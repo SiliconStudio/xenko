@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         // Mixin 
         mixin McIntoshOptimizedShader;
-        mixin compose directionalBlurA = DepthAwareDirectionalBlurUtil<DepthAwareDirectionalBlurKeys.Count, DepthAwareDirectionalBlurKeys.TotalTap, DepthAwareDirectionalBlurKeys.ReferenceIndex>;
-        mixin compose directionalBlurB = DepthAwareDirectionalBlurUtil<DepthAwareDirectionalBlurKeys.Count, DepthAwareDirectionalBlurKeys.TotalTap, DepthAwareDirectionalBlurKeys.ReferenceIndex>;
+        mixin compose directionalBlurA = DepthAwareDirectionalBlurUtil<DepthAwareDirectionalBlurKeys.Count, DepthAwareDirectionalBlurKeys.TotalTap>;
+        mixin compose directionalBlurB = DepthAwareDirectionalBlurUtil<DepthAwareDirectionalBlurKeys.Count, DepthAwareDirectionalBlurKeys.TotalTap>;
     };
 }

@@ -11,7 +11,6 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         // Mixin 
         mixin DepthAwareDirectionalBlurShader< DepthAwareDirectionalBlurKeys.Count, 
-                                               DepthAwareDirectionalBlurKeys.TotalTap, 
-                                               DepthAwareDirectionalBlurKeys.ReferenceIndex>;
+                                               DepthAwareDirectionalBlurKeys.TotalTap>;
     };
 }

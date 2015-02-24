@@ -1,0 +1,22 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Paradox.Effects.Images
+{
+    /// <summary>
+    /// Combines two textures by replacing transparent areas by a blur of the neighbor texels.
+    /// </summary>
+    class InFocusMaskCombine: ImageEffectShader
+    {
+        stage override float4 Shading()
+        {
+            float4 color = Texture0.Sample(Sampler, streams.TexCoord).xyzw;
+            float4 focusBlur = Texture1.Sample(Sampler, streams.TexCoord).xyzw;
+            
+            float alpha = color.w;
+            float3 result = alpha * color + (1.0 - alpha) * focusBlur;
+
+            return float4(result, focusBlur.w);
+        }
+    };
+}

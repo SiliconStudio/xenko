@@ -27,14 +27,14 @@ namespace SiliconStudio.Paradox.Effects.Images
                 {
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
                     context.PushComposition(mixin, "directionalBlurA", __subMixin);
-                    context.Mixin(__subMixin, "DepthAwareDirectionalBlurUtil", context.GetParam(DepthAwareDirectionalBlurKeys.Count), context.GetParam(DepthAwareDirectionalBlurKeys.TotalTap), context.GetParam(DepthAwareDirectionalBlurKeys.ReferenceIndex));
+                    context.Mixin(__subMixin, "DepthAwareDirectionalBlurUtil", context.GetParam(DepthAwareDirectionalBlurKeys.Count), context.GetParam(DepthAwareDirectionalBlurKeys.TotalTap));
                     context.PopComposition();
                 }
 
                 {
                     var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
                     context.PushComposition(mixin, "directionalBlurB", __subMixin);
-                    context.Mixin(__subMixin, "DepthAwareDirectionalBlurUtil", context.GetParam(DepthAwareDirectionalBlurKeys.Count), context.GetParam(DepthAwareDirectionalBlurKeys.TotalTap), context.GetParam(DepthAwareDirectionalBlurKeys.ReferenceIndex));
+                    context.Mixin(__subMixin, "DepthAwareDirectionalBlurUtil", context.GetParam(DepthAwareDirectionalBlurKeys.Count), context.GetParam(DepthAwareDirectionalBlurKeys.TotalTap));
                     context.PopComposition();
                 }
             }

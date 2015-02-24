@@ -117,10 +117,16 @@ namespace SiliconStudio.Paradox.Effects.Images
         [DataMemberRange(0f, 1f)]
         public float QualityPreset
         {
+            get
+            {
+                return quality;
+            }
+
             set
             {
                 if (value < 0f) value = 0f;
                 if (value > 1f) value = 1f;
+                quality = value;
                 int presetCount = 6;
                 int presetRequested = (int) (value * presetCount);
                 switch (presetRequested)
@@ -161,9 +167,15 @@ namespace SiliconStudio.Paradox.Effects.Images
         private BokehTechnique technique;
         private float[] levelCoCValues;
         private int[] levelDownscaleFactors;
+        private float quality;
 
         // Util to scale images
         private ImageScaler textureScaler;
+
+        private ImageEffectShader inFocusToAlpha;
+        private ImageEffectShader inFocusMaskCombine;
+        private GaussianBokeh gaussianBokeh;
+        private GaussianBlur gaussianBlur;
 
         // Transforms "Color and depth" -> "linear depth and CoC"
         private ImageEffectShader coclinearDepthMapEffect;
@@ -214,6 +226,10 @@ namespace SiliconStudio.Paradox.Effects.Images
             combineLevelsEffect = ToLoadAndUnload(new ImageEffectShader("CombineLevelsFromCoCEffect"));
             textureScaler = ToLoadAndUnload(new ImageScaler());
             cocMapBlur = ToLoadAndUnload(new CoCMapBlur());
+            inFocusToAlpha = ToLoadAndUnload(new ImageEffectShader("InFocusToAlpha"));
+            inFocusMaskCombine = ToLoadAndUnload(new ImageEffectShader("InFocusMaskCombine"));
+            gaussianBlur = ToLoadAndUnload(new GaussianBlur());
+            gaussianBokeh = ToLoadAndUnload(new GaussianBokeh());
         }
 
         /// <summary>
@@ -311,23 +327,6 @@ namespace SiliconStudio.Paradox.Effects.Images
             // Preparation phase: create different downscaled versions of the original image, later needed by the bokeh blur shaders. 
             // TODO use ImageMultiScaler instead?
             downscaledSources.Clear();
-            downscaledSources[0] = originalColorBuffer;
-
-            // Find the smallest downscale we should go down to.
-            var maxDownscale = 0;
-            foreach (var cocLevel in cocLevels)
-            {
-                if (cocLevel.downscaleFactor > maxDownscale) maxDownscale = cocLevel.downscaleFactor;
-            }
-            for (int i = 1; i <= maxDownscale; i++)
-            {
-                var downSizedTexture = GetScopedRenderTarget(originalColorBuffer.Description, 1f / (float)Math.Pow(2f, i), originalColorBuffer.Description.Format);
-                var input = downscaledSources[i - 1];
-                textureScaler.SetInput(0, downscaledSources[i - 1]);
-                textureScaler.SetOutput(downSizedTexture);
-                textureScaler.Draw(context, "DownScale_Factor{0}", i);
-                downscaledSources[i] = downSizedTexture;
-            }
 
             // First we linearize the depth and compute the CoC map based on the user lens configuration.
             // Render target will contain "CoC"(16 bits) "Linear depth"(16bits).
@@ -337,6 +336,55 @@ namespace SiliconStudio.Paradox.Effects.Images
             coclinearDepthMapEffect.SetOutput(cocLinearDepthTexture);
             coclinearDepthMapEffect.Parameters.Set(CircleOfConfusionKeys.depthAreas, DOFAreas);
             coclinearDepthMapEffect.Draw(context, name: "CoC_LinearDepth");
+
+            // Find the smallest downscale we should go down to.
+            var maxDownscale = 0;
+            foreach (var cocLevel in cocLevels)
+            {
+                if (cocLevel.downscaleFactor > maxDownscale) maxDownscale = cocLevel.downscaleFactor;
+            }
+
+            // Create a series of downscale, with anti-bleeding treatment
+            for (int i = 0; i <= maxDownscale; i++)
+            {
+                var downSizedTexture = originalColorBuffer;
+                if (i > 0)
+                {
+                    downSizedTexture = GetScopedRenderTarget(originalColorBuffer.Description, 1f / (float)Math.Pow(2f, i), originalColorBuffer.Description.Format);
+                    textureScaler.SetInput(0, downscaledSources[i - 1]);
+                    textureScaler.SetOutput(downSizedTexture);
+                    textureScaler.Draw(context, "DownScale_Factor{0}", i);
+                }
+
+                // Special treatment to reduce bleeding: make the in-focus area transparent-black, 
+                // and make the out-focus areas bleed into it. 
+
+                // Make in-focus areas transparent
+                var alphaFocusInput = NewScopedRenderTarget2D(downSizedTexture.Description);
+                inFocusToAlpha.SetInput(0, downSizedTexture);
+                inFocusToAlpha.SetInput(1, cocLinearDepthTexture);
+                inFocusToAlpha.SetOutput(alphaFocusInput);
+                inFocusToAlpha.Draw("In focus to alpha");
+
+                // Blur
+                var blurredAlphaFocus = NewScopedRenderTarget2D(alphaFocusInput.Description);
+                gaussianBokeh.Radius = 3;
+                gaussianBokeh.SetInput(0, alphaFocusInput);
+                gaussianBokeh.SetInput(1, cocLinearDepthTexture);
+                gaussianBokeh.SetOutput(blurredAlphaFocus);
+                gaussianBokeh.Draw("Blur focus-alpha");
+
+                // Combine the 2 previous buffers using alpha as a mask
+                var bleedToAlpha = NewScopedRenderTarget2D(alphaFocusInput.Description);
+                inFocusMaskCombine.SetInput(0, alphaFocusInput);
+                inFocusMaskCombine.SetInput(1, blurredAlphaFocus);
+                inFocusMaskCombine.SetOutput(bleedToAlpha);
+                inFocusMaskCombine.Draw("Bleed color to alpha");
+
+                downSizedTexture = bleedToAlpha;
+
+                downscaledSources[i] = downSizedTexture;
+            }
 
             // We create a blurred version of the CoC map. 
             // This is useful to avoid silhouettes appearing when the CoC changes abruptly.
@@ -366,7 +414,6 @@ namespace SiliconStudio.Paradox.Effects.Images
                 BokehBlur levelBlur = levelConfig.blurEffect;
                 levelBlur.Radius = blurRadius; // This doesn't generate garbage if the radius value doesn't change.
                 levelBlur.SetInput(0, textureToBlur);
-                levelBlur.SetInput(1, cocLinearDepthTexture);
                 levelBlur.SetOutput(blurOutput);
                 levelBlur.Draw(context, "CoC_LoD_Layer_{0}", i);
                 combineLevelsEffect.SetInput(i + 2, blurOutput);

@@ -90,6 +90,18 @@
     <Compile Include="Engine\Graphics\EntityComponentRendererBatch.cs" />
     <Compile Include="Engine\Graphics\GraphicsRendererCollectionBase.cs" />
     <Compile Include="Engine\Graphics\IGraphicsRendererCore.cs" />
+    <Compile Include="Engine\Graphics\Images\DepthOfField\InFocusMaskCombine.cs">
+      <DependentUpon>InFocusMaskCombine.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Engine\Graphics\Images\DepthOfField\InFocusToAlpha.cs">
+      <DependentUpon>InFocusToAlpha.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Engine\Graphics\Lights\ColorLightBase.cs" />
     <Compile Include="Engine\Graphics\Lights\DirectLightBase.cs" />
     <Compile Include="Engine\Graphics\Lights\IColorLight.cs" />
@@ -2570,6 +2582,14 @@
     <None Include="Engine\Graphics\Images\DepthOfField\BokehTechnique\Hexagonal\TripleRhombiCombineShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>TripleRhombiCombineShader.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Images\DepthOfField\InFocusMaskCombine.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>InFocusMaskCombine.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Images\DepthOfField\InFocusToAlpha.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>InFocusToAlpha.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Images\DepthOfField\CircleOfConfusion.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

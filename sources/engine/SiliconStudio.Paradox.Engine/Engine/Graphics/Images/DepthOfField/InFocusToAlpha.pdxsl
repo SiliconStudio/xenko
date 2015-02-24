@@ -1,0 +1,20 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Paradox.Effects.Images
+{
+    /// <summary>
+    /// Makes in-focus area transparent-black. 
+    /// </summary>
+    class InFocusToAlpha: ImageEffectShader
+    {
+        stage override float4 Shading()
+        {
+            float3 color = Texture0.Sample(Sampler, streams.TexCoord).xyz;
+            float CoC = Texture1.Sample(Sampler, streams.TexCoord).x;
+            CoC = sign(CoC); // Hard cut for in-focus area.
+
+            return float4(color * CoC, CoC);
+        }
+    };
+}

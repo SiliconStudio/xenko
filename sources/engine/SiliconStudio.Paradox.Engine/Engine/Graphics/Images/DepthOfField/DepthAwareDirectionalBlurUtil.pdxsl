@@ -8,17 +8,14 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// A blur with weights applied along one direction. 
     /// The blurring algorithm is also depth-aware: sample weights are modified on-the-fly to avoid 
     /// artifacts such as in-focus objects bleeding into out-of-focus background objects.
-    /// You can also specify which sample should be used as a reference point to avoid bleeding. 
     /// Expects as input: 
     /// - Texture0: color buffer
-    /// - Texture1: a [CoC, Linear Depth] buffer
     /// </summary>
     ///
     /// <typeparam name="TWeightCount">The number of weights along a direction.</typeparam>
     /// <typeparam name="TTotalNumber">Total number of tpas. The value is always 2 * TWeightCount - 1.</typeparam>
-    /// <typeparam name="TReferenceIndex">Index of the tap to consider to avoid color-bleeding.</typeparam>
 
-    class DepthAwareDirectionalBlurUtil<int TWeightCount, int TTotalNumber, int TReferenceIndex> : Texturing, ComputeColor
+    class DepthAwareDirectionalBlurUtil<int TWeightCount, int TTotalNumber> : Texturing, ComputeColor
     {
         // Direction to apply the blur. (normalized vector)
         float2 Direction;
@@ -36,13 +33,13 @@ namespace SiliconStudio.Paradox.Effects.Images
             float2 tapOffset =  Radius / (TWeightCount - 1) * Texture0TexelSize;
             
             // Fills arrays with all the taps
-            float3 tapColor[TTotalNumber];  // All the taps colors
-            float3 tapCoCDepthWeight[TTotalNumber]; // With their respective CoC, Depth, Weight
+            float4 tapColor[TTotalNumber];  // All the taps colors
+            float tapOriginalWeight[TTotalNumber]; // With their respective weight
 
             // Center tap
             int centerIndex = TWeightCount - 1;
-            tapColor[centerIndex] = Texture0.Sample(LinearSampler, streams.TexCoord).rgb;
-            tapCoCDepthWeight[centerIndex] = float3(Texture1.Sample(LinearSampler, streams.TexCoord).xy, TapWeights[0]);
+            tapColor[centerIndex] = Texture0.Sample(LinearSampler, streams.TexCoord).xyzw;
+            tapOriginalWeight[centerIndex] = TapWeights[0];
 
             // Treats all the taps in the 2 directions from the center
             [unroll]
@@ -53,13 +50,10 @@ namespace SiliconStudio.Paradox.Effects.Images
                 {                     
                     float2 tapUV = streams.TexCoord + j * i * Direction * tapOffset;
                     int tapIndex = centerIndex + (j * i);
-                    tapColor[tapIndex]          = Texture0.Sample(LinearSampler, tapUV).rgb;
-                    tapCoCDepthWeight[tapIndex] = float3(Texture1.Sample(LinearSampler, tapUV).xy, TapWeights[i]);
+                    tapColor[tapIndex]          = Texture0.Sample(LinearSampler, tapUV).xyzw;
+                    tapOriginalWeight[tapIndex] = TapWeights[i];
                 }
             }
-
-            // Select our reference point for the depth (to avoid bleeding)
-            float centerDepth = tapCoCDepthWeight[TReferenceIndex].y;
 
             // Calculate the final average color by modifying tap weights on-the-fly
             float3 resultColor = float3(0.0, 0.0, 0.0);
@@ -68,27 +62,22 @@ namespace SiliconStudio.Paradox.Effects.Images
             [unroll]
             for(int k = 0; k < TTotalNumber; k++)
             {
-                // We want to avoid color-bleeding due to depth occlusion: 
-                // tap's weight is recalculated to prevent artifacts
-                float3 cocDepthWeight = tapCoCDepthWeight[k];
-                float contribution = 1.0; // Default to 1.0 for the reference point
-                if (k != TReferenceIndex)
-                {
-                    // Tap other than the reference point need the re-calculation
-                    contribution = (cocDepthWeight.y >= centerDepth);
-                    contribution += cocDepthWeight.x;
-                    contribution = saturate(contribution * sign(cocDepthWeight.x));
-                }
-
+                float contribution = tapColor[k].w; // alpha modulates the contribution
                 // Final weight value to use
-                float tapWeight = contribution * cocDepthWeight.z;
+                float tapWeight = contribution * tapOriginalWeight[k];
 
-                resultColor += tapColor[k] * tapWeight;
+                resultColor += tapColor[k].xyz * tapColor[k].w * tapWeight;
                 totalWeight += tapWeight;
             }
 
-            // Normalizes the final result
-            return float4(resultColor / totalWeight, 1.0);
+            if (totalWeight > 0) {
+                // Normalizes the final result
+                resultColor /= totalWeight;
+            } else {
+                resultColor = float3(0.0, 0.0, 0.0);
+            }
+
+            return float4(resultColor, sign(totalWeight));
         }
     };
 }

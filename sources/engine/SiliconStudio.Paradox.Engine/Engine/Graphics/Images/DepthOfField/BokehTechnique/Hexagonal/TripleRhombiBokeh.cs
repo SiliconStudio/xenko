@@ -134,7 +134,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         protected void DrawCoreNaive(RenderContext context)
         {
             var originalTexture = GetSafeInput(0);
-            var originalDepthBuffer = GetSafeInput(1);
             var outputTexture = GetSafeOutput(0);
 
             if (rhombiTapOffsetsDirty) calculateRhombiOffsets();
@@ -142,7 +141,6 @@ namespace SiliconStudio.Paradox.Effects.Images
             var tapNumber = 2 * tapCount - 1;
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.Count, tapCount);
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.TotalTap, tapNumber);
-            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.ReferenceIndex, 0);
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Radius, Radius);
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.TapWeights, tapWeights);
 
@@ -152,7 +150,6 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             var verticalBlurTexture = NewScopedRenderTarget2D(originalTexture.Description);
             directionalBlurEffect.SetInput(0, originalTexture);
-            directionalBlurEffect.SetInput(1, originalDepthBuffer);
             directionalBlurEffect.SetOutput(verticalBlurTexture);
             directionalBlurEffect.Draw(context, "TripleRhombiBokeh_RhombiABVertical_tap{0}_radius{1}", tapNumber, (int)Radius);
 

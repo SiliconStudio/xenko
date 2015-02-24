@@ -13,7 +13,5 @@ namespace SiliconStudio.Paradox.Effects.Images
         public static readonly ParameterKey<int> Count = ParameterKeys.New<int>();
 
         public static readonly ParameterKey<int> TotalTap = ParameterKeys.New<int>();
-
-        public static readonly ParameterKey<int> ReferenceIndex = ParameterKeys.New<int>();
     }
 }
