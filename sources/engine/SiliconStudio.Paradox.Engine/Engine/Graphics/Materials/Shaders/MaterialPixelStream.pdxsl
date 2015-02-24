@@ -116,7 +116,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
 
             // Make sure alphaRoughness is not going below a certain value as it can generate Infinity with some specular model
             // roughness-burley = roughness^2 = (1 - glossy)^2
-            streams.alphaRoughness = max(roughness * roughness + roughnessAdjust, 0.0001); 
+            streams.alphaRoughness = max(roughness * roughness + roughnessAdjust, 0.001); 
             // TODO: precalculate alphaRoughness^2
         }
     };
