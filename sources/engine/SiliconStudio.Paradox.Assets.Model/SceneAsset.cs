@@ -4,6 +4,7 @@
 using System;
 
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Engine;
@@ -17,6 +18,7 @@ namespace SiliconStudio.Paradox.Assets.Model
     [DataContract("SceneAsset")]
     [AssetFileExtension(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
+    [ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName, true)]
     [Display("Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
