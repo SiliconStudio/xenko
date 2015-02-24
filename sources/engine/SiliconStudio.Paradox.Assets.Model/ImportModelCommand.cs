@@ -324,6 +324,11 @@ namespace SiliconStudio.Paradox.Assets.Model
                     }
                     var vertexBuffer = new BufferData(BufferFlags.VertexBuffer, new byte[sizeVertexBuffer]);
                     var indexBuffer = new BufferData(BufferFlags.IndexBuffer, new byte[sizeIndexBuffer]);
+
+                    // Note: reusing same instance, to avoid having many VB with same hash but different URL
+                    var vertexBufferSerializable = vertexBuffer.ToSerializableVersion();
+                    var indexBufferSerializable = indexBuffer.ToSerializableVersion();
+
                     var vertexBufferNextIndex = 0;
                     var indexBufferNextIndex = 0;
                     foreach (var drawMesh in model.Meshes.Select(x => x.Draw))
@@ -337,7 +342,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 
                         Array.Copy(oldIndexBuffer, 0, indexBuffer.Content, indexBufferNextIndex, oldIndexBuffer.Length);
                     
-                        drawMesh.IndexBuffer = new IndexBufferBinding(indexBuffer.ToSerializableVersion(), drawMesh.IndexBuffer.Is32Bit, drawMesh.IndexBuffer.Count, indexBufferNextIndex);
+                        drawMesh.IndexBuffer = new IndexBufferBinding(indexBufferSerializable, drawMesh.IndexBuffer.Is32Bit, drawMesh.IndexBuffer.Count, indexBufferNextIndex);
                     
                         indexBufferNextIndex += oldIndexBuffer.Length;
                     
@@ -349,7 +354,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 
                             Array.Copy(oldVertexBuffer, 0, vertexBuffer.Content, vertexBufferNextIndex, oldVertexBuffer.Length);
 
-                            drawMesh.VertexBuffers[index] = new VertexBufferBinding(vertexBuffer.ToSerializableVersion(), vertexBufferBinding.Declaration, vertexBufferBinding.Count, vertexBufferBinding.Stride, vertexBufferNextIndex);
+                            drawMesh.VertexBuffers[index] = new VertexBufferBinding(vertexBufferSerializable, vertexBufferBinding.Declaration, vertexBufferBinding.Count, vertexBufferBinding.Stride, vertexBufferNextIndex);
 
                             vertexBufferNextIndex += oldVertexBuffer.Length;
                         }

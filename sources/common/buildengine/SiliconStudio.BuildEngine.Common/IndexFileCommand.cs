@@ -106,7 +106,7 @@ namespace SiliconStudio.BuildEngine
         /// </summary>
         public static void UnmountDatabase()
         {
-            MicroThreadLocalDatabaseFileProvider.Value = null;
+            MicroThreadLocalDatabaseFileProvider.ClearValue();
         }
         
         private static IEnumerable<IDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups(IEnumerable<IDictionary<ObjectUrl, OutputObject>> transactionOutputObjectsGroups)
@@ -163,7 +163,7 @@ namespace SiliconStudio.BuildEngine
                 //AssetIndexMap.Save();
             }
 
-            MicroThreadLocalDatabaseFileProvider.Value = null;
+            MicroThreadLocalDatabaseFileProvider.ClearValue();
         }
     }
 }

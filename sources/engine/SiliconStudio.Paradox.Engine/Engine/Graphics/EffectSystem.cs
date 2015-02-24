@@ -29,6 +29,9 @@ namespace SiliconStudio.Paradox.Effects
         private Dictionary<EffectBytecode, Effect> cachedEffects = new Dictionary<EffectBytecode, Effect>();
         private DirectoryWatcher directoryWatcher;
 
+        // Ideally it should be a "HashStore", but we don't have it yet...
+        private DictionaryStore<EffectCompileRequest, bool> recordedEffectCompile;
+
         private readonly HashSet<string> recentlyModifiedShaders = new HashSet<string>();
         private bool clearNextFrame = false;
 
@@ -69,6 +72,25 @@ namespace SiliconStudio.Paradox.Effects
             // TODO: pdxfx too
 #endif
             compiler = (EffectCompilerBase)CreateEffectCompiler();
+        }
+
+        public void RecordEffectCompile(string filePath, bool reset)
+        {
+            try
+            {
+                if (reset && File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+            }
+            catch (IOException)
+            {
+            }
+
+            var fileStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+            recordedEffectCompile = new DictionaryStore<EffectCompileRequest, bool>(fileStream);
+            if (!reset)
+                recordedEffectCompile.LoadNewValues();
         }
 
         public static IEffectCompiler CreateEffectCompiler(TaskScheduler taskScheduler = null)
@@ -251,6 +273,22 @@ namespace SiliconStudio.Paradox.Effects
             {
                 compilerResult = compiler.Compile(source, compilerParameters);
 
+                // If enabled, request this effect compile
+                // TODO: For now we save usedParameters, but ideally we probably want to have a list of everything that might be use by a given
+                //       pdxfx and filter against this, so that branches not taken on a specific situation/platform can still be reproduced on another.
+                // Alternatively, we could save full compilerParameters, but we would have to ignore certain things that are not serializable, such as Texture. 
+                if (recordedEffectCompile != null)
+                {
+                    ShaderMixinParameters usedParameters;
+                    compilerResult.UsedParameters.TryGetValue(subEffect, out usedParameters);
+
+                    var effectCompileRequest = new EffectCompileRequest(effectName, usedParameters);
+                    if (!recordedEffectCompile.Contains(effectCompileRequest))
+                    {
+                        recordedEffectCompile[effectCompileRequest] = true;
+                    }
+                }
+                
                 if (!compilerResult.HasErrors && isPdxfx)
                 {
                     lock (earlyCompilerCache)

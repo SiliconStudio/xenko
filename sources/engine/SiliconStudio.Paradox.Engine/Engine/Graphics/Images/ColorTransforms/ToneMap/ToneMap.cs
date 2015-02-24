@@ -25,9 +25,9 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <summary>
         /// Initializes a new instance of the <see cref="ToneMap"/> class.
         /// </summary>
-        public ToneMap()
-            : this("ToneMapEffect")
+        public ToneMap() : this("ToneMapEffect")
         {
+            
         }
 
         /// <summary>

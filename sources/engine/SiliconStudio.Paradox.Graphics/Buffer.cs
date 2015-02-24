@@ -43,6 +43,10 @@ namespace SiliconStudio.Paradox.Graphics
         protected int elementCount;
         private BufferDescription bufferDescription;
 
+        public Buffer()
+        {
+        }
+
         /// <summary>
         /// Gets the description of this buffer.
         /// </summary>

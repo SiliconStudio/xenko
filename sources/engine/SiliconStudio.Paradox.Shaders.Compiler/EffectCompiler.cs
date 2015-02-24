@@ -265,7 +265,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 builder.AppendLine("***************************");
                 builder.Append("@P EffectName: ");
                 builder.AppendLine(fullEffectName ?? "");
-                WriteParameters(builder, usedParameters, 0, false);
+                builder.Append(usedParameters.ToStringDetailed());
                 builder.AppendLine("***************************");
 
                 if (bytecode.Reflection.ConstantBuffers.Count > 0)
@@ -346,55 +346,6 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 outputLog.Log(outputMessage);
             }
             outputLog.HasErrors = inputLog.HasErrors;
-        }
-
-        private static void WriteParameters(StringBuilder builder, ParameterCollection parameters, int indent, bool isArray)
-        {
-            var indentation = "";
-            for (var i = 0; i < indent - 1; ++i)
-                indentation += "    ";
-            var first = true;
-            foreach (var usedParam in parameters)
-            {
-                builder.Append("@P ");
-                builder.Append(indentation);
-                if (isArray && first)
-                {
-                    builder.Append("  - ");
-                    first = false;
-                }
-                else if (indent > 0)
-                    builder.Append("    ");
-                
-                if (usedParam.Key == null)
-                    builder.Append("NullKey");
-                else
-                    builder.Append(usedParam.Key);
-                builder.Append(": ");
-                if (usedParam.Value == null)
-                    builder.AppendLine("NullValue");
-                else
-                {
-                    if (usedParam.Value is ParameterCollection)
-                    {
-                        WriteParameters(builder, usedParam.Value as ParameterCollection, indent + 1, false);
-                    }
-                    else if (usedParam.Value is ParameterCollection[])
-                    {
-                        var collectionArray = (ParameterCollection[])usedParam.Value;
-                        foreach (var collection in collectionArray)
-                            WriteParameters(builder, collection, indent + 1, true);
-                    }
-                    else if (usedParam.Value is Array)
-                    {
-                        builder.AppendLine(string.Join(", ", (IEnumerable<object>)usedParam.Value));
-                    }
-                    else
-                    {
-                        builder.AppendLine(usedParam.Value.ToString());
-                    }
-                }
-            }
         }
 
         private static void CleanupReflection(EffectReflection reflection)

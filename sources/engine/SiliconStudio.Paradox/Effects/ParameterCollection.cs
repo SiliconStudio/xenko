@@ -310,20 +310,60 @@ namespace SiliconStudio.Paradox.Effects
             return string.Format("ParameterCollection [{0}]", Name);
         }
 
-        public string ToStringDetailed(string itemSeparator = "\r\n", string itemTab = "   ")
+        private static void WriteParameters(StringBuilder builder, ParameterCollection parameters, int indent, bool isArray)
         {
-            var parameterCollectionText = new StringBuilder();
-            bool isNextParameter = false;
-            foreach (var paramValue in this)
+            var indentation = "";
+            for (var i = 0; i < indent - 1; ++i)
+                indentation += "    ";
+            var first = true;
+            foreach (var usedParam in parameters)
             {
-                if (isNextParameter)
+                builder.Append("@P ");
+                builder.Append(indentation);
+                if (isArray && first)
                 {
-                    parameterCollectionText.Append(itemSeparator);
+                    builder.Append("  - ");
+                    first = false;
                 }
-                parameterCollectionText.Append(itemTab).Append(paramValue.Key).Append(": ").Append(paramValue.Value);
-                isNextParameter = true;
+                else if (indent > 0)
+                    builder.Append("    ");
+
+                if (usedParam.Key == null)
+                    builder.Append("NullKey");
+                else
+                    builder.Append(usedParam.Key);
+                builder.Append(": ");
+                if (usedParam.Value == null)
+                    builder.AppendLine("NullValue");
+                else
+                {
+                    if (usedParam.Value is ParameterCollection)
+                    {
+                        WriteParameters(builder, usedParam.Value as ParameterCollection, indent + 1, false);
+                    }
+                    else if (usedParam.Value is ParameterCollection[])
+                    {
+                        var collectionArray = (ParameterCollection[])usedParam.Value;
+                        foreach (var collection in collectionArray)
+                            WriteParameters(builder, collection, indent + 1, true);
+                    }
+                    else if (usedParam.Value is Array)
+                    {
+                        builder.AppendLine(string.Join(", ", (IEnumerable<object>)usedParam.Value));
+                    }
+                    else
+                    {
+                        builder.AppendLine(usedParam.Value.ToString());
+                    }
+                }
             }
-            return parameterCollectionText.ToString();
+        }
+
+        public string ToStringDetailed()
+        {
+            var builder = new StringBuilder();
+            WriteParameters(builder, this, 0, false);
+            return builder.ToString();
         }
 
         public void Add<T>(ParameterKey<T> key, T value)

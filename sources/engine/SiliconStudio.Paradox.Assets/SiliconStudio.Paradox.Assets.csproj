@@ -130,7 +130,10 @@
     <Compile Include="Audio\RawSoundAssetImporter.cs" />
     <Compile Include="Audio\SoundAsset.cs" />
     <Compile Include="Audio\RawMusicAssetImporter.cs" />
+    <Compile Include="Effect\EffectCompileCommand.cs" />
     <Compile Include="Effect\EffectCompositorAsset.cs" />
+    <Compile Include="Effect\EffectLogAsset.cs" />
+    <Compile Include="Effect\EffectLogAssetCompiler.cs" />
     <Compile Include="Effect\EffectShaderAssetCompiler.cs" />
     <Compile Include="Effect\EffectShaderAsset.cs" />
     <Compile Include="Materials\ComputeShaderBaseExtensions.cs" />

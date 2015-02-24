@@ -22,10 +22,6 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-        public Buffer()
-        {
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Buffer" /> class.
         /// </summary>

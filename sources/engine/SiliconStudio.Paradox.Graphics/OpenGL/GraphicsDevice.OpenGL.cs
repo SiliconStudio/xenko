@@ -14,6 +14,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Paradox.Graphics.OpenGL;
 using Color4 = SiliconStudio.Core.Mathematics.Color4;
 #if SILICONSTUDIO_PLATFORM_ANDROID
 using System.Text;
@@ -317,6 +318,10 @@ namespace SiliconStudio.Paradox.Graphics
         {
         }
 
+        public void EndProfile()
+        {
+        }
+
         public void Clear(Texture depthStencilBuffer, DepthStencilClearOptions options, float depth = 1, byte stencil = 0)
         {
 #if DEBUG
@@ -387,7 +392,7 @@ namespace SiliconStudio.Paradox.Graphics
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             throw new NotImplementedException();
 #else
-            if((buffer.BufferFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
+            if((buffer.ViewFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
                 throw new ArgumentException("Buffer does not support unordered access");
 
             GL.BindBuffer(buffer.bufferTarget, buffer.resourceId);
@@ -405,7 +410,7 @@ namespace SiliconStudio.Paradox.Graphics
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             throw new NotImplementedException();
 #else
-            if ((buffer.BufferFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
+            if ((buffer.ViewFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
                 throw new ArgumentException("Buffer does not support unordered access");
 
             GL.BindBuffer(buffer.bufferTarget, buffer.resourceId);
@@ -423,7 +428,7 @@ namespace SiliconStudio.Paradox.Graphics
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             throw new NotImplementedException();
 #else
-            if ((buffer.BufferFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
+            if ((buffer.ViewFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
                 throw new ArgumentException("Buffer does not support unordered access");
 
             GL.BindBuffer(buffer.bufferTarget, buffer.resourceId);
@@ -542,9 +547,6 @@ namespace SiliconStudio.Paradox.Graphics
 
             if (destTexture.Description.Usage == GraphicsResourceUsage.Staging)
             {
-                if(sourceTexture.Width <= 16 || sourceTexture.Height <= 16)
-                    throw new NotSupportedException("ReadPixels from texture smaller or equal to 16x16 pixels seems systematically to fails on some android devices (for exp: Galaxy S3)");
-
                 if (dstX != 0 || dstY != 0 || dstZ != 0)
                     throw new NotSupportedException("ReadPixels from staging texture using non-zero destination is not supported");
 
@@ -554,6 +556,10 @@ namespace SiliconStudio.Paradox.Graphics
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 if (IsOpenGLES2)
                 {
+                    // TODO: This issue might just be because we don't specify alignment to glPixelStorei().
+                    if (sourceTexture.Width <= 16 || sourceTexture.Height <= 16)
+                        throw new NotSupportedException("ReadPixels from texture smaller or equal to 16x16 pixels seems systematically to fails on some android devices."); // example: Galaxy S3
+
                     GL.ReadPixels(sourceRectangle.Left, sourceRectangle.Top, sourceRectangle.Width, sourceRectangle.Height, destTexture.FormatGl, destTexture.Type, destTexture.StagingData);
                 }
                 else
@@ -715,6 +721,11 @@ namespace SiliconStudio.Paradox.Graphics
         public void Copy(GraphicsResource source, GraphicsResource destination)
         {
             CopyRegion(source, 0, null, destination, 0);
+        }
+
+        public void CopyMultiSample(Texture sourceMsaaTexture, int sourceSubResource, Texture destTexture, int destSubResource, PixelFormat format = PixelFormat.None)
+        {
+            throw new NotImplementedException();
         }
 
         public void CopyCount(Buffer sourceBuffer, Buffer destBuffer, int offsetToDest)
@@ -936,10 +947,6 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-        public void EndProfile()
-        {
-        }
-
         internal void EnsureContextActive()
         {
             // TODO: Better checks (is active context the expected one?)
@@ -1018,7 +1025,7 @@ namespace SiliconStudio.Paradox.Graphics
                 // TODO: Need to disable some part of rendering if either is null
                 var isProvidedDepthBuffer = (depthStencilBuffer == RootDevice.windowProvidedDepthTexture);
                 var isProvidedRenderTarget = (fboKey.LastRenderTarget == 1 && renderTargets[0] == RootDevice.windowProvidedRenderTexture);
-                if ((isProvidedDepthBuffer || boundDepthStencilBuffer == null) && (isProvidedRenderTarget || fboKey.LastRenderTarget == 0)) // device provided framebuffer
+                if ((isProvidedDepthBuffer || depthStencilBuffer == null) && (isProvidedRenderTarget || fboKey.LastRenderTarget == 0)) // device provided framebuffer
                 {
                     return windowProvidedFrameBuffer;
                 }
@@ -2154,7 +2161,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-        protected void InitializePlatformDevice(GraphicsProfile[] graphicsProfile, DeviceCreationFlags deviceCreationFlags, WindowHandle windowHandle)
+        protected void InitializePlatformDevice(GraphicsProfile[] graphicsProfiles, DeviceCreationFlags deviceCreationFlags, WindowHandle windowHandle)
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             gameWindow = (OpenTK.GameWindow)windowHandle.NativeHandle;
@@ -2185,24 +2192,20 @@ namespace SiliconStudio.Paradox.Graphics
             versionMajor = 1;
             versionMinor = 0;
 
-            // get real values
-            // using glGetIntegerv(GL_MAJOR_VERSION / GL_MINOR_VERSION) only works on opengl (es) > 3.0
-            var version = GL.GetString(StringName.Version);
-            if (version != null)
+            var requestedGraphicsProfile = GraphicsProfile.Level_9_1;
+
+            // Find the first profile that is compatible with current GL version
+            foreach (var graphicsProfile in graphicsProfiles)
             {
-                var splitVersion = version.Split(new char[] { '.', ' ' });
-                // find first number occurence because:
-                //   - on OpenGL, "<major>.<minor>"
-                //   - on OpenGL ES, "OpenGL ES <profile> <major>.<minor>"
-                for (var i = 0; i < splitVersion.Length - 1; ++i)
+                if (Adapter.IsProfileSupported(graphicsProfile))
                 {
-                    if (int.TryParse(splitVersion[i], out versionMajor))
-                    {
-                        int.TryParse(splitVersion[i+1], out versionMinor);
-                        break;
-                    }
+                    requestedGraphicsProfile = graphicsProfile;
+                    break;
                 }
             }
+
+            // Find back OpenGL version from requested version
+            OpenGLUtils.GetGLVersion(requestedGraphicsProfile, out versionMajor, out versionMinor);
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             IsOpenGLES2 = (versionMajor < 3);

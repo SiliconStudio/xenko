@@ -689,20 +689,20 @@ NOTE the other tuning knobs are now in the shader function inputs!
 /*--------------------------------------------------------------------------*/
 #if (FXAA_HLSL_4 == 1)
     #define FxaaInt2 int2
-    struct FxaaTex { SamplerState smpl; Texture2D tex; };
-    #define FxaaTexTop(t, p) t.tex.SampleLevel(t.smpl, p, 0.0)
-    #define FxaaTexOff(t, p, o, r) t.tex.SampleLevel(t.smpl, p, 0.0, o)
+    #define FxaaTex Texture2D
+    #define FxaaTexTop(t, p) t.SampleLevel(LinearSampler, p, 0.0)
+    #define FxaaTexOff(t, p, o, r) t.SampleLevel(LinearSampler, p, 0.0, o)
 #endif
 /*--------------------------------------------------------------------------*/
 #if (FXAA_HLSL_5 == 1)
     #define FxaaInt2 int2
-    struct FxaaTex { SamplerState smpl; Texture2D tex; };
-    #define FxaaTexTop(t, p) t.tex.SampleLevel(t.smpl, p, 0.0)
-    #define FxaaTexOff(t, p, o, r) t.tex.SampleLevel(t.smpl, p, 0.0, o)
-    #define FxaaTexAlpha4(t, p) t.tex.GatherAlpha(t.smpl, p)
-    #define FxaaTexOffAlpha4(t, p, o) t.tex.GatherAlpha(t.smpl, p, o)
-    #define FxaaTexGreen4(t, p) t.tex.GatherGreen(t.smpl, p)
-    #define FxaaTexOffGreen4(t, p, o) t.tex.GatherGreen(t.smpl, p, o)
+    #define FxaaTex Texture2D
+    #define FxaaTexTop(t, p) t.SampleLevel(LinearSampler, p, 0.0)
+    #define FxaaTexOff(t, p, o, r) t.SampleLevel(LinearSampler, p, 0.0, o)
+    #define FxaaTexAlpha4(t, p) t.GatherAlpha(LinearSampler, p)
+    #define FxaaTexOffAlpha4(t, p, o) t.GatherAlpha(LinearSampler, p, o)
+    #define FxaaTexGreen4(t, p) t.GatherGreen(LinearSampler, p)
+    #define FxaaTexOffGreen4(t, p, o) t.GatherGreen(LinearSampler, p, o)
 #endif
 
 
@@ -2056,11 +2056,8 @@ half4 FxaaPixelShader(
     stage override float4 Shading()
     {
         var texCoord = streams.TexCoord;
-        FxaaTex textureHandler;
-        textureHandler.smpl = LinearSampler;
-        textureHandler.tex = Texture0;
 
         float2 screenPixelRatio = Texture0TexelSize;
-        return float4(FxaaPixelShader(texCoord, 0, textureHandler, textureHandler, textureHandler, screenPixelRatio, 0, 0, 0, 0.75, 0.063, 0.0312, 8, 0.125, 0.05, 0).rgb, 1.0f); // output alpha = 1.0f
+        return float4(FxaaPixelShader(texCoord, 0, Texture0, Texture0, Texture0, screenPixelRatio, 0, 0, 0, 0.75, 0.063, 0.0312, 8, 0.125, 0.05, 0).rgb, 1.0f); // output alpha = 1.0f
     }
 };
