@@ -36,6 +36,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 try
                 {
                     context.PushParameters(Parameters);
+
+                    // Setup the render target
+                    context.GraphicsDevice.SetDepthAndRenderTarget(output.DepthStencil, output.RenderTarget);
+
                     DrawCore(context, output);
                 }
                 finally

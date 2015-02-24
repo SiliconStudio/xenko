@@ -102,9 +102,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 return;
             }
 
-            // Setup the render target
-            context.GraphicsDevice.SetDepthAndRenderTarget(output.DepthStencil, output.RenderTarget);
-
             Viewport viewport;
             var rect = Viewport;
             // Setup the viewport
