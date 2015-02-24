@@ -112,7 +112,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// <value>The hint.</value>
         /// <remarks>This hint helps the texture compressor to select the appropriate format based on the HW Level and 
         /// platform.</remarks>
-        /// <userdodc>A hint to indicate the usage/type of texture. This hint helps the texture compressor to select the 
+        /// <userdoc>A hint to indicate the usage/type of texture. This hint helps the texture compressor to select the 
         /// appropriate format based on the HW Level and platform.</userdoc>
         [DataMember(51)]
         [DefaultValue(TextureHint.Color)]
