@@ -52,14 +52,4 @@ namespace SiliconStudio.Core.Serialization.Contents
             dataSerializerHelper.Serialize(context, stream, obj);
         }
     }
-
-    /// <summary>
-    /// ContentSerializer that loads a type different from storage type.
-    /// </summary>
-    /// <typeparam name="TActual">The type visible by the user</typeparam>
-    /// <typeparam name="TSerialization">The type on the disk</typeparam>
-    public class DataContentSerializer<TActual, TSerialization> : DataContentSerializer<TSerialization>
-    {
-        public override Type ActualType { get { return typeof(TActual); } }
-    }
 }

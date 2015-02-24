@@ -5,7 +5,7 @@ using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Paradox.Graphics.Font
 {
-    internal class StaticSpriteFontContentSerializer : DataContentSerializer<SpriteFont, StaticSpriteFont>
+    internal class StaticSpriteFontContentSerializer : DataContentSerializer<StaticSpriteFont>
     {
         public override object Construct(ContentSerializerContext context)
         {
