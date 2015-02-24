@@ -246,14 +246,14 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
             var realShaderSource = glslShaderCode.ToString();
 
             // optimize shader
-            var optShaderSource = RunOptimizer(realShaderSource, isOpenGLES, isOpenGLES3, pipelineStage == PipelineStage.Vertex);
+            var optShaderSource = RunOptimizer(shaderBytecodeResult, realShaderSource, isOpenGLES, isOpenGLES3, pipelineStage == PipelineStage.Vertex);
             if (!String.IsNullOrEmpty(optShaderSource))
                 realShaderSource = optShaderSource;
 
             return realShaderSource;
         }
 
-        private string RunOptimizer(string baseShader, bool openGLES, bool es30, bool vertex)
+        private string RunOptimizer(ShaderBytecodeResult shaderBytecodeResult, string baseShader, bool openGLES, bool es30, bool vertex)
 	    {
             lock (GlslOptimizerLock)
             {
@@ -292,6 +292,12 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
                     IntPtr optShader = glslopt_get_output(shader);
                     shaderAsString = Marshal.PtrToStringAnsi(optShader);
                 }
+                else
+                {
+                    IntPtr log = glslopt_get_log(shader);
+                    var logAsString = Marshal.PtrToStringAnsi(log);
+                    shaderBytecodeResult.Warning("Could not run GLSL optimizer:\n{0}", logAsString);
+                }
 
                 glslopt_shader_delete(shader);
                 glslopt_cleanup(ctx);
@@ -314,6 +320,9 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
 
         [DllImport("glsl_optimizer.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void glslopt_shader_delete(IntPtr shader);
+
+        [DllImport("glsl_optimizer.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr glslopt_get_log(IntPtr shader);
 
         [DllImport("glsl_optimizer.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void glslopt_cleanup(IntPtr ctx);
