@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections.Generic;
+
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Images;
@@ -30,13 +32,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Skyboxes
             skyboxEffect = ToLoadAndUnload(new ImageEffectShader("SkyboxEffect"));
         }
 
-        protected override void Unload()
-        {
-            skyboxEffect.Dispose();
-            base.Unload();
-        }
-
-        protected override void DrawCore(RenderContext context)
+        protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
             skyboxProcessor = SceneInstance.GetProcessor<SkyboxProcessor>();
             if (skyboxProcessor == null)
@@ -87,22 +83,41 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Skyboxes
                     }
                 }
 
+                // Fake as the skybox was in front of all others (as opaque are rendered back to front)
+                opaqueList.Add(new RenderItem(this, skybox, 0.0f));
+            }
+        }
+
+        protected override void DrawCore(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
+        {
+            var viewport = context.GraphicsDevice.Viewport;
+
+            for (int i = fromIndex; i <= toIndex; i++)
+            {
+                var skybox = (SkyboxComponent)renderItems[i].DrawContext;
+
                 // Setup the intensity
                 skyboxEffect.Parameters.Set(SkyboxKeys.Intensity, skybox.Intensity);
-                    
+
                 // Setup the rotation
                 skyboxEffect.Parameters.Set(SkyboxKeys.SkyMatrix, Matrix.RotationQuaternion(skybox.Entity.Transform.Rotation));
 
-                var viewport = context.GraphicsDevice.Viewport;
                 skyboxEffect.SetOutput(CurrentRenderFrame.RenderTarget);
                 skyboxEffect.Draw();
-
-                // Make sure to fully restore the current render frame
-                CurrentRenderFrame.Activate(context);
-                
-                // Restore the viewport: TODO: We should add a method to Push/Pop Target/Depth/Stencil/Viewport on the GraphicsDevice
-                context.GraphicsDevice.SetViewport(viewport);
             }
+
+            // Make sure to fully restore the current render frame
+            CurrentRenderFrame.Activate(context);
+
+            // Restore the viewport: TODO: We should add a method to Push/Pop Target/Depth/Stencil/Viewport on the GraphicsDevice
+            context.GraphicsDevice.SetViewport(viewport);
+
+        }
+
+        protected override void Unload()
+        {
+            skyboxEffect.Dispose();
+            base.Unload();
         }
     }
 }

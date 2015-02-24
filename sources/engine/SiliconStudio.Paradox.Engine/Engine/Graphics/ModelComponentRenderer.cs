@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Graphics;
@@ -24,19 +25,6 @@ namespace SiliconStudio.Paradox.Effects
 
         private DynamicEffectCompiler dynamicEffectCompiler;
         private readonly string effectName;
-
-        /// <summary>
-        /// An accept model callback to test whether a model will be handled by this instance.
-        /// </summary>
-        /// <param name="modelInstance">The model instance</param>
-        /// <returns><c>true</c> if the model instance is going to be handled by this renderer, <c>false</c> otherwise.</returns>
-        public delegate bool AcceptModelDelegate(IModelInstance modelInstance);
-
-        public delegate bool AcceptMeshForRenderingDelegate(RenderModel renderModel, Mesh mesh);
-
-        public delegate bool AcceptRenderMeshDelegate(RenderContext context, RenderMesh renderMesh);
-
-        public delegate bool AcceptRenderModelDelegate(RenderModel renderModel);
 
         public delegate void UpdateMeshesDelegate(RenderContext context, FastList<RenderMesh> meshes);
 
@@ -62,8 +50,6 @@ namespace SiliconStudio.Paradox.Effects
 
             meshesToRender = new FastList<RenderMesh>();
 
-            SortMeshes = DefaultSort;
-
             CullingMask = EntityGroup.All;
             modelRenderSlot = -1;
         }
@@ -84,10 +70,6 @@ namespace SiliconStudio.Paradox.Effects
             }
         }
 
-        public AcceptRenderModelDelegate AcceptRenderModel { get; set; }
-
-        public AcceptRenderMeshDelegate AcceptRenderMesh { get; set; }
-
         public UpdateMeshesDelegate UpdateMeshes { get; set; }
 
         public PreRenderDelegate PreRender { get; set; }
@@ -98,7 +80,7 @@ namespace SiliconStudio.Paradox.Effects
 
         public PostEffectUpdateDelegate PostEffectUpdate { get; set; }
 
-        public UpdateMeshesDelegate SortMeshes { get; set; }
+        public EntityGroup CullingMask { get; set; }
 
         protected override void InitializeCore()
         {
@@ -107,24 +89,7 @@ namespace SiliconStudio.Paradox.Effects
             dynamicEffectCompiler = new DynamicEffectCompiler(Services, effectName);
         }
 
-        protected override void Unload()
-        {
-            if (modelRenderSlot < 0)
-            {
-                var pipelineModelState = GetOrCreateModelRendererState(Context);
-
-                // Release the slot (note: if shared, it will wait for all its usage to be released)
-                pipelineModelState.ReleaseModelSlot(modelRenderSlot);
-
-                // TODO: Remove RenderMeshes
-            }
-
-            base.Unload();
-        }
-
-        public EntityGroup CullingMask { get; set; }
-
-        protected override void DrawCore(RenderContext context)
+        protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
             modelProcessor = SceneInstance.GetProcessor<ModelProcessor>();
 
@@ -140,33 +105,53 @@ namespace SiliconStudio.Paradox.Effects
             }
 
             // Get all meshes from render models
-            meshesToRender.Clear();
             foreach (var renderModel in modelProcessor.Models)
             {
                 // Always prepare the slot for the render meshes even if they are not used.
                 EnsureRenderMeshes(renderModel);
 
                 // Perform culling on group and accept
-                if ((renderModel.Group & CullingMask) == 0 || (AcceptRenderModel != null && !AcceptRenderModel(renderModel)))
+                if ((renderModel.Group & CullingMask) == 0)
                 {
                     continue;
                 }
 
                 var meshes = PrepareModelForRendering(context, renderModel);
-                meshesToRender.AddRange(meshes);
+
+                foreach (var renderMesh in meshes)
+                {
+                    if (!renderMesh.Enabled)
+                    {
+                        continue;
+                    }
+
+                    // Project the position
+                    // TODO: This could be done in a SIMD batch, but we need to figure-out how to plugin in with RenderMesh object
+                    var worldPosition = new Vector4(renderMesh.Parameters.Get(TransformationKeys.World).TranslationVector, 1.0f);
+                    Vector4 projectedPosition;
+                    Vector4.Transform(ref worldPosition, ref context.ViewProjectionMatrix, out projectedPosition);
+                    var projectedZ = projectedPosition.Z / projectedPosition.W;
+
+                    renderMesh.UpdateMaterial();
+                    var list = renderMesh.HasTransparency ? transparentList : opaqueList;
+                    list.Add(new RenderItem(this, renderMesh, projectedZ));
+                }
+            }
+        }
+
+        protected override void DrawCore(RenderContext context, RenderItemCollection renderItemList, int fromIndex, int toIndex)
+        {
+            // Get all meshes from render models
+            meshesToRender.Clear();
+            for(int i = fromIndex; i <= toIndex; i++)
+            {
+                meshesToRender.Add((RenderMesh)renderItemList[i].DrawContext);
             }
 
             // Update meshes
-            UpdateMeshesDefault(context, meshesToRender);
             if (UpdateMeshes != null)
             {
                 UpdateMeshes(context, meshesToRender);
-            }
-
-            // Sort meshes
-            if (SortMeshes != null)
-            {
-                SortMeshes(context, meshesToRender);
             }
 
             // TODO: separate update effect and render to tightly batch render calls vs 1 cache-friendly loop on meshToRender
@@ -177,6 +162,21 @@ namespace SiliconStudio.Paradox.Effects
 
                 mesh.Draw(context);
             }
+        }
+
+        protected override void Unload()
+        {
+            if (modelRenderSlot < 0)
+            {
+                var pipelineModelState = GetOrCreateModelRendererState(Context);
+
+                // Release the slot (note: if shared, it will wait for all its usage to be released)
+                pipelineModelState.ReleaseModelSlot(modelRenderSlot);
+
+                // TODO: Remove RenderMeshes
+            }
+
+            base.Unload();
         }
 
         private void EnsureRenderMeshes(RenderModel renderModel)
@@ -221,22 +221,6 @@ namespace SiliconStudio.Paradox.Effects
                 }
             }
             return renderMeshes;
-        }
-
-        private void UpdateMeshesDefault(RenderContext context, FastList<RenderMesh> meshes)
-        {
-            for (var i = 0; i < meshes.Count; ++i)
-            {
-                var mesh = meshes[i];
-
-                if (!mesh.Enabled)
-                {
-                    meshes.SwapRemoveAt(i--);
-                    continue;
-                }
-
-                mesh.UpdateMaterial();
-            }
         }
 
         private void DefaultSort(RenderContext context, FastList<RenderMesh> meshes)

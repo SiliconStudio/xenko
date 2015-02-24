@@ -199,7 +199,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             if (cameraState != null)
             {
                 // Update the parameters for this post effect
-                CameraComponentRenderer.UpdateParameters(context.Parameters, cameraState);
+                CameraComponentRenderer.UpdateParameters(context, cameraState);
             }
 
             // If input == output, than copy the input to a temporary texture

@@ -5,11 +5,15 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Images;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
+
+using ComponentBase = SiliconStudio.Core.ComponentBase;
+using IServiceRegistry = SiliconStudio.Core.IServiceRegistry;
 
 namespace SiliconStudio.Paradox.Effects
 {
@@ -44,7 +48,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// Occurs when a renderer is initialized.
         /// </summary>
-        public event Action<IGraphicsRenderer> RendererInitialized;
+        public event Action<IGraphicsRendererCore> RendererInitialized;
 
         /// <summary>
         /// Gets the content manager.
@@ -69,6 +73,21 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         /// <value>The parameters.</value>
         public ParameterCollection Parameters { get; private set; }
+
+        /// <summary>
+        /// The view matri (read-only).
+        /// </summary>
+        public Matrix ViewMatrix;
+
+        /// <summary>
+        /// The projection matrix (read-only).
+        /// </summary> 
+        public Matrix ProjectionMatrix;
+
+        /// <summary>
+        /// The view projection matrix (read-only).
+        /// </summary>
+        public Matrix ViewProjectionMatrix;
 
         public void PushParameters(ParameterCollection parameters)
         {
@@ -142,9 +161,9 @@ namespace SiliconStudio.Paradox.Effects
             return graphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, SharedImageEffectContextKey, () => new RenderContext(services));
         }
 
-        internal void OnRendererInitialized(IGraphicsRenderer obj)
+        internal void OnRendererInitialized(IGraphicsRendererCore obj)
         {
-            Action<IGraphicsRenderer> handler = RendererInitialized;
+            Action<IGraphicsRendererCore> handler = RendererInitialized;
             if (handler != null) handler(obj);
         }
     }

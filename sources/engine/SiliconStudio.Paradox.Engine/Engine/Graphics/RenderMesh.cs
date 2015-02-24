@@ -32,6 +32,8 @@ namespace SiliconStudio.Paradox.Effects
 
         public Material Material;
 
+        public bool HasTransparency { get; private set; }
+
         private readonly ParameterCollection parameters;
 
         /// <summary>
@@ -164,6 +166,10 @@ namespace SiliconStudio.Paradox.Effects
         public void UpdateMaterial()
         {
             Material = RenderModel.GetMaterial(Mesh.MaterialIndex);
+            if (Material != null)
+            {
+                HasTransparency = Material.HasTransparency;
+            }
         }
 
         internal void Initialize(GraphicsDevice device)

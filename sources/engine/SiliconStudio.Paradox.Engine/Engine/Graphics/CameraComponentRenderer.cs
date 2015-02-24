@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -20,31 +21,41 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         public static readonly PropertyKey<CameraComponentState> Current = new PropertyKey<CameraComponentState>("CameraComponentRenderer.CurrentCamera", typeof(CameraComponentState));
 
-        protected override void DrawCore(RenderContext context)
+        protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
             var cameraState = context.Tags.Get(Current);
 
             if (cameraState == null)
                 return;
 
-            UpdateParameters(context.Parameters, cameraState);
+            UpdateParameters(context, cameraState);
         }
 
-        public static void UpdateParameters(ParameterCollection viewParameters, CameraComponentState cameraState)
+        protected override void DrawCore(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
         {
-            if (viewParameters == null) throw new ArgumentNullException("viewParameters");
+            // Nothing to draw for this camera
+        }
+
+        public static void UpdateParameters(RenderContext context, CameraComponentState cameraState)
+        {
             if (cameraState == null) throw new ArgumentNullException("cameraState");
-        
+
+            ParameterCollection viewParameters = context.Parameters;
+
             if (cameraState.CameraComponent.Entity == null)
                 return;
 
             var camera = cameraState.CameraComponent;
 
-            Matrix projection = cameraState.Projection;
-            Matrix worldToCamera = cameraState.View;
+            // Store the current view/projection matrix in the context
+            context.ProjectionMatrix = cameraState.Projection;
+            context.ViewMatrix = cameraState.View;
+            Matrix.Multiply(ref context.ViewMatrix, ref context.ProjectionMatrix, out context.ViewProjectionMatrix);
 
-            viewParameters.Set(TransformationKeys.View, worldToCamera);
-            viewParameters.Set(TransformationKeys.Projection, projection);
+            viewParameters.Set(TransformationKeys.View, context.ViewMatrix);
+            viewParameters.Set(TransformationKeys.Projection, context.ProjectionMatrix);
+            viewParameters.Set(TransformationKeys.ViewProjection, context.ViewProjectionMatrix);
+
             viewParameters.Set(CameraKeys.NearClipPlane, camera.NearPlane);
             viewParameters.Set(CameraKeys.FarClipPlane, camera.FarPlane);
             if (camera.Projection == CameraProjectionMode.Perspective)

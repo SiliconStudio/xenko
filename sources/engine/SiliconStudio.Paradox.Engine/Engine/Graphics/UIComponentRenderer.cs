@@ -52,21 +52,15 @@ namespace SiliconStudio.Paradox.Effects
             };
         }
 
-        private void UISystemOnResolutionChanged(object sender, EventArgs eventArgs)
+        protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
-            uiResolutionChanged = true;
+            throw new NotImplementedException();
         }
 
-        protected override void Unload()
+        protected override void DrawCore(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
         {
-            if (uiSystem != null)
-                uiSystem.ResolutionChanged -= UISystemOnResolutionChanged;
+            throw new NotImplementedException();
 
-            base.Unload();
-        }
-
-        protected override void DrawCore(RenderContext context)
-        {
             if (uiSystem.RootElement == null)
                 return;
 
@@ -103,6 +97,19 @@ namespace SiliconStudio.Paradox.Effects
 
             // end the image draw session
             batch.End();
+        }
+
+        private void UISystemOnResolutionChanged(object sender, EventArgs eventArgs)
+        {
+            uiResolutionChanged = true;
+        }
+
+        protected override void Unload()
+        {
+            if (uiSystem != null)
+                uiSystem.ResolutionChanged -= UISystemOnResolutionChanged;
+
+            base.Unload();
         }
 
         private void ReccursiveDrawWithClipping(RenderContext context, UIElement element)

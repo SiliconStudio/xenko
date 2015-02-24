@@ -36,8 +36,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         {
             Mode = new CameraRendererModeForward();
             CullingMask = EntityGroup.All;
-            Viewport = new RectangleF(0, 0, 100f, 100f);
-            IsViewportInPercentage = true;
         }
 
         /// <summary>
@@ -64,23 +62,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         public EntityGroup CullingMask { get; set; }
 
         /// <summary>
-        /// Gets or sets the viewport in percentage or pixel.
-        /// </summary>
-        /// <value>The viewport in percentage or pixel.</value>
-        [DataMember(40)]
-        public RectangleF Viewport { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the viewport is in fixed pixels instead of percentage.
-        /// </summary>
-        /// <value><c>true</c> if the viewport is in pixels instead of percentage; otherwise, <c>false</c>.</value>
-        /// <userdoc>When this value is true, the Viewport size is a percentage (0-100) calculated relatively to the size of the Output, else it is a fixed size in pixels.</userdoc>
-        [DataMember(50)]
-        [DefaultValue(true)]
-        [Display("Viewport in percentage?")]
-        public bool IsViewportInPercentage { get; set; }
-
-        /// <summary>
         /// Gets or sets the material filter used to render this scene camera.
         /// </summary>
         /// <value>The material filter.</value>
@@ -101,22 +82,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             {
                 return;
             }
-
-            Viewport viewport;
-            var rect = Viewport;
-            // Setup the viewport
-            if (IsViewportInPercentage)
-            {
-                var width = output.RenderTarget.Width;
-                var height = output.RenderTarget.Height;
-                viewport = new Viewport((int)(rect.X * width / 100.0f), (int)(rect.Y * height / 100.0f), (int)(rect.Width * width / 100.0f), (int)(rect.Height * height / 100.0f));
-            }
-            else
-            {
-                viewport = new Viewport((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
-            }
-
-            context.GraphicsDevice.SetViewport(viewport);
 
             // Draw this camera.
             using (var t1 = context.PushTagAndRestore(Current, this))

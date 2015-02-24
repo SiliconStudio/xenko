@@ -51,6 +51,12 @@ namespace SiliconStudio.Paradox.Effects
         public ParadoxTessellationMethod TessellationMethod;
 
         /// <summary>
+        /// Gets or sets a value indicating whether this instance has transparent.
+        /// </summary>
+        /// <value><c>true</c> if this instance has transparent; otherwise, <c>false</c>.</value>
+        public bool HasTransparency { get; set; }
+
+        /// <summary>
         /// Creates a new material from the specified descriptor.
         /// </summary>
         /// <param name="descriptor">The material descriptor.</param>

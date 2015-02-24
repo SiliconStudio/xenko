@@ -19,12 +19,12 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         public static readonly PropertyKey<EntityComponentRendererTypeCollection> RendererTypesKey = new PropertyKey<EntityComponentRendererTypeCollection>("CameraRendererMode.RendererTypesKey", typeof(CameraRendererMode));
 
         private readonly List<EntityComponentRendererType> sortedRendererTypes;
-        private readonly GraphicsRendererCollection<IEntityComponentRenderer> renderers;
+        private readonly EntityComponentRendererBatch batchRenderer;
 
         protected CameraRendererMode()
         {
             sortedRendererTypes = new List<EntityComponentRendererType>();
-            renderers = new GraphicsRendererCollection<IEntityComponentRenderer>();
+            batchRenderer = new EntityComponentRendererBatch();
             RendererOverrides = new Dictionary<Type, IEntityComponentRenderer>();
             FilterComponentTypes = new HashSet<Type>();
         }
@@ -55,7 +55,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// <param name="context">The context.</param>
         protected override void DrawCore(RenderContext context)
         {
-            // Pre-create all renderers
+            // Pre-create all batchRenderer
             // TODO: We should handle cases where we are removing components types to improve performance
             var rendererTypes = context.Tags.GetSafe(RendererTypesKey);
 
@@ -80,7 +80,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 RendererOverrides.TryGetValue(componentType, out renderer);
 
                 var rendererType = renderer != null ? renderer.GetType() : sortedRendererTypes[i].RendererType;
-                var currentType = i < renderers.Count ? renderers[i].GetType() : null;
+                var currentType = i < batchRenderer.Count ? batchRenderer[i].GetType() : null;
 
 
                 if (currentType != rendererType)
@@ -90,20 +90,21 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                         renderer = CreateRenderer(sortedRendererTypes[i]);
                     }
 
-                    if (index == renderers.Count)
+                    if (index == batchRenderer.Count)
                     {
-                        renderers.Add(renderer);
+                        batchRenderer.Add(renderer);
                     }
                     else
                     {
-                        renderers.Insert(index, renderer);
+                        batchRenderer.Insert(index, renderer);
                     }
                 }
 
                 index++;
             }
 
-            renderers.Draw(context);
+            // Call the batch renderer
+            batchRenderer.Draw(context);
         }
 
         protected virtual IEntityComponentRenderer CreateRenderer(EntityComponentRendererType rendererType)

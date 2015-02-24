@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -46,11 +47,16 @@ namespace SiliconStudio.Paradox.Effects
         //    spriteBatch = new SpriteBatch(GraphicsDevice);
         //}
 
-        protected override void DrawCore(RenderContext context)
+        protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void DrawCore(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
         {
             throw new NotImplementedException("TODO: REFACTOR THIS CODE TO USE A BackgroundComponent");
             Texture BackgroundTexture = null;
-            if(BackgroundTexture == null)
+            if (BackgroundTexture == null)
                 return;
 
             var graphicsDevice = context.GraphicsDevice;

@@ -1,16 +1,17 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections.Generic;
+
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Engine.Graphics
 {
     /// <summary>
     /// A default implementation for a <see cref="IEntityComponentRenderer"/>.
     /// </summary>
-    public abstract class EntityComponentRendererBase : RendererBase, IEntityComponentRenderer
+    public abstract class EntityComponentRendererBase : RendererCoreBase, IEntityComponentRenderer
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityComponentRendererBase" /> class.
@@ -70,5 +71,21 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             base.PostDrawCore(context);
             CurrentRenderFrame = null;
         }
+
+        public void Prepare(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
+        {
+            PrepareCore(context, opaqueList, transparentList);
+        }
+
+        public void Draw(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
+        {
+            PreDrawCoreInternal(context);
+            DrawCore(context, renderItems, fromIndex, toIndex);
+            PostDrawCoreInternal(context);
+        }
+
+        protected abstract void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList);
+
+        protected abstract void DrawCore(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex);
     }
 }

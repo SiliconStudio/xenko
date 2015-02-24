@@ -87,6 +87,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorSubtract.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Engine\Graphics\EntityComponentRendererBatch.cs" />
+    <Compile Include="Engine\Graphics\GraphicsRendererCollectionBase.cs" />
+    <Compile Include="Engine\Graphics\IGraphicsRendererCore.cs" />
     <Compile Include="Engine\Graphics\Lights\ColorLightBase.cs" />
     <Compile Include="Engine\Graphics\Lights\DirectLightBase.cs" />
     <Compile Include="Engine\Graphics\Lights\IColorLight.cs" />
@@ -910,7 +913,10 @@
     <Compile Include="Engine\Graphics\ProceduralModels\TeapotProceduralModel.cs" />
     <Compile Include="Engine\Graphics\ProceduralModels\TorusProceduralModel.cs" />
     <Compile Include="Engine\Graphics\ReferenceToEffectsAttribute.cs" />
+    <Compile Include="Engine\Graphics\RendererCoreBase.cs" />
     <Compile Include="Engine\Graphics\RenderFrameProviderBase.cs" />
+    <Compile Include="Engine\Graphics\RenderItem.cs" />
+    <Compile Include="Engine\Graphics\RenderItemCollection.cs" />
     <Compile Include="Engine\Graphics\SceneCameraRenderer.cs" />
     <Compile Include="Engine\Graphics\ClearRenderFrameFlags.cs" />
     <Compile Include="Engine\Graphics\ClearRenderFrameRenderer.cs" />

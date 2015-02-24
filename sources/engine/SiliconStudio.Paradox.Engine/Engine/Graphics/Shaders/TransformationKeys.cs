@@ -14,7 +14,6 @@ namespace SiliconStudio.Paradox.Effects
             View = ParameterKeys.New(Matrix.Identity);
             Projection = ParameterKeys.New(Matrix.Identity);
             World = ParameterKeys.New(Matrix.Identity);
-            ViewProjection = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Matrix, Matrix, Matrix>(View, Projection, Matrix.MultiplyRef));
             WorldView = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Matrix, Matrix, Matrix>(World, View, Matrix.MultiplyRef));
             WorldViewProjection = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Matrix, Matrix, Matrix>(World, ViewProjection, Matrix.MultiplyRef));
             ProjScreenRay = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Vector2, Matrix>(Projection, ExtractProjScreenRay));

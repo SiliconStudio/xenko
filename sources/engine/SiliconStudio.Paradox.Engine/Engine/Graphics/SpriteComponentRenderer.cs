@@ -49,6 +49,38 @@ namespace SiliconStudio.Paradox.Effects
             GameVirtualResolutionChanged(null, EventArgs.Empty);
         }
 
+        protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
+        {
+            spriteProcessor = SceneInstance.GetProcessor<SpriteProcessor>();
+            if (spriteProcessor == null)
+            {
+                return;
+            }
+
+            foreach (var sprite in spriteProcessor.Sprites)
+            {
+                // Project the position
+                // TODO: This could be done in a SIMD batch, but we need to figure-out how to plugin in with RenderMesh object
+                var worldPosition = new Vector4(sprite.TransformComponent.WorldMatrix.TranslationVector, 1.0f);
+
+                Vector4 projectedPosition;
+                Vector4.Transform(ref worldPosition, ref context.ViewProjectionMatrix, out projectedPosition);
+                var projectedZ = projectedPosition.Z / projectedPosition.W;
+
+                var list = sprite.SpriteComponent.CurrentSprite.IsTransparent ? transparentList : opaqueList;
+
+                list.Add(new RenderItem(this, sprite, projectedZ));
+            }
+        }
+
+        protected override void DrawCore(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
+        {
+            // TODO: Check how to integrate sprites in a Camera renderer instead of this
+            var blendState = renderItems.HasTransparency ? context.GraphicsDevice.BlendStates.AlphaBlend : context.GraphicsDevice.BlendStates.Opaque;
+            SelectAndSortEntitiesByEffects(renderItems, fromIndex, toIndex);
+            DrawSprites(context, SpriteSortMode.FrontToBack, blendState);
+        }
+
         protected override void Unload()
         {
             gameVirtualResolution.VirtualResolutionChanged -= GameVirtualResolutionChanged;
@@ -58,43 +90,19 @@ namespace SiliconStudio.Paradox.Effects
             base.Unload();
         }
 
-        protected override void DrawCore(RenderContext context)
-        {
-            spriteProcessor = SceneInstance.GetProcessor<SpriteProcessor>();
-
-            // TODO: Check how to integrate sprites in a Camera renderer instead of this
-            // draw opaque sprites 
-            SelectAndSortEntitiesByEffects(spriteProcessor, SpriteIsOpaque);
-            DrawSprites(context, SpriteSortMode.FrontToBack, context.GraphicsDevice.BlendStates.Opaque);
-
-            // draw transparent objects
-            SelectAndSortEntitiesByEffects(spriteProcessor, SpriteIsTransparent);
-            DrawSprites(context, SpriteSortMode.BackToFront, context.GraphicsDevice.BlendStates.AlphaBlend);
-        }
-
-        private bool SpriteIsTransparent(SpriteComponent spriteComponent)
-        {
-            return spriteComponent.CurrentSprite.IsTransparent;
-        }
-
-        private bool SpriteIsOpaque(SpriteComponent spriteComponent)
-        {
-            return !SpriteIsTransparent(spriteComponent);
-        }
-
-        private void SelectAndSortEntitiesByEffects(SpriteProcessor spriteProcessor, Func<SpriteComponent, bool> shouldSelect)
+        private void SelectAndSortEntitiesByEffects(List<RenderItem> renderItemList, int fromIndex, int toIndex)
         {
             // clear current cache
             foreach (var entities in effectNamesToEntityDatas.Values)
                 entities.Clear();
 
             // select and sort the entities
-            foreach (var entityKeyPair in spriteProcessor.Sprites)
+            for(int i = fromIndex; i <= toIndex; i++)
             {
-                var spriteComp = entityKeyPair.SpriteComponent;
+                var spriteComp = (SpriteComponent)renderItemList[i].DrawContext;
                 var entity = spriteComp.Entity;
 
-                if (spriteComp.SpriteGroup == null || spriteComp.SpriteGroup.Images == null || !shouldSelect(spriteComp)) 
+                if (spriteComp.SpriteGroup == null || spriteComp.SpriteGroup.Images == null)
                     continue;
 
                 var effectName = spriteComp.Effect != null ? spriteComp.Effect.Name : "SpriteBatch.DefaultEffect";
