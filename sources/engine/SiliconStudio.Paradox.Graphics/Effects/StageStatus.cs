@@ -56,13 +56,22 @@ namespace SiliconStudio.Paradox.Graphics.Internals
             {
                 // Apply graphics states
                 var rasterizerState = parameterUpdater.GetValue<RasterizerState>(effectStateBindings.RasterizerStateKeyIndex);
-                graphicsDevice.SetRasterizerState(rasterizerState);
+                if (rasterizerState != null)
+                {
+                    graphicsDevice.SetRasterizerState(rasterizerState);
+                }
 
                 var depthStencilState = parameterUpdater.GetValue<DepthStencilState>(effectStateBindings.DepthStencilStateKeyIndex);
-                graphicsDevice.SetDepthStencilState(depthStencilState);
+                if (depthStencilState != null)
+                {
+                    graphicsDevice.SetDepthStencilState(depthStencilState);
+                }
 
                 var blendState = parameterUpdater.GetValue<BlendState>(effectStateBindings.BlendStateKeyIndex);
-                graphicsDevice.SetBlendState(blendState);
+                if (blendState != null)
+                {
+                    graphicsDevice.SetBlendState(blendState);
+                }
             }
         }
 
