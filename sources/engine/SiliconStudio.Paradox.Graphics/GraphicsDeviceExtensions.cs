@@ -62,5 +62,17 @@ namespace SiliconStudio.Paradox.Graphics
             // Unapply
             effect.UnbindResources(device);
         }
+
+        /// <summary>
+        /// Resets the <see cref="BlendState"/>, <see cref="DepthStencilState"/> and <see cref="RasterizerState"/> to their 
+        /// default values.
+        /// </summary>
+        /// <param name="device">The device.</param>
+        public static void ResetStates(this GraphicsDevice device)
+        {
+            device.SetBlendState(device.BlendStates.Default);
+            device.SetDepthStencilState(device.DepthStencilStates.Default);
+            device.SetRasterizerState(device.RasterizerStates.CullBack);
+        }
     }
 }
