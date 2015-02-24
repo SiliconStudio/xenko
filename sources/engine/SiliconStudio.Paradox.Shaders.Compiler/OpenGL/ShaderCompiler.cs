@@ -233,10 +233,11 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
                     .AppendLine();
             }
 
-            if ((!isOpenGLES || isOpenGLES3) && pipelineStage == PipelineStage.Pixel)
+            if ((!isOpenGLES || isOpenGLES3) && pipelineStage == PipelineStage.Pixel && renderTargetCount > 0)
             {
                 // TODO: identifiers starting with "gl_" should be reserved. Compilers usually accept them but it may should be prevented.
                 glslShaderCode
+                    .AppendLine("#define gl_FragData _glesFragData")
                     .AppendLine("out vec4 gl_FragData[" + renderTargetCount + "];")
                     .AppendLine();
             }
@@ -262,23 +263,13 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
                 if (openGLES)
                 {
                     if (es30)
-                        ctx = glslopt_initialize(2);
+                        ctx = glslopt_initialize(2); // kGlslTargetOpenGLES30
                     else
-                        ctx = glslopt_initialize(1);
-
-                    if (vertex)
-                    {
-                        var pre = "#define gl_Vertex _glesVertex\nattribute highp vec4 _glesVertex;\n";
-                        pre += "#define gl_Normal _glesNormal\nattribute mediump vec3 _glesNormal;\n";
-                        pre += "#define gl_MultiTexCoord0 _glesMultiTexCoord0\nattribute highp vec4 _glesMultiTexCoord0;\n";
-                        pre += "#define gl_MultiTexCoord1 _glesMultiTexCoord1\nattribute highp vec4 _glesMultiTexCoord1;\n";
-                        pre += "#define gl_Color _glesColor\nattribute lowp vec4 _glesColor;\n";
-                        inputShader = pre + inputShader;
-                    }
+                        ctx = glslopt_initialize(1); // kGlslTargetOpenGLES20
                 }
                 else
                 {
-                    ctx = glslopt_initialize(0);
+                    ctx = glslopt_initialize(0); // kGlslTargetOpenGL
                 }
 
                 int type = vertex ? 0 : 1;
