@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Engine.Graphics
 {
@@ -64,11 +65,18 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 var renderItem = renderItems[i];
                 bool isNewRenderer = !ReferenceEquals(renderItem.Renderer, renderer);
                 bool isLastIndex = i == lastIndex;
+
+                // Make sure that states are clean before rendering
+                context.GraphicsDevice.ResetStates();
+
                 if (isLastIndex)
                 {
                     if (isNewRenderer)
                     {
                         renderer.Draw(context, renderItems, fromIndex, i - 1);
+
+                        context.GraphicsDevice.ResetStates();
+                        
                         renderItem.Renderer.Draw(context, renderItems, lastIndex, lastIndex);
                     }
                     else

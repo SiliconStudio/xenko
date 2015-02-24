@@ -83,6 +83,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 finally
                 {
                     context.PopParameters();
+
+                    // Make sure that states are clean after this rendering
+                    context.GraphicsDevice.ResetStates();
                 }
             }
         }
