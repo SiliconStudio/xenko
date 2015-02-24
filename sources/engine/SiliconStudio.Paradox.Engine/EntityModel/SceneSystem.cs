@@ -1,14 +1,12 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Graphics;
-using SiliconStudio.Paradox.Engine.Graphics.Composers;
 using SiliconStudio.Paradox.Games;
 
 namespace SiliconStudio.Paradox.EntityModel
@@ -22,7 +20,10 @@ namespace SiliconStudio.Paradox.EntityModel
 
         private RenderContext renderContext;
 
-        private RenderFrame mainRenderFrame;
+        /// <summary>
+        /// The main render frame of the scene system
+        /// </summary>
+        public RenderFrame MainRenderFrame { get; set; }
 
         private int previousWidth;
         private int previousHeight;
@@ -58,9 +59,12 @@ namespace SiliconStudio.Paradox.EntityModel
             //        Scene = assetManager.Load<Scene>(DefaultSceneName);
             //    }
 
-            mainRenderFrame = RenderFrame.FromTexture(GraphicsDevice.BackBuffer, GraphicsDevice.DepthStencilBuffer);
-            previousWidth = mainRenderFrame.RenderTarget.Width;
-            previousHeight = mainRenderFrame.RenderTarget.Height;
+            if (MainRenderFrame == null)
+            {
+                MainRenderFrame = RenderFrame.FromTexture(GraphicsDevice.BackBuffer, GraphicsDevice.DepthStencilBuffer);
+                previousWidth = MainRenderFrame.RenderTarget.Width;
+                previousHeight = MainRenderFrame.RenderTarget.Height;
+            }
 
             // Create the drawing context
             renderContext = RenderContext.GetShared(Services);
@@ -83,14 +87,14 @@ namespace SiliconStudio.Paradox.EntityModel
 
             // If the width or height changed, we have to recycle all temporary allocated resources.
             // NOTE: We assume that they are mostly resolution dependent.
-            if (previousWidth != mainRenderFrame.RenderTarget.Width || previousHeight != mainRenderFrame.RenderTarget.Height)
+            if (previousWidth != MainRenderFrame.RenderTarget.Width || previousHeight != MainRenderFrame.RenderTarget.Height)
             {
                 // Force a recycle of all allocated temporary textures
                 renderContext.Allocator.Recycle(link => true);
             }
 
-            previousWidth = mainRenderFrame.RenderTarget.Width;
-            previousHeight = mainRenderFrame.RenderTarget.Height;
+            previousWidth = MainRenderFrame.RenderTarget.Width;
+            previousHeight = MainRenderFrame.RenderTarget.Height;
 
             // TODO: Clear camera states. This is not highly customizable
             renderContext.ClearCameraStates();
@@ -100,7 +104,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
             // Renders the scene
             renderContext.Time = gameTime;
-            SceneInstance.Draw(renderContext, mainRenderFrame);
+            SceneInstance.Draw(renderContext, MainRenderFrame);
         }
     }
 }
