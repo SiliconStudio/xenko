@@ -113,9 +113,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 //if (materialParameterCreator.CreateParameterCollectionData(commandContext.Logger))
                 //    return Task.FromResult(ResultStatus.Failed);
 
-                var materialData = new Material { Parameters = result.Parameters, TessellationMethod = result.TessellationMethod };
-                
-                assetManager.Save(assetUrl, materialData);
+                assetManager.Save(assetUrl, result.Material);
 
                 return Task.FromResult(ResultStatus.Successful);
             }

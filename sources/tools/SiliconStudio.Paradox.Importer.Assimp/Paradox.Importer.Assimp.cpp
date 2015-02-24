@@ -1012,7 +1012,7 @@ private:
 		hasSpecPower = (AI_SUCCESS == pMaterial->Get(AI_MATKEY_SHININESS, specPower) && specPower > 0);
 		if(pMaterial->Get(AI_MATKEY_OPACITY, opacity) == AI_SUCCESS && opacity < 1.0)
 		{
-			finalMaterial->Parameters->Set(MaterialKeys::UseTransparent, true);
+			finalMaterial->Parameters->Set(MaterialKeys::HasTransparency, true);
 			hasOpacity = true;
 		}
 

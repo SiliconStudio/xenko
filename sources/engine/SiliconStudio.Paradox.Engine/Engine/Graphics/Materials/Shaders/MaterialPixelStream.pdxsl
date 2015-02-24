@@ -32,6 +32,10 @@ namespace SiliconStudio.Paradox.Effects.Materials
         stage stream float3  matEmissive;
         stage stream float   matEmissiveIntensity;
 
+        // Transparent attributes
+        stage stream float2  matAlphaBlend;
+        stage stream float3  matAlphaBlendColor;
+
         // Inputs while shading a material surface
         stage stream float3 viewWS;
     
@@ -74,6 +78,9 @@ namespace SiliconStudio.Paradox.Effects.Materials
 
             streams.matEmissive = 0.0f;
             streams.matEmissiveIntensity = 0.0f;
+
+            streams.matAlphaBlend = 1.0f;
+            streams.matAlphaBlendColor = 1.0f;
         }
 
         float GetFilterSquareRoughnessAdjustment(float3 averageNormal)
@@ -96,8 +103,8 @@ namespace SiliconStudio.Paradox.Effects.Materials
             streams.lightDirectAmbientOcclusion = lerp(1.0, streams.matAmbientOcclusion, streams.matAmbientOcclusionDirectLightingFactor);
 
             // Diffuse visible 
-            streams.matDiffuseVisible = streams.matDiffuse.rgb * lerp(1.0f, streams.matCavity, streams.matCavityDiffuse);
-            streams.matSpecularVisible = streams.matSpecular.rgb * streams.matSpecularIntensity * lerp(1.0f, streams.matCavity, streams.matCavitySpecular);
+            streams.matDiffuseVisible = streams.matDiffuse.rgb * lerp(1.0f, streams.matCavity, streams.matCavityDiffuse) * streams.matAlphaBlend.r * streams.matAlphaBlendColor;
+            streams.matSpecularVisible = streams.matSpecular.rgb * streams.matSpecularIntensity * lerp(1.0f, streams.matCavity, streams.matCavitySpecular) * streams.matAlphaBlend.g * streams.matAlphaBlendColor;
 
             streams.NdotV = max(dot(streams.normalWS, streams.viewWS), 0.0001f);
 

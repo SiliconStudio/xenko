@@ -66,7 +66,7 @@ namespace SiliconStudio.Paradox.Effects
         public static Material New(MaterialDescriptor descriptor)
         {
             if (descriptor == null) throw new ArgumentNullException("descriptor");
-            var context = new MaterialGeneratorContext();
+            var context = new MaterialGeneratorContext(new Material());
             var result = MaterialGenerator.Generate(descriptor, context);
 
             if (result.HasErrors)
@@ -74,7 +74,7 @@ namespace SiliconStudio.Paradox.Effects
                 throw new InvalidOperationException(string.Format("Error when creating the material [{0}]", result.ToText()));
             }
 
-            return new Material(result.Parameters);
+            return result.Material;
         }
 
         public static Material NewDiffuseOnly(Texture diffuseTexture)

@@ -12,6 +12,8 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         Float3,
 
+        Float2,
+
         Float
     }
 }

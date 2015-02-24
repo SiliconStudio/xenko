@@ -14,48 +14,37 @@ namespace SiliconStudio.Paradox.Assets.Materials
 {
     public class MaterialShaderResult : LoggerResult
     {
-        public Dictionary<MaterialShaderStage, ShaderSource> SurfaceShaders  = new Dictionary<MaterialShaderStage, ShaderSource>();
-        public Dictionary<MaterialShaderStage, ShaderSource> StreamInitializers = new Dictionary<MaterialShaderStage, ShaderSource>();
-
-        public ParadoxTessellationMethod TessellationMethod;
-
-        public ParameterCollection Parameters { get; set; }
+        public Material Material { get; set; }
     }
 
     public class MaterialGenerator
     {
-        public static MaterialShaderResult Generate(MaterialDescriptor material, MaterialGeneratorContext context = null)
+        public static MaterialShaderResult Generate(MaterialDescriptor materialDescriptor, MaterialGeneratorContext context = null)
         {
-            if (material == null) throw new ArgumentNullException("material");
+            if (materialDescriptor == null) throw new ArgumentNullException("materialDescriptor");
             var result = new MaterialShaderResult();
 
             if (context == null)
             {
-                context = new MaterialGeneratorContext();
+                context = new MaterialGeneratorContext(new Material());
             }
             context.Log = result;
 
-            result.Parameters = context.Parameters;
+            var material = context.Material;
+            result.Material = context.Material;
+
+            context.Parameters = material.Parameters;
             context.PushLayer(new MaterialBlendOverrides());
-            material.Visit(context);
+            materialDescriptor.Visit(context);
             context.PopLayer();
 
-            // Squash all operations into a single mixin
-            foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
-            {
-                result.SurfaceShaders[stage] = context.GenerateSurfaceShader(stage);
-                result.StreamInitializers[stage] = context.GenerateStreamInitializer(stage);
-            }
+            material.Parameters.Set(MaterialKeys.VertexStageSurfaceShaders, context.GenerateSurfaceShader(MaterialShaderStage.Vertex));
+            material.Parameters.Set(MaterialKeys.DomainStageSurfaceShaders, context.GenerateSurfaceShader(MaterialShaderStage.Domain));
+            material.Parameters.Set(MaterialKeys.PixelStageSurfaceShaders, context.GenerateSurfaceShader(MaterialShaderStage.Pixel));
 
-            result.Parameters.Set(MaterialKeys.VertexStageSurfaceShaders, result.SurfaceShaders[MaterialShaderStage.Vertex]);
-            result.Parameters.Set(MaterialKeys.DomainStageSurfaceShaders, result.SurfaceShaders[MaterialShaderStage.Domain]);
-            result.Parameters.Set(MaterialKeys.PixelStageSurfaceShaders, result.SurfaceShaders[MaterialShaderStage.Pixel]);
-
-            result.Parameters.Set(MaterialKeys.VertexStageStreamInitializer, result.StreamInitializers[MaterialShaderStage.Vertex]);
-            result.Parameters.Set(MaterialKeys.DomainStageStreamInitializer, result.StreamInitializers[MaterialShaderStage.Domain]);
-            result.Parameters.Set(MaterialKeys.PixelStageStreamInitializer, result.StreamInitializers[MaterialShaderStage.Pixel]);
-
-            result.TessellationMethod = context.TessellationMethod;
+            material.Parameters.Set(MaterialKeys.VertexStageStreamInitializer, context.GenerateStreamInitializer(MaterialShaderStage.Vertex));
+            material.Parameters.Set(MaterialKeys.DomainStageStreamInitializer, context.GenerateStreamInitializer(MaterialShaderStage.Domain));
+            material.Parameters.Set(MaterialKeys.PixelStageStreamInitializer, context.GenerateStreamInitializer(MaterialShaderStage.Pixel));
 
             return result;
         }

@@ -252,14 +252,14 @@ namespace SiliconStudio.Paradox.Assets.Model
             //        }
 
             //        // set the key if it was missing
-            //        material.Parameters.Set(MaterialParameters.UseTransparent, true);
+            //        material.Parameters.Set(MaterialParameters.HasTransparency, true);
             //    }
             //    else
             //    {
-            //        // NOTE: MaterialParameters.UseTransparent is mostly runtime
+            //        // NOTE: MaterialParameters.HasTransparency is mostly runtime
             //        var isTransparent = false;
-            //        if (material.Parameters.ContainsKey(MaterialParameters.UseTransparent))
-            //            isTransparent = (bool)material.Parameters[MaterialParameters.UseTransparent];
+            //        if (material.Parameters.ContainsKey(MaterialParameters.HasTransparency))
+            //            isTransparent = (bool)material.Parameters[MaterialParameters.HasTransparency];
                     
             //        if (!isTransparent)
             //        {

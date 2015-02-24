@@ -151,6 +151,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>MaterialTessellationStream.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Engine\Graphics\Materials\MaterialTransparencyAdditiveFeature.cs" />
     <Compile Include="Engine\Graphics\Materials\ParadoxTessellationMethod.cs" />
     <Compile Include="Engine\EntityComponentRendererTypeCollection.cs" />
     <Compile Include="Engine\EntityTransformExtensions.cs" />
@@ -879,6 +880,12 @@
     <Compile Include="Engine\Graphics\Materials\MaterialStreamType.cs" />
     <Compile Include="Engine\Graphics\Materials\MaterialUtility.cs" />
     <Compile Include="Engine\Graphics\Materials\ShaderGeneratorContextBase.cs" />
+    <Compile Include="Engine\Graphics\Materials\Shaders\ComputeColorMaterialAlphaBlend.cs">
+      <DependentUpon>ComputeColorMaterialAlphaBlend.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Engine\Graphics\Materials\TextureChannel.cs" />
     <Compile Include="Engine\Graphics\Materials\TextureCoordinate.cs" />
     <Compile Include="Engine\Graphics\ParadoxForwardShadingEffect.cs">
@@ -2727,6 +2734,10 @@
     <None Include="Engine\Graphics\Materials\MaterialTessellationStream.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialTessellationStream1.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Materials\Shaders\ComputeColorMaterialAlphaBlend.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorMaterialAlphaBlend.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Materials\Shaders\IMaterialSpecularMicrofacetFresnelFunction.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

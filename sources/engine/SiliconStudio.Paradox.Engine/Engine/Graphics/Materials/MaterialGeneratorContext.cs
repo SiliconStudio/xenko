@@ -28,8 +28,13 @@ namespace SiliconStudio.Paradox.Assets.Materials
         public delegate void MaterialGeneratorCallback(MaterialShaderStage stage, MaterialGeneratorContext context);
         private readonly Dictionary<MaterialShaderStage, List<MaterialGeneratorCallback>> finalCallbacks = new Dictionary<MaterialShaderStage, List<MaterialGeneratorCallback>>();
 
-        public MaterialGeneratorContext()
+        private readonly Material material;
+
+        public MaterialGeneratorContext(Material material = null)
         {
+            this.material = material ?? new Material();
+            Parameters = this.material.Parameters;
+
             currentOverrides = new MaterialBlendOverrides();
 
             foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
@@ -43,6 +48,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
             get
             {
                 return Current.Streams;
+            }
+        }
+
+        public Material Material
+        {
+            get
+            {
+                return material;
             }
         }
 
@@ -109,11 +122,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 return currentOverrides;
             }
         }
-
-        /// <summary>
-        /// Gets or sets the tessellation method used by the material.
-        /// </summary>
-        public ParadoxTessellationMethod TessellationMethod { get; set; }
 
         public void PopLayer()
         {
@@ -292,6 +300,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
             Current.SetStream(stage, stream, computeNode, defaultTexturingKey, defaultValueKey, defaultTextureValue);
         }
 
+        public void SetStream(MaterialShaderStage stage, string stream, MaterialStreamType streamType, ShaderSource shaderSource)
+        {
+            Current.SetStream(stage, stream, streamType, shaderSource);
+        }
+
         public void SetStream(string stream, IComputeNode computeNode, ParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue = null)
         {
             SetStream(MaterialShaderStage.Pixel, stream, computeNode, defaultTexturingKey, defaultValueKey, defaultTextureValue);
@@ -376,6 +389,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 {
                     streamType = MaterialStreamType.Float3;
                 }
+                else if (defaultValueKey.PropertyType == typeof(Vector2) || defaultValueKey.PropertyType == typeof(Half2))
+                {
+                    streamType = MaterialStreamType.Float2;
+                }
                 else if (defaultValueKey.PropertyType == typeof(float))
                 {
                     streamType = MaterialStreamType.Float;
@@ -389,7 +406,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 SetStream(stage, stream, streamType, classSource);
             }
 
-            private void SetStream(MaterialShaderStage stage, string stream, MaterialStreamType streamType, ShaderSource classSource)
+            public void SetStream(MaterialShaderStage stage, string stream, MaterialStreamType streamType, ShaderSource classSource)
             {
                 // Blend stream isnot part of the stream used
                 if (stream != MaterialBlendLayer.BlendStream)
@@ -402,6 +419,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 {
                     case MaterialStreamType.Float:
                         channel = "r";
+                        break;
+                    case MaterialStreamType.Float2:
+                        channel = "rg";
                         break;
                     case MaterialStreamType.Float3:
                         channel = "rgb";

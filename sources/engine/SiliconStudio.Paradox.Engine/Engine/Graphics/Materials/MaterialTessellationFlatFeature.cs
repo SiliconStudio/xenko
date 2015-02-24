@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 return;
 
             // set the tessellation method used enumeration
-            context.TessellationMethod |= ParadoxTessellationMethod.Flat;
+            context.Material.TessellationMethod |= ParadoxTessellationMethod.Flat;
 
             // create and affect the shader source
             var tessellationShader = new ShaderMixinSource();

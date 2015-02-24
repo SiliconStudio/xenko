@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             var sampleDirection = mul(streams.normalWS, (float3x3)SkyMatrix);
             sampleDirection = float3(sampleDirection.xy, -sampleDirection.z);
 
-            streams.envLightDiffuseColor = lightDiffuseColor.Compute(sampleDirection).rgb * Intensity * ambientAccessibility;
+            streams.envLightDiffuseColor = lightDiffuseColor.Compute(sampleDirection).rgb * Intensity * ambientAccessibility * streams.matAlphaBlend.x;
 
             // -----------------------------------------
             // Specular lighting
@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             sampleDirection = mul(sampleDirection, (float3x3)SkyMatrix);
             sampleDirection = float3(sampleDirection.xy, -sampleDirection.z);
 
-            streams.envLightSpecularColor = lightSpecularColor.Compute(sampleDirection).rgb * Intensity * ambientAccessibility;
+            streams.envLightSpecularColor = lightSpecularColor.Compute(sampleDirection).rgb * Intensity * ambientAccessibility * streams.matAlphaBlend.y;
         }
     };
 }

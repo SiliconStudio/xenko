@@ -38,6 +38,12 @@ namespace SiliconStudio.Paradox.Effects.Materials
         public static readonly ParameterKey<Texture> DiffuseMap = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<Color4> DiffuseValue = ParameterKeys.New<Color4>();
 
+        public static readonly ParameterKey<Texture> AlphaBlendMap = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<float> AlphaBlendValue = ParameterKeys.New<float>();
+
+        public static readonly ParameterKey<Texture> AlphaBlendColorMap = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Color3> AlphaBlendColorValue = ParameterKeys.New<Color3>();
+
         public static readonly ParameterKey<Texture> SpecularMap = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<Color3> SpecularValue = ParameterKeys.New<Color3>();
         public static readonly ParameterKey<float> SpecularIntensityValue = ParameterKeys.New<float>();
@@ -112,7 +118,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
 
         public static readonly ParameterKey<bool> HasSkinningTangent = ParameterKeys.New<bool>();
 
-        public static readonly ParameterKey<bool> UseTransparent = ParameterKeys.New<bool>();
+        public static readonly ParameterKey<bool> HasTransparency = ParameterKeys.New<bool>();
 
         public static readonly ParameterKey<int> SkinningMaxBones = ParameterKeys.New<int>(56);
 

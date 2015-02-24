@@ -306,10 +306,10 @@ namespace SiliconStudio.Paradox.Effects
 
                 // TODO: Add a kind of associated data to an effect mesh to speed up this test?
                 var leftMaterial = left.Material;
-                var isLeftTransparent = (leftMaterial != null && leftMaterial.Parameters.Get(MaterialKeys.UseTransparent));
+                var isLeftTransparent = (leftMaterial != null && leftMaterial.HasTransparency);
 
                 var rightMaterial = right.Material;
-                var isRightTransparent = (rightMaterial != null && rightMaterial.Parameters.Get(MaterialKeys.UseTransparent));
+                var isRightTransparent = (rightMaterial != null && rightMaterial.HasTransparency);
 
                 if (isLeftTransparent && !isRightTransparent)
                     return 1;

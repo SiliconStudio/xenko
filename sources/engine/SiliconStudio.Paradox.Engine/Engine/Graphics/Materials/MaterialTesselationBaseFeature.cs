@@ -66,7 +66,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             // set the tessellation method and callback to add Displacement/Normal average shaders.
             if (AdjacentEdgeAverage)
             {
-                context.TessellationMethod = ParadoxTessellationMethod.AdjacentEdgeAverage;
+                context.Material.TessellationMethod = ParadoxTessellationMethod.AdjacentEdgeAverage;
                 context.AddFinalCallback(MaterialShaderStage.Domain, AddAdjacentEdgeAverageMacros);
                 context.AddFinalCallback(MaterialShaderStage.Domain, AddAdjacentEdgeAverageShaders);
             }
