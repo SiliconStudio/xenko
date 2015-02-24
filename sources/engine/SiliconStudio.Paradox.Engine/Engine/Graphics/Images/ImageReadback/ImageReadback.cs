@@ -76,6 +76,12 @@ namespace SiliconStudio.Paradox.Effects.Images
         public bool IsSlow { get; private set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether [force get latest blocking].
+        /// </summary>
+        /// <value><c>true</c> if [force get latest blocking]; otherwise, <c>false</c>.</value>
+        public bool ForceGetLatestBlocking { get; set; }
+
+        /// <summary>
         /// Gets the elapsed time to query the result.
         /// </summary>
         /// <value>The elapsed time.</value>
@@ -116,31 +122,41 @@ namespace SiliconStudio.Paradox.Effects.Images
             // Read-back to CPU using a ring of staging buffers
             IsResultAvailable = false;
             IsSlow = false;
-            for (int i = stagingTargets.Count - 1; !IsResultAvailable && i >= 1; i--)
-            {
-                var oldStagingIndex = (currentStagingIndex + i) % stagingTargets.Count;
-                var stagingTarget = stagingTargets[oldStagingIndex];
 
-                // Only try to get data from staging if it has received a copy of the input texture
-                if (stagingUsed[oldStagingIndex])
+            if (ForceGetLatestBlocking)
+            {
+                stagingTargets[currentStagingIndex].GetData(result);
+                IsResultAvailable = true;
+                IsSlow = true;
+            }
+            else
+            {
+                for (int i = stagingTargets.Count - 1; !IsResultAvailable && i >= 1; i--)
                 {
-                    // If oldest staging target?
-                    if (i == 1)
+                    var oldStagingIndex = (currentStagingIndex + i) % stagingTargets.Count;
+                    var stagingTarget = stagingTargets[oldStagingIndex];
+
+                    // Only try to get data from staging if it has received a copy of the input texture
+                    if (stagingUsed[oldStagingIndex])
                     {
-                        // Get data blocking (otherwise we would loop without getting any readback if StagingCount is not enough high)
-                        stagingTarget.GetData(result);
-                        IsSlow = true;
-                        IsResultAvailable = true;
-                    }
-                    else if (stagingTarget.GetData(result, 0, 0, true)) // Get data non-blocking
-                    {
-                        IsResultAvailable = true;
+                        // If oldest staging target?
+                        if (i == 1)
+                        {
+                            // Get data blocking (otherwise we would loop without getting any readback if StagingCount is not enough high)
+                            stagingTarget.GetData(result);
+                            IsSlow = true;
+                            IsResultAvailable = true;
+                        }
+                        else if (stagingTarget.GetData(result, 0, 0, true)) // Get data non-blocking
+                        {
+                            IsResultAvailable = true;
+                        }
                     }
                 }
-            }
 
-            // Move to next staging target
-            currentStagingIndex = (currentStagingIndex + 1) % stagingTargets.Count;
+                // Move to next staging target
+                currentStagingIndex = (currentStagingIndex + 1) % stagingTargets.Count;
+            }
 
             // Stop the clock.
             clock.Stop();
