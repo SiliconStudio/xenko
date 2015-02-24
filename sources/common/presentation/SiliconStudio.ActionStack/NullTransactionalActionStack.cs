@@ -49,6 +49,18 @@ namespace SiliconStudio.ActionStack
         public event EventHandler ActionItemsCleared;
 
         /// <inheritdocs/>
+        public event EventHandler<EventArgs> TransactionStarted;
+
+        /// <inheritdocs/>
+        public event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionEnded;
+
+        /// <inheritdocs/>
+        public event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionCancelled;
+
+        /// <inheritdocs/>
+        public event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionDiscarded;
+
+        /// <inheritdocs/>
         public event EventHandler<DiscardedActionItemsEventArgs<IActionItem>> ActionItemsDiscarded;
 
         /// <inheritdocs/>

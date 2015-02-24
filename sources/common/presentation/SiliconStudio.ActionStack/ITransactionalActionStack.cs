@@ -21,6 +21,26 @@ namespace SiliconStudio.ActionStack
         bool TransactionInProgress { get; }
 
         /// <summary>
+        /// Raised when a transaction is started.
+        /// </summary>
+        event EventHandler<EventArgs> TransactionStarted;
+
+        /// <summary>
+        /// Raised when a transaction has ended.
+        /// </summary>
+        event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionEnded;
+
+        /// <summary>
+        /// Raised when a transaction is cancelled.
+        /// </summary>
+        event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionCancelled;
+
+        /// <summary>
+        /// Raised when a transaction is discarded.
+        /// </summary>
+        event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionDiscarded;
+
+        /// <summary>
         /// Creates a BeginTransaction-EndTransaction subscription.
         /// Use it with a using statement to ensure balanced state integrity.
         /// </summary>
