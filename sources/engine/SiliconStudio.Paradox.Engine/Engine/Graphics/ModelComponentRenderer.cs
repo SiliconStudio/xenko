@@ -207,7 +207,7 @@ namespace SiliconStudio.Paradox.Effects
             {
                 if (renderMeshes == null)
                 {
-                    renderMeshes = new List<RenderMesh>();
+                    renderMeshes = new RenderMeshCollection();
                     renderModel.RenderMeshesList[modelRenderSlot] = renderMeshes;
                 }
 
@@ -220,6 +220,21 @@ namespace SiliconStudio.Paradox.Effects
                     renderMeshes.Add(renderMesh);
                 }
             }
+
+            // Update RenderModel transform
+            if (!renderMeshes.TransformUpdated)
+            {
+                // Update the model hierarchy
+                var modelViewHierarchy = renderModel.ModelComponent.ModelViewHierarchy;
+
+                modelViewHierarchy.UpdateToRenderModel(renderModel, modelRenderSlot);
+
+                // Upload skinning blend matrices
+                MeshSkinningUpdater.Update(modelViewHierarchy, renderModel, modelRenderSlot);
+
+                renderMeshes.TransformUpdated = true;
+            }
+
             return renderMeshes;
         }
 

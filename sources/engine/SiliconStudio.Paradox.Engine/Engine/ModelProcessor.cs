@@ -121,11 +121,13 @@ namespace SiliconStudio.Paradox.Engine
                     }
                 }
 
-                // Upload matrices to TransformationKeys.World
-                modelViewHierarchy.UpdateToRenderModel(renderModel);
+                // TODO: World update and skinning is now perform at ModelComponentRenderer time. Check if we can find a better place to do this.
 
-                // Upload skinning blend matrices
-                MeshSkinningUpdater.Update(modelViewHierarchy, renderModel);
+                //// Upload matrices to TransformationKeys.World
+                //modelViewHierarchy.UpdateToRenderModel(renderModel);
+
+                //// Upload skinning blend matrices
+                //MeshSkinningUpdater.Update(modelViewHierarchy, renderModel);
             }
         }
 

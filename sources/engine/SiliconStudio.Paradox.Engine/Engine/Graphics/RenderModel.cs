@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             ModelComponent = entity.Get<ModelComponent>();
             Parameters = ModelComponent.Parameters;
             TransformComponent = entity.Transform;
-            RenderMeshesList = new List<List<RenderMesh>>(4);
+            RenderMeshesList = new List<RenderMeshCollection>(4);
             Update();
         }
 
@@ -46,6 +46,18 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                     {
                         // TODO: Should we dispose something here?
                         renderMeshes.Clear();
+                        renderMeshes.TransformUpdated = false;
+                    }
+                }
+            }
+            else
+            {
+                // When changing the model, we need to regenerate the render meshes
+                foreach (var renderMeshes in RenderMeshesList)
+                {
+                    if (renderMeshes != null)
+                    {
+                        renderMeshes.TransformUpdated = false;
                     }
                 }
             }
@@ -53,7 +65,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         public readonly TransformComponent TransformComponent;
 
-        internal readonly List<List<RenderMesh>> RenderMeshesList;
+        internal readonly List<RenderMeshCollection> RenderMeshesList;
 
         public List<ModelProcessor.EntityLink> Links;
 
@@ -78,4 +90,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             return null;
         }
     }
+
+    internal class RenderMeshCollection : List<RenderMesh>
+    {
+        public bool TransformUpdated { get; set; }
+    }
+
 }
