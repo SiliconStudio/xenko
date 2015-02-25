@@ -115,6 +115,12 @@
     <Compile Include="Direct3D\InputLayoutManager.cs" />
     <Compile Include="Direct3D\Rational.Direct3D.cs" />
     <Compile Include="DepthStencilStateSerializer.cs" />
+    <Compile Include="Shaders\ShaderBaseStream.cs">
+      <DependentUpon>ShaderBaseStream.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="VertexHelper.cs" />
     <Compile Include="WorkingSpace.cs" />
     <Compile Include="Font\FontAntiAliasMode.cs" />
@@ -463,6 +469,10 @@
     <None Include="Shaders.Bytecodes\CompileShaders.cmd" />
     <None Include="Shaders.Bytecodes\Graphics.pdxpkg" />
     <None Include="Shaders.Bytecodes\Shaders.pdxfxlib" />
+    <None Include="Shaders\ShaderBaseStream.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ShaderBaseStream.cs</LastGenOutput>
+    </None>
     <None Include="Shaders\UIEffectSeparateAlpha.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>UIEffectSeparateAlpha.cs</LastGenOutput>
