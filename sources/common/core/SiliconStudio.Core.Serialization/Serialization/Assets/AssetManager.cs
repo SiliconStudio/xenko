@@ -113,6 +113,17 @@ namespace SiliconStudio.Core.Serialization.Assets
             return Task.Factory.StartNew(() => Load(type, url, settings));
         }
 
+        public T Get<T>(string url)
+        {
+            return (T)Get(typeof(T), url);
+        }
+
+        public object Get(Type type, string url)
+        {
+            var reference = FindDeserializedObject(url, type);
+            return reference != null ? reference.Object : null;
+        }
+
         public bool TryGetAssetUrl(object obj, out string url)
         {
             if (obj == null) throw new ArgumentNullException("obj");
@@ -207,7 +218,7 @@ namespace SiliconStudio.Core.Serialization.Assets
             return result;
         }
 
-        internal object FindDeserializedObject(string url, Type objType)
+        internal AssetReference FindDeserializedObject(string url, Type objType)
         {
             // Try to find already loaded object
             AssetReference assetReference;
@@ -222,15 +233,7 @@ namespace SiliconStudio.Core.Serialization.Assets
                 {
                     // TODO: Currently ReferenceSerializer creates a ContentReference, so we will go through DeserializeObject later to add the reference
                     // This should be unified at some point
-
-                    // Add reference
-                    //bool isRoot = parentAssetReference == null;
-                    //if (isRoot || parentAssetReference.References.Add(assetReference))
-                    //{
-                    //    IncrementReference(assetReference, isRoot);
-                    //}
-
-                    return assetReference.Object;
+                    return assetReference;
                 }
             }
 
@@ -246,25 +249,17 @@ namespace SiliconStudio.Core.Serialization.Assets
         private object DeserializeObject(Queue<DeserializeOperation> serializeOperations, AssetReference parentAssetReference, string url, Type objType, object obj, AssetManagerLoaderSettings settings)
         {
             // Try to find already loaded object
-            AssetReference assetReference;
-            if (loadedAssetsByUrl.TryGetValue(url, out assetReference))
+            AssetReference assetReference = FindDeserializedObject(url, objType);
+            if (assetReference != null && assetReference.Deserialized)
             {
-                while (assetReference != null && !objType.GetTypeInfo().IsAssignableFrom(assetReference.Object.GetType().GetTypeInfo()))
+                // Add reference
+                bool isRoot = parentAssetReference == null;
+                if (isRoot || parentAssetReference.References.Add(assetReference))
                 {
-                    assetReference = assetReference.Next;
+                    IncrementReference(assetReference, isRoot);
                 }
 
-                if (assetReference != null && assetReference.Deserialized)
-                {
-                    // Add reference
-                    bool isRoot = parentAssetReference == null;
-                    if (isRoot || parentAssetReference.References.Add(assetReference))
-                    {
-                        IncrementReference(assetReference, isRoot);
-                    }
-
-                    return assetReference.Object;
-                }
+                return assetReference.Object;
             }
 
             if (!FileProvider.FileExists(url))
