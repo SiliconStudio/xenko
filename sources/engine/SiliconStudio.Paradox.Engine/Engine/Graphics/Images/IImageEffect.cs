@@ -13,6 +13,12 @@ namespace SiliconStudio.Paradox.Effects.Images
         void SetInput(int slot, Texture texture);
 
         /// <summary>
+        /// Sets the viewport.
+        /// </summary>
+        /// <param name="viewport">The viewport.</param>
+        void SetViewport(Viewport? viewport);
+
+        /// <summary>
         /// Sets the render target output.
         /// </summary>
         /// <param name="view">The render target output view.</param>

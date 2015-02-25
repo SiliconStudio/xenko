@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     /// </summary>
     [DataContract("SceneDelegateRenderer")]
     [Browsable(false)] // This type is not browsable from the editor
-    public class SceneDelegateRenderer : SceneRendererBase
+    public class SceneDelegateRenderer : SceneRendererViewportBase
     {
         private readonly Action<RenderContext, RenderFrame> drawAction;
 
@@ -31,6 +31,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         protected override void DrawCore(RenderContext context, RenderFrame output)
         {
+            base.DrawCore(context, output);
             drawAction(context, output);
         }
     }

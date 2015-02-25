@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     /// </summary>
     [DataContract("SceneCameraRenderer")]
     [Display("Render Camera")]
-    public sealed class SceneCameraRenderer : SceneRendererBase
+    public sealed class SceneCameraRenderer : SceneRendererViewportBase
     {
         /// <summary>
         /// Property key to access the current <see cref="SceneCameraRenderer"/> from <see cref="RenderContext.Tags"/>.
@@ -70,6 +70,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         protected override void DrawCore(RenderContext context, RenderFrame output)
         {
+            base.DrawCore(context, output);
+
             // Early exit if some properties are null
             if (Mode == null)
             {

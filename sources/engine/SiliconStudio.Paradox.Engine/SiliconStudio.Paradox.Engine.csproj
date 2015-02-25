@@ -111,6 +111,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>VignettingShader.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Engine\Graphics\ISceneRendererViewport.cs" />
     <Compile Include="Engine\Graphics\Lights\ColorLightBase.cs" />
     <Compile Include="Engine\Graphics\Lights\DirectLightBase.cs" />
     <Compile Include="Engine\Graphics\Lights\IColorLight.cs" />
@@ -961,6 +962,7 @@
     <Compile Include="Engine\Graphics\Composers\MasterRenderFrameProvider.cs" />
     <Compile Include="Engine\Graphics\Composers\LocalRenderFrameProvider.cs" />
     <Compile Include="Engine\Graphics\SceneDelegateRenderer.cs" />
+    <Compile Include="Engine\Graphics\SceneRendererViewportBase.cs" />
     <Compile Include="Engine\Graphics\SharedRenderFrameProvider.cs" />
     <Compile Include="Engine\Graphics\Composers\SceneGraphicsLayerCollection.cs" />
     <Compile Include="Engine\Graphics\SceneEffectRenderer.cs" />
