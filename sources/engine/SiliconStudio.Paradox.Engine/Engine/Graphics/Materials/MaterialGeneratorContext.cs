@@ -63,7 +63,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         private MaterialShadingModelCollection CurrentShadingModel { get; set; }
 
-
         public bool IsNotPixelStage { get; set; }
 
         /// <summary>
@@ -193,13 +192,17 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 {
                     Current.SurfaceShaders[modifierKey.Key].Add(inputStreamModifiers[modifierKey]);
                 }
-                foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
+
+                // Clear final callback
+                foreach (var callbackKeyPair in finalCallbacks)
                 {
-                    foreach (var callback in finalCallbacks[stage])
+                    var stage = callbackKeyPair.Key;
+                    var callbacks = callbackKeyPair.Value;
+                    foreach (var callback in callbacks)
                     {
                         callback(stage, this);
                     }
-                    finalCallbacks[stage].Clear();
+                    callbacks.Clear();
                 }
             }
 
