@@ -107,6 +107,7 @@
     <Compile Include="Engine\Graphics\Lights\IColorLight.cs" />
     <Compile Include="Engine\Graphics\Lights\LightAmbientRenderer.cs" />
     <Compile Include="Engine\Graphics\Materials\DisplacementMapStage.cs" />
+    <Compile Include="Engine\Graphics\Materials\IMaterialDescriptor.cs" />
     <Compile Include="Engine\Graphics\Materials\IMaterialSurfaceDomain.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1758,7 +1759,6 @@
     <Compile Include="Engine\Graphics\Skyboxes\SkyboxBackground.cs" />
     <Compile Include="Engine\Graphics\Skyboxes\SkyboxComponentRenderer.cs" />
     <Compile Include="Engine\Graphics\Skyboxes\SkyboxComponent.cs" />
-    <Compile Include="Engine\Graphics\Skyboxes\SkyboxComponentCollection.cs" />
     <Compile Include="Engine\Graphics\Skyboxes\SkyboxEffect.cs">
       <DependentUpon>SkyboxEffect.pdxfx</DependentUpon>
       <AutoGen>True</AutoGen>
