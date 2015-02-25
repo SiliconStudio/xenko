@@ -86,7 +86,7 @@ namespace SiliconStudio.Paradox.Engine
                 var renderModel = matchingEntity.Value;
 
                 // Skip disabled model components, or model components without a proper model set
-                if (!renderModel.ModelComponent.Enabled || renderModel.ModelComponent.ModelViewHierarchy == null)
+                if (!renderModel.ModelComponent.Enabled || renderModel.ModelComponent.ModelViewHierarchy == null || renderModel.ModelComponent.Model == null)
                 {
                     continue;
                 }
