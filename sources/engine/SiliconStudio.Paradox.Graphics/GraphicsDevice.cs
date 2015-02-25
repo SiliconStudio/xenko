@@ -122,7 +122,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <remarks>
         ///     Because this method is being called from a lock region, this method should not be time consuming.
         /// </remarks>
-        public delegate T CreateSharedData<out T>() where T : class, IDisposable;
+        public delegate T CreateSharedData<out T>(GraphicsDevice device) where T : class, IDisposable;
 
         /// <summary>
         ///     Gets the adapter this instance is attached to.
@@ -418,7 +418,7 @@ namespace SiliconStudio.Paradox.Graphics
                 IDisposable localValue;
                 if (!dictionary.TryGetValue(key, out localValue))
                 {
-                    localValue = sharedDataCreator();
+                    localValue = sharedDataCreator(this);
                     if (localValue == null)
                     {
                         return null;

@@ -2,9 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Graphics
@@ -73,6 +73,21 @@ namespace SiliconStudio.Paradox.Graphics
             device.SetBlendState(device.BlendStates.Default);
             device.SetDepthStencilState(device.DepthStencilStates.Default);
             device.SetRasterizerState(device.RasterizerStates.CullBack);
+        }
+
+        public static Texture GetSharedWhiteTexture(this GraphicsDevice device)
+        {
+            return device.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, "WhiteTexture", CreateWhiteTexture);
+        }
+
+        private static Texture CreateWhiteTexture(GraphicsDevice device)
+        {
+            const int Size = 2;
+            var whiteData = new Color[Size * Size];
+            for (int i = 0; i < Size*Size; i++)
+                whiteData[i] = Color.White;
+
+            return Texture.New2D(device, Size, Size, PixelFormat.R8G8B8A8_UNorm, whiteData);
         }
     }
 }

@@ -37,7 +37,7 @@ namespace SiliconStudio.Paradox.Graphics
             simpleEffect = effect;
             parameters = new ParameterCollection();
             parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
-            sharedData = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, "PrimitiveQuad::VertexBuffer", () => new SharedData(GraphicsDevice, simpleEffect.InputSignature));
+            sharedData = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, "PrimitiveQuad::VertexBuffer", d => new SharedData(GraphicsDevice, simpleEffect.InputSignature));
         }
 
         /// <summary>
