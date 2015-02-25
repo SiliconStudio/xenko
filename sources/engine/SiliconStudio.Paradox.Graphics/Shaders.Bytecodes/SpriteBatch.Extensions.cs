@@ -9,7 +9,7 @@ namespace SiliconStudio.Paradox.Graphics
     {
         private static EffectBytecode bytecode = null;
 
-        private static EffectBytecode Bytecode
+        public static EffectBytecode Bytecode
         {
             get
             {

@@ -1,10 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 
@@ -15,49 +17,69 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("SpriteComponent")]
     [Display(100, "Sprite")]
+    [DefaultEntityComponentRenderer(typeof(SpriteComponentRenderer))]
     [DefaultEntityComponentProcessor(typeof(SpriteProcessor))]
     public sealed class SpriteComponent : EntityComponent
     {
         public static PropertyKey<SpriteComponent> Key = new PropertyKey<SpriteComponent>("Key", typeof(SpriteComponent));
-
+        
         /// <summary>
         /// The sprites to play.
         /// </summary>
-        internal SpriteGroup SpriteGroupInternal;
+        internal ISpriteProvider SpriteProviderInternal;
 
         /// <summary>
         /// The color to apply on the sprite.
         /// </summary>
+        /// <userdoc>The color to apply to the sprite.</userdoc>
+        [DataMember(20)]
+        [Display("Color")]
         public Color Color = Color.White;
 
         /// <summary>
-        /// The effect to apply on the sprite.
+        /// The type of the sprite.
         /// </summary>
-        public SpriteEffects SpriteEffect;
+        /// <userdoc>The type of the sprite. A 3D sprite in the scene or billboard perpendicular to camera view.</userdoc>
+        [DataMember(10)]
+        [DefaultValue(SpriteType.Sprite)]
+        [Display("Type")]
+        public SpriteType SpriteType;
 
         /// <summary>
-        /// The effect to use to render the sprite.
+        /// Gets or set the sprite extrusion method.
         /// </summary>
-        [DataMemberCustomSerializer]
-        public Effect Effect;
+        [DataMember(15)]
+        [DefaultValue(SpriteExtrusionMethod.UnitHeightSpriteRatio)]
+        [Display("Extrusion")]
+        public SpriteExtrusionMethod ExtrusionMethod { get; set; }
 
         [DataMemberIgnore]
         internal double ElapsedTime;
 
-        private int currentFrame;
+        /// <summary>
+        /// Creates a new instance of <see cref="SpriteComponent"/>
+        /// </summary>
+        public SpriteComponent()
+        {
+            SpriteProviderInternal = new SpriteFromSpriteGroup();
+            ExtrusionMethod = SpriteExtrusionMethod.UnitHeightSpriteRatio;
+        }
 
         /// <summary>
         /// The group of sprites associated to the component.
         /// </summary>
-        public SpriteGroup SpriteGroup
+        [DataMember(5)]
+        [Display("Source")]
+        [NotNull]
+        public ISpriteProvider SpriteGroup
         {
-            get { return SpriteGroupInternal; }
+            get { return SpriteProviderInternal; }
             set
             {
-                if(SpriteGroupInternal == value)
+                if(SpriteProviderInternal == value)
                     return;
 
-                SpriteGroupInternal = value;
+                SpriteProviderInternal = value;
                 CurrentFrame = 0;
             }
         }
@@ -66,20 +88,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets the current frame of the animation.
         /// </summary>
         [DataMemberIgnore]
-        public int CurrentFrame
-        {
-            get { return currentFrame; }
-            set
-            {
-                if (SpriteGroupInternal == null || SpriteGroupInternal.Images == null || SpriteGroupInternal.Images.Count == 0)
-                {
-                    currentFrame = 0;
-                    return;
-                }
-
-                currentFrame = Math.Max(0, value % SpriteGroupInternal.Images.Count);
-            }
-        }
+        public int CurrentFrame { get; set; }
 
         /// <summary>
         /// Gets the current sprite.
@@ -89,10 +98,10 @@ namespace SiliconStudio.Paradox.Engine
         {
             get
             {
-                if (SpriteGroupInternal == null || SpriteGroupInternal.Images == null)
+                if (SpriteProviderInternal == null)
                     return null;
 
-                return SpriteGroupInternal.Images[Math.Min(currentFrame, SpriteGroupInternal.Images.Count)];
+                return SpriteProviderInternal.GetSprite(CurrentFrame);
             }
         }
 

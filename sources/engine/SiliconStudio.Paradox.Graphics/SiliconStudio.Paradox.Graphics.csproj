@@ -116,6 +116,7 @@
     <Compile Include="Direct3D\Rational.Direct3D.cs" />
     <Compile Include="DepthStencilStateSerializer.cs" />
     <Compile Include="Shaders\ShaderBaseStream.cs">
+    <Compile Include="Sprite3DBatch.cs" />
       <DependentUpon>ShaderBaseStream.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

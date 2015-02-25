@@ -627,11 +627,11 @@ namespace SiliconStudio.Paradox.Graphics
         /// <remarks>
         /// The index buffer is used in static mode and contains six indices for each quad. The vertex buffer contains 4 vertices for each quad.
         /// Rectangle is composed of two triangles as follow: 
-        ///  v0 - - - v1
-        ///  |  \      |
-        ///  |    \ t1 |
-        ///  | t2   \  |
-        ///  v3 - - - v2
+        ///                  v0 - - - v1                  v0 - - - v1
+        ///                  |  \      |                  | t1   /  |
+        ///  If cycle=true:  |    \ t1 | If cycle=false:  |    /    |
+        ///                  | t2   \  |                  | /    t2 |
+        ///                  v3 - - - v2                  v2 - - - v3
         /// </remarks>
         protected class StaticQuadBufferInfo: ResourceBufferInfo
         {
@@ -644,7 +644,7 @@ namespace SiliconStudio.Paradox.Graphics
             {
             }
 
-            public static StaticQuadBufferInfo CreateQuadBufferInfo(string resourceKey, int maxQuadNumber, int batchCapacity = 64)
+            public static StaticQuadBufferInfo CreateQuadBufferInfo(string resourceKey, bool cycle, int maxQuadNumber, int batchCapacity = 64)
             {
                 var indices = new short[maxQuadNumber * IndicesByElement];
                 var k = 0;
@@ -653,9 +653,18 @@ namespace SiliconStudio.Paradox.Graphics
                     indices[i++] = (short)(k + 0);
                     indices[i++] = (short)(k + 1);
                     indices[i++] = (short)(k + 2);
-                    indices[i++] = (short)(k + 0);
-                    indices[i++] = (short)(k + 2);
-                    indices[i++] = (short)(k + 3);
+                    if (cycle)
+                    {
+                        indices[i++] = (short)(k + 0);
+                        indices[i++] = (short)(k + 2);
+                        indices[i++] = (short)(k + 3);
+                    }
+                    else
+                    {
+                        indices[i++] = (short)(k + 1);
+                        indices[i++] = (short)(k + 3);
+                        indices[i++] = (short)(k + 2);
+                    }
                 }
 
                 return new StaticQuadBufferInfo(resourceKey, indices, VertexByElement * maxQuadNumber) { BatchCapacity = batchCapacity };
