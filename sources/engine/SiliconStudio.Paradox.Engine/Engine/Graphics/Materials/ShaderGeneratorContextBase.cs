@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.Packaging;
 
+using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
@@ -21,7 +22,7 @@ namespace SiliconStudio.Paradox.Assets
     /// <summary>
     /// Base class for generating shader class source with associated parameters.
     /// </summary>
-    public abstract class ShaderGeneratorContextBase
+    public abstract class ShaderGeneratorContextBase : ComponentBase
     {
         // TODO: Document this class
 

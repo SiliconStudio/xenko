@@ -35,6 +35,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
         // Transparent attributes
         stage stream float2  matAlphaBlend;
         stage stream float3  matAlphaBlendColor;
+        stage stream float   matAlphaDiscard;
 
         // Inputs while shading a material surface
         stage stream float3 viewWS;
@@ -81,6 +82,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
 
             streams.matAlphaBlend = 1.0f;
             streams.matAlphaBlendColor = 1.0f;
+            streams.matAlphaDiscard = 0.0f;
         }
 
         float GetFilterSquareRoughnessAdjustment(float3 averageNormal)

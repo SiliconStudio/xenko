@@ -44,6 +44,9 @@ namespace SiliconStudio.Paradox.Effects.Materials
         public static readonly ParameterKey<Texture> AlphaBlendColorMap = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<Color3> AlphaBlendColorValue = ParameterKeys.New<Color3>();
 
+        public static readonly ParameterKey<Texture> AlphaDiscardMap = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<float> AlphaDiscardValue = ParameterKeys.New<float>();
+
         public static readonly ParameterKey<Texture> SpecularMap = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<Color3> SpecularValue = ParameterKeys.New<Color3>();
         public static readonly ParameterKey<float> SpecularIntensityValue = ParameterKeys.New<float>();
