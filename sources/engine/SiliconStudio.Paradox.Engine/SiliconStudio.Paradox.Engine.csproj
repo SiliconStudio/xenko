@@ -88,7 +88,9 @@
       <DependentUpon>ComputeColorSubtract.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Engine\Graphics\EntityComponentRendererBatch.cs" />
+    <Compile Include="Engine\Graphics\EntityComponentRendererCoreBase.cs" />
     <Compile Include="Engine\Graphics\GraphicsRendererCollectionBase.cs" />
+    <Compile Include="Engine\Graphics\IEntityComponentRendererCore.cs" />
     <Compile Include="Engine\Graphics\IGraphicsRendererCore.cs" />
     <Compile Include="Engine\Graphics\Images\DepthOfField\InFocusMaskCombine.cs">
       <DependentUpon>InFocusMaskCombine.pdxsl</DependentUpon>
