@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Extensions;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Core.Collections;
@@ -89,6 +90,11 @@ namespace SiliconStudio.Paradox.Effects
             var material = Material;
             var vao = vertexArrayObject;
             var drawCount = currentRenderData.DrawCount;
+
+            if (context.IsPicking()) // TODO move this code corresponding to picking outside of the runtime code!
+            {
+                mesh.Parameters.Set(ComputeIDKeys.constantID, new Color4(RenderModel.ModelComponent.Id));
+            }
 
             if (material != null && material.TessellationMethod != ParadoxTessellationMethod.None)
             {

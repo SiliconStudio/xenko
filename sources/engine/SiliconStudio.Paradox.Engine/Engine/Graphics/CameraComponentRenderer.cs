@@ -21,6 +21,8 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         public static readonly PropertyKey<CameraComponentState> Current = new PropertyKey<CameraComponentState>("CameraComponentRenderer.CurrentCamera", typeof(CameraComponentState));
 
+        public override bool SupportPicking { get { return true; } }
+
         protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
             var cameraState = context.Tags.Get(Current);

@@ -939,6 +939,7 @@
     <Compile Include="Engine\Graphics\ProceduralModels\TeapotProceduralModel.cs" />
     <Compile Include="Engine\Graphics\ProceduralModels\TorusProceduralModel.cs" />
     <Compile Include="Engine\Graphics\ReferenceToEffectsAttribute.cs" />
+    <Compile Include="Engine\Graphics\RenderContextExtensions.cs" />
     <Compile Include="Engine\Graphics\RendererCoreBase.cs" />
     <Compile Include="Engine\Graphics\RenderFrameProviderBase.cs" />
     <Compile Include="Engine\Graphics\RenderItem.cs" />

@@ -17,6 +17,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         private SpriteProcessor spriteProcessor;
 
+        public override bool SupportPicking { get { return true; } }
+
         protected override void InitializeCore()
         {
             base.InitializeCore();
@@ -76,7 +78,14 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 if (sprite == null)
                     continue;
 
-                var sourceRegion = sprite.Region;
+                var sourceRegion = sprite.Region; 
+                var texture = sprite.Texture;
+                var color = spriteComp.Color;
+                if (context.IsPicking()) // TODO move this code corresponding to picking out of the runtime code.
+                {
+                    texture = device.GetSharedWhiteTexture();
+                    color = (Color)new Color4(spriteComp.Id);
+                }
 
                 // determine the size of the element depending on the extrusion method.
                 var elementSize = Vector2.One;
@@ -108,7 +117,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 }
                 
                 // draw the sprite
-                sprite3DBatch.Draw(sprite.Texture, ref worldMatrix, ref sourceRegion, ref elementSize, ref spriteComp.Color, sprite.Orientation, SwizzleMode.None, renderItem.Depth);
+                sprite3DBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref elementSize, ref color, sprite.Orientation, SwizzleMode.None, renderItem.Depth);
             }
 
             sprite3DBatch.End();

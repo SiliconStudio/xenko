@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects;
@@ -71,6 +70,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             base.PostDrawCore(context);
             CurrentRenderFrame = null;
         }
+
+        public virtual bool SupportPicking { get { return false; } }
 
         public void Prepare(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {

@@ -25,6 +25,8 @@ namespace SiliconStudio.Paradox.Effects
 
         private DynamicEffectCompiler dynamicEffectCompiler;
         private readonly string effectName;
+        
+        public override bool SupportPicking { get { return true; } }
 
         public delegate void UpdateMeshesDelegate(RenderContext context, FastList<RenderMesh> meshes);
 

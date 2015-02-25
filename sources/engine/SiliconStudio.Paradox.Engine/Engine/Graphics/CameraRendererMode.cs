@@ -47,7 +47,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// </summary>
         /// <value>The filter renderer types.</value>
         [DataMemberIgnore]
-        public HashSet<Type> FilterComponentTypes { get; private set; } // TODO: This is not supporting changes at runtime
+        public HashSet<Type> FilterComponentTypes { get; private set; }
 
         /// <summary>
         /// Draws entities from a specified <see cref="SceneCameraRenderer" />.

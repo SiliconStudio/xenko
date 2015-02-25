@@ -13,12 +13,19 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     {
         private LightModelRendererForward lightModelRenderer;
         private ModelComponentRenderer modelRenderer;
+
+        public override bool SupportPicking { get { return true; } }
+
         protected override void InitializeCore()
         {
             base.InitializeCore();
 
+            var effectName = SceneCameraRenderer.Mode.ModelEffect ?? "";
+            if (Context.IsPicking())
+                effectName += ".Picking";
+
             // TODO: Add support for mixin overrides
-            modelRenderer = ToLoadAndUnload(new ModelComponentRenderer(SceneCameraRenderer.Mode.ModelEffect));
+            modelRenderer = ToLoadAndUnload(new ModelComponentRenderer(effectName));
             lightModelRenderer = new LightModelRendererForward(modelRenderer);
         }
 
