@@ -39,9 +39,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// </summary>
         /// <value><c>true</c> if the viewport is in pixels instead of percentage; otherwise, <c>false</c>.</value>
         /// <userdoc>When this value is true, the Viewport size is a percentage (0-100) calculated relatively to the size of the Output, else it is a fixed size in pixels.</userdoc>
-        [DataMember(50)]
+        [DataMember(120)]
         [DefaultValue(true)]
-        [Display("Viewport in percentage?")]
+        [Display("Viewport in %")]
         public bool IsViewportInPercentage { get; set; }
 
         /// <summary>
