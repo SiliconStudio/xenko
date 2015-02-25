@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         private LensFlare lensFlare;
         private ColorTransformGroup colorTransformsGroup;
         private IScreenSpaceAntiAliasingEffect ssaa;
-        public Vignetting vignetting;
+        private Vignetting vignetting;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PostProcessingEffects" /> class.
@@ -154,6 +154,21 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
         /// <summary>
+        /// Gets the vignetting effect.
+        /// </summary>
+        /// <value>The antialiasing.</value>
+        [DataMember(65)]
+        [Category]
+        public Vignetting Vignetting
+        {
+            get
+            {
+                return vignetting;
+            }
+        }
+
+
+        /// <summary>
         /// Gets the antialiasing effect.
         /// </summary>
         /// <value>The antialiasing.</value>
@@ -170,20 +185,6 @@ namespace SiliconStudio.Paradox.Effects.Images
             {
                 // TODO: Unload previous anti-aliasing before replacing it
                 ssaa = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets the vignetting effect.
-        /// </summary>
-        /// <value>The antialiasing.</value>
-        [DataMember(80)]
-        [Category]
-        public Vignetting Vignetting
-        {
-            get
-            {
-                return vignetting;
             }
         }
 
