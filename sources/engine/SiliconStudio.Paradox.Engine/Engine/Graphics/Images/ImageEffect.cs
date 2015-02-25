@@ -21,6 +21,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         private Texture[] outputRenderTargetViews;
         private Texture[] createdOutputRenderTargetViews;
 
+        private Viewport? viewport;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffect" /> class.
         /// </summary>
@@ -113,6 +115,15 @@ namespace SiliconStudio.Paradox.Effects.Images
             SetOutputInternal(views);
         }
 
+        /// <summary>
+        /// Sets the viewport to use .
+        /// </summary>
+        /// <param name="viewport">The viewport.</param>
+        public void SetViewport(Viewport? viewport)
+        {
+            this.viewport = viewport; // TODO: support multiple viewport?
+        }
+
         protected override void PreDrawCore(RenderContext context)
         {
             base.PreDrawCore(context);
@@ -139,15 +150,35 @@ namespace SiliconStudio.Paradox.Effects.Images
                         createdOutputRenderTargetViews[i] = outputRenderTargetView.ToTextureView(ViewType.Single, i, 0);
 
                     GraphicsDevice.SetRenderTargets(createdOutputRenderTargetViews);
+
+                    if (viewport.HasValue)
+                    {
+                        for (int i = 0; i < createdOutputRenderTargetViews.Length; i++)
+                        {
+                            GraphicsDevice.SetViewport(i, viewport.Value);
+                        }
+                    }
                 }
                 else
                 {
                     GraphicsDevice.SetRenderTarget(outputRenderTargetView);
+                    if (viewport.HasValue)
+                    {
+                        GraphicsDevice.SetViewport(viewport.Value);
+                    }
                 }
             }
             else if (outputRenderTargetViews != null)
             {
                 GraphicsDevice.SetRenderTargets(outputRenderTargetViews);
+
+                if (viewport.HasValue)
+                {
+                    for (int i = 0; i < outputRenderTargetViews.Length; i++)
+                    {
+                        GraphicsDevice.SetViewport(i, viewport.Value);
+                    }
+                }
             }
         }
 
