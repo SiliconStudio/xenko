@@ -57,6 +57,13 @@ namespace SiliconStudio.Paradox.Effects
         public bool HasTransparency { get; set; }
 
         /// <summary>
+        /// Gets or sets the descriptor (this field is null at runtime).
+        /// </summary>
+        /// <value>The descriptor.</value>
+        [DataMemberIgnore]
+        public MaterialDescriptor Descriptor { get; set; }
+
+        /// <summary>
         /// Creates a new material from the specified descriptor.
         /// </summary>
         /// <param name="descriptor">The material descriptor.</param>

@@ -14,6 +14,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Materials;
+using SiliconStudio.Paradox.Engine.Graphics.Materials;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.Data;
 
@@ -32,7 +33,7 @@ namespace SiliconStudio.Paradox.Assets
 
         private readonly Dictionary<Color4, Texture> singleColorTextures = new Dictionary<Color4, Texture>();
 
-        public delegate object FindAssetDelegate(object material);
+        public delegate IMaterialDescriptor FindAssetDelegate(Material material);
 
         public FindAssetDelegate FindAsset { get; set; }
 
@@ -52,7 +53,7 @@ namespace SiliconStudio.Paradox.Assets
             parameterKeyIndices = new Dictionary<ParameterKey, int>();
             declaredSamplerStates = new Dictionary<SamplerStateDescription, ParameterKey<SamplerState>>();
             // By default return the asset
-            FindAsset = material => material;
+            FindAsset = material => material.Descriptor;
         }
 
         public ParameterCollection Parameters { get; set; }

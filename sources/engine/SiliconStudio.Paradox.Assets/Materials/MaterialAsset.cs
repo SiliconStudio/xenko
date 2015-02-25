@@ -12,6 +12,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Engine.Graphics.Materials;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -24,7 +25,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     [AssetCompiler(typeof(MaterialAssetCompiler))]
     [ObjectFactory(typeof(MaterialFactory))]
     [Display("Material", "A material")]
-    public sealed class MaterialAsset : Asset, IMaterialShaderGenerator
+    public sealed class MaterialAsset : Asset, IMaterialDescriptor
     {
         /// <summary>
         /// The default file extension used by the <see cref="MaterialAsset"/>.
