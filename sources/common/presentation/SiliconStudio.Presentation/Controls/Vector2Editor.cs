@@ -30,22 +30,22 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyProperty AngleProperty = DependencyProperty.Register("Angle", typeof(float), typeof(Vector2Editor), new FrameworkPropertyMetadata(0.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceAngleValue));
 
         /// <summary>
-        /// The X component (in Cartesian coordinate system) of the <see cref="Vector2"/> associated to this control.
+        /// Gets or sets the X component (in Cartesian coordinate system) of the <see cref="Vector2"/> associated to this control.
         /// </summary>
         public float X { get { return (float)GetValue(XProperty); } set { SetValue(XProperty, value); } }
 
         /// <summary>
-        /// The Y component (in Cartesian coordinate system) of the <see cref="Vector2"/> associated to this control.
+        /// Gets or sets the Y component (in Cartesian coordinate system) of the <see cref="Vector2"/> associated to this control.
         /// </summary>
         public float Y { get { return (float)GetValue(YProperty); } set { SetValue(YProperty, value); } }
 
         /// <summary>
-        /// The length (in polar coordinate system) of the <see cref="Vector2"/> associated to this control.
+        /// Gets or sets the length (in polar coordinate system) of the <see cref="Vector2"/> associated to this control.
         /// </summary>
         public float Length { get { return (float)GetValue(LengthProperty); } set { SetValue(LengthProperty, value); } }
 
         /// <summary>
-        /// The angle (in polar coordinate system) of the <see cref="Vector2"/> associated to this control.
+        /// Gets or sets the angle (in polar coordinate system) of the <see cref="Vector2"/> associated to this control.
         /// </summary>
         public float Angle { get { return (float)GetValue(AngleProperty); } set { SetValue(AngleProperty, value); } }
 

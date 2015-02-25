@@ -62,6 +62,7 @@
     <Compile Include="Controls\PropertyView.cs" />
     <Compile Include="Controls\PropertyViewItem.cs" />
     <Compile Include="Controls\PropertyViewItemEventArgs.cs" />
+    <Compile Include="Controls\RectangleFEditor.cs" />
     <Compile Include="Controls\RotationEditor.cs" />
     <Compile Include="Controls\TextBoxBase.cs" />
     <Compile Include="Controls\VectorEditor.cs" />

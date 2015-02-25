@@ -30,22 +30,22 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyProperty LengthProperty = DependencyProperty.Register("Length", typeof(float), typeof(Vector3Editor), new FrameworkPropertyMetadata(0.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceLengthValue));
 
         /// <summary>
-        /// The X component (in Cartesian coordinate system) of the <see cref="Vector3"/> associated to this control.
+        /// Gets or sets the X component (in Cartesian coordinate system) of the <see cref="Vector3"/> associated to this control.
         /// </summary>
         public float X { get { return (float)GetValue(XProperty); } set { SetValue(XProperty, value); } }
 
         /// <summary>
-        /// The Y component (in Cartesian coordinate system) of the <see cref="Vector3"/> associated to this control.
+        /// Gets or sets the Y component (in Cartesian coordinate system) of the <see cref="Vector3"/> associated to this control.
         /// </summary>
         public float Y { get { return (float)GetValue(YProperty); } set { SetValue(YProperty, value); } }
 
         /// <summary>
-        /// The Y component (in Cartesian coordinate system) of the <see cref="Vector3"/> associated to this control.
+        /// Gets or sets the Z component (in Cartesian coordinate system) of the <see cref="Vector3"/> associated to this control.
         /// </summary>
         public float Z { get { return (float)GetValue(ZProperty); } set { SetValue(ZProperty, value); } }
 
         /// <summary>
-        /// The length (in polar coordinate system) of the <see cref="Vector3"/> associated to this control.
+        /// Gets or sets the length (in polar coordinate system) of the <see cref="Vector3"/> associated to this control.
         /// </summary>
         public float Length { get { return (float)GetValue(LengthProperty); } set { SetValue(LengthProperty, value); } }
 
