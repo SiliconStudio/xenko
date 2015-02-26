@@ -22,26 +22,80 @@ namespace SiliconStudio.Paradox.Effects.Images
     [DataContract("DepthOfField")]
     public sealed class DepthOfField : ImageEffect
     {
-        /// <summary>
-        /// Areas of the depth of field: [nearStart, nearEnd, farStart, farEnd] expressed as a 
-        /// distance from the camera.
-        /// </summary>
-        [DataMember(10)]
-        public Vector4 DOFAreas { get; set; } // TODO provide an alternative control with physical lens parameters
+        private const float BokehSizeFactor = 0.05f; // Occupy 5% of the screen, divided by 100, as MaxBokehSize is x 100
 
         /// <summary>
         /// Maximum size of the bokeh (ie. when the circle of confusion is 1.0).
-        /// This is resolution-independent, it is a ratio proportional to the screen width.
+        /// This is resolution-independent, it is a ratio proportional to the screen width in percentage.
         /// </summary>
         /// <remarks>
         /// This property is not supposed to be modified at each frame since it generates garbage. 
         /// Instead you should set it once for your scene and play with the DOF areas / lens parameters 
         /// to make out-of-focus objects create bigger bokeh shapes.
         /// </remarks>
-        [DataMember(20)]
-        [DefaultValue(10f / 1280f)]
-        [DataMemberRange(0f, 0.3f)]
+        [DataMember(10)]
+        [DefaultValue(0.1f)]
+        [DataMemberRange(0.01f, 1.0f, 0.01f, 0.1f, 2)]
+        [Display("Size")]
         public float MaxBokehSize { get; set; }
+        
+        /// <summary>
+        /// Areas of the depth of field: [nearStart, nearEnd, farStart, farEnd] expressed as a 
+        /// distance from the camera.
+        /// </summary>
+        [DataMember(20)]
+        public Vector4 DOFAreas { get; set; } // TODO provide an alternative control with physical lens parameters
+
+        /// <summary>
+        /// Affects a preset quality setting, between 0 (lowest quality) and 1 (highest quality).
+        /// This auto-configures <cref name="LevelCoCValues"/> and <cref name="LevelDownscaleFactors"/>.
+        /// </summary>
+        [DataMember(30)]
+        [DefaultValue(0.5f)]
+        [DataMemberRange(0f, 1f, 0.01f, 0.1f, 2)]
+        public float QualityPreset
+        {
+            get
+            {
+                return quality;
+            }
+
+            set
+            {
+                if (value < 0f) value = 0f;
+                if (value > 1f) value = 1f;
+                quality = value;
+                int presetCount = 6;
+                int presetRequested = (int)(value * presetCount);
+                switch (presetRequested)
+                {
+                    case 0:
+                        // Single level, at 1/4 resolution
+                        LevelCoCValues = new float[] { 1f };
+                        LevelDownscaleFactors = new int[] { 2 };
+                        break;
+
+                    case 1:
+                        // Single level, at half the resolution
+                        LevelCoCValues = new float[] { 1f };
+                        LevelDownscaleFactors = new int[] { 1 };
+                        break;
+
+                    default:
+                        // Multi-levels at half the resolution
+                        int lvlNumber = presetRequested;
+                        float levelSpacer = 1f / lvlNumber;
+                        LevelCoCValues = new float[lvlNumber];
+                        LevelDownscaleFactors = new int[lvlNumber];
+                        for (int i = 0; i < lvlNumber; i++)
+                        {
+                            LevelCoCValues[i] = (i + 1) * levelSpacer;
+                            LevelDownscaleFactors[i] = 1;
+                        }
+                        break;
+                }
+            }
+        }
 
         /// <summary>
         /// Bokeh technique used to blur each level.
@@ -49,9 +103,9 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <remarks>
         /// This influences the bokeh shape (circular, hexagonal...) as well as the performance.
         /// </remarks>
-        [DataMember(30)]
+        [DataMember(40)]
         [DefaultValue(BokehTechnique.HexagonalTripleRhombi)]
-        public BokehTechnique Technique 
+        public BokehTechnique Technique
         {
             get
             {
@@ -108,56 +162,6 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
-        /// <summary>
-        /// Affects a preset quality setting, between 0 (lowest quality) and 1 (highest quality).
-        /// This auto-configures <cref name="LevelCoCValues"/> and <cref name="LevelDownscaleFactors"/>.
-        /// </summary>
-        [DataMember(5)]
-        [DefaultValue(0.5f)]
-        [DataMemberRange(0f, 1f)]
-        public float QualityPreset
-        {
-            get
-            {
-                return quality;
-            }
-
-            set
-            {
-                if (value < 0f) value = 0f;
-                if (value > 1f) value = 1f;
-                quality = value;
-                int presetCount = 6;
-                int presetRequested = (int) (value * presetCount);
-                switch (presetRequested)
-                {
-                    case 0:
-                        // Single level, at 1/4 resolution
-                        LevelCoCValues = new float[] { 1f };
-                        LevelDownscaleFactors = new int[] { 2 };
-                        break;
-
-                    case 1:
-                        // Single level, at half the resolution
-                        LevelCoCValues = new float[] { 1f };
-                        LevelDownscaleFactors = new int[] { 1 };
-                        break;
-
-                    default: 
-                        // Multi-levels at half the resolution
-                        int lvlNumber = presetRequested;
-                        float levelSpacer = 1f / lvlNumber;
-                        LevelCoCValues = new float[lvlNumber];
-                        LevelDownscaleFactors = new int[lvlNumber];
-                        for (int i = 0; i < lvlNumber; i++)
-                        {
-                            LevelCoCValues[i] = (i + 1) * levelSpacer;
-                            LevelDownscaleFactors[i] = 1;
-                        }
-                        break;
-                }
-            }
-        }
 
         // Tells if we need to regenerate the "pipeline" of the DoF.
         // Set to true when the technique changes, or the number/resolution of layers is modified.
@@ -213,7 +217,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             // Some preset values
             DOFAreas = new Vector4(0.5f, 6f, 50f, 200f);
-            MaxBokehSize = 10f / 1280f; //ratio of the width (resolution independent)
+            MaxBokehSize = 0.1f; //ratio of the width (resolution independent)
             Technique = BokehTechnique.HexagonalTripleRhombi;
             QualityPreset = 0.5f;
         }
@@ -409,7 +413,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 var textureToBlur = downscaledSources[levelConfig.downscaleFactor];
                 float downscaleFactor = 1f / (float)(Math.Pow(2f, levelConfig.downscaleFactor));
                 var blurOutput = GetScopedRenderTarget(originalColorBuffer.Description, downscaleFactor, originalColorBuffer.Description.Format);
-                float blurRadius = MaxBokehSize * levelConfig.CoCValue * downscaleFactor * originalColorBuffer.Width;
+                float blurRadius = (MaxBokehSize * BokehSizeFactor) * levelConfig.CoCValue * downscaleFactor * originalColorBuffer.Width;
                 if (blurRadius < 1f) blurRadius = 1f;
                 BokehBlur levelBlur = levelConfig.blurEffect;
                 levelBlur.Radius = blurRadius; // This doesn't generate garbage if the radius value doesn't change.
