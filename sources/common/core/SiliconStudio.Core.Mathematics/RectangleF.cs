@@ -30,7 +30,8 @@ namespace SiliconStudio.Core.Mathematics
     /// <summary>
     /// Define a RectangleF.
     /// </summary>
-    [DataContract]
+    [DataContract("RectangleF")]
+    [DataStyle(DataStyle.Compact)]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct RectangleF : IEquatable<RectangleF>
     {

@@ -30,7 +30,8 @@ namespace SiliconStudio.Core.Mathematics
     /// <summary>
     /// A rectangle structure defining X,Y,Width,Height.
     /// </summary>
-    [DataContract]
+    [DataContract("Rectangle")]
+    [DataStyle(DataStyle.Compact)]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Rectangle : IEquatable<Rectangle>
     {
