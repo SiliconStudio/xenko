@@ -212,6 +212,7 @@ namespace SiliconStudio.Paradox.Graphics
                                     (int)TextureWrapMode.ClampToEdge);
                     GL.TexParameter(Target, TextureParameterName.TextureWrapT,
                                     (int)TextureWrapMode.ClampToEdge);
+                    BoundSamplerState = GraphicsDevice.SamplerStates.PointClamp;
                 }
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 else if (Description.MipLevels <= 1)
