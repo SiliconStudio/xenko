@@ -218,6 +218,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
 
                 if (generateUniformBlocks) // TODO: is it really needed? It produces only a warning.
                     glslShaderCode
+                        .AppendLine("#extension GL_EXT_gpu_shader4 : enable")
                         .AppendLine("#extension GL_ARB_gpu_shader5 : enable")
                         .AppendLine();
 
