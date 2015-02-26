@@ -1637,8 +1637,8 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
             _currentScissorRectangles[0].Left = left;
             _currentScissorRectangles[0].Top = top;
-            _currentScissorRectangles[0].Right = right;
-            _currentScissorRectangles[0].Bottom = bottom;
+            _currentScissorRectangles[0].Width = right - left;
+            _currentScissorRectangles[0].Height = bottom - top;
             
             UpdateScissor(_currentScissorRectangles[0]);
         }
