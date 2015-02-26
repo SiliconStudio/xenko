@@ -73,8 +73,8 @@ namespace SiliconStudio.Paradox.Engine.Tests
             // create fore/background entities
             foreground = new Entity();
             background = new Entity();
-            foreground.Add(new SpriteComponent { SpriteGroup = groundSprites, CurrentFrame = 1 });
-            background.Add(new SpriteComponent { SpriteGroup = groundSprites, CurrentFrame = 0 });
+            foreground.Add(new SpriteComponent { SpriteProvider = groundSprites, CurrentFrame = 1 });
+            background.Add(new SpriteComponent { SpriteProvider = groundSprites, CurrentFrame = 0 });
 
             throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
             //Entities.Add(camera);
@@ -88,14 +88,14 @@ namespace SiliconStudio.Paradox.Engine.Tests
             transfoComponent.Position.X = areaSize.X / 2;
             transfoComponent.Position.Y = areaSize.Y / 2;
 
-            var backgroundSpriteRegion = background.Get(SpriteComponent.Key).SpriteGroup.Images[0].Region;
+            var backgroundSpriteRegion = background.Get(SpriteComponent.Key).SpriteProvider.Images[0].Region;
             var decorationScalings = new Vector3(areaSize.X / backgroundSpriteRegion.Width, areaSize.Y / backgroundSpriteRegion.Height, 1);
             background.Get(TransformComponent.Key).Scale = decorationScalings;
             foreground.Get(TransformComponent.Key).Scale = decorationScalings;
             background.Get(TransformComponent.Key).Position = new Vector3(0, 0, -1);
             foreground.Get(TransformComponent.Key).Position = new Vector3(0, areaSize.Y, 1);
 
-            SpriteAnimation.Play(spriteComponent, 0, spriteComponent.SpriteGroup.Images.Count-1, AnimationRepeatMode.LoopInfinite, 30);
+            SpriteAnimation.Play(spriteComponent, 0, spriteComponent.SpriteProvider.Images.Count-1, AnimationRepeatMode.LoopInfinite, 30);
         }
 
         protected override void RegisterTests()
@@ -105,7 +105,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             FrameGameSystem.DrawOrder = -1;
             FrameGameSystem.Draw(() => SpriteAnimation.Stop(spriteComponent)).TakeScreenshot();
             FrameGameSystem.Update(() => SetFrameAndUpdateBall(20, 15)).TakeScreenshot();
-            FrameGameSystem.Update(() => spriteComponent.SpriteGroup = ballSprite2).TakeScreenshot();
+            FrameGameSystem.Update(() => spriteComponent.SpriteProvider = ballSprite2).TakeScreenshot();
         }
 
         protected override void Update(GameTime time)
@@ -116,9 +116,9 @@ namespace SiliconStudio.Paradox.Engine.Tests
                 UpdateBall((float)time.Elapsed.TotalSeconds);
 
             if (Input.IsKeyPressed(Keys.D1))
-                spriteComponent.SpriteGroup = ballSprite1;
+                spriteComponent.SpriteProvider = ballSprite1;
             if (Input.IsKeyPressed(Keys.D2))
-                spriteComponent.SpriteGroup = ballSprite2;
+                spriteComponent.SpriteProvider = ballSprite2;
 
             if (Input.IsKeyDown(Keys.Space))
                 spriteComponent.CurrentFrame = 0;
@@ -140,7 +140,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
             transfoComponent.RotationEulerXYZ = new Vector3(0,0, transfoComponent.RotationEulerXYZ.Z + deltaRotation);
 
-            var sprite = spriteComponent.SpriteGroup.Images[spriteComponent.CurrentFrame];
+            var sprite = spriteComponent.SpriteProvider.Images[spriteComponent.CurrentFrame];
             var spriteSize = new Vector2(sprite.Region.Width, sprite.Region.Height);
 
             for (int i = 0; i < 2; i++)

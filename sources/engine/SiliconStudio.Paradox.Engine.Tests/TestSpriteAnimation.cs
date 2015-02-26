@@ -212,12 +212,12 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
         private static SpriteComponent CreateSpriteComponent(int nbOfFrames)
         {
-            var sprite = new SpriteComponent { SpriteGroup = new SpriteGroup { Images = new List<Sprite>() } };
+            var sprite = new SpriteComponent { SpriteProvider = new SpriteGroup { Images = new List<Sprite>() } };
 
             // add a few sprites
             for (int i = 0; i < nbOfFrames; i++)
             {
-                sprite.SpriteGroup.Images.Add(new Sprite(Guid.NewGuid().ToString()));
+                sprite.SpriteProvider.Images.Add(new Sprite(Guid.NewGuid().ToString()));
             }
 
             return sprite;
