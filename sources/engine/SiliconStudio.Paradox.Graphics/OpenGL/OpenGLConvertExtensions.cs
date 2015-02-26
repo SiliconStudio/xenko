@@ -416,7 +416,7 @@ namespace SiliconStudio.Paradox.Graphics
                     break;
                 case PixelFormat.D24_UNorm_S8_UInt:
                     internalFormat = Depth24Stencil8;
-                    format = PixelFormatGl.DepthComponent;
+                    format = PixelFormatGl.DepthStencil;
                     type = PixelType.UnsignedInt248;
                     pixelSize = 4;
                     break;
