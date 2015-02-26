@@ -98,7 +98,27 @@ namespace SiliconStudio.Core.Serialization.Assets
             {
                 using (var profile = Profiler.Begin(AssetProfilingKeys.AssetLoad, url))
                 {
-                    return DeserializeObject(url, type, settings);
+                    return DeserializeObject(url, type, null, settings);
+                }
+            }
+        }
+
+        public void Reload(object obj, AssetManagerLoaderSettings settings = null)
+        {
+            if (settings == null)
+                settings = AssetManagerLoaderSettings.Default;
+
+            lock (loadedAssetsByUrl)
+            {
+                AssetReference assetReference;
+                if (!loadedAssetsUrl.TryGetValue(obj, out assetReference))
+                    throw new InvalidOperationException("Asset not loaded through this AssetManager.");
+
+                var url = assetReference.Url;
+
+                using (var profile = Profiler.Begin(AssetProfilingKeys.AssetReload, url))
+                {
+                    DeserializeObject(url, obj.GetType().GetTypeInfo(), obj, settings);
                 }
             }
         }
@@ -194,12 +214,32 @@ namespace SiliconStudio.Core.Serialization.Assets
             }
         }
 
-        private object DeserializeObject(string url, Type type, AssetManagerLoaderSettings settings)
+        private object DeserializeObject(string url, Type type, object obj, AssetManagerLoaderSettings settings)
         {
-            AssetReference assetReference;
-
             var serializeOperations = new Queue<DeserializeOperation>();
-            serializeOperations.Enqueue(new DeserializeOperation(null, url, type, null));
+            serializeOperations.Enqueue(new DeserializeOperation(null, url, type, obj));
+
+            AssetReference reference = null;
+            if (obj != null)
+            {
+                reference = FindDeserializedObject(url, type);
+                if (reference.Object != obj)
+                {
+                    throw new InvalidOperationException("Object doesn't match, can't reload");
+                }
+            }
+
+            // Let's put aside old references, so that we unload them only afterwise (avoid a referenced object to be unloaded for no reason)
+            HashSet<AssetReference> references = null;
+            if (reference != null)
+            {
+                // Let's collect dependent reference, and reset current list
+                references = reference.References;
+                reference.References = new HashSet<AssetReference>();
+
+                // Mark object as not deserialized yet
+                reference.Deserialized = false;
+            }
 
             bool isFirstOperation = true;
             object result = null;
@@ -212,6 +252,14 @@ namespace SiliconStudio.Core.Serialization.Assets
                 {
                     result = deserializedObject;
                     isFirstOperation = false;
+                }
+            }
+
+            if (reference != null)
+            {
+                foreach (var dependentReference in references)
+                {
+                    DecrementReference(dependentReference, false);
                 }
             }
 
