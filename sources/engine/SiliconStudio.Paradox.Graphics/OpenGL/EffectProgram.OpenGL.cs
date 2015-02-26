@@ -87,7 +87,10 @@ namespace SiliconStudio.Paradox.Graphics
                     {
                         case ShaderStage.Vertex:
                             shaderStage = ShaderType.VertexShader;
-                            inputSignature = EffectInputSignature.GetOrCreateLayout(new EffectInputSignature(shader.Id, shader.Data));
+                            // We can't use VS only, since various attributes might get optimized when linked with a specific PS
+                            // Maybe we should unify signature after checking attributes
+                            //inputSignature = EffectInputSignature.GetOrCreateLayout(new EffectInputSignature(shader.Id, shader.Data));
+                            inputSignature = new EffectInputSignature(shader.Id, shader.Data);
                             break;
                         case ShaderStage.Pixel:
                             shaderStage = ShaderType.FragmentShader;
