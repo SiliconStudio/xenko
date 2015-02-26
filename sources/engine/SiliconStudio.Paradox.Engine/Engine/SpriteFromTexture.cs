@@ -39,6 +39,16 @@ namespace SiliconStudio.Paradox.Engine
         [DataMember(15)]
         [DefaultValue(true)]
         public bool CenterFromMiddle { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the transparency value of the sprite.
+        /// </summary>
+        /// <userdoc>
+        /// If checked, the sprite is considered as having transparent colors.
+        /// </userdoc>
+        [DataMember(20)]
+        [DefaultValue(true)]
+        public bool IsTransparent { get; set; }
 
         /// <summary>
         /// Creates a new instance of <see cref="SpriteFromTexture"/>.
@@ -46,6 +56,7 @@ namespace SiliconStudio.Paradox.Engine
         public SpriteFromTexture()
         {
             CenterFromMiddle = true;
+            IsTransparent = true;
         }
 
         /// <summary>
@@ -74,7 +85,8 @@ namespace SiliconStudio.Paradox.Engine
                     {
                         Texture = Texture,
                         Center = Center + (CenterFromMiddle ? new Vector2(texture.Width, texture.Height) : Vector2.Zero),
-                        Region = new RectangleF(0, 0, texture.Width, texture.Height)
+                        Region = new RectangleF(0, 0, texture.Width, texture.Height),
+                        IsTransparent = IsTransparent
                     };
                 }
             }
