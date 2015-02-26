@@ -6,31 +6,29 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// Vignetting shader. 
     /// </summary>
-    internal class VignettingShader : ImageEffectShader
+    internal class VignettingShader : ColorTransformShader, Texturing
     {
         // Amount
-        stage float Amount;
+        float Amount;
 
         // At which radius from the center the vignetting begins, in [0, 1]
-        stage float RadiusBegin;
+        float RadiusBegin;
 
         // Color othe vignette
         [Color]
-        stage float3 Color;
+        float3 Color;
 
-        stage override float4 Shading()
+        override float4 Compute(float4 color)
         {
-            float4 tapColor = Texture0.Sample(LinearSampler, streams.TexCoord).rgba;
-
             float2 fromCenterVector = streams.TexCoord - float2(0.5, 0.5);
             float squareDistanceToCenter = dot(fromCenterVector, fromCenterVector);
             float distanceToCenter = sqrt(squareDistanceToCenter);
 
-            float vignette = smoothstep(RadiusBegin, 1.0, distanceToCenter / 0.7071); // 0.7071 is srqt(0.5), at the screen angle
+            float vignette = smoothstep(RadiusBegin, 1.0, distanceToCenter / 0.7071); // 0.7071 is srqt(0.5), at the screen corner
             vignette *= Amount;
-            tapColor.rgb = tapColor.rgb * (1.0 - vignette) + vignette * Color;
+            color.rgb = color.rgb * (1.0 - vignette) + vignette * Color;
 
-            return tapColor;
+            return color;
             
         }
     };

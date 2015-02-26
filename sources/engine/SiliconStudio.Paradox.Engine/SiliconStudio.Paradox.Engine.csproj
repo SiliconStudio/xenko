@@ -104,8 +104,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Images\Vignetting\Vignetting.cs" />
-    <Compile Include="Engine\Graphics\Images\Vignetting\VignettingShader.cs">
+    <Compile Include="Engine\Graphics\Images\ColorTransforms\Vignetting\Vignetting.cs" />
+    <Compile Include="Engine\Graphics\Images\ColorTransforms\Vignetting\VignettingShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -2714,7 +2714,7 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>SphericalHarmonicsRendererEffect1.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Images\Vignetting\VignettingShader.pdxsl">
+    <None Include="Engine\Graphics\Images\ColorTransforms\Vignetting\VignettingShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>VignettingShader.cs</LastGenOutput>
     </None>
