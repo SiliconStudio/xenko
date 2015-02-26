@@ -25,17 +25,17 @@ namespace SiliconStudio.Paradox.Effects.Images
         stage override float4 Shading()
         {
             // Need to be able to access blur textures by index
-            Texture2D dofTextureLevels[8] = 
-            {
-                Texture2,
-                Texture3,
-                Texture4,
-                Texture5,
-                Texture6,
-                Texture7,
-                Texture8,
-                Texture9
-            };
+            //Texture2D dofTextureLevels[8] = 
+            //{
+            //    Texture2,
+            //    Texture3,
+            //    Texture4,
+            //    Texture5,
+            //    Texture6,
+            //    Texture7,
+            //    Texture8,
+            //    Texture9
+            //};
 
 #if DEBUG_COC_LEVEL_COLOR
             // Some debug colors to visualize each layer
@@ -54,12 +54,30 @@ namespace SiliconStudio.Paradox.Effects.Images
 #endif
 
             // Fetch all our levels
-            float3 colorLevels[TLevelCount];
+            float3 colorLevels[8];
+
+			// Note: Manually unrolled until better HLSL2GLSL support
+			if (TLevelCount >= 1)
+	            colorLevels[0] = Texture2.Sample(LinearSampler, streams.TexCoord).rgb;
+			if (TLevelCount >= 2)
+				colorLevels[1] = Texture3.Sample(LinearSampler, streams.TexCoord).rgb;
+			if (TLevelCount >= 3)
+				colorLevels[2] = Texture4.Sample(LinearSampler, streams.TexCoord).rgb;
+			if (TLevelCount >= 4)
+				colorLevels[3] = Texture5.Sample(LinearSampler, streams.TexCoord).rgb;
+			if (TLevelCount >= 5)
+				colorLevels[4] = Texture6.Sample(LinearSampler, streams.TexCoord).rgb;
+			if (TLevelCount >= 6)
+				colorLevels[5] = Texture7.Sample(LinearSampler, streams.TexCoord).rgb;
+			if (TLevelCount >= 7)
+				colorLevels[6] = Texture8.Sample(LinearSampler, streams.TexCoord).rgb;
+			if (TLevelCount >= 8)
+				colorLevels[7] = Texture9.Sample(LinearSampler, streams.TexCoord).rgb;
 
             [unroll]
             for (int k = 0; k < TLevelCount; k++) 
             {
-                colorLevels[k] = dofTextureLevels[k].Sample(LinearSampler, streams.TexCoord).rgb;
+				//colorLevels[k] = dofTextureLevels[k].Sample(LinearSampler, streams.TexCoord).rgb;
 #if DEBUG_COC_LEVEL_COLOR
                 // Affects a debug color
                 colorLevels[k] *= debugColors[k];
