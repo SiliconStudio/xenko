@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine.Graphics.Composers;
 using SiliconStudio.Paradox.Graphics;
@@ -21,6 +22,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         }
 
         [DataMember(100)]
+        [NotNull]
         public ISceneRendererOutput Output { get; set; }
 
         /// <summary>
