@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 Width = 100,
                 Height = 100,
                 Format = RenderFrameFormat.LDR,
-                DepthFormat = RenderFrameDepthFormat.None,
+                DepthFormat = RenderFrameDepthFormat.Shared,
             };
         }
 
@@ -79,7 +79,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// </summary>
         /// <value>The depth format.</value>
         [DataMember(50)]
-        [DefaultValue(RenderFrameDepthFormat.None)]
+        [DefaultValue(RenderFrameDepthFormat.Shared)]
         public RenderFrameDepthFormat DepthFormat { get; set; }
 
         public bool Equals(RenderFrameDescriptor other)
