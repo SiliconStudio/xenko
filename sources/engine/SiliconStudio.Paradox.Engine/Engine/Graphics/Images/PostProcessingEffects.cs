@@ -25,7 +25,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         private LensFlare lensFlare;
         private ColorTransformGroup colorTransformsGroup;
         private IScreenSpaceAntiAliasingEffect ssaa;
-        private Vignetting vignetting;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PostProcessingEffects" /> class.
@@ -49,7 +48,6 @@ namespace SiliconStudio.Paradox.Effects.Images
             lensFlare = new LensFlare();
             ssaa = new FXAAEffect();
             colorTransformsGroup = new ColorTransformGroup();
-            vignetting = new Vignetting();
         }
 
         /// <summary>
@@ -154,21 +152,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
         /// <summary>
-        /// Gets the vignetting effect.
-        /// </summary>
-        /// <value>The antialiasing.</value>
-        [DataMember(65)]
-        [Category]
-        public Vignetting Vignetting
-        {
-            get
-            {
-                return vignetting;
-            }
-        }
-
-
-        /// <summary>
         /// Gets the antialiasing effect.
         /// </summary>
         /// <value>The antialiasing.</value>
@@ -200,7 +183,6 @@ namespace SiliconStudio.Paradox.Effects.Images
             lensFlare = ToLoadAndUnload(lensFlare);
             ssaa = ToLoadAndUnload(ssaa);
             colorTransformsGroup = ToLoadAndUnload(colorTransformsGroup);
-            vignetting = ToLoadAndUnload(vignetting);
         }
 
         protected override void DrawCore(RenderContext context)
@@ -310,13 +292,6 @@ namespace SiliconStudio.Paradox.Effects.Images
                 ssaa.SetInput(outputForLastEffectBeforeAntiAliasing);
                 ssaa.SetOutput(output);
                 ssaa.Draw(context);
-            }
-
-            if (vignetting.Enabled)
-            {
-                vignetting.SetInput(output);
-                vignetting.SetOutput(output);
-                vignetting.Draw(context);
             }
         }
     }
