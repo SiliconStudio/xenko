@@ -67,7 +67,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
         [DataMember(5)]
         [DefaultValue(true)]
-        public bool Enabled
+        public virtual bool Enabled
         {
             get
             {

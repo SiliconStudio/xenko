@@ -19,5 +19,18 @@ namespace SiliconStudio.Paradox.Effects.Images
         protected ToneMapOperator(string effectName) : base(effectName)
         {
         }
+
+        [DataMemberIgnore]
+        public override bool Enabled
+        {
+            get
+            {
+                return base.Enabled;
+            }
+            set
+            {
+                base.Enabled = value;
+            }
+        }
     }
 }
