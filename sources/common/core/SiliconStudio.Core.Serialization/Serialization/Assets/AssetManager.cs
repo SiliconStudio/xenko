@@ -12,6 +12,9 @@ using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Core.Serialization.Assets
 {
+    /// <summary>
+    /// Loads and saves assets.
+    /// </summary>
     public sealed partial class AssetManager : IAssetManager
     {
         private static readonly Logger Log = GlobalLogger.GetLogger("AssetManager");
@@ -55,6 +58,16 @@ namespace SiliconStudio.Core.Serialization.Assets
             }
         }
 
+        /// <summary>
+        /// Saves an asset at a specific URL.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <param name="asset">The asset.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// url
+        /// or
+        /// asset
+        /// </exception>
         public void Save(string url, object asset)
         {
             if (url == null) throw new ArgumentNullException("url");
@@ -69,6 +82,13 @@ namespace SiliconStudio.Core.Serialization.Assets
             }
         }
 
+        /// <summary>
+        /// Check if the specified asset exists.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified asset url exists, <c>false</c> otherwise.
+        /// </returns>
         public bool Exists(string url)
         {
             lock (loadedAssetsByUrl)
@@ -82,11 +102,26 @@ namespace SiliconStudio.Core.Serialization.Assets
             return FileProvider.OpenStream(url, VirtualFileMode.Open, VirtualFileAccess.Read, streamFlags:streamFlags);
         }
 
+        /// <summary>
+        /// Loads an asset from the specified URL.
+        /// </summary>
+        /// <typeparam name="T">The content type.</typeparam>
+        /// <param name="url">The URL to load from.</param>
+        /// <param name="settings">The settings. If null, fallback to <see cref="AssetManagerLoaderSettings.Default" />.</param>
+        /// <returns></returns>
         public T Load<T>(string url, AssetManagerLoaderSettings settings = null) where T : class
         {
             return (T)Load(typeof(T), url, settings);
         }
 
+        /// <summary>
+        /// Loads an asset from the specified URL.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="url">The URL.</param>
+        /// <param name="settings">The settings.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">url</exception>
         public object Load(Type type, string url, AssetManagerLoaderSettings settings = null)
         {
             if (settings == null)
@@ -103,6 +138,12 @@ namespace SiliconStudio.Core.Serialization.Assets
             }
         }
 
+        /// <summary>
+        /// Reloads an asset. If possible, same recursively referenced objects are reused.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        /// <param name="settings">The settings.</param>
+        /// <exception cref="System.InvalidOperationException">Asset not loaded through this AssetManager.</exception>
         public void Reload(object obj, AssetManagerLoaderSettings settings = null)
         {
             if (settings == null)
@@ -123,21 +164,47 @@ namespace SiliconStudio.Core.Serialization.Assets
             }
         }
 
+        /// <summary>
+        /// Loads an asset from the specified URL asynchronously.
+        /// </summary>
+        /// <typeparam name="T">The content type.</typeparam>
+        /// <param name="url">The URL to load from.</param>
+        /// <param name="settings">The settings. If null, fallback to <see cref="AssetManagerLoaderSettings.Default" />.</param>
+        /// <returns></returns>
         public Task<T> LoadAsync<T>(string url, AssetManagerLoaderSettings settings = null) where T : class
         {
             return Task.Factory.StartNew(() => Load<T>(url, settings));
         }
 
+        /// <summary>
+        /// Loads an asset from the specified URL asynchronously.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="url">The URL.</param>
+        /// <param name="settings">The settings.</param>
+        /// <returns></returns>
         public Task<object> LoadAsync(Type type, string url, AssetManagerLoaderSettings settings = null)
         {
             return Task.Factory.StartNew(() => Load(type, url, settings));
         }
 
+        /// <summary>
+        /// Gets a previously loaded asset from its URL.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="url">The URL.</param>
+        /// <returns></returns>
         public T Get<T>(string url)
         {
             return (T)Get(typeof(T), url);
         }
 
+        /// <summary>
+        /// Gets a previously loaded asset from its URL.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="url">The URL.</param>
+        /// <returns></returns>
         public object Get(Type type, string url)
         {
             var reference = FindDeserializedObject(url, type);
@@ -161,6 +228,11 @@ namespace SiliconStudio.Core.Serialization.Assets
             }
         }
 
+        /// <summary>
+        /// Unloads the specified asset.
+        /// </summary>
+        /// <param name="obj">The object to unload.</param>
+        /// <exception cref="System.InvalidOperationException">Asset not loaded through this AssetManager.</exception>
         public void Unload(object obj)
         {
             lock (loadedAssetsByUrl)
@@ -174,6 +246,11 @@ namespace SiliconStudio.Core.Serialization.Assets
             }
         }
 
+        /// <summary>
+        /// Unloads the asset at the specified URL.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <exception cref="System.InvalidOperationException">Asset not loaded through this AssetManager.</exception>
         public void Unload(string url)
         {
             lock (loadedAssetsByUrl)
