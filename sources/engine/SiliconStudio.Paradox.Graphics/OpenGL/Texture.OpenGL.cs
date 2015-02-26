@@ -457,6 +457,13 @@ namespace SiliconStudio.Paradox.Graphics
             return 2;
         }
 
+        internal void InternalSetSize(int width, int height)
+        {
+            // Set backbuffer actual size
+            textureDescription.Width = width;
+            textureDescription.Height = height;
+        }
+
         internal static PixelFormat ComputeShaderResourceFormatFromDepthFormat(PixelFormat format)
         {
             return format;

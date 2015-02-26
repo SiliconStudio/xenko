@@ -47,8 +47,7 @@ namespace SiliconStudio.Paradox.Games
                         {
                             Adapter = GraphicsAdapterFactory.Default,
                             GraphicsProfile = featureLevel,
-                            PresentationParameters = new PresentationParameters(gameWindowAndroid.ClientBounds.Width,
-                                gameWindowAndroid.ClientBounds.Height,
+                            PresentationParameters = new PresentationParameters(preferredParameters.PreferredBackBufferWidth, preferredParameters.PreferredBackBufferHeight,
                                 gameWindowAndroid.NativeWindow)
                             {
                                 // TODO: PDX-364: Transmit what was actually created
