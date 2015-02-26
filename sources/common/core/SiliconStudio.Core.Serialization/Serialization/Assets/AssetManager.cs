@@ -143,8 +143,9 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// </summary>
         /// <param name="obj">The object.</param>
         /// <param name="settings">The settings.</param>
+        /// <returns>True if it could be reloaded, false otherwise.</returns>
         /// <exception cref="System.InvalidOperationException">Asset not loaded through this AssetManager.</exception>
-        public void Reload(object obj, AssetManagerLoaderSettings settings = null)
+        public bool Reload(object obj, AssetManagerLoaderSettings settings = null)
         {
             if (settings == null)
                 settings = AssetManagerLoaderSettings.Default;
@@ -153,7 +154,7 @@ namespace SiliconStudio.Core.Serialization.Assets
             {
                 AssetReference assetReference;
                 if (!loadedAssetsUrl.TryGetValue(obj, out assetReference))
-                    throw new InvalidOperationException("Asset not loaded through this AssetManager.");
+                    return false;
 
                 var url = assetReference.Url;
 
@@ -161,6 +162,8 @@ namespace SiliconStudio.Core.Serialization.Assets
                 {
                     DeserializeObject(url, obj.GetType().GetTypeInfo(), obj, settings);
                 }
+
+                return true;
             }
         }
 
