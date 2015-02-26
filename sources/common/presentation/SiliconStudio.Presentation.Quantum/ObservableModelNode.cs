@@ -154,6 +154,14 @@ namespace SiliconStudio.Presentation.Quantum
 
         protected ModelNodePath TargetNodePath { get; private set; }
    
+        public void AddAssociatedData(string key, object value)
+        {
+            // TODO: make AssociatedData a read-only dictionary publicly and manage all add/remove this way!
+            OnPropertyChanging(key);
+            AssociatedData.Add(key, value);
+            OnPropertyChanged(key);
+        }
+
         /// <summary>
         /// Indicates whether this <see cref="ObservableModelNode"/> instance corresponds to the given <see cref="IModelNode"/>.
         /// </summary>
@@ -382,6 +390,10 @@ namespace SiliconStudio.Presentation.Quantum
 
             Initialize(true);
 
+            if (DisplayNameProvider != null)
+            {
+                DisplayName = DisplayNameProvider();
+            }
             OnPropertyChanged("IsPrimitive", "HasList", "HasDictionary");
         }
 
