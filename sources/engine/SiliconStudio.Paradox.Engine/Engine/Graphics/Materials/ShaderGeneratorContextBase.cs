@@ -4,8 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.IO.Packaging;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;

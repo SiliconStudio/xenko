@@ -3,8 +3,6 @@
 
 using System.ComponentModel;
 
-using SharpDX;
-
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.Assets.Materials
