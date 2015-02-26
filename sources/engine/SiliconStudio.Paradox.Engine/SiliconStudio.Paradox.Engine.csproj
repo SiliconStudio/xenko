@@ -1952,6 +1952,9 @@
     <Compile Include="EntityModel\DefaultEntityComponentRendererAttribute.cs" />
     <Compile Include="EntityModel\EntityComponentRendererType.cs" />
     <Compile Include="EntityModel\EntityReference.cs" />
+    <Compile Include="EntityModel\GizmoEntityFactory.cs" />
+    <Compile Include="EntityModel\GizmoEntityFactoryAttribute.cs" />
+    <Compile Include="EntityModel\GizmoEntityFactoryNames.cs" />
     <Compile Include="EntityModel\IEntityComponentReference.cs" />
     <Compile Include="Data\SimpleExtensions.cs" />
     <Compile Include="Data\MergeExtensions.cs" />
