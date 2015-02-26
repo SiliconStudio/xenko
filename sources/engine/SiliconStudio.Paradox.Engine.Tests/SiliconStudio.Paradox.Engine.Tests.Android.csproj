@@ -166,6 +166,10 @@
       <Name>SiliconStudio.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.csproj">
+      <Project>{0342c3e7-4a38-46b4-a8ec-e728d50085d3}</Project>
+      <Name>SiliconStudio.Paradox.Effects</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.Games\SiliconStudio.Paradox.Games.csproj">
       <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
       <Name>SiliconStudio.Paradox.Games</Name>
@@ -182,33 +186,23 @@
     <Reference Include="System.Core" />
     <Compile Include="Build\TestBuilder.cs" />
     <Compile Include="SpriteTestGame.cs" />
+    <Compile Include="TestCamera.cs" />
     <Compile Include="TestSpriteAnimation.cs" />
+    <Compile Include="TestTesselation.cs" />
     <Compile Include="TestTextureAlphaSeparation.cs" />
     <None Include="Build\TestSerializer.cs" />
     <Compile Include="Build\TestStorage.cs" />
-    <Compile Include="FBXEntityAnimTestGame.cs" />
-    <Compile Include="FBXTestGame.cs" />
-    <Compile Include="FBXEntityTestGame.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="TestAnimationChannel.cs" />
     <Compile Include="TestEntitySerializer.cs" />
     <Compile Include="TestParameterPath.cs" />
-    <Compile Include="Default.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Default.pdxfx</DependentUpon>
-    </Compile>
     <Compile Include="TestShaderMerging.cs" />
     <Compile Include="TestParameters.cs" />
-    <None Include="Default.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>Default.cs</LastGenOutput>
-    </None>
     <None Include="effects_test.xml">
       <SubType>Designer</SubType>
     </None>
     <None Include="SiliconStudio.Paradox.Engine.Tests.pdxpkg" />
+    <Folder Include="GameAssets\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="$(SiliconStudioPackageProps)" Condition="Exists('$(SiliconStudioPackageProps)')" />
