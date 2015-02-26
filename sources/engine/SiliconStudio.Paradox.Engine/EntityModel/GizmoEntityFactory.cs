@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.EntityModel
         /// Gets the graphics device.
         /// </summary>
         /// <value>The graphics device.</value>
-        public GraphicsDevice GraphicsDevice
+        protected GraphicsDevice GraphicsDevice
         {
             get
             {
