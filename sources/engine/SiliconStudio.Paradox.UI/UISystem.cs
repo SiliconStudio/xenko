@@ -192,7 +192,7 @@ namespace SiliconStudio.Paradox.UI
             DecreaseStencilValueState = DepthStencilState.New(GraphicsDevice, depthStencilDescription);
 
             // set the default design of the UI elements.
-            var designsTexture = TextureExtensions.CreateTextureFromFileData(GraphicsDevice, DefaultDesigns.Designs);
+            var designsTexture = TextureExtensions.FromFileData(GraphicsDevice, DefaultDesigns.Designs);
             Button.PressedImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default button pressed design", designsTexture) { Borders = 8 * Vector4.One, Region = new RectangleF(71, 3, 32, 32)});
             Button.NotPressedImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default button not pressed design", designsTexture) { Borders = 8 * Vector4.One, Region = new RectangleF(3, 3, 32, 32) });
             Button.MouseOverImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Default button overred design", designsTexture) { Borders = 8 * Vector4.One, Region = new RectangleF(37, 3, 32, 32) });
