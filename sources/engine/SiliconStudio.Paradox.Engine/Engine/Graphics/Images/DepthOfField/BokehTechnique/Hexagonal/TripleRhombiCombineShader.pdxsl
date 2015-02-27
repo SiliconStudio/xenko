@@ -18,8 +18,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         stage override float4 Shading()
         {
             float3 result =    Texture0.Sample( Sampler, streams.TexCoord + RhombiTapOffsets[0] * Texture0TexelSize ).rgb
-                             + Texture1.Sample( Sampler, streams.TexCoord + RhombiTapOffsets[1] * Texture0TexelSize ).rgb
-                             + Texture2.Sample( Sampler, streams.TexCoord + RhombiTapOffsets[2] * Texture0TexelSize ).rgb;
+                             + Texture1.Sample( Sampler, streams.TexCoord + RhombiTapOffsets[1] * Texture1TexelSize ).rgb
+                             + Texture2.Sample( Sampler, streams.TexCoord + RhombiTapOffsets[2] * Texture2TexelSize ).rgb;
 
             // Averages the result
             return float4(result / 3.0, 1.0);
