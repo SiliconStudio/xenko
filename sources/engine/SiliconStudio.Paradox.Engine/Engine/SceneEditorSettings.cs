@@ -21,6 +21,7 @@ namespace SiliconStudio.Paradox.Engine
         public SceneEditorSettings()
         {
             GridColor = (Color3)new Color(180, 180, 180);
+            SceneUnit = 1.0f;
             Camera = new SceneEditorCameraSettings();
             Mode = new SceneEditorGraphicsModeLDRSettings();
         }
@@ -32,6 +33,14 @@ namespace SiliconStudio.Paradox.Engine
         /// <userdoc>The background color used by the editor view</userdoc>
         [DataMember(5)]
         public Color3 GridColor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the scene unit, used to scale entity gizmos and camera speed.
+        /// </summary>
+        /// <value>The color of the background.</value>
+        /// <userdoc>The scene unit, used to scale entity gizmos and camera speed.</userdoc>
+        [DataMember(7)]
+        public float SceneUnit { get; set; }
 
         /// <summary>
         /// Gets or sets the camera.
