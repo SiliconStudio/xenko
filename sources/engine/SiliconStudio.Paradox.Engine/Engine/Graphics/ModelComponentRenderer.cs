@@ -82,8 +82,6 @@ namespace SiliconStudio.Paradox.Effects
 
         public PostEffectUpdateDelegate PostEffectUpdate { get; set; }
 
-        public EntityGroup CullingMask { get; set; }
-
         protected override void InitializeCore()
         {
             base.InitializeCore();
@@ -113,7 +111,7 @@ namespace SiliconStudio.Paradox.Effects
                 EnsureRenderMeshes(renderModel);
 
                 // Perform culling on group and accept
-                if ((renderModel.Group & CullingMask) == 0)
+                if ((renderModel.Group & CurrentCullingMask) == 0)
                 {
                     continue;
                 }
