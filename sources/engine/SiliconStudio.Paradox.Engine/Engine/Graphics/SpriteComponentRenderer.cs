@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
@@ -13,6 +13,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     /// </summary>
     public class SpriteComponentRenderer : EntityComponentRendererBase
     {
+        // TODO this is temporary code. this should disappear from here later when materials on sprite will be available
+        public static PropertyKey<bool> IsEntitySelected = new PropertyKey<bool>("IsEntitySelected", typeof(SpriteComponentRenderer));
+        private Effect selectedSpriteEffect;
+
         private Sprite3DBatch sprite3DBatch;
 
         private SpriteProcessor spriteProcessor;
@@ -24,6 +28,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             base.InitializeCore();
 
             sprite3DBatch = new Sprite3DBatch(Context.GraphicsDevice);
+            selectedSpriteEffect = EffectSystem.LoadEffect("SelectedSprite").WaitForResult();
         }
 
         protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
@@ -82,6 +87,13 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 if (sprite == null)
                     continue;
 
+                var useSelectedEffect = !context.IsPicking() && spriteComp.Tags.Get(IsEntitySelected); // TODO remove this code when material are available
+                if (useSelectedEffect)
+                {
+                    sprite3DBatch.End();
+                    sprite3DBatch.Begin(viewProjection, SpriteSortMode.Deferred, blendState, rasterizerState: cullMode, effect: selectedSpriteEffect);
+                }
+
                 var sourceRegion = sprite.Region; 
                 var texture = sprite.Texture;
                 var color = spriteComp.Color;
@@ -122,6 +134,12 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 
                 // draw the sprite
                 sprite3DBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref elementSize, ref color, sprite.Orientation, SwizzleMode.None, renderItem.Depth);
+
+                if (useSelectedEffect) // TODO remove this code when material are available
+                {
+                    sprite3DBatch.End();
+                    sprite3DBatch.Begin(viewProjection, SpriteSortMode.Deferred, blendState, rasterizerState: cullMode);
+                }
             }
 
             sprite3DBatch.End();
