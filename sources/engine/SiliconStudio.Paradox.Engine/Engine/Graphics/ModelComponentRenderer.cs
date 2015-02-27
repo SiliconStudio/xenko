@@ -52,7 +52,6 @@ namespace SiliconStudio.Paradox.Effects
 
             meshesToRender = new FastList<RenderMesh>();
 
-            CullingMask = EntityGroup.All;
             modelRenderSlot = -1;
         }
 

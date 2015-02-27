@@ -40,6 +40,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 if(sprite == null)
                     continue;
 
+                // Perform culling on group and accept
+                if ((spriteState.SpriteComponent.Entity.Group & CurrentCullingMask) == 0)
+                    continue;
+
                 // Project the position
                 // TODO: This could be done in a SIMD batch, but we need to figure-out how to plugin in with RenderMesh object
                 var worldPosition = new Vector4(spriteState.TransformComponent.WorldMatrix.TranslationVector, 1.0f);
