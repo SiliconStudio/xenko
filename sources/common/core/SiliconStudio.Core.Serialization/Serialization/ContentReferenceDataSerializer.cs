@@ -30,9 +30,13 @@ namespace SiliconStudio.Core.Serialization
                     if (obj == null)
                     {
                         // Check if already deserialized
-                        obj = (T)contentSerializerContext.AssetManager.FindDeserializedObject(contentReference.Location, typeof(T));
-                        if (obj != null)
-                            contentReference.Value = obj;
+                        var assetReference = contentSerializerContext.AssetManager.FindDeserializedObject(contentReference.Location, typeof(T));
+                        if (assetReference != null)
+                        {
+                            obj = (T)assetReference.Object;
+                            if (obj != null)
+                                contentReference.Value = obj;
+                        }
                     }
 
                     if (obj == null)

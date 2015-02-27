@@ -4,7 +4,6 @@
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Games;
 
 namespace SiliconStudio.Paradox.Engine.Graphics.Skyboxes
 {
@@ -13,14 +12,12 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Skyboxes
     /// </summary>
     public class SkyboxProcessor : EntityProcessor<SkyboxComponent>
     {
-        private readonly SkyboxComponentCollection skyboxes;
         /// <summary>
         /// Initializes a new instance of the <see cref="SkyboxProcessor" /> class.
         /// </summary>
         public SkyboxProcessor()
             : base(new PropertyKey[] { SkyboxComponent.Key })
         {
-            skyboxes = new SkyboxComponentCollection();
         }
 
         /// <summary>
@@ -28,18 +25,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Skyboxes
         /// </summary>
         /// <value>The active skybox background.</value>
         public SkyboxComponent ActiveSkyboxBackground { get; private set; }
-
-        protected override void OnEntityAdding(Entity entity, SkyboxComponent data)
-        {
-            base.OnEntityAdding(entity, data);
-            skyboxes.Add(data);
-        }
-
-        protected override void OnEntityRemoved(Entity entity, SkyboxComponent data)
-        {
-            base.OnEntityRemoved(entity, data);
-            skyboxes.Remove(data);
-        }
 
         /// <inheritdoc/>
         protected override SkyboxComponent GenerateAssociatedData(Entity entity)
@@ -50,8 +35,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Skyboxes
         public override void Draw(RenderContext context)
         {
             ActiveSkyboxBackground = null;
-            foreach (var skybox in skyboxes)
+
+            foreach (var entityKeyPair in matchingEntities)
             {
+                var skybox = entityKeyPair.Value;
                 if (skybox.Enabled && skybox.Skybox != null)
                 {
                     // Select the first active skybox

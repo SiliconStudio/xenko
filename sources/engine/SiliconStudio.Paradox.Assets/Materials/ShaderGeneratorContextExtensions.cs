@@ -3,6 +3,7 @@
 
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Paradox.Engine.Graphics.Materials;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -12,6 +13,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
         {
             shaderGeneratorContext.FindAsset = material =>
             {
+                if (material.Descriptor != null)
+                {
+                    return material.Descriptor;
+                }
+
                 var reference = AttachedReferenceManager.GetAttachedReference(material);
 
                 var assetItem = package.Session.FindAsset(reference.Id) ?? package.Session.FindAsset(reference.Url);
@@ -20,7 +26,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 {
                     return null;
                 }
-                return assetItem.Asset;
+                return (IMaterialDescriptor)assetItem.Asset;
             };            
         }
     }

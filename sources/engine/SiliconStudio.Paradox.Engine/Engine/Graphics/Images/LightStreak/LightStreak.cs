@@ -41,7 +41,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             Attenuation = 0.7f;
             Amount = 0.25f;
             IterationCount = 5;
-            Phase = 1.3f;
+            Phase = 30f;
             ColorAberrationStrength = 0.2f;
             ColorAberrationCoefficients = new Vector3(1.2f, 1.8f, 2.8f);
             IsAnamorphic = false;
@@ -120,10 +120,11 @@ namespace SiliconStudio.Paradox.Effects.Images
         public float Attenuation { get; set; }
 
         /// <summary>
-        /// Phase angle for the streaks, in radian.
+        /// Phase angle for the streaks, in degrees.
         /// </summary>
         [DataMember(40)]
-        [DefaultValue(1.3f)]
+        [DefaultValue(30f)]
+        [DataMemberRange(0.0, 180.0, 1.0, 10.0, 1)]
         public float Phase { get; set; }
 
         /// <summary>
@@ -137,6 +138,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         [DataMember(50)]
         [DefaultValue(0.2f)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
         public float ColorAberrationStrength { get; set; }
 
         /// <summary>
@@ -228,7 +230,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 // Treats one streak
 
                 // Direction vector
-                float angle = Phase + streak * MathUtil.TwoPi / StreakCount;
+                float angle = MathUtil.DegreesToRadians(Phase) + streak * MathUtil.TwoPi / StreakCount;
                 direction.X = (float)Math.Cos(angle);
                 direction.Y = (float)Math.Sin(angle);
 

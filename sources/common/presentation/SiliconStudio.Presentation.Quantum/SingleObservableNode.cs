@@ -14,8 +14,8 @@ namespace SiliconStudio.Presentation.Quantum
     public abstract class SingleObservableNode : ObservableNode
     {
         public static readonly string[] ReservedNames = { "Owner", "Name", "DisplayName", "Path", "Parent", "Root", "Type", "IsPrimitive", "IsVisible", "IsReadOnly", "Value", "TypedValue", "Index", "Guid", "Children", "Commands", "AssociatedData", "HasList", "HasDictionary", "CombinedNodes", "HasMultipleValues", "HasMultipleInitialValues", "ResetInitialValues", "DistinctInitialValues" };
-        private string[] displayNameDependentProperties;
-        private Func<string> displayNameProvider;
+        protected string[] DisplayNameDependentProperties;
+        protected Func<string> DisplayNameProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SingleObservableNode"/> class.
@@ -47,8 +47,8 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="dependentProperties">The names of children that should trigger the re-evaluation of the display name when they are modified.</param>
         public void SetDisplayNameProvider(Func<string> provider, params string[] dependentProperties)
         {
-            displayNameProvider = provider;
-            displayNameDependentProperties = dependentProperties;
+            DisplayNameProvider = provider;
+            DisplayNameDependentProperties = dependentProperties;
             if (provider != null)
                 DisplayName = provider();
         }
@@ -76,11 +76,11 @@ namespace SiliconStudio.Presentation.Quantum
         protected override void OnPropertyChanged(params string[] propertyNames)
         {
             base.OnPropertyChanged(propertyNames);
-            if (displayNameProvider != null && displayNameDependentProperties != null)
+            if (DisplayNameProvider != null && DisplayNameDependentProperties != null)
             {
-                if (propertyNames.Any(x => displayNameDependentProperties.Contains(x)))
+                if (propertyNames.Any(x => DisplayNameDependentProperties.Contains(x)))
                 {
-                    DisplayName = displayNameProvider();
+                    DisplayName = DisplayNameProvider();
                 }
             }
         }

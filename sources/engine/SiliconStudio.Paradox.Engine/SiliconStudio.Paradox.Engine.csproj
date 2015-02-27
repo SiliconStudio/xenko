@@ -88,7 +88,9 @@
       <DependentUpon>ComputeColorSubtract.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Engine\Graphics\EntityComponentRendererBatch.cs" />
+    <Compile Include="Engine\Graphics\EntityComponentRendererCoreBase.cs" />
     <Compile Include="Engine\Graphics\GraphicsRendererCollectionBase.cs" />
+    <Compile Include="Engine\Graphics\IEntityComponentRendererCore.cs" />
     <Compile Include="Engine\Graphics\IGraphicsRendererCore.cs" />
     <Compile Include="Engine\Graphics\Images\DepthOfField\InFocusMaskCombine.cs">
       <DependentUpon>InFocusMaskCombine.pdxsl</DependentUpon>
@@ -102,11 +104,20 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Engine\Graphics\Images\ColorTransforms\Vignetting\Vignetting.cs" />
+    <Compile Include="Engine\Graphics\Images\ColorTransforms\Vignetting\VignettingShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>VignettingShader.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Engine\Graphics\ISceneRendererViewport.cs" />
     <Compile Include="Engine\Graphics\Lights\ColorLightBase.cs" />
     <Compile Include="Engine\Graphics\Lights\DirectLightBase.cs" />
     <Compile Include="Engine\Graphics\Lights\IColorLight.cs" />
     <Compile Include="Engine\Graphics\Lights\LightAmbientRenderer.cs" />
     <Compile Include="Engine\Graphics\Materials\DisplacementMapStage.cs" />
+    <Compile Include="Engine\Graphics\Materials\IMaterialDescriptor.cs" />
     <Compile Include="Engine\Graphics\Materials\IMaterialSurfaceDomain.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -952,6 +963,7 @@
     <Compile Include="Engine\Graphics\Composers\MasterRenderFrameProvider.cs" />
     <Compile Include="Engine\Graphics\Composers\LocalRenderFrameProvider.cs" />
     <Compile Include="Engine\Graphics\SceneDelegateRenderer.cs" />
+    <Compile Include="Engine\Graphics\SceneRendererViewportBase.cs" />
     <Compile Include="Engine\Graphics\SharedRenderFrameProvider.cs" />
     <Compile Include="Engine\Graphics\Composers\SceneGraphicsLayerCollection.cs" />
     <Compile Include="Engine\Graphics\SceneEffectRenderer.cs" />
@@ -1759,7 +1771,6 @@
     <Compile Include="Engine\Graphics\Skyboxes\SkyboxBackground.cs" />
     <Compile Include="Engine\Graphics\Skyboxes\SkyboxComponentRenderer.cs" />
     <Compile Include="Engine\Graphics\Skyboxes\SkyboxComponent.cs" />
-    <Compile Include="Engine\Graphics\Skyboxes\SkyboxComponentCollection.cs" />
     <Compile Include="Engine\Graphics\Skyboxes\SkyboxEffect.cs">
       <DependentUpon>SkyboxEffect.pdxfx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2706,6 +2717,10 @@
     <None Include="Engine\Graphics\Images\SphericalHarmonics\SphericalHarmonicsRendererEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>SphericalHarmonicsRendererEffect1.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Images\ColorTransforms\Vignetting\VignettingShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>VignettingShader.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Lights\DirectLightGroup.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

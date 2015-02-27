@@ -83,6 +83,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         /// </summary>
         [DataMember(20)]
         [DefaultValue(0.2f)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
         public float ColorAberrationStrength { get; set; }
 
         /// <summary>

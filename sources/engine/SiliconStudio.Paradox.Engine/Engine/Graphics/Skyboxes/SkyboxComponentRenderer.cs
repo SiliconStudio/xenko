@@ -103,6 +103,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Skyboxes
                 skyboxEffect.Parameters.Set(SkyboxKeys.SkyMatrix, Matrix.RotationQuaternion(skybox.Entity.Transform.Rotation));
 
                 skyboxEffect.SetOutput(CurrentRenderFrame.RenderTarget);
+                skyboxEffect.SetViewport(viewport);
                 skyboxEffect.Draw();
             }
 
@@ -111,7 +112,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Skyboxes
 
             // Restore the viewport: TODO: We should add a method to Push/Pop Target/Depth/Stencil/Viewport on the GraphicsDevice
             context.GraphicsDevice.SetViewport(viewport);
-
         }
 
         protected override void Unload()

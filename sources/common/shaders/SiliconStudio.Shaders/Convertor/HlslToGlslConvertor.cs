@@ -3828,11 +3828,12 @@ namespace SiliconStudio.Shaders.Convertor
 
         private static string RenameGlslKeyword(string name)
         {
+            // Note: we try to avoid ending up with a _, since glsl_optimizer might add another _X, and GLSL doesn't like usage of double underscore
             if (GlslKeywords.IsReserved(name))
-                name = "_" + name + "_";
+                name = "_" + name;
 
-            // Replace all variable using __ with _t_
-            return name.Replace("__", "_t_");
+            // Replace all variable using __ with _0
+            return name.Replace("__", "_0");
         }
 
         /// <summary>

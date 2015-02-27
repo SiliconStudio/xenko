@@ -6,7 +6,9 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Engine.Graphics.Materials;
 using SiliconStudio.Paradox.Shaders;
@@ -54,7 +56,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The material.</value>
         [DefaultValue(null)]
         [DataMember(30)]
-        public MaterialDescriptor Material { get; set; }
+        public Material Material { get; set; }
 
         /// <summary>
         /// Gets or sets the blend map.
@@ -84,7 +86,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             }
 
             // Find the material from the reference
-            var material = (MaterialDescriptor)context.FindAsset(Material);
+            var material = context.FindAsset(Material);
             if (material == null)
             {
                 context.Log.Error("Unable to find material [{0}]", Material);

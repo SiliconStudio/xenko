@@ -1078,7 +1078,7 @@ namespace SiliconStudio.Paradox.Graphics
                 if (depthStencilBuffer != null)
                 {
                     FramebufferAttachment attachmentType;
-                    if (depthStencilBuffer.IsDepthBuffer && depthStencilBuffer.IsStencilBuffer && depthStencilBuffer.ResourceIdStencil != 0)
+                    if (depthStencilBuffer.IsDepthBuffer && depthStencilBuffer.HasStencil && depthStencilBuffer.ResourceIdStencil != 0)
                         attachmentType = FramebufferAttachment.DepthStencilAttachment; // This enum does not exists in ES 2
                     else if (depthStencilBuffer.IsDepthBuffer)
                         attachmentType = FramebufferAttachment.DepthAttachment;
@@ -1637,8 +1637,8 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
             _currentScissorRectangles[0].Left = left;
             _currentScissorRectangles[0].Top = top;
-            _currentScissorRectangles[0].Right = right;
-            _currentScissorRectangles[0].Bottom = bottom;
+            _currentScissorRectangles[0].Width = right - left;
+            _currentScissorRectangles[0].Height = bottom - top;
             
             UpdateScissor(_currentScissorRectangles[0]);
         }

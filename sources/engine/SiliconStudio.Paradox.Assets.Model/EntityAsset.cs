@@ -29,10 +29,10 @@ namespace SiliconStudio.Paradox.Assets.Model
     [ThumbnailCompiler(PreviewerCompilerNames.EntityThumbnailCompilerQualifiedName, true)]
     [ObjectFactory(typeof(EntityFactory))]
     [Display("Entity", "An entity")]
-    [AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
+    //[AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
     public class EntityAsset : AssetImportTracked, IDiffResolver, IAssetComposer
     {
-        public const int AssetFormatVersion = 1;
+        public const int AssetFormatVersion = 0;
 
         /// <summary>
         /// The default file extension used by the <see cref="EntityAsset"/>.

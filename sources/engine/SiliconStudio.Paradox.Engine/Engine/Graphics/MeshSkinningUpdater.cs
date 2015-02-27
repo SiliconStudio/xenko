@@ -15,14 +15,16 @@ namespace SiliconStudio.Paradox.Effects
         [ThreadStatic]
         private static Matrix[] staticBoneMatrices;
 
-        public static void Update(ModelViewHierarchyUpdater hierarchy, RenderModel renderModel)
+        public static void Update(ModelViewHierarchyUpdater hierarchy, RenderModel renderModel, int slot)
         {
             var boneMatrices = staticBoneMatrices;
 
-            foreach (var meshes in renderModel.RenderMeshesList)
+            var meshes = renderModel.RenderMeshesList[slot];
             {
                 if (meshes == null)
-                    continue;
+                {
+                    return;
+                }
 
                 foreach (var renderMesh in meshes)
                 {

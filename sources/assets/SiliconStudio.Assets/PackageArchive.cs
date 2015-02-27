@@ -51,10 +51,6 @@ namespace SiliconStudio.Assets
                     files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.pdxfx", target));
                 }
 
-                // TODO: Hardcoded because of lack of file/regex-pattern (gitignore-style?) in PackageProfile.AssetFolders
-                files.Add(NewFile(@"sources\shaders\SiliconStudio.Paradox.Shaders.csproj", target));
-                files.Add(NewFile(@"sources\shaders\SiliconStudio.Paradox.Shaders.sln", target));
-
                 var targetProfile = new PackageProfile(profile.Name);
                 targetProfile.AssetFolders.Add(new AssetFolder(target));
                 newPackage.Profiles.Add(targetProfile);

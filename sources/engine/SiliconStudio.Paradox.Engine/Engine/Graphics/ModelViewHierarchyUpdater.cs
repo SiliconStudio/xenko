@@ -102,25 +102,26 @@ namespace SiliconStudio.Paradox.Effects
         /// Updates previously computed world matrices to TransformationKeys.World for each <see cref="Mesh"/>.
         /// </summary>
         /// <param name="renderModel">The render model.</param>
-        public void UpdateToRenderModel(RenderModel renderModel)
+        /// <param name="slot">The slot.</param>
+        internal void UpdateToRenderModel(RenderModel renderModel, int slot)
         {
             var nodeTransformationsLocal = this.nodeTransformations;
 
             // Set World matrices in mesh parameters
-            foreach (var meshes in renderModel.RenderMeshesList)
+            var meshes = renderModel.RenderMeshesList[slot];
+            if (meshes == null)
             {
-                if (meshes == null)
-                    continue;
+                return;
+            }
 
-                foreach (var renderMesh in meshes)
+            foreach (var renderMesh in meshes)
+            {
+                var nodeIndex = renderMesh.Mesh.NodeIndex;
+                var enabled = nodeTransformationsLocal[nodeIndex].RenderingEnabledRecursive;
+                renderMesh.Enabled = enabled;
+                if (enabled)
                 {
-                    var nodeIndex = renderMesh.Mesh.NodeIndex;
-                    var enabled = nodeTransformationsLocal[nodeIndex].RenderingEnabledRecursive;
-                    renderMesh.Enabled = enabled;
-                    if (enabled)
-                    {
-                        renderMesh.Parameters.Set(TransformationKeys.World, nodeTransformationsLocal[nodeIndex].WorldMatrix);
-                    }
+                    renderMesh.Parameters.Set(TransformationKeys.World, nodeTransformationsLocal[nodeIndex].WorldMatrix);
                 }
             }
         }

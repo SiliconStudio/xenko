@@ -48,8 +48,8 @@ namespace SiliconStudio.Paradox.Effects
 
                 SortedKeys[i] = internalValue.Key;
                 SortedKeyHashes[i] = internalValue.Key.HashCode;
-                SortedCompilationValues[i] = internalValue.Key.DefaultValueMetadata.GetDefaultValue();
-                SortedCounters[i] = 0;
+                SortedCompilationValues[i] = internalValue.Value.Object;
+                SortedCounters[i] = internalValue.Value.Counter;
             }
 
             var keyMapping = new Dictionary<ParameterKey, int>();

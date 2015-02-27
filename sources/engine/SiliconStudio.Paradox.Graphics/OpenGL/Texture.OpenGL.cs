@@ -61,15 +61,15 @@ namespace SiliconStudio.Paradox.Graphics
         private int pixelBufferObjectId;
         private int resourceIdStencil;
 
-        public PixelInternalFormat InternalFormat { get; set; }
-        public PixelFormatGl FormatGl { get; set; }
-        public PixelType Type { get; set; }
-        public TextureTarget Target { get; set; }
-        public int DepthPitch { get; set; }
-        public int RowPitch { get; set; }
-        public bool IsDepthBuffer { get; private set; }
-        public bool IsStencilBuffer { get; private set; }
-        public bool IsRenderbuffer { get; private set; }
+        internal PixelInternalFormat InternalFormat { get; set; }
+        internal PixelFormatGl FormatGl { get; set; }
+        internal PixelType Type { get; set; }
+        internal TextureTarget Target { get; set; }
+        internal int DepthPitch { get; set; }
+        internal int RowPitch { get; set; }
+        internal bool IsDepthBuffer { get; private set; }
+        internal bool HasStencil { get; private set; }
+        internal bool IsRenderbuffer { get; private set; }
         
         internal int PixelBufferObjectId
         {
@@ -115,7 +115,7 @@ namespace SiliconStudio.Paradox.Graphics
                 DepthPitch = ParentTexture.DepthPitch;
                 RowPitch = ParentTexture.RowPitch;
                 IsDepthBuffer = ParentTexture.IsDepthBuffer;
-                IsStencilBuffer = ParentTexture.IsStencilBuffer;
+                HasStencil = ParentTexture.HasStencil;
                 IsRenderbuffer = ParentTexture.IsRenderbuffer;
 
                 resourceIdStencil = ParentTexture.ResourceIdStencil;
@@ -160,12 +160,12 @@ namespace SiliconStudio.Paradox.Graphics
                 if ((Description.Flags & TextureFlags.DepthStencil) != 0)
                 {
                     IsDepthBuffer = true;
-                    IsStencilBuffer = HasStencil(Format);
+                    HasStencil = InternalHasStencil(Format);
                 }
                 else
                 {
                     IsDepthBuffer = false;
-                    IsStencilBuffer = false;
+                    HasStencil = false;
                 }
 
                 // Depth texture are render buffer for now
@@ -212,6 +212,7 @@ namespace SiliconStudio.Paradox.Graphics
                                     (int)TextureWrapMode.ClampToEdge);
                     GL.TexParameter(Target, TextureParameterName.TextureWrapT,
                                     (int)TextureWrapMode.ClampToEdge);
+                    BoundSamplerState = GraphicsDevice.SamplerStates.PointClamp;
                 }
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 else if (Description.MipLevels <= 1)
@@ -394,7 +395,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-        private static bool HasStencil(PixelFormat format)
+        private static bool InternalHasStencil(PixelFormat format)
         {
             switch (format)
             {

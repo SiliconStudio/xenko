@@ -726,7 +726,10 @@ namespace SiliconStudio.Paradox.Graphics
         {
             if (scissorRectangles == null) throw new ArgumentNullException("scissorRectangles");
             var localScissorRectangles = new SharpDX.Rectangle[scissorRectangles.Length];
-            Utilities.Write((IntPtr)Interop.Fixed(localScissorRectangles), scissorRectangles, 0, scissorRectangles.Length);
+            for (int i = 0; i < scissorRectangles.Length; i++)
+            {
+                localScissorRectangles[i] = new SharpDX.Rectangle(scissorRectangles[i].X, scissorRectangles[i].Y, scissorRectangles[i].Width, scissorRectangles[i].Height);
+            }
             NativeDeviceContext.Rasterizer.SetScissorRectangles(localScissorRectangles);
         }
 

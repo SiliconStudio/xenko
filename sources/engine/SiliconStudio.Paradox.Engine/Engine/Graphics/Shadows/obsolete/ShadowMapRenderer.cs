@@ -4,13 +4,11 @@
 using System;
 using System.Collections.Generic;
 
-using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Effects.Lights;
-using SiliconStudio.Paradox.Effects.Processors;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.Engine.Graphics;
+using SiliconStudio.Paradox.Engine.Graphics.Shadows;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Shadows
@@ -18,16 +16,9 @@ namespace SiliconStudio.Paradox.Effects.Shadows
     /// <summary>
     /// Handles shadow mapping.
     /// </summary>
-    public class ShadowMapRenderer : RecursiveRenderer
+    public class ShadowMapRenderer : EntityComponentRendererCoreBase
     {
-        #region Constants
-
-        //TODO: dependant of the PostEffectVsmBlur shader. We should have a way to set everything at the same time
         private const float VsmBlurSize = 4.0f;
-
-        #endregion
-
-        #region Private static members
 
         /// <summary>
         /// Base points for frustum corners.
@@ -48,54 +39,40 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         internal static readonly ParameterKey<ShadowMapCascadeLevel[]> LevelReceivers = ParameterKeys.New(new ShadowMapCascadeLevel[1]);
         internal static readonly ParameterKey<int> ShadowMapLightCount = ParameterKeys.New(0);
         
-        #endregion
-
-        #region Private members
-
         // Storage for temporary variables
         private Vector3[] points = new Vector3[8];
         private Vector3[] directions = new Vector3[4];
-
-        private Effect vsmHorizontalBlur;
-
-        private Effect vsmVerticalBlur;
 
         // rectangles to blur for each shadow map
         private HashSet<ShadowMapTexture> shadowMapTexturesToBlur = new HashSet<ShadowMapTexture>();
 
         private readonly ParameterCollection blurParameters;
 
-        #endregion
 
-        #region Constructor
-
-        public ShadowMapRenderer(IServiceRegistry services, RenderPipeline recursivePipeline) : base(services, recursivePipeline)
+        public ShadowMapRenderer()
         {
-            // Build blur effects for VSM
-            var compilerParameters = GetDefaultCompilerParameters();
-            vsmHorizontalBlur = EffectSystem.LoadEffect("HorizontalVsmBlur", compilerParameters);
-            vsmVerticalBlur = EffectSystem.LoadEffect("VerticalVsmBlur", compilerParameters);
-            blurParameters = new ParameterCollection();
         }
 
-        #endregion
+        public void Draw(RenderContext context)
+        {
+            PreDrawCoreInternal(context);
+            DrawCore(context);
+            PostDrawCoreInternal(context);
+        }
 
-        #region Methods
 
-        protected override void OnRendering(RenderContext context)
+        protected void DrawCore(RenderContext context)
         {
             // get the lightprocessor
-            var entitySystem = Services.GetServiceAs<EntitySystem>();
-            var lightProcessor = entitySystem.GetProcessor<LightShadowProcessor>();
+            var lightProcessor = SceneInstance.GetProcessor<LightProcessor>();
             if (lightProcessor == null)
                 return;
 
             var graphicsDevice = context.GraphicsDevice;
 
             // Get View and Projection matrices
-            Matrix view, projection;
-            Pass.Parameters.Get(TransformationKeys.View, out view);
-            Pass.Parameters.Get(TransformationKeys.Projection, out projection);
+            var view = context.ViewMatrix;
+            var projection = context.ProjectionMatrix;
 
             // Clear shadow map textures
             foreach (var shadowMapTexture in lightProcessor.ActiveShadowMapTextures)
@@ -339,7 +316,5 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 cascades[cascadeLevel].CascadeLevels.CascadeTextureCoordsBorder = cascadeTextureCoords;
             }
         }
-
-        #endregion
     }
 }

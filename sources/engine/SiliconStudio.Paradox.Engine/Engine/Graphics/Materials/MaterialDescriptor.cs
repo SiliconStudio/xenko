@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Materials
     [DataSerializerGlobal(typeof(ReferenceSerializer<MaterialDescriptor>), Profile = "Asset")]
     [ContentSerializer(typeof(DataContentSerializer<MaterialDescriptor>))]
     [DataContract("MaterialDescriptor")]
-    public class MaterialDescriptor : IMaterialShaderGenerator
+    public class MaterialDescriptor : IMaterialDescriptor
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialDescriptor"/> class.
