@@ -226,7 +226,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             }
             else if (frameDescriptor.DepthFormat == RenderFrameDepthFormat.Depth || frameDescriptor.DepthFormat == RenderFrameDepthFormat.DepthAndStencil)
             {
-                depthStencil = Texture.New2D(graphicsDevice, width, height, 1, depthFormat, TextureFlags.DepthStencil);
+                depthStencil = Texture.New2D(graphicsDevice, width, height, 1, depthFormat, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
             }
 
             // Create a render frame.
