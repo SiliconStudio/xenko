@@ -27,8 +27,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             // TODO: Add support for shadows
             // TODO: We call it directly here but it might be plugged into 
             lightModelRenderer.PrepareLights(context);
-
-            modelRenderer.CullingMask = SceneCameraRenderer.CullingMask;
             modelRenderer.Prepare(context, opaqueList, transparentList);
         }
 
