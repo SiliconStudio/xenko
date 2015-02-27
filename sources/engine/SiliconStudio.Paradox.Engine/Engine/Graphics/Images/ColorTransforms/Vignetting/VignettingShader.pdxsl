@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             float squareDistanceToCenter = dot(fromCenterVector, fromCenterVector);
             float distanceToCenter = sqrt(squareDistanceToCenter);
 
-            float vignette = smoothstep(RadiusBegin, 1.0, distanceToCenter / 0.7071); // 0.7071 is srqt(0.5), at the screen corner
+            float vignette = smoothstep(RadiusBegin, 1.0, distanceToCenter / 0.7071); // 0.7071 is sqrt(0.5), at the screen corner
             vignette *= Amount;
             color.rgb = color.rgb * (1.0 - vignette) + vignette * Color;
 

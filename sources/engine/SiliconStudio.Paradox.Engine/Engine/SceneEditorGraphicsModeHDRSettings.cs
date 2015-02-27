@@ -47,6 +47,7 @@ namespace SiliconStudio.Paradox.Engine
                 var fx = settings.PostProcessingEffects;
                 fx.LightStreak.Enabled = false;
                 fx.ColorTransforms.Transforms.Add(new ToneMap() { LuminanceLocalFactor = 0.0f });
+                fx.ColorTransforms.Transforms.Add(new FilmGrain() { Enabled = false });
                 fx.ColorTransforms.Transforms.Add(new Vignetting() { Enabled =  false } );
                 fx.DepthOfField.Enabled = false;
                 fx.Bloom.Enabled = false;

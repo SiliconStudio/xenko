@@ -92,6 +92,13 @@
     <Compile Include="Engine\Graphics\GraphicsRendererCollectionBase.cs" />
     <Compile Include="Engine\Graphics\IEntityComponentRendererCore.cs" />
     <Compile Include="Engine\Graphics\IGraphicsRendererCore.cs" />
+    <Compile Include="Engine\Graphics\Images\ColorTransforms\Noise\FilmGrain.cs" />
+    <Compile Include="Engine\Graphics\Images\ColorTransforms\Noise\FilmGrainShader.cs">
+      <DependentUpon>FilmGrainShader.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Engine\Graphics\Images\DepthOfField\InFocusMaskCombine.cs">
       <DependentUpon>InFocusMaskCombine.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2549,6 +2556,10 @@
     <None Include="Engine\Graphics\Images\ColorTransforms\GammaTransformShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>GammaTransformShader.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Images\ColorTransforms\Noise\FilmGrainShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>FilmGrainShader.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Images\ColorTransforms\ToneMap\ToneMapCommonOperatorShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

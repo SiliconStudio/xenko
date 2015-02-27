@@ -16,8 +16,6 @@ namespace SiliconStudio.Paradox.Effects.Images
     public sealed class Vignetting : ColorTransform
     {
 
-        private ImageEffect vignettingEffect;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Vignetting"/> class.
         /// </summary>
