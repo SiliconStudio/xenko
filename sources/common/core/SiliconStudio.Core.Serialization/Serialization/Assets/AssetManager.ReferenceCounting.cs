@@ -42,19 +42,17 @@ namespace SiliconStudio.Core.Serialization.Assets
             int referenceCount;
             if (publicReference)
             {
-                referenceCount = --assetReference.PublicReferenceCount;
-                if (referenceCount < 0)
+                if (assetReference.PublicReferenceCount <= 0)
                     throw new InvalidOperationException("Cannot release an object that doesn't have active public references. Load/Unload pairs must match.");
 
-                referenceCount += assetReference.PrivateReferenceCount;
+                referenceCount = --assetReference.PublicReferenceCount + assetReference.PrivateReferenceCount;
             }
             else
             {
-                referenceCount = --assetReference.PrivateReferenceCount;
-                if (referenceCount < 0)
+                if (assetReference.PrivateReferenceCount <= 0)
                     throw new InvalidOperationException("Cannot release an object that doesn't have active private references. This is either due to non-matching Load/Unload pairs or an engine internal error.");
-
-                referenceCount += assetReference.PublicReferenceCount;
+             
+                referenceCount = --assetReference.PrivateReferenceCount + assetReference.PublicReferenceCount;
             }
 
             if (referenceCount == 0)
