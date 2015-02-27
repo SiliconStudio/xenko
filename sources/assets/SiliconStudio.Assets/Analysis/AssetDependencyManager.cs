@@ -81,7 +81,7 @@ namespace SiliconStudio.Assets.Analysis
             MissingReferencesToParent = new Dictionary<Guid, HashSet<AssetDependencies>>();
             Packages = new HashSet<Package>();
             Dependencies = new Dictionary<Guid, AssetDependencies>();
-            TrackingSleepTime = 1000;
+            TrackingSleepTime = 100;
             tokenSourceForImportHash = new CancellationTokenSource();
             threadWatcherEvent = new ManualResetEvent(false);
 
