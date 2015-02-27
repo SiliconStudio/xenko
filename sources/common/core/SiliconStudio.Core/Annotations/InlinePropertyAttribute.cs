@@ -9,7 +9,7 @@ namespace SiliconStudio.Core.Annotations
     /// This attribute indicates that the associated property should be inlined in its container presentation
     /// when displayed in a property grid.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Class | AttributeTargets.Interface)]
     public sealed class InlinePropertyAttribute : Attribute
     {
     }
