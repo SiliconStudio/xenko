@@ -262,8 +262,9 @@ namespace SiliconStudio.Core.Serialization.Assets
                 AssetReference assetReference;
                 if (!loadedAssetsByUrl.TryGetValue(url, out assetReference))
                     throw new InvalidOperationException("Asset not loaded through this AssetManager.");
-
-                Unload(assetReference.Object);
+                
+                // Release reference
+                DecrementReference(assetReference, true);
             }
         }
 
