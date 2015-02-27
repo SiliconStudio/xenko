@@ -135,7 +135,7 @@ namespace SiliconStudio.Paradox.Graphics
             parameters = new ParameterCollection();
             
             // Creates the vertex buffer (shared by within a device context).
-            ResourceContext = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerContext, resourceBufferInfo.ResourceKey, () => new DeviceResourceContext(GraphicsDevice, DefaultEffect, vertexDeclaration, resourceBufferInfo, indexStructSize));
+            ResourceContext = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerContext, resourceBufferInfo.ResourceKey, d => new DeviceResourceContext(GraphicsDevice, DefaultEffect, vertexDeclaration, resourceBufferInfo, indexStructSize));
         }
 
         /// <summary>

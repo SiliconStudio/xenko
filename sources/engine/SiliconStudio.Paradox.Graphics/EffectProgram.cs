@@ -10,7 +10,7 @@ namespace SiliconStudio.Paradox.Graphics
     {
         public static EffectProgram New(GraphicsDevice graphicsDevice, EffectBytecode bytecode)
         {
-            var effectProgramLibrary = graphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, typeof(EffectProgram), () => new EffectProgramLibrary());
+            var effectProgramLibrary = graphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, typeof(EffectProgram), d => new EffectProgramLibrary());
             return effectProgramLibrary.GetOrCreateShader(graphicsDevice, bytecode);
         }
 

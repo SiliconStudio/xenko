@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.IO;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -56,6 +57,34 @@ namespace SiliconStudio.Paradox.Graphics
                 throw new ArgumentException("Texture must be a RenderTarget", "texture");
             }
             return texture;
+        }
+
+        /// <summary>
+        /// Creates a texture from an image file data (png, dds, ...).
+        /// </summary>
+        /// <param name="graphicsDevice">The graphics device in which to create the texture</param>
+        /// <param name="data">The image file data</param>
+        /// <returns>The texture</returns>
+        public static Texture FromFileData(GraphicsDevice graphicsDevice, byte[] data)
+        {
+            Texture result;
+
+            using (var imageStream = new MemoryStream(data))
+            {
+                using (var image = Image.Load(imageStream))
+                    result = Texture.New(graphicsDevice, image);
+            }
+
+            result.Reload = graphicsResource =>
+            {
+                using (var imageStream = new MemoryStream(data))
+                {
+                    using (var image = Image.Load(imageStream))
+                        ((Texture)graphicsResource).Recreate(image.ToDataBox());
+                }
+            };
+
+            return result;
         }
     }
 }

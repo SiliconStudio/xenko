@@ -13,6 +13,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     public interface IEntityComponentRenderer : IEntityComponentRendererCore
     {
         /// <summary>
+        /// Gets the value indicating whether the picking is supported by this renderer or not.
+        /// </summary>
+        bool SupportPicking { get; }
+
+        /// <summary>
         /// Prepares a list of opaque and transparent <see cref="RenderItem"/>. See remarks.
         /// </summary>
         /// <param name="context">The context.</param>

@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                 if (entityData.Components.ContainsKey(SpriteComponent.Key))
                 {
                     var spriteComponent = entityData.Components.Get(SpriteComponent.Key);
-                    if (spriteComponent == null || spriteComponent.SpriteGroup == null)
+                    if (spriteComponent == null || spriteComponent.SpriteProvider == null)
                     {
                         result.Warning(string.Format("The entity [{0}:{1}] has a sprite component that does not reference any sprite group.", urlInStorage, entityData.Name));
                     }

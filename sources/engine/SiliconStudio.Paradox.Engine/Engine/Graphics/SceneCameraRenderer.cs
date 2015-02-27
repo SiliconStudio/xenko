@@ -5,11 +5,9 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Engine.Graphics.Composers;
-using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Engine.Graphics
@@ -67,6 +65,12 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// <value>The material filter.</value>
         [DataMemberIgnore]
         public ShaderSource MaterialFilter { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value indicating the current rendering is for picking or not.
+        /// </summary>
+        [DataMemberIgnore]
+        public bool IsPickingMode { get; set; }
 
         protected override void DrawCore(RenderContext context, RenderFrame output)
         {

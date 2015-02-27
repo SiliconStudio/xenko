@@ -158,7 +158,7 @@ namespace SiliconStudio.Paradox.Effects
 
             // Store RenderContext shared into the GraphicsDevice
             var graphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
-            return graphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, SharedImageEffectContextKey, () => new RenderContext(services));
+            return graphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, SharedImageEffectContextKey, d => new RenderContext(services));
         }
 
         internal void OnRendererInitialized(IGraphicsRendererCore obj)

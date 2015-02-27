@@ -950,6 +950,7 @@
     <Compile Include="Engine\Graphics\ProceduralModels\TeapotProceduralModel.cs" />
     <Compile Include="Engine\Graphics\ProceduralModels\TorusProceduralModel.cs" />
     <Compile Include="Engine\Graphics\ReferenceToEffectsAttribute.cs" />
+    <Compile Include="Engine\Graphics\RenderContextExtensions.cs" />
     <Compile Include="Engine\Graphics\RendererCoreBase.cs" />
     <Compile Include="Engine\Graphics\RenderFrameProviderBase.cs" />
     <Compile Include="Engine\Graphics\RenderItem.cs" />
@@ -1962,6 +1963,9 @@
     <Compile Include="EntityModel\DefaultEntityComponentRendererAttribute.cs" />
     <Compile Include="EntityModel\EntityComponentRendererType.cs" />
     <Compile Include="EntityModel\EntityReference.cs" />
+    <Compile Include="EntityModel\GizmoEntityFactory.cs" />
+    <Compile Include="EntityModel\GizmoEntityFactoryAttribute.cs" />
+    <Compile Include="EntityModel\GizmoEntityFactoryNames.cs" />
     <Compile Include="EntityModel\IEntityComponentReference.cs" />
     <Compile Include="Data\SimpleExtensions.cs" />
     <Compile Include="Data\MergeExtensions.cs" />

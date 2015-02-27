@@ -10,6 +10,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     /// </summary>
     public abstract class EntityComponentRendererBase : EntityComponentRendererCoreBase, IEntityComponentRenderer
     {
+
+        public virtual bool SupportPicking { get { return false; } }
         public void Prepare(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
             PrepareCore(context, opaqueList, transparentList);

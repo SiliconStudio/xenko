@@ -42,7 +42,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         protected override void DrawRenderer(RenderContext context, IEntityComponentRenderer renderer)
         {
-            renderer.Prepare(context, opaqueRenderItems, transparentRenderItems);
+            if (!context.IsPicking() || renderer.SupportPicking)
+                renderer.Prepare(context, opaqueRenderItems, transparentRenderItems);
         }
 
         private void Draw(RenderContext context, RenderItemCollection renderItems, IComparer<RenderItem> comparer)

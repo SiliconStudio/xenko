@@ -71,7 +71,7 @@ namespace SiliconStudio.Paradox.Engine
         [DataMember(5)]
         [Display("Source")]
         [NotNull]
-        public ISpriteProvider SpriteGroup
+        public ISpriteProvider SpriteProvider
         {
             get { return SpriteProviderInternal; }
             set
