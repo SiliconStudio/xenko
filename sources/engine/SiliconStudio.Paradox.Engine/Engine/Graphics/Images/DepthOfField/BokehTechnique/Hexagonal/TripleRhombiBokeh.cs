@@ -67,8 +67,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             rhombiTapOffsetsDirty = false;
 
-            var texture = GetSafeInput(0);
-            var textureSize = new Vector2( 1f/ (texture.Width), 1f / (texture.Height));
             // Half-radius of the hexagon
             float halfRadius = Radius * 0.5f; 
             // Half-width of an hexagon pointing up (altitude of an equilateral triangle)
@@ -98,7 +96,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             for (int i = 0; i < 3; i++)
             {
-                rhombiTapOffsets[i] = (rhombiPosition[i] + bias[i]) * textureSize;
+                rhombiTapOffsets[i] = (rhombiPosition[i] + bias[i]);
             }
              
         }
