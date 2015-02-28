@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Engine
         protected override SceneInstance GenerateAssociatedData(Entity entity)
         {
             var sceneChild = entity.Get<SceneChildComponent>();
-            return new SceneInstance(EntityManager.Services, sceneChild.Scene);
+            return new SceneInstance(EntityManager.Services, sceneChild.Scene, EntityManager.GetProcessor<ScriptProcessor>() != null);
         }
 
         protected override void OnEntityAdding(Entity entity, SceneInstance data)

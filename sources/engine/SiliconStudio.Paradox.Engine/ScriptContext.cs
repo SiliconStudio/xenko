@@ -46,13 +46,23 @@ namespace SiliconStudio.Paradox
         Task Execute();
     }
 
+    [DataContract("ScriptContext")]
     public abstract class ScriptContext : ComponentBase, IScriptContext
     {
-        private readonly IGraphicsDeviceService graphicsDeviceService;
+        private IGraphicsDeviceService graphicsDeviceService;
 
-        private readonly IVirtualResolution virtualResolutionProvider;
+        private IVirtualResolution virtualResolutionProvider;
+
+        protected ScriptContext()
+        {
+        }
 
         protected ScriptContext(IServiceRegistry registry)
+        {
+            Initialize(registry);
+        }
+
+        internal void Initialize(IServiceRegistry registry)
         {
             Services = registry;
 
@@ -69,16 +79,21 @@ namespace SiliconStudio.Paradox
             UI = Services.GetSafeServiceAs<UISystem>();
         }
 
+        [DataMemberIgnore]
         public AudioSystem Audio { get; private set; }
 
+        [DataMemberIgnore]
         public IServiceRegistry Services { get; private set; }
 
         public object Parameter { get; set; }
 
+        [DataMemberIgnore]
         public IGame Game { get; private set; }
 
+        [DataMemberIgnore]
         public AssetManager Asset { get; private set; }
 
+        [DataMemberIgnore]
         public GraphicsDevice GraphicsDevice
         {
             get
@@ -87,20 +102,26 @@ namespace SiliconStudio.Paradox
             }
         }
 
+        [DataMemberIgnore]
         public UISystem UI { get; private set; }
 
+        [DataMemberIgnore]
         public InputManager Input { get; private set; }
 
+        [DataMemberIgnore]
         public ScriptSystem Script { get; private set; }
 
+        [DataMemberIgnore]
         public SceneSystem SceneSystem { get; private set; }
 
+        [DataMemberIgnore]
         public EffectSystem EffectSystem { get; private set; }
 
         protected override void Destroy()
         {
         }
 
+        [DataMemberIgnore]
         public Vector3 VirtualResolution 
         { 
             get { return virtualResolutionProvider.VirtualResolution; }

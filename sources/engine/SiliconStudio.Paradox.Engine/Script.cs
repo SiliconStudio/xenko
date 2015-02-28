@@ -3,11 +3,25 @@
 using System.Threading.Tasks;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.MicroThreading;
+using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox
 {
+    [DataContract("Script")]
     public abstract class Script : ScriptContext, IScript
     {
+        [DataMemberIgnore]
+        internal ScriptComponent ScriptComponent;
+        [DataMemberIgnore]
+        internal MicroThread MicroThread;
+        [DataMemberIgnore]
+        internal bool Unloaded;
+
+        protected Script()
+        {
+        }
+
         protected Script(IServiceRegistry registry) : base(registry)
         {
         }

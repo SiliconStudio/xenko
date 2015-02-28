@@ -29,6 +29,7 @@ namespace SiliconStudio.Paradox.Engine
 
         private Scene previousScene;
         private Scene scene;
+        private bool enableScripting = true;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityManager" /> class.
@@ -43,13 +44,15 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="sceneEntityRoot">The scene entity root.</param>
+        /// <param name="enableScripting">if set to <c>true</c> [enable scripting].</param>
         /// <exception cref="System.ArgumentNullException">services
         /// or
         /// sceneEntityRoot</exception>
-        public SceneInstance(IServiceRegistry services, Scene sceneEntityRoot) : base(services)
+        public SceneInstance(IServiceRegistry services, Scene sceneEntityRoot, bool enableScripting = true) : base(services)
         {
             if (services == null) throw new ArgumentNullException("services");
 
+            this.enableScripting = enableScripting;
             Scene = sceneEntityRoot;
             RendererTypes = new EntityComponentRendererTypeCollection();
             Load();
@@ -196,6 +199,8 @@ namespace SiliconStudio.Paradox.Engine
             RendererTypes.Clear();
 
             // Initialize processors
+            if (enableScripting)
+                Processors.Add(new ScriptProcessor());
             Processors.Add(new SceneProcessor(this));
             Processors.Add(new HierarchicalProcessor()); // Important to pre-register this processor
             Processors.Add(new TransformProcessor());
