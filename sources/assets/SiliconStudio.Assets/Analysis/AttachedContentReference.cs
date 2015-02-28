@@ -22,5 +22,11 @@ namespace SiliconStudio.Assets.Analysis
         {
             this.attachedReference = attachedReference;
         }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return string.Format("{0}:{1}", attachedReference.Id, attachedReference.Url);
+        }
     }
 }
