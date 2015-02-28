@@ -56,6 +56,8 @@
     <Compile Include="Annotations\NotNullAttribute.cs" />
     <Compile Include="Annotations\NotNullItemsAttribute.cs" />
     <Compile Include="AnonymousDisposable.cs" />
+    <Compile Include="BrowsableAttribute.cs" />
+    <Compile Include="CategoryAttribute.cs" />
     <Compile Include="Collections\ITrackingCollectionChanged.cs" />
     <Compile Include="Collections\KeyedSortedList.cs" />
     <Compile Include="Collections\SafeList.cs" />

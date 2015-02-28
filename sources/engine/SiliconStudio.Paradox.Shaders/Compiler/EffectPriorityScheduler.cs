@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-
+#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -81,3 +81,4 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         }
     }
 }
+#endif

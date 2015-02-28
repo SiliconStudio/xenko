@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Reflection;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Serializers;
 using SiliconStudio.Core.Storage;
@@ -70,7 +71,7 @@ namespace SiliconStudio.Core.Serialization
         public static ContentReference New(Type referenceType, Guid id, string location)
         {
             if (referenceType == null) throw new ArgumentNullException("referenceType");
-            if (!typeof(ContentReference).IsAssignableFrom(referenceType)) throw new ArgumentException("Reference must inherit from ContentReference", "referenceType");
+            if (!typeof(ContentReference).GetTypeInfo().IsAssignableFrom(referenceType.GetTypeInfo())) throw new ArgumentException("Reference must inherit from ContentReference", "referenceType");
 
             return (ContentReference)Activator.CreateInstance(referenceType, id, location);
         }

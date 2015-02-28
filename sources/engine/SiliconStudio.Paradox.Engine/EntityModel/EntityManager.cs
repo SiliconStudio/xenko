@@ -373,7 +373,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
         private void RegisterProcessors(Type type)
         {
-            var processorAttributes = type.GetCustomAttributes<DefaultEntityComponentProcessorAttribute>();
+            var processorAttributes = type.GetTypeInfo().GetCustomAttributes<DefaultEntityComponentProcessorAttribute>();
             foreach (var processorAttributeType in processorAttributes)
             {
                 var processorType = Type.GetType(processorAttributeType.TypeName);
@@ -388,7 +388,7 @@ namespace SiliconStudio.Paradox.EntityModel
         private void RegisterProcessorType(Type processorType)
         {
             // TODO: Log an error?
-            if (!typeof(EntityProcessor).GetTypeInfo().IsAssignableFrom(processorType))
+            if (!typeof(EntityProcessor).GetTypeInfo().IsAssignableFrom(processorType.GetTypeInfo()))
             {
                 return;
             }

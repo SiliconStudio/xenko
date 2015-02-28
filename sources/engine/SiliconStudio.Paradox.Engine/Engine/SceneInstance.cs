@@ -6,6 +6,7 @@ using System.Reflection;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Engine.Graphics.Composers;
@@ -226,7 +227,7 @@ namespace SiliconStudio.Paradox.Engine
                 return;
             }
             var renderType = Type.GetType(rendererTypeAttribute.TypeName);
-            if (renderType != null && typeof(IEntityComponentRenderer).IsAssignableFrom(renderType) && renderType.GetConstructor(Type.EmptyTypes) != null)
+            if (renderType != null && typeof(IEntityComponentRenderer).GetTypeInfo().IsAssignableFrom(renderType.GetTypeInfo()) && renderType.GetTypeInfo().GetConstructor(Type.EmptyTypes) != null)
             {
                 var entityComponentRendererType = new EntityComponentRendererType(type, renderType, rendererTypeAttribute.Order);
                 RendererTypes.Add(entityComponentRendererType);

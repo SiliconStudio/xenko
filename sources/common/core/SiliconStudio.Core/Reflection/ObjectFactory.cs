@@ -33,7 +33,7 @@ namespace SiliconStudio.Core.Reflection
             IObjectFactory factory = null;
             lock (RegisteredFactories)
             {
-                var factoryAttribute = objectType.GetCustomAttribute<ObjectFactoryAttribute>();
+                var factoryAttribute = objectType.GetTypeInfo().GetCustomAttribute<ObjectFactoryAttribute>();
                 if (factoryAttribute != null)
                 {
                     var factoryType = Type.GetType(factoryAttribute.FactoryTypeName);

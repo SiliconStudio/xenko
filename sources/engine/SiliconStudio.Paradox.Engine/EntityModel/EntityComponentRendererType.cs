@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Graphics;
@@ -27,12 +27,12 @@ namespace SiliconStudio.Paradox.EntityModel
             if (componentType == null) throw new ArgumentNullException("componentType");
             if (rendererType == null) throw new ArgumentNullException("rendererType");
 
-            if (!typeof(EntityComponent).IsAssignableFrom(componentType))
+            if (!typeof(EntityComponent).GetTypeInfo().IsAssignableFrom(componentType.GetTypeInfo()))
             {
                 throw new ArgumentException("Must inherit from EntityComponent", "componentType");
             }
 
-            if (!typeof(IEntityComponentRenderer).IsAssignableFrom(rendererType))
+            if (!typeof(IEntityComponentRenderer).GetTypeInfo().IsAssignableFrom(rendererType.GetTypeInfo()))
             {
                 throw new ArgumentException("Must inherit from IEntityComponentRenderer", "rendererType");
             }

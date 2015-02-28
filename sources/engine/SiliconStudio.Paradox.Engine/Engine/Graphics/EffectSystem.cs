@@ -29,8 +29,10 @@ namespace SiliconStudio.Paradox.Effects
         private Dictionary<EffectBytecode, Effect> cachedEffects = new Dictionary<EffectBytecode, Effect>();
         private DirectoryWatcher directoryWatcher;
 
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         // Ideally it should be a "HashStore", but we don't have it yet...
         private DictionaryStore<EffectCompileRequest, bool> recordedEffectCompile;
+#endif
 
         private readonly HashSet<string> recentlyModifiedShaders = new HashSet<string>();
         private bool clearNextFrame = false;
@@ -74,6 +76,12 @@ namespace SiliconStudio.Paradox.Effects
             compiler = (EffectCompilerBase)CreateEffectCompiler();
         }
 
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+        /// <summary>
+        /// Records the effect compilation request to the specified file.
+        /// </summary>
+        /// <param name="filePath">The file path.</param>
+        /// <param name="reset">if set to <c>true</c> erase the previous file, otherwise append.</param>
         public void RecordEffectCompile(string filePath, bool reset)
         {
             try
@@ -92,6 +100,7 @@ namespace SiliconStudio.Paradox.Effects
             if (!reset)
                 recordedEffectCompile.LoadNewValues();
         }
+#endif
 
         public static IEffectCompiler CreateEffectCompiler(TaskScheduler taskScheduler = null)
         {
@@ -273,6 +282,7 @@ namespace SiliconStudio.Paradox.Effects
             {
                 compilerResult = compiler.Compile(source, compilerParameters);
 
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
                 // If enabled, request this effect compile
                 // TODO: For now we save usedParameters, but ideally we probably want to have a list of everything that might be use by a given
                 //       pdxfx and filter against this, so that branches not taken on a specific situation/platform can still be reproduced on another.
@@ -288,6 +298,7 @@ namespace SiliconStudio.Paradox.Effects
                         recordedEffectCompile[effectCompileRequest] = true;
                     }
                 }
+#endif
                 
                 if (!compilerResult.HasErrors && isPdxfx)
                 {

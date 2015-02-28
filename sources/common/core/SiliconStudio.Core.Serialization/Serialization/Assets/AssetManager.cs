@@ -160,7 +160,7 @@ namespace SiliconStudio.Core.Serialization.Assets
 
                 using (var profile = Profiler.Begin(AssetProfilingKeys.AssetReload, url))
                 {
-                    DeserializeObject(url, obj.GetType().GetTypeInfo(), obj, settings);
+                    DeserializeObject(url, obj.GetType(), obj, settings);
                 }
 
                 return true;
