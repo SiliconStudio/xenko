@@ -34,7 +34,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// Clears the whole region.
         /// </summary>
-        public void Clear()
+        public virtual void Clear()
         {
             Clear(Width, Height);
         }
