@@ -158,7 +158,6 @@
     <Compile Include="Font\CharacterSpecification.cs" />
     <Compile Include="Font\FontStyle.cs" />
     <Compile Include="Font\FontSystem.cs" />
-    <Compile Include="Font\GuillotinePacker.cs" />
     <Compile Include="Font\IFontFactory.cs" />
     <Compile Include="Font\StaticSpriteFont.cs" />
     <Compile Include="FrameworkResources.Designer.cs">

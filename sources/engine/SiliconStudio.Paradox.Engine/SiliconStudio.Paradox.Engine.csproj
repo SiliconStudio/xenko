@@ -51,8 +51,6 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AsyncScript.cs" />
-    <Compile Include="BinPacking\GuillotinePacker.cs" />
-    <Compile Include="BinPacking\Rect.cs" />
     <Compile Include="DataModel\AnimationBlendOperation.cs" />
     <Compile Include="DataModel\AnimationBlender.cs" />
     <Compile Include="DataModel\AnimationChannel.cs" />
@@ -1329,7 +1327,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Engine\Graphics\Lights\EnvironmentLightKeys.cs" />
-    <Compile Include="Engine\Graphics\Lights\GuillotinePacker.cs" />
     <Compile Include="Engine\Graphics\Lights\IDirectLight.cs" />
     <Compile Include="Engine\Graphics\Lights\IEnvironmentLight.cs" />
     <Compile Include="Engine\Graphics\Lights\ILight.cs" />
