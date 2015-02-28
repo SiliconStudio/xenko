@@ -462,5 +462,25 @@ namespace SiliconStudio.Core.Mathematics
 
             return r;
         }
+
+        /// <summary>
+        /// Get the next power of two for a size.
+        /// </summary>
+        /// <param name="size">The size.</param>
+        /// <returns>System.Int32.</returns>
+        public static int NextPowerOfTwo(int size)
+        {
+            return 1 << (int)Math.Ceiling(Math.Log(size, 2));
+        }
+
+        /// <summary>
+        /// Get the next power of two for a size.
+        /// </summary>
+        /// <param name="size">The size.</param>
+        /// <returns>System.Int32.</returns>
+        public static float NextPowerOfTwo(float size)
+        {
+            return (float)Math.Pow(2, Math.Ceiling(Math.Log(size, 2)));
+        }
     }
 }
