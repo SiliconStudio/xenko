@@ -77,6 +77,19 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
+        public bool UnloadAssembly(Assembly assembly)
+        {
+            lock (loadedAssemblies)
+            {
+                var loadedAssembly = loadedAssemblies.FirstOrDefault(x => x.Value == assembly);
+                if (loadedAssembly.Value == null)
+                    return false;
+
+                loadedAssemblies.Remove(loadedAssembly.Key);
+                return true;
+            }
+        }
+
         private Assembly LoadAssemblyByName(string assemblyName)
         {
             if (assemblyName == null) throw new ArgumentNullException("assemblyName");
