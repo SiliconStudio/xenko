@@ -10,8 +10,16 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     /// </summary>
     public abstract class EntityComponentRendererBase : EntityComponentRendererCoreBase, IEntityComponentRenderer
     {
-
         public virtual bool SupportPicking { get { return false; } }
+
+        public virtual bool IsWritingToDepth
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public void Prepare(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
             PrepareCore(context, opaqueList, transparentList);
@@ -19,7 +27,17 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         public void Draw(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
         {
+            var currentSceneCameraRenderer = context.Tags.Get(SceneCameraRenderer.Current);
+            if (currentSceneCameraRenderer == null)
+            {
+                return;
+            }
+
             PreDrawCoreInternal(context);
+
+            // Make sure the render frame and viewport is correctly setup
+            currentSceneCameraRenderer.ActivateOutput(context, IsWritingToDepth);
+
             DrawCore(context, renderItems, fromIndex, toIndex);
             PostDrawCoreInternal(context);
         }

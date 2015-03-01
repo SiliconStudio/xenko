@@ -29,12 +29,23 @@ namespace SiliconStudio.Paradox.Engine
         internal ISpriteProvider SpriteProviderInternal;
 
         /// <summary>
-        /// The color to apply on the sprite.
+        /// The group of sprites associated to the component.
         /// </summary>
-        /// <userdoc>The color to apply to the sprite.</userdoc>
-        [DataMember(20)]
-        [Display("Color")]
-        public Color Color = Color.White;
+        [DataMember(5)]
+        [Display("Source")]
+        [NotNull]
+        public ISpriteProvider SpriteProvider
+        {
+            get { return SpriteProviderInternal; }
+            set
+            {
+                if(SpriteProviderInternal == value)
+                    return;
+
+                SpriteProviderInternal = value;
+                CurrentFrame = 0;
+            }
+        }
 
         /// <summary>
         /// The type of the sprite.
@@ -53,6 +64,22 @@ namespace SiliconStudio.Paradox.Engine
         [Display("Extrusion")]
         public SpriteExtrusionMethod ExtrusionMethod { get; set; }
 
+        /// <summary>
+        /// The color to apply on the sprite.
+        /// </summary>
+        /// <userdoc>The color to apply to the sprite.</userdoc>
+        [DataMember(20)]
+        [Display("Color")]
+        public Color Color = Color.White;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the sprite is a premultiplied alpha (default is true).
+        /// </summary>
+        /// <value><c>true</c> if the texture is premultiplied by alpha; otherwise, <c>false</c>.</value>
+        [DataMember(30)]
+        [DefaultValue(true)]
+        public bool PremultipliedAlpha { get; set; }
+
         [DataMemberIgnore]
         internal double ElapsedTime;
 
@@ -63,25 +90,7 @@ namespace SiliconStudio.Paradox.Engine
         {
             SpriteProviderInternal = new SpriteFromSpriteGroup();
             ExtrusionMethod = SpriteExtrusionMethod.UnitHeightSpriteRatio;
-        }
-
-        /// <summary>
-        /// The group of sprites associated to the component.
-        /// </summary>
-        [DataMember(5)]
-        [Display("Source")]
-        [NotNull]
-        public ISpriteProvider SpriteProvider
-        {
-            get { return SpriteProviderInternal; }
-            set
-            {
-                if(SpriteProviderInternal == value)
-                    return;
-
-                SpriteProviderInternal = value;
-                CurrentFrame = 0;
-            }
+            PremultipliedAlpha = true;
         }
 
         /// <summary>
