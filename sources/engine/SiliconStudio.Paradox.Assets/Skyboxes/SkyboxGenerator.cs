@@ -146,14 +146,14 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
                 textureSize = (int)Math.Pow(2, Math.Round(Math.Log(textureSize, 2)));
                 if (textureSize < 64) textureSize = 64;
 
-                //var outputTexture = Texture.New2D(graphicsDevice, 256, 256, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 6);
-                using (var outputTexture = Texture.New2D(context.GraphicsDevice, textureSize, textureSize, true, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 6))
+                //var outputTexture = Texture.New2D(graphicsDevice, 256, 256, skyboxTexture.Format, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 6);
+                using (var outputTexture = Texture.New2D(context.GraphicsDevice, textureSize, textureSize, true, skyboxTexture.Format, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 6))
                 {
                     specularRadiancePrefilterGGX.RadianceMap = skyboxTexture;
                     specularRadiancePrefilterGGX.PrefilteredRadiance = outputTexture;
                     specularRadiancePrefilterGGX.Draw();
 
-                    var cubeTexture = Texture.NewCube(context.GraphicsDevice, textureSize, true, PixelFormat.R16G16B16A16_Float);
+                    var cubeTexture = Texture.NewCube(context.GraphicsDevice, textureSize, true, skyboxTexture.Format);
                     context.GraphicsDevice.Copy(outputTexture, cubeTexture);
 
                     cubeTexture.SetSerializationData(cubeTexture.GetDataAsImage());
