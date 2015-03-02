@@ -178,6 +178,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         private ImageEffectShader inFocusToAlpha;
         private ImageEffectShader inFocusMaskCombine;
+        private ImageEffectShader thresholdAlphaCoC;
         private GaussianBokeh gaussianBokeh;
         private GaussianBlur gaussianBlur;
 
@@ -232,6 +233,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             cocMapBlur = ToLoadAndUnload(new CoCMapBlur());
             inFocusToAlpha = ToLoadAndUnload(new ImageEffectShader("InFocusToAlpha"));
             inFocusMaskCombine = ToLoadAndUnload(new ImageEffectShader("InFocusMaskCombine"));
+            thresholdAlphaCoC = ToLoadAndUnload(new ImageEffectShader("ThresholdAlphaCoC"));
             gaussianBlur = ToLoadAndUnload(new GaussianBlur());
             gaussianBokeh = ToLoadAndUnload(new GaussianBokeh());
         }
@@ -415,7 +417,18 @@ namespace SiliconStudio.Paradox.Effects.Images
                 var blurOutput = GetScopedRenderTarget(originalColorBuffer.Description, downscaleFactor, originalColorBuffer.Description.Format);
                 float blurRadius = (MaxBokehSize * BokehSizeFactor) * levelConfig.CoCValue * downscaleFactor * originalColorBuffer.Width;
                 if (blurRadius < 1f) blurRadius = 1f;
+
+                // Pre-process the layer for the current CoC
+                var alphaTextureToBlur = NewScopedRenderTarget2D(textureToBlur.Description);
+                thresholdAlphaCoC.Parameters.Set(ThresholdAlphaCoCKeys.CoCReference, levelConfig.CoCValue);
+                thresholdAlphaCoC.SetInput(0, textureToBlur);
+                thresholdAlphaCoC.SetInput(1, cocLinearDepthTexture);
+                thresholdAlphaCoC.SetOutput(alphaTextureToBlur);
+                thresholdAlphaCoC.Draw(context, "Alphaize");
+                textureToBlur = alphaTextureToBlur;
+
                 BokehBlur levelBlur = levelConfig.blurEffect;
+                levelBlur.CoCStrength = levelConfig.CoCValue;
                 levelBlur.Radius = blurRadius; // This doesn't generate garbage if the radius value doesn't change.
                 levelBlur.SetInput(0, textureToBlur);
                 levelBlur.SetOutput(blurOutput);

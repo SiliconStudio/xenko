@@ -106,6 +106,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Engine\Graphics\Images\DepthOfField\ThresholdAlphaCoC.cs">
+      <DependentUpon>ThresholdAlphaCoC.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Engine\Graphics\Images\DepthOfField\InFocusToAlpha.cs">
       <DependentUpon>InFocusToAlpha.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2626,6 +2632,10 @@
     <None Include="Engine\Graphics\Images\DepthOfField\InFocusMaskCombine.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>InFocusMaskCombine.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Images\DepthOfField\ThresholdAlphaCoC.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ThresholdAlphaCoC.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Images\DepthOfField\InFocusToAlpha.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
