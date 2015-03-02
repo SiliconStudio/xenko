@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31010.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "90-Tools", "90-Tools", "{1AE1AC60-5D2F-4CA7-AE20-888F44551185}"
 EndProject
@@ -260,6 +260,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Presentation.ExpressionDark", "..\sources\common\presentation\SiliconStudio.Presentation.ExpressionDark\SiliconStudio.Presentation.ExpressionDark.csproj", "{83A11F1D-C852-4DB5-9DB1-62943D21D5CA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.GameStudio.Plugin", "..\sources\editor\SiliconStudio.Paradox.GameStudio.Plugin\SiliconStudio.Paradox.GameStudio.Plugin.csproj", "{16E02D45-5530-4617-97DC-BC3BDF77DE2C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{73AA8A18-15C4-405B-BBF4-5D41C1CE44AD} = {73AA8A18-15C4-405B-BBF4-5D41C1CE44AD}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.GameStudio.Tests", "..\sources\editor\SiliconStudio.Paradox.GameStudio.Tests\SiliconStudio.Paradox.GameStudio.Tests.csproj", "{0EA748AF-E1DC-4788-BA50-8BABD56F220C}"
 	ProjectSection(ProjectDependencies) = postProject
