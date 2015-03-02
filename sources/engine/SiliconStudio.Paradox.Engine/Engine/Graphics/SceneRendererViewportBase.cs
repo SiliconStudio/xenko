@@ -39,8 +39,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         [Display("Viewport in %")]
         public bool IsViewportInPercentage { get; set; }
 
-        protected override void DrawCore(RenderContext context, RenderFrame output)
+        protected override void ActivateOutputCore(RenderContext context, RenderFrame output, bool disableDepth)
         {
+            base.ActivateOutputCore(context, output, disableDepth);
+
             Viewport viewport;
             var rect = Viewport;
             // Setup the viewport
