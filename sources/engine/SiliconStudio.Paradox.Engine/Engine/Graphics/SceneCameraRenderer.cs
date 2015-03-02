@@ -74,6 +74,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         protected override void DrawCore(RenderContext context, RenderFrame output)
         {
+            base.DrawCore(context, output);
+
             // Early exit if some properties are null
             if (Mode == null)
             {

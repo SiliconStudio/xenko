@@ -32,52 +32,17 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         [DataMemberIgnore]
         public ParameterCollection Parameters { get; private set; }
 
-        /// <summary>
-        /// Gets the current output <see cref="RenderFrame"/> output.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <returns>RenderFrame.</returns>
-        public RenderFrame GetOutput(RenderContext context)
-        {
-            return Output.GetSafeRenderFrame(context);
-        }
-
-        /// <summary>
-        /// Activates the output to the current <see cref="GraphicsDevice"/>.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="disableDepth">if set to <c>true</c> [disable depth].</param>
-        public void ActivateOutput(RenderContext context, bool disableDepth = false)
-        {
-            var output = GetOutput(context);
-            if (output != null)
-            {
-                ActivateOutputCore(context, output, disableDepth);
-            }
-        }
-
-        /// <summary>
-        /// Activates the output to the current <see cref="GraphicsDevice" />.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="output">The output.</param>
-        /// <param name="disableDepth">if set to <c>true</c> [disable depth].</param>
-        protected virtual void ActivateOutputCore(RenderContext context, RenderFrame output, bool disableDepth)
-        {
-            // Setup the render target
-            context.GraphicsDevice.SetDepthAndRenderTarget(disableDepth ? null : output.DepthStencil, output.RenderTarget);
-        }
-
         protected override void DrawCore(RenderContext context)
         {
-            var output = GetOutput(context);
+            var output = Output.GetSafeRenderFrame(context);
             if (output != null)
             {
                 try
                 {
                     context.PushParameters(Parameters);
 
-                    ActivateOutput(context, true);
+                    // Setup the render target
+                    context.GraphicsDevice.SetDepthAndRenderTarget(output.DepthStencil, output.RenderTarget);
 
                     DrawCore(context, output);
                 }

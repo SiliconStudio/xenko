@@ -23,14 +23,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         public override bool SupportPicking { get { return true; } }
 
-        public override bool IsWritingToDepth
-        {
-            get
-            {
-                return false;
-            }
-        }
-
         protected override void InitializeCore()
         {
             base.InitializeCore();
@@ -80,13 +72,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             var cullMode = device.RasterizerStates.CullNone;
             var viewInverse = Matrix.Invert(viewParameters.Get(TransformationKeys.View));
             var viewProjection = viewParameters.Get(TransformationKeys.ViewProjection);
+            var blendState = renderItems.HasTransparency ? device.BlendStates.AlphaBlend : device.BlendStates.Opaque;
 
-            BlendState previousBlendState = null;
-            Effect previousEffect = null;
+            sprite3DBatch.Begin(viewProjection, SpriteSortMode.Deferred, blendState, rasterizerState: cullMode);
 
-            var isPicking = context.IsPicking();
-
-            bool hasBegin = false;
             for (var i = fromIndex; i <= toIndex; i++)
             {
                 var renderItem = renderItems[i];
@@ -98,25 +87,17 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 if (sprite == null)
                     continue;
 
-                // Update the sprite batch
-                var blendState = isPicking ? device.BlendStates.Opaque : renderItems.HasTransparency ? (spriteComp.PremultipliedAlpha ? device.BlendStates.AlphaBlend : device.BlendStates.NonPremultiplied) : device.BlendStates.Opaque;
-                var currentEffect = (!isPicking && spriteComp.Tags.Get(IsEntitySelected)) ? selectedSpriteEffect : null; // TODO remove this code when material are available
-                if (previousEffect != currentEffect || blendState != previousBlendState)
+                var useSelectedEffect = !context.IsPicking() && spriteComp.Tags.Get(IsEntitySelected); // TODO remove this code when material are available
+                if (useSelectedEffect)
                 {
-                    if (hasBegin)
-                    {
-                        sprite3DBatch.End();
-                    }
-                    sprite3DBatch.Begin(viewProjection, SpriteSortMode.Deferred, blendState, rasterizerState: cullMode, effect: currentEffect);
-                    hasBegin = true;
+                    sprite3DBatch.End();
+                    sprite3DBatch.Begin(viewProjection, SpriteSortMode.Deferred, blendState, rasterizerState: cullMode, effect: selectedSpriteEffect);
                 }
-                previousEffect = currentEffect;
-                previousBlendState = blendState;
 
                 var sourceRegion = sprite.Region; 
                 var texture = sprite.Texture;
                 var color = spriteComp.Color;
-                if (isPicking) // TODO move this code corresponding to picking out of the runtime code.
+                if (context.IsPicking()) // TODO move this code corresponding to picking out of the runtime code.
                 {
                     texture = device.GetSharedWhiteTexture();
                     color = (Color)new Color4(spriteComp.Id);
@@ -153,6 +134,12 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 
                 // draw the sprite
                 sprite3DBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref elementSize, ref color, sprite.Orientation, SwizzleMode.None, renderItem.Depth);
+
+                if (useSelectedEffect) // TODO remove this code when material are available
+                {
+                    sprite3DBatch.End();
+                    sprite3DBatch.Begin(viewProjection, SpriteSortMode.Deferred, blendState, rasterizerState: cullMode);
+                }
             }
 
             sprite3DBatch.End();
