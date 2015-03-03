@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
         public const string PresentationAssemblyQualifiedName = ", " + PresentationAssemblyName + ", " + SharedAssemblyQualifiedName;
 
-        public const string GizmoEntityFactoriesNamespace = "SiliconStudio.Paradox.Assets.Presentation.SceneEditor.GizmoEntityFactories.";
+        public const string GizmoEntityFactoriesNamespace = "SiliconStudio.Paradox.Assets.Presentation.SceneEditor.Gizmos.";
 
         public const string CameraGizmoEntityFactoryQualifiedName = GizmoEntityFactoriesNamespace + "CameraGizmoEntityFactory" + PresentationAssemblyQualifiedName;
         public const string LightGizmoEntityFactoryQualifiedName = GizmoEntityFactoriesNamespace + "LightGizmoEntityFactory" + PresentationAssemblyQualifiedName;

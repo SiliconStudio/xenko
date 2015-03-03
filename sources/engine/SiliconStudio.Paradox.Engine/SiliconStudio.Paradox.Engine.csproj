@@ -1978,6 +1978,8 @@
     <Compile Include="EntityModel\DefaultEntityComponentRendererAttribute.cs" />
     <Compile Include="EntityModel\EntityComponentRendererType.cs" />
     <Compile Include="EntityModel\EntityReference.cs" />
+    <Compile Include="EntityModel\GizmoBase.cs" />
+    <Compile Include="EntityModel\GizmoContext.cs" />
     <Compile Include="EntityModel\GizmoEntityFactory.cs" />
     <Compile Include="EntityModel\GizmoEntityFactoryAttribute.cs" />
     <Compile Include="EntityModel\GizmoEntityFactoryNames.cs" />
@@ -2046,6 +2048,7 @@
     <Compile Include="EntityModel\CloneEntityComponentSerializer.cs" />
     <Compile Include="EntityModel\EntityExtensions.cs" />
     <Compile Include="EntityModel\EntityHierarchyData.cs" />
+    <Compile Include="EntityModel\IGizmo.cs" />
     <Compile Include="EntityModel\Scene.cs" />
     <Compile Include="Engine\SceneChildRenderer.cs" />
     <Compile Include="EntityModel\SceneSystem.cs" />

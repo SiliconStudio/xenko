@@ -1,10 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.EntityModel
 {
@@ -13,40 +10,13 @@ namespace SiliconStudio.Paradox.EntityModel
     /// </summary>
     public abstract class GizmoEntityFactory: ComponentBase
     {
-        private IGraphicsDeviceService graphicsDeviceService;
-
-        /// <summary>
-        /// Gets the graphics device.
-        /// </summary>
-        /// <value>The graphics device.</value>
-        protected GraphicsDevice GraphicsDevice
-        {
-            get
-            {
-                if (graphicsDeviceService == null)
-                {
-                    throw new InvalidOperationException("GraphicsDeviceService is not yet initialized");
-                }
-
-                return graphicsDeviceService.GraphicsDevice;
-            }
-        }
-
-        /// <summary>
-        /// Initialize the <see cref="GizmoEntityFactory"/>
-        /// </summary>
-        /// <param name="services">The list of services of the scene</param>
-        public virtual void Initialize(IServiceRegistry services)
-        {
-            graphicsDeviceService = services.GetServiceAs<IGraphicsDeviceService>();
-        }
-
         /// <summary>
         /// Generates the gizmo-entity to associate to the provided entity.
         /// </summary>
+        /// <param name="sceneEntity">The scene entity that requires a gizmo entity</param>
         /// <param name="component">The component that requires the gizmo-entity</param>
         /// <returns>The gizmo-entity</returns>
-        public abstract Entity CreateGizmoEntity(EntityComponent component);
+        public abstract IGizmo CreateGizmoEntity(Entity sceneEntity, EntityComponent component);
     }
 
     /// <summary>
@@ -55,16 +25,17 @@ namespace SiliconStudio.Paradox.EntityModel
     public abstract class GizmoEntityFactory<T> : GizmoEntityFactory
         where T : EntityComponent
     {
-        public override Entity CreateGizmoEntity(EntityComponent component)
+        public override IGizmo CreateGizmoEntity(Entity sceneEntity, EntityComponent component)
         {
-            return CreateGizmoEntity((T)component);
+            return CreateGizmoEntity(sceneEntity, (T)component);
         }
 
         /// <summary>
         /// Generates the gizmo-entity to associate to the provided entity.
         /// </summary>
+        /// <param name="sceneEntity">The scene entity that requires the gizmo-entity</param>
         /// <param name="component">The component that requires the gizmo-entity</param>
         /// <returns>The gizmo-entity</returns>
-        public abstract Entity CreateGizmoEntity(T component);
+        public abstract IGizmo CreateGizmoEntity(Entity sceneEntity, T component);
     }
 }
