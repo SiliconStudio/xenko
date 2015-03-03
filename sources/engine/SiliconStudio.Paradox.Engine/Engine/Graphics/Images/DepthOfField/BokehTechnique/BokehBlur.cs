@@ -24,6 +24,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         protected BokehBlur()
         {
             Radius = 5f; // Default value
+            CoCStrength = 1.0f;
         }
 
         /// <summary>
@@ -36,6 +37,9 @@ namespace SiliconStudio.Paradox.Effects.Images
             SetInput(0, colorBuffer);
             SetInput(1, depthBuffer);
         }
+
+        [DataMemberIgnore]
+        public float CoCStrength { get; set; }
 
         /// <summary>
         /// Sets the radius of the blur.

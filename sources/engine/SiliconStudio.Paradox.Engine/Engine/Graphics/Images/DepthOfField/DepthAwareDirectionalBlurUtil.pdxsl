@@ -26,6 +26,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         // Weights of each tap (weights values are symmetric along each direction)
         float TapWeights[TWeightCount];
 
+        float CoCReference;
+
         // Gets the blur result for the current pixel.
         override float4 Compute()
         {
@@ -65,8 +67,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 float contribution = tapColor[k].w; // alpha modulates the contribution
                 // Final weight value to use
                 float tapWeight = contribution * tapOriginalWeight[k];
-
-                resultColor += tapColor[k].xyz * tapColor[k].w * tapWeight;
+                resultColor += tapColor[k].xyz /*  * tapColor[k].w */  * tapWeight;
                 totalWeight += tapWeight;
             }
 
@@ -77,7 +78,10 @@ namespace SiliconStudio.Paradox.Effects.Images
                 resultColor = float3(0.0, 0.0, 0.0);
             }
 
-            return float4(resultColor, sign(totalWeight));
+            float finalWeight = 0;
+            if (totalWeight > 0) finalWeight = 1.0 / totalWeight;
+
+            return float4(resultColor, sign(totalWeight) );
         }
     };
 }

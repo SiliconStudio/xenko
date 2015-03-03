@@ -141,6 +141,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.TotalTap, tapNumber);
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Radius, Radius);
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.TapWeights, tapWeights);
+            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.CoCReference, CoCStrength);
 
             // Vertical blur
             var blurAngle = MathUtil.PiOverTwo + Phase;

@@ -16,11 +16,8 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
-    public static partial class DepthAwareDirectionalBlurUtilKeys
+    public static partial class ThresholdAlphaCoCKeys
     {
-        public static readonly ParameterKey<Vector2> Direction = ParameterKeys.New<Vector2>();
-        public static readonly ParameterKey<float> Radius = ParameterKeys.New<float>();
-        public static readonly ParameterKey<float[]> TapWeights = ParameterKeys.New<float[]>();
         public static readonly ParameterKey<float> CoCReference = ParameterKeys.New<float>();
     }
 }
