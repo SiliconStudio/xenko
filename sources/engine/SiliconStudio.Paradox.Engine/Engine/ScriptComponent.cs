@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Engine
     /// Script component.
     /// </summary>
     [DataContract("ScriptComponent")]
-    [Display(200, "Scripts")]
+    [Display(20, "Scripts")]
     public sealed class ScriptComponent : EntityComponent
     {
         public static PropertyKey<ScriptComponent> Key = new PropertyKey<ScriptComponent>("Key", typeof(ScriptComponent));
