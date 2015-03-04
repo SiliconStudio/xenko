@@ -112,7 +112,7 @@ namespace SiliconStudio.Paradox.EntityModel
         {
             base.Destroy();
 
-            SceneInstance.Scene.RemoveChild(RootEntity);
+            SceneInstance.Remove(RootEntity);
         }
 
         /// <summary>
