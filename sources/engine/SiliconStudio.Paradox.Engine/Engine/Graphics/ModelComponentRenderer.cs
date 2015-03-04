@@ -185,7 +185,7 @@ namespace SiliconStudio.Paradox.Effects
             {
                 return;
             }
-            for (int i = 0; i < (modelRenderSlot - renderMeshes.Count + 1); i++)
+            for (int i = renderMeshes.Count; i <= modelRenderSlot; i++)
             {
                 renderMeshes.Add(null);
             }
