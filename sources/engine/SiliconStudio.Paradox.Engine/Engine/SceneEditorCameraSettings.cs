@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Engine
             VerticalFieldOfView = 45.0f;
             OrthographicSize = 10.0f;
             NearPlane = 0.1f;
-            FarPlane = 1000.0f;
+            FarPlane = 2000.0f;
         }
 
         /// <summary>
