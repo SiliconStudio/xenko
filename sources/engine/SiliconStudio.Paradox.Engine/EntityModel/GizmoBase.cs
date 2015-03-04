@@ -144,7 +144,7 @@ namespace SiliconStudio.Paradox.EntityModel
             RootEntity.Transform.UseTRS = false;
         }
 
-        public void PrepareDraw(RenderContext context)
+        public virtual void PrepareDraw(RenderContext context)
         {
         }
     }
