@@ -1,9 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
 using System.Threading.Tasks;
 
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
@@ -16,7 +15,7 @@ using SiliconStudio.Paradox.UI;
 
 namespace SiliconStudio.Paradox
 {
-    public interface IScriptContext : IVirtualResolution
+    public interface IScriptContext
     {
         IServiceRegistry Services { get; }
 
@@ -51,8 +50,6 @@ namespace SiliconStudio.Paradox
     {
         private IGraphicsDeviceService graphicsDeviceService;
 
-        private IVirtualResolution virtualResolutionProvider;
-
         protected ScriptContext()
         {
         }
@@ -69,7 +66,6 @@ namespace SiliconStudio.Paradox
             graphicsDeviceService = Services.GetSafeServiceAs<IGraphicsDeviceService>();
 
             Game = Services.GetSafeServiceAs<IGame>();
-            virtualResolutionProvider = Services.GetSafeServiceAs<IVirtualResolution>();
             Asset = (AssetManager)Services.GetSafeServiceAs<IAssetManager>();
             Input = Services.GetSafeServiceAs<InputManager>();
             Script = Services.GetSafeServiceAs<ScriptSystem>();
@@ -119,19 +115,6 @@ namespace SiliconStudio.Paradox
 
         protected override void Destroy()
         {
-        }
-
-        [DataMemberIgnore]
-        public Vector3 VirtualResolution 
-        { 
-            get { return virtualResolutionProvider.VirtualResolution; }
-            set { virtualResolutionProvider.VirtualResolution = value; }
-        }
-
-        public event EventHandler<EventArgs> VirtualResolutionChanged
-        {
-            add { virtualResolutionProvider.VirtualResolutionChanged += value;}
-            remove { virtualResolutionProvider.VirtualResolutionChanged -= value; }
         }
     }
 }

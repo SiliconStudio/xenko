@@ -25,7 +25,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Games.Time;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core;
@@ -36,7 +35,7 @@ namespace SiliconStudio.Paradox.Games
     /// <summary>
     /// The game.
     /// </summary>
-    public abstract class GameBase : ComponentBase, IGame, IVirtualResolution
+    public abstract class GameBase : ComponentBase, IGame
     {
         #region Fields
 
@@ -75,8 +74,6 @@ namespace SiliconStudio.Paradox.Games
 
         internal bool SlowDownDrawCalls;
 
-        private Vector3 virtualResolution;
-
         #endregion
 
         #region Constructors and Destructors
@@ -87,7 +84,7 @@ namespace SiliconStudio.Paradox.Games
         protected GameBase()
         {
             // Internals
-            Log = GlobalLogger.GetLogger(this.GetType().GetTypeInfo().Name);
+            Log = GlobalLogger.GetLogger(GetType().GetTypeInfo().Name);
             updateTime = new GameTime();
             drawTime = new GameTime();
             playTimer = new TimerTick();
@@ -125,7 +122,6 @@ namespace SiliconStudio.Paradox.Games
 
             // Setup registry
             Services.AddService(typeof(IGame), this);
-            Services.AddService(typeof(IVirtualResolution), this);
             Services.AddService(typeof(IGamePlatform), gamePlatform);
 
             IsActive = true;
@@ -328,25 +324,7 @@ namespace SiliconStudio.Paradox.Games
         }
 
         public GameState State { get; set; }
-
-        public Vector3 VirtualResolution
-        {
-            get { return virtualResolution; }
-            set
-            {
-                if(virtualResolution == value)
-                    return;
-
-                virtualResolution = value;
-
-                var handler = VirtualResolutionChanged;
-                if (handler != null)
-                    handler(this, EventArgs.Empty);
-            }
-        }
-
-        public event EventHandler<EventArgs> VirtualResolutionChanged;
-
+        
         #endregion
 
         internal EventHandler<GameUnhandledExceptionEventArgs> UnhandledExceptionInternal
@@ -457,7 +435,7 @@ namespace SiliconStudio.Paradox.Games
             }
 
             // Gets the GameWindow Context
-            this.Context = gameContext ?? new GameContext();
+            Context = gameContext ?? new GameContext();
 
             try
             {
@@ -635,7 +613,7 @@ namespace SiliconStudio.Paradox.Games
                     if (!suppressNextDraw)
                     {
                         totalDrawTime = TimeSpan.FromTicks(totalUpdateTime.Ticks + drawLag);
-                        DrawInterpolationFactor = (float)drawLag/(float)TargetElapsedTime.Ticks;
+                        DrawInterpolationFactor = drawLag/(float)TargetElapsedTime.Ticks;
                         DrawFrame();
                     }
 
@@ -703,7 +681,7 @@ namespace SiliconStudio.Paradox.Games
                     Window.OnPause();
 
                 var array = new IGameSystemBase[GameSystems.Count];
-                this.GameSystems.CopyTo(array, 0);
+                GameSystems.CopyTo(array, 0);
                 for (int i = 0; i < array.Length; i++)
                 {
                     var disposable = array[i] as IDisposable;

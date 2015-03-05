@@ -227,11 +227,6 @@ namespace SiliconStudio.Paradox
             Asset.Serializer.RegisterSerializer(new SoundEffectSerializer(Audio.AudioEngine));
             Asset.Serializer.RegisterSerializer(new SoundMusicSerializer(Audio.AudioEngine));
 
-            // determine the virtual resolution so that ratio is maintained
-            const int screenDesiredHeight = 1080;
-            var screenRatio = GraphicsDevice.BackBuffer.ViewWidth / (float)GraphicsDevice.BackBuffer.ViewHeight;
-            VirtualResolution = new Vector3((int)(screenRatio * screenDesiredHeight), screenDesiredHeight, screenDesiredHeight);
-
             // enable multi-touch by default
             Input.MultiTouchEnabled = true;
         }

@@ -82,8 +82,6 @@ namespace SiliconStudio.Paradox.UI
 
         private readonly List<PointerEvent> compactedPointerEvents = new List<PointerEvent>();
 
-        private readonly IVirtualResolution gameVirtualResolution;
-
         private float uiFrustumHeight;
 
         private Matrix inverseViewMatrix;
@@ -105,14 +103,6 @@ namespace SiliconStudio.Paradox.UI
             : base(registry)
         {
             Services.AddService(typeof(UISystem), this);
-
-            gameVirtualResolution = (IVirtualResolution)Services.GetService(typeof(IVirtualResolution));
-            gameVirtualResolution.VirtualResolutionChanged += OnGameVirtualResolutionChanged;
-        }
-
-        private void OnGameVirtualResolutionChanged(object sender, EventArgs eventArgs)
-        {
-            VirtualResolution = gameVirtualResolution.VirtualResolution;
         }
 
         public override void Initialize()
@@ -134,8 +124,6 @@ namespace SiliconStudio.Paradox.UI
 
         protected override void Destroy()
         {
-            gameVirtualResolution.VirtualResolutionChanged -= OnGameVirtualResolutionChanged;
-
             Game.Activated -= OnApplicationResumed;
             Game.Deactivated -= OnApplicationPaused;
 
