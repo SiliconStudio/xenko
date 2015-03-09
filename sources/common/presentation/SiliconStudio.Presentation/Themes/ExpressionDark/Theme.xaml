@@ -159,7 +159,9 @@
                                     <TextBlock VerticalAlignment="Center" Text="{TemplateBinding Title}" Margin="0,4" FontSize="14"/>
                                 </DockPanel>
                                 <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
-                                    <ContentPresenter Content="{TemplateBinding Content}" />
+                                    <AdornerDecorator>
+                                        <ContentPresenter Content="{TemplateBinding Content}" />
+                                    </AdornerDecorator>
                                 </Border>
                             </DockPanel>
                         </Border>
@@ -3713,6 +3715,8 @@
 
     <Style TargetType="{x:Type GridSplitter}">
         <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
     </Style>
 
     <Style TargetType="ctrl:Vector2Editor">
