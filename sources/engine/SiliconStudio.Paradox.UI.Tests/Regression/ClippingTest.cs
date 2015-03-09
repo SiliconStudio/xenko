@@ -63,7 +63,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             canvas.Children.Add(element1);
             canvas.Children.Add(element2);
 
-            UI.RootElement = canvas;
+            SceneUIComponent.RootElement = canvas;
         }
 
         protected override void Update(GameTime gameTime)

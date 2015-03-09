@@ -7,6 +7,10 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Engine.Graphics;
+using SiliconStudio.Paradox.Engine.Graphics.Composers;
+using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.Regression;
@@ -20,11 +24,23 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// </summary>
     public class UnitTestGameBase : GraphicsTestBase
     {
+        protected const EntityGroup UIRendereredGroup = EntityGroup.Group1;
+        protected const EntityGroup CameraRenderedGroup = EntityGroup.Group2;
+
         protected readonly Logger Logger = GlobalLogger.GetLogger("Test Game");
         
         private Vector2 lastTouchPosition;
 
-        protected UIComponentRenderer UiComponentRenderer;
+        protected readonly CameraRendererModeUI SceneCameraRenderer = new CameraRendererModeUI { Name = "Camera UI" };
+        protected readonly SceneUIRenderer SceneUIRenderer = new SceneUIRenderer { Name = "Scene UI", CullingMask = UIRendereredGroup };
+
+        protected Scene UIScene;
+
+        protected Entity CameraUIRoot = new Entity("Root entity of camera UI") { new UIComponent() };
+        protected Entity SceneUIRoot = new Entity("Root entity of scene UI") { new UIComponent() };
+
+        protected UIComponent CameraUIComponent { get {  return CameraUIRoot.Get<UIComponent>(); } }
+        protected UIComponent SceneUIComponent { get {  return SceneUIRoot.Get<UIComponent>(); } }
 
         /// <summary>
         /// Create an instance of the game test
@@ -34,14 +50,48 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             StopOnFrameCount = -1;
 
             GraphicsDeviceManager.PreferredGraphicsProfile = new [] { GraphicsProfile.Level_11_0 };
+            UIScene = new Scene
+            {
+                Settings =
+                {
+                    GraphicsCompositor = new SceneGraphicsCompositorLayers
+                    {
+                        Master =
+                        {
+                            Renderers =
+                            {
+                                new ClearRenderFrameRenderer { Color = Color.Green, Name = "Clear frame" },
+    
+                                new SceneDelegateRenderer(SpecificDrawBeforeUI) { Name = "Delegate before main UI"},
+
+                                new SceneCameraRenderer
+                                {
+                                    CullingMask = CameraRenderedGroup,
+                                    Mode = SceneCameraRenderer
+                                },
+                                
+                                SceneUIRenderer
+                            }
+                        }
+                    }
+                }
+            };
+
+            UIScene.AddChild(CameraUIRoot);
+            UIScene.AddChild(SceneUIRoot);
+
+            SceneCameraRenderer.VirtualResolution = new Vector3(1000, 500, 500);
+            SceneUIRenderer.VirtualResolution = new Int3(1000, 500, 500);
         }
 
-        protected virtual void SpecificDrawBeforeUI(RenderContext context)
+        protected virtual void SpecificDrawBeforeUI(RenderContext context, RenderFrame renderFrame)
         {
         }
 
-        protected override Task LoadContent()
+        protected override async Task LoadContent()
         {
+            await base.LoadContent();
+
             // Set dependency properties test values.
             TextBlock.TextColorPropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(Color.LightGray);
             EditText.TextColorPropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(Color.LightGray);
@@ -67,20 +117,8 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             ToggleButton.IndeterminateImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Test toggle button indeterminate design", toggleButtonIndeterminate) { Borders = 8 * Vector4.One });
 
             Window.IsMouseVisible = true;
-            UI.VirtualResolution = new Vector3(1000, 500, 500);
 
-            CreatePipeline();
-
-            return base.LoadContent();
-        }
-
-        protected virtual void CreatePipeline()
-        {
-            // create the render pipeline
-            UiComponentRenderer = new UIComponentRenderer(Services);
-            RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.Green, EnableClearStencil = true });
-            RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = SpecificDrawBeforeUI });
-            RenderSystem.Pipeline.Renderers.Add(UiComponentRenderer);
+            SceneSystem.SceneInstance = new SceneInstance(Services, UIScene);
         }
 
         protected override void Update(GameTime gameTime)

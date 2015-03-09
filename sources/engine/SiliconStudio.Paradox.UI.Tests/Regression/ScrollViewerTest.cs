@@ -70,7 +70,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
             contentDecorator = new ContentDecorator { Content = scrollViewer };
 
-            UI.RootElement = contentDecorator;
+            SceneUIComponent.RootElement = contentDecorator;
         }
 
         protected override void Update(GameTime gameTime)

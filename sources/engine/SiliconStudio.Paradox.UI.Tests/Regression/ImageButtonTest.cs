@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
                 NotPressedImage = new UIImage(Asset.Load<Texture>("ImageButtonNotPressed")),
             };
 
-            UI.RootElement = imageButton;
+            SceneUIComponent.RootElement = imageButton;
         }
 
         protected override void RegisterTests()

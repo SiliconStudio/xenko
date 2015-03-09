@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            var middleOfScreen = new Vector3(UI.VirtualResolution.X, UI.VirtualResolution.Y, 0) / 2;
+            var middleOfScreen = new Vector3(SceneUIRenderer.VirtualResolution.X, SceneUIRenderer.VirtualResolution.Y, 0) / 2;
 
             edit1 = new EditText(Services)
             {
@@ -96,7 +96,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             canvas.Children.Add(edit3);
             canvas.Children.Add(edit4);
 
-            UI.RootElement = canvas;
+            SceneUIComponent.RootElement = canvas;
         }
 
         private bool IsLetter(char c)

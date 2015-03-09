@@ -130,7 +130,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
             scrollViewer = new ScrollViewer { Name = "sv", Content = currentStackPanel, ScrollMode = ScrollingMode.Vertical };
 
-            UI.RootElement = scrollViewer;
+            SceneUIComponent.RootElement = scrollViewer;
         }
 
         protected override void Update(GameTime gameTime)

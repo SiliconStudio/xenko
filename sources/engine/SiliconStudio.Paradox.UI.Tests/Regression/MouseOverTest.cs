@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.UI.Controls;
@@ -72,15 +73,16 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             canvas.MouseOverStateChanged += (sender, args) => { triggeredCanvas = true;};
             stackPanel.MouseOverStateChanged += (sender, args) => { triggeredStackPanel = true;};
 
-            UI.RootElement = canvas;
+            SceneUIComponent.RootElement = canvas;
         }
 
-        protected override void CreatePipeline()
-        {
-            RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services));
-            RenderSystem.Pipeline.Renderers.Add(new BackgroundRenderer(Services) { BackgroundTexture = Asset.Load<Texture>("ParadoxBackground")});
-            RenderSystem.Pipeline.Renderers.Add(UiComponentRenderer = new UIComponentRenderer(Services));
-        }
+        // TODO reactivate this code when the background renderer will be available again.
+        //protected override void CreatePipeline()
+        //{
+        //    RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services));
+        //    RenderSystem.Pipeline.Renderers.Add(new BackgroundRenderer(Services) { BackgroundTexture = Asset.Load<Texture>("ParadoxBackground")});
+        //    RenderSystem.Pipeline.Renderers.Add(UiComponentRenderer = new UIComponentRenderer(Services));
+        //}
 
         protected override void RegisterTests()
         {

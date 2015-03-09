@@ -44,7 +44,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
                 BackgroundImage = new UIImage(Asset.Load<Texture>("DumbWhite"))
             };
 
-            UI.RootElement = decorator;
+            SceneUIComponent.RootElement = decorator;
         }
 
         protected override void Update(GameTime gameTime)

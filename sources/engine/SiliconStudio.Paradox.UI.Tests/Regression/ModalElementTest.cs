@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Input;
@@ -94,8 +95,8 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             uniformGrid.Children.Add(lifeBar);
             uniformGrid.Children.Add(quitGameButton);
 
-            
-            UI.RootElement = uniformGrid;
+
+            SceneUIComponent.RootElement = uniformGrid;
         }
 
         private void Modal1OnOutsideClick(object sender, RoutedEventArgs routedEventArgs)
@@ -117,9 +118,9 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             uniformGrid.Children.Remove(modal2);
         }
 
-        protected override void SpecificDrawBeforeUI(RenderContext context)
+        protected override void SpecificDrawBeforeUI(RenderContext context, RenderFrame renderFrame)
         {
-            base.SpecificDrawBeforeUI(context);
+            base.SpecificDrawBeforeUI(context, renderFrame);
 
             GraphicsDevice.DrawTexture(uiImages["GameScreen"].Texture);
         }
