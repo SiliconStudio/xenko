@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.ComponentModel;
-
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Paradox.Effects;
@@ -17,13 +15,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     /// </summary>
     [DataContract("SceneCameraRenderer")]
     [Display("Render Camera")]
-    public sealed class SceneCameraRenderer : SceneRendererViewportBase
+    public sealed class SceneCameraRenderer : SceneEntityRenderer
     {
-        /// <summary>
-        /// Property key to access the current <see cref="SceneCameraRenderer"/> from <see cref="RenderContext.Tags"/>.
-        /// </summary>
-        public static readonly PropertyKey<SceneCameraRenderer> Current = new PropertyKey<SceneCameraRenderer>("SceneCameraRenderer.Current", typeof(SceneCameraRenderer));
-
         // TODO: Add option for Occlusion culling
         // TODO: Add support for fixed aspect ratio and auto-centered-viewport
 
@@ -33,7 +26,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         public SceneCameraRenderer()
         {
             Mode = new CameraRendererModeForward();
-            CullingMask = EntityGroup.All;
         }
 
         /// <summary>
@@ -52,25 +44,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         public SceneCameraSlotIndex Camera { get; set; }
 
         /// <summary>
-        /// Gets or sets the culling mask.
-        /// </summary>
-        /// <value>The culling mask.</value>
-        [DataMember(30)]
-        [DefaultValue(EntityGroup.All)]
-        public EntityGroup CullingMask { get; set; }
-
-        /// <summary>
         /// Gets or sets the material filter used to render this scene camera.
         /// </summary>
         /// <value>The material filter.</value>
         [DataMemberIgnore]
         public ShaderSource MaterialFilter { get; set; }
-
-        /// <summary>
-        /// Gets or sets the value indicating the current rendering is for picking or not.
-        /// </summary>
-        [DataMemberIgnore]
-        public bool IsPickingMode { get; set; }
 
         protected override void DrawCore(RenderContext context, RenderFrame output)
         {
@@ -88,8 +66,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             }
 
             // Draw this camera.
-            using (var t1 = context.PushTagAndRestore(Current, this))
-            using (var t2 = context.PushTagAndRestore(CameraComponentRenderer.Current, cameraState))
+            using (context.PushTagAndRestore(Current, this))
+            using (context.PushTagAndRestore(CameraComponentRenderer.Current, cameraState))
             {
                 var currentFilter = context.Parameters.Get(MaterialKeys.PixelStageSurfaceFilter);
                 if (!ReferenceEquals(currentFilter, MaterialFilter))

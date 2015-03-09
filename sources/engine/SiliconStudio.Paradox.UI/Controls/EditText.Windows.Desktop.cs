@@ -81,7 +81,7 @@ namespace SiliconStudio.Paradox.UI.Controls
                 return 0;
 
             var textRegionSize = (ActualWidth - Padding.Left - Padding.Right);
-            var fontScale = RealSizeVirtualResolutionRatio;
+            var fontScale = LayoutingContext.RealVirtualResolutionRatio;
             var fontSize = fontScale * TextSize;
 
             // calculate the offset of the beginning of the text due to text alignment

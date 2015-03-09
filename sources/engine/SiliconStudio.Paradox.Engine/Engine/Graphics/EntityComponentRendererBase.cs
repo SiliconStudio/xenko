@@ -27,8 +27,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         public void Draw(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
         {
-            var currentSceneCameraRenderer = context.Tags.Get(SceneCameraRenderer.Current);
-            if (currentSceneCameraRenderer == null)
+            var currentSceneEntityRenderer = context.Tags.Get(SceneEntityRenderer.Current);
+            if (currentSceneEntityRenderer == null)
             {
                 return;
             }
@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             PreDrawCoreInternal(context);
 
             // Make sure the render frame and viewport is correctly setup
-            currentSceneCameraRenderer.ActivateOutput(context, !IsWritingToDepth);
+            currentSceneEntityRenderer.ActivateOutput(context, !IsWritingToDepth);
 
             DrawCore(context, renderItems, fromIndex, toIndex);
             PostDrawCoreInternal(context);

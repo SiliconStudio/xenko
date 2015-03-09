@@ -6,7 +6,6 @@ using System.Reflection;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Engine.Graphics.Composers;
@@ -133,14 +132,14 @@ namespace SiliconStudio.Paradox.Engine
                 graphicsDevice.ClearState();
 
                 // Draw the main scene using the current compositor (or the provided override)
-                var graphicsCompositor = compositorOverride ?? this.Scene.Settings.GraphicsCompositor;
+                var graphicsCompositor = compositorOverride ?? Scene.Settings.GraphicsCompositor;
                 if (graphicsCompositor != null)
                 {
                     // Push context (pop after using)
                     using (var t1 = context.PushTagAndRestore(RenderFrame.Current, toFrame))
                     using (var t2 = context.PushTagAndRestore(SceneGraphicsLayer.Master, toFrame))
                     using (var t3 = context.PushTagAndRestore(Current, this))
-                    using (var t4 = context.PushTagAndRestore(CameraRendererMode.RendererTypesKey, this.RendererTypes))
+                    using (var t4 = context.PushTagAndRestore(CameraRendererMode.RendererTypesKey, RendererTypes))
                     {
                         graphicsCompositor.Draw(context);
                     }

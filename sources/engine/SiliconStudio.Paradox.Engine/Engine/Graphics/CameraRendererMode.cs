@@ -26,7 +26,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             sortedRendererTypes = new List<EntityComponentRendererType>();
             batchRenderer = new EntityComponentRendererBatch();
             RendererOverrides = new Dictionary<Type, IEntityComponentRenderer>();
-            FilterComponentTypes = new HashSet<Type>();
+            RenderComponentTypes = new HashSet<Type>();
+            SkipComponentTypes = new HashSet<Type>();
         }
 
         /// <summary>
@@ -37,17 +38,18 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         public Dictionary<Type, IEntityComponentRenderer> RendererOverrides { get; private set; }
 
         /// <summary>
-        /// Gets or sets the effect to use to render the models in the scene.
-        /// </summary>
-        /// <value>The main model effect.</value>
-        public abstract string ModelEffect { get; set; } // TODO: This is not a good extensibility point. Check how to improve this
-
-        /// <summary>
-        /// Gets the filter renderer types.
+        /// Gets the filter on the types to render.
         /// </summary>
         /// <value>The filter renderer types.</value>
         [DataMemberIgnore]
-        public HashSet<Type> FilterComponentTypes { get; private set; }
+        public HashSet<Type> RenderComponentTypes { get; private set; }
+
+        /// <summary>
+        /// Gets the filter on the types to skip.
+        /// </summary>
+        /// <value>The filter renderer types.</value>
+        [DataMemberIgnore]
+        public HashSet<Type> SkipComponentTypes { get; private set; }
 
         /// <summary>
         /// Draws entities from a specified <see cref="SceneCameraRenderer" />.
@@ -70,7 +72,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 var componentType = sortedRendererTypes[i].ComponentType;
 
                 // If a Filter on a component types is set, skip 
-                if (FilterComponentTypes.Count > 0 && !FilterComponentTypes.Contains(componentType))
+                if (RenderComponentTypes.Count > 0 && !RenderComponentTypes.Contains(componentType))
+                {
+                    continue;
+                }
+                if (SkipComponentTypes.Contains(componentType))
                 {
                     continue;
                 }

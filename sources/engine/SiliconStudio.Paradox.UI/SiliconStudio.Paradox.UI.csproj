@@ -50,6 +50,7 @@
     <Compile Include="IScrollAnchorInfo.cs" />
     <Compile Include="IScrollInfo.cs" />
     <Compile Include="KeyEventArgs.cs" />
+    <Compile Include="LayoutingContext.cs" />
     <Compile Include="MouseOverState.cs" />
     <Compile Include="Panels\Grid.cs" />
     <Compile Include="Panels\GridBase.cs" />

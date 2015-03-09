@@ -137,10 +137,8 @@ namespace SiliconStudio.Paradox.UI
         private float minimumDepth;
         private Matrix localMatrix = Matrix.Identity;
         private MouseOverState mouseOverState;
-
-        // Cached element renderer
-        internal Renderers.ElementRenderer ElementRenderer;
-
+        private LayoutingContext layoutingContext;
+        
         internal bool HierarchyDisablePicking;
         internal Vector3 RenderSizeInternal;
         internal Matrix WorldMatrixInternal;
@@ -251,20 +249,25 @@ namespace SiliconStudio.Paradox.UI
         /// </summary>
         public int DrawLayerNumber { get; set; }
 
-        /// <summary>
-        /// The instance of <see cref="UISystem"/> managing this <see cref="UIElement"/>.
-        /// </summary>
-        internal protected UISystem UISystem { get; set; }
-
         internal bool ForceNextMeasure = true;
         internal bool ForceNextArrange = true;
 
         /// <summary>
         /// The ratio between the element real size on the screen and the element virtual size.
         /// </summary>
-        internal protected Vector2 RealSizeVirtualResolutionRatio
+        internal protected LayoutingContext LayoutingContext
         {
-            get { return UISystem.BackBufferVirtualResolutionRatio; } // TODO should we take in account the world matrix here? -> may generate to many font size in case of zoom animations
+            get { return layoutingContext; }
+            set
+            {
+                if (value.Equals(layoutingContext))
+                    return;
+
+                ForceMeasure();
+                layoutingContext = value;
+                foreach (var child in VisualChildren)
+                    child.LayoutingContext = value;
+            }
         }
 
         /// <summary>
@@ -1124,8 +1127,8 @@ namespace SiliconStudio.Paradox.UI
 
             if (parent != null)
             {
+                child.LayoutingContext = parent.layoutingContext;
                 parent.VisualChildrenCollection.Add(child);
-                ((IUIElementUpdate)child).UpdateUISystemReference(parent.UISystem);
             }
         }
 
@@ -1210,13 +1213,6 @@ namespace SiliconStudio.Paradox.UI
             MaxChildrenDepthBias = currentElementDepthBias;
         }
 
-        void IUIElementUpdate.UpdateUISystemReference(UISystem system)
-        {
-            OnUISystemChanged(system);
-            foreach (var children in VisualChildrenCollection)
-                ((IUIElementUpdate)children).UpdateUISystemReference(system);
-        }
-
         #endregion
 
         /// <summary>
@@ -1252,16 +1248,6 @@ namespace SiliconStudio.Paradox.UI
                 LocalMatrixChanged = false;
                 ArrangeChanged = false;
             }
-        }
-
-        /// <summary>
-        /// Function called when the <see cref="UISystem"/> in charge of the <see cref="UIElement"/> changed.
-        /// This function can be override in children classes.
-        /// </summary>
-        /// <param name="system">The new UI system in charge of the element.</param>
-        protected virtual void OnUISystemChanged(UISystem system)
-        {
-            UISystem = system;
         }
 
         /// <summary>

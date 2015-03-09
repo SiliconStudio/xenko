@@ -21,7 +21,7 @@ using System.Runtime.InteropServices;
 
 #pragma warning disable 436 // SiliconStudio.PublicKeys is defined in multiple assemblies
 
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.UI" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine" + SiliconStudio.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Input.Serializers" + SiliconStudio.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.UI.Tests" + SiliconStudio.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("SiliconStudioParadoxUITests" + SiliconStudio.PublicKeys.Default)] // iOS removes dot

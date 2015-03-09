@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
@@ -10,11 +11,11 @@ namespace SiliconStudio.Paradox.UI.Renderers
     /// <summary>
     /// Base class for UI element renderers
     /// </summary>
-    public class ElementRenderer
+    public class ElementRenderer : ComponentBase
     {
-        internal UISystem UI { get; private set; }
-
         private static Color blackColor;
+
+        private UISystem UI;
 
         /// <summary>
         /// A reference to the game asset manager.
@@ -37,90 +38,22 @@ namespace SiliconStudio.Paradox.UI.Renderers
         /// <summary>
         /// Gets a reference to the UI image drawer.
         /// </summary>
-        public UIBatch Batch
-        {
-            get
-            {
-                return UI.Batch;
-            }
-        }
+        public UIBatch Batch { get { return UI.Batch; } }
 
         /// <summary>
         /// A depth stencil state that keep the stencil value in any cases.
         /// </summary>
-        public DepthStencilState KeepStencilValueState 
-        {
-            get
-            {
-                return UI.KeepStencilValueState;
-            }
-        }
+        public DepthStencilState KeepStencilValueState { get { return UI.KeepStencilValueState; } }
 
         /// <summary>
         /// A depth stencil state that increase the stencil value if the stencil test passes.
         /// </summary>
-        public DepthStencilState IncreaseStencilValueState 
-        { 
-            get
-            {
-                return UI.IncreaseStencilValueState;
-            } 
-        }
+        public DepthStencilState IncreaseStencilValueState { get { return UI.IncreaseStencilValueState; } }
 
         /// <summary>
         /// A depth stencil state that decrease the stencil value if the stencil test passes.
         /// </summary>
-        public DepthStencilState DecreaseStencilValueState
-        {
-            get
-            {
-                return UI.DecreaseStencilValueState;
-            }
-        }
-
-        /// <summary>
-        /// The projection matrix of the UI.
-        /// </summary>
-        public Matrix ProjectionMatrix
-        {
-            get
-            {
-                return UI.ProjectionMatrix;
-            }
-        }
-
-        /// <summary>
-        /// The view matrix of the UI.
-        /// </summary>
-        public Matrix ViewMatrix
-        {
-            get
-            {
-                return UI.ViewMatrix;
-            }
-        }
-
-        /// <summary>
-        /// The view projection matrix of the UI.
-        /// </summary>
-        public Matrix ViewProjectionMatrix
-        {
-            get
-            {
-                return UI.ViewProjectionInternal;
-            }
-        }
-
-        /// <summary>
-        /// Return the resolution of the UI.
-        /// </summary>
-        public Vector3 Resolution
-        {
-            get
-            {
-                return UI.VirtualResolution;
-            }
-        }
+        public DepthStencilState DecreaseStencilValueState { get { return UI.DecreaseStencilValueState; } }
 
         /// <summary>
         /// Create an instance of an UI element renderer.
@@ -128,9 +61,9 @@ namespace SiliconStudio.Paradox.UI.Renderers
         /// <param name="services">The list of registered services</param>
         public ElementRenderer(IServiceRegistry services)
         {
-            UI = services.GetSafeServiceAs<UISystem>();
             Asset = services.GetSafeServiceAs<IAssetManager>();
             GraphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
+            UI = services.GetServiceAs<UISystem>();
         }
 
         /// <summary>
@@ -169,22 +102,6 @@ namespace SiliconStudio.Paradox.UI.Renderers
 
             // increase the context depth bias for next elements.
             context.DepthBias += 1;
-        }
-
-        /// <summary>
-        /// Loads this instance. This method is called when the element renderer is added to the rendering pipeline
-        /// </summary>
-        public virtual void Load()
-        {
-            
-        }
-
-        /// <summary>
-        /// Unloads this instance. This method is called when the element renderer is removed from the rendering pipeline
-        /// </summary>
-        public virtual void Unload()
-        {
-            
         }
     }
 }

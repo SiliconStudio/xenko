@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// <returns><value>True</value> if the current rendering is for picking</returns>
         public static bool IsPicking(this RenderContext context)
         {
-            var thisInstacnce = context.Tags.Get(SceneCameraRenderer.Current);
+            var thisInstacnce = context.Tags.Get(SceneEntityRenderer.Current);
             return thisInstacnce != null && thisInstacnce.IsPickingMode;
         }
     }

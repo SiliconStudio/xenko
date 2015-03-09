@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Games;
 
 namespace SiliconStudio.Paradox.Engine
 {

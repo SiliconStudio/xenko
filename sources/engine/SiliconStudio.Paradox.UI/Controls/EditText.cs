@@ -223,7 +223,6 @@ namespace SiliconStudio.Paradox.UI.Controls
 
             InitializeImpl();
 
-            SnapText = true;
             CanBeHitByUser = true;
             IsSelectionActive = false;
             Padding = new Thickness(8,4,0,8,8,0);
@@ -410,9 +409,11 @@ namespace SiliconStudio.Paradox.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the value indicating if the <see cref="Text"/> of the <see cref="TextBlock"/> must be aligned to the closest screen pixel.
+        /// Gets or sets the value indicating if the snapping of the <see cref="Text"/> of the <see cref="TextBlock"/> to the closest screen pixel should be skipped.
         /// </summary>
-        public bool SnapText { get; set; }
+        /// <remarks>When <value>true</value>, the element's text is never snapped. 
+        /// When <value>false</value>, it is snapped only if the font is dynamic and the element is rendered by a SceneUIRenderer.</remarks>
+        public bool DoNotSnapText { get; set; }
 
         /// <summary>
         /// Gets or sets the caret position in the <see cref="EditText"/>'s text.
@@ -755,7 +756,7 @@ namespace SiliconStudio.Paradox.UI.Controls
             if (textToMeasure == null || Font == null)
                 return Vector2.Zero;
 
-            var sizeRatio = RealSizeVirtualResolutionRatio;
+            var sizeRatio = LayoutingContext.RealVirtualResolutionRatio;
             var measureFontSize = TextSize * sizeRatio;
             var realSize = Font.MeasureString(textToMeasure, measureFontSize);
 

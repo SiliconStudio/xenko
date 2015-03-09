@@ -87,7 +87,7 @@ namespace SiliconStudio.Paradox.UI.Controls
             if (!IsModal)
                 return base.Intersects(ref ray, out intersectionPoint);
 
-            var virtualResolution = UISystem.VirtualResolution;
+            var virtualResolution = LayoutingContext.VirtualResolution;
             var worldmatrix = Matrix.Identity;
             
             return Collision.RayIntersectsRectangle(ref ray, ref worldmatrix, ref virtualResolution, 2, out intersectionPoint);

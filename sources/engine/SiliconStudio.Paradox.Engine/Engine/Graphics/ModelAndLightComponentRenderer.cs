@@ -14,13 +14,16 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         private LightModelRendererForward lightModelRenderer;
         private ModelComponentRenderer modelRenderer;
 
+        private SceneCameraRenderer SceneCameraRenderer { get {  return (SceneCameraRenderer)SceneEntityRenderer; } }
+
         public override bool SupportPicking { get { return true; } }
 
         protected override void InitializeCore()
         {
             base.InitializeCore();
 
-            var effectName = SceneCameraRenderer.Mode.ModelEffect ?? "";
+            var forwardMode = SceneCameraRenderer.Mode as CameraRendererModeForward;
+            var effectName =  (forwardMode != null? forwardMode.ModelEffect: null) ?? "";
             if (Context.IsPicking())
                 effectName += ".Picking";
 
