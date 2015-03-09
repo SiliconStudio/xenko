@@ -164,14 +164,13 @@ namespace SiliconStudio.Presentation.Behaviors
                 newList.CollectionChanged += behavior.CollectionSelectionChanged;
                 if (behavior.AssociatedObject != null)
                 {
-
                     object[] currentlySelectedItems = behavior.SelectedItemsInAssociatedObject.Cast<object>().ToArray();
-                    foreach (var currentlySelectedItem in currentlySelectedItems.Where(x => !newList.Contains(x)))
+                    foreach (var currentlySelectedItem in currentlySelectedItems.Where(x => !newList.Contains(x)).ToList())
                     {
                         behavior.SelectedItemsInAssociatedObject.Remove(currentlySelectedItem);
                     }
 
-                    foreach (var newlySelectedItem in newList.Where(x => !behavior.SelectedItemsInAssociatedObject.Contains(x)))
+                    foreach (var newlySelectedItem in newList.Where(x => !behavior.SelectedItemsInAssociatedObject.Contains(x)).ToList())
                     {
                         behavior.SelectedItemsInAssociatedObject.Add(newlySelectedItem);
                     }
