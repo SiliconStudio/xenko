@@ -392,7 +392,10 @@ namespace SiliconStudio.Core.Serialization.Assets
             }
 
             if (!FileProvider.FileExists(url))
-                throw new InvalidOperationException(string.Format("Asset [{0}] not found.", url));
+            {
+                HandleAssetNotFound(url);
+                return null;
+            }
 
             ContentSerializerContext contentSerializerContext;
             object result;
