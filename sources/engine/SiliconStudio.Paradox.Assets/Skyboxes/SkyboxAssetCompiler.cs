@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -42,17 +43,27 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
                 this.package = package;
             }
 
+            /// <inheritdoc/>
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
             {
                 base.ComputeParameterHash(writer);
                 writer.Write(1); // Change this number to recompute the hash when prefiltering algorithm are changed
             }
 
+            /// <inheritdoc/>
+            public override IEnumerable<ObjectUrl> GetInputFiles()
+            {
+                foreach (var dependency in Asset.Model.GetDependencies())
+                {
+                    yield return new ObjectUrl(UrlType.Internal, dependency.Location);
+                }
+            }
+
+            /// <inheritdoc/>
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 // TODO Convert SkyboxAsset to Skybox and save to Skybox object
                 // TODO Add system to prefilter
-                // TODO: Add input texture as input 
 
                 using (var context = new SkyboxGeneratorContext())
                 {
