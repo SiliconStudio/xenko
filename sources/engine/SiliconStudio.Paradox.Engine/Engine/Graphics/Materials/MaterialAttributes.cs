@@ -15,6 +15,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
     public class MaterialAttributes : IMaterialAttributes
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="MaterialAttributes"/> class.
+        /// </summary>
+        public MaterialAttributes()
+        {
+            Overrides = new MaterialOverrides();
+        }
+
+        /// <summary>
         /// Gets or sets the tessellation.
         /// </summary>
         /// <value>The tessellation.</value>
@@ -107,8 +115,18 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DataMember(110)]
         public IMaterialTransparencyFeature Transparency { get; set; }
 
+        /// <summary>
+        /// Gets or sets the overrides.
+        /// </summary>
+        /// <value>The overrides.</value>
+        [DataMember(120)]
+        public MaterialOverrides Overrides { get; private set; }
+
         public void Visit(MaterialGeneratorContext context)
         {
+            // Push overrides of this attributes
+            context.PushOverrides(Overrides);
+
             // Order is important, as some features are dependent on other
             // (For example, Specular can depend on Diffuse in case of Metalness)
             // We may be able to describe a dependency system here, but for now, assume 
@@ -142,6 +160,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
             context.Visit(Occlusion);
             context.Visit(Emissive);
             context.Visit(Transparency);
+
+            // Pop overrides
+            context.PopOverrides();
         }
     }
 }

@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     {
         private readonly Dictionary<string, ShaderSource> registeredStreamBlend = new Dictionary<string, ShaderSource>();
         private int shadingModelCount;
-        private MaterialBlendOverrides currentOverrides;
+        private MaterialOverrides currentOverrides;
 
         private readonly Dictionary<KeyValuePair<MaterialShaderStage, Type>, ShaderSource> inputStreamModifiers = new Dictionary<KeyValuePair<MaterialShaderStage, Type>, ShaderSource>();
 
@@ -29,12 +29,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         private readonly Material material;
 
+        private Stack<MaterialOverrides> overridesStack = new Stack<MaterialOverrides>();
+
         public MaterialGeneratorContext(Material material = null)
         {
             this.material = material ?? new Material();
             Parameters = this.material.Parameters;
 
-            currentOverrides = new MaterialBlendOverrides();
+            currentOverrides = new MaterialOverrides();
 
             foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
             {
@@ -93,27 +95,40 @@ namespace SiliconStudio.Paradox.Assets.Materials
             return shaderSource;
         }
 
-        public void PushLayer(MaterialBlendOverrides overrides)
+        public void PushOverrides(MaterialOverrides overrides)
         {
-            var newLayer = new MaterialBlendLayerNode(this, Current, overrides);
+            if (overrides == null) throw new ArgumentNullException("overrides");
+            overridesStack.Push(overrides);
+            UpdateOverrides();
+        }
+
+        public void PopOverrides()
+        {
+            overridesStack.Pop();
+            UpdateOverrides();
+        }
+
+        private void UpdateOverrides()
+        {
+            // Update overrides by squashing them using multiplication
+            currentOverrides = new MaterialOverrides();
+            foreach (var current in overridesStack)
+            {
+                currentOverrides *= current;
+            }
+        }
+
+        public void PushLayer()
+        {
+            var newLayer = new MaterialBlendLayerNode(this, Current);
             if (Current != null)
             {
                 Current.Children.Add(newLayer);
             }
             Current = newLayer;
-
-            // Update overrides by squashing them using multiplication
-            currentOverrides = new MaterialBlendOverrides();
-            var current = Current;
-            while (current != null && current.Overrides != null)
-            {
-                // TODO: We are doing this bottom-up. We might have to do this top-down in case overrides multiplcation is not commutative
-                currentOverrides *= current.Overrides;
-                current = current.Parent;
-            }
         }
 
-        public MaterialBlendOverrides CurrentOverrides
+        public MaterialOverrides CurrentOverrides
         {
             get
             {
@@ -323,13 +338,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
             private readonly MaterialBlendLayerNode parentNode;
 
-            private readonly MaterialBlendOverrides overrides;
-
-            public MaterialBlendLayerNode(MaterialGeneratorContext context, MaterialBlendLayerNode parentNode, MaterialBlendOverrides overrides)
+            public MaterialBlendLayerNode(MaterialGeneratorContext context, MaterialBlendLayerNode parentNode)
             {
                 this.context = context;
                 this.parentNode = parentNode;
-                this.overrides = overrides;
 
                 Children = new List<MaterialBlendLayerNode>();
                 ShadingModels = new MaterialShadingModelCollection();
@@ -339,14 +351,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
                     SurfaceShaders[stage] = new List<ShaderSource>();
                     StreamInitializers[stage] = new List<string>();
                     Streams[stage] = new HashSet<string>();
-                }
-            }
-
-            public MaterialBlendOverrides Overrides
-            {
-                get
-                {
-                    return overrides;
                 }
             }
 

@@ -888,7 +888,7 @@
     <Compile Include="Engine\Graphics\Materials\MaterialAttributes.cs" />
     <Compile Include="Engine\Graphics\Materials\MaterialBlendLayer.cs" />
     <Compile Include="Engine\Graphics\Materials\MaterialBlendLayers.cs" />
-    <Compile Include="Engine\Graphics\Materials\MaterialBlendOverrides.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialOverrides.cs" />
     <Compile Include="Engine\Graphics\Materials\MaterialComputeColorKeys.cs" />
     <Compile Include="Engine\Graphics\Materials\MaterialDescriptor.cs" />
     <Compile Include="Engine\Graphics\Materials\MaterialDiffuseLambertModelFeature.cs" />
