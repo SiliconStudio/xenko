@@ -91,6 +91,7 @@
     <Compile Include="Core\Utils.cs" />
     <Compile Include="ValueConverters\MaxNum.cs" />
     <Compile Include="ValueConverters\MinNum.cs" />
+    <Compile Include="ViewModel\ActionStack\AnonymousViewModelActionItem.cs" />
     <Compile Include="ViewModel\IViewModelServiceProvider.cs" />
     <Compile Include="ViewModel\ViewModelServiceProvider.cs" />
     <Compile Include="View\DefaultTemplateProvider.cs" />
