@@ -23,7 +23,8 @@ namespace SiliconStudio.Paradox
         /// Contains all currently executed scripts
         /// </summary>
         private HashSet<Script> registeredScripts = new HashSet<Script>();
-        private HashSet<Script> scriptsToExecute = new HashSet<Script>();
+        private HashSet<Script> scriptsToStart = new HashSet<Script>();
+        private HashSet<SyncScript> syncScripts = new HashSet<SyncScript>();
 
         /// <summary>
         /// Gets the scheduler.
@@ -49,12 +50,27 @@ namespace SiliconStudio.Paradox
             // Run current micro threads
             Scheduler.Run();
 
-            // Execute new scripts
-            foreach (var script in scriptsToExecute)
+            // Start new scripts
+            foreach (var script in scriptsToStart)
             {
-                script.MicroThread = Add(script.Execute);
+                // Start the script
+                script.Start();
+
+                // Start a microthread with execute method if it's an async script
+                var asyncScript = script as AsyncScript;
+                if (asyncScript != null)
+                {
+                    script.MicroThread = Add(asyncScript.Execute);
+                }
             }
-            scriptsToExecute.Clear();
+
+            scriptsToStart.Clear();
+
+            // Execute sync scripts
+            foreach (var script in syncScripts)
+            {
+                script.Update();
+            }
         }
 
         /// <summary>
@@ -81,7 +97,7 @@ namespace SiliconStudio.Paradox
         /// </summary>
         /// <param name="script">The script.</param>
         /// <returns>MicroThread.</returns>
-        public MicroThread Add(IScript script)
+        public MicroThread Add(AsyncScript script)
         {
             return Scheduler.Add(script.Execute);
         }
@@ -101,14 +117,27 @@ namespace SiliconStudio.Paradox
             script.Initialize(Services);
             registeredScripts.Add(script);
 
-            // Note: there might be new types of scripts later (Update() based, etc...)
-            scriptsToExecute.Add(script);
+            // Register script for Start() and possibly async Execute()
+            scriptsToStart.Add(script);
+
+            // If it's a synchronous script, add it to the list as well
+            var syncScript = script as SyncScript;
+            if (syncScript != null)
+            {
+                syncScripts.Add(syncScript);
+            }
         }
 
         public void RemoveScript(Script script)
         {
             // Make sure it's not registered in any pending list
-            scriptsToExecute.Remove(script);
+            scriptsToStart.Remove(script);
+
+            var syncScript = script as SyncScript;
+            if (syncScript != null)
+            {
+                syncScripts.Remove(syncScript);
+            }
 
             registeredScripts.Remove(script);
         }
@@ -175,7 +204,7 @@ namespace SiliconStudio.Paradox
                     continue;
 
                 // Unregister it from launches (in case it wasn't done yet)
-                scriptsToExecute.Remove(script);
+                scriptsToStart.Remove(script);
 
                 // Dispose script (if it applies)
                 script.Dispose();

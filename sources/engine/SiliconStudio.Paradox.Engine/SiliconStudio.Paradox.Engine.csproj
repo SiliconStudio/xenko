@@ -50,6 +50,7 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AsyncScript.cs" />
     <Compile Include="BinPacking\GuillotinePacker.cs" />
     <Compile Include="BinPacking\Rect.cs" />
     <Compile Include="DataModel\AnimationBlendOperation.cs" />
@@ -2130,6 +2131,7 @@
       <DependentUpon>Transformation.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Engine\Graphics\Shaders\TransformationKeys.cs" />
+    <Compile Include="SyncScript.cs" />
     <Compile Include="Threading\ILockMechanism.cs" />
     <Compile Include="Threading\Lock.cs" />
     <Compile Include="Threading\LockMechanismException.cs" />

@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
     /// <summary>
     /// The default script for the scene editor camera.
     /// </summary>
-    public class TestCamera : Script
+    public class TestCamera : AsyncScript
     {
         private readonly Vector3 upVector = new Vector3(0, 1, 0);
         private readonly Vector3 forwardVector = new Vector3(0, 0, -1);
