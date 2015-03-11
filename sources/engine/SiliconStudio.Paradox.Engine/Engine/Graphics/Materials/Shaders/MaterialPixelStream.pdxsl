@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
         stage stream float  matCavitySpecular;
 
         // Emissive attributes
-        stage stream float3  matEmissive;
+        stage stream float4  matEmissive;
         stage stream float   matEmissiveIntensity;
 
         // Transparent attributes
