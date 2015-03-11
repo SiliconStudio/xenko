@@ -26,6 +26,19 @@ namespace SiliconStudio.Paradox
         {
         }
 
+        /// <summary>
+        /// Gets the entity this script is attached to.
+        /// </summary>
+        /// <value>
+        /// The entity this script is attached to.
+        /// </value>
+        protected Entity Entity
+        {
+            // Note: we might want to make this property public?
+            get { return ScriptComponent != null ? ScriptComponent.Entity : null; }
+        }
+    }
+
         public abstract Task Execute();
     }
 }
