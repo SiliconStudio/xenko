@@ -102,7 +102,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Skyboxes
                 // Setup the rotation
                 skyboxEffect.Parameters.Set(SkyboxKeys.SkyMatrix, Matrix.RotationQuaternion(skybox.Entity.Transform.Rotation));
 
-                skyboxEffect.SetOutput(CurrentRenderFrame.RenderTarget);
+                skyboxEffect.SetOutput(CurrentRenderFrame.RenderTargets);
                 skyboxEffect.SetViewport(viewport);
                 skyboxEffect.Draw();
             }

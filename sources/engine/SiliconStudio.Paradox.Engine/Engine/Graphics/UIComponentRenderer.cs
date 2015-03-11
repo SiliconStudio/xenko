@@ -48,7 +48,7 @@ namespace SiliconStudio.Paradox.Effects
             renderingContext = new UIRenderingContext
             {
                 DepthStencilBuffer = CurrentRenderFrame.DepthStencil,
-                RenderTarget = CurrentRenderFrame.RenderTarget,
+                RenderTarget = CurrentRenderFrame.RenderTargets[0], // TODO: Hardcoded
             };
         }
 
@@ -82,7 +82,7 @@ namespace SiliconStudio.Paradox.Effects
             uiResolutionChanged = false;
 
             // set render targets and reset Depth buffer
-            context.GraphicsDevice.SetDepthAndRenderTarget(CurrentRenderFrame.DepthStencil, CurrentRenderFrame.RenderTarget);
+            context.GraphicsDevice.SetDepthAndRenderTargets(CurrentRenderFrame.DepthStencil, CurrentRenderFrame.RenderTargets);
             context.GraphicsDevice.Clear(CurrentRenderFrame.DepthStencil, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
 
             // update the context time

@@ -45,11 +45,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Composers
         {
             if (currentFrame != null)
             {
-                currentFrame.RenderTarget.Dispose();
-                if (currentFrame.Descriptor.DepthFormat != RenderFrameDepthFormat.Shared && currentFrame.DepthStencil != null)
-                {
-                    currentFrame.DepthStencil.Dispose();
-                }
+                currentFrame.Dispose();
                 currentFrame = null;
             }
         }
