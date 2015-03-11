@@ -8,7 +8,7 @@ using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox
 {
-    [DataContract("Script")]
+    [DataContract("Script", Inherited = true)]
     public abstract class Script : ScriptContext
     {
         [DataMemberIgnore]
