@@ -48,6 +48,28 @@ namespace SiliconStudio.Core.Serialization
                     }
                 }
             }
+            else if (stream.Context.Get(ContentSerializerContext.SerializeAttachedReferenceProperty))
+            {
+                if (mode == ArchiveMode.Serialize)
+                {
+                    // This case will happen when serializing build engine command hashes: we still want Location to still be written
+                    var attachedReference = AttachedReferenceManager.GetAttachedReference(obj);
+                    if (attachedReference == null || attachedReference.Url == null)
+                        throw new InvalidOperationException("Error when serializing reference.");
+
+                    stream.Write(obj.GetType().AssemblyQualifiedName);
+                    stream.Write(attachedReference.Id);
+                    stream.Write(attachedReference.Url);
+                }
+                else
+                {
+                    var type = Type.GetType(stream.ReadString());
+                    var id = stream.Read<Guid>();
+                    var url = stream.ReadString();
+
+                    obj = (T)AttachedReferenceManager.CreateSerializableVersion(type, id, url);
+                }
+            }
             else
             {
                 // This case will happen when serializing build engine command hashes: we still want Location to still be written

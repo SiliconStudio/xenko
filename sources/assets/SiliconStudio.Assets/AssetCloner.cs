@@ -2,9 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.IO;
-using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets
 {
@@ -25,9 +25,15 @@ namespace SiliconStudio.Assets
             // Clone only if value is not a value type
             if (value != null && !value.GetType().IsValueType)
             {
+                // TODO: keepOnlySealedOverride is currently ignored
                 // TODO Clone is not supporting SourceCodeAsset (The SourceCodeAsset.Text won't be cloned)
                 var stream = new MemoryStream();
-                YamlSerializer.Serialize(stream, value, keepOnlySealedOverride);
+                var writer = new BinarySerializationWriter(stream);
+                writer.Context.SerializerSelector = SerializerSelector.AssetWithReuse;
+                writer.Context.Set(ContentSerializerContext.SerializeAttachedReferenceProperty, true);
+                writer.SerializeExtended(value, ArchiveMode.Serialize);
+                writer.Flush();
+
                 streamOrValueType = stream;
             }
             else
@@ -46,7 +52,11 @@ namespace SiliconStudio.Assets
             if (stream != null)
             {
                 stream.Position = 0;
-                var newObject = YamlSerializer.Deserialize(stream);
+                var reader = new BinarySerializationReader(stream);
+                reader.Context.SerializerSelector = SerializerSelector.AssetWithReuse;
+                reader.Context.Set(ContentSerializerContext.SerializeAttachedReferenceProperty, true);
+                object newObject = null;
+                reader.SerializeExtended(ref newObject, ArchiveMode.Deserialize);
                 return newObject;
             }
             // Else this is a value type, so it is cloned automatically
@@ -59,7 +69,6 @@ namespace SiliconStudio.Assets
         /// <param name="asset">The asset.</param>
         /// <param name="keepOnlySealedOverride">if set to <c>true</c> to discard override information except sealed.</param>
         /// <returns>A clone of the asset.</returns>
-        /// TODO: This code is not efficient as it is using YAML serialization for cloning assets
         public static object Clone(object asset, bool keepOnlySealedOverride = false)
         {
             if (asset == null)
