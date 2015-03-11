@@ -74,6 +74,12 @@
     <Compile Include="DataModel\CompressedTimeSpan.cs" />
     <Compile Include="DataModel\AnimationCurveEvaluatorOptimizedQuaternionGroup.cs" />
     <Compile Include="DataModel\Interpolator.cs" />
+    <Compile Include="Engine\Graphics\Lights\DirectLightGroupFixed.cs">
+      <DependentUpon>DirectLightGroupFixed.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Engine\ScriptComponent.cs" />
     <Compile Include="Engine\CameraComponentState.cs" />
     <Compile Include="Engine\CameraProcessor.cs" />
@@ -2747,6 +2753,10 @@
     <None Include="Engine\Graphics\Images\ColorTransforms\Vignetting\VignettingShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>VignettingShader.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Lights\DirectLightGroupFixed.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>DirectLightGroupFixed.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Lights\DirectLightGroup.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
