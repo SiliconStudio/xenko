@@ -9,14 +9,17 @@ namespace SiliconStudio.Paradox.Effects.Lights
 {
     public class LightShaderGroup
     {
+        public LightShaderGroup() : this(null)
+        {
+        }
+
         public LightShaderGroup(ShaderSource shaderSource)
         {
-            if (shaderSource == null) throw new ArgumentNullException("shaderSource");
             ShaderSource = shaderSource;
             Parameters = new ParameterCollection();
         }
 
-        public ShaderSource ShaderSource { get; private set; }
+        public ShaderSource ShaderSource { get; set; }
 
         public ParameterCollection Parameters { get; private set; }
     }

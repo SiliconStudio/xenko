@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -35,6 +36,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             if (emissiveMap == null) throw new ArgumentNullException("emissiveMap");
             EmissiveMap = emissiveMap;
             Intensity = new ComputeFloat(1.0f);
+            UseAlpha = false;
         }
 
         /// <summary>
@@ -43,6 +45,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The diffuse map.</value>
         [Display("Emissive Map")]
         [NotNull]
+        [DataMember(10)]
         public IComputeColor EmissiveMap { get; set; }
 
         /// <summary>
@@ -51,7 +54,16 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <value>The intensity.</value>
         [Display("Intensity")]
         [NotNull]
+        [DataMember(20)]
         public IComputeScalar Intensity { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether [use alpha].
+        /// </summary>
+        /// <value><c>true</c> if [use alpha]; otherwise, <c>false</c>.</value>
+        [DataMember(30)]
+        [DefaultValue(false)]
+        public bool UseAlpha { get; set; }
 
         public bool IsLightDependent
         {
@@ -66,7 +78,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             context.SetStream(EmissiveStream.Stream, EmissiveMap, MaterialKeys.EmissiveMap, MaterialKeys.EmissiveValue);
             context.SetStream("matEmissiveIntensity", Intensity, MaterialKeys.EmissiveIntensityMap, MaterialKeys.EmissiveIntensity);
 
-            context.AddShading(this, new ShaderClassSource("MaterialSurfaceEmissiveShading"));
+            context.AddShading(this, new ShaderClassSource("MaterialSurfaceEmissiveShading", UseAlpha));
         }
 
         public bool Equals(IMaterialShadingModelFeature other)

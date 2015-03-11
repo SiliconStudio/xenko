@@ -78,6 +78,12 @@
     <Compile Include="Engine\Graphics\SceneEntityRenderer.cs" />
     <Compile Include="Engine\Graphics\SceneUIRenderer.cs" />
     <Compile Include="Engine\Graphics\VirtualResolutionMode.cs" />
+    <Compile Include="Engine\Graphics\Lights\DirectLightGroupFixed.cs">
+      <DependentUpon>DirectLightGroupFixed.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Engine\ScriptComponent.cs" />
     <Compile Include="Engine\CameraComponentState.cs" />
     <Compile Include="Engine\CameraProcessor.cs" />
@@ -892,7 +898,7 @@
     <Compile Include="Engine\Graphics\Materials\MaterialAttributes.cs" />
     <Compile Include="Engine\Graphics\Materials\MaterialBlendLayer.cs" />
     <Compile Include="Engine\Graphics\Materials\MaterialBlendLayers.cs" />
-    <Compile Include="Engine\Graphics\Materials\MaterialBlendOverrides.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialOverrides.cs" />
     <Compile Include="Engine\Graphics\Materials\MaterialComputeColorKeys.cs" />
     <Compile Include="Engine\Graphics\Materials\MaterialDescriptor.cs" />
     <Compile Include="Engine\Graphics\Materials\MaterialDiffuseLambertModelFeature.cs" />
@@ -2753,6 +2759,10 @@
     <None Include="Engine\Graphics\Images\ColorTransforms\Vignetting\VignettingShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>VignettingShader.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Lights\DirectLightGroupFixed.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>DirectLightGroupFixed.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Lights\DirectLightGroup.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

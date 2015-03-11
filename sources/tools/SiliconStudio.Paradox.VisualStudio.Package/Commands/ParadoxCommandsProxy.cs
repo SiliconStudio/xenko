@@ -255,7 +255,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
                     return null;
 
                 var packageDirectory = store.PathResolver.GetPackageDirectory(paradoxPackage);
-                return Path.Combine(paradoxSdkDir, NugetStore.DefaultGamePackagesDirectory, packageDirectory);
+                return Path.Combine(paradoxSdkDir, store.RepositoryPath, packageDirectory);
             }
 
             return null;

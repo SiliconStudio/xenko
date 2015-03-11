@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Effects.Lights
@@ -19,13 +20,27 @@ namespace SiliconStudio.Paradox.Effects.Lights
         private readonly Vector3[] lightDirections;
         private readonly Color3[] lightColors;
 
+        private readonly ShaderSource lightShaderDynamic;
+        private readonly ShaderSource[] lightShaderFixed;
+
         public LightDirectionalGroupRenderer()
         {
             // TODO: Handle unroll
-            lightShaderGroup  = new LightShaderGroup(new ShaderClassSource("LightDirectionalGroup", LightMax));
+            lightShaderDynamic = new ShaderClassSource("LightDirectionalGroup", LightMax);
+            lightShaderGroup = new LightShaderGroup();
             lightShaderGroups = new List<LightShaderGroup>() { lightShaderGroup };
             lightDirections = new Vector3[LightMax];
             lightColors = new Color3[LightMax];
+
+            // Precreate fixed lights for profile < 10.0
+            lightShaderFixed = new ShaderSource[LightMax];
+            for (int i = 1; i < LightMax; i++)
+            {
+                var mixin = new ShaderMixinSource();
+                mixin.Mixins.Add(new ShaderClassSource("LightDirectionalGroup", i));
+                mixin.Mixins.Add(new ShaderClassSource("DirectLightGroupFixed", i));
+                lightShaderFixed[i] = mixin;
+            }
         }
 
         public override bool IsDirectLight
@@ -52,6 +67,11 @@ namespace SiliconStudio.Paradox.Effects.Lights
             lightShaderGroup.Parameters.Set(DirectLightGroupKeys.LightCount, count);
             lightShaderGroup.Parameters.Set(LightDirectionalGroupKeys.LightDirectionsWS, lightDirections);
             lightShaderGroup.Parameters.Set(LightDirectionalGroupKeys.LightColor, lightColors);
+
+            // Setup the correct shader source depending on the profile
+            lightShaderGroup.ShaderSource = context.GraphicsDevice.Features.Profile < GraphicsProfile.Level_10_0
+                ? lightShaderFixed[count]
+                : lightShaderDynamic;
 
             return lightShaderGroups;
         }

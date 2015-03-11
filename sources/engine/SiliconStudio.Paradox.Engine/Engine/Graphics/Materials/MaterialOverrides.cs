@@ -9,14 +9,16 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// <summary>
     /// Material overrides used in a <see cref="MaterialBlendLayer"/>
     /// </summary>
-    [DataContract("MaterialBlendOverrides")]
+    [DataContract("MaterialOverrides")]
     [Display("Layer Overrides")]
-    public class MaterialBlendOverrides
+    public class MaterialOverrides
     {
+        // TODO: This class should use instead pluggable ovrride so that the system can support new overrides
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialBlendOverrides"/> class.
+        /// Initializes a new instance of the <see cref="MaterialOverrides"/> class.
         /// </summary>
-        public MaterialBlendOverrides()
+        public MaterialOverrides()
         {
             //SurfaceContribution = 1.0f;
             //MicroSurfaceContribution = 1.0f;
@@ -100,9 +102,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <param name="left">The left.</param>
         /// <param name="right">The right.</param>
         /// <returns>The result of the operator.</returns>
-        public static MaterialBlendOverrides operator *(MaterialBlendOverrides left, MaterialBlendOverrides right)
+        public static MaterialOverrides operator *(MaterialOverrides left, MaterialOverrides right)
         {
-            var overrides = new MaterialBlendOverrides { UVScale = left.UVScale * right.UVScale };
+            var overrides = new MaterialOverrides { UVScale = left.UVScale * right.UVScale };
             return overrides;
         }
     }
