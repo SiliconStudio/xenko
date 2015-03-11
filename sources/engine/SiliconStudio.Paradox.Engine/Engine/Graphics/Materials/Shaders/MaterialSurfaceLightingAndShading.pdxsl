@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
                 const int maxLightCount = lightGroup.GetMaxLightCount();
                 int count = lightGroup.GetLightCount();
                 
-                [unroll]
+                // [unroll] Don't unroll and let the driver handle it
                 for(int i = 0; i < maxLightCount; i++)
                 {
                     if (i >= count)
