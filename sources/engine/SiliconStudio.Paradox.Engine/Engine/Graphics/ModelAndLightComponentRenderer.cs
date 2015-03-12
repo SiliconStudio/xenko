@@ -21,8 +21,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             base.InitializeCore();
 
             var effectName = SceneCameraRenderer.Mode.ModelEffect ?? "";
+
             if (Context.IsPicking())
-                effectName += ".Picking";
+                effectName += ".ModelComponentPickingEffect";
 
             // TODO: Add support for mixin overrides
             modelRenderer = ToLoadAndUnload(new ModelComponentRenderer(effectName));

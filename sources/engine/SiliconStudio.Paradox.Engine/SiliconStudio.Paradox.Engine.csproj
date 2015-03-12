@@ -1891,8 +1891,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Utils\ComputeID.cs">
-      <DependentUpon>ComputeID.pdxsl</DependentUpon>
+    <Compile Include="Engine\Graphics\Utils\ModelComponentPickingShader.cs">
+      <DependentUpon>ModelComponentPickingShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -1939,8 +1939,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Utils\Picking.cs">
-      <DependentUpon>Picking.pdxfx</DependentUpon>
+    <Compile Include="Engine\Graphics\Utils\ModelComponentPickingEffect.cs">
+      <DependentUpon>ModelComponentPickingEffect.pdxfx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -3168,9 +3168,9 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>BlendUtils.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Utils\ComputeID.pdxsl">
+    <None Include="Engine\Graphics\Utils\ModelComponentPickingShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeID.cs</LastGenOutput>
+      <LastGenOutput>ModelComponentPickingShader.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Utils\DepthBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -3200,9 +3200,9 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>NormalUtil.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Utils\Picking.pdxfx">
+    <None Include="Engine\Graphics\Utils\ModelComponentPickingEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>Picking.cs</LastGenOutput>
+      <LastGenOutput>ModelComponentPickingEffect.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Utils\SwapUV.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

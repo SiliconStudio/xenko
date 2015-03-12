@@ -14,10 +14,12 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Effects.Utils
 {
-    public static partial class ComputeIDKeys
+    public static partial class ModelComponentPickingShaderKeys
     {
-        public static readonly ParameterKey<Color4> constantID = ParameterKeys.New<Color4>();
+        public static readonly ParameterKey<Color4> ModelComponentId = ParameterKeys.New<Color4>();
+        public static readonly ParameterKey<Color4> MeshId = ParameterKeys.New<Color4>();
+        public static readonly ParameterKey<Color4> MaterialId = ParameterKeys.New<Color4>();
     }
 }

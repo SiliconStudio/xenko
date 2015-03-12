@@ -2,7 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Effects.Utils;
 using SiliconStudio.Paradox.Extensions;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Core.Collections;
@@ -93,7 +95,9 @@ namespace SiliconStudio.Paradox.Effects
 
             if (context.IsPicking()) // TODO move this code corresponding to picking outside of the runtime code!
             {
-                mesh.Parameters.Set(ComputeIDKeys.constantID, new Color4(RenderModel.ModelComponent.Id));
+                parameters.Set(ModelComponentPickingShaderKeys.ModelComponentId, new Color4(RenderModel.ModelComponent.Id));
+                parameters.Set(ModelComponentPickingShaderKeys.MeshId, new Color4(Mesh.NodeIndex));
+                parameters.Set(ModelComponentPickingShaderKeys.MaterialId, new Color4(Mesh.MaterialIndex));
             }
 
             if (material != null && material.TessellationMethod != ParadoxTessellationMethod.None)

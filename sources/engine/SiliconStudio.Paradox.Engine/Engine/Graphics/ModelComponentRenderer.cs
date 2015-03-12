@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 
+using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
@@ -12,6 +13,38 @@ using SiliconStudio.Paradox.Engine.Graphics;
 
 namespace SiliconStudio.Paradox.Effects
 {
+
+    [DataContract]
+    public class ModelComponentRendererCallback
+    {
+        public static readonly PropertyKey<ModelComponentRendererCallback> Key = new PropertyKey<ModelComponentRendererCallback>("ModelComponentRendererCallback.Key", typeof(ModelComponentRendererCallback));
+
+        public delegate void UpdateMeshesDelegate(RenderContext context, FastList<RenderMesh> meshes);
+
+        public delegate void PreRenderDelegate(RenderContext context);
+
+        public delegate void PostRenderDelegate(RenderContext context);
+
+        public delegate void PreEffectUpdateDelegate(RenderContext context, RenderMesh renderMesh);
+
+        public delegate void PostEffectUpdateDelegate(RenderContext context, RenderMesh renderMesh);
+
+        [DataMemberIgnore]
+        public UpdateMeshesDelegate UpdateMeshes { get; set; }
+
+        [DataMemberIgnore]
+        public PreRenderDelegate PreRender { get; set; }
+
+        [DataMemberIgnore]
+        public PostRenderDelegate PostRender { get; set; }
+
+        [DataMemberIgnore]
+        public PreEffectUpdateDelegate PreEffectUpdate { get; set; }
+
+        [DataMemberIgnore]
+        public PostEffectUpdateDelegate PostEffectUpdate { get; set; }
+    }
+
     /// <summary>
     /// This <see cref="EntityComponentRendererBase"/> is responsible to prepare and render meshes for a specific pass.
     /// </summary>
@@ -27,16 +60,6 @@ namespace SiliconStudio.Paradox.Effects
         private readonly string effectName;
         
         public override bool SupportPicking { get { return true; } }
-
-        public delegate void UpdateMeshesDelegate(RenderContext context, FastList<RenderMesh> meshes);
-
-        public delegate void PreRenderDelegate(RenderContext context);
-
-        public delegate void PostRenderDelegate(RenderContext context);
-
-        public delegate void PreEffectUpdateDelegate(RenderContext context, RenderMesh renderMesh);
-
-        public delegate void PostEffectUpdateDelegate(RenderContext context, RenderMesh renderMesh);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelComponentRenderer" /> class.
@@ -70,16 +93,6 @@ namespace SiliconStudio.Paradox.Effects
                 return dynamicEffectCompiler;
             }
         }
-
-        public UpdateMeshesDelegate UpdateMeshes { get; set; }
-
-        public PreRenderDelegate PreRender { get; set; }
-
-        public PostRenderDelegate PostRender { get; set; }
-
-        public PreEffectUpdateDelegate PreEffectUpdate { get; set; }
-
-        public PostEffectUpdateDelegate PostEffectUpdate { get; set; }
 
         protected override void InitializeCore()
         {
@@ -147,19 +160,33 @@ namespace SiliconStudio.Paradox.Effects
                 meshesToRender.Add((RenderMesh)renderItemList[i].DrawContext);
             }
 
-            // Update meshes
-            if (UpdateMeshes != null)
+            // Slow path there is a callback
+            var callback = context.Tags.Get(ModelComponentRendererCallback.Key);
+            if (callback != null && callback.UpdateMeshes != null)
             {
-                UpdateMeshes(context, meshesToRender);
+                callback.UpdateMeshes(context, meshesToRender);
             }
+            var preEffectUpdate = callback != null ? callback.PreEffectUpdate : null;
+            var postEffectUpdate = callback != null ? callback.PostEffectUpdate : null;
 
-            // TODO: separate update effect and render to tightly batch render calls vs 1 cache-friendly loop on meshToRender
             foreach (var mesh in meshesToRender)
             {
+                // Perform an pre-draw per RenderMesh
+                if (preEffectUpdate != null)
+                {
+                    preEffectUpdate(context, mesh);
+                }
+
                 // Update Effect and mesh
                 UpdateEffect(context, mesh, context.Parameters);
 
                 mesh.Draw(context);
+
+                // Perform a post-draw per RenderMesh
+                if (postEffectUpdate != null)
+                {
+                    postEffectUpdate(context, mesh);
+                }
             }
         }
 

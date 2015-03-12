@@ -105,7 +105,7 @@ namespace SiliconStudio.Paradox.Effects
         }
 
         // TODO: Need a flag to detect if we are in scene editor
-        mixin child Picking;
+        mixin child ModelComponentPickingEffect;
 
         // -----------------------------------------------
         // Mix material and lighting shading for Pixel Shader
@@ -154,10 +154,4 @@ namespace SiliconStudio.Paradox.Effects
         if (LightingKeys.CastShadows)
             mixin child ShadowMapCaster;
     };
-
-    shader Picking
-    {
-        mixin clone;
-        mixin ComputeID;
-    };	
 }
