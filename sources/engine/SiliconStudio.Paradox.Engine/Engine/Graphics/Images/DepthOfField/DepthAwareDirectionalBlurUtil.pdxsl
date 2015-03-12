@@ -6,8 +6,6 @@ namespace SiliconStudio.Paradox.Effects.Images
 
     /// <summary>
     /// A blur with weights applied along one direction. 
-    /// The blurring algorithm is also depth-aware: sample weights are modified on-the-fly to avoid 
-    /// artifacts such as in-focus objects bleeding into out-of-focus background objects.
     /// Expects as input: 
     /// - Texture0: color buffer
     /// </summary>
@@ -41,6 +39,8 @@ namespace SiliconStudio.Paradox.Effects.Images
             // Center tap
             int centerIndex = TWeightCount - 1;
             tapColor[centerIndex] = Texture0.Sample(LinearSampler, streams.TexCoord).xyzw;
+            // Premultiply alpha
+            tapColor[centerIndex].rgb *= tapColor[centerIndex].a;
             tapOriginalWeight[centerIndex] = TapWeights[0];
 
             // Treats all the taps in the 2 directions from the center
@@ -52,22 +52,23 @@ namespace SiliconStudio.Paradox.Effects.Images
                 {                     
                     float2 tapUV = streams.TexCoord + j * i * Direction * tapOffset;
                     int tapIndex = centerIndex + (j * i);
-                    tapColor[tapIndex]          = Texture0.Sample(LinearSampler, tapUV).xyzw;
+                    tapColor[tapIndex] = Texture0.Sample(LinearSampler, tapUV).xyzw;
+                    // Premultiply alpha
+                    tapColor[tapIndex].rgb *= tapColor[tapIndex].a;
                     tapOriginalWeight[tapIndex] = TapWeights[i];
                 }
             }
 
-            // Calculate the final average color by modifying tap weights on-the-fly
-            float3 resultColor = float3(0.0, 0.0, 0.0);
+            // Calculate the final average color
+            float4 resultColor = float4(0.0, 0.0, 0.0, 0.0);
             float totalWeight = 0.0;
 
             [unroll]
             for(int k = 0; k < TTotalNumber; k++)
             {
-                float contribution = tapColor[k].w; // alpha modulates the contribution
-                // Final weight value to use
-                float tapWeight = contribution * tapOriginalWeight[k];
-                resultColor += tapColor[k].xyz /*  * tapColor[k].w */  * tapWeight;
+                float tapWeight = tapOriginalWeight[k];
+                // You could change the weight on the fly here to discard some sample
+                resultColor += tapColor[k].xyzw * tapWeight;
                 totalWeight += tapWeight;
             }
 
@@ -75,13 +76,16 @@ namespace SiliconStudio.Paradox.Effects.Images
                 // Normalizes the final result
                 resultColor /= totalWeight;
             } else {
-                resultColor = float3(0.0, 0.0, 0.0);
+                resultColor = float4(0.0, 0.0, 0.0, 0.0);
             }
 
-            float finalWeight = 0;
-            if (totalWeight > 0) finalWeight = 1.0 / totalWeight;
+            // Go back to non-premultiplied-alpha
+            if (resultColor.a > 0) 
+            {
+                 resultColor.rgb /= resultColor.a;
+            }
 
-            return float4(resultColor, sign(totalWeight) );
+            return resultColor;
         }
     };
 }

@@ -16,7 +16,7 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
-    public static partial class ThresholdAlphaCoCKeys
+    public static partial class ThresholdAlphaCoCFrontKeys
     {
         public static readonly ParameterKey<float> CoCReference = ParameterKeys.New<float>();
         public static readonly ParameterKey<float> CoCCurrent = ParameterKeys.New<float>();

@@ -17,12 +17,26 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         stage override float4 Shading()
         {
-            float3 result =    Texture0.Sample( Sampler, streams.TexCoord + RhombiTapOffsets[0] * Texture0TexelSize ).rgb
-                             + Texture1.Sample( Sampler, streams.TexCoord + RhombiTapOffsets[1] * Texture1TexelSize ).rgb
-                             + Texture2.Sample( Sampler, streams.TexCoord + RhombiTapOffsets[2] * Texture2TexelSize ).rgb;
+            float4 tapColor[3]; 
 
-            // Averages the result
-            return float4(result / 3.0, 1.0);
+            tapColor[0] = Texture0.Sample( LinearSampler, streams.TexCoord + RhombiTapOffsets[0] * Texture0TexelSize );
+            tapColor[1] = Texture1.Sample( LinearSampler, streams.TexCoord + RhombiTapOffsets[1] * Texture1TexelSize );
+            tapColor[2] = Texture2.Sample( LinearSampler, streams.TexCoord + RhombiTapOffsets[2] * Texture2TexelSize );
+
+            float4 result = float4(0.0, 0.0, 0.0, 0.0);
+            [unroll]
+            for (int i = 0; i < 3; i++) 
+            {
+                float4 color = tapColor[i];
+                color.rgb *= color.a; //Pre-multiply alpha
+                result += color;
+            }
+
+            result /= 3.0;
+
+            if (result.a > 0) result.rgb /= result.a; // Converts back to non-pre-multiplied alpha
+
+            return result;
         }
     };
 }
