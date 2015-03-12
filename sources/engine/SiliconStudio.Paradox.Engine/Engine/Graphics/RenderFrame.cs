@@ -98,11 +98,14 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         {
             if (isOwner)
             {
-                foreach (var renderTarget in RenderTargets)
+                if (RenderTargets != null)
                 {
-                    if (renderTarget != null)
+                    foreach (var renderTarget in RenderTargets)
                     {
-                        renderTarget.Dispose();
+                        if (renderTarget != null)
+                        {
+                            renderTarget.Dispose();
+                        }
                     }
                 }
 
@@ -152,7 +155,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// <returns>The result of the conversion.</returns>
         public static implicit operator Texture(RenderFrame from)
         {
-            return from != null ? from.RenderTargets[0] : null;
+            return from != null && from.RenderTargets != null && from.RenderTargets.Length > 0 ? from.RenderTargets[0] : null;
         }
 
         /// <summary>
@@ -269,6 +272,12 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         {
             if (graphicsDevice == null) throw new ArgumentNullException("graphicsDevice");
 
+            // Just return null if no render frame is defined
+            if (frameDescriptor.DepthFormat == RenderFrameDepthFormat.None && frameDescriptor.Format == RenderFrameFormat.None)
+            {
+                return null;
+            }
+
             var referenceTexture = referenceFrame != null ? referenceFrame.ReferenceTexture : graphicsDevice.BackBuffer;
 
             int width = frameDescriptor.Width;
@@ -280,8 +289,12 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 height = (height * referenceTexture.Height) / 100;
             }
 
-            var pixelFormat = PixelFormat.R8G8B8A8_UNorm;
-            if (frameDescriptor.Format == RenderFrameFormat.HDR)
+            var pixelFormat = PixelFormat.None;
+            if (frameDescriptor.Format == RenderFrameFormat.LDR)
+            {
+                pixelFormat = PixelFormat.R8G8B8A8_UNorm;
+            }
+            else if (frameDescriptor.Format == RenderFrameFormat.HDR)
             {
                 pixelFormat = PixelFormat.R16G16B16A16_Float;
             }
@@ -298,7 +311,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             }
 
             // Create the render target
-            var renderTarget = Texture.New2D(graphicsDevice, width, height, 1, pixelFormat, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
+            Texture renderTarget = null;
+            if (pixelFormat != PixelFormat.None)
+            {
+                renderTarget = Texture.New2D(graphicsDevice, width, height, 1, pixelFormat, TextureFlags.RenderTarget | TextureFlags.ShaderResource);    
+            }
 
             // Create the depth stencil buffer
             Texture depthStencil = null;
@@ -315,7 +332,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             }
 
             // Create a render frame.
-            return new RenderFrame(frameDescriptor, new [] { renderTarget }, depthStencil, true);
+            return new RenderFrame(frameDescriptor, renderTarget != null ? new [] { renderTarget } : null, depthStencil, true);
         }
 
         internal class RenderFrameSerializer : DataSerializer<RenderFrame>
