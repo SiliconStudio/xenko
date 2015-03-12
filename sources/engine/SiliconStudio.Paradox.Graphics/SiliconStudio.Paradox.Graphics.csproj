@@ -71,21 +71,27 @@
     </When>
   </Choose>
   <ItemGroup>
-    <None Include="..\..\..\deps\freetype-2.5.3\$(SiliconStudioPlatform)\**\*.*">
+    <None Include="..\..\..\deps\freetype-2.5.3\$(SiliconStudioPlatform)\$(Configuration)\**\*.*">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'WindowsStore' Or '$(SiliconStudioPlatform)' == 'WindowsPhone' Or '$(SiliconStudioPlatform)' == 'Android' ">
+  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'WindowsStore' Or '$(SiliconStudioPlatform)' == 'WindowsPhone'">
     <Reference Include="SharpFont">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ParadoxDependenciesDir)SharpFont\SharpFont.dll</HintPath>
+      <HintPath>$(ParadoxDependenciesDir)SharpFont\Windows\$(Configuration)\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS'">
     <Reference Include="SharpFont">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ParadoxDependenciesDir)SharpFont\iOS\SharpFont.dll</HintPath>
+      <HintPath>$(ParadoxDependenciesDir)SharpFont\iOS\$(Configuration)\SharpFont.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Android'">
+    <Reference Include="SharpFont">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(ParadoxDependenciesDir)SharpFont\Android\$(Configuration)\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
   <!-- Files for Direct3D  -->
