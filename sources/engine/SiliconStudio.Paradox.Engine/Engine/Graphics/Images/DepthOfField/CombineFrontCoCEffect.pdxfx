@@ -3,13 +3,14 @@
 namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
-    /// Combines the different blur levels depending on the pixel's CoC. (Back area only.)
+    /// Combines the different blur levels depending on the pixel's CoC.
+    /// Specific for the front out-of-focus objects. 
     /// </summary>
-    shader CombineLevelsFromCoCEffect
+    shader CombineFrontCoCEffect
     {
         using params CombineLevelsFromCoCKeys;
 
         // Mixin 
-        mixin CombineLevelsFromCoCShader<CombineLevelsFromCoCKeys.LevelCount>;
+        mixin CombineFrontCoCShader<CombineLevelsFromCoCKeys.LevelCount>;
     };
 }

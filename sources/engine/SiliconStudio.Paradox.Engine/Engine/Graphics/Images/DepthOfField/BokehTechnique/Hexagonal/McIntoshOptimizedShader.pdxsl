@@ -20,12 +20,12 @@ namespace SiliconStudio.Paradox.Effects.Images
         stage override float4 Shading()
         {
             // First diagonal blur
-            float3 blurColorA = directionalBlurA.Compute().rgb;
+            float4 blurColorA = directionalBlurA.Compute();
 
             // Second diagonal blur
-            float3 blurColorB = directionalBlurB.Compute().rgb;
+            float4 blurColorB = directionalBlurB.Compute();
 
-            return float4( min(blurColorA, blurColorB), 1.0);
+            return min(blurColorA, blurColorB);
         }
     };
 }

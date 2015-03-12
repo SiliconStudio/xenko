@@ -77,7 +77,7 @@
       <DependentUpon>DirectLightGroupFixed.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
+      <DependentUpon>CombineFrontCoCShader.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Engine\Graphics\Images\Bloom\Afterimage.cs" />
     <Compile Include="Engine\Graphics\Images\Bloom\BloomAfterimageCombineShader.cs">
@@ -91,6 +91,24 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Engine\Graphics\Images\DepthOfField\CombineFrontCoCEffect.cs">
+      <DependentUpon>CombineFrontCoCEffect.pdxfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Engine\Graphics\Images\DepthOfField\PointDepth.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>PointDepth.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Engine\Graphics\Images\DepthOfField\ThresholdAlphaCoCFront.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ThresholdAlphaCoCFront.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Engine\ScriptComponent.cs" />
     <Compile Include="Engine\CameraComponentState.cs" />
@@ -118,20 +136,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Images\DepthOfField\InFocusMaskCombine.cs">
-      <DependentUpon>InFocusMaskCombine.pdxsl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Engine\Graphics\Images\DepthOfField\ThresholdAlphaCoC.cs">
       <DependentUpon>ThresholdAlphaCoC.pdxsl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Engine\Graphics\Images\DepthOfField\InFocusToAlpha.cs">
-      <DependentUpon>InFocusToAlpha.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -2658,17 +2664,21 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>TripleRhombiCombineShader.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Images\DepthOfField\InFocusMaskCombine.pdxsl">
+    <None Include="Engine\Graphics\Images\DepthOfField\CombineFrontCoCShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>InFocusMaskCombine.cs</LastGenOutput>
+      <LastGenOutput>CombineFrontCoCShader.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Images\DepthOfField\CombineFrontCoCEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CombineFrontCoCEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Images\DepthOfField\PointDepth.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>PointDepth.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Images\DepthOfField\ThresholdAlphaCoC.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ThresholdAlphaCoC.cs</LastGenOutput>
-    </None>
-    <None Include="Engine\Graphics\Images\DepthOfField\InFocusToAlpha.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>InFocusToAlpha.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Images\DepthOfField\CircleOfConfusion.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -2705,6 +2715,10 @@
     <None Include="Engine\Graphics\Images\DepthOfField\DepthAwareDirectionalBlurUtil.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>DepthAwareDirectionalBlurUtil.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Images\DepthOfField\ThresholdAlphaCoCFront.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ThresholdAlphaCoCFront.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Images\GaussianBlur\GaussianBlurEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
