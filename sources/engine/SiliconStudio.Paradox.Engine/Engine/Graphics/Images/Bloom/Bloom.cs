@@ -16,6 +16,8 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         private ImageMultiScaler multiScaler;
 
+        private Afterimage afterimage;
+
         private Vector2 distortion;
 
         /// <summary>
@@ -28,6 +30,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             DownScale = 1;
             SigmaRatio = 3.5f;
             Distortion = new Vector2(1);
+            afterimage = new Afterimage { Enabled = false };
         }
 
         /// <summary>
@@ -74,6 +77,18 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
+        /// <summary>
+        /// Gets the afterimage effect/>
+        /// </summary>
+        [DataMember(50)]
+        public Afterimage Afterimage
+        {
+            get
+            {
+                return afterimage;
+            }
+        }
+
         [DataMemberIgnore]
         public bool ShowOnlyBloom { get; set; }
 
@@ -100,6 +115,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             multiScaler = ToLoadAndUnload(new ImageMultiScaler());
             blur = ToLoadAndUnload(new GaussianBlur());
+            afterimage = ToLoadAndUnload(afterimage);
         }
 
         protected override void DrawCore(RenderContext context)
@@ -110,6 +126,16 @@ namespace SiliconStudio.Paradox.Effects.Images
             if (input == null)
             {
                 return;
+            }
+
+            // If afterimage is active, add some persistence to the brightness
+            if (afterimage.Enabled)
+            {
+                var persistenceBrightness = NewScopedRenderTarget2D(input.Description);
+                afterimage.SetInput(0, input);
+                afterimage.SetOutput(persistenceBrightness);
+                afterimage.Draw(context);
+                input = persistenceBrightness;
             }
 
             // A distortion can be applied to the bloom effect to simulate anamorphic lenses

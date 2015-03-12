@@ -79,6 +79,19 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Engine\Graphics\Images\Bloom\Afterimage.cs" />
+    <Compile Include="Engine\Graphics\Images\Bloom\BloomAfterimageCombineShader.cs">
+      <DependentUpon>BloomAfterimageCombineShader.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Engine\Graphics\Images\Bloom\BloomAfterimageShader.cs">
+      <DependentUpon>BloomAfterimageShader.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Engine\ScriptComponent.cs" />
     <Compile Include="Engine\CameraComponentState.cs" />
     <Compile Include="Engine\CameraProcessor.cs" />
@@ -2544,6 +2557,14 @@
     <None Include="Engine\Graphics\Images\AntiAliasing\FXAAShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>FXAAShader.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Images\Bloom\BloomAfterimageCombineShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>BloomAfterimageCombineShader.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Images\Bloom\BloomAfterimageShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>BloomAfterimageShader.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Images\BrightFilter\BrightFilterShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
