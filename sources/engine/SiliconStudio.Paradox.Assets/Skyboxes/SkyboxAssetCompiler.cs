@@ -53,9 +53,12 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
             /// <inheritdoc/>
             public override IEnumerable<ObjectUrl> GetInputFiles()
             {
-                foreach (var dependency in Asset.Model.GetDependencies())
+                if (Asset.Model != null)
                 {
-                    yield return new ObjectUrl(UrlType.Internal, dependency.Location);
+                    foreach (var dependency in Asset.Model.GetDependencies())
+                    {
+                        yield return new ObjectUrl(UrlType.Internal, dependency.Location);
+                    }
                 }
             }
 
