@@ -122,12 +122,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         {
             if (Descriptor.Mode == RenderFrameSizeMode.Relative && referenceFrame != null)
             {
-                var renderTarget = referenceFrame.RenderTargets[0];
+                var targetWidth = (int)((double)Descriptor.Width * referenceFrame.Width / 100);
+                var targetHeight = (int)((double)Descriptor.Height * referenceFrame.Height / 100);
 
-                var targetWidth = (int)((double)Descriptor.Width * renderTarget.Width / 100);
-                var targetHeight = (int)((double)Descriptor.Height * renderTarget.Height / 100);
-
-                return renderTarget.Width != targetWidth || renderTarget.Height != targetHeight;
+                return Width != targetWidth || Height != targetHeight;
             }
             return false;
         }
