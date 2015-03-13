@@ -188,19 +188,12 @@ namespace SiliconStudio.Shaders.Visitor
                 {
                     var evaluator = new ExpressionEvaluator();
                     var subResult = evaluator.Evaluate(methodInvocationExpression.Arguments[0]);
-                    values.Push(Convert.ToDouble(subResult.Value, CultureInfo.InvariantCulture));
-
-                    try
-                    {
-                    }
-                    catch (Exception e)
-                    {
-                        result.Error(e.Message, methodInvocationExpression.Span);
-                        result.Error("Unable to cast the value [{0}]", methodInvocationExpression.Span, methodInvocationExpression);
-                    }
+                    values.Push(subResult.Value);
                 }
                 else
+                {
                     result.Error("Method invocation expression evaluation [{0}] is not supported", methodInvocationExpression.Span, methodInvocationExpression);
+                }
             }
         }
 
@@ -215,7 +208,7 @@ namespace SiliconStudio.Shaders.Visitor
             {
                 result.Error("Unable to find variable [{0}]", variableReferenceExpression.Span, variableReferenceExpression);
             }
-            else if (variableDeclaration.InitialValue == null)
+            else if (variableDeclaration.InitialValue == null || !variableDeclaration.Qualifiers.Contains(StorageQualifier.Const))
             {
                 result.Error("Variable [{0}] used in expression is not constant", variableReferenceExpression.Span, variableDeclaration);
             }
@@ -231,7 +224,7 @@ namespace SiliconStudio.Shaders.Visitor
                 }
                 else
                 {
-                    values.Push(Convert.ToDouble(subResult.Value, CultureInfo.InvariantCulture));
+                    values.Push(subResult.Value);
                 }
             }
         }
