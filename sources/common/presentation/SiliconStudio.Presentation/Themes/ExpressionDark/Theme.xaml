@@ -3715,6 +3715,7 @@
 
     <Style TargetType="{x:Type GridSplitter}">
         <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
+        <Setter Property="Focusable" Value="False"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="VerticalAlignment" Value="Stretch"/>
     </Style>
