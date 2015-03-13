@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public ScrollingTextTest()
         {
-            CurrentVersion = 2;
+            CurrentVersion = 4;
         }
 
         protected override async Task LoadContent()

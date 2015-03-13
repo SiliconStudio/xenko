@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         protected Scene UIScene;
 
-        protected Entity CameraUIRoot = new Entity("Root entity of camera UI") { new UIComponent() };
+        protected Entity CameraUIRoot = new Entity("Root entity of camera UI") { new UIComponent()  };
         protected Entity SceneUIRoot = new Entity("Root entity of scene UI") { new UIComponent() };
 
         protected UIComponent CameraUIComponent { get {  return CameraUIRoot.Get<UIComponent>(); } }
@@ -76,6 +76,9 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
                     }
                 }
             };
+
+            CameraUIRoot.Group = CameraRenderedGroup;
+            SceneUIRoot.Group = UIRendereredGroup;
 
             UIScene.AddChild(CameraUIRoot);
             UIScene.AddChild(SceneUIRoot);

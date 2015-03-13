@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public BorderImageTest()
         {
-            CurrentVersion = 4;
+            CurrentVersion = 5;
         }
 
         protected override async Task LoadContent()

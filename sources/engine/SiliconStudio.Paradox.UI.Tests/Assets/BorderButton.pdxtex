@@ -1,10 +1,8 @@
 !Texture
-Id: f87d89f5-7a0c-4de8-9ce0-23760649843e
+Id: 6d354d02-2593-4297-b5e0-30208f9ff0f4
 Tags: []
 Source: ../../../data/tests/BorderButton.dds
-ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Format: TrueColor
 Alpha: Explicit
 GenerateMipmaps: false
 ~Base:
@@ -12,4 +10,5 @@ GenerateMipmaps: false
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000
         Tags: []
+        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
         ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public DynamicFontTest()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 2;
         }
 
         protected override async Task LoadContent()

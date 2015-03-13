@@ -167,7 +167,6 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.75f, 0.5f)));
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.75f, 0.5f)));
-            UI.Update(new GameTime());
         }
 
         public void DrawTest4()
@@ -187,7 +186,6 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.54f, 0.5f)));
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.54f, 0.5f)));
-            UI.Update(new GameTime());
         }
 
         public void DrawTest7()

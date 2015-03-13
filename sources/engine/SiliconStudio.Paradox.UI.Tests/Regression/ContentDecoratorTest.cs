@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public ContentDecoratorTest()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 3;
         }
 
         protected override async Task LoadContent()

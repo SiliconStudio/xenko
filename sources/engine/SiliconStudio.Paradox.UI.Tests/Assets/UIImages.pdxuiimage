@@ -1,7 +1,7 @@
 !UIImageGroup
-Id: e249baba-658e-426e-9c6b-1884c4d1917a
+Id: c8b6b4b7-12db-488a-8e90-ba0c661944c2
 Tags: []
-Images:
+Images: 
     -   Source: ../../../data/tests/rotatedUV.dds
         Name: uvNotRotated
         TextureRegion:
@@ -60,6 +60,5 @@ Images:
             Height: 256
         Borders: {X: 0, Y: 0, Z: 0, W: 0}
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Format: Compressed
 Alpha: Explicit
 GenerateMipmaps: true

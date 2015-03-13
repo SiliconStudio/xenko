@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     {
         public ImageTest()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 2;
         }
 
         protected override async Task LoadContent()

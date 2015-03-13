@@ -277,7 +277,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
                         throw new ArgumentOutOfRangeException("orientation");
                 }
 
-                Assert.AreEqual(Matrix.Translation(childOffsets), Children[i].DependencyProperties.Get(PanelArrangeMatrixPropertyKey));
+                Utilities.AssertAreNearlyEqual(Matrix.Translation(childOffsets), Children[i].DependencyProperties.Get(PanelArrangeMatrixPropertyKey));
             }
         }
 
@@ -821,7 +821,13 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
             var childSize2 = new Vector3(150, 250, 350);
             var childSize3 = new Vector3(250, 250, 350);
 
-            var stackPanel = new StackPanel { Size = stackSize, ItemVirtualizationEnabled = virtualizeItems, Orientation = Orientation.Horizontal };
+            var stackPanel = new StackPanel
+            {
+                Size = stackSize, 
+                ItemVirtualizationEnabled = virtualizeItems, 
+                Orientation = Orientation.Horizontal,
+                LayoutingContext = new LayoutingContext()
+            };
 
             var child1 = new StackPanel { Size = childSize1 };
             var child2 = new StackPanel { Size = childSize2 };

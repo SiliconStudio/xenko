@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     {
         public CanvasGridTest()
         {
-            CurrentVersion = 2;
+            CurrentVersion = 3;
         }
 
         protected override void RegisterTests()

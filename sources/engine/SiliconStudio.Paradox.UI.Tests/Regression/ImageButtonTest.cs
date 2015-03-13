@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public ImageButtonTest()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 2;
         }
 
         protected override async Task LoadContent()
