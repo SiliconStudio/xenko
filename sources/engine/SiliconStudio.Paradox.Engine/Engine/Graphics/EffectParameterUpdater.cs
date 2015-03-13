@@ -70,7 +70,7 @@ namespace SiliconStudio.Paradox.Effects
 
     internal class EffectParameterUpdater : ParameterUpdater
     {
-        public KeyValuePair<int, ParameterCollection.InternalValue> GetAtIndex(int index)
+        public BoundInternalValue GetAtIndex(int index)
         {
             return InternalValues[index];
         }
@@ -83,10 +83,10 @@ namespace SiliconStudio.Paradox.Effects
 
                 // We can skip keys defined by the first level (which is the effect default parameters + key mapping)
                 // TODO: Make sure this is a valid assumption in all cases
-                if (kvp.Key == 0)
+                if (kvp.DirtyCount == 0)
                     continue;
 
-                if (definition.SortedLevels[i] == kvp.Key)
+                if (definition.SortedLevels[i] == kvp.DirtyCount)
                 {
                     if (definition.SortedCounters[i] != kvp.Value.Counter && !kvp.Value.ValueEquals(definition.SortedCompilationValues[i]))
                         return true;
@@ -110,7 +110,7 @@ namespace SiliconStudio.Paradox.Effects
 
             for (var i = 0; i < levels.Length; ++i)
             {
-                levels[i] = GetAtIndex(i).Key;
+                levels[i] = GetAtIndex(i).DirtyCount;
             }
 
             definition.SortedLevels = levels;            

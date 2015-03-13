@@ -227,14 +227,14 @@ namespace SiliconStudio.Paradox.Graphics.Internals
             {
                 var dependency = dependencies[dependencyIndex];
                 int highestLevel = 0;
-                int destinationLevel = InternalValues[dependency.Destination].Key;
+                int destinationLevel = InternalValues[dependency.Destination].DirtyCount;
 
                 var destination = InternalValues[dependency.Destination];
                 bool needUpdate = false;
                 for (int i = 0; i < dependency.Sources.Length; ++i)
                 {
                     var source = InternalValues[dependency.Sources[i]];
-                    var sourceLevel = source.Key;
+                    var sourceLevel = source.DirtyCount;
 
                     if (highestLevel < sourceLevel)
                         highestLevel = sourceLevel;
@@ -255,12 +255,12 @@ namespace SiliconStudio.Paradox.Graphics.Internals
                         var bestCollectionForDynamicValue = parameterCollections[maxLevelNoOverride];
                         var key = definition.SortedKeys[dependency.Destination];
                         bestCollectionForDynamicValue.SetDefault(key, true);
-                        InternalValues[dependency.Destination] = destination = new KeyValuePair<int, ParameterCollection.InternalValue>(highestLevel, bestCollectionForDynamicValue.GetInternalValue(key));
+                        InternalValues[dependency.Destination] = destination = new BoundInternalValue(highestLevel, bestCollectionForDynamicValue.GetInternalValue(key));
                     }
                     else
                     {
                         // At least one source comes from TLS override, so use dynamic from TLS dynamic storage as well.
-                        InternalValues[dependency.Destination] = destination = new KeyValuePair<int, ParameterCollection.InternalValue>(parameterCollections.Length, definition.ThreadLocalDynamicValues[graphicsDevice.ThreadIndex][dependencyIndex]);
+                        InternalValues[dependency.Destination] = destination = new BoundInternalValue(parameterCollections.Length, definition.ThreadLocalDynamicValues[graphicsDevice.ThreadIndex][dependencyIndex]);
                     }
 
                     needUpdate = true;

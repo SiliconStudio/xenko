@@ -19,11 +19,11 @@ namespace SiliconStudio.Paradox.Effects
     /// </summary>
     internal class ParameterUpdater
     {
-        protected KeyValuePair<int, ParameterCollection.InternalValue>[] InternalValues;
+        protected BoundInternalValue[] InternalValues;
 
         public ParameterUpdater()
         {
-            InternalValues = new KeyValuePair<int, ParameterCollection.InternalValue>[8];
+            InternalValues = new BoundInternalValue[8];
         }
 
         public void Update(ParameterUpdaterDefinition definition, ParameterCollection[] parameterCollections, int levelCount)
@@ -34,11 +34,11 @@ namespace SiliconStudio.Paradox.Effects
                 return;
 
             if (sortedKeyHashesLength > InternalValues.Length)
-                InternalValues = new KeyValuePair<int, ParameterCollection.InternalValue>[sortedKeyHashesLength];
+                InternalValues = new BoundInternalValue[sortedKeyHashesLength];
 
             // Temporary clear data for debug/test purposes (shouldn't necessary)
             for (int i = 0; i < sortedKeyHashesLength; ++i)
-                InternalValues[i] = new KeyValuePair<int, ParameterCollection.InternalValue>();
+                InternalValues[i] = new BoundInternalValue();
 
             // Optimization: List is already prepared (with previous SetKeyMapping() call)
             var collection = parameterCollections[0];
@@ -47,7 +47,7 @@ namespace SiliconStudio.Paradox.Effects
             {
                 var internalValue = keys[i];
                 if (internalValue != null)
-                    InternalValues[i] = new KeyValuePair<int, ParameterCollection.InternalValue>(0, internalValue);
+                    InternalValues[i] = new BoundInternalValue(0, internalValue);
             }
 
             // Iterate over parameter collections
@@ -78,7 +78,7 @@ namespace SiliconStudio.Paradox.Effects
                     if (currentHash == expectedHash)
                     {
                         // Update element
-                        InternalValues[index] = new KeyValuePair<int, ParameterCollection.InternalValue>(levelIndex, internalValue.Value);
+                        InternalValues[index] = new BoundInternalValue(levelIndex, internalValue.Value);
                     }
                 }
             }
@@ -87,6 +87,18 @@ namespace SiliconStudio.Paradox.Effects
         public object GetObject(int index)
         {
             return (InternalValues[index].Value).Object;
+        }
+
+        internal struct BoundInternalValue
+        {
+            public int DirtyCount;
+            public ParameterCollection.InternalValue Value;
+
+            public BoundInternalValue(int dirtyCount, ParameterCollection.InternalValue value)
+            {
+                DirtyCount = dirtyCount;
+                Value = value;
+            }
         }
     }
 }
