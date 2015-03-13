@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
@@ -62,7 +63,8 @@ namespace SiliconStudio.Paradox.Physics
 
         public void Apply()
         {
-            Apply(parameters);
+            //Apply(parameters);
+            throw new NotImplementedException();
         }
     }
 }

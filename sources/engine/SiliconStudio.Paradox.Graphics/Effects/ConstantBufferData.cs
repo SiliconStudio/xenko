@@ -15,21 +15,21 @@ namespace SiliconStudio.Paradox.Graphics.Internals
         public IntPtr Data { get; private set; }
         public ShaderConstantBufferDescription Desc { get; private set; }
 
-        private BoundConstantBufferParam[] constantBufferParams;
+        private ParameterCollectionGroup.BoundInternalValue[] constantBufferParams;
 
         public ConstantBufferData(ShaderConstantBufferDescription description)
         {
             Desc = description;
             Data = Marshal.AllocHGlobal(Desc.Size);
-            constantBufferParams = new BoundConstantBufferParam[Desc.Members.Length];
+            constantBufferParams = new ParameterCollectionGroup.BoundInternalValue[Desc.Members.Length];
         }
 
         /// <summary>
         /// Updates the specified parameter updater.
         /// </summary>
-        /// <param name="parameterUpdater">The parameter updater.</param>
+        /// <param name="parameterCollectionGroup">The parameter updater.</param>
         /// <returns></returns>
-        public unsafe bool Update(ShaderParameterUpdater parameterUpdater)
+        public unsafe bool Update(EffectParameterCollectionGroup parameterCollectionGroup)
         {
             bool dataChanged = false;
             Matrix tempMatrix;
@@ -47,16 +47,16 @@ namespace SiliconStudio.Paradox.Graphics.Internals
 
                     var paramReference = constantBufferParams[i];
 
-                    var internalValue = parameterUpdater.GetInternalValue(shaderVariable.Param.KeyIndex);
+                    var internalValue = parameterCollectionGroup.GetInternalValue(shaderVariable.Param.KeyIndex);
 
                     // TODO: Comparing Counter+DataPointer is not enough (if realloc on same address)
-                    if (internalValue == paramReference.DataPointer
+                    if (internalValue == paramReference.Value
                         && internalValue.Counter == paramReference.DirtyCount)
                         continue;
 
-                    constantBufferParams[i] = new BoundConstantBufferParam
+                    constantBufferParams[i] = new ParameterCollectionGroup.BoundInternalValue
                     {
-                        DataPointer = internalValue,
+                        Value = internalValue,
                         DirtyCount = internalValue.Counter
                     };
 
@@ -121,12 +121,6 @@ namespace SiliconStudio.Paradox.Graphics.Internals
                 }
             }
             return dataChanged;
-        }
-
-        private struct BoundConstantBufferParam
-        {
-            public int DirtyCount;
-            public ParameterCollection.InternalValue DataPointer;
         }
     }
 }

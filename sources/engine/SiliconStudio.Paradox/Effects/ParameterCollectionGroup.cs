@@ -1,11 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Collections.Generic;
 
 namespace SiliconStudio.Paradox.Effects
 {
     /// <summary>
-    /// Describes the expected parameters when using a <see cref="ParameterUpdater"/>.
+    /// Describes the expected parameters when using a <see cref="ParameterCollectionGroup"/>.
     /// </summary>
     internal abstract class ParameterUpdaterDefinition
     {
@@ -15,18 +17,28 @@ namespace SiliconStudio.Paradox.Effects
     }
 
     /// <summary>
-    /// Merges and filters parameters coming from multiple <see cref="ParameterCollection"/>.
+    /// Merges and filters parameters coming from multiple <see cref="ParameterCollection"/>, using the first collection as key-mapping reference.
     /// </summary>
-    internal class ParameterUpdater
+    public abstract class ParameterCollectionGroup
     {
-        protected BoundInternalValue[] InternalValues;
+        internal BoundInternalValue[] InternalValues;
+        protected int[] previousParameterCollections;
+        protected readonly ParameterCollection[] parameterCollections;
 
-        public ParameterUpdater()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ParameterCollectionGroup" /> class.
+        /// </summary>
+        /// <param name="parameterCollections">The parameter collections.</param>
+        /// <exception cref="System.ArgumentNullException">parameterCollections</exception>
+        protected ParameterCollectionGroup(ParameterCollection[] parameterCollections)
         {
+            if (parameterCollections == null) throw new ArgumentNullException("parameterCollections");
+
             InternalValues = new BoundInternalValue[8];
+            this.parameterCollections = parameterCollections;
         }
 
-        public void Update(ParameterUpdaterDefinition definition, ParameterCollection[] parameterCollections, int levelCount)
+        internal void Update(ParameterUpdaterDefinition definition)
         {
             var sortedKeyHashes = definition.SortedKeyHashes;
             var sortedKeyHashesLength = sortedKeyHashes.Length;
@@ -35,6 +47,30 @@ namespace SiliconStudio.Paradox.Effects
 
             if (sortedKeyHashesLength > InternalValues.Length)
                 InternalValues = new BoundInternalValue[sortedKeyHashesLength];
+
+
+            // Optimization: nothing changed?
+            if (previousParameterCollections == null || previousParameterCollections.Length < parameterCollections.Length)
+            {
+                previousParameterCollections = new int[parameterCollections.Length];
+            }
+
+            bool needUpdate = false;
+            for (int levelIndex = 0; levelIndex < parameterCollections.Length; ++levelIndex)
+            {
+                var parameterCollection = parameterCollections[levelIndex];
+                var keyCounter = parameterCollection.KeyVersion;
+                if (keyCounter != previousParameterCollections[levelIndex])
+                {
+                    needUpdate = true;
+                    previousParameterCollections[levelIndex] = keyCounter;
+                }
+            }
+
+            if (!needUpdate)
+            {
+                return;
+            }
 
             // Temporary clear data for debug/test purposes (shouldn't necessary)
             for (int i = 0; i < sortedKeyHashesLength; ++i)
@@ -51,7 +87,7 @@ namespace SiliconStudio.Paradox.Effects
             }
 
             // Iterate over parameter collections
-            for (int levelIndex = 1; levelIndex < levelCount; ++levelIndex)
+            for (int levelIndex = 1; levelIndex < parameterCollections.Length; ++levelIndex)
             {
                 var level = parameterCollections[levelIndex].valueList;
                 int index = 0;
@@ -84,7 +120,7 @@ namespace SiliconStudio.Paradox.Effects
             }
         }
 
-        public object GetObject(int index)
+        internal object GetObject(int index)
         {
             return (InternalValues[index].Value).Object;
         }

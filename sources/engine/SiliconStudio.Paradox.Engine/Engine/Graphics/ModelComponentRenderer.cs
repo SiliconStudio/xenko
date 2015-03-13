@@ -249,7 +249,7 @@ namespace SiliconStudio.Paradox.Effects
                 foreach (var mesh in modelMeshes)
                 {
                     var renderMesh = new RenderMesh(renderModel, mesh);
-                    UpdateEffect(context, renderMesh, null);
+                    //UpdateEffect(context, renderMesh, null);
 
                     // Register mesh for rendering
                     renderMeshes.Add(renderMesh);

@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Graphics.Internals;
 
 namespace SiliconStudio.Paradox.Effects.ComputeEffect
 {
@@ -22,6 +23,7 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect
         private readonly List<ParameterCollection> parameterCollections;
 
         private readonly List<ParameterCollection> appliedParameterCollections;
+        private EffectParameterCollectionGroup effectParameterCollections;
 
         public ComputeEffectShader(RenderContext context)
             : this(context, null)
@@ -116,15 +118,20 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect
 
             UpdateEffect();
 
-            appliedParameterCollections.Clear();
-            if (context != null)
+            if (effectParameterCollections == null || effectParameterCollections.Effect != EffectInstance.Effect)
             {
-                appliedParameterCollections.Add(context.Parameters);
+                appliedParameterCollections.Clear();
+                if (context != null)
+                {
+                    appliedParameterCollections.Add(context.Parameters);
+                }
+                appliedParameterCollections.AddRange(parameterCollections);
+
+                effectParameterCollections = new EffectParameterCollectionGroup(GraphicsDevice, EffectInstance.Effect, appliedParameterCollections);
             }
-            appliedParameterCollections.AddRange(parameterCollections);
 
             // Apply the effect
-            EffectInstance.Effect.Apply(GraphicsDevice, appliedParameterCollections, false);
+            EffectInstance.Effect.Apply(GraphicsDevice, effectParameterCollections, false);
 
             // Draw a full screen quad
             GraphicsDevice.Dispatch(ThreadGroupCounts.X, ThreadGroupCounts.Y, ThreadGroupCounts.Z);
