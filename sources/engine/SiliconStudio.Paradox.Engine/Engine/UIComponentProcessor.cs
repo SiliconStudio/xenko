@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Initializes a new instance of the <see cref="SpriteProcessor"/> class.
         /// </summary>
         public UIComponentProcessor()
-            : base(new PropertyKey[] { SpriteComponent.Key, TransformComponent.Key })
+            : base(new PropertyKey[] { UIComponent.Key, TransformComponent.Key })
         {
             UIRoots = new List<UIComponentState>();
         }

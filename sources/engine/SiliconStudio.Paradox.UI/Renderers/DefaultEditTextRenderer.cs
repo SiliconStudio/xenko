@@ -55,7 +55,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
             // Draw the selection
             if(editText.IsSelectionActive)
             {
-                var fontSize = fontScale * editText.TextSize;
+                var fontSize = new Vector2(fontScale.Y * editText.TextSize);
                 offsetTextStart = font.MeasureString(editText.TextToDisplay, ref fontSize, editText.SelectionStart).X;
                 selectionSize = font.MeasureString(editText.TextToDisplay, ref fontSize, editText.SelectionStart + editText.SelectionLength).X - offsetTextStart;
                 if (font.IsDynamic)

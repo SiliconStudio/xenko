@@ -260,7 +260,10 @@ namespace SiliconStudio.Paradox.UI
             get { return layoutingContext; }
             set
             {
-                if (value.Equals(layoutingContext))
+                if (value == null)
+                    return;
+
+                if (layoutingContext != null && layoutingContext.Equals(value))
                     return;
 
                 ForceMeasure();

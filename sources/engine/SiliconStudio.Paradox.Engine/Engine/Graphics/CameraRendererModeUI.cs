@@ -30,6 +30,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         {
             ClearDepthBuffer = true;
             RenderComponentTypes.Add(typeof(UIComponent));
+            RenderComponentTypes.Add(typeof(CameraComponent));
 
             // create and add the ui component renderer override (we need a reference to the renderer)
             uiComponentRenderer = new UIComponentRenderer();

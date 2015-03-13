@@ -104,6 +104,12 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 lastTargetSize = targetSize;
             }
 
+            // set the context view matrix and view projection matrix 
+            var oldViewMatrix = context.ViewMatrix;
+            var oldViewProjectionMatrix = context.ViewProjectionMatrix;
+            context.ViewMatrix = cameraState.View;
+            Matrix.Multiply(ref cameraState.View, ref cameraState.Projection, out context.ViewProjectionMatrix);
+
             // Draw this camera.
             using (context.PushTagAndRestore(Current, this))
             using (context.PushTagAndRestore(RenderFrame.Current, output))
@@ -111,6 +117,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             {
                 uiCameraRenderer.Draw(Context);
             }
+
+            // revert the context view matrix and view projection matrix 
+            context.ViewMatrix = oldViewMatrix;
+            context.ViewProjectionMatrix = oldViewProjectionMatrix;
         }
 
         protected override void Destroy()

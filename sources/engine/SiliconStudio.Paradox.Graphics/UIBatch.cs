@@ -143,7 +143,7 @@ namespace SiliconStudio.Paradox.Graphics
             uiSeparateAlphaEffect = new Effect(GraphicsDevice, UIEffectSeparateAlpha.Bytecode) {Name = "SeparatedAlphaBatchEffect"};
             
             // Create a 1x1 pixel white texture
-            whiteTexture = Texture.New2D(GraphicsDevice, 1, 1, PixelFormat.R8G8B8A8_UNorm, new Byte[] { 255, 255, 255, 255 });
+            whiteTexture = GraphicsDevice.GetSharedWhiteTexture();
         }
 
         /// <summary>
@@ -548,6 +548,7 @@ namespace SiliconStudio.Paradox.Graphics
 
         private unsafe void CalculateRectangleVertices(UIImageDrawInfo* drawInfo, VertexPositionColorTextureSwizzle* vertex)
         {
+            // TODO this should be replaced by the size of the render target.
             var backBufferHalfWidth = GraphicsDevice.BackBuffer.ViewWidth / 2;
             var backBufferHalfHeight = GraphicsDevice.BackBuffer.ViewHeight / 2;
 

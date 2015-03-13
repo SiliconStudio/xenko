@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.UI
         /// <summary>
         /// The resolution of the output target.
         /// </summary>
-        public Vector2 RealResolution { get; private set; }
+        public Vector2 RealResolution { get; internal set; }
 
         /// <summary>
         /// The virtual resolution of the UI.
@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.UI
         /// <summary>
         /// The ratio between the real and virtual resolution (=real/virtual)
         /// </summary>
-        public Vector2 RealVirtualResolutionRatio { get; private set; }
+        public Vector2 RealVirtualResolutionRatio { get; internal set; }
 
         /// <summary>
         /// Determine if two <see cref="LayoutingContext"/> are equals.
@@ -35,15 +35,6 @@ namespace SiliconStudio.Paradox.UI
         public bool Equals(LayoutingContext other)
         {
             return RealResolution.Equals(other.RealResolution) && VirtualResolution.Equals(other.VirtualResolution);
-        }
-
-        internal void CalculateRealResolutionAndRatio(float realHeightEstimate)
-        {
-            // Calculate the real resolution so that the RealVirtualResolution is uniform (same value for X and Y)
-            // -> This ensure that freetype does not produce deformed characters.
-            var virtualResolutionRatio = VirtualResolution.X / VirtualResolution.Y;
-            RealResolution = new Vector2(virtualResolutionRatio * realHeightEstimate, realHeightEstimate);
-            RealVirtualResolutionRatio = new Vector2(RealResolution.Y / VirtualResolution.Y);
         }
     }
 }
