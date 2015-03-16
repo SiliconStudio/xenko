@@ -1,7 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Collections.Generic;
+using System;
 
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.EntityModel;
@@ -33,14 +33,12 @@ namespace SiliconStudio.Paradox.Engine
 
         protected override SceneChildComponent GenerateAssociatedData(Entity entity)
         {
-            var sceneChild = entity.Get<SceneChildComponent>();
-            sceneChild.SceneInstance = new SceneInstance(EntityManager.Services, sceneChild.Scene, EntityManager.GetProcessor<ScriptProcessor>() != null);
-            return sceneChild;
+            return entity.Get<SceneChildComponent>();
         }
 
         protected override void OnEntityAdding(Entity entity, SceneChildComponent component)
         {
-
+            component.SceneInstance = new SceneInstance(EntityManager.Services, component.Scene, EntityManager.GetProcessor<ScriptProcessor>() != null);
         }
 
         protected override void OnEntityRemoved(Entity entity, SceneChildComponent component)
@@ -57,11 +55,14 @@ namespace SiliconStudio.Paradox.Engine
             foreach (var entity in enabledEntities)
             {
                 var childComponent = entity.Value;
-
-                // Copy back the scene from the component to the instance
-                childComponent.SceneInstance.Scene = childComponent.Scene;
                 if (childComponent.Enabled)
                 {
+                    // Copy back the scene from the component to the instance
+                    if (childComponent.SceneInstance.Scene != childComponent.Scene)
+                    {
+                        childComponent.SceneInstance.Dispose();
+                        childComponent.SceneInstance = new SceneInstance(EntityManager.Services, childComponent.Scene, EntityManager.GetProcessor<ScriptProcessor>() != null);
+                    } 
                     childComponent.SceneInstance.Update(time);
                 }
             }
@@ -72,11 +73,12 @@ namespace SiliconStudio.Paradox.Engine
             foreach (var entity in enabledEntities)
             {
                 var childComponent = entity.Value;
-
-                // Copy back the scene from the component to the instance
-                childComponent.SceneInstance.Scene = childComponent.Scene;
                 if (childComponent.Enabled)
                 {
+                    var sceneInstance = childComponent.SceneInstance;
+                    if (sceneInstance.Scene != childComponent.Scene)
+                        throw new InvalidOperationException("The scene instance does not match the scene of the SceneChildComponent. Has it been modified after Update?");
+                    
                     childComponent.SceneInstance.Draw(context);
                 }
             }
