@@ -244,9 +244,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                 var finalShader = mixer.GetMixedShader();
 
                 // Simplifies the shader by removing dead code
-                // TODO: Disable this as it is introducing some errors in the generated shaders
-                //var simplifier = new ExpressionSimplifierVisitor();
-                //simplifier.Run(finalShader);
+                var simplifier = new ExpressionSimplifierVisitor();
+                simplifier.Run(finalShader);
 
                 parsingResult.Reflection = new EffectReflection();
                 var pdxShaderLinker = new ShaderLinker(parsingResult);

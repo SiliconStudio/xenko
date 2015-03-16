@@ -128,28 +128,28 @@ namespace SiliconStudio.Shaders.Visitor
                     resultValue = ((int) leftValue) ^ ((int) rightValue);
                     break;
                 case BinaryOperator.LogicalAnd:
-                    resultValue = leftValue != 0.0f && rightValue != 0.0f ? 1.0f : 0.0f;
+                    resultValue = leftValue != 0.0 && rightValue != 0.0 ? 1.0 : 0.0;
                     break;
                 case BinaryOperator.LogicalOr:
-                    resultValue = leftValue != 0.0f || rightValue != 0.0f ? 1.0f : 0.0f;
+                    resultValue = leftValue != 0.0 || rightValue != 0.0 ? 1.0 : 0.0;
                     break;
                 case BinaryOperator.GreaterEqual:
-                    resultValue = leftValue >= rightValue ? 1.0f : 0.0f;
+                    resultValue = leftValue >= rightValue ? 1.0 : 0.0;
                     break;
                 case BinaryOperator.Greater:
-                    resultValue = leftValue > rightValue ? 1.0f : 0.0f;
+                    resultValue = leftValue > rightValue ? 1.0 : 0.0;
                     break;
                 case BinaryOperator.Less:
-                    resultValue = leftValue < rightValue ? 1.0f : 0.0f;
+                    resultValue = leftValue < rightValue ? 1.0 : 0.0;
                     break;
                 case BinaryOperator.LessEqual:
-                    resultValue = leftValue <= rightValue ? 1.0f : 0.0f;
+                    resultValue = leftValue <= rightValue ? 1.0 : 0.0;
                     break;
                 case BinaryOperator.Equality:
-                    resultValue = leftValue == rightValue ? 1.0f : 0.0f;
+                    resultValue = leftValue == rightValue ? 1.0 : 0.0;
                     break;
                 case BinaryOperator.Inequality:
-                    resultValue = leftValue != rightValue ? 1.0f : 0.0f;
+                    resultValue = leftValue != rightValue ? 1.0 : 0.0;
                     break;
                 default:
                     result.Error("Binary operator [{0}] is not supported", binaryExpression.Span, binaryExpression);
@@ -159,23 +159,22 @@ namespace SiliconStudio.Shaders.Visitor
             values.Push(resultValue);
         }
 
-        /*
-        //[Visit]
-        //protected virtual void Visit(IndexerExpression indexerExpression)
-        //{
-        //    Visit((Node)indexerExpression);
-        //    // TODO implement indexer expression eval
-        //    result.Error("Indexer expression evaluation [{0}] is not supported", indexerExpression.Span, indexerExpression);
-        //}
-        //[Visit]
-        //protected virtual void Visit(MemberReferenceExpression memberReferenceExpression)
-        //{
-        //    Visit((Node)memberReferenceExpression);
+        [Visit]
+        protected virtual void Visit(IndexerExpression indexerExpression)
+        {
+            Visit((Node)indexerExpression);
 
-        //    // TODO implement member reference expression eval
-        //    result.Error("Member reference expression evaluation [{0}] is not supported", memberReferenceExpression.Span, memberReferenceExpression);
-        //}
-        */
+            // TODO implement indexer expression eval
+            result.Error("Indexer expression evaluation [{0}] is not supported", indexerExpression.Span, indexerExpression);
+        }
+        [Visit]
+        protected virtual void Visit(MemberReferenceExpression memberReferenceExpression)
+        {
+            Visit((Node)memberReferenceExpression);
+
+            // TODO implement member reference expression eval
+            result.Error("Member reference expression evaluation [{0}] is not supported", memberReferenceExpression.Span, memberReferenceExpression);
+        }
 
         /// <inheritdoc/>
         [Visit]
@@ -189,12 +188,11 @@ namespace SiliconStudio.Shaders.Visitor
                     var evaluator = new ExpressionEvaluator();
                     var subResult = evaluator.Evaluate(methodInvocationExpression.Arguments[0]);
                     values.Push(subResult.Value);
-                }
-                else
-                {
-                    result.Error("Method invocation expression evaluation [{0}] is not supported", methodInvocationExpression.Span, methodInvocationExpression);
+                    return;
                 }
             }
+
+            result.Error("Method invocation expression evaluation [{0}] is not supported", methodInvocationExpression.Span, methodInvocationExpression);
         }
 
         /// <inheritdoc/>
@@ -220,7 +218,7 @@ namespace SiliconStudio.Shaders.Visitor
 
                 if (subResult.HasErrors)
                 {
-                    values.Push(0.0f);
+                    values.Push(0.0);
                 }
                 else
                 {
@@ -278,7 +276,7 @@ namespace SiliconStudio.Shaders.Visitor
                     values.Push(value);
                     break;
                 case UnaryOperator.LogicalNot:
-                    values.Push(value == 0.0 ? 1.0f : 0.0f);
+                    values.Push(value == 0.0 ? 1.0 : 0.0);
                     break;
                 default:
                     result.Error("Unary operator [{0}] is not supported", unaryExpression.Span, unaryExpression);
