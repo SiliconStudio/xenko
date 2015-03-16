@@ -221,6 +221,17 @@ namespace SiliconStudio.Paradox.EntityModel
             Components.SetObject(key, value);
         }
 
+        /// <summary>
+        /// Removes a component with the specified key.
+        /// </summary>
+        /// <typeparam name="T">Type of the component</typeparam>
+        /// <param name="key">The key.</param>
+        /// <returns><c>True</c> if the component was removed, <c>False</c> otherwise.</returns>
+        public bool Remove<T>(PropertyKey<T> key)
+        {
+            return Components.Remove(key);
+        }
+        
         private void EntityPropertyUpdated(ref PropertyContainer propertyContainer, PropertyKey propertyKey, object newValue, object oldValue)
         {
             // Remove entity owner from previous EntityComponent.
