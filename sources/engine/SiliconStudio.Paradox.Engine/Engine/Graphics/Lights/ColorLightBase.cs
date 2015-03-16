@@ -10,6 +10,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
     /// <summary>
     /// Base implementation of <see cref="IColorLight"/>
     /// </summary>
+    [DataContract(Inherited = true)]
     public abstract class ColorLightBase : IColorLight
     {
         protected ColorLightBase()
