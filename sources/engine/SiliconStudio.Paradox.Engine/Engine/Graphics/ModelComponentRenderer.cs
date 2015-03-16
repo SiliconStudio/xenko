@@ -105,6 +105,13 @@ namespace SiliconStudio.Paradox.Effects
         {
             modelProcessor = SceneInstance.GetProcessor<ModelProcessor>();
 
+            // If no camera, early exit
+            var camera = context.GetCurrentCamera();
+            if (camera == null)
+            {
+                return;
+            }
+
             // If we don't have yet a render slot, create a new one
             if (modelRenderSlot < 0)
             {
@@ -115,6 +122,8 @@ namespace SiliconStudio.Paradox.Effects
                 // ModelRenderer.modelRenderSlot is valid (it might call PrepareModelForRendering recursively).
                 modelRenderSlot = pipelineModelState.AllocateModelSlot(EffectName);
             }
+
+            var viewProjectionMatrix = camera.ViewProjectionMatrix;
 
             // Get all meshes from render models
             foreach (var renderModel in modelProcessor.Models)
@@ -141,7 +150,7 @@ namespace SiliconStudio.Paradox.Effects
                     // TODO: This could be done in a SIMD batch, but we need to figure-out how to plugin in with RenderMesh object
                     var worldPosition = new Vector4(renderMesh.Parameters.Get(TransformationKeys.World).TranslationVector, 1.0f);
                     Vector4 projectedPosition;
-                    Vector4.Transform(ref worldPosition, ref context.ViewProjectionMatrix, out projectedPosition);
+                    Vector4.Transform(ref worldPosition, ref viewProjectionMatrix, out projectedPosition);
                     var projectedZ = projectedPosition.Z / projectedPosition.W;
 
                     renderMesh.UpdateMaterial();

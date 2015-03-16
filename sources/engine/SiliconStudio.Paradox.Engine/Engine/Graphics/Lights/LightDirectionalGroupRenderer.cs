@@ -58,9 +58,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             {
                 var lightComponent = lights[i];
                 var light = (LightDirectional)lightComponent.Type;
-                var lightDir = LightComponent.DefaultDirection;
-
-                Vector3.TransformNormal(ref lightDir, ref lightComponent.Entity.Transform.WorldMatrix, out lightDirections[i]);
+                lightDirections[i] = lightComponent.Direction;
                 lightColors[i] = light.ComputeColor(lightComponent.Intensity);
             }
 

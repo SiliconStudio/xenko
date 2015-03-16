@@ -6,13 +6,15 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Paradox.Effects.Lights
 {
     /// <summary>
-    /// Filtering type used for a Shadow map.
+    /// No shadowmap filter.
     /// </summary>
-    [DataContract("LightShadowMapFilterType")]
-    public enum LightShadowMapFilterType
+    [DataContract("LightShadowMapFilterTypePcf")]
+    [Display("PCF")]
+    public class LightShadowMapFilterTypePcf : ILightShadowMapFilterType
     {
-        Nearest = 0,
-        PercentageCloserFiltering = 1,
-        Variance = 2,
+        public bool RequiresCustomBuffer()
+        {
+            return false;
+        }
     }
 }

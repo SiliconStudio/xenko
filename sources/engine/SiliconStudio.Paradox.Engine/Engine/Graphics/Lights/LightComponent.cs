@@ -63,6 +63,22 @@ namespace SiliconStudio.Paradox.Effects.Lights
         [DefaultValue(EntityGroup.All)]
         public EntityGroup Groups { get; set; }
 
+        /// <summary>
+        /// Gets the light position in World-Space (computed by the <see cref="LightProcessor"/>). See remarks.
+        /// </summary>
+        /// <value>The position.</value>
+        /// <remarks>This property should only be used inside a renderer and not from a script as it is updated after scripts</remarks>
+        [DataMemberIgnore]
+        public Vector3 Position { get; internal set; }
+
+        /// <summary>
+        /// Gets the light direction in World-Space (computed by the <see cref="LightProcessor"/>).
+        /// </summary>
+        /// <value>The direction.</value>
+        /// <remarks>This property should only be used inside a renderer and not from a script as it is updated after scripts</remarks>
+        [DataMemberIgnore]
+        public Vector3 Direction { get; internal set; }
+
         public override PropertyKey GetDefaultKey()
         {
             return Key;

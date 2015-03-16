@@ -55,7 +55,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             VirtualResolution = new Vector3(areaSize.X, areaSize.Y, 1000);
 
             // Creates the camera
-            var cameraComponent = new CameraComponent { UseProjectionMatrix = true, ProjectionMatrix = SpriteBatch.CalculateDefaultProjection(new Vector3(areaSize, 200))};
+            var cameraComponent = new CameraComponent { UseCustomProjectionMatrix = true, ProjectionMatrix = SpriteBatch.CalculateDefaultProjection(new Vector3(areaSize, 200))};
             var camera = new Entity("Camera") { cameraComponent };
 
             //// Create Main pass

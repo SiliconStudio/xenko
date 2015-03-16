@@ -23,11 +23,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Shadows
         public static readonly ParameterKey<LightType> LightType = ParameterKeys.New<LightType>();
 
         /// <summary>
-        /// Filter type of the shadow map.
-        /// </summary>
-        public static readonly ParameterKey<LightShadowMapFilterType> FilterType = ParameterKeys.New<LightShadowMapFilterType>();
-
-        /// <summary>
         /// Number of shadow maps.
         /// </summary>
         public static readonly ParameterKey<int> ShadowMapCount = ParameterKeys.New<int>(0);
@@ -48,6 +43,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Shadows
         /// <userdoc>
         /// The supported shadow configurations.
         /// </userdoc>
-        public static readonly ParameterKey<ShadowConfigurationArray> ShadowConfigurations = ParameterKeys.New<ShadowConfigurationArray>(null);
+        // public static readonly ParameterKey<ShadowConfigurationArray> ShadowConfigurations = ParameterKeys.New<ShadowConfigurationArray>(null);
     }
 }

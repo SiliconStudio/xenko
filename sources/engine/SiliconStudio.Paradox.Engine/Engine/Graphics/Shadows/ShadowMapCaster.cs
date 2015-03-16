@@ -26,8 +26,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Shadows
             {
                 context.CloneParentMixinToCurrent();
                 context.Mixin(mixin, "ShadowMapCasterBase");
-                if (context.GetParam(ShadowMapParameters.FilterType) == LightShadowMapFilterType.Variance)
-                    context.Mixin(mixin, "ShadowMapCasterVsm");
             }
 
             [ModuleInitializer]

@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
             //var dice = Asset.Load<Entity>("Cube/cube");
 
-            //var cameraComp = new CameraComponent { AspectRatio = 1, FarPlane = 100, NearPlane = 0.1f, TargetUp = -Vector3.UnitY, Target = dice, UseViewMatrix = false, VerticalFieldOfView = 1 };
+            //var cameraComp = new CameraComponent { AspectRatio = 1, FarPlane = 100, NearPlane = 0.1f, TargetUp = -Vector3.UnitY, Target = dice, UseCustomViewMatrix = false, VerticalFieldOfView = 1 };
             //RenderSystem.Pipeline.SetCamera(cameraComp);
 
             //var cameraEntity = new Entity { Transform = { Position = new Vector3(0, 0, -2) } };

@@ -9,7 +9,7 @@ using SiliconStudio.Paradox.Engine;
 namespace SiliconStudio.Paradox.Effects.Shadows
 {
     /// <summary>
-    /// Represents a shadow map for the <see cref="ShadowMapRenderer"/>.
+    /// Represents a shadow map for the <see cref="ShadowMapCasterRenderer"/>.
     /// </summary>
     public class ShadowMap
     {
@@ -71,7 +71,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         /// <summary>
         /// The shadow map filter.
         /// </summary>
-        public LightShadowMapFilterType Filter;
+        //public LightShadowMapFilterType Filter;
 
         /// <summary>
         /// The shadow map texture.

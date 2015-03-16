@@ -109,11 +109,8 @@ namespace SiliconStudio.Paradox.Engine.Tests
         {
             get
             {
-                Matrix view;
-                Matrix projection;
-                Camera.Calculate(out projection, out view);
-
-                return projection;
+                Camera.Update();
+                return Camera.ProjectionMatrix;
             }
         }
         /// <summary>
@@ -123,11 +120,9 @@ namespace SiliconStudio.Paradox.Engine.Tests
         {
             get
             {
-                Matrix view;
-                Matrix projection;
-                Camera.Calculate(out projection, out view);
+                Camera.Update();
 
-                return view * projection;
+                return Camera.ViewProjectionMatrix;
             }
         }
 
@@ -221,7 +216,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             // set the camera values
             Camera.NearPlane = 0.1f;
             Camera.FarPlane = 1000f;
-            Camera.UseViewMatrix = true;
+            Camera.UseCustomViewMatrix = true;
             cameraEntity.Add(Camera);
             OnWindowSizeChanged();
 
