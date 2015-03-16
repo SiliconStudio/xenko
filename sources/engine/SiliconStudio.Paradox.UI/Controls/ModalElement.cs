@@ -87,6 +87,12 @@ namespace SiliconStudio.Paradox.UI.Controls
             if (!IsModal)
                 return base.Intersects(ref ray, out intersectionPoint);
 
+            if (LayoutingContext == null)
+            {
+                intersectionPoint = Vector3.Zero;
+                return false;
+            }
+
             var virtualResolution = LayoutingContext.VirtualResolution;
             var worldmatrix = Matrix.Identity;
             
