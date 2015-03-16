@@ -176,8 +176,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                     renderer.Initialize(context);
                 }
 
-                // Draw the renderer
-                DrawRenderer(context, renderer);
+                if (renderer.Enabled)
+                {
+                    // Draw the renderer
+                    DrawRenderer(context, renderer);
+                }
 
                 // Add it to the list of previous renderers
                 previousRenderers.Add(renderer);
