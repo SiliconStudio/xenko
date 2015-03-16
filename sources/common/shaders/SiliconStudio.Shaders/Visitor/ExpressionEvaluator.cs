@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 
 using SiliconStudio.Shaders.Ast;
 
@@ -76,7 +77,7 @@ namespace SiliconStudio.Shaders.Visitor
         [Visit]
         protected virtual void Visit(Expression expression)
         {
-            result.Warning("Expression evaluation [{0}] is not supported", expression.Span, expression);
+            result.Error("Expression evaluation [{0}] is not supported", expression.Span, expression);
         }
 
         /// <inheritdoc/>
@@ -159,23 +160,6 @@ namespace SiliconStudio.Shaders.Visitor
             values.Push(resultValue);
         }
 
-        [Visit]
-        protected virtual void Visit(IndexerExpression indexerExpression)
-        {
-            Visit((Node)indexerExpression);
-
-            // TODO implement indexer expression eval
-            result.Error("Indexer expression evaluation [{0}] is not supported", indexerExpression.Span, indexerExpression);
-        }
-        [Visit]
-        protected virtual void Visit(MemberReferenceExpression memberReferenceExpression)
-        {
-            Visit((Node)memberReferenceExpression);
-
-            // TODO implement member reference expression eval
-            result.Error("Member reference expression evaluation [{0}] is not supported", memberReferenceExpression.Span, memberReferenceExpression);
-        }
-
         /// <inheritdoc/>
         [Visit]
         protected virtual void Visit(MethodInvocationExpression methodInvocationExpression)
@@ -231,8 +215,15 @@ namespace SiliconStudio.Shaders.Visitor
         [Visit]
         protected virtual void Visit(LiteralExpression literalExpression)
         {
-            var value = Convert.ToDouble(literalExpression.Literal.Value, CultureInfo.InvariantCulture);
-            values.Push(value);
+            try
+            {
+                var value = Convert.ToDouble(literalExpression.Literal.Value, CultureInfo.InvariantCulture);
+                values.Push(value);
+            }
+            catch (Exception ex)
+            {
+                result.Error("Unable to convert value [{0}] to double", literalExpression.Span, literalExpression.Literal.Value);
+            }
         }
 
         /// <inheritdoc/>
