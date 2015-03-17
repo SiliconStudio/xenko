@@ -11,6 +11,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     /// <summary>
     /// A renderer in charge of displaying some entities of the scene.
     /// </summary>
+    [DataContract("SceneEntityRenderer")]
     public abstract class SceneEntityRenderer : SceneRendererViewportBase
     {
         /// <summary>
