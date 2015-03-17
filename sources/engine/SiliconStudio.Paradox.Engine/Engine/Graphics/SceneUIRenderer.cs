@@ -32,6 +32,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         {
             ClearDepthBuffer = true;
             VirtualResolution = new Int3(1920, 1080, 1000);
+            VirtualResolutionMode = VirtualResolutionMode.HeightDepthTargetRatio;
         }
 
         /// <summary>
@@ -57,6 +58,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// <userdoc>Indicate how the virtual resolution value should be interpreted</userdoc>
         [DataMember(20)]
         [Display("Virtual Resolution Mode")]
+        [DefaultValue(VirtualResolutionMode.HeightDepthTargetRatio)]
         public VirtualResolutionMode VirtualResolutionMode { get; set; }
 
         /// <summary>
