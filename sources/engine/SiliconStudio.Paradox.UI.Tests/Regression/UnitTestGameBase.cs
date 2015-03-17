@@ -56,6 +56,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
                 {
                     GraphicsCompositor = new SceneGraphicsCompositorLayers
                     {
+                        Cameras = { new CameraComponent() },
                         Master =
                         {
                             Renderers =
@@ -67,7 +68,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
                                 new SceneCameraRenderer
                                 {
                                     CullingMask = CameraRenderedGroup,
-                                    Mode = SceneCameraRenderer
+                                    Mode = SceneCameraRenderer,
                                 },
                                 
                                 SceneUIRenderer
