@@ -56,46 +56,14 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Gets the root node of this path.
         /// </summary>
+        // TODO: turn this property private!
+        [Obsolete("This property will be removed in the next release.")]
         public IModelNode RootNode { get; private set; }
 
         /// <summary>
-        /// Gets the node corresponding to this path.
-        /// </summary>
-        /// <returns>The node corresponding to this path.</returns>
-        /// <exception cref="InvalidOperationException">The path is invalid.</exception>
-        public IModelNode GetNode()
-        {
-            if (!IsValid)
-                throw new InvalidOperationException("The node path is invalid.");
-
-            IModelNode node = RootNode;
-            foreach (var itemPath in path)
-            {
-                var member = itemPath as NodePathItemMember;
-                var target = itemPath as NodePathItemTarget;
-                var index = itemPath as NodePathItemIndex;
-                if (member != null)
-                {
-                    node = node.Children.Single(x => x.Name == member.Name);
-                }
-                else if (target != null)
-                {
-                    var objectRefererence = (ObjectReference)node.Content.Reference;
-                    node = objectRefererence.TargetNode;
-                }
-                else if (index != null)
-                {
-                    var enumerableReference = (ReferenceEnumerable)node.Content.Reference;
-                    var objectRefererence = enumerableReference.Single(x => Equals(x.Index, index.Value));
-                    node = objectRefererence.TargetNode;
-                }
-            }
-            return node;
-        }
-        
-        /// <summary>
         /// Gets the source node corresponding to this path.
         /// </summary>
+        /// <param name="targetIndex">The index to the target node, if applicable.</param>
         /// <returns>The node corresponding to this path.</returns>
         /// <exception cref="InvalidOperationException">The path is invalid.</exception>
         public IModelNode GetSourceNode(out object targetIndex)
@@ -130,6 +98,17 @@ namespace SiliconStudio.Quantum
             return node;
         }
         
+        /// <summary>
+        /// Gets the source node corresponding to this path.
+        /// </summary>
+        /// <returns>The node corresponding to this path.</returns>
+        /// <exception cref="InvalidOperationException">The path is invalid.</exception>
+        public IModelNode GetSourceNode()
+        {
+            object index;
+            return GetSourceNode(out index);
+        }
+
         /// <summary>
         /// Computes a <see cref="ModelNodePath"/> corresponding to the given <see cref="target"/> node, which must be a direct child or a direct reference of the <see cref="parentNode"/>.
         /// </summary>

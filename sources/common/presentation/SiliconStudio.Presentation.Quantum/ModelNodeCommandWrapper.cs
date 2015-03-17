@@ -38,11 +38,6 @@ namespace SiliconStudio.Presentation.Quantum
 
         public INodeCommand NodeCommand { get; private set; }
 
-        internal IModelNode GetCommandRootNode()
-        {
-            return NodePath.RootNode;
-        }
-
         protected override UndoToken Redo(object parameter, bool creatingActionItem)
         {
             UndoToken token;
@@ -84,7 +79,7 @@ namespace SiliconStudio.Presentation.Quantum
             if (observableViewModel == null)
                 return;
 
-            var observableNode = observableViewModel.ResolveObservableModelNode(ObservableNodePath, NodePath.RootNode);
+            var observableNode = (ObservableModelNode)observableViewModel.ResolveObservableNode(ObservableNodePath);
             // No node matches this model node
             if (observableNode == null)
                 return;

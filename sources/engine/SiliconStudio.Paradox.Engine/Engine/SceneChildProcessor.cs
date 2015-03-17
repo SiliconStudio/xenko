@@ -1,7 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Collections.Generic;
+using System;
 
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.EntityModel;
@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Engine
     /// This processor is handling specially an entity with a <see cref="SceneChildComponent"/>. If an scene component is found, it will
     /// create a sub-<see cref="EntityManager"/> dedicated to handle the entities inside the child scene.
     /// </remarks>
-    public sealed class SceneChildProcessor : EntityProcessor<SceneInstance>
+    public sealed class SceneChildProcessor : EntityProcessor<SceneChildComponent>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneChildProcessor"/> class.
@@ -24,65 +24,62 @@ namespace SiliconStudio.Paradox.Engine
         public SceneChildProcessor()
             : base(SceneChildComponent.Key)
         {
-            Scenes = new Dictionary<SceneChildComponent, SceneInstance>();
         }
 
-        public Dictionary<SceneChildComponent, SceneInstance> Scenes { get; private set; }
-
-        protected override SceneInstance GenerateAssociatedData(Entity entity)
+        public SceneInstance GetSceneInstance(SceneChildComponent component)
         {
-            var sceneChild = entity.Get<SceneChildComponent>();
-            return new SceneInstance(EntityManager.Services, sceneChild.Scene, EntityManager.GetProcessor<ScriptProcessor>() != null);
+            return component.SceneInstance;
         }
 
-        protected override void OnEntityAdding(Entity entity, SceneInstance data)
+        protected override SceneChildComponent GenerateAssociatedData(Entity entity)
         {
-            var childComponent = entity.Get<SceneChildComponent>();
+            return entity.Get<SceneChildComponent>();
+        }
 
-            if (data != null)
+        protected override void OnEntityAdding(Entity entity, SceneChildComponent component)
+        {
+            component.SceneInstance = new SceneInstance(EntityManager.Services, component.Scene, EntityManager.GetProcessor<ScriptProcessor>() != null);
+        }
+
+        protected override void OnEntityRemoved(Entity entity, SceneChildComponent component)
+        {
+            if (component != null)
             {
-                Scenes[childComponent] = data;
-            }
-        }
-
-        protected override void OnEntityRemoved(Entity entity, SceneInstance data)
-        {
-            var childComponent = entity.Get<SceneChildComponent>();
-            if (data != null)
-            {
-                data.Dispose();
-                Scenes.Remove(childComponent);
+                component.SceneInstance.Dispose();
+                component.SceneInstance = null;
             }
         }
 
         public override void Update(GameTime time)
         {
-            foreach (var sceneEntityAndState in Scenes)
+            foreach (var entity in enabledEntities)
             {
-                var childComponent = sceneEntityAndState.Key;
-                var sceneInstance = sceneEntityAndState.Value;
-
-                // Copy back the scene from the component to the instance
-                sceneInstance.Scene = childComponent.Scene;
+                var childComponent = entity.Value;
                 if (childComponent.Enabled)
                 {
-                    sceneInstance.Update(time);
+                    // Copy back the scene from the component to the instance
+                    if (childComponent.SceneInstance.Scene != childComponent.Scene)
+                    {
+                        childComponent.SceneInstance.Dispose();
+                        childComponent.SceneInstance = new SceneInstance(EntityManager.Services, childComponent.Scene, EntityManager.GetProcessor<ScriptProcessor>() != null);
+                    } 
+                    childComponent.SceneInstance.Update(time);
                 }
             }
         }
 
         public override void Draw(RenderContext context)
         {
-            foreach (var sceneEntityAndState in Scenes)
+            foreach (var entity in enabledEntities)
             {
-                var childComponent = sceneEntityAndState.Key;
-                var sceneInstance = sceneEntityAndState.Value;
-
-                // Copy back the scene from the component to the instance
-                sceneInstance.Scene = childComponent.Scene;
+                var childComponent = entity.Value;
                 if (childComponent.Enabled)
                 {
-                    sceneInstance.Draw(context);
+                    var sceneInstance = childComponent.SceneInstance;
+                    if (sceneInstance.Scene != childComponent.Scene)
+                        throw new InvalidOperationException("The scene instance does not match the scene of the SceneChildComponent. Has it been modified after Update?");
+                    
+                    childComponent.SceneInstance.Draw(context);
                 }
             }
         }

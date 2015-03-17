@@ -80,8 +80,8 @@ namespace SiliconStudio.Paradox.Engine
                 return;
             }
 
-            SceneInstance sceneInstance;
-            if (sceneChildProcessor.Scenes.TryGetValue(SceneChild, out sceneInstance))
+            SceneInstance sceneInstance = sceneChildProcessor.GetSceneInstance(SceneChild);
+            if (sceneInstance != null)
             {
                 sceneInstance.Draw(context, output, GraphicsCompositorOverride);
             }

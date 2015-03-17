@@ -26,8 +26,6 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         public static readonly PropertyKey<SceneInstance> Current = new PropertyKey<SceneInstance>("SceneInstance.Current", typeof(SceneInstance));
 
-        private Scene previousScene;
-        private Scene scene;
         private bool enableScripting = true;
 
         /// <summary>
@@ -61,22 +59,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets the scene.
         /// </summary>
         /// <value>The scene.</value>
-        public Scene Scene
-        {
-            get
-            {
-                return scene;
-            }
-
-            set
-            {
-                if (scene != value)
-                {
-                    previousScene = scene;
-                    scene = value;
-                }
-            }
-        }
+        public Scene Scene { get; private set; }
 
         /// <summary>
         /// Gets the component renderers.
@@ -158,37 +141,8 @@ namespace SiliconStudio.Paradox.Engine
             }
         }
 
-        /// <summary>
-        /// Updates this scene at the specified time.
-        /// </summary>
-        /// <param name="time">The time.</param>
-        public override void Update(GameTime time)
-        {
-            UpdateFromChild();
-            base.Update(time);
-        }
-
-        internal override void Draw(RenderContext context)
-        {
-            UpdateFromChild();
-            base.Draw(context);
-        }
-
-        private void UpdateFromChild()
-        {
-            // If this scene instance is coming from a SceneChildComponent, check that the Scene hasn't changed
-            // If the scene has changed, we need to recreate a new SceneInstance with the new scene
-            if (previousScene != Scene)
-            {
-                Reset();
-                Load();
-            }
-        }
-
         private void Load()
         {
-            previousScene = Scene;
-
             // If Scene is null, early exit
             if (Scene == null)
             {

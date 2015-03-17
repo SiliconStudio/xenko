@@ -54,12 +54,9 @@ namespace SiliconStudio.Presentation.Quantum
             bool setByObservableNode = false;
 
             var observableViewModel = service.ViewModelProvider != null ? service.ViewModelProvider(identifier) : null;
-            if (observableViewModel != null && !observableViewModel.MatchRootNode(nodePath.RootNode))
-                observableViewModel = null;
-
             if (observableViewModel != null)
             {
-                SingleObservableNode observableNode = observableViewModel.ResolveObservableModelNode(observableNodePath, nodePath.RootNode);
+                var observableNode = (SingleObservableNode)observableViewModel.ResolveObservableNode(observableNodePath);
                 if (observableNode != null)
                 {
                     observableNode.Value = previousValue;

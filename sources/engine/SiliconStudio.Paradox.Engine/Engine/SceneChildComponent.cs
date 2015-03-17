@@ -13,6 +13,10 @@ namespace SiliconStudio.Paradox.Engine
     [DefaultEntityComponentProcessor(typeof(SceneChildProcessor))]
     public sealed class SceneChildComponent : EntityComponent
     {
+        // Used by the SceneChildProcessor
+        [DataMemberIgnore]
+        internal SceneInstance SceneInstance;
+        
         public readonly static PropertyKey<SceneChildComponent> Key = new PropertyKey<SceneChildComponent>("Key", typeof(SceneChildComponent));
 
         /// <summary>

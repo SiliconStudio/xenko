@@ -155,6 +155,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         public event EventHandler<NodeChangedArgs> NodeChanged;
 
+        [Pure]
         public IObservableNode ResolveObservableNode(string path)
         {
             var members = path.Split('.');
@@ -169,43 +170,6 @@ namespace SiliconStudio.Presentation.Quantum
                     return null;
             }
             return currentNode;
-        }
-
-        [Pure]
-        public ObservableModelNode ResolveObservableModelNode(string path, IModelNode rootModelNode)
-        {
-            var members = path.Split('.');
-            if (members[0] != RootNode.Name)
-                return null;
-
-            var currentNode = RootNode;
-            var combinedNode = currentNode as CombinedObservableNode;
-            if (combinedNode != null)
-            {
-                currentNode = combinedNode.CombinedNodes.OfType<ObservableModelNode>().Single(x => x.MatchNode(rootModelNode));
-            }
-            foreach (var member in members.Skip(1))
-            {
-                currentNode = currentNode.Children.FirstOrDefault(x => x.Name == member);
-                if (currentNode == null)
-                    return null;
-            }
-            return (ObservableModelNode)currentNode;
-        }
-
-        private bool MatchModelRootNode(IModelNode node)
-        {
-            return RootNode is ObservableModelNode && ((ObservableModelNode)RootNode).MatchNode(node);
-        }
-
-        internal bool MatchCombinedRootNode(IModelNode node)
-        {
-            return RootNode is CombinedObservableNode && ((CombinedObservableNode)RootNode).CombinedNodes.OfType<ObservableModelNode>().Any(x => x.MatchNode(node));
-        }
-
-        internal bool MatchRootNode(IModelNode node)
-        {
-            return MatchModelRootNode(node) || MatchCombinedRootNode(node);
         }
 
         internal void NotifyNodeChanged(string observableNodePath)
