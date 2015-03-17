@@ -50,6 +50,7 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
 using System.Globalization;
+using System.Linq;
 
 namespace SiliconStudio.Core.TypeConverters
 {
@@ -109,6 +110,33 @@ namespace SiliconStudio.Core.TypeConverters
 
             return Array.ConvertAll(strings, s => (T)converter.ConvertFromString(context, culture, s));
         }
+        
+        protected TResult ConvertFromString<TResult, T>(ITypeDescriptorContext context, CultureInfo culture, object strValue) where TResult : new()
+        {
+            var str = strValue as string;
+            if (string.IsNullOrEmpty(str))
+                return default(TResult);
+
+            if (culture == null)
+                culture = CultureInfo.CurrentCulture;
+
+            var converter = TypeDescriptor.GetConverter(typeof(T));
+            var strings = str.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            // Note: we explicitely box the struct so we can use reflection to set values.
+            object result = new TResult();
+            foreach (var comp in strings)
+            {
+                var split = comp.Split(new[] { ':' });
+                if (split.Length != 2)
+                    throw new InvalidCastException("The string does not match the expected format.");
+                var property = Properties.Cast<FieldPropertyDescriptor>().First(x => x.Name == split[0]);
+                var compValue = converter.ConvertFromString(context, culture, split[1]);
+                property.FieldInfo.SetValue(result, compValue);
+            }
+            return (TResult)result;
+        }
+
 
         /// <summary>
         /// Returns whether this converter can convert an object of the given type to the type of this converter, using the specified context.

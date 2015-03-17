@@ -69,10 +69,10 @@ namespace SiliconStudio.Core.TypeConverters
 			var type = typeof(Color4);
 			Properties = new PropertyDescriptorCollection(new[] 
             { 
-                new FieldPropertyDescriptor(type.GetField("Red")), 
-                new FieldPropertyDescriptor(type.GetField("Green")),
-                new FieldPropertyDescriptor(type.GetField("Blue")),
-                new FieldPropertyDescriptor(type.GetField("Alpha"))
+                new FieldPropertyDescriptor(type.GetField("R")), 
+                new FieldPropertyDescriptor(type.GetField("G")),
+                new FieldPropertyDescriptor(type.GetField("B")),
+                new FieldPropertyDescriptor(type.GetField("A"))
             });
 		}
 
@@ -99,16 +99,16 @@ namespace SiliconStudio.Core.TypeConverters
 
 			if (value is Color4)
 			{
-				var Color = (Color4)value;
+				var color = (Color4)value;
 
 				if (destinationType == typeof(string))
-					return ConvertFromValues(context, culture, Color.ToArray());
+                    return color.ToString();
 
 				if (destinationType == typeof(InstanceDescriptor))
 				{
 					var constructor = typeof(Color4).GetConstructor(MathUtil.Array(typeof(float), 4));
 					if (constructor != null)
-						return new InstanceDescriptor(constructor, Color.ToArray());
+                        return new InstanceDescriptor(constructor, color.ToArray());
 				}
 			}
 
@@ -129,9 +129,8 @@ namespace SiliconStudio.Core.TypeConverters
 		/// </exception>
 		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
-			var values = ConvertToValues<float>(context, culture, value);
-			return values != null ? new Color4(values) : base.ConvertFrom(context, culture, value);
-		}
+            return value != null ? ConvertFromString<Color4, float>(context, culture, value) : base.ConvertFrom(context, culture, null);
+        }
 
 		/// <summary>
 		/// Creates an instance of the type that this <see cref="T:System.ComponentModel.TypeConverter"/> is associated with, using the specified context, given a set of property values for the object.

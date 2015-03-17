@@ -51,6 +51,8 @@ using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
 using System.Globalization;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 using SiliconStudio.Core.Mathematics;
 
@@ -61,6 +63,8 @@ namespace SiliconStudio.Core.TypeConverters
     /// </summary>
     public class MatrixConverter : BaseConverter
     {
+        private static readonly Regex ParseRegex = new Regex("\\[|\\]\\s\\[|\\]");
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MatrixConverter"/> class.
         /// </summary>
@@ -117,7 +121,7 @@ namespace SiliconStudio.Core.TypeConverters
                 var matrix = (Matrix)value;
 
                 if (destinationType == typeof(string))
-                    return ConvertFromValues(context, culture, matrix.ToArray());
+                    return matrix.ToString();
 
                 if (destinationType == typeof(InstanceDescriptor))
                 {
@@ -144,9 +148,12 @@ namespace SiliconStudio.Core.TypeConverters
         /// </exception>
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
-            var values = ConvertToValues<float>(context, culture, value);
+            var str = value as string;
+            if (string.IsNullOrEmpty(str))
+                return null;
 
-            return values != null ? new Matrix(values) : base.ConvertFrom(context, culture, value);
+            str = str.Replace("[", "").Replace("]", "");
+            return ConvertFromString<Matrix, float>(context, culture, str);
         }
 
         /// <summary>

@@ -67,7 +67,7 @@ namespace SiliconStudio.Core.TypeConverters
         public QuaternionConverter()
         {
             var type = typeof(Quaternion);
-            Properties = new PropertyDescriptorCollection(new[] 
+            Properties = new PropertyDescriptorCollection(new PropertyDescriptor[] 
             { 
                 new FieldPropertyDescriptor(type.GetField("X")), 
                 new FieldPropertyDescriptor(type.GetField("Y")),
@@ -102,7 +102,7 @@ namespace SiliconStudio.Core.TypeConverters
                 var quaternion = (Quaternion)value;
 
                 if (destinationType == typeof(string))
-                    return ConvertFromValues(context, culture, quaternion.ToArray());
+                    return quaternion.ToString();
 
                 if (destinationType == typeof(InstanceDescriptor))
                 {
@@ -129,8 +129,7 @@ namespace SiliconStudio.Core.TypeConverters
         /// </exception>
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
-            var values = ConvertToValues<float>(context, culture, value);
-            return values != null ? new Quaternion(values) : base.ConvertFrom(context, culture, value);
+            return value != null ? ConvertFromString<Quaternion, float>(context, culture, value) : base.ConvertFrom(context, culture, null);
         }
 
         /// <summary>

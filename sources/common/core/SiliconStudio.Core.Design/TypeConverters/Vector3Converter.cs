@@ -69,7 +69,7 @@ namespace SiliconStudio.Core.TypeConverters
             try
             {
                 var type = typeof(Vector3);
-                Properties = new PropertyDescriptorCollection(new[]
+                Properties = new PropertyDescriptorCollection(new PropertyDescriptor[] 
                                                                   {
                                                                       new FieldPropertyDescriptor(type.GetField("X")),
                                                                       new FieldPropertyDescriptor(type.GetField("Y")),
@@ -108,7 +108,7 @@ namespace SiliconStudio.Core.TypeConverters
                 var vector = (Vector3)value;
 
                 if (destinationType == typeof(string))
-                    return ConvertFromValues(context, culture, vector.ToArray());
+                    return vector.ToString();
 
                 if (destinationType == typeof(InstanceDescriptor))
                 {
@@ -135,8 +135,7 @@ namespace SiliconStudio.Core.TypeConverters
         /// </exception>
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
-            var values = ConvertToValues<float>(context, culture, value);
-            return values != null ? new Vector3(values) : base.ConvertFrom(context, culture, value);
+            return value != null ? ConvertFromString<Vector3, float>(context, culture, value) : base.ConvertFrom(context, culture, null);
         }
 
         /// <summary>

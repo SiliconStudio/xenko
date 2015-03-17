@@ -103,7 +103,7 @@ namespace SiliconStudio.Core.TypeConverters
 
 			    if (destinationType == typeof(string))
 			    {
-			        return string.Format("#{0:X8}", color.ToAbgr());
+                    return color.ToString();
 			    }
 
 			    if (destinationType == typeof(InstanceDescriptor))
@@ -148,11 +148,7 @@ namespace SiliconStudio.Core.TypeConverters
                 }
 		        return null;
 		    }
-		    else
-		    {
-		        var values = ConvertToValues<byte>(context, culture, value);
-		        return values != null ? new Color(values) : base.ConvertFrom(context, culture, value);
-		    }
+		    return ConvertFromString<Color, byte>(context, culture, value);
 		}
 
 		/// <summary>

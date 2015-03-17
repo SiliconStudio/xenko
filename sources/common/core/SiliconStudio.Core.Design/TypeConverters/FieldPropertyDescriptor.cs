@@ -56,6 +56,11 @@ namespace SiliconStudio.Core.TypeConverters
     {
         readonly FieldInfo fieldInfo;
 
+        public FieldInfo FieldInfo
+        {
+            get { return fieldInfo; }
+        }
+
         public override Type ComponentType
         {
             get { return fieldInfo.DeclaringType; }
