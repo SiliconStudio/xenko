@@ -58,11 +58,7 @@ namespace SiliconStudio.Paradox.Engine
                 if (childComponent.Enabled)
                 {
                     // Copy back the scene from the component to the instance
-                    if (childComponent.SceneInstance.Scene != childComponent.Scene)
-                    {
-                        childComponent.SceneInstance.Dispose();
-                        childComponent.SceneInstance = new SceneInstance(EntityManager.Services, childComponent.Scene, EntityManager.GetProcessor<ScriptProcessor>() != null);
-                    } 
+                    childComponent.SceneInstance.Scene = childComponent.Scene;
                     childComponent.SceneInstance.Update(time);
                 }
             }
