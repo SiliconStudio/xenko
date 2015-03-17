@@ -7,8 +7,6 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.UI;
-using SiliconStudio.Paradox.UI.Renderers;
 
 namespace SiliconStudio.Paradox.Engine.Graphics
 {
@@ -17,9 +15,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     /// </summary>
     [DataContract("SceneUIRenderer")]
     [Display("Render UI")]
-    public sealed class SceneUIRenderer : SceneEntityRenderer, IRendererManager
+    public sealed class SceneUIRenderer : SceneEntityRenderer
     {
-        private readonly CameraRendererModeUI uiCameraRenderer = new CameraRendererModeUI();
+        private readonly CameraRendererModeForward cameraRenderer = new CameraRendererModeForward();
 
         private readonly CameraComponentState cameraState = new CameraComponentState(new CameraComponent());
 
@@ -69,11 +67,21 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         [DefaultValue(true)]
         public bool ClearDepthBuffer { get; set; }
 
+        /// <summary>
+        /// Gets the UI component renderer used by the scene renderer.
+        /// </summary>
+        [DataMemberIgnore]
+        public UIComponentRenderer UIRenderer { get { return cameraRenderer.Renderers.Count>0? (UIComponentRenderer)cameraRenderer.Renderers[0]: null; } }
+
+        [DataMemberIgnore]
+        internal Vector3 VirtualResolutionFactor { get; set; }
+        
         protected override void InitializeCore()
         {
             base.InitializeCore();
 
-            uiCameraRenderer.Initialize(Context);
+            cameraRenderer.RenderComponentTypes.Add(typeof(UIComponent));
+            cameraRenderer.Initialize(Context);
         }
 
         protected override void DrawCore(RenderContext context, RenderFrame output)
@@ -89,7 +97,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 if (VirtualResolutionMode == VirtualResolutionMode.HeightDepthTargetRatio)
                     virtualResolutionFloat.X = virtualResolutionFloat.Y * output.RenderTarget.Width / output.RenderTarget.Height;
 
-                uiCameraRenderer.VirtualResolution = virtualResolutionFloat;
+                VirtualResolutionFactor = virtualResolutionFloat;
 
                 // Update the camera component state
                 var nearPlane = 1f;
@@ -115,7 +123,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             using (context.PushTagAndRestore(RenderFrame.Current, output))
             using (context.PushTagAndRestore(CameraComponentRenderer.Current, cameraState))
             {
-                uiCameraRenderer.Draw(Context);
+                cameraRenderer.Draw(Context);
             }
 
             // revert the context view matrix and view projection matrix 
@@ -127,22 +135,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         {
             base.Destroy();
 
-            uiCameraRenderer.Dispose();
-        }
-
-        public ElementRenderer GetRenderer(UIElement element)
-        {
-            return uiCameraRenderer.GetRenderer(element);
-        }
-
-        public void RegisterRendererFactory(Type uiElementType, IElementRendererFactory factory)
-        {
-            uiCameraRenderer.RegisterRendererFactory(uiElementType, factory);
-        }
-
-        public void RegisterRenderer(UIElement element, ElementRenderer renderer)
-        {
-            uiCameraRenderer.RegisterRenderer(element, renderer);
+            cameraRenderer.Dispose();
         }
     }
 }

@@ -30,9 +30,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         private UIBatch batch;
 
-        private Vector3 virtualResolution;
-        private Vector2 worldTranslation;
-
         private readonly LayoutingContext layoutingContext = new LayoutingContext();
 
         private Vector2 lastMousePosition;
@@ -67,45 +64,15 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             rendererManager.Dispose();
         }
 
-        /// <summary>
-        /// Gets or sets the virtual resolution of the screen in Pixels.
-        /// </summary>
-        /// <value>The virtual resolution.</value>
-        /// <exception cref="System.InvalidOperationException">
-        /// The resolution along the X axis is not valid. [Value= + value.X + ]
-        /// or
-        /// The resolution along the Y axis is not valid. [Value= + value.Y + ]
-        /// or
-        /// The resolution along the Z axis is not valid. [Value= + value.Z + ]
-        /// </exception>
-        internal Vector3 VirtualResolution
-        {
-            get
-            {
-                return virtualResolution;
-            }
-            set
-            {
-                if (value.X <= 0)
-                    throw new InvalidOperationException("The resolution along the X axis is not valid. [Value=" + value.X + "]");
-                if (value.Y <= 0)
-                    throw new InvalidOperationException("The resolution along the Y axis is not valid. [Value=" + value.Y + "]");
-                if (value.Z <= 0)
-                    throw new InvalidOperationException("The resolution along the Z axis is not valid. [Value=" + value.Z + "]");
-
-                if (virtualResolution == value)
-                    return;
-
-                virtualResolution = value;
-                worldTranslation = new Vector2(-VirtualResolution.X / 2, -VirtualResolution.Y / 2);
-            }
-        }
-
         protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
             var uiProcessor = SceneInstance.GetProcessor<UIComponentProcessor>();
             if (uiProcessor == null)
                 return;
+
+            // update the needed camera parameters
+            var cameraComponentState = context.Tags.Get(CameraComponentRenderer.Current);
+            cameraState.Update(context, cameraComponentState);
 
             foreach (var uiRoot in uiProcessor.UIRoots)
             {
@@ -118,7 +85,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 var worldPosition = new Vector4(uiRoot.TransformComponent.WorldMatrix.TranslationVector, 1.0f);
 
                 Vector4 projectedPosition;
-                Vector4.Transform(ref worldPosition, ref context.ViewProjectionMatrix, out projectedPosition);
+                Vector4.Transform(ref worldPosition, ref cameraState.ViewProjectionMatrix, out projectedPosition);
                 var projectedZ = projectedPosition.Z / projectedPosition.W;
 
                 transparentList.Add(new RenderItem(this, uiRoot, projectedZ));
@@ -132,40 +99,42 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             foreach (var renderItem in renderItems)
                 uiElementStates.Add((UIComponentProcessor.UIComponentState)renderItem.DrawContext);
 
-            // Adapt the projection matrix to the UI coordinate system (Y axis inversed)
-            context.ProjectionMatrix.M22 = -context.ProjectionMatrix.M22;
-            context.ViewProjectionMatrix.Column2 = -context.ViewProjectionMatrix.Column2;
+            // evaluate the current draw time (game instance is null for thumbnails)
+            var drawTime = game != null ? game.DrawTime : new GameTime();
 
-            // update the needed camera parameters
-            var cameraComponentState = context.Tags.Get(CameraComponentRenderer.Current);
-            cameraState.Update(cameraComponentState);
-            
             // Analyze the input and trigger the UI element touch and key events
             // Note: this is done before measuring/arranging/drawing the element in order to avoid one frame latency on clicks.
             //       But by doing so the world matrices taken for hit test are the ones calculated during last frame.
-            CompactPointerEvents();
-            using (Profiler.Begin(UIProfilerKeys.TouchEventsUpdate))
+            if (input != null) // no input for thumbnails
             {
-                foreach (var uiState in uiElementStates)
+                CompactPointerEvents();
+                using (Profiler.Begin(UIProfilerKeys.TouchEventsUpdate))
                 {
-                    if (uiState.UIComponent.RootElement == null)
-                        continue;
+                    foreach (var uiState in uiElementStates)
+                    {
+                        if (uiState.UIComponent.RootElement == null)
+                            continue;
 
-                    UpdateMouseOver(context, uiState);
-                    UpdateTouchEvents(context, uiState, game.DrawTime);
+                        UpdateMouseOver(context, uiState);
+                        UpdateTouchEvents(context, uiState, drawTime);
+                    }
                 }
+                ClearPointerEvents();
             }
-            ClearPointerEvents();
+
+            // determine if we need to clear depth buffer and the virtual resolution scales.
+            var sceneUIRenderer = context.Tags.Get(SceneEntityRenderer.Current) as SceneUIRenderer;
+            var shouldClearDepth = sceneUIRenderer != null && sceneUIRenderer.ClearDepthBuffer;
+            var virtualResolutionScales = sceneUIRenderer != null ? sceneUIRenderer.VirtualResolutionFactor : new Vector3(1);
 
             // update the rendering context
-            renderingContext.Time = game.DrawTime;
-            renderingContext.Resolution = virtualResolution;
+            renderingContext.Time = drawTime;
             renderingContext.ViewMatrix = context.ViewMatrix;
-            renderingContext.ProjectionMatrix = context.ProjectionMatrix;
-            renderingContext.ViewProjectionMatrix = context.ViewProjectionMatrix;
+            renderingContext.ProjectionMatrix = cameraState.ProjectionMatrix;
+            renderingContext.ViewProjectionMatrix = cameraState.ViewProjectionMatrix;
             renderingContext.RenderTarget = CurrentRenderFrame.RenderTarget;
             renderingContext.DepthStencilBuffer = CurrentRenderFrame.DepthStencil;
-            renderingContext.ShouldSnapText = (context.Tags.Get(SceneEntityRenderer.Current) as SceneUIRenderer) != null; // snaps only if rendered from the SceneUIRenderer
+            renderingContext.ShouldSnapText = sceneUIRenderer != null; // snaps only if rendered from the SceneUIRenderer
 
             // cache the ratio between viewport and target.
             var viewportSize = context.GraphicsDevice.Viewport.Size;
@@ -178,14 +147,19 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 if (rootElement == null)
                     return;
 
-                var drawTime = game.DrawTime;
                 var updatableRootElement = (IUIElementUpdate)rootElement;
 
-                // build the world matrix of the UI
+                // calculate the size of the virtual resolution (UI canvas)
                 var worldMatrix = uiElementState.TransformComponent.WorldMatrix;
-                worldMatrix.M41 += worldTranslation.X * worldMatrix.M11 + worldTranslation.Y * worldMatrix.M21;
-                worldMatrix.M42 += worldTranslation.X * worldMatrix.M12 + worldTranslation.Y * worldMatrix.M22;
-                worldMatrix.M43 += worldTranslation.X * worldMatrix.M13 + worldTranslation.Y * worldMatrix.M23;
+                var worldScales = new Vector3(worldMatrix.Row1.XYZ().Length(), worldMatrix.Row2.XYZ().Length(), worldMatrix.Row3.XYZ().Length());
+                var virtualResolution = worldScales * virtualResolutionScales;
+                renderingContext.Resolution = virtualResolution;
+
+                // build the world matrix of the UI
+                var worldTranslation = virtualResolution.XY() / 2;
+                worldMatrix.M41 -= worldTranslation.X * worldMatrix.M11 + worldTranslation.Y * worldMatrix.M21;
+                worldMatrix.M42 -= worldTranslation.X * worldMatrix.M12 + worldTranslation.Y * worldMatrix.M22;
+                worldMatrix.M43 -= worldTranslation.X * worldMatrix.M13 + worldTranslation.Y * worldMatrix.M23;
 
                 // calculate an estimate of the UI real size by projecting the element virtual resolution on the screen
                 var projectedVirtualWidth = virtualResolution.X * new Vector3(worldMatrix.M11, worldMatrix.M12, worldMatrix.M13);
@@ -213,12 +187,13 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 updatableRootElement.UpdateElementState(0);
                 uiElementState.LastWorldMatrix = worldMatrix;
 
-                // clear the Depth buffer
-                context.GraphicsDevice.Clear(CurrentRenderFrame.DepthStencil, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
+                // clear the Depth buffer if required
+                if (shouldClearDepth)
+                    context.GraphicsDevice.Clear(CurrentRenderFrame.DepthStencil, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
 
                 // start the image draw session
                 renderingContext.StencilTestReferenceValue = 0;
-                batch.Begin(ref context.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(ref cameraState.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
 
                 // Render the UI elements in the final render target
                 ReccursiveDrawWithClipping(context, rootElement);
@@ -226,10 +201,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 // end the image draw session
                 batch.End();
             }
-
-            // revert inversion of the Y axis in the projection matrix (for next rendering)
-            context.ProjectionMatrix.M22 = -context.ProjectionMatrix.M22;
-            context.ViewProjectionMatrix.Column2 = -context.ViewProjectionMatrix.Column2;
         }
 
         private void ReccursiveDrawWithClipping(RenderContext context, UIElement element)
@@ -248,13 +219,13 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 batch.End();
                 
                 // render the clipping region
-                batch.Begin(ref context.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.ColorDisabled, uiSystem.IncreaseStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(ref cameraState.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.ColorDisabled, uiSystem.IncreaseStencilValueState, renderingContext.StencilTestReferenceValue);
                 renderer.RenderClipping(element, renderingContext);
                 batch.End();
 
                 // update context and restart the batch
                 renderingContext.StencilTestReferenceValue += 1;
-                batch.Begin(ref context.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(ref cameraState.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
             }
 
             // render the design of the element
@@ -273,13 +244,13 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 renderingContext.DepthBias = element.MaxChildrenDepthBias;
 
                 // render the clipping region
-                batch.Begin(ref context.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.ColorDisabled, uiSystem.DecreaseStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(ref cameraState.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.ColorDisabled, uiSystem.DecreaseStencilValueState, renderingContext.StencilTestReferenceValue);
                 renderer.RenderClipping(element, renderingContext);
                 batch.End();
 
                 // update context and restart the batch
                 renderingContext.StencilTestReferenceValue -= 1;
-                batch.Begin(ref context.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(ref cameraState.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
             }
         }
 
@@ -525,12 +496,12 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             // perform the hit test
             UIElement clickedElement = null;
             var smallestDepth = float.PositiveInfinity;
-            PerformRecursiveHitTest(context, rootElement, ref clickRay, ref clickedElement, ref intersectionPoint, ref smallestDepth);
+            PerformRecursiveHitTest(rootElement, ref clickRay, ref clickedElement, ref intersectionPoint, ref smallestDepth);
 
             return clickedElement;
         }
 
-        private void PerformRecursiveHitTest(RenderContext context, UIElement element, ref Ray ray, ref UIElement clickedElement, ref Vector3 intersectionPoint, ref float smallestDepth)
+        private void PerformRecursiveHitTest(UIElement element, ref Ray ray, ref UIElement clickedElement, ref Vector3 intersectionPoint, ref float smallestDepth)
         {
             // if the element is not visible, we also remove all its children
             if (!element.IsVisible)
@@ -548,7 +519,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 // Calculate the depth of the element with the depth bias so that hit test corresponds to visuals.
                 Vector4 projectedIntersection;
                 var intersection4 = new Vector4(intersection, 1);
-                Vector4.Transform(ref intersection4, ref context.ViewProjectionMatrix, out projectedIntersection);
+                Vector4.Transform(ref intersection4, ref cameraState.ViewProjectionMatrix, out projectedIntersection);
                 var depthWithBias = projectedIntersection.Z / projectedIntersection.W - element.DepthBias * BatchBase<int>.DepthBiasShiftOneUnit;
 
                 // update the closest element hit
@@ -562,7 +533,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
             // render the children
             foreach (var child in element.HitableChildren)
-                PerformRecursiveHitTest(context, child, ref ray, ref clickedElement, ref intersectionPoint, ref smallestDepth);
+                PerformRecursiveHitTest(child, ref ray, ref clickedElement, ref intersectionPoint, ref smallestDepth);
         }
 
         public ElementRenderer GetRenderer(UIElement element)
@@ -585,12 +556,20 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             public float AspectRatio;
             public float FrustumHeight;
             public Matrix ViewMatrixInverse;
+            public Matrix ProjectionMatrix;
+            public Matrix ViewProjectionMatrix;
 
-            public void Update(CameraComponentState state)
+            public void Update(RenderContext context, CameraComponentState state)
             {
                 AspectRatio = state.CameraComponent.AspectRatio;
                 FrustumHeight = 2 * (float)Math.Tan(MathUtil.DegreesToRadians(state.CameraComponent.VerticalFieldOfView) / 2);
                 ViewMatrixInverse = Matrix.Invert(state.View);
+                ProjectionMatrix = context.ProjectionMatrix;
+                ViewProjectionMatrix = context.ViewProjectionMatrix;
+
+                // Adapt the projection matrix to the UI coordinate system (Y axis inversed)
+                ProjectionMatrix.M22 = -ProjectionMatrix.M22;
+                ViewProjectionMatrix.Column2 = -ViewProjectionMatrix.Column2;
             }
         }
     }

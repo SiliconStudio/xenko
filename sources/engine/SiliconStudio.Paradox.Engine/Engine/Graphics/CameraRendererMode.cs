@@ -52,6 +52,15 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         [DataMemberIgnore]
         public HashSet<Type> SkipComponentTypes { get; private set; }
 
+        [DataMemberIgnore]
+        public EntityComponentRendererBatch Renderers
+        {
+            get
+            {
+                return batchRenderer;
+            }
+        }
+
         /// <summary>
         /// Draws entities from a specified <see cref="SceneCameraRenderer" />.
         /// </summary>

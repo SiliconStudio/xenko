@@ -22,7 +22,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         public CameraRendererModeForward()
         {
             ModelEffect = ForwardEffect;
-            SkipComponentTypes.Add(typeof(UIComponent));
         }
 
         /// <summary>

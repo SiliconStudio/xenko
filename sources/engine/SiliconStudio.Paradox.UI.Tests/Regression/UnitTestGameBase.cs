@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         
         private Vector2 lastTouchPosition;
 
-        protected readonly CameraRendererModeUI SceneCameraRenderer = new CameraRendererModeUI { Name = "Camera UI" };
+        protected readonly CameraRendererModeForward SceneCameraRenderer = new CameraRendererModeForward { Name = "Camera UI" };
         protected readonly SceneUIRenderer SceneUIRenderer = new SceneUIRenderer { Name = "Scene UI", CullingMask = UIRendereredGroup };
 
         protected Scene UIScene;
@@ -83,7 +83,6 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             UIScene.AddChild(CameraUIRoot);
             UIScene.AddChild(SceneUIRoot);
 
-            SceneCameraRenderer.VirtualResolution = new Vector3(1000, 500, 500);
             SceneUIRenderer.VirtualResolution = new Int3(1000, 500, 500);
         }
 

@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     /// <summary>
     /// A dedicated batch renderer of <see cref="IEntityComponentRenderer"/>
     /// </summary>
-    internal sealed class EntityComponentRendererBatch : GraphicsRendererCollectionBase<IEntityComponentRenderer>
+    public sealed class EntityComponentRendererBatch : GraphicsRendererCollectionBase<IEntityComponentRenderer>
     {
         private readonly RenderItemCollection opaqueRenderItems;
 
