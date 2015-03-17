@@ -21,7 +21,8 @@ namespace SiliconStudio.Paradox.Engine
         private bool isTransparent;
         private bool centerFromMiddle;
 
-        private Sprite sprite;
+        private bool isSpriteDirty = true;
+        private readonly Sprite sprite = new Sprite();
         
         /// <summary>
         /// Creates a new instance of <see cref="SpriteFromTexture"/>.
@@ -46,7 +47,7 @@ namespace SiliconStudio.Paradox.Engine
             set
             {
                 center = value;
-                UpdateSprite();
+                isSpriteDirty = true;
             }
         }
 
@@ -64,7 +65,7 @@ namespace SiliconStudio.Paradox.Engine
             set
             {
                 centerFromMiddle = value;
-                UpdateSprite();
+                isSpriteDirty = true;
             }
         }
 
@@ -82,7 +83,7 @@ namespace SiliconStudio.Paradox.Engine
             set
             {
                 isTransparent = value;
-                UpdateSprite();
+                isSpriteDirty = true;
             }
         }
 
@@ -96,13 +97,13 @@ namespace SiliconStudio.Paradox.Engine
             set
             {
                 texture = value;
-                UpdateSprite();
+                isSpriteDirty = true;
             }
         }
 
         public Sprite GetSprite(int index)
         {
-            if(sprite == null)
+            if(isSpriteDirty)
                 UpdateSprite();
 
             return sprite;
@@ -112,9 +113,6 @@ namespace SiliconStudio.Paradox.Engine
 
         private void UpdateSprite()
         {
-            if (sprite == null)
-                sprite = new Sprite();
-
             sprite.Texture = texture;
             sprite.IsTransparent = isTransparent;
             if (texture != null)
@@ -122,6 +120,8 @@ namespace SiliconStudio.Paradox.Engine
                 sprite.Center = center + (centerFromMiddle ? new Vector2(texture.Width, texture.Height) : Vector2.Zero);
                 sprite.Region = new RectangleF(0, 0, texture.Width, texture.Height);
             }
+
+            isSpriteDirty = false;
         }
     }
 }
