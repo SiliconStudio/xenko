@@ -36,6 +36,7 @@
     <Compile Include="ColorBGRA.cs" />
     <Compile Include="ColorHSV.cs" />
     <Compile Include="ContainmentType.cs" />
+    <Compile Include="GuillotinePacker.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="Point.cs" />

@@ -48,8 +48,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             // Setup the viewport
             if (IsViewportInPercentage)
             {
-                var width = output.RenderTarget.Width;
-                var height = output.RenderTarget.Height;
+                var width = output.Width;
+                var height = output.Height;
                 viewport = new Viewport((int)(rect.X * width / 100.0f), (int)(rect.Y * height / 100.0f), (int)(rect.Width * width / 100.0f), (int)(rect.Height * height / 100.0f));
             }
             else

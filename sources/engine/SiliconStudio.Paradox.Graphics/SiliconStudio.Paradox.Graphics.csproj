@@ -104,6 +104,8 @@
     <Compile Include="DataOld\GpuRasterizerStateSerializer.cs" />
     <Compile Include="DataOld\GpuSamplerStateSerializer2.cs" />
     <Compile Include="DataOld\GpuTextureSerializer2.cs" />
+    <Compile Include="Effects\EffectParameterUpdaterDefinition.cs" />
+    <Compile Include="Effects\ParameterDependency.cs" />
     <Compile Include="Font\DynamicSpriteFontContentSerializer.cs" />
     <Compile Include="Font\FontDataFactory.cs" />
     <Compile Include="Font\StaticSpriteFontContentSerializer.cs" />
@@ -164,7 +166,6 @@
     <Compile Include="Font\CharacterSpecification.cs" />
     <Compile Include="Font\FontStyle.cs" />
     <Compile Include="Font\FontSystem.cs" />
-    <Compile Include="Font\GuillotinePacker.cs" />
     <Compile Include="Font\IFontFactory.cs" />
     <Compile Include="Font\StaticSpriteFont.cs" />
     <Compile Include="FrameworkResources.Designer.cs">
@@ -189,7 +190,7 @@
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="OpenGL\EffectInputSignature.OpenGL.cs" />
     <Compile Include="OpenGL\SwapChainGraphicsPresenter.iOS.cs" />
-    <Compile Include="Effects\ShaderParameterUpdater.cs" />
+    <Compile Include="Effects\EffectParameterCollectionGroup.cs" />
     <Compile Include="PrimitiveQuad.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecode.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecode.OpenGL.Level_9_1.cs" />

@@ -31,6 +31,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             Amount = 0.25f;
             GrainSize = 1.6f;
             Animate = false;
+            LuminanceFactor = 1f;
         }
 
         /// <summary>
@@ -57,6 +58,14 @@ namespace SiliconStudio.Paradox.Effects.Images
         [DefaultValue(false)]
         public bool Animate { get; set; }
 
+        /// <summary>
+        /// How the luminance influences the amount of grain.
+        /// </summary>
+        [DataMember(40)]
+        [DefaultValue(1.0)]
+        [DataMemberRange(0f, 1f, 0.01f, 0.1f)]
+        public float LuminanceFactor { get; set; }
+
         private float time = 1f;
 
         public override void UpdateParameters(ColorTransformContext context)
@@ -65,6 +74,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             Parameters.Set(FilmGrainShaderKeys.Amount, Amount * 4 * 0.02f);
             Parameters.Set(FilmGrainShaderKeys.GrainSize, GrainSize);
+            Parameters.Set(FilmGrainShaderKeys.LuminanceFactor, LuminanceFactor);
             if (Animate)
             {
                 time += 0.1f;

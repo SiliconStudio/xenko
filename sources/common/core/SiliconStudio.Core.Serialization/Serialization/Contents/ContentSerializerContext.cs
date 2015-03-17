@@ -22,6 +22,7 @@ namespace SiliconStudio.Core.Serialization.Contents
         private string generatedUrlPrefix;
 
         public static PropertyKey<ContentSerializerContext> ContentSerializerContextProperty = new PropertyKey<ContentSerializerContext>("ContentSerializerContext", typeof(ContentSerializerContext));
+        public static PropertyKey<bool> SerializeAttachedReferenceProperty = new PropertyKey<bool>("SerializeAttachedReference", typeof(ContentSerializerContext));
 
         public AssetManager AssetManager { get; private set; }
         public string Url { get; protected set; }

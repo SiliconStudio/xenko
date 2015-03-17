@@ -5,9 +5,9 @@ using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Effects.Utils
 {
-    shader Picking
+    shader ModelComponentPickingEffect
     {
         mixin clone;
-        mixin ComputeID;
+        mixin ModelComponentPickingShader;
     };	
 }

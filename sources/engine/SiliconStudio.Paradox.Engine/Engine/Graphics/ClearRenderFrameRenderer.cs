@@ -81,7 +81,13 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
             if (ClearFlags == ClearRenderFrameFlags.Color)
             {
-                graphicsDevice.Clear(output.RenderTarget, Color);
+                foreach (var renderTarget in output.RenderTargets)
+                {
+                    if (renderTarget != null)
+                    {
+                        graphicsDevice.Clear(renderTarget, Color);
+                    }
+                }
             }
         }
     }

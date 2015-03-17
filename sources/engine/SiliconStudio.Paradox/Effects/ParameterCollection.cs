@@ -31,6 +31,9 @@ namespace SiliconStudio.Paradox.Effects
         // Value ordered according to this.keys
         internal InternalValue[] keys;
 
+        // Updated every time valueList.Keys is changed
+        internal int KeyVersion = 1;
+
         // Either a ParameterCollection (inherits everything) or an InheritanceDefinition (inherits only specific key, ability to remap them as well)
         private readonly List<IParameterCollectionInheritanceInternal> sources;
         
@@ -443,6 +446,7 @@ namespace SiliconStudio.Paradox.Effects
                 {
                     index = ~index;
                     valueList.Insert(index, new KeyValuePair<ParameterKey, InternalValue>(key, null));
+                    KeyVersion++;
                 }
             }
 
@@ -712,6 +716,7 @@ namespace SiliconStudio.Paradox.Effects
                 valueList.Items[index] = new KeyValuePair<ParameterKey, InternalValue>(key, null);
                 //mapKeyToIndex.Remove(key);
                 valueList.RemoveAt(index);
+                KeyVersion++;
                 //internalValues = valueList.Items;
                 OnKeyUpdate(key, null, internalValue);
 
@@ -798,6 +803,7 @@ namespace SiliconStudio.Paradox.Effects
                         if (OnUpdateValue != null) OnUpdateValue(this, key, valueList.Items[localIndex].Value);
                     }
                 }
+                KeyVersion++;
             }
         }
 
@@ -838,6 +844,7 @@ namespace SiliconStudio.Paradox.Effects
                         OnKeyUpdate(key, null, internalValue.Value);
                     }
                 }
+                KeyVersion++;
             }
 
             return true;
@@ -903,6 +910,7 @@ namespace SiliconStudio.Paradox.Effects
             // Otherwise, simply remove it
             var oldInternalValue = valueList.Items[index].Value;
             valueList.RemoveAt(index);
+            KeyVersion++;
 
             // Notify InternalValue change
             OnKeyUpdate(key, null, oldInternalValue);

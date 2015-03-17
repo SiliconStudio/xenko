@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             var forwardMode = SceneCameraRenderer.Mode as CameraRendererModeForward;
             var effectName =  (forwardMode != null? forwardMode.ModelEffect: null) ?? "";
             if (Context.IsPicking())
-                effectName += ".Picking";
+                effectName += ".ModelComponentPickingEffect";
 
             // TODO: Add support for mixin overrides
             modelRenderer = ToLoadAndUnload(new ModelComponentRenderer(effectName));

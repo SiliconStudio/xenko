@@ -3,15 +3,13 @@
 
 using System.Collections.Generic;
 
-using SiliconStudio.Core.Mathematics;
-
-namespace SiliconStudio.Paradox.Effects.Processors
+namespace SiliconStudio.Core.Mathematics
 {
     /// <summary>
     /// Implementation of a "Guillotine" packer.
     /// More information at http://clb.demon.fi/files/RectangleBinPack.pdf.
     /// </summary>
-    internal class GuillotinePacker
+    public class GuillotinePacker
     {
         private readonly List<Rectangle> freeRectangles = new List<Rectangle>();
         private readonly List<Rectangle> tempFreeRectangles = new List<Rectangle>();
@@ -19,6 +17,11 @@ namespace SiliconStudio.Paradox.Effects.Processors
         public int Width { get; private set; }
         public int Height { get; private set; }
 
+        /// <summary>
+        /// Clears the specified region.
+        /// </summary>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
         public void Clear(int width, int height)
         {
             freeRectangles.Clear();
@@ -28,11 +31,18 @@ namespace SiliconStudio.Paradox.Effects.Processors
             Height = height;
         }
 
-        public void Clear()
+        /// <summary>
+        /// Clears the whole region.
+        /// </summary>
+        public virtual void Clear()
         {
             Clear(Width, Height);
         }
 
+        /// <summary>
+        /// Frees the specified old rectangle.
+        /// </summary>
+        /// <param name="oldRectangle">The old rectangle.</param>
         public void Free(ref Rectangle oldRectangle)
         {
             freeRectangles.Add(oldRectangle);

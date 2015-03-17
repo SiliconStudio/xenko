@@ -4,6 +4,7 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Graphics.Internals;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -17,6 +18,7 @@ namespace SiliconStudio.Paradox.Graphics
         private const int QuadCount = 3;
 
         private readonly ParameterCollection parameters;
+        private readonly EffectParameterCollectionGroup parameterCollectionGroup;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PrimitiveQuad" /> class with a <see cref="SimpleEffect"/>.
@@ -37,6 +39,7 @@ namespace SiliconStudio.Paradox.Graphics
             simpleEffect = effect;
             parameters = new ParameterCollection();
             parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
+            parameterCollectionGroup = new EffectParameterCollectionGroup(graphicsDevice, simpleEffect, new[] { parameters });
             sharedData = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, "PrimitiveQuad::VertexBuffer", d => new SharedData(GraphicsDevice, simpleEffect.InputSignature));
         }
 
@@ -92,7 +95,7 @@ namespace SiliconStudio.Paradox.Graphics
             parameters.Set(SpriteEffectKeys.Color, color);
             parameters.Set(TexturingKeys.Texture0, texture);
             parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
-            simpleEffect.Apply(parameters, applyEffectStates);
+            simpleEffect.Apply(GraphicsDevice, parameterCollectionGroup, applyEffectStates);
             Draw();
 
             // TODO ADD QUICK UNBIND FOR SRV

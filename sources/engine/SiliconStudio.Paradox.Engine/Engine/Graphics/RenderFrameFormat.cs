@@ -12,6 +12,12 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     public enum RenderFrameFormat
     {
         /// <summary>
+        /// No render target.
+        /// </summary>
+        [Display("None")]
+        None,
+
+        /// <summary>
         /// The rendering target is a 32bits bits targets (4 x 16 bits half floats per RGBA component).
         /// </summary>
         [Display("Low Dynamic Range")]

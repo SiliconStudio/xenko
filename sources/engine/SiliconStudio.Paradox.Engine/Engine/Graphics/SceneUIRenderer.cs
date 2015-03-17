@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     {
         private readonly CameraRendererModeForward cameraRenderer = new CameraRendererModeForward();
 
-        private readonly CameraComponentState cameraState = new CameraComponentState(new CameraComponent());
+        private readonly CameraComponent cameraComponent = new CameraComponent();
 
         private Vector2 lastTargetSize;
 
@@ -87,15 +87,16 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         protected override void DrawCore(RenderContext context, RenderFrame output)
         {
             // Update UI camera and resolution if either VR or RenderTarget changed
-            var targetSize = new Vector2(output.RenderTarget.Width, output.RenderTarget.Height);
+            var renderTarget = output.RenderTargets[0]; // TODO avoid hardcoded target
+            var targetSize = new Vector2(renderTarget.Width, renderTarget.Height);
             if (targetSize != lastTargetSize)
             {
                 // update the virtual resolution of the renderer
                 var virtualResolutionFloat = (Vector3)virtualResolution;
                 if (VirtualResolutionMode == VirtualResolutionMode.WidthDepthTargetRatio)
-                    virtualResolutionFloat.Y = virtualResolutionFloat.X * output.RenderTarget.Height / output.RenderTarget.Width;
+                    virtualResolutionFloat.Y = virtualResolutionFloat.X * targetSize.Y / targetSize.X;
                 if (VirtualResolutionMode == VirtualResolutionMode.HeightDepthTargetRatio)
-                    virtualResolutionFloat.X = virtualResolutionFloat.Y * output.RenderTarget.Width / output.RenderTarget.Height;
+                    virtualResolutionFloat.X = virtualResolutionFloat.Y * targetSize.X / targetSize.Y;
 
                 VirtualResolutionFactor = virtualResolutionFloat;
 
@@ -104,31 +105,22 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 var farPlane = nearPlane + 2 * virtualResolutionFloat.Z;
                 var zOffset = virtualResolutionFloat.Z + 1f;
                 var verticalFov = (float)Math.Atan2(virtualResolutionFloat.Y / 2, zOffset) * 2;
-                cameraState.CameraComponent.AspectRatio = virtualResolutionFloat.X / virtualResolutionFloat.Y;
-                cameraState.CameraComponent.VerticalFieldOfView = MathUtil.RadiansToDegrees(verticalFov);
-                cameraState.View = Matrix.LookAtRH(new Vector3(0, 0, zOffset), Vector3.Zero, Vector3.UnitY);
-                cameraState.Projection = Matrix.PerspectiveFovRH(verticalFov, cameraState.CameraComponent.AspectRatio, nearPlane, farPlane);
+                cameraComponent.AspectRatio = virtualResolutionFloat.X / virtualResolutionFloat.Y;
+                cameraComponent.VerticalFieldOfView = MathUtil.RadiansToDegrees(verticalFov);
+                cameraComponent.ViewMatrix = Matrix.LookAtRH(new Vector3(0, 0, zOffset), Vector3.Zero, Vector3.UnitY);
+                cameraComponent.ProjectionMatrix = Matrix.PerspectiveFovRH(verticalFov, cameraComponent.AspectRatio, nearPlane, farPlane);
+                Matrix.Multiply(ref cameraComponent.ViewMatrix, ref cameraComponent.ProjectionMatrix, out cameraComponent.ViewProjectionMatrix);
 
                 lastTargetSize = targetSize;
             }
 
-            // set the context view matrix and view projection matrix 
-            var oldViewMatrix = context.ViewMatrix;
-            var oldViewProjectionMatrix = context.ViewProjectionMatrix;
-            context.ViewMatrix = cameraState.View;
-            Matrix.Multiply(ref cameraState.View, ref cameraState.Projection, out context.ViewProjectionMatrix);
-
             // Draw this camera.
             using (context.PushTagAndRestore(Current, this))
             using (context.PushTagAndRestore(RenderFrame.Current, output))
-            using (context.PushTagAndRestore(CameraComponentRenderer.Current, cameraState))
+            using (context.PushTagAndRestore(CameraComponentRenderer.Current, cameraComponent))
             {
                 cameraRenderer.Draw(Context);
             }
-
-            // revert the context view matrix and view projection matrix 
-            context.ViewMatrix = oldViewMatrix;
-            context.ViewProjectionMatrix = oldViewProjectionMatrix;
         }
 
         protected override void Destroy()

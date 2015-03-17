@@ -94,6 +94,7 @@ namespace SiliconStudio.Paradox.Graphics
         private readonly VertexDeclaration vertexDeclaration;
 
         private readonly ParameterCollection parameters;
+        private EffectParameterCollectionGroup defaultParameterCollectionGroup;
 
         /// <summary>
         /// Boolean indicating if we are between a call of Begin and End.
@@ -104,6 +105,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// The effect used for the current Begin/End session.
         /// </summary>
         protected Effect Effect { get; private set; }
+        protected EffectParameterCollectionGroup ParameterCollectionGroup { get; private set; }
         protected readonly Effect DefaultEffect;
 
         protected TextureIdComparer TextureComparer { get; set; }
@@ -133,6 +135,7 @@ namespace SiliconStudio.Paradox.Graphics
             vertexStructSize = vertexDeclaration.CalculateSize();
 
             parameters = new ParameterCollection();
+            defaultParameterCollectionGroup = new EffectParameterCollectionGroup(device, DefaultEffect, new[] { parameters });
             
             // Creates the vertex buffer (shared by within a device context).
             ResourceContext = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerContext, resourceBufferInfo.ResourceKey, d => new DeviceResourceContext(GraphicsDevice, DefaultEffect, vertexDeclaration, resourceBufferInfo, indexStructSize));
@@ -151,18 +154,20 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
-        /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil, rasterizer state objects and a custom effect. 
-        /// Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, depthStencilState.None, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp). 
-        /// Passing a null effect selects the default effect shader. 
+        /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil, rasterizer state objects and a custom effect.
+        /// Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, depthStencilState.None, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp).
+        /// Passing a null effect selects the default effect shader.
         /// </summary>
         /// <param name="effect">The effect to use for this begin/end draw session (default effect if null)</param>
+        /// <param name="parameterCollectionGroup">The parameter collection group.</param>
         /// <param name="sessionSortMode">Sprite drawing order used for the Begin/End session.</param>
         /// <param name="sessionBlendState">Blending state used for the Begin/End session</param>
         /// <param name="sessionSamplerState">Texture sampling used for the Begin/End session</param>
         /// <param name="sessionDepthStencilState">Depth and stencil state used for the Begin/End session</param>
         /// <param name="sessionRasterizerState">Rasterization state used for the Begin/End session</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference for the Begin/End session</param>
-        protected void Begin(Effect effect, SpriteSortMode sessionSortMode, BlendState sessionBlendState, SamplerState sessionSamplerState, DepthStencilState sessionDepthStencilState, RasterizerState sessionRasterizerState, int stencilValue)
+        /// <exception cref="System.InvalidOperationException">Only one SpriteBatch at a time can use SpriteSortMode.Immediate</exception>
+        protected void Begin(Effect effect, EffectParameterCollectionGroup parameterCollectionGroup, SpriteSortMode sessionSortMode, BlendState sessionBlendState, SamplerState sessionSamplerState, DepthStencilState sessionDepthStencilState, RasterizerState sessionRasterizerState, int stencilValue)
         {
             CheckEndHasBeenCalled("begin");
 
@@ -174,6 +179,13 @@ namespace SiliconStudio.Paradox.Graphics
             StencilReferenceValue = stencilValue;
 
             Effect = effect ?? DefaultEffect;
+            ParameterCollectionGroup = parameterCollectionGroup ?? defaultParameterCollectionGroup;
+            if (ParameterCollectionGroup == defaultParameterCollectionGroup && ParameterCollectionGroup.Effect != Effect)
+            {
+                // If ParameterCollectionGroup is not specified (using default one), let's make sure it is updated to matches effect
+                // It is quite inefficient if user is often switching effect without providing a matching ParameterCollectionGroup
+                ParameterCollectionGroup = defaultParameterCollectionGroup = new EffectParameterCollectionGroup(GraphicsDevice, Effect, new[] { parameters });
+            }
 
             texture0Updater = null;
             texture1Updater = null;
@@ -214,7 +226,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             // Sets the sampler state of the effect
             Parameters.Set(TexturingKeys.Sampler, localSamplerState);
-            Effect.Apply(Parameters);
+            Effect.Apply(GraphicsDevice, ParameterCollectionGroup, false);
 
             // Setup states (Blend, DepthStencil, Rasterizer)
             GraphicsDevice.SetBlendState(BlendState ?? GraphicsDevice.BlendStates.AlphaBlend);

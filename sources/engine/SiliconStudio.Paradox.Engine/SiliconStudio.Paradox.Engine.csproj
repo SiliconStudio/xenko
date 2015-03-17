@@ -50,8 +50,7 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="BinPacking\GuillotinePacker.cs" />
-    <Compile Include="BinPacking\Rect.cs" />
+    <Compile Include="AsyncScript.cs" />
     <Compile Include="DataModel\AnimationBlendOperation.cs" />
     <Compile Include="DataModel\AnimationBlender.cs" />
     <Compile Include="DataModel\AnimationChannel.cs" />
@@ -76,15 +75,47 @@
     <Compile Include="DataModel\Interpolator.cs" />
     <Compile Include="Engine\Graphics\SceneEntityRenderer.cs" />
     <Compile Include="Engine\Graphics\SceneUIRenderer.cs" />
+    <Compile Include="Engine\Graphics\CameraComponentRendererExtensions.cs" />
+    <Compile Include="Engine\Graphics\DynamicEffectParameterUpdaterDefinition.cs" />
     <Compile Include="Engine\Graphics\VirtualResolutionMode.cs" />
     <Compile Include="Engine\Graphics\Lights\DirectLightGroupFixed.cs">
       <DependentUpon>DirectLightGroupFixed.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CombineFrontCoCShader.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Engine\Graphics\Images\Bloom\Afterimage.cs" />
+    <Compile Include="Engine\Graphics\Images\Bloom\BloomAfterimageCombineShader.cs">
+      <DependentUpon>BloomAfterimageCombineShader.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Engine\Graphics\Images\Bloom\BloomAfterimageShader.cs">
+      <DependentUpon>BloomAfterimageShader.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Engine\Graphics\Images\DepthOfField\CombineFrontCoCEffect.cs">
+      <DependentUpon>CombineFrontCoCEffect.pdxfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Engine\Graphics\Images\DepthOfField\PointDepth.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>PointDepth.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Engine\Graphics\Images\DepthOfField\ThresholdAlphaCoCFront.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ThresholdAlphaCoCFront.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Engine\ScriptComponent.cs" />
-    <Compile Include="Engine\CameraComponentState.cs" />
     <Compile Include="Engine\CameraProcessor.cs" />
     <Compile Include="Engine\CameraProjectionMode.cs" />
     <Compile Include="Engine\Graphics\Composers\SceneCameraSlot.cs" />
@@ -109,20 +140,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Images\DepthOfField\InFocusMaskCombine.cs">
-      <DependentUpon>InFocusMaskCombine.pdxsl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Engine\Graphics\Images\DepthOfField\ThresholdAlphaCoC.cs">
       <DependentUpon>ThresholdAlphaCoC.pdxsl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Engine\Graphics\Images\DepthOfField\InFocusToAlpha.cs">
-      <DependentUpon>InFocusToAlpha.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -138,7 +157,13 @@
     <Compile Include="Engine\Graphics\Lights\ColorLightBase.cs" />
     <Compile Include="Engine\Graphics\Lights\DirectLightBase.cs" />
     <Compile Include="Engine\Graphics\Lights\IColorLight.cs" />
+    <Compile Include="Engine\Graphics\Lights\ILightShadowMapFilterType.cs" />
     <Compile Include="Engine\Graphics\Lights\LightAmbientRenderer.cs" />
+    <Compile Include="Engine\Graphics\Lights\LightPoint.cs" />
+    <Compile Include="Engine\Graphics\Lights\LightShadowMapCascadeCount.cs" />
+    <Compile Include="Engine\Graphics\Lights\LightShadowMapFilterTypePCF.cs" />
+    <Compile Include="Engine\Graphics\Lights\LightShadowMapFilterTypeVariance.cs" />
+    <Compile Include="Engine\Graphics\Lights\LightShadowMapSize.cs" />
     <Compile Include="Engine\Graphics\Materials\DisplacementMapStage.cs" />
     <Compile Include="Engine\Graphics\Materials\IMaterialDescriptor.cs" />
     <Compile Include="Engine\Graphics\Materials\IMaterialSurfaceDomain.cs">
@@ -1331,7 +1356,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Engine\Graphics\Lights\EnvironmentLightKeys.cs" />
-    <Compile Include="Engine\Graphics\Lights\GuillotinePacker.cs" />
     <Compile Include="Engine\Graphics\Lights\IDirectLight.cs" />
     <Compile Include="Engine\Graphics\Lights\IEnvironmentLight.cs" />
     <Compile Include="Engine\Graphics\Lights\ILight.cs" />
@@ -1356,7 +1380,6 @@
     <Compile Include="Engine\Graphics\Lights\LightProcessor.cs" />
     <Compile Include="Engine\Graphics\Lights\LightShaderGroup.cs" />
     <Compile Include="Engine\Graphics\Lights\LightShadowMap.cs" />
-    <Compile Include="Engine\Graphics\Lights\LightShadowMapFilterType.cs" />
     <Compile Include="Engine\Graphics\Lights\LightSimpleAmbient.cs">
       <DependentUpon>LightSimpleAmbient.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -1378,7 +1401,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Shadows\ShadowConfiguration.cs" />
     <Compile Include="Engine\Graphics\Shadows\ShadowMapParameters.cs" />
     <Compile Include="Engine\Graphics\ModelAndLightComponentRenderer.cs" />
     <Compile Include="Engine\Graphics\RendererBase.cs" />
@@ -1656,7 +1678,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Shadows\ShadowMap.cs" />
     <Compile Include="Engine\Graphics\Shadows\ShadowMapCascade.cs">
       <DependentUpon>ShadowMapCascade.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -1722,7 +1743,6 @@
     <Compile Include="Engine\Graphics\Shadows\ShadowMapKeys.cs" />
     <Compile Include="Engine\Graphics\Shadows\ShadowMapReceiverInfo.cs" />
     <Compile Include="Engine\Graphics\Shadows\ShadowMapReceiverVsmInfo.cs" />
-    <Compile Include="Engine\Graphics\Shadows\ShadowMapTexture.cs" />
     <Compile Include="Engine\Graphics\Shadows\ShadowStream.cs">
       <DependentUpon>ShadowStream.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -1893,8 +1913,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Utils\ComputeID.cs">
-      <DependentUpon>ComputeID.pdxsl</DependentUpon>
+    <Compile Include="Engine\Graphics\Utils\ModelComponentPickingShader.cs">
+      <DependentUpon>ModelComponentPickingShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -1941,8 +1961,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Utils\Picking.cs">
-      <DependentUpon>Picking.pdxfx</DependentUpon>
+    <Compile Include="Engine\Graphics\Utils\ModelComponentPickingEffect.cs">
+      <DependentUpon>ModelComponentPickingEffect.pdxfx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -2008,7 +2028,7 @@
     <Compile Include="Engine\Graphics\DefaultEffectInstance.cs" />
     <Compile Include="Engine\Graphics\DynamicEffectCompiler.cs" />
     <Compile Include="Engine\Graphics\DynamicEffectInstance.cs" />
-    <Compile Include="Engine\Graphics\EffectParameterUpdater.cs" />
+    <Compile Include="Engine\Graphics\DynamicEffectParameterCollectionGroup.cs" />
     <Compile Include="Engine\Graphics\Material.cs" />
     <Compile Include="Engine\Graphics\MaterialAssetKeys.cs" />
     <Compile Include="Engine\Graphics\MeshBoneDefinition.cs" />
@@ -2135,6 +2155,7 @@
       <DependentUpon>Transformation.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Engine\Graphics\Shaders\TransformationKeys.cs" />
+    <Compile Include="SyncScript.cs" />
     <Compile Include="Threading\ILockMechanism.cs" />
     <Compile Include="Threading\Lock.cs" />
     <Compile Include="Threading\LockMechanismException.cs" />
@@ -2551,6 +2572,14 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>FXAAShader.cs</LastGenOutput>
     </None>
+    <None Include="Engine\Graphics\Images\Bloom\BloomAfterimageCombineShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>BloomAfterimageCombineShader.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Images\Bloom\BloomAfterimageShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>BloomAfterimageShader.cs</LastGenOutput>
+    </None>
     <None Include="Engine\Graphics\Images\BrightFilter\BrightFilterShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>BrightFilterShader.cs</LastGenOutput>
@@ -2643,17 +2672,21 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>TripleRhombiCombineShader.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Images\DepthOfField\InFocusMaskCombine.pdxsl">
+    <None Include="Engine\Graphics\Images\DepthOfField\CombineFrontCoCShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>InFocusMaskCombine.cs</LastGenOutput>
+      <LastGenOutput>CombineFrontCoCShader.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Images\DepthOfField\CombineFrontCoCEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CombineFrontCoCEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Images\DepthOfField\PointDepth.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>PointDepth.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Images\DepthOfField\ThresholdAlphaCoC.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ThresholdAlphaCoC.cs</LastGenOutput>
-    </None>
-    <None Include="Engine\Graphics\Images\DepthOfField\InFocusToAlpha.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>InFocusToAlpha.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Images\DepthOfField\CircleOfConfusion.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -2690,6 +2723,10 @@
     <None Include="Engine\Graphics\Images\DepthOfField\DepthAwareDirectionalBlurUtil.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>DepthAwareDirectionalBlurUtil.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Images\DepthOfField\ThresholdAlphaCoCFront.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ThresholdAlphaCoCFront.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Images\GaussianBlur\GaussianBlurEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -3171,9 +3208,9 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>BlendUtils.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Utils\ComputeID.pdxsl">
+    <None Include="Engine\Graphics\Utils\ModelComponentPickingShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeID.cs</LastGenOutput>
+      <LastGenOutput>ModelComponentPickingShader.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Utils\DepthBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -3203,9 +3240,9 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>NormalUtil.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Utils\Picking.pdxfx">
+    <None Include="Engine\Graphics\Utils\ModelComponentPickingEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>Picking.cs</LastGenOutput>
+      <LastGenOutput>ModelComponentPickingEffect.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Utils\SwapUV.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

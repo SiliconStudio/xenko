@@ -16,16 +16,18 @@ namespace SiliconStudio.Paradox.Effects
     /// </summary>
     public static class ModelRendererExtensions
     {
+        // TODO: Find a way to replug this
+
         /// <summary>
         /// Adds a default frustum culling for rendering only meshes that are only inside the frustum/
         /// </summary>
         /// <param name="modelRenderer">The model renderer.</param>
         /// <returns>ModelRenderer.</returns>
-        public static ModelComponentRenderer AddDefaultFrustumCulling(this ModelComponentRenderer modelRenderer)
-        {
-            modelRenderer.UpdateMeshes = FrustumCulling;
-            return modelRenderer;
-        }
+        //public static ModelComponentRenderer AddDefaultFrustumCulling(this ModelComponentRenderer modelRenderer)
+        //{
+        //    modelRenderer.UpdateMeshes = FrustumCulling;
+        //    return modelRenderer;
+        //}
 
         private static void FrustumCulling(RenderContext context, FastList<RenderMesh> meshes)
         {

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 
@@ -133,6 +134,12 @@ namespace SiliconStudio.Paradox.Effects.Lights
             {
                 AddLightComponent(light, type, ActiveEnvironmentLights);
             }
+
+            Vector3 lightDirection;
+            var lightDir = LightComponent.DefaultDirection;
+            Vector3.TransformNormal(ref lightDir, ref light.Entity.Transform.WorldMatrix, out lightDirection);
+            lightDirection.Normalize();
+            light.Direction = lightDirection;
         }
     }
 }

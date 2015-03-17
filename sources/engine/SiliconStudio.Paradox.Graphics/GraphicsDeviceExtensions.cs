@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Graphics.Internals;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -19,42 +20,14 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <param name="device">The device.</param>
         /// <param name="effect">The effect.</param>
-        /// <param name="parameters">The parameters.</param>
+        /// <param name="effectParameterCollectionGroup">The shader parameter updater.</param>
         /// <exception cref="System.ArgumentNullException">effect</exception>
-        public static void DrawQuad(this GraphicsDevice device, Effect effect, ParameterCollection parameters = null)
+        public static void DrawQuad(this GraphicsDevice device, Effect effect, EffectParameterCollectionGroup effectParameterCollectionGroup)
         {
             if (effect == null) throw new ArgumentNullException("effect");
 
             // Apply the effect
-            if (parameters != null)
-            {
-                effect.Apply(device, parameters, false);
-            }
-            else
-            {
-                effect.Apply(device, false);
-            }
-
-            // Draw a full screen quad
-            device.DrawQuad();
-
-            // Unapply
-            effect.UnbindResources(device);
-        }
-
-        /// <summary>
-        /// Draws a fullscreen quad with the specified effect and parameters.
-        /// </summary>
-        /// <param name="device">The device.</param>
-        /// <param name="effect">The effect.</param>
-        /// <param name="parameterCollections">The parameter collections.</param>
-        /// <exception cref="System.ArgumentNullException">effect</exception>
-        public static void DrawQuad(this GraphicsDevice device, Effect effect, List<ParameterCollection> parameterCollections)
-        {
-            if (effect == null) throw new ArgumentNullException("effect");
-
-            // Apply the effect
-            effect.Apply(device, parameterCollections, false);
+            effect.Apply(device, effectParameterCollectionGroup, false);
 
             // Draw a full screen quad
             device.DrawQuad();

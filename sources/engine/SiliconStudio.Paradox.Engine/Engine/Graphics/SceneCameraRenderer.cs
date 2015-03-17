@@ -59,15 +59,15 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             }
 
             // Gets the current camera state from the slot
-            var cameraState = context.GetCameraState(Camera);
-            if (cameraState == null)
+            var camera = context.GetCameraFromSlot(Camera);
+            if (camera == null)
             {
                 return;
             }
 
             // Draw this camera.
             using (context.PushTagAndRestore(Current, this))
-            using (context.PushTagAndRestore(CameraComponentRenderer.Current, cameraState))
+            using (context.PushTagAndRestore(CameraComponentRenderer.Current, camera))
             {
                 var currentFilter = context.Parameters.Get(MaterialKeys.PixelStageSurfaceFilter);
                 if (!ReferenceEquals(currentFilter, MaterialFilter))

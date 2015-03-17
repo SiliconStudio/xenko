@@ -21,5 +21,6 @@ namespace SiliconStudio.Paradox.Effects.Images
         public static readonly ParameterKey<float> Amount = ParameterKeys.New<float>();
         public static readonly ParameterKey<float> Time = ParameterKeys.New<float>();
         public static readonly ParameterKey<float> GrainSize = ParameterKeys.New<float>();
+        public static readonly ParameterKey<float> LuminanceFactor = ParameterKeys.New<float>();
     }
 }

@@ -40,11 +40,6 @@ namespace SiliconStudio.Paradox
         UISystem UI { get; }
     }
 
-    public interface IScript : IScriptContext
-    {
-        Task Execute();
-    }
-
     [DataContract("ScriptContext")]
     public abstract class ScriptContext : ComponentBase, IScriptContext
     {

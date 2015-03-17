@@ -1,13 +1,15 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-
+using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Effects.Utils;
 using SiliconStudio.Paradox.Extensions;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Paradox.Graphics;
-
+using SiliconStudio.Paradox.Graphics.Internals;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects
@@ -36,6 +38,9 @@ namespace SiliconStudio.Paradox.Effects
         public bool HasTransparency { get; private set; }
 
         private readonly ParameterCollection parameters;
+        private readonly FastList<ParameterCollection> parameterCollections = new FastList<ParameterCollection>();
+        private EffectParameterCollectionGroup parameterCollectionGroup;
+        private ParameterCollection[] previousParameterCollections;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderMesh" /> class.
@@ -93,7 +98,9 @@ namespace SiliconStudio.Paradox.Effects
 
             if (context.IsPicking()) // TODO move this code corresponding to picking outside of the runtime code!
             {
-                mesh.Parameters.Set(ComputeIDKeys.constantID, new Color4(RenderModel.ModelComponent.Id));
+                parameters.Set(ModelComponentPickingShaderKeys.ModelComponentId, new Color4(RenderModel.ModelComponent.Id));
+                parameters.Set(ModelComponentPickingShaderKeys.MeshId, new Color4(Mesh.NodeIndex));
+                parameters.Set(ModelComponentPickingShaderKeys.MaterialId, new Color4(Mesh.MaterialIndex));
             }
 
             if (material != null && material.TessellationMethod != ParadoxTessellationMethod.None)
@@ -118,22 +125,26 @@ namespace SiliconStudio.Paradox.Effects
                 // The order is based on the granularity level of each element and how shared it can be. Material is heavily shared, a model contains many meshes. An renderMesh is unique.
                 // TODO: really copy mesh parameters into renderMesh instead of just referencing the meshDraw parameters.
 
-                var modelComponent = RenderModel.ModelComponent;
-                var hasModelComponentParams = modelComponent != null && modelComponent.Parameters != null;
+                //var modelComponent = RenderModel.ModelComponent;
+                //var hasModelComponentParams = modelComponent != null && modelComponent.Parameters != null;
                 
-                var materialParameters = material != null && material.Parameters != null ? material.Parameters : null;
+                //var materialParameters = material != null && material.Parameters != null ? material.Parameters : null;
 
-                if (materialParameters != null)
+                parameterCollections.Clear();
+
+                parameterCollections.Add(context.Parameters);
+                FillParameterCollections(parameterCollections);
+
+                // Check if we need to recreate the EffectParameterCollectionGroup
+                // TODO: We can improve performance by redesigning FillParameterCollections to avoid ArrayExtensions.ArraysReferenceEqual (or directly check the appropriate parameter collections)
+                // This also happens in another place: DynamicEffectCompiler (we probably want to factorize it when doing additional optimizations)
+                if (parameterCollectionGroup == null || parameterCollectionGroup.Effect != Effect || !ArrayExtensions.ArraysReferenceEqual(previousParameterCollections, parameterCollections))
                 {
-                    if (hasModelComponentParams)
-                        Effect.Apply(context.Parameters, materialParameters, modelComponent.Parameters, parameters, true);
-                    else
-                        Effect.Apply(context.Parameters, materialParameters, parameters, true);
+                    parameterCollectionGroup = new EffectParameterCollectionGroup(context.GraphicsDevice, Effect, parameterCollections);
+                    previousParameterCollections = parameterCollections.ToArray();
                 }
-                else if (hasModelComponentParams)
-                    Effect.Apply(context.Parameters, modelComponent.Parameters, parameters, true);
-                else
-                    Effect.Apply(context.Parameters, parameters, true);
+
+                Effect.Apply(context.GraphicsDevice, parameterCollectionGroup, true);
             }
 
             //using (Profiler.Begin(ProfilingKeys.RenderMesh))

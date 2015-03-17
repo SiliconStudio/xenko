@@ -11,29 +11,28 @@ namespace SiliconStudio.Paradox.EntityModel
         /// <summary>
         /// The scale unit of the current scene
         /// </summary>
-        public readonly float SceneUnit;
+        public float SceneUnit { get; set; }
 
         /// <summary>
         /// Indicate if the user is current multi-selecting entities.
         /// </summary>
-        public readonly bool IsMultiSelecting;
+        public bool IsMultiSelecting { get; set; }
 
         /// <summary>
         /// Indicate if the camera is currently navigating in the space.
         /// </summary>
-        public readonly bool IsCameraMoving;
+        public bool IsCameraMoving { get; set; }
 
         /// <summary>
         /// The id of the entity component picked since last update.
         /// </summary>
-        public readonly int PickedComponentId;
+        public int PickedComponentId { get; set; }
 
-        public GizmoContext(float sceneUnit, bool isMultiSelecting, bool isCameraMoving, int pickedComponentId)
+        public GizmoContext(float sceneUnit, bool isMultiSelecting, bool isCameraMoving)
         {
             SceneUnit = sceneUnit;
             IsCameraMoving = isCameraMoving;
             IsMultiSelecting = isMultiSelecting;
-            PickedComponentId = pickedComponentId;
         }
     };
 }

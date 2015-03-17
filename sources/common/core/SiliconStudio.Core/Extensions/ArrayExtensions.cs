@@ -33,6 +33,26 @@ namespace SiliconStudio.Core.Extensions
             return true;
         }
 
+        public static bool ArraysReferenceEqual<T>(IList<T> a1, IList<T> a2) where T : class
+        {
+            if (ReferenceEquals(a1, a2))
+                return true;
+
+            if (a1 == null || a2 == null)
+                return false;
+
+            if (a1.Count != a2.Count)
+                return false;
+
+            for (int i = 0; i < a1.Count; i++)
+            {
+                if (a1[i] != a2[i])
+                    return false;
+            }
+
+            return true;
+        }
+
         public static int ComputeHash<T>(this ICollection<T> data, IEqualityComparer<T> comparer = null)
         {
             unchecked

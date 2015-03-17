@@ -19,5 +19,6 @@ namespace SiliconStudio.Paradox.Effects.Images
     public static partial class ThresholdAlphaCoCKeys
     {
         public static readonly ParameterKey<float> CoCReference = ParameterKeys.New<float>();
+        public static readonly ParameterKey<float> CoCCurrent = ParameterKeys.New<float>();
     }
 }

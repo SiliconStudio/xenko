@@ -120,6 +120,13 @@ namespace SiliconStudio.Paradox.Effects.Images
         }
 
         /// <summary>
+        /// Auto-focus on the pixel at the center of the screen. 
+        /// </summary>
+        [DataMember(50)]
+        [DefaultValue(true)]
+        public bool AutoFocus { get; set; }
+
+        /// <summary>
         /// The number of layers with their own CoC strength. Note that you need to define 
         /// at least 1 level of blur, each level of blur should have a CoC stronger than its predecessor and the last
         /// level should always have a CoC of 1.0. Example: { 0.25f, 0.5f, 1.0f }
@@ -162,7 +169,6 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
         }
 
-
         // Tells if we need to regenerate the "pipeline" of the DoF.
         // Set to true when the technique changes, or the number/resolution of layers is modified.
         private bool configurationDirty = true;
@@ -176,11 +182,15 @@ namespace SiliconStudio.Paradox.Effects.Images
         // Util to scale images
         private ImageScaler textureScaler;
 
-        private ImageEffectShader inFocusToAlpha;
-        private ImageEffectShader inFocusMaskCombine;
         private ImageEffectShader thresholdAlphaCoC;
-        private GaussianBokeh gaussianBokeh;
-        private GaussianBlur gaussianBlur;
+        private ImageEffectShader thresholdAlphaCoCFront;
+
+        // For auto-focus
+        private ImageEffect pointDepthShader;
+        private ImageReadback<Half> depthReadBack;
+        private Texture depthCenter1x1;
+        private float autoFocusDistanceTarget = 10f;
+        private float autoFocusDistanceCurrent = 10f;
 
         // Transforms "Color and depth" -> "linear depth and CoC"
         private ImageEffectShader coclinearDepthMapEffect;
@@ -190,6 +200,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         // Used for the final pass interpolating between some CoC levels.
         private ImageEffectShader combineLevelsEffect;
+        private ImageEffectShader combineLevelsFrontEffect;
 
         // Represents a level of CoC
         private class CoCLevelConfig
@@ -221,6 +232,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             MaxBokehSize = 0.1f; //ratio of the width (resolution independent)
             Technique = BokehTechnique.HexagonalTripleRhombi;
             QualityPreset = 0.5f;
+            AutoFocus = true;
         }
 
         protected override void InitializeCore()
@@ -229,13 +241,15 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             coclinearDepthMapEffect = ToLoadAndUnload(new ImageEffectShader("CoCLinearDepthShader"));
             combineLevelsEffect = ToLoadAndUnload(new ImageEffectShader("CombineLevelsFromCoCEffect"));
+            combineLevelsFrontEffect = ToLoadAndUnload(new ImageEffectShader("CombineFrontCoCEffect"));
             textureScaler = ToLoadAndUnload(new ImageScaler());
             cocMapBlur = ToLoadAndUnload(new CoCMapBlur());
-            inFocusToAlpha = ToLoadAndUnload(new ImageEffectShader("InFocusToAlpha"));
-            inFocusMaskCombine = ToLoadAndUnload(new ImageEffectShader("InFocusMaskCombine"));
             thresholdAlphaCoC = ToLoadAndUnload(new ImageEffectShader("ThresholdAlphaCoC"));
-            gaussianBlur = ToLoadAndUnload(new GaussianBlur());
-            gaussianBokeh = ToLoadAndUnload(new GaussianBokeh());
+            thresholdAlphaCoCFront = ToLoadAndUnload(new ImageEffectShader("ThresholdAlphaCoCFront"));
+            pointDepthShader = ToLoadAndUnload(new ImageEffectShader("PointDepth"));
+            depthReadBack = ToLoadAndUnload(new ImageReadback<Half>(Context));
+            depthCenter1x1 = Texture.New2D(GraphicsDevice, 1, 1, 1, PixelFormat.R16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this);
+            depthReadBack.SetInput(depthCenter1x1);
         }
 
         /// <summary>
@@ -338,10 +352,39 @@ namespace SiliconStudio.Paradox.Effects.Images
             // Render target will contain "CoC"(16 bits) "Linear depth"(16bits).
             var cocLinearDepthTexture = GetScopedRenderTarget(originalColorBuffer.Description, 1f, PixelFormat.R16G16_Float);
 
+            var farPlane = context.Parameters.Get(CameraKeys.FarClipPlane);
+
+            var depthAreas = DOFAreas;
+            if (AutoFocus)
+            {
+                // TODO replace this by physical camera parameters (aperture, focus distance...)
+                var diffToTarget = (autoFocusDistanceTarget - autoFocusDistanceCurrent);
+                var absDiff = Math.Abs(diffToTarget);
+                var maxAmplitude = farPlane * 0.2f;
+                if (absDiff > maxAmplitude) diffToTarget = diffToTarget / absDiff * maxAmplitude;
+                autoFocusDistanceCurrent = autoFocusDistanceCurrent + 0.1f * diffToTarget;
+                if (autoFocusDistanceCurrent < 1f) autoFocusDistanceCurrent = 1f;
+                depthAreas = new Vector4(0.5f, autoFocusDistanceCurrent, autoFocusDistanceCurrent, autoFocusDistanceCurrent + farPlane * 0.5f);
+            }
+
             coclinearDepthMapEffect.SetInput(0, originalDepthBuffer);
             coclinearDepthMapEffect.SetOutput(cocLinearDepthTexture);
-            coclinearDepthMapEffect.Parameters.Set(CircleOfConfusionKeys.depthAreas, DOFAreas);
-            coclinearDepthMapEffect.Draw(context, name: "CoC_LinearDepth");
+            coclinearDepthMapEffect.Parameters.Set(CircleOfConfusionKeys.depthAreas, depthAreas);
+            coclinearDepthMapEffect.Draw(context, "CoC_LinearDepth");
+
+            if (AutoFocus)
+            {
+                // Reads the center depth of the previous frame and use it as a new target
+                // TODO single pixel is really small, average some disk area instead?
+                pointDepthShader.Parameters.Set(PointDepthKeys.Coordinate, new Vector2(0.5f, 0.5f));
+                pointDepthShader.SetInput(cocLinearDepthTexture);
+                pointDepthShader.SetOutput(depthCenter1x1);
+                pointDepthShader.Draw("Center Depth");
+
+                depthReadBack.Draw("Center_Depth_Readback");
+                var centerDepth = depthReadBack.Result[0];
+                autoFocusDistanceTarget = centerDepth;
+            }
 
             // Find the smallest downscale we should go down to.
             var maxDownscale = 0;
@@ -362,34 +405,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                     textureScaler.Draw(context, "DownScale_Factor{0}", i);
                 }
 
-                // Special treatment to reduce bleeding: make the in-focus area transparent-black, 
-                // and make the out-focus areas bleed into it. 
-
-                // Make in-focus areas transparent
-                var alphaFocusInput = NewScopedRenderTarget2D(downSizedTexture.Description);
-                inFocusToAlpha.SetInput(0, downSizedTexture);
-                inFocusToAlpha.SetInput(1, cocLinearDepthTexture);
-                inFocusToAlpha.SetOutput(alphaFocusInput);
-                inFocusToAlpha.Draw("In focus to alpha");
-
-                // Blur
-                var blurredAlphaFocus = NewScopedRenderTarget2D(alphaFocusInput.Description);
-                gaussianBokeh.Radius = 3;
-                gaussianBokeh.SetInput(0, alphaFocusInput);
-                gaussianBokeh.SetInput(1, cocLinearDepthTexture);
-                gaussianBokeh.SetOutput(blurredAlphaFocus);
-                gaussianBokeh.Draw("Blur focus-alpha");
-
-                // Combine the 2 previous buffers using alpha as a mask
-                var bleedToAlpha = NewScopedRenderTarget2D(alphaFocusInput.Description);
-                inFocusMaskCombine.SetInput(0, alphaFocusInput);
-                inFocusMaskCombine.SetInput(1, blurredAlphaFocus);
-                inFocusMaskCombine.SetOutput(bleedToAlpha);
-                inFocusMaskCombine.Draw("Bleed color to alpha");
-
-                downSizedTexture = bleedToAlpha;
-
-                downscaledSources[i] = downSizedTexture;
+                downscaledSources[i] = downSizedTexture; 
             }
 
             // We create a blurred version of the CoC map. 
@@ -398,7 +414,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             cocMapBlur.Radius = 6f / 720f * cocLinearDepthTexture.Description.Height; // 6 pixels at 720p
             cocMapBlur.SetInput(0, cocLinearDepthTexture);
             cocMapBlur.SetOutput(blurredCoCTexture);
-            cocMapBlur.Draw(context, name: "CoC_BlurredMap");
+            cocMapBlur.Draw(context, "CoC_BlurredMap");
 
             // Creates all the levels with different CoC strengths.
             // (Skips level with CoC 0 which is always the original buffer.)
@@ -407,40 +423,87 @@ namespace SiliconStudio.Paradox.Effects.Images
             combineLevelsEffect.SetInput(1, blurredCoCTexture);
             combineLevelsEffect.SetInput(2, originalColorBuffer);
 
+            combineLevelsFrontEffect.Parameters.Set(CombineLevelsFromCoCKeys.LevelCount, cocLevels.Count);
+            combineLevelsFrontEffect.SetInput(0, cocLinearDepthTexture);
+            combineLevelsFrontEffect.SetInput(1, blurredCoCTexture);
+            combineLevelsFrontEffect.SetInput(2, originalColorBuffer);
+
+            float previousCoC = 0f;
             for (int i = 1; i < cocLevels.Count; i++)
             {
                 // We render a blurred version of the original scene into a downscaled render target.
                 // Blur strength depends on the current level CoC value. 
+
                 var levelConfig = cocLevels[i];
                 var textureToBlur = downscaledSources[levelConfig.downscaleFactor];
                 float downscaleFactor = 1f / (float)(Math.Pow(2f, levelConfig.downscaleFactor));
                 var blurOutput = GetScopedRenderTarget(originalColorBuffer.Description, downscaleFactor, originalColorBuffer.Description.Format);
+                var blurOutputFront = NewScopedRenderTarget2D(blurOutput.Description);
                 float blurRadius = (MaxBokehSize * BokehSizeFactor) * levelConfig.CoCValue * downscaleFactor * originalColorBuffer.Width;
                 if (blurRadius < 1f) blurRadius = 1f;
 
+                //---------------------------------
+                // Far out-of-focus
+                //---------------------------------
+
                 // Pre-process the layer for the current CoC
+                // This removes areas which might wrongly bleed into our image when blurring. 
                 var alphaTextureToBlur = NewScopedRenderTarget2D(textureToBlur.Description);
-                thresholdAlphaCoC.Parameters.Set(ThresholdAlphaCoCKeys.CoCReference, levelConfig.CoCValue);
+                thresholdAlphaCoC.Parameters.Set(ThresholdAlphaCoCKeys.CoCReference, previousCoC);
+                thresholdAlphaCoC.Parameters.Set(ThresholdAlphaCoCKeys.CoCCurrent, levelConfig.CoCValue);
                 thresholdAlphaCoC.SetInput(0, textureToBlur);
                 thresholdAlphaCoC.SetInput(1, cocLinearDepthTexture);
                 thresholdAlphaCoC.SetOutput(alphaTextureToBlur);
-                thresholdAlphaCoC.Draw(context, "Alphaize");
+                thresholdAlphaCoC.Draw(context, "Alphaize_Far_{0}", i);
                 textureToBlur = alphaTextureToBlur;
 
+                // TODO Quality up: make the opaque areas "bleed" into the areas we just made transparent
+
+                // Apply the bokeh blur effect
                 BokehBlur levelBlur = levelConfig.blurEffect;
                 levelBlur.CoCStrength = levelConfig.CoCValue;
                 levelBlur.Radius = blurRadius; // This doesn't generate garbage if the radius value doesn't change.
                 levelBlur.SetInput(0, textureToBlur);
                 levelBlur.SetOutput(blurOutput);
-                levelBlur.Draw(context, "CoC_LoD_Layer_{0}", i);
+                levelBlur.Draw(context, "CoC_LoD_Layer_Far_{0}", i);
                 combineLevelsEffect.SetInput(i + 2, blurOutput);
+
+                //---------------------------------
+                // Near out-of-focus
+                //---------------------------------
+
+                // Negates CoC values and makes background objects transparent
+                thresholdAlphaCoCFront.Parameters.Set(ThresholdAlphaCoCFrontKeys.CoCReference, previousCoC);
+                thresholdAlphaCoCFront.Parameters.Set(ThresholdAlphaCoCFrontKeys.CoCCurrent, levelConfig.CoCValue);
+                thresholdAlphaCoCFront.SetInput(0, downscaledSources[levelConfig.downscaleFactor]);
+                thresholdAlphaCoCFront.SetInput(1, cocLinearDepthTexture);
+                thresholdAlphaCoCFront.SetOutput(alphaTextureToBlur);
+                thresholdAlphaCoCFront.Draw(context, "Alphaize_Near_{0}", i);
+                textureToBlur = alphaTextureToBlur;
+
+                // Apply the bokeh blur effect
+                levelBlur.SetInput(0, textureToBlur);
+                levelBlur.SetOutput(blurOutputFront);
+                levelBlur.Draw(context, "CoC_LoD_Layer_Near_{0}", i);
+                combineLevelsFrontEffect.SetInput(i + 2, blurOutputFront);
+
+                previousCoC = levelConfig.CoCValue;
             }
 
-            // Final pass: each pixel, depending on its CoC, interpolates its color from the 
+            // Far out-of-focus: each pixel, depending on its CoC, interpolates its color from 
             // the original color buffer and blurred buffer(s). 
             combineLevelsEffect.Parameters.Set(CombineLevelsFromCoCShaderKeys.CoCLevelValues, combineShaderCocLevelValues);
             combineLevelsEffect.SetOutput(outputTexture);
-            combineLevelsEffect.Draw(context, name: "CoCLevelCombineInterpolation");
+            combineLevelsEffect.Draw(context, "CoCLevelCombineInterpolation");
+
+            // Finally add front out-of-focus objects on the top of the scene
+
+            // TODO Quality up: instead of merging all the layers for each pixel, merge only
+            // the relevant layer(s) closest to the pixel CoC. 
+            GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.AlphaBlend);
+            combineLevelsFrontEffect.SetOutput(outputTexture);
+            combineLevelsFrontEffect.Draw(context, "CoCLevelCombineInterpolationFront");
+            GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.Default);
 
             // Release any reference
             downscaledSources.Clear();

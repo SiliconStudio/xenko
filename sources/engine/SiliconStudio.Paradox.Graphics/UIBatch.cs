@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Graphics.Internals;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -17,6 +19,7 @@ namespace SiliconStudio.Paradox.Graphics
         private static readonly List<short[]> PrimiteTypeToIndices = new List<short[]>(4);
 
         private readonly Effect uiSeparateAlphaEffect;
+        private readonly EffectParameterCollectionGroup uiSeparateAlphaParameterCollectionGroup;
 
         private bool separateAlphaEffectBinded;
 
@@ -141,6 +144,7 @@ namespace SiliconStudio.Paradox.Graphics
         {
             // Create the two ui effects
             uiSeparateAlphaEffect = new Effect(GraphicsDevice, UIEffectSeparateAlpha.Bytecode) {Name = "SeparatedAlphaBatchEffect"};
+            uiSeparateAlphaParameterCollectionGroup = new EffectParameterCollectionGroup(device, uiSeparateAlphaEffect, new[] { Parameters });
             
             // Create a 1x1 pixel white texture
             whiteTexture = GraphicsDevice.GetSharedWhiteTexture();
@@ -174,7 +178,7 @@ namespace SiliconStudio.Paradox.Graphics
             separateAlphaEffectBinded = false;
             viewProjectionMatrix = viewProjection;
 
-            Begin(null, SpriteSortMode.BackToFront, blendState, samplerState, depthStencilState, rasterizerState, stencilValue);
+            Begin(null, null, SpriteSortMode.BackToFront, blendState, samplerState, depthStencilState, rasterizerState, stencilValue);
         }
 
         /// <summary>
@@ -311,7 +315,7 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 End();
                 separateAlphaEffectBinded = !separateAlphaEffectBinded;
-                Begin(separateAlphaEffectBinded? uiSeparateAlphaEffect: null, SortMode, BlendState, SamplerState, DepthStencilState, RasterizerState, StencilReferenceValue);
+                Begin(separateAlphaEffectBinded? uiSeparateAlphaEffect: null, separateAlphaEffectBinded ? uiSeparateAlphaParameterCollectionGroup : null, SortMode, BlendState, SamplerState, DepthStencilState, RasterizerState, StencilReferenceValue);
             }
 
             // Calculate the information needed to draw.

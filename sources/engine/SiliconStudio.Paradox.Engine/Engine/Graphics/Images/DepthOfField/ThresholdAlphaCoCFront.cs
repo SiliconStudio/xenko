@@ -14,10 +14,11 @@ using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Effects.Images
 {
-    public static partial class ComputeIDKeys
+    public static partial class ThresholdAlphaCoCFrontKeys
     {
-        public static readonly ParameterKey<Color4> constantID = ParameterKeys.New<Color4>();
+        public static readonly ParameterKey<float> CoCReference = ParameterKeys.New<float>();
+        public static readonly ParameterKey<float> CoCCurrent = ParameterKeys.New<float>();
     }
 }

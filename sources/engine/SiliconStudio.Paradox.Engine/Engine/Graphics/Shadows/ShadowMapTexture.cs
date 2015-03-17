@@ -1,15 +1,14 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Lights;
-using SiliconStudio.Paradox.Effects.Processors;
-using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Shadows
 {
     /// <summary>
-    /// Represents a texture to use with <see cref="ShadowMapRenderer"/>.
+    /// Represents a texture to use with <see cref="ShadowMapCasterRenderer"/>.
     /// </summary>
     public class ShadowMapTexture
     {

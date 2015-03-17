@@ -72,6 +72,12 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
 
             if (asset.Model != null)
             {
+                var cubemap = ((SkyboxCubeMapModel)asset.Model).CubeMap;
+                if (cubemap == null)
+                {
+                    return result;
+                }
+
                 var shaderSource = asset.Model.Generate(context);
                 parameters.Set(SkyboxKeys.Shader, shaderSource);
 
@@ -80,7 +86,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
                 // -------------------------------------------------------------------
                 var lamberFiltering = new LambertianPrefilteringSH(context.DrawEffectContext);
 
-                var reference = AttachedReferenceManager.GetAttachedReference(((SkyboxCubeMapModel)asset.Model).CubeMap);
+                var reference = AttachedReferenceManager.GetAttachedReference(cubemap);
                 var skyboxTexture = context.Assets.Load<Texture>(reference.Url);
 
                 lamberFiltering.HarmonicOrder = (int)asset.DiffuseSHOrder;
