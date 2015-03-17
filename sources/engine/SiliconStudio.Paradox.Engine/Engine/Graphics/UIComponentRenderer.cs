@@ -98,8 +98,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         {
             // build the list of the UI elements to render
             uiElementStates.Clear();
-            foreach (var renderItem in renderItems)
+            for (var i = fromIndex; i <= toIndex; ++i)
+            {
+                var renderItem = renderItems[i];
                 uiElementStates.Add((UIComponentProcessor.UIComponentState)renderItem.DrawContext);
+            }
 
             // evaluate the current draw time (game instance is null for thumbnails)
             var drawTime = game != null ? game.DrawTime : new GameTime();
@@ -185,7 +188,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 rootElement.Arrange(virtualResolution, false);
 
                 // update the UI element hierarchical properties
-                updatableRootElement.UpdateWorldMatrix(ref worldMatrix, worldMatrix == uiElementState.LastWorldMatrix);
+                updatableRootElement.UpdateWorldMatrix(ref worldMatrix, worldMatrix != uiElementState.LastWorldMatrix);
                 updatableRootElement.UpdateElementState(0);
                 uiElementState.LastWorldMatrix = worldMatrix;
 
