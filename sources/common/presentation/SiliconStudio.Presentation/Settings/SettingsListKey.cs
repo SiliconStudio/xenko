@@ -3,8 +3,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
 using System.Linq;
 
 using SiliconStudio.Core.IO;
@@ -92,16 +90,7 @@ namespace SiliconStudio.Presentation.Settings
 
                 foreach (object item in list)
                 {
-                    var converter = TypeDescriptor.GetConverter(typeof(T));
-                    T newValue;
-                    if (converter.CanConvertFrom(item != null ? item.GetType() : typeof(object)))                        
-                    {
-                        newValue = (T)converter.ConvertFrom(item);
-                    }
-                    else
-                    {
-                        newValue = (T)Convert.ChangeType(item, typeof(T));
-                    }
+                    var newValue = ConvertObject(item, default(T));
                     result.Add(newValue);
                 }
             }
