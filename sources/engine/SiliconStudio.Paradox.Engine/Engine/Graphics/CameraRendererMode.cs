@@ -18,6 +18,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         // TODO: Where should we put this key?
         public static readonly PropertyKey<EntityComponentRendererTypeCollection> RendererTypesKey = new PropertyKey<EntityComponentRendererTypeCollection>("CameraRendererMode.RendererTypesKey", typeof(CameraRendererMode));
 
+        private readonly Dictionary<Type, IEntityComponentRenderer> componentTypeToRenderer = new Dictionary<Type, IEntityComponentRenderer>();
         private readonly List<EntityComponentRendererType> sortedRendererTypes;
         private readonly EntityComponentRendererBatch batchRenderer;
 
@@ -65,8 +66,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             sortedRendererTypes.Clear();
             sortedRendererTypes.AddRange(rendererTypes);
             sortedRendererTypes.Sort();
+            
+            // clear current renderer batching
+            batchRenderer.Clear();
 
-            int index = 0;
+            // rebuild the renderer batch
             for (int i = 0; i < sortedRendererTypes.Count; i++)
             {
                 var componentType = sortedRendererTypes[i].ComponentType;
@@ -81,36 +85,37 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                     continue;
                 }
 
-                // Check an existing overrides
+                // check in existing overrides
                 IEntityComponentRenderer renderer;
                 RendererOverrides.TryGetValue(componentType, out renderer);
 
-                var rendererType = renderer != null ? renderer.GetType() : sortedRendererTypes[i].RendererType;
-                var currentType = i < batchRenderer.Count ? batchRenderer[i].GetType() : null;
-
-
-                if (currentType != rendererType)
+                // check in existing default renderer
+                if (renderer == null)
+                    componentTypeToRenderer.TryGetValue(componentType, out renderer);
+                
+                // create the default renderer if not existing
+                if (renderer == null)
                 {
-                    if (renderer == null)
-                    {
-                        renderer = CreateRenderer(sortedRendererTypes[i]);
-                    }
-
-                    if (index == batchRenderer.Count)
-                    {
-                        batchRenderer.Add(renderer);
-                    }
-                    else
-                    {
-                        batchRenderer.Insert(index, renderer);
-                    }
+                    renderer = CreateRenderer(sortedRendererTypes[i]);
+                    componentTypeToRenderer[componentType] = renderer;
                 }
 
-                index++;
+                batchRenderer.Add(renderer);
             }
 
             // Call the batch renderer
             batchRenderer.Draw(context);
+        }
+
+        protected override void Destroy()
+        {
+            base.Destroy();
+
+            foreach (var renderer in componentTypeToRenderer.Values)
+            {
+                renderer.Dispose();
+            }
+            componentTypeToRenderer.Clear();
         }
 
         protected virtual IEntityComponentRenderer CreateRenderer(EntityComponentRendererType rendererType)
