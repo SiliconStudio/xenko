@@ -57,7 +57,7 @@ namespace SiliconStudio.Assets.Compiler
         /// <param name="context">The context.</param>
         /// <param name="compilationResult">The compilation result.</param>
         /// <param name="assetItem">The asset item.</param>
-        protected BuildStep CompileItem(CompilerContext context, AssetCompilerResult compilationResult, AssetItem assetItem)
+        protected ListBuildStep CompileItem(CompilerContext context, AssetCompilerResult compilationResult, AssetItem assetItem)
         {
             // First try to find an asset compiler for this particular asset.
             IAssetCompiler compiler;
