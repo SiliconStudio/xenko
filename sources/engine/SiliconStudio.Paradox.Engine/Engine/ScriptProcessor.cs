@@ -34,7 +34,8 @@ namespace SiliconStudio.Paradox.Engine
             // Add current list of scripts
             foreach (var script in associatedData.Component.Scripts)
             {
-                scriptSystem.AddScript(script);
+                if(script != null)
+                    scriptSystem.AddScript(script);
             }
 
             // Keep tracking changes to the collection
