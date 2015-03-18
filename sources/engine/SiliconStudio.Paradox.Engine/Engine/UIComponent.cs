@@ -25,6 +25,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <userdoc>The root element of the UI hierarchy.</userdoc>
         [DataMember(5)]
         [Display("Root Element")]
+        [DataMemberIgnore] // TODO this is temporary as long as we don't have an UI editor and UI data asset.
         public UIElement RootElement { get; set; }
 
         public override PropertyKey GetDefaultKey()
