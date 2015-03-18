@@ -19,6 +19,7 @@ namespace SiliconStudio.Paradox.Engine
     /// to activate/deactivate the listeners that are actually listening at a given time.</para>
     /// <para>The entity needs to be added to the Entity System so that the associated AudioListenerComponent can be processed.</para></remarks>
     [Display(60, "Audio Listener")]
+    [DataContract("AudioListenerComponent")]
     [DefaultEntityComponentProcessor(typeof(AudioListenerProcessor))]
     public sealed class AudioListenerComponent : EntityComponent
     {

@@ -28,6 +28,7 @@ namespace SiliconStudio.Paradox.Engine
     /// </para>
     /// </remarks>
     [Display(70, "Audio Emitter")]
+    [DataContract("AudioEmitterComponent")]
     [DefaultEntityComponentProcessor(typeof(AudioEmitterProcessor))]
     public sealed class AudioEmitterComponent : EntityComponent
     {
