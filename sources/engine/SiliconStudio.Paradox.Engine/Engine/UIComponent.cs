@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Engine
     /// Add an <see cref="UIElement"/> to an <see cref="Entity"/>.
     /// </summary>
     [DataContract("UIComponent")]
-    [Display(100, "UI")]
+    [Display(98, "UI")]
     [DefaultEntityComponentRenderer(typeof(UIComponentRenderer))]
     [DefaultEntityComponentProcessor(typeof(UIComponentProcessor))]
     public class UIComponent : EntityComponent

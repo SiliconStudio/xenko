@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Engine
     /// Add a background to an <see cref="Entity"/>.
     /// </summary>
     [DataContract("BackgroundComponent")]
-    [Display(100, "Background")]
+    [Display(96, "Background")]
     [DefaultEntityComponentRenderer(typeof(BackgroundComponentRenderer))]
     [DefaultEntityComponentProcessor(typeof(BackgroundComponentProcessor))]
     public class BackgroundComponent : EntityComponent
