@@ -47,9 +47,6 @@ namespace SiliconStudio.Paradox
 
         public override void Update(GameTime gameTime)
         {
-            // Run current micro threads
-            Scheduler.Run();
-
             // Start new scripts
             foreach (var script in scriptsToStart)
             {
@@ -63,8 +60,10 @@ namespace SiliconStudio.Paradox
                     script.MicroThread = Add(asyncScript.Execute);
                 }
             }
-
             scriptsToStart.Clear();
+
+            // Run current micro threads
+            Scheduler.Run();
 
             // Execute sync scripts
             foreach (var script in syncScripts)
