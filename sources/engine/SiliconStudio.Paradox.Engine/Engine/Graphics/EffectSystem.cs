@@ -102,7 +102,7 @@ namespace SiliconStudio.Paradox.Effects
         }
 #endif
 
-        public static IEffectCompiler CreateEffectCompiler(TaskScheduler taskScheduler = null)
+        public static IEffectCompiler CreateEffectCompiler(TaskSchedulerSelector taskSchedulerSelector = null)
         {
             // Create compiler
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
@@ -111,7 +111,7 @@ namespace SiliconStudio.Paradox.Effects
 #else
             var effectCompiler = new NullEffectCompiler();
 #endif
-            return new EffectCompilerCache(effectCompiler, taskScheduler);
+            return new EffectCompilerCache(effectCompiler, taskSchedulerSelector);
         }
 
         public override void Update(GameTime gameTime)

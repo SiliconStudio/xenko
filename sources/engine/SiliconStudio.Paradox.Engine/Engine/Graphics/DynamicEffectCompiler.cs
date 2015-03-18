@@ -22,6 +22,7 @@ namespace SiliconStudio.Paradox.Effects
 
         private readonly string effectName;
         private bool asyncEffectCompiler;
+        private int taskPriority;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DynamicEffectCompiler" /> class.
@@ -32,13 +33,14 @@ namespace SiliconStudio.Paradox.Effects
         /// <exception cref="System.ArgumentNullException">services
         /// or
         /// effectName</exception>
-        public DynamicEffectCompiler(IServiceRegistry services, string effectName)
+        public DynamicEffectCompiler(IServiceRegistry services, string effectName, int taskPriority = 0)
         {
             if (services == null) throw new ArgumentNullException("services");
             if (effectName == null) throw new ArgumentNullException("effectName");
 
             Services = services;
             this.effectName = effectName;
+            this.taskPriority = taskPriority;
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
             GraphicsDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
             parameterCollections = new FastList<ParameterCollection>();
@@ -47,7 +49,12 @@ namespace SiliconStudio.Paradox.Effects
             ComputeFallbackEffect = (dynamicEffectCompiler, name, parameters) =>
             {
                 ParameterCollection usedParameters;
-                var effect = dynamicEffectCompiler.EffectSystem.LoadEffect(effectName, new CompilerParameters(), out usedParameters).WaitForResult();
+                var compilerParameters = new CompilerParameters();
+
+                // We want high priority
+                compilerParameters.TaskPriority = -1;
+
+                var effect = dynamicEffectCompiler.EffectSystem.LoadEffect(effectName, compilerParameters, out usedParameters).WaitForResult();
                 return new ComputeFallbackEffectResult(effect, usedParameters);
             };
         }
@@ -150,6 +157,8 @@ namespace SiliconStudio.Paradox.Effects
                     }
                 }
             }
+
+            compilerParameters.TaskPriority = taskPriority;
 
             foreach (var parameter in GraphicsDevice.Parameters.InternalValues)
             {

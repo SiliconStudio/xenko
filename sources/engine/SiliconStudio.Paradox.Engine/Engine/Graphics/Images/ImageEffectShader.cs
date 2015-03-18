@@ -50,7 +50,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             // Setup the effect compiler
             EffectInstance = new DefaultEffectInstance(parameterCollections);
-            effectCompiler = new DynamicEffectCompiler(Context.Services, EffectName);
+            effectCompiler = new DynamicEffectCompiler(Context.Services, EffectName, -1); // Image effects are compiled with higher priority
 
             SetDefaultParameters();
         }

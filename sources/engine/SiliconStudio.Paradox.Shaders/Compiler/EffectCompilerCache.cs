@@ -17,20 +17,21 @@ using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Paradox.Shaders.Compiler
 {
+    public delegate TaskScheduler TaskSchedulerSelector(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters);
+
     /// <summary>
     /// Checks if an effect has already been compiled in its cache before deferring to a real <see cref="IEffectCompiler"/>.
     /// </summary>
     [DataSerializerGlobal(null, typeof(KeyValuePair<HashSourceCollection, EffectBytecode>))]
     public class EffectCompilerCache : EffectCompilerChain
     {
-        private readonly TaskScheduler taskScheduler;
-
         private static readonly Logger Log = GlobalLogger.GetLogger("EffectCompilerCache");
         private readonly Dictionary<ObjectId, EffectBytecode> bytecodes = new Dictionary<ObjectId, EffectBytecode>();
         private readonly HashSet<ObjectId> bytecodesByPassingStorage = new HashSet<ObjectId>();
         private const string CompiledShadersKey = "__shaders_bytecode__";
 
         private readonly Dictionary<ObjectId, Task<EffectBytecodeCompilerResult>> compilingShaders = new Dictionary<ObjectId, Task<EffectBytecodeCompilerResult>>();
+        private readonly TaskSchedulerSelector taskSchedulerSelector;
 
         private int effectCompileCount;
 
@@ -38,10 +39,10 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
         public override DatabaseFileProvider FileProvider { get; set; }
 
-        public EffectCompilerCache(EffectCompilerBase compiler, TaskScheduler taskScheduler = null) : base(compiler)
+        public EffectCompilerCache(EffectCompilerBase compiler, TaskSchedulerSelector taskSchedulerSelector = null) : base(compiler)
         {
             CompileEffectAsynchronously = true;
-            this.taskScheduler = taskScheduler ?? TaskScheduler.Default;
+            this.taskSchedulerSelector = taskSchedulerSelector;
         }
 
         public override void ResetCache(HashSet<string> modifiedShaders)
@@ -140,7 +141,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 // Compile the mixin in a Task
                 if (CompileEffectAsynchronously)
                 {
-                    var resultTask = Task.Factory.StartNew(() => CompileBytecode(mixinTree, compilerParameters, mixinObjectId, database, compiledUrl, usedParameters), CancellationToken.None, TaskCreationOptions.None, taskScheduler);
+                    var resultTask = Task.Factory.StartNew(() => CompileBytecode(mixinTree, compilerParameters, mixinObjectId, database, compiledUrl, usedParameters), CancellationToken.None, TaskCreationOptions.None, taskSchedulerSelector != null ? taskSchedulerSelector(mixinTree, compilerParameters) : TaskScheduler.Default);
 
                     compilingShaders.Add(mixinObjectId, resultTask);
 
