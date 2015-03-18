@@ -79,11 +79,6 @@ namespace SiliconStudio.Paradox.Engine
                 InternalRemoveEntity(childEntity, false);
             }
 
-            // If sub entity is removed but its parent is still there, it needs to be detached.
-            // Note that this behavior is still not totally fixed yet, it might change.
-            if (data.Parent != null && EntityManager.Contains(data.Parent.Entity))
-                data.Parent = null;
-
             rootEntities.Remove(entity);
 
             ((TrackingCollection<TransformComponent>)data.Children).CollectionChanged -= Children_CollectionChanged;
@@ -113,9 +108,7 @@ namespace SiliconStudio.Paradox.Engine
                     InternalAddEntity(((TransformComponent)e.Item).Entity);
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    // If a child is removed, it is still kept in Entities.
-                    // Entities.Remove(child) should be used to remove entities (this will detach child from its parent)
-                    //InternalRemoveEntity(((TransformComponent)e.Item).Entity);
+                    InternalRemoveEntity(((TransformComponent)e.Item).Entity, false);
                     break;
                 default:
                     throw new NotSupportedException();
