@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Engine
         public SceneEditorSettings()
         {
             GridColor = (Color3)new Color(180, 180, 180);
-            SceneUnit = 1.0f;
+            SceneUnit = 100.0f;
             Camera = new SceneEditorCameraSettings();
             Mode = new SceneEditorGraphicsModeLDRSettings();
         }

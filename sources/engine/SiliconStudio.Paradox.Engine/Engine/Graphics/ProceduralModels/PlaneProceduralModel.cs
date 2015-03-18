@@ -7,7 +7,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Effects.ProceduralModels
+namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
 {
     /// <summary>
     /// The geometric descriptor for a plane.
@@ -21,8 +21,8 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
         /// </summary>
         public PlaneProceduralModel()
         {
-            SizeX = 1.0f;
-            SizeY = 1.0f;
+            SizeX = 100.0f;
+            SizeY = 100.0f;
             TesselationX = 1;
             TesselationY = 1;
             ScaleU = 1;
@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
         /// </summary>
         /// <value>The size x.</value>
         [DataMember(10)]
-        [DefaultValue(1.0f)]
+        [DefaultValue(100.0f)]
         public float SizeX { get; set; }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
         /// </summary>
         /// <value>The size y.</value>
         [DataMember(20)]
-        [DefaultValue(1.0f)]
+        [DefaultValue(100.0f)]
         public float SizeY { get; set; }
 
         /// <summary>

@@ -6,6 +6,7 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Paradox.Effects.ProceduralModels;
+using SiliconStudio.Paradox.Engine.Graphics.ProceduralModels;
 
 namespace SiliconStudio.Paradox.Assets.ProceduralModels
 {

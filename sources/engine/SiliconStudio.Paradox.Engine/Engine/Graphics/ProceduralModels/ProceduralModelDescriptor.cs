@@ -6,6 +6,7 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Paradox.Engine.Graphics.ProceduralModels;
 
 namespace SiliconStudio.Paradox.Effects.ProceduralModels
 {

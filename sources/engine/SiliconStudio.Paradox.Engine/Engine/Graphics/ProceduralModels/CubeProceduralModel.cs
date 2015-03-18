@@ -6,7 +6,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Effects.ProceduralModels
+namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
 {
     /// <summary>
     /// A cube procedural model
@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
         /// </summary>
         public CubeProceduralModel()
         {
-            Size = 1.0f;
+            Size = 100.0f;
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
         /// </summary>
         /// <value>The size.</value>
         [DataMember(10)]
-        [DefaultValue(1.0f)]
+        [DefaultValue(100.0f)]
         public float Size { get; set; }
 
         protected override GeometricMeshData<VertexPositionNormalTexture> CreatePrimitiveMeshData()

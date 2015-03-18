@@ -89,7 +89,7 @@ namespace SiliconStudio.Paradox.Engine
         /// The near plane distance.
         /// </value>
         [DataMember(20)]
-        [DefaultValue(0.1f)]
+        [DefaultValue(10f)]
         public float NearPlane { get; set; }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace SiliconStudio.Paradox.Engine
         /// The far plane distance.
         /// </value>
         [DataMember(30)]
-        [DefaultValue(1000.0f)]
+        [DefaultValue(100000f)]
         public float FarPlane { get; set; }
 
         /// <summary>

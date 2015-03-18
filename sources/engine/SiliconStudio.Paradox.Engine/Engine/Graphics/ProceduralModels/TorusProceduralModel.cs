@@ -6,7 +6,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Effects.ProceduralModels
+namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
 {
     /// <summary>
     /// The Torus Model.
@@ -20,8 +20,8 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
         /// </summary>
         public TorusProceduralModel()
         {
-            Diameter = 1.0f;
-            Thickness = 0.333f;
+            Diameter = 100.0f;
+            Thickness = 33.3f;
             Tessellation = 32;
         }
 
@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
         /// </summary>
         /// <value>The diameter.</value>
         [DataMember(10)]
-        [DefaultValue(1.0f)]
+        [DefaultValue(100.0f)]
         public float Diameter { get; set; }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
         /// </summary>
         /// <value>The thickness.</value>
         [DataMember(20)]
-        [DefaultValue(0.333f)]
+        [DefaultValue(33.3f)]
         public float Thickness { get; set; }
 
         /// <summary>
