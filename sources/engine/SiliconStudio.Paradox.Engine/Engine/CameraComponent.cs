@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Create a new <see cref="CameraComponent"/> instance.
         /// </summary>
         public CameraComponent()
-            : this(0.1f , 1000.0f)
+            : this(10f , 100000f)
         {
         }
 
