@@ -5,23 +5,29 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Games;
+using SiliconStudio.Paradox.Graphics.Internals;
 
 namespace SiliconStudio.Paradox.Graphics.Tests
 {
     [TestFixture]
     public class TestGeometricPrimitives : TestGameBase
     {
-        private SimpleEffect simpleEffect;
+        private Effect simpleEffect;
         private List<GeometricPrimitive> primitives;
         private Matrix view;
         private Matrix projection;
 
         private float timeSeconds;
 
+        private EffectParameterCollectionGroup parameterCollectionGroup;
+
+        private ParameterCollection parameterCollection;
+
         public TestGeometricPrimitives()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 2;
         }
 
         protected override void RegisterTests()
@@ -36,7 +42,10 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             await base.LoadContent();
 
-            simpleEffect = new SimpleEffect(GraphicsDevice) {Texture = UVTexture};
+            simpleEffect = new Effect(GraphicsDevice, SpriteEffect.Bytecode);
+            parameterCollection = new ParameterCollection();
+            parameterCollectionGroup = new EffectParameterCollectionGroup(GraphicsDevice, simpleEffect, new [] { parameterCollection });
+            parameterCollection.Set(TexturingKeys.Texture0, UVTexture);
 
             primitives = new List<GeometricPrimitive>();
 
@@ -109,14 +118,13 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
                 // Setup the World matrice for this primitive
                 var world = Matrix.Scaling((float)Math.Sin(time * 1.5f) * 0.2f + 1.0f) * Matrix.RotationX(time) * Matrix.RotationY(time * 2.0f) * Matrix.RotationZ(time * .7f) * Matrix.Translation(x, y, 0);
-                //var world = Matrix.Translation(x, y, 0);
 
                 // Disable Cull only for the plane primitive, otherwise use standard culling
                 GraphicsDevice.SetRasterizerState(i == 0 ? GraphicsDevice.RasterizerStates.CullNone : GraphicsDevice.RasterizerStates.CullBack);
 
                 // Draw the primitive using BasicEffect
-                simpleEffect.Transform = Matrix.Multiply(world, Matrix.Multiply(view, projection));
-                simpleEffect.Apply();
+                parameterCollection.Set(SpriteBaseKeys.MatrixTransform, Matrix.Multiply(world, Matrix.Multiply(view, projection)));
+                simpleEffect.Apply(GraphicsDevice, parameterCollectionGroup, true);
                 primitive.Draw();
             }
         }

@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             await base.LoadContent();
 
-            hdrTexture = Texture.Load(GraphicsDevice, File.OpenRead(@"C:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Graphics.Tests\Assets\AtriumNight.dds")); //await Asset.LoadAsync<Texture>("Atrium");
+            hdrTexture = await Asset.LoadAsync<Texture>("Atrium");
             hdrRenderTexture = Texture.New2D(GraphicsDevice, hdrTexture.Width, hdrTexture.Height, 1, hdrTexture.Format, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
             drawEffectContext = RenderContext.GetShared(Services);
             postProcessingEffects = new PostProcessingEffects(drawEffectContext);
