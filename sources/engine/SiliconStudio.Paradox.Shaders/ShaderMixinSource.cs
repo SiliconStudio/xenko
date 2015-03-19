@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Shaders
     /// <summary>
     /// A mixin performing a combination of <see cref="ShaderClassSource"/> and other mixins.
     /// </summary>
-    [DataContract]
+    [DataContract("ShaderMixinSource")]
     public sealed class ShaderMixinSource : ShaderSource, IEquatable<ShaderMixinSource>
     {
         /// <summary>

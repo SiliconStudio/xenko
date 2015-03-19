@@ -9,7 +9,7 @@ namespace SiliconStudio.Paradox.Effects
     /// <summary>
     /// Represents an effect compile request done to the <see cref="EffectSystem"/>.
     /// </summary>
-    [DataContract]
+    [DataContract("EffectCompileRequest")]
     [DataSerializerGlobal(null, typeof(KeyValuePair<EffectCompileRequest, bool>))]
     public class EffectCompileRequest : IEquatable<EffectCompileRequest>
     {

@@ -8,7 +8,7 @@ namespace SiliconStudio.Paradox.Shaders
     /// <summary>
     /// A shader source.
     /// </summary>
-    [DataContract(Inherited = true)]
+    [DataContract("ShaderSource")]
     public abstract class ShaderSource
     {
         /// <summary>

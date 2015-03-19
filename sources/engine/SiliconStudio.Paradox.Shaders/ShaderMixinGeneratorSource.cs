@@ -8,7 +8,7 @@ namespace SiliconStudio.Paradox.Shaders
     /// <summary>
     /// A shader source that is linked to a pdxfx effect.
     /// </summary>
-    [DataContract]
+    [DataContract("ShaderMixinGeneratorSource")]
     public sealed class ShaderMixinGeneratorSource : ShaderSource, IEquatable<ShaderMixinGeneratorSource>
     {
         private string name;
