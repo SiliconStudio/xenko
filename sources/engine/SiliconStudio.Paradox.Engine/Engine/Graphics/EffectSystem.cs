@@ -32,6 +32,7 @@ namespace SiliconStudio.Paradox.Effects
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         // Ideally it should be a "HashStore", but we don't have it yet...
         private DictionaryStore<EffectCompileRequest, bool> recordedEffectCompile;
+        private object effectCompileRecordLock = new object();
 #endif
 
         private readonly HashSet<string> recentlyModifiedShaders = new HashSet<string>();
@@ -82,7 +83,7 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         /// <param name="filePath">The file path.</param>
         /// <param name="reset">if set to <c>true</c> erase the previous file, otherwise append.</param>
-        public void RecordEffectCompile(string filePath, bool reset)
+        public void StartRecordEffectCompile(string filePath, bool reset)
         {
             try
             {
@@ -96,9 +97,37 @@ namespace SiliconStudio.Paradox.Effects
             }
 
             var fileStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
-            recordedEffectCompile = new DictionaryStore<EffectCompileRequest, bool>(fileStream);
+            var effectCompileLog = new DictionaryStore<EffectCompileRequest, bool>(fileStream);
             if (!reset)
-                recordedEffectCompile.LoadNewValues();
+                effectCompileLog.LoadNewValues();
+
+            StartRecordEffectCompile(effectCompileLog);
+        }
+
+        public void StartRecordEffectCompile(DictionaryStore<EffectCompileRequest, bool> requestStore)
+        {
+            lock (effectCompileRecordLock)
+            {
+                if (this.recordedEffectCompile != null)
+                    throw new InvalidOperationException("Effect compile requests were already being recorded.");
+
+                this.recordedEffectCompile = requestStore;
+            }
+        }
+
+        public void StopRecordEffectCompile()
+        {
+            DictionaryStore<EffectCompileRequest, bool> effectCompileLog;
+            lock (effectCompileRecordLock)
+            {
+                if (recordedEffectCompile == null)
+                    throw new InvalidOperationException("Effect compile requests were not being recorded.");
+
+                effectCompileLog = recordedEffectCompile;
+                recordedEffectCompile = null;
+            }
+
+            effectCompileLog.Dispose();
         }
 #endif
 
@@ -287,15 +316,18 @@ namespace SiliconStudio.Paradox.Effects
                 // TODO: For now we save usedParameters, but ideally we probably want to have a list of everything that might be use by a given
                 //       pdxfx and filter against this, so that branches not taken on a specific situation/platform can still be reproduced on another.
                 // Alternatively, we could save full compilerParameters, but we would have to ignore certain things that are not serializable, such as Texture. 
-                if (recordedEffectCompile != null)
+                lock (effectCompileRecordLock)
                 {
-                    ShaderMixinParameters usedParameters;
-                    compilerResult.UsedParameters.TryGetValue(subEffect, out usedParameters);
-
-                    var effectCompileRequest = new EffectCompileRequest(effectName, usedParameters);
-                    if (!recordedEffectCompile.Contains(effectCompileRequest))
+                    if (recordedEffectCompile != null)
                     {
-                        recordedEffectCompile[effectCompileRequest] = true;
+                        ShaderMixinParameters usedParameters;
+                        compilerResult.UsedParameters.TryGetValue(subEffect, out usedParameters);
+
+                        var effectCompileRequest = new EffectCompileRequest(effectName, usedParameters);
+                        if (!recordedEffectCompile.Contains(effectCompileRequest))
+                        {
+                            recordedEffectCompile[effectCompileRequest] = true;
+                        }
                     }
                 }
 #endif

@@ -43,7 +43,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
                 Steps = steps;
 
                 var fileStream = new FileStream(originalSourcePath.ToWindowsPath(), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
-                var recordedEffectCompile = new DictionaryStore<EffectCompileRequest, bool>(fileStream);
+                var recordedEffectCompile = new EffectLogStore(fileStream);
                 recordedEffectCompile.LoadNewValues();
 
                 foreach (var entry in recordedEffectCompile.GetValues())
