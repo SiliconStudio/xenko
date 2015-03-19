@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
@@ -21,10 +21,11 @@ namespace SiliconStudio.Paradox.Graphics
         private readonly EffectParameterCollectionGroup parameterCollectionGroup;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PrimitiveQuad" /> class with a <see cref="SimpleEffect"/>.
+        /// Initializes a new instance of the <see cref="PrimitiveQuad" /> class with a <see cref="SpriteEffect"/>.
         /// </summary>
         /// <param name="graphicsDevice">The graphics device.</param>
-        public PrimitiveQuad(GraphicsDevice graphicsDevice) : this(graphicsDevice, new SimpleEffect(graphicsDevice))
+        public PrimitiveQuad(GraphicsDevice graphicsDevice)
+            : this(graphicsDevice, new Effect(graphicsDevice, SpriteEffect.Bytecode))
         {
         }
 

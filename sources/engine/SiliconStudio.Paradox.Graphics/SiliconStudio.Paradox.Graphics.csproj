@@ -252,7 +252,6 @@
       <DependentUpon>UIEffect.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Shaders.Bytecodes\UIEffectSeparateAlpha.Extensions.cs" />
-    <Compile Include="SimpleEffect.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="SpriteBatch.cs" />
     <Compile Include="SpriteEffects.cs" />

@@ -6,7 +6,7 @@ using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Graphics
 {
-    internal partial class SpriteEffect
+    public partial class SpriteEffect
     {
         private static EffectBytecode bytecode = null;
 
