@@ -1,24 +1,43 @@
-!Entity
-Id: 1423931a-7924-4a01-8931-1c58d668079b
-SerializedVersion: 1
+!EntityAsset
+Id: 62b6f5f6-089a-47ef-9bc8-7abafffeb7de
 Tags: []
+Source: ../../../data/tests/Factory/factory.fbx
+SourceHash: d2f423dd854ddffde648997a5284b01c
 Hierarchy:
-    RootEntity: 62ad31e5-292b-4953-b4b3-9d0b39d13d66
+    RootEntity: 7dc47f54-ccac-4ece-ba59-3a4a835cde42
     Entities:
-        SyncRoot: null
-        ~Items:
-            -   Id: 62ad31e5-292b-4953-b4b3-9d0b39d13d66
-                Name: Root
-                Components:
-                    TransformationComponent.Key: !TransformationComponentData
-                        Children: []
-                        Rotation: {W: 1, X: 0, Y: 0, Z: 0}
-                        Scaling: {X: 1, Y: 1, Z: 1}
-                        Translation: {X: 0, Y: 0, Z: 0}
-                        UseTRS: true
-                    ModelComponent.Key: !ModelComponentData
-                        DrawOrder: 0
-                        Enabled: true
-                        Model: ddb8f78e-58f5-4c3d-b22f-259ffd5d6be3:factory_model
-                        Parameters: {}
-AssetBases: {}
+        -   Name: factory
+            Components:
+                ModelComponent.Key:
+                    DrawOrder: 0
+                    Materials: []
+                    Model: 3e977733-a289-412b-9eeb-cacf1aa8bca7:factory Model
+                    Parameters: {}
+                TransformComponent.Key:
+                    Position: {X: 0, Y: 0, Z: 0}
+                    Rotation: {W: 1, X: 0, Y: 0, Z: 0}
+                    Scale: {X: 1, Y: 1, Z: 1}
+                    Children: []
+            Id: 7dc47f54-ccac-4ece-ba59-3a4a835cde42
+~Base:
+    Location: --import--
+    Asset: !EntityAsset
+        Id: 00000000-0000-0000-0000-000000000000
+        Tags: []
+        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
+        Hierarchy:
+            RootEntity: 7dc47f54-ccac-4ece-ba59-3a4a835cde42
+            Entities:
+                -   Name: Entity
+                    Components:
+                        ModelComponent.Key:
+                            DrawOrder: 0
+                            Materials: []
+                            Model: 3e977733-a289-412b-9eeb-cacf1aa8bca7:factory Model
+                            Parameters: {}
+                        TransformComponent.Key:
+                            Position: {X: 0, Y: 0, Z: 0}
+                            Rotation: {W: 1, X: 0, Y: 0, Z: 0}
+                            Scale: {X: 1, Y: 1, Z: 1}
+                            Children: []
+                    Id: 7dc47f54-ccac-4ece-ba59-3a4a835cde42
