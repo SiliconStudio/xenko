@@ -89,8 +89,8 @@ namespace SiliconStudio.Paradox.Engine
             camera.Projection = Projection;
             camera.VerticalFieldOfView = VerticalFieldOfView;
             camera.OrthographicSize = OrthographicSize;
-            camera.NearPlane = NearPlane;
-            camera.FarPlane = FarPlane;
+            camera.NearClipPlane = NearPlane;
+            camera.FarClipPlane = FarPlane;
             // TODO: Aspect ratio
         }
     }

@@ -37,9 +37,9 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// Create a new <see cref="CameraComponent" /> instance with the provided target, near plane and far plane.
         /// </summary>
-        /// <param name="nearPlane">The near plane value</param>
-        /// <param name="farPlane">The far plane value</param>
-        public CameraComponent(float nearPlane, float farPlane)
+        /// <param name="nearClipPlane">The near plane value</param>
+        /// <param name="farClipPlane">The far plane value</param>
+        public CameraComponent(float nearClipPlane, float farClipPlane)
         {
             Projection = CameraProjectionMode.Perspective;
             VerticalFieldOfView = 45.0f;
@@ -47,8 +47,8 @@ namespace SiliconStudio.Paradox.Engine
 
             // TODO: Handle Aspect ratio differently
             AspectRatio = 16f / 9f;
-            NearPlane = nearPlane;
-            FarPlane = farPlane;
+            NearClipPlane = nearClipPlane;
+            FarClipPlane = farClipPlane;
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace SiliconStudio.Paradox.Engine
         /// </value>
         [DataMember(20)]
         [DefaultValue(10f)]
-        public float NearPlane { get; set; }
+        public float NearClipPlane { get; set; }
 
         /// <summary>
         /// Gets or sets the far plane distance.
@@ -100,7 +100,7 @@ namespace SiliconStudio.Paradox.Engine
         /// </value>
         [DataMember(30)]
         [DefaultValue(100000f)]
-        public float FarPlane { get; set; }
+        public float FarClipPlane { get; set; }
 
         /// <summary>
         /// Gets or sets the aspect ratio.
@@ -181,7 +181,7 @@ namespace SiliconStudio.Paradox.Engine
             // TODO: Should we throw an error if Projection is not set?
             if (!UseCustomProjectionMatrix)
             {
-                ProjectionMatrix = Projection == CameraProjectionMode.Perspective ? Matrix.PerspectiveFovRH(MathUtil.DegreesToRadians(VerticalFieldOfView), AspectRatio, NearPlane, FarPlane) : Matrix.OrthoRH(OrthographicSize, OrthographicSize, NearPlane, FarPlane);
+                ProjectionMatrix = Projection == CameraProjectionMode.Perspective ? Matrix.PerspectiveFovRH(MathUtil.DegreesToRadians(VerticalFieldOfView), AspectRatio, NearClipPlane, FarClipPlane) : Matrix.OrthoRH(OrthographicSize, OrthographicSize, NearClipPlane, FarClipPlane);
             }
 
             // Update ViewProjectionMatrix

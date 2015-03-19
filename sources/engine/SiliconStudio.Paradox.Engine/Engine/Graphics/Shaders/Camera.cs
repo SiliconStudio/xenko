@@ -21,9 +21,9 @@ namespace SiliconStudio.Paradox.Effects
         public static readonly ParameterKey<float> NearClipPlane = ParameterKeys.New<float>(1.0f);
         public static readonly ParameterKey<float> FarClipPlane = ParameterKeys.New<float>(100.0f);
         public static readonly ParameterKey<Vector2> ZProjection = ParameterKeys.New<Vector2>();
-        public static readonly ParameterKey<float> Aspect = ParameterKeys.New<float>();
+        public static readonly ParameterKey<float> AspectRatio = ParameterKeys.New<float>();
         public static readonly ParameterKey<Vector2> ViewSize = ParameterKeys.New<Vector2>();
-        public static readonly ParameterKey<float> FieldOfView = ParameterKeys.New<float>();
+        public static readonly ParameterKey<float> VerticalFieldOfView = ParameterKeys.New<float>();
         public static readonly ParameterKey<float> OrthoSize = ParameterKeys.New<float>();
     }
 }
