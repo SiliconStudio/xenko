@@ -127,21 +127,21 @@ namespace SiliconStudio.Paradox.Physics
 
         #region Ignore or Private/Internal
 
-        private Collider mCollider;
+        internal Collider InternalCollider;
 
         [DataMemberIgnore]
         public Collider Collider
         {
             get
             {
-                if (mCollider == null)
+                if (InternalCollider == null)
                 {
                     throw new Exception("Collider is null, please make sure that you are trying to access this object after it is added to the game entities ( Entities.Add(entity) ).");
                 }
 
-                return mCollider;
+                return InternalCollider;
             }
-            internal set { mCollider = value; }
+            internal set { InternalCollider = value; }
         }
 
         [DataMemberIgnore]

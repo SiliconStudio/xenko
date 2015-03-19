@@ -1,5 +1,10 @@
-﻿using SiliconStudio.Core;
-using SiliconStudio.Core.Collections;
+﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
@@ -8,12 +13,6 @@ using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Threading;
-
-// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -24,7 +23,6 @@ namespace SiliconStudio.Paradox.Physics
             public PhysicsComponent PhysicsComponent;
             public TransformComponent TransformComponent;
             public ModelComponent ModelComponent; //not mandatory, could be null e.g. invisible triggers
-            public Simulation PhysicsEngine;
         }
 
         private readonly List<PhysicsElement> elements = new List<PhysicsElement>();
@@ -32,9 +30,10 @@ namespace SiliconStudio.Paradox.Physics
         private readonly List<PhysicsElement> characters = new List<PhysicsElement>();
 
         private Bullet2PhysicsSystem physicsSystem;
+        private Simulation simulation;
 
         public PhysicsProcessor()
-            : base(new PropertyKey[] { PhysicsComponent.Key, TransformComponent.Key })
+            : base(PhysicsComponent.Key, TransformComponent.Key)
         {
         }
 
@@ -44,9 +43,8 @@ namespace SiliconStudio.Paradox.Physics
             {
                 PhysicsComponent = entity.Get(PhysicsComponent.Key),
                 TransformComponent = entity.Get(TransformComponent.Key),
-                ModelComponent = entity.Get(ModelComponent.Key),
+                ModelComponent = entity.Get(ModelComponent.Key)
             };
-            data.PhysicsEngine = physicsSystem.PhysicsEngines[data.PhysicsComponent.Simulation];
             return data;
         }
 
@@ -114,11 +112,11 @@ namespace SiliconStudio.Paradox.Physics
 
                         if (defaultGroups)
                         {
-                            data.PhysicsEngine.AddCollider(c);
+                            simulation.AddCollider(c);
                         }
                         else
                         {
-                            data.PhysicsEngine.AddCollider(c, (CollisionFilterGroupFlags)element.CollisionGroup, element.CanCollideWith);
+                            simulation.AddCollider(c, (CollisionFilterGroupFlags)element.CollisionGroup, element.CanCollideWith);
                         }
                     }
                     break;
@@ -135,11 +133,11 @@ namespace SiliconStudio.Paradox.Physics
 
                         if (defaultGroups)
                         {
-                            data.PhysicsEngine.AddCollider(c);
+                            simulation.AddCollider(c);
                         }
                         else
                         {
-                            data.PhysicsEngine.AddCollider(c, (CollisionFilterGroupFlags)element.CollisionGroup, element.CanCollideWith);
+                            simulation.AddCollider(c, (CollisionFilterGroupFlags)element.CollisionGroup, element.CanCollideWith);
                         }
                     }
                     break;
@@ -158,11 +156,11 @@ namespace SiliconStudio.Paradox.Physics
 
                         if (defaultGroups)
                         {
-                            data.PhysicsEngine.AddRigidBody(rb);
+                            simulation.AddRigidBody(rb);
                         }
                         else
                         {
-                            data.PhysicsEngine.AddRigidBody(rb, (CollisionFilterGroupFlags)element.CollisionGroup, element.CanCollideWith);
+                            simulation.AddRigidBody(rb, (CollisionFilterGroupFlags)element.CollisionGroup, element.CanCollideWith);
                         }
                     }
                     break;
@@ -182,11 +180,11 @@ namespace SiliconStudio.Paradox.Physics
 
                         if (defaultGroups)
                         {
-                            data.PhysicsEngine.AddRigidBody(rb);
+                            simulation.AddRigidBody(rb);
                         }
                         else
                         {
-                            data.PhysicsEngine.AddRigidBody(rb, (CollisionFilterGroupFlags)element.CollisionGroup, element.CanCollideWith);
+                            simulation.AddRigidBody(rb, (CollisionFilterGroupFlags)element.CollisionGroup, element.CanCollideWith);
                         }
                     }
                     break;
@@ -206,11 +204,11 @@ namespace SiliconStudio.Paradox.Physics
 
                         if (defaultGroups)
                         {
-                            data.PhysicsEngine.AddRigidBody(rb);
+                            simulation.AddRigidBody(rb);
                         }
                         else
                         {
-                            data.PhysicsEngine.AddRigidBody(rb, (CollisionFilterGroupFlags)element.CollisionGroup, element.CanCollideWith);
+                            simulation.AddRigidBody(rb, (CollisionFilterGroupFlags)element.CollisionGroup, element.CanCollideWith);
                         }
                     }
                     break;
@@ -225,11 +223,11 @@ namespace SiliconStudio.Paradox.Physics
 
                         if (defaultGroups)
                         {
-                            data.PhysicsEngine.AddCharacter(ch);
+                            simulation.AddCharacter(ch);
                         }
                         else
                         {
-                            data.PhysicsEngine.AddCharacter(ch, (CollisionFilterGroupFlags)element.CollisionGroup, element.CanCollideWith);
+                            simulation.AddCharacter(ch, (CollisionFilterGroupFlags)element.CollisionGroup, element.CanCollideWith);
                         }
 
                         characters.Add(element);
@@ -244,7 +242,7 @@ namespace SiliconStudio.Paradox.Physics
         private void DeleteElement(PhysicsElement element, bool now = false)
         {
             //might be possible that this element was not valid during creation so it would be already null
-            if (element.Collider == null) return;
+            if (element.InternalCollider == null) return;
 
             var toDispose = new List<IDisposable>();
 
@@ -256,7 +254,7 @@ namespace SiliconStudio.Paradox.Physics
                 case PhysicsElement.Types.PhantomCollider:
                 case PhysicsElement.Types.StaticCollider:
                     {
-                        element.Data.PhysicsEngine.RemoveCollider(element.Collider);
+                        simulation.RemoveCollider(element.Collider);
                     }
                     break;
 
@@ -268,18 +266,18 @@ namespace SiliconStudio.Paradox.Physics
                         var constraints = rb.LinkedConstraints.ToArray();
                         foreach (var c in constraints)
                         {
-                            element.Data.PhysicsEngine.RemoveConstraint(c);
+                            simulation.RemoveConstraint(c);
                             toDispose.Add(c);
                         }
 
-                        element.Data.PhysicsEngine.RemoveRigidBody(rb);
+                        simulation.RemoveRigidBody(rb);
                     }
                     break;
 
                 case PhysicsElement.Types.CharacterController:
                     {
                         characters.Remove(element);
-                        element.Data.PhysicsEngine.RemoveCharacter((Character)element.Collider);
+                        simulation.RemoveCharacter((Character)element.Collider);
                     }
                     break;
             }
@@ -341,6 +339,7 @@ namespace SiliconStudio.Paradox.Physics
         protected override void OnSystemAdd()
         {
             physicsSystem = (Bullet2PhysicsSystem)Services.GetSafeServiceAs<IPhysicsSystem>();
+            physicsSystem.Create(this);
 
             //setup debug device and debug shader
             var gfxDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>();
@@ -356,6 +355,8 @@ namespace SiliconStudio.Paradox.Physics
             {
                 DeleteElement(element);
             }
+
+            physicsSystem.Release(this);
         }
 
         private static void DrawDebugCompound(ref Matrix viewProj, CompoundColliderShape compound, PhysicsElement element)

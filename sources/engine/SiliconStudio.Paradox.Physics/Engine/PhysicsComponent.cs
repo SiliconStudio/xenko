@@ -26,8 +26,6 @@ namespace SiliconStudio.Paradox.Physics
         /// </summary>
         public List<PhysicsElement> Elements { get; private set; }
 
-        public string Simulation = "default";
-
         [DataMemberIgnore]
         public PhysicsElement this[int i]
         {

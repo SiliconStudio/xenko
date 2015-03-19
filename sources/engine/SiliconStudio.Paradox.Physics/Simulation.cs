@@ -69,12 +69,8 @@ namespace SiliconStudio.Paradox.Physics
 
         internal static GraphicsDevice DebugGraphicsDevice;
 
-        private static Game game;
-
-        internal static void Initialize(Game currentGame)
+        static Simulation()
         {
-            game = currentGame;
-
             // Preload proper libbulletc native library (depending on CPU type)
             Core.NativeLibrary.PreloadLibrary("libbulletc.dll");
         }
