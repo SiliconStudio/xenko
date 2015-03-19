@@ -25,6 +25,8 @@ namespace SiliconStudio.Paradox
         private HashSet<Script> registeredScripts = new HashSet<Script>();
         private HashSet<Script> scriptsToStart = new HashSet<Script>();
         private HashSet<SyncScript> syncScripts = new HashSet<SyncScript>();
+        private List<Script> scriptsToStartCopy = new List<Script>();
+        private List<SyncScript> syncScriptsCopy = new List<SyncScript>();
 
         /// <summary>
         /// Gets the scheduler.
@@ -47,8 +49,11 @@ namespace SiliconStudio.Paradox
 
         public override void Update(GameTime gameTime)
         {
+            scriptsToStartCopy.Clear();
+            scriptsToStartCopy.AddRange(scriptsToStart);
+
             // Start new scripts
-            foreach (var script in scriptsToStart)
+            foreach (var script in scriptsToStartCopy)
             {
                 // Start the script
                 script.Start();
@@ -65,8 +70,11 @@ namespace SiliconStudio.Paradox
             // Run current micro threads
             Scheduler.Run();
 
+            syncScriptsCopy.Clear();
+            syncScriptsCopy.AddRange(syncScripts);
+
             // Execute sync scripts
-            foreach (var script in syncScripts)
+            foreach (var script in syncScriptsCopy)
             {
                 script.Update();
             }
