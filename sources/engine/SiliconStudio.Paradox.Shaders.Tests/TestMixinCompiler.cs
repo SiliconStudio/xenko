@@ -11,6 +11,7 @@ using NUnit.Framework;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Paradox.Assets.Materials;
@@ -51,10 +52,10 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.Direct3D11 };
 
             var layers = new MaterialBlendLayers();
-            layers.Add(new MaterialBlendLayer()
+            layers.Add(new MaterialBlendLayer
             {
                 BlendMap = new ComputeFloat(0.5f),
-                Material =  new AssetReference<MaterialAsset>(Guid.Empty, "fake")
+                Material =  AttachedReferenceManager.CreateSerializableVersion<Material>(Guid.Empty, "fake")
             });
 
             var materialAsset = new MaterialAsset
@@ -82,9 +83,9 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             };
 
             var context = new MaterialGeneratorContext { FindAsset = reference => fakeAsset };
-            var result = MaterialGenerator.Generate(materialAsset, context);
+            var result = MaterialGenerator.Generate(new MaterialDescriptor { Attributes = materialAsset.Attributes, Layers = materialAsset.Layers }, context);
 
-            compilerParameters.Set(MaterialKeys.PixelStageSurfaceShaders, result.PixelStageSurfaceShader);
+            compilerParameters.Set(MaterialKeys.PixelStageSurfaceShaders, result.Material.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders));
             var directionalLightGroup = new ShaderClassSource("LightDirectionalGroup", 1);
             compilerParameters.Set(LightingKeys.DirectLightGroups, new ShaderSource[] { directionalLightGroup });
             compilerParameters.Set(LightingKeys.CastShadows, false);
