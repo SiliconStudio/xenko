@@ -59,6 +59,7 @@ namespace SiliconStudio.Presentation.Commands
         public UndoToken ExecuteCommand(object parameter, bool createActionItem)
         {
             // TODO: Improve this - we're discarding any change made directly by the command invoke and create a CommandActionItem after.
+            // NOTE: PickupAssetCommand is currently assuming that there's such a transaction in progress, be sure to check it if changing this.
             var transactionalActionStack = ActionStack as ITransactionalActionStack;
             if (transactionalActionStack != null)
                 transactionalActionStack.BeginTransaction();
