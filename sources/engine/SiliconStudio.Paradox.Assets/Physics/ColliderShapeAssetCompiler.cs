@@ -127,7 +127,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
 
                             var stride = meshData.Draw.VertexBuffers[0].Declaration.VertexStride;
                             var vertexDataAsset = assetManager.Load<Graphics.Buffer>(AttachedReferenceManager.GetUrl(meshData.Draw.VertexBuffers[0].Buffer));
-                            var vertexData = vertexDataAsset.GetData<byte>();
+                            var vertexData = vertexDataAsset.GetSerializationData().Content;
                             var vertexIndex = meshData.Draw.VertexBuffers[0].Offset;
                             for (var v = 0; v < meshData.Draw.VertexBuffers[0].Count; v++)
                             {
@@ -145,7 +145,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
                             }
 
                             var indexDataAsset = assetManager.Load<Graphics.Buffer>(AttachedReferenceManager.GetUrl(meshData.Draw.IndexBuffer.Buffer));
-                            var indexData = indexDataAsset.GetData<byte>();
+                            var indexData = indexDataAsset.GetSerializationData().Content;
                             var indexIndex = meshData.Draw.IndexBuffer.Offset;
                             for (var v = 0; v < meshData.Draw.IndexBuffer.Count; v++)
                             {

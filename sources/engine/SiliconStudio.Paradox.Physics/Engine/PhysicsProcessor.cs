@@ -339,13 +339,11 @@ namespace SiliconStudio.Paradox.Physics
         protected override void OnSystemAdd()
         {
             physicsSystem = (Bullet2PhysicsSystem)Services.GetSafeServiceAs<IPhysicsSystem>();
-            physicsSystem.Create(this);
+            simulation = physicsSystem.Create(this);
 
             //setup debug device and debug shader
             var gfxDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>();
             Simulation.DebugGraphicsDevice = gfxDevice.GraphicsDevice;
-
-            //Debug primitives render, should happen about the last steps of the pipeline
         }
 
         protected override void OnSystemRemove()
