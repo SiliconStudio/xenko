@@ -53,9 +53,9 @@ namespace SiliconStudio.Presentation.Quantum
                 DisplayName = provider();
         }
 
-        public VirtualObservableNode CreateVirtualChild(string name, Type contentType, int? order, object initialValue, NodeCommandWrapperBase valueChangedCommand = null, IReadOnlyDictionary<string, object> nodeAssociatedData = null)
+        public VirtualObservableNode CreateVirtualChild(string name, Type contentType, int? order, bool isPrimitive, object initialValue, NodeCommandWrapperBase valueChangedCommand = null, IReadOnlyDictionary<string, object> nodeAssociatedData = null)
         {
-            var observableChild = VirtualObservableNode.Create(Owner, name, this, order, contentType, initialValue, valueChangedCommand);
+            var observableChild = VirtualObservableNode.Create(Owner, name, this, order, isPrimitive, contentType, initialValue, valueChangedCommand);
             if (nodeAssociatedData != null)
             {
                 foreach (var data in nodeAssociatedData)
