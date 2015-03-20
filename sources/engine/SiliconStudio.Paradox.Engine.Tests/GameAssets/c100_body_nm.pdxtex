@@ -1,8 +1,7 @@
 !Texture
-Id: 689e849e-9d2b-4600-a38b-0600f6442841
+Id: ffd38816-770b-4047-a376-6e5ec614f379
 Tags: []
-Source: ../../../data/tests/Factory/TX-Factory_Ground.dds
-ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
+Source: ../../../data/tests/knight/sourceimages/c100_body_nm.jpg
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 PremultiplyAlpha: false
 ~Base:

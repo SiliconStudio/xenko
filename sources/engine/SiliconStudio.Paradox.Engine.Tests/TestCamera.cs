@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 
-using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Extensions;
@@ -21,15 +20,12 @@ namespace SiliconStudio.Paradox.Engine.Tests
         private float pitch = -(float)(Math.PI * 0.25f);
         private Vector3 position = new Vector3(10, 10, 10);
 
-        /// <summary>
-        /// The entity containing the camera component used for the visualize the scene.
-        /// </summary>
-        private readonly Entity cameraEntity = new Entity("Scene main camera");
+        private readonly CameraComponent camera = new CameraComponent();
 
         /// <summary>
         /// Gets the camera component used to visualized the scene.
         /// </summary>
-        protected CameraComponent Camera { get { return cameraEntity.GetOrCreate<CameraComponent>(); } }
+        public CameraComponent Camera { get { return camera; } }
 
         /// <summary>
         /// Gets or sets the moving speed of the camera (in units/second).
@@ -44,9 +40,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
         /// <summary>
         /// Create a new instance of scene camera.
         /// </summary>
-        /// <param name="gameRegistry">The service registry used by the game</param>
-        public TestCamera(IServiceRegistry gameRegistry)
-            : base(gameRegistry)
+        public TestCamera()
         {
             MoveSpeed = 10f;
             RotationSpeed = MathUtil.Pi / 2f;
@@ -187,12 +181,12 @@ namespace SiliconStudio.Paradox.Engine.Tests
         {
             var ypr = Quaternion.RotationYawPitchRoll(Yaw, Pitch, 0);
             var direction = Vector3.TransformNormal(forwardVector, Matrix.RotationQuaternion(ypr));
-            var targetPos = target.Transformation.WorldMatrix.TranslationVector;
+            var targetPos = target.Transform.WorldMatrix.TranslationVector;
             if (targetOffset.HasValue)
             {
                 targetPos += targetOffset.Value;
             }
-            var distance = 0.0f;
+            float distance;
             if (keepActualTargetDistance)
             {
                 distance = (targetPos - position).Length() + deltaDistance;
@@ -217,12 +211,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             Camera.NearPlane = 0.1f;
             Camera.FarPlane = 1000f;
             Camera.UseCustomViewMatrix = true;
-            cameraEntity.Add(Camera);
             OnWindowSizeChanged();
-
-            // set the camera for the scene entities
-            Entities.Add(cameraEntity);
-            RenderSystem.Pipeline.SetCamera(Camera);
         }
 
         /// <summary>
@@ -230,11 +219,6 @@ namespace SiliconStudio.Paradox.Engine.Tests
         /// </summary>
         protected virtual void UpdateCamera()
         {
-            // Set Camera to pipeline every frame, just in case pipeline was reloaded
-            // TODO: This should be removed as soon as we have more control over the pipeline
-            // (CameraSetter should be reused across the various pipelines)
-            RenderSystem.Pipeline.SetCamera(Camera);
-
             // Capture/release mouse when the button is pressed/released
             if (Input.IsMouseButtonPressed(MouseButton.Right))
             {
@@ -285,7 +269,6 @@ namespace SiliconStudio.Paradox.Engine.Tests
             UpdateViewMatrix();
         }
 
-        // TODO: put this in a more convenient location
         internal bool IsModifierDown(bool includeShift)
         {
             return (includeShift && (Input.IsKeyDown(Keys.LeftShift) || Input.IsKeyDown(Keys.RightShift)))
@@ -385,7 +368,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             var distance = 1.2f * (minimunDistance + boundingSphere.Radius); // set the view distance such that the object can be seen entirely 
             var parameters = new ViewParameters(upAxis)
             {
-                Target = boundingSphere.Center + entity.Transformation.Translation, // use of center of the bounding box as camera target
+                Target = boundingSphere.Center + entity.Transform.Position, // use of center of the bounding box as camera target
                 Distance = distance,
                 FarPlane = distance
             };
@@ -407,13 +390,13 @@ namespace SiliconStudio.Paradox.Engine.Tests
             {
                 var boundingBox = model.Model.BoundingBox;
                 var objectHalfSize = (boundingBox.Maximum - boundingBox.Minimum) / 2f;
-                var scaledHalfSize = objectHalfSize * rootEntity.Transformation.Scaling;
+                var scaledHalfSize = objectHalfSize * rootEntity.Transform.Scale;
                 var sphereRadius = Math.Max(scaledHalfSize.X, Math.Max(scaledHalfSize.Y, scaledHalfSize.Z));
-                var sphereCenter = (boundingBox.Maximum + boundingBox.Minimum) / 2f + rootEntity.Transformation.Translation;
+                var sphereCenter = (boundingBox.Maximum + boundingBox.Minimum) / 2f + rootEntity.Transform.Position;
                 boundingSphere = new BoundingSphere(sphereCenter, sphereRadius);
             }
 
-            rootEntity.Transformation.UpdateLocalMatrix();
+            rootEntity.Transform.UpdateLocalMatrix();
 
             foreach (var child in rootEntity.GetChildren())
             {
@@ -421,8 +404,8 @@ namespace SiliconStudio.Paradox.Engine.Tests
                 if (Math.Abs(childSphere.Radius) < MathUtil.ZeroTolerance)
                     continue;
 
-                var centerInParent = Vector3.TransformCoordinate(childSphere.Center, rootEntity.Transformation.LocalMatrix);
-                var radiusInParent = Vector3.TransformNormal(new Vector3(childSphere.Radius, 0, 0), rootEntity.Transformation.LocalMatrix).Length();
+                var centerInParent = Vector3.TransformCoordinate(childSphere.Center, rootEntity.Transform.LocalMatrix);
+                var radiusInParent = Vector3.TransformNormal(new Vector3(childSphere.Radius, 0, 0), rootEntity.Transform.LocalMatrix).Length();
                 var sphereInParent = new BoundingSphere(centerInParent, radiusInParent);
 
                 if (Math.Abs(boundingSphere.Radius) < MathUtil.ZeroTolerance)

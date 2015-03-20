@@ -1,49 +1,43 @@
-!Entity
-Id: cb1af31d-453f-485a-bde0-109b49912d98
-SerializedVersion: 1
+!EntityAsset
+Id: b548e1bc-65ba-4a4b-8d99-09f0859fc466
 Tags: []
 Source: ../../../data/tests/knight/scenes/knight.fbx
 SourceHash: b0dc28bd79ba6cd2fed575b8855b52fc
 Hierarchy:
-    RootEntity: fc48762c-7e07-48b7-a4dc-00c3b65004a6
+    RootEntity: 0554f357-f330-40fa-a659-2de27786ad4c
     Entities:
         -   Name: knight
             Components:
                 ModelComponent.Key:
                     DrawOrder: 0
                     Materials: []
-                    Model: 20b9b194-3e44-4b80-929b-06be9ad0895b:knight Model
+                    Model: 53b953af-1d02-459e-a96f-b40805964d59:knight Model
                     Parameters: {}
-                TransformationComponent.Key:
-                    Children: []
+                TransformComponent.Key:
+                    Position: {X: 0, Y: 0, Z: 0}
                     Rotation: {W: 1, X: 0, Y: 0, Z: 0}
-                    Scaling: {X: 1, Y: 1, Z: 1}
-                    Translation: {X: 0, Y: 0, Z: 0}
-                    UseTRS: true
-            Id: fc48762c-7e07-48b7-a4dc-00c3b65004a6
-AssetBases: {}
+                    Scale: {X: 1, Y: 1, Z: 1}
+                    Children: []
+            Id: 0554f357-f330-40fa-a659-2de27786ad4c
 ~Base:
     Location: --import--
-    Asset: !Entity
+    Asset: !EntityAsset
         Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: 1
         Tags: []
         ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
         Hierarchy:
-            RootEntity: fc48762c-7e07-48b7-a4dc-00c3b65004a6
+            RootEntity: 0554f357-f330-40fa-a659-2de27786ad4c
             Entities:
-                -   Name: knight
+                -   Name: Entity
                     Components:
                         ModelComponent.Key:
                             DrawOrder: 0
                             Materials: []
-                            Model: 20b9b194-3e44-4b80-929b-06be9ad0895b:knight Model
+                            Model: 53b953af-1d02-459e-a96f-b40805964d59:knight Model
                             Parameters: {}
-                        TransformationComponent.Key:
-                            Children: []
+                        TransformComponent.Key:
+                            Position: {X: 0, Y: 0, Z: 0}
                             Rotation: {W: 1, X: 0, Y: 0, Z: 0}
-                            Scaling: {X: 1, Y: 1, Z: 1}
-                            Translation: {X: 0, Y: 0, Z: 0}
-                            UseTRS: true
-                    Id: fc48762c-7e07-48b7-a4dc-00c3b65004a6
-        AssetBases: {}
+                            Scale: {X: 1, Y: 1, Z: 1}
+                            Children: []
+                    Id: 0554f357-f330-40fa-a659-2de27786ad4c

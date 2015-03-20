@@ -7,7 +7,7 @@ Source: ../../../../data/tests/cube/cube.fbx
 SourceHash: 2471e6b1be7106f3e68cf790e9306164
 Materials:
     -   Name: lambert1
-        Material: e961efcb-a13d-4082-8260-3f78068dc70d:Cube/lambert1
+        Material: ed1bbd82-0078-4d58-9544-ff7e47697d77:Cube/lambert1
 Nodes:
     - {Name: RootNode, Depth: 0, Preserve: false}
     - {Name: pCube1, Depth: 1, Preserve: false}
@@ -21,7 +21,7 @@ Nodes:
         ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
         Materials:
             -   Name: lambert1
-                Material: e961efcb-a13d-4082-8260-3f78068dc70d:Cube/lambert1
+                Material: ed1bbd82-0078-4d58-9544-ff7e47697d77:Cube/lambert1
         Nodes:
             - {Name: RootNode, Depth: 0, Preserve: false}
             - {Name: pCube1, Depth: 1, Preserve: false}
