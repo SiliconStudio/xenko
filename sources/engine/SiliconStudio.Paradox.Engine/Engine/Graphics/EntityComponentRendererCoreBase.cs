@@ -52,7 +52,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             base.InitializeCore();
             Services = Context.Services;
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
-            SceneInstance = Context.Tags.GetSafe(SceneInstance.Current);
+            SceneInstance = SceneInstance.GetCurrent(Context);
             SceneEntityRenderer = Context.Tags.GetSafe(SceneEntityRenderer.Current);
             CurrentCullingMask = SceneEntityRenderer.CullingMask;
         }

@@ -94,6 +94,16 @@ namespace SiliconStudio.Paradox.Engine
         }
 
         /// <summary>
+        /// Gets the current scene valid only from a rendering context. May be null.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <returns>SiliconStudio.Paradox.Engine.SceneInstance.</returns>
+        public static SceneInstance GetCurrent(RenderContext context)
+        {
+            return context.Tags.GetSafe(Current);
+        }
+
+        /// <summary>
         /// Draws this scene instance with the specified context and <see cref="RenderFrame"/>.
         /// </summary>
         /// <param name="context">The context.</param>

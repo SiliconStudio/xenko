@@ -5,7 +5,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Engine.Graphics.Composers;
-using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Engine
 {
@@ -16,7 +15,7 @@ namespace SiliconStudio.Paradox.Engine
     [Display("Render Child Scene")]
     public sealed class SceneChildRenderer : SceneRendererBase
     {
-        private EntityManager currentEntityManager;
+        private SceneInstance currentSceneInstance;
         private SceneChildProcessor sceneChildProcessor;
 
         /// <summary>
@@ -49,12 +48,6 @@ namespace SiliconStudio.Paradox.Engine
         [DataMemberIgnore]
         public ISceneGraphicsCompositor GraphicsCompositorOverride { get; set; } // Overrides are accessible only at runtime
 
-        protected override void InitializeCore()
-        {
-            base.InitializeCore();
-            currentEntityManager = Context.Tags.Get(SceneInstance.Current);
-        }
-
         protected override void Destroy()
         {
             if (GraphicsCompositorOverride != null)
@@ -73,7 +66,9 @@ namespace SiliconStudio.Paradox.Engine
                 return;
             }
 
-            sceneChildProcessor = sceneChildProcessor  ?? currentEntityManager.GetProcessor<SceneChildProcessor>();
+            currentSceneInstance = SceneInstance.GetCurrent(Context);
+
+            sceneChildProcessor = sceneChildProcessor ?? currentSceneInstance.GetProcessor<SceneChildProcessor>();
 
             if (sceneChildProcessor == null)
             {

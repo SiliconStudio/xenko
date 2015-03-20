@@ -38,8 +38,6 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         // rectangles to blur for each shadow map
         private HashSet<ShadowMapTexture> shadowMapTexturesToBlur = new HashSet<ShadowMapTexture>();
 
-        private readonly ParameterCollection blurParameters;
-
         private readonly SceneGraphicsCompositorLayers compositor;
 
         private readonly Entity cameraEntity;
@@ -87,7 +85,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         protected void DrawCore(RenderContext context)
         {
             // We must be running inside the context of 
-            var sceneInstance = context.Tags.Get(Engine.SceneInstance.Current);
+            var sceneInstance = SceneInstance.GetCurrent(context);
             if (sceneInstance == null)
             {
                 throw new InvalidOperationException("ShadowMapCasterRenderer expects to be used inside the context of a SceneInstance.Draw()");
@@ -101,13 +99,11 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             }
 
             // Collect all required shadow maps
-            if (!CollectShadowMaps(context)) 
+            if (!CollectShadowMaps()) 
                 return;
 
             // Assign rectangles to shadow maps
-            AssignRectangles(context);
-
-            var graphicsDevice = context.GraphicsDevice;
+            AssignRectangles();
 
             // Get View and Projection matrices
             var shadowMapContext = new ShadowMapCasterContext(camera);
@@ -119,7 +115,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             }
         }
 
-        private void AssignRectangles(RenderContext context)
+        private void AssignRectangles()
         {
             // Clear atlases
             for (int i = 0; i < atlases.Count; i++)
@@ -130,11 +126,11 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             // Assign rectangles for shadowmaps
             for (int i = 0; i < shadowMaps.Count; i++)
             {
-                AssignRectangles(context, ref shadowMaps.Items[i]);
+                AssignRectangles(ref shadowMaps.Items[i]);
             }
         }
 
-        private void AssignRectangles(RenderContext context, ref ShadowMapTexture shadowMapTexture)
+        private void AssignRectangles(ref ShadowMapTexture shadowMapTexture)
         {
             // TODO: This is not good to have to detect the light type here
             shadowMapTexture.CascadeCount = shadowMapTexture.Light is LightDirectional ? (int)shadowMapTexture.Shadow.CascadeCount : 1;
@@ -147,21 +143,21 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 var atlas = atlases[i];
                 if (atlas.FilterType == shadowMapTexture.FilterType && atlas.TryInsert(size, size, shadowMapTexture.CascadeCount))
                 {
-                    AssignRectangles(context, ref shadowMapTexture, atlas);
+                    AssignRectangles(ref shadowMapTexture, atlas);
                     return;
                 }
             }
             
             // Allocate a new atlas texture
-            var texture = Texture.New2D(context.GraphicsDevice, MaximumTextureSize, MaximumTextureSize, 1, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
+            var texture = Texture.New2D(Context.GraphicsDevice, MaximumTextureSize, MaximumTextureSize, 1, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
             var newAtlas = new ShadowMapAtlasTexture(texture) { FilterType = shadowMapTexture.FilterType };
             atlases.Add(newAtlas);
         }
 
-        private void AssignRectangles(RenderContext context, ref ShadowMapTexture shadowMapTexture, ShadowMapAtlasTexture atlas)
+        private void AssignRectangles(ref ShadowMapTexture shadowMapTexture, ShadowMapAtlasTexture atlas)
         {
             // Make sure the atlas cleared (will be clear just once)
-            atlas.ClearRenderTarget(context);
+            atlas.ClearRenderTarget(Context);
 
             var size = shadowMapTexture.Size;
             for (int i = 0; i < shadowMapTexture.CascadeCount; i++)
@@ -172,7 +168,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             }
         }
 
-        private bool CollectShadowMaps(RenderContext context)
+        private bool CollectShadowMaps()
         {
             // Gets the LightProcessor
             var lightProcessor = SceneInstance.GetProcessor<LightProcessor>();
@@ -201,7 +197,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                     var position = lightComponent.Position;
 
                     // Compute the coverage of this light on the screen
-                    var size = light.ComputeScreenCoverage(context, position, direction);
+                    var size = light.ComputeScreenCoverage(Context, position, direction);
 
                     // Converts the importance into a shadow size factor
                     var sizeFactor = ComputeSizeFactor(light.ShadowImportance, shadowMap.Size);
