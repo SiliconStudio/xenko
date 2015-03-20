@@ -79,6 +79,7 @@
     <Compile Include="Engine\Graphics\SceneUIRenderer.cs" />
     <Compile Include="Engine\Graphics\CameraComponentRendererExtensions.cs" />
     <Compile Include="Engine\Graphics\DynamicEffectParameterUpdaterDefinition.cs" />
+    <Compile Include="Engine\Graphics\Shadows\ShadowMapCasterRenderer.cs" />
     <Compile Include="Engine\Graphics\VirtualResolutionMode.cs" />
     <Compile Include="Engine\Graphics\Lights\DirectLightGroupFixed.cs">
       <DependentUpon>DirectLightGroupFixed.pdxsl</DependentUpon>

@@ -7,6 +7,18 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.Effects.Lights
 {
+
+    [DataContract("LightShadowMapSplitMode")]
+    public enum LightShadowMapSplitMode
+    {
+        Manual,
+
+        Logarithmic,
+
+        PSSM
+    }
+
+
     /// <summary>
     /// A shadow map.
     /// </summary>
@@ -22,6 +34,13 @@ namespace SiliconStudio.Paradox.Effects.Lights
             Enabled = false;
             Size = LightShadowMapSize.Medium;
             CascadeCount = LightShadowMapCascadeCount.TwoCascades;
+            MinDistance = 0.0f;
+            MaxDistance = 1.0f;
+            SplitDistance0 = 0.05f;
+            SplitDistance1 = 0.15f;
+            SplitDistance2 = 0.50f;
+            SplitDistance3 = 1.00f;
+            SplitMode = LightShadowMapSplitMode.Manual;
         }
 
         /// <summary>
@@ -54,5 +73,32 @@ namespace SiliconStudio.Paradox.Effects.Lights
         [DataMember(40)]
         [DefaultValue(LightShadowMapCascadeCount.TwoCascades)]
         public LightShadowMapCascadeCount CascadeCount { get; set; }
+
+        [DataMemberIgnore]
+        public LightShadowMapSplitMode SplitMode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the minimum distance.
+        /// </summary>
+        /// <value>The minimum distance.</value>
+        [DataMemberIgnore]
+        public float MinDistance { get; set; }
+
+        [DataMemberIgnore]
+        public float MaxDistance { get; set; }
+
+        [DataMemberIgnore]
+        public float SplitDistance0 { get; set; }
+
+        [DataMemberIgnore]
+        public float SplitDistance1 { get; set; }
+
+        [DataMemberIgnore]
+        public float SplitDistance2 { get; set; }
+        [DataMemberIgnore]
+        public float SplitDistance3 { get; set; }
+
+        [DataMemberIgnore]
+        public bool Stabilized { get; set; }
     }
 }
