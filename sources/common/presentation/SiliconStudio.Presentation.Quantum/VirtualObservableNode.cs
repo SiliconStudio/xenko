@@ -24,7 +24,7 @@ namespace SiliconStudio.Presentation.Quantum
             return node;
         }
 
-        public override IDictionary<string, object> AssociatedData { get { return associatedData; } }
+        public override Dictionary<string, object> AssociatedData { get { return associatedData; } }
 
         public override int? Order { get { return order; } }
         

@@ -19,7 +19,7 @@ namespace SiliconStudio.Presentation.Quantum
         protected readonly IModelNode SourceNode;
         protected readonly ModelNodePath SourceNodePath;
         private IModelNode targetNode;
-        private IDictionary<string, object> associatedData;
+        private Dictionary<string, object> associatedData;
         private bool isInitialized;
         private int? customOrder;
 
@@ -146,7 +146,7 @@ namespace SiliconStudio.Presentation.Quantum
         public sealed override bool HasDictionary { get { AssertInit(); return (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary); } }
 
         /// <inheritdoc/>
-        public sealed override IDictionary<string, object> AssociatedData { get { return associatedData; } }
+        public sealed override Dictionary<string, object> AssociatedData { get { return associatedData; } }
 
         internal Guid ModelGuid { get { return targetNode.Guid; } }
 
