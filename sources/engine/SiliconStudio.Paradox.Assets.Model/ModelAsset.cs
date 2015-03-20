@@ -73,6 +73,11 @@ namespace SiliconStudio.Paradox.Assets.Model
             }
         }
 
+        protected override int InternalBuildOrder
+        {
+            get { return 500; }
+        }
+
         /// <summary>
         /// Returns to list of nodes that are preserved (they cannot be merged with other ones).
         /// </summary>
@@ -133,7 +138,6 @@ namespace SiliconStudio.Paradox.Assets.Model
 
         public override void SetDefaults()
         {
-            BuildOrder = 500;
             if (Nodes != null)
                 Nodes.Clear();
         }

@@ -42,6 +42,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
             Parameters = new ParameterCollection();
         }
 
+        protected override int InternalBuildOrder
+        {
+            get { return 100; }
+        }
+
         /// <summary>
         /// Gets or sets the material attributes.
         /// </summary>
