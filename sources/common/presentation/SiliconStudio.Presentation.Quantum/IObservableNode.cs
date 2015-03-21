@@ -110,6 +110,11 @@ namespace SiliconStudio.Presentation.Quantum
         int VisibleChildrenCount { get; }
 
         /// <summary>
+        /// Raised when the <see cref="Value"/> property has changed.
+        /// </summary>
+        event EventHandler<EventArgs> ValueChanged;
+
+        /// <summary>
         /// Raised when the <see cref="IsVisible"/> property has changed.
         /// </summary>
         event EventHandler<EventArgs> IsVisibleChanged;

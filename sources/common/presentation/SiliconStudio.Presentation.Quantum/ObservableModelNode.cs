@@ -367,12 +367,15 @@ namespace SiliconStudio.Presentation.Quantum
         {
             bool hasChanged = !Equals(Value, newValue);
             if (!hasChanged)
-               OnPropertyChanging("TypedValue");
+                OnPropertyChanging("TypedValue");
 
             Value = newValue;
-            
+
             if (!hasChanged)
+            {
                 OnPropertyChanged("TypedValue");
+                OnValueChanged();
+            }
         }
 
         protected virtual void Refresh()
@@ -465,6 +468,7 @@ namespace SiliconStudio.Presentation.Quantum
                 if (hasChanged)
                 {
                     OnPropertyChanged("TypedValue");
+                    OnValueChanged();
                     if (parent != null)
                         ((ObservableNode)Parent).NotifyPropertyChanged(Name);
                     string displayName = Owner.FormatSingleUpdateMessage(this, value);

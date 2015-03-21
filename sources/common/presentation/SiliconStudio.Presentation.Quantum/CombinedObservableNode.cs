@@ -420,6 +420,7 @@ namespace SiliconStudio.Presentation.Quantum
                 }
                 changedNodes.ForEach(x => x.Refresh());
                 NotifyNodeUpdated();
+                OnValueChanged();
                 string displayName = Owner.FormatCombinedUpdateMessage(this, value);
                 Owner.EndCombinedAction(displayName, Path, value);
             }

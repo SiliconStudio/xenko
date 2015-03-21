@@ -137,6 +137,9 @@ namespace SiliconStudio.Presentation.Quantum
         public int VisibleChildrenCount { get { return visibleChildrenCount; } private set { SetValue(ref visibleChildrenCount, value); } }
 
         /// <inheritdoc/>
+        public event EventHandler<EventArgs> ValueChanged;
+        
+        /// <inheritdoc/>
         public event EventHandler<EventArgs> IsVisibleChanged;
         
         /// <summary>
@@ -320,7 +323,14 @@ namespace SiliconStudio.Presentation.Quantum
                 OnPropertyChanged(string.Format("{0}{1}", ObservableViewModel.HasCommandPrefix, commandNames[i]));
             }
         }
-        
+
+        protected void OnValueChanged()
+        {
+            var handler = ValueChanged;
+            if (handler != null)
+                handler(this, EventArgs.Empty);
+        }
+
         protected void CheckDynamicMemberConsistency()
         {
             var memberNames = new HashSet<string>();

@@ -10,8 +10,7 @@ namespace SiliconStudio.Presentation.Quantum
     {
         private readonly Dictionary<string, object> associatedData = new Dictionary<string,object>();
         private readonly int? order;
-
-        private bool isPrimitive;
+        private readonly bool isPrimitive;
 
         protected VirtualObservableNode(ObservableViewModel ownerViewModel, string name, SingleObservableNode parentNode, int? order, bool isPrimitive, NodeCommandWrapperBase valueChangedCommand)
             : base(ownerViewModel, name, parentNode, null)
@@ -76,6 +75,7 @@ namespace SiliconStudio.Presentation.Quantum
                 if (hasChanged && ValueChangedCommand != null)
                 {
                     ValueChangedCommand.Execute(value);
+                    OnValueChanged();
                 }
             }
         }
