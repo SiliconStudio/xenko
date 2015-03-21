@@ -17,5 +17,6 @@ namespace SiliconStudio.Paradox.EntityModel
 
         public const string CameraGizmoEntityFactoryQualifiedName = GizmoEntityFactoriesNamespace + "CameraGizmoEntityFactory" + PresentationAssemblyQualifiedName;
         public const string LightGizmoEntityFactoryQualifiedName = GizmoEntityFactoriesNamespace + "LightGizmoEntityFactory" + PresentationAssemblyQualifiedName;
+        public const string PhysicsGizmoEntityFactoryQualifiedName = GizmoEntityFactoriesNamespace + "PhysicsGizmoEntityFactory" + PresentationAssemblyQualifiedName;
     }
 }

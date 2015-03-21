@@ -10,6 +10,7 @@ namespace SiliconStudio.Paradox.Physics
 {
     [DataContract("PhysicsComponent")]
     [Display(30, "Physics")]
+    [GizmoEntityFactory(GizmoEntityFactoryNames.PhysicsGizmoEntityFactoryQualifiedName)]
     [DefaultEntityComponentProcessor(typeof(PhysicsProcessor))]
     public sealed class PhysicsComponent : EntityComponent
     {

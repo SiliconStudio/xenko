@@ -92,7 +92,7 @@ namespace SiliconStudio.Paradox.Physics
             }
             set
             {
-                DebugPrimitiveScaling *= Matrix.Scaling(value);
+                DebugPrimitiveMatrix *= Matrix.Scaling(value);
                 InternalShape.LocalScaling = value;
             }
         }
@@ -111,9 +111,12 @@ namespace SiliconStudio.Paradox.Physics
 
         internal CompoundColliderShape Parent;
 
-        internal GeometricPrimitive DebugPrimitive;
+        public virtual GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
+        {
+            return null;
+        }
 
-        internal Matrix DebugPrimitiveScaling;
+        public Matrix DebugPrimitiveMatrix;
 
         internal bool NeedsCustomCollisionCallback;
     }

@@ -19,9 +19,12 @@ namespace SiliconStudio.Paradox.Physics
 
             InternalShape = new BulletSharp.Box2DShape(halfExtents) { LocalScaling = new Vector3(1, 1, 0) };
 
-            if (!Simulation.CreateDebugPrimitives) return;
-            DebugPrimitive = GeometricPrimitive.Cube.New(Simulation.DebugGraphicsDevice);
-            DebugPrimitiveScaling = Matrix.Scaling(new Vector3(halfExtents.X * 2, halfExtents.Y * 2, 0.05f) * 1.01f);
+            DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(halfExtents.X * 2, halfExtents.Y * 2, 0.05f) * 1.01f);
+        }
+
+        public override GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
+        {
+            return GeometricPrimitive.Cube.New(device);
         }
     }
 }

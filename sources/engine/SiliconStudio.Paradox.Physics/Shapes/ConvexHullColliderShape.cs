@@ -10,6 +10,9 @@ namespace SiliconStudio.Paradox.Physics
 {
     public class ConvexHullColliderShape : ColliderShape
     {
+        private readonly IReadOnlyList<Vector3> pointsList;
+        private readonly IReadOnlyCollection<uint> indicesList; 
+
         public ConvexHullColliderShape(IReadOnlyList<Vector3> points, IReadOnlyCollection<uint> indices)
         {
             Type = ColliderShapeTypes.ConvexHull;
@@ -17,19 +20,25 @@ namespace SiliconStudio.Paradox.Physics
 
             InternalShape = new BulletSharp.ConvexHullShape(points);
 
-            if (!Simulation.CreateDebugPrimitives) return;
+            DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(1, 1, 1) * 1.01f);
 
-            var verts = new VertexPositionNormalTexture[points.Count];
-            for (var i = 0; i < points.Count; i++)
+            pointsList = points;
+            indicesList = indices;
+        }
+
+        public override GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
+        {
+            var verts = new VertexPositionNormalTexture[pointsList.Count];
+            for (var i = 0; i < pointsList.Count; i++)
             {
-                verts[i].Position = points[i];
+                verts[i].Position = pointsList[i];
                 verts[i].TextureCoordinate = Vector2.Zero;
                 verts[i].Normal = Vector3.Zero;
             }
-            
+
             //calculate basic normals
             //todo verify, winding order might be wrong?
-            for (var i = 0; i < indices.Count; i += 3)
+            for (var i = 0; i < indicesList.Count; i += 3)
             {
                 var a = verts[i];
                 var b = verts[i + 1];
@@ -39,11 +48,10 @@ namespace SiliconStudio.Paradox.Physics
                 verts[i].Normal = verts[i + 1].Normal = verts[i + 2].Normal = n;
             }
 
-            var intIndices = indices.Select(x => (int)x).ToArray();
+            var intIndices = indicesList.Select(x => (int)x).ToArray();
             var meshData = new GeometricMeshData<VertexPositionNormalTexture>(verts, intIndices, false);
 
-            DebugPrimitive = new GeometricPrimitive(Simulation.DebugGraphicsDevice, meshData);
-            DebugPrimitiveScaling = Matrix.Scaling(new Vector3(1, 1, 1) * 1.01f);
+            return new GeometricPrimitive(device, meshData);
         }
     }
 }
