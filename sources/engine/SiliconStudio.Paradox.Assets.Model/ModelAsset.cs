@@ -75,7 +75,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 
         protected override int InternalBuildOrder
         {
-            get { return 500; }
+            get { return -100; } // We want Model to be scheduled early since they tend to take the longest (bad concurrency at end of build)
         }
 
         /// <summary>
