@@ -211,10 +211,10 @@ namespace SiliconStudio.Paradox.Assets.Physics
                             uint[] indices;
                             convexHullMesh.CopyIndices(h, out indices);
 
-                            //for (var t = 0; t < indices.Length; t += 3)
-                            //{
-                            //    Utilities.Swap(ref indices[t], ref indices[t + 2]);
-                            //}
+                            for (var t = 0; t < indices.Length; t += 3)
+                            {
+                                Utilities.Swap(ref indices[t], ref indices[t + 2]);
+                            }
 
                             var indexList = new List<uint>(indices);
 

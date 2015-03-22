@@ -40,8 +40,8 @@ namespace SiliconStudio.Paradox.Physics
         [DataMemberIgnore]
         public ColliderShape Shape { get; private set; }
 
-        [DataMemberIgnore]
-        public Entity DebugEntity { get; set; }
+        [DataMemberIgnore] 
+        public List<Entity> EditorEntities = new List<Entity>(); 
 
         public static PhysicsColliderShape New(params IColliderShapeDesc[] descriptions)
         {

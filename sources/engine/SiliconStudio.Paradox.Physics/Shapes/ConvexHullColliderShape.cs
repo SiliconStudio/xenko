@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Physics
         private readonly IReadOnlyList<Vector3> pointsList;
         private readonly IReadOnlyCollection<uint> indicesList; 
 
-        public ConvexHullColliderShape(IReadOnlyList<Vector3> points, IReadOnlyCollection<uint> indices)
+        public ConvexHullColliderShape(IReadOnlyList<Vector3> points, IReadOnlyList<uint> indices)
         {
             Type = ColliderShapeTypes.ConvexHull;
             Is2D = false;
@@ -36,19 +36,23 @@ namespace SiliconStudio.Paradox.Physics
                 verts[i].Normal = Vector3.Zero;
             }
 
-            //calculate basic normals
-            //todo verify, winding order might be wrong?
+            var intIndices = indicesList.Select(x => (int)x).ToArray();
+
+            ////calculate basic normals
+            ////todo verify, winding order might be wrong?
             for (var i = 0; i < indicesList.Count; i += 3)
             {
-                var a = verts[i];
-                var b = verts[i + 1];
-                var c = verts[i + 2];
+                var i1 = intIndices[i];
+                var i2 = intIndices[i + 1];
+                var i3 = intIndices[i + 2];
+                var a = verts[i1];
+                var b = verts[i2];
+                var c = verts[i3];
                 var n = Vector3.Cross((b.Position - a.Position), (c.Position - a.Position));
                 n.Normalize();
-                verts[i].Normal = verts[i + 1].Normal = verts[i + 2].Normal = n;
+                verts[i1].Normal = verts[i2].Normal = verts[i3].Normal = n;
             }
 
-            var intIndices = indicesList.Select(x => (int)x).ToArray();
             var meshData = new GeometricMeshData<VertexPositionNormalTexture>(verts, intIndices, false);
 
             return new GeometricPrimitive(device, meshData);
