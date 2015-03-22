@@ -7,7 +7,7 @@ Attributes:
         AdjacentEdgeAverage: true
     Displacement: !MaterialDisplacementMapFeature
         DisplacementMap: !ComputeTextureScalar
-            TextureReference: a7a030b6-da74-4c64-9b6f-e15d9ee50434:CobbleDisplacementMap
+            Texture: a7a030b6-da74-4c64-9b6f-e15d9ee50434:CobbleDisplacementMap
             Scale: {X: 1, Y: 1}
             Offset: {X: 0, Y: 0}
         Intensity: !ComputeFloat
@@ -17,5 +17,7 @@ Attributes:
         DiffuseMap: !ComputeColor
             Value: {R: 0, G: 0.454901963, B: 0.419607848, A: 1}
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+    Overrides:
+        UVScale: {X: 1, Y: 1}
 Layers: []
 Parameters: {}

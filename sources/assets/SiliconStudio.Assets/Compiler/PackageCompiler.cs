@@ -183,7 +183,7 @@ namespace SiliconStudio.Assets.Compiler
 
                 // Sort the items to build by build order
                 var assets = package.Assets.ToList();
-                assets.Sort((item1, item2) => item1.Asset != null && item2.Asset != null ? item1.Asset.BuildOrder.CompareTo(item2.Asset.BuildOrder) : 0);
+                assets.Sort((item1, item2) => item1.Asset != null && item2.Asset != null ? item1.Asset.InternalBuildOrder.CompareTo(item2.Asset.InternalBuildOrder) : 0);
 
                 // Import all assets provided by this psckage
                 GenerateRawImportBuildSteps(context, result);

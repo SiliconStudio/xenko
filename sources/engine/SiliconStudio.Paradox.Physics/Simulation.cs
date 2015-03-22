@@ -48,26 +48,9 @@ namespace SiliconStudio.Paradox.Physics
         }
 
         /// <summary>
-        /// The debug effect, populate this field in the case of debug rendering
-        /// </summary>
-        public static PhysicsDebugEffect DebugEffect = null;
-
-        /// <summary>
-        /// Set to true if you want the engine to create the debug primitives
-        /// </summary>
-        public static bool CreateDebugPrimitives = false;
-
-        /// <summary>
-        ///  Set to true if you want the engine to render the debug primitives
-        /// </summary>
-        public static bool RenderDebugPrimitives = false;
-
-        /// <summary>
         /// Totally disable the simulation if set to true
         /// </summary>
         public static bool DisableSimulation = false;
-
-        internal static GraphicsDevice DebugGraphicsDevice;
 
         static Simulation()
         {

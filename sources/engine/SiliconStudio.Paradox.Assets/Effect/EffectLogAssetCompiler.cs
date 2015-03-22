@@ -22,6 +22,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, EffectLogAsset asset, AssetCompilerResult result)
         {
             var originalSourcePath = asset.AbsoluteSourceLocation;
+            result.ShouldWaitForPreviousBuilds = true;
             result.BuildSteps = new AssetBuildStep(AssetItem) { new EffectLogBuildStep(context, originalSourcePath) };
         }
 

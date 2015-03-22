@@ -29,9 +29,12 @@ namespace SiliconStudio.Paradox.Physics
                 InternalShape = shape;
             }
 
-            if (!Simulation.CreateDebugPrimitives) return;
-            DebugPrimitive = GeometricPrimitive.Sphere.New(Simulation.DebugGraphicsDevice);
-            DebugPrimitiveScaling = Matrix.Scaling(radius * 2 * 1.01f);
+            DebugPrimitiveMatrix = Matrix.Scaling(radius * 2 * 1.01f);
+        }
+
+        public override GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
+        {
+            return GeometricPrimitive.Sphere.New(device);
         }
     }
 }

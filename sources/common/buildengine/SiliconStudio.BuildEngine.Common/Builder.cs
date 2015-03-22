@@ -319,7 +319,7 @@ namespace SiliconStudio.BuildEngine
                 this.builderContext = builderContext;
                 this.builder = builder;
                 this.buildStep = buildStep;
-                buildTransaction = new BuildTransaction(buildStep.GetOutputObjectsGroups());
+                buildTransaction = new BuildTransaction(null, buildStep.GetOutputObjectsGroups());
             }
 
             public Logger Logger { get { return logger; } }

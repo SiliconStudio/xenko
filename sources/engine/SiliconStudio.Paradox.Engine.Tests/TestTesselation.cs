@@ -11,18 +11,18 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Lights;
 using SiliconStudio.Paradox.Effects.ProceduralModels;
+using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Engine.Graphics.ProceduralModels;
 using SiliconStudio.Paradox.Engine.Graphics.Tessellation;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Regression;
 using SiliconStudio.Paradox.Input;
 
 namespace SiliconStudio.Paradox.Engine.Tests
 {
     [ReferenceToEffects]
-    public class TestTesselation : GraphicsTestBase
+    public class TestTesselation : EngineTestBase
     {
         private List<Entity> entities = new List<Entity>();
         private List<Material> materials = new List<Material>();
@@ -51,6 +51,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
         }
 
         public TestTesselation(bool isDebug)
+            : base("ParadoxBaseShader")
         {
             CurrentVersion = 1;
             debug = isDebug;
@@ -67,11 +68,6 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
             wireframeState = RasterizerState.New(GraphicsDevice, new RasterizerStateDescription(CullMode.Back) { FillMode = FillMode.Wireframe });
 
-            RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.White});
-            RenderSystem.Pipeline.Renderers.Add(new CameraSetter(Services));
-            RenderSystem.Pipeline.Renderers.Add(new ModelRenderer(Services, "ParadoxBaseShader"));
-            RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = RenderDebugInfo } );
-            
             materials.Add(Asset.Load<Material>("NoTessellation"));
             materials.Add(Asset.Load<Material>("FlatTessellation"));
             materials.Add(Asset.Load<Material>("PNTessellation"));
@@ -84,19 +80,21 @@ namespace SiliconStudio.Paradox.Engine.Tests
             var sphere = new Entity("Sphere") { new ModelComponent(new ProceduralModelDescriptor(new SphereProceduralModel { Diameter = 100, Tessellation = 5, Material = materials [0] }).GenerateModel(Services)) };
             
             var megalodon = Asset.Load<Entity>("megalodon Entity"); 
-            megalodon.Transformation.Translation = new Vector3(0, -30f, -10f);
+            megalodon.Transform.Position= new Vector3(0, -30f, -10f);
 
             var knight = Asset.Load<Entity>("AnimatedModel");
-            knight.Transformation.RotationEulerXYZ = new Vector3(-MathUtil.Pi / 2, MathUtil.Pi / 4, 0);
-            knight.Transformation.Translation = new Vector3(0, -50f, 20f);
-            knight.Transformation.Scaling = new Vector3(0.6f);
+            knight.Transform.RotationEulerXYZ = new Vector3(-MathUtil.Pi / 2, MathUtil.Pi / 4, 0);
+            knight.Transform.Position = new Vector3(0, -50f, 20f);
+            knight.Transform.Scale= new Vector3(0.6f);
 
             entities.Add(sphere);
             entities.Add(cube);
             entities.Add(megalodon);
             entities.Add(knight);
 
-            Script.Add(camera = new TestCamera(Services));
+            camera = new TestCamera();
+            CameraComponent = camera.Camera;
+            Script.AddScript(camera);
 
             LightingKeys.EnableFixedAmbientLight(GraphicsDevice.Parameters, true);
             GraphicsDevice.Parameters.Set(EnvironmentLightKeys.GetParameterKey(LightSimpleAmbientKeys.AmbientLight, 0), (Color3)Color.White);
@@ -120,7 +118,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             FrameGameSystem.Draw(() => ChangeMaterial(1)).TakeScreenshot();
         }
 
-        private void RenderDebugInfo(RenderContext obj)
+        protected override void PostCameraRendererDraw(RenderContext context, RenderFrame frame)
         {
             if (!debug)
                 return;
@@ -179,8 +177,8 @@ namespace SiliconStudio.Paradox.Engine.Tests
             currentModelIndex = (currentModelIndex + offset + entities.Count) % entities.Count;
             currentEntity = entities[currentModelIndex];
 
-            Entities.Clear();
-            Entities.Add(currentEntity);
+            Scene.Transform.Children.Clear();
+            Scene.AddChild(currentEntity);
 
             ChangeMaterial(0);
         }

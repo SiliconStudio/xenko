@@ -27,5 +27,10 @@ namespace SiliconStudio.Paradox.Assets.Effect
         public EffectLogAsset()
         {
         }
+
+        protected override int InternalBuildOrder
+        {
+            get { return 100; }
+        }
     }
 }

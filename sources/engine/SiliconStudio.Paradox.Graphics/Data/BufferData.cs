@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Core;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Paradox.Graphics.Data
 {
@@ -8,6 +9,7 @@ namespace SiliconStudio.Paradox.Graphics.Data
     /// Content of a GPU buffer (vertex buffer, index buffer, etc...).
     /// </summary>
     [DataContract]
+    [ContentSerializer(typeof(DataContentSerializerWithReuse<BufferData>))]
     public class BufferData
     {
         public BufferData()

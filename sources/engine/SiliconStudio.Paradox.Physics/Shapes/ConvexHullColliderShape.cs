@@ -10,40 +10,52 @@ namespace SiliconStudio.Paradox.Physics
 {
     public class ConvexHullColliderShape : ColliderShape
     {
-        public ConvexHullColliderShape(IReadOnlyList<Vector3> points, IReadOnlyCollection<uint> indices)
+        private readonly IReadOnlyList<Vector3> pointsList;
+        private readonly IReadOnlyCollection<uint> indicesList; 
+
+        public ConvexHullColliderShape(IReadOnlyList<Vector3> points, IReadOnlyList<uint> indices)
         {
             Type = ColliderShapeTypes.ConvexHull;
             Is2D = false;
 
             InternalShape = new BulletSharp.ConvexHullShape(points);
 
-            if (!Simulation.CreateDebugPrimitives) return;
+            DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(1, 1, 1) * 1.01f);
 
-            var verts = new VertexPositionNormalTexture[points.Count];
-            for (var i = 0; i < points.Count; i++)
+            pointsList = points;
+            indicesList = indices;
+        }
+
+        public override GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
+        {
+            var verts = new VertexPositionNormalTexture[pointsList.Count];
+            for (var i = 0; i < pointsList.Count; i++)
             {
-                verts[i].Position = points[i];
+                verts[i].Position = pointsList[i];
                 verts[i].TextureCoordinate = Vector2.Zero;
                 verts[i].Normal = Vector3.Zero;
             }
-            
-            //calculate basic normals
-            //todo verify, winding order might be wrong?
-            for (var i = 0; i < indices.Count; i += 3)
+
+            var intIndices = indicesList.Select(x => (int)x).ToArray();
+
+            ////calculate basic normals
+            ////todo verify, winding order might be wrong?
+            for (var i = 0; i < indicesList.Count; i += 3)
             {
-                var a = verts[i];
-                var b = verts[i + 1];
-                var c = verts[i + 2];
+                var i1 = intIndices[i];
+                var i2 = intIndices[i + 1];
+                var i3 = intIndices[i + 2];
+                var a = verts[i1];
+                var b = verts[i2];
+                var c = verts[i3];
                 var n = Vector3.Cross((b.Position - a.Position), (c.Position - a.Position));
                 n.Normalize();
-                verts[i].Normal = verts[i + 1].Normal = verts[i + 2].Normal = n;
+                verts[i1].Normal = verts[i2].Normal = verts[i3].Normal = n;
             }
 
-            var intIndices = indices.Select(x => (int)x).ToArray();
             var meshData = new GeometricMeshData<VertexPositionNormalTexture>(verts, intIndices, false);
 
-            DebugPrimitive = new GeometricPrimitive(Simulation.DebugGraphicsDevice, meshData);
-            DebugPrimitiveScaling = Matrix.Scaling(new Vector3(1, 1, 1) * 1.01f);
+            return new GeometricPrimitive(device, meshData);
         }
     }
 }

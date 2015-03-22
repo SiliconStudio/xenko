@@ -44,7 +44,6 @@ namespace SiliconStudio.Paradox.Assets.Model
                                 PreservedNodes = asset.PreservedNodes,
                                 Materials = asset.Materials,
                             },
-                        new WaitBuildStep(),
                     };
             }
             else if (ImportAssimpCommand.IsSupportingExtensions(extension))
@@ -61,7 +60,6 @@ namespace SiliconStudio.Paradox.Assets.Model
                                 PreservedNodes = asset.PreservedNodes,
                                 Materials = asset.Materials,
                             },
-                        new WaitBuildStep(),
                     };
             }
             else

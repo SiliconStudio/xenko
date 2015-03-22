@@ -8,6 +8,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -38,6 +39,9 @@ namespace SiliconStudio.Paradox.Physics
 
         [DataMemberIgnore]
         public ColliderShape Shape { get; private set; }
+
+        [DataMemberIgnore] 
+        public List<Entity> EditorEntities = new List<Entity>(); 
 
         public static PhysicsColliderShape New(params IColliderShapeDesc[] descriptions)
         {

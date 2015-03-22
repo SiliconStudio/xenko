@@ -73,6 +73,11 @@ namespace SiliconStudio.Paradox.Assets.Model
             }
         }
 
+        protected override int InternalBuildOrder
+        {
+            get { return -100; } // We want Model to be scheduled early since they tend to take the longest (bad concurrency at end of build)
+        }
+
         /// <summary>
         /// Returns to list of nodes that are preserved (they cannot be merged with other ones).
         /// </summary>
@@ -133,7 +138,6 @@ namespace SiliconStudio.Paradox.Assets.Model
 
         public override void SetDefaults()
         {
-            BuildOrder = 500;
             if (Nodes != null)
                 Nodes.Clear();
         }

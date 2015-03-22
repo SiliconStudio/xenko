@@ -163,6 +163,9 @@ namespace SiliconStudio.Paradox.Physics
 
         internal PhysicsProcessor.AssociatedData Data;
 
+        [DataMemberIgnore]
+        public Entity DebugEntity;
+
         #endregion Ignore or Private/Internal
 
         #region Utility

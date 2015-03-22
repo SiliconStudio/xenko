@@ -1,11 +1,10 @@
-!Entity
-Id: d3d8a05f-d67f-470e-9727-4fd86acfdfe4
-SerializedVersion: 1
+!EntityAsset
+Id: b4f01ff9-58fa-4ba4-9cfc-08e34a05fedd
 Tags: []
-Source: ../../../../data/tests/cube/cube.fbx
+Source: ../../../data/tests/cube/cube.fbx
 SourceHash: 2471e6b1be7106f3e68cf790e9306164
 Hierarchy:
-    RootEntity: 75f27d6d-4f43-4ff6-9e07-68aa52804685
+    RootEntity: ab9f664d-8214-4a8d-9114-37d68a1408ae
     Entities:
         -   Name: cube
             Components:
@@ -14,36 +13,31 @@ Hierarchy:
                     Materials: []
                     Model: fdd84cdb-1e11-4cb8-a5eb-8bba7f2fe729:Cube/cube Model
                     Parameters: {}
-                TransformationComponent.Key:
-                    Children: []
+                TransformComponent.Key:
+                    Position: {X: 0, Y: 0, Z: 0}
                     Rotation: {W: 1, X: 0, Y: 0, Z: 0}
-                    Scaling: {X: 1, Y: 1, Z: 1}
-                    Translation: {X: 0, Y: 0, Z: 0}
-                    UseTRS: true
-            Id: 75f27d6d-4f43-4ff6-9e07-68aa52804685
-AssetBases: {}
+                    Scale: {X: 1, Y: 1, Z: 1}
+                    Children: []
+            Id: ab9f664d-8214-4a8d-9114-37d68a1408ae
 ~Base:
     Location: --import--
-    Asset: !Entity
+    Asset: !EntityAsset
         Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: 1
         Tags: []
         ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
         Hierarchy:
-            RootEntity: 75f27d6d-4f43-4ff6-9e07-68aa52804685
+            RootEntity: ab9f664d-8214-4a8d-9114-37d68a1408ae
             Entities:
-                -   Name: cube
+                -   Name: Entity
                     Components:
                         ModelComponent.Key:
                             DrawOrder: 0
                             Materials: []
-                            Model: fdd84cdb-1e11-4cb8-a5eb-8bba7f2fe729:Cube/cube Model
+                            Model: ab23ed01-165f-4b9a-ab4b-203f08804955:cube Model
                             Parameters: {}
-                        TransformationComponent.Key:
-                            Children: []
+                        TransformComponent.Key:
+                            Position: {X: 0, Y: 0, Z: 0}
                             Rotation: {W: 1, X: 0, Y: 0, Z: 0}
-                            Scaling: {X: 1, Y: 1, Z: 1}
-                            Translation: {X: 0, Y: 0, Z: 0}
-                            UseTRS: true
-                    Id: 75f27d6d-4f43-4ff6-9e07-68aa52804685
-        AssetBases: {}
+                            Scale: {X: 1, Y: 1, Z: 1}
+                            Children: []
+                    Id: ab9f664d-8214-4a8d-9114-37d68a1408ae

@@ -10,7 +10,6 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Threading;
 
@@ -77,7 +76,7 @@ namespace SiliconStudio.Paradox.Physics
 
         private void NewElement(PhysicsElement element, AssociatedData data, Entity entity)
         {
-            if (element.Shape == null) return; //no shape no purpose
+            if (element.Shape == null || element.Shape.Descriptions == null || element.Shape.Shape == null) return; //no shape no purpose
 
             var shape = element.Shape.Shape;
 
@@ -339,13 +338,11 @@ namespace SiliconStudio.Paradox.Physics
         protected override void OnSystemAdd()
         {
             physicsSystem = (Bullet2PhysicsSystem)Services.GetSafeServiceAs<IPhysicsSystem>();
-            physicsSystem.Create(this);
+            simulation = physicsSystem.Create(this);
 
             //setup debug device and debug shader
-            var gfxDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>();
-            Simulation.DebugGraphicsDevice = gfxDevice.GraphicsDevice;
-
-            //Debug primitives render, should happen about the last steps of the pipeline
+            //var gfxDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>();
+            //Simulation.DebugGraphicsDevice = gfxDevice.GraphicsDevice;
         }
 
         protected override void OnSystemRemove()
@@ -359,6 +356,7 @@ namespace SiliconStudio.Paradox.Physics
             physicsSystem.Release(this);
         }
 
+        /*
         private static void DrawDebugCompound(ref Matrix viewProj, CompoundColliderShape compound, PhysicsElement element)
         {
             for (var i = 0; i < compound.Count; i++)
@@ -442,6 +440,7 @@ namespace SiliconStudio.Paradox.Physics
 
             Simulation.DebugGraphicsDevice.SetRasterizerState(rasterizers.CullBack);
         }
+        */
 
         internal void UpdateCharacters()
         {

@@ -1,22 +1,19 @@
-!Entity
-Id: 9c431da4-42fa-4174-a4fe-ea600570a299
-SerializedVersion: 1
+!EntityAsset
+Id: eecc01cb-89b5-477a-92b4-e46add694194
 Tags: []
 Hierarchy:
-    RootEntity: c0a1a6ed-3cc7-4943-b85a-f129d5cf57a2
+    RootEntity: b45f0183-39c9-468c-9d18-202b5733973f
     Entities:
         -   Name: Root
             Components:
                 SpriteComponent.Key:
+                    SpriteProvider: !SiliconStudio.Paradox.Engine.SpriteFromTexture,%20SiliconStudio.Paradox.Engine,%20Version=1.0.0.0,%20Culture=neutral,%20PublicKeyToken=bacacc89c3b6d556
+                        Texture: 39070e2f-ef25-4600-86f8-309c7081b6bb:Sphere
+                        Center: {X: 0, Y: 0}
                     Color: {R: 255, G: 255, B: 255, A: 255}
-                    Effect: null
-                    SpriteEffect: None
-                    SpriteGroup: 5d8ecea5-50f2-49c1-8fe8-16e67dd65ab0:BallSprite1
-                TransformationComponent.Key:
-                    Children: []
+                TransformComponent.Key:
+                    Position: {X: 0, Y: 0, Z: 0}
                     Rotation: {W: 1, X: 0, Y: 0, Z: 0}
-                    Scaling: {X: 1, Y: 1, Z: 1}
-                    Translation: {X: 0, Y: 0, Z: 0}
-                    UseTRS: true
-            Id: c0a1a6ed-3cc7-4943-b85a-f129d5cf57a2
-AssetBases: {}
+                    Scale: {X: 150, Y: 150, Z: 1}
+                    Children: []
+            Id: b45f0183-39c9-468c-9d18-202b5733973f

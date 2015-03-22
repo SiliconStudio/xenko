@@ -1,5 +1,5 @@
 !Model
-Id: 20b9b194-3e44-4b80-929b-06be9ad0895b
+Id: 53b953af-1d02-459e-a96f-b40805964d59
 SerializedVersion: 1
 BuildOrder: 500
 Tags: []
@@ -7,11 +7,11 @@ Source: ../../../data/tests/knight/scenes/knight.fbx
 SourceHash: b0dc28bd79ba6cd2fed575b8855b52fc
 Materials:
     -   Name: c100_chr_ch00_Knight_KINGHT_iron
-        Material: 5e6ed1e6-9d57-4310-a0b8-46c7cca9cb19:c100_chr_ch00_Knight_KINGHT_iron
+        Material: 6bacdf7e-6538-4cfa-a035-0807aee89e2c:c100_chr_ch00_Knight_KINGHT_iron
     -   Name: c100_chr_ch00_Knight_KINGHT
-        Material: b46027ce-b0a3-4e46-98b7-1fa8429ac71d:c100_chr_ch00_Knight_KINGHT
+        Material: c88b7d39-bb04-407f-92e4-69f2dcfef378:c100_chr_ch00_Knight_KINGHT
     -   Name: c100_chr_ch00_Knight_SWORD1
-        Material: 584be6db-dd3a-4463-9251-d4e56a278a75:c100_chr_ch00_Knight_SWORD1
+        Material: 32a944cf-8bb5-413b-9998-36a85b12dcc5:c100_chr_ch00_Knight_SWORD1
 Nodes:
     - {Name: RootNode, Depth: 0, Preserve: false}
     - {Name: root, Depth: 1, Preserve: false}
@@ -95,11 +95,11 @@ Nodes:
         ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
         Materials:
             -   Name: c100_chr_ch00_Knight_KINGHT_iron
-                Material: 5e6ed1e6-9d57-4310-a0b8-46c7cca9cb19:c100_chr_ch00_Knight_KINGHT_iron
+                Material: 6bacdf7e-6538-4cfa-a035-0807aee89e2c:c100_chr_ch00_Knight_KINGHT_iron
             -   Name: c100_chr_ch00_Knight_KINGHT
-                Material: b46027ce-b0a3-4e46-98b7-1fa8429ac71d:c100_chr_ch00_Knight_KINGHT
+                Material: c88b7d39-bb04-407f-92e4-69f2dcfef378:c100_chr_ch00_Knight_KINGHT
             -   Name: c100_chr_ch00_Knight_SWORD1
-                Material: 584be6db-dd3a-4463-9251-d4e56a278a75:c100_chr_ch00_Knight_SWORD1
+                Material: 32a944cf-8bb5-413b-9998-36a85b12dcc5:c100_chr_ch00_Knight_SWORD1
         Nodes:
             - {Name: RootNode, Depth: 0, Preserve: false}
             - {Name: root, Depth: 1, Preserve: false}
