@@ -1,19 +1,19 @@
 ﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Linq;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Contents;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using SiliconStudio.Core;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Physics
 {
     [DataContract]
     [ContentSerializer(typeof(DataContentSerializer<PhysicsColliderShape>))]
+    [DataSerializerGlobal(typeof(CloneSerializer<PhysicsColliderShape>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(ReferenceSerializer<PhysicsColliderShape>), Profile = "Asset")]
     public class PhysicsColliderShape
     {
