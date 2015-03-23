@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.Assets.Model
     [DataContract("SceneAsset")]
     [AssetFileExtension(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
-    [ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName, true, Priority = 20000)]
+    //[ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName, true)]
     [Display("Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
