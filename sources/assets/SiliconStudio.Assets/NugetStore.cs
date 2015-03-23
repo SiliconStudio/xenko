@@ -25,6 +25,8 @@ namespace SiliconStudio.Assets
 
         private const string MainPackageKey = "mainPackage";
 
+        private const string VsixPluginKey = "vsixPlugin";
+
         private const string DefaultTargets = @"Targets\SiliconStudio.Common.targets";
 
         public const string DefaultGamePackagesDirectory = "GamePackages";
@@ -77,6 +79,12 @@ namespace SiliconStudio.Assets
                 throw new InvalidOperationException(string.Format("Invalid configuration. Expecting [{0}] in config", MainPackageKey));
             }
 
+            VSIXPluginId = Settings.GetConfigValue(VsixPluginKey);
+            if (string.IsNullOrWhiteSpace(VSIXPluginId))
+            {
+                throw new InvalidOperationException(string.Format("Invalid configuration. Expecting [{0}] in config", VsixPluginKey));
+            }
+
             RepositoryPath = Settings.GetConfigValue(RepositoryPathKey);
             if (string.IsNullOrWhiteSpace(RepositoryPath))
             {
@@ -96,6 +104,8 @@ namespace SiliconStudio.Assets
         }
 
         public string MainPackageId { get; private set; }
+
+        public string VSIXPluginId { get; private set; }
 
         public string RepositoryPath { get; private set; }
 
@@ -169,7 +179,7 @@ namespace SiliconStudio.Assets
                 UpdateTargetsInternal();
 
                 // Install vsix
-                InstallVsix(GetLatestPackageInstalled(packageId));
+                ////InstallVsix(GetLatestPackageInstalled(packageId));
             }
         }
 
@@ -184,6 +194,14 @@ namespace SiliconStudio.Assets
 
                 // Install vsix
                 InstallVsix(GetLatestPackageInstalled(package.Id));
+            }
+        }
+
+        public void UninstallPackage(IPackage package)
+        {
+            using (GetLocalRepositoryLocker())
+            {
+                Manager.UninstallPackage(package);
             }
         }
 
@@ -325,7 +343,7 @@ namespace SiliconStudio.Assets
             packages.Remove(packageToTrack);
         }
 
-        private void InstallVsix(IPackage package)
+        public void InstallVsix(IPackage package)
         {
             if (package == null)
             {
