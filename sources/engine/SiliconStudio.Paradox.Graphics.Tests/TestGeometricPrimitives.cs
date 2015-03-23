@@ -8,6 +8,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics.Internals;
+using SiliconStudio.Paradox.Input;
 
 namespace SiliconStudio.Paradox.Graphics.Tests
 {
@@ -25,6 +26,12 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         private ParameterCollection parameterCollection;
 
+        private bool isWireframe;
+
+        private RasterizerState wireframeState;
+
+        private bool isPaused;
+
         public TestGeometricPrimitives()
         {
             CurrentVersion = 2;
@@ -41,6 +48,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         protected override async Task LoadContent()
         {
             await base.LoadContent();
+
+            wireframeState = RasterizerState.New(GraphicsDevice, new RasterizerStateDescription(CullMode.Back) { FillMode = FillMode.Wireframe });
 
             simpleEffect = new Effect(GraphicsDevice, SpriteEffect.Bytecode);
             parameterCollection = new ParameterCollection();
@@ -71,6 +80,12 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             base.Update(gameTime);
 
+            if (Input.IsKeyPressed(Keys.W))
+                isWireframe = !isWireframe;
+
+            if (Input.IsKeyPressed(Keys.Space))
+                isPaused = !isPaused;
+
             projection = Matrix.PerspectiveFovRH((float)Math.PI / 4.0f, (float)GraphicsDevice.BackBuffer.ViewWidth / GraphicsDevice.BackBuffer.ViewHeight, 0.1f, 100.0f);
 
             if (GraphicsDevice.BackBuffer.ViewWidth < GraphicsDevice.BackBuffer.ViewHeight) // the screen is standing up on Android{
@@ -81,7 +96,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             base.Draw(gameTime);
 
-            timeSeconds += 1 / 60f; // frame dependent time (for unit tests)
+            if (!isPaused)
+                timeSeconds += 1 / 60f; // frame dependent time (for unit tests)
 
             if(!ScreenShotAutomationEnabled)
                 DrawPrimitives();
@@ -120,7 +136,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 var world = Matrix.Scaling((float)Math.Sin(time * 1.5f) * 0.2f + 1.0f) * Matrix.RotationX(time) * Matrix.RotationY(time * 2.0f) * Matrix.RotationZ(time * .7f) * Matrix.Translation(x, y, 0);
 
                 // Disable Cull only for the plane primitive, otherwise use standard culling
-                GraphicsDevice.SetRasterizerState(i == 0 ? GraphicsDevice.RasterizerStates.CullNone : GraphicsDevice.RasterizerStates.CullBack);
+                var defaultRasterizerState = i == 0 ? GraphicsDevice.RasterizerStates.CullNone : GraphicsDevice.RasterizerStates.CullBack;
+                GraphicsDevice.SetRasterizerState(isWireframe? wireframeState: defaultRasterizerState);
 
                 // Draw the primitive using BasicEffect
                 parameterCollection.Set(SpriteBaseKeys.MatrixTransform, Matrix.Multiply(world, Matrix.Multiply(view, projection)));
