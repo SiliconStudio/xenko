@@ -3,6 +3,7 @@
 
 using System;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Physics
@@ -115,6 +116,8 @@ namespace SiliconStudio.Paradox.Physics
         {
             return null;
         }
+
+        public Model DebugModel;
 
         public Matrix DebugPrimitiveMatrix;
 
