@@ -5,6 +5,8 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 using System;
 
+using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
+
 namespace SiliconStudio.Paradox.Physics
 {
     public class CapsuleColliderShape : ColliderShape

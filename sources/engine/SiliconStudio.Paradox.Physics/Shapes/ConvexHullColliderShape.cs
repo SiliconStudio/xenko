@@ -6,6 +6,8 @@ using SiliconStudio.Paradox.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 
+using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
+
 namespace SiliconStudio.Paradox.Physics
 {
     public class ConvexHullColliderShape : ColliderShape

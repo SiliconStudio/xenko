@@ -3,6 +3,7 @@
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
 
 namespace SiliconStudio.Paradox.Physics
 {

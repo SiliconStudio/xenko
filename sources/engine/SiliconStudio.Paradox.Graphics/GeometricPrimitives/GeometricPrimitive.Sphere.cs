@@ -77,7 +77,7 @@ using System;
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
 {
     public partial class GeometricPrimitive
     {

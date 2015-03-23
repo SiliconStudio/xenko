@@ -21,11 +21,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
 {
     public partial class GeometricPrimitive
     {
@@ -43,12 +41,14 @@ namespace SiliconStudio.Paradox.Graphics
             /// <param name="tessellationX">The tessellation, as the number of quads per X axis.</param>
             /// <param name="tessellationY">The tessellation, as the number of quads per Y axis.</param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
-            /// <param name="uvFactors">Scale UVs between 0 and the values of this parameter.</param>
+            /// <param name="uFactor">Scale U coordinates between 0 and the values of this parameter.</param>
+            /// <param name="vFactor">Scale V coordinates 0 and the values of this parameter.</param>
+            /// <param name="generateBackFace">Add a back face to the plane</param>
             /// <returns>A Plane primitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;tessellation must be > 0</exception>
-            public static GeometricPrimitive New(GraphicsDevice device, float sizeX = 1.0f, float sizeY = 1.0f, int tessellationX = 1, int tessellationY = 1, bool toLeftHanded = false, Vector2? uvFactors = null)
+            public static GeometricPrimitive New(GraphicsDevice device, float sizeX = 1.0f, float sizeY = 1.0f, int tessellationX = 1, int tessellationY = 1, float uFactor = 1f, float vFactor = 1f, bool generateBackFace = false, bool toLeftHanded = false)
             {
-                return new GeometricPrimitive(device, New(sizeX, sizeY, tessellationX, tessellationY, toLeftHanded, uvFactors));
+                return new GeometricPrimitive(device, New(sizeX, sizeY, tessellationX, tessellationY, uFactor, vFactor, generateBackFace, toLeftHanded));
             }
 
             /// <summary>
@@ -59,10 +59,12 @@ namespace SiliconStudio.Paradox.Graphics
             /// <param name="tessellationX">The tessellation, as the number of quads per X axis.</param>
             /// <param name="tessellationY">The tessellation, as the number of quads per Y axis.</param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
-            /// <param name="uvFactors">Scale UVs between 0 and the values of this parameter.</param>
+            /// <param name="uFactor">Scale U coordinates between 0 and the values of this parameter.</param>
+            /// <param name="vFactor">Scale V coordinates 0 and the values of this parameter.</param>
+            /// <param name="generateBackFace">Add a back face to the plane</param>
             /// <returns>A Plane primitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;tessellation must be > 0</exception>
-            public static GeometricMeshData<VertexPositionNormalTexture> New(float sizeX = 1.0f, float sizeY = 1.0f, int tessellationX = 1, int tessellationY = 1, bool toLeftHanded = false, Vector2? uvFactors = null, bool generateBackFace = false)
+            public static GeometricMeshData<VertexPositionNormalTexture> New(float sizeX = 1.0f, float sizeY = 1.0f, int tessellationX = 1, int tessellationY = 1, float uFactor = 1f, float vFactor = 1f, bool generateBackFace = false, bool toLeftHanded = false)
             {
                 if (tessellationX < 1)
                     tessellationX = 1;
@@ -84,7 +86,7 @@ namespace SiliconStudio.Paradox.Graphics
                 int indexCount = 0;
                 var normal = Vector3.UnitZ;
 
-                var uv = uvFactors.HasValue ? uvFactors.Value : new Vector2(1, 1);
+                var uv = new Vector2(uFactor, vFactor);
 
                 // Create vertices
                 for (int y = 0; y < (tessellationY + 1); y++)

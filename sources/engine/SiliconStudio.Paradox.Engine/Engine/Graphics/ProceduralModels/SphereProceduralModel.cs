@@ -5,6 +5,7 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
 
 namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
 {

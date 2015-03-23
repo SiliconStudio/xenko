@@ -7,6 +7,7 @@ using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Games;
+using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
 using SiliconStudio.Paradox.Graphics.Internals;
 using SiliconStudio.Paradox.Input;
 

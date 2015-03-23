@@ -13,6 +13,7 @@ using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Engine.Graphics.Composers;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Extensions;
+using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
 using SiliconStudio.Paradox.Input;
 
 namespace SiliconStudio.Paradox.Graphics.Tests
