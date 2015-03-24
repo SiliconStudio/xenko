@@ -259,6 +259,10 @@ namespace SiliconStudio.Assets
             var packages = GetRootPackagesInDependencyOrder();
             foreach (var package in packages)
             {
+
+                // TODO This is to process the Paradox package only, we don't want the VSIX package. Make this clean.
+                if (!package.Id.StartsWith("Paradox")) continue;
+
                 var packageVar = GetPackageVersionVariable(package.Id);
                 var packageTarget = String.Format(@"$(MSBuildThisFileDirectory)..\{0}\{1}.{2}\Targets\{1}.targets", RepositoryPath, package.Id, "$(" + packageVar + ")");
 
@@ -270,9 +274,31 @@ namespace SiliconStudio.Assets
                 // Add common properties
                 var packageVarSaved = packageVar + "Saved";
                 var packageVarInvalid = packageVar + "Invalid";
+                var packageVarRevision = packageVar + "Revision";
 
                 // <SiliconStudioPackageParadoxVersionSaved>$(SiliconStudioPackageParadoxVersion)</SiliconStudioPackageParadoxVersionSaved>
                 commonPropertyGroup.AddProperty(packageVarSaved, "$(" + packageVar + ")");
+
+                // List all the correspondances: Major.minor -> latest installed explicit version
+
+                // Get all the related versions of the same package also installed, and order by Major.Minor
+                var allMajorVersions = LocalRepository.FindPackagesById(package.Id).GroupBy(p => p.Version.Version.Major, p => p);
+                foreach (var major in allMajorVersions)
+                {
+                    var majorVersion = major.Key;
+                    var minorPkg = major.GroupBy(p => p.Version.Version.Minor, p => p);
+                    foreach (var minor in minorPkg)
+                    {
+                        var latestPackage = minor.First();
+                        // <SiliconStudioPackageParadoxVersionRevision Condition="'$(SiliconStudioPackageParadoxVersion)' == '0.5'">0.5.0-alpha09</SiliconStudioPackageParadoxVersionRevision>
+                        var revisionVersionProperty = commonPropertyGroup.AddProperty(packageVarRevision, latestPackage.Version.ToString());
+                        revisionVersionProperty.Condition = "'$(" + packageVar + ")' == '" + majorVersion + "." + minor.Key + "'";
+                    }
+                }
+
+                // Replace the version Major.minor by the full revision name
+                // <SiliconStudioPackageParadoxVersion>$(SiliconStudioPackageParadoxVersionRevision)</SiliconStudioPackageParadoxVersion>
+                commonPropertyGroup.AddProperty(packageVar, "$(" + packageVarRevision + ")");
 
                 // <SiliconStudioPackageParadoxVersionInvalid Condition="'$(SiliconStudioPackageParadoxVersion)' == '' or !Exists('..\Packages\Paradox.$(SiliconStudioPackageParadoxVersion)\Targets\Paradox.targets')">true</SiliconStudioPackageParadoxVersionInvalid>
                 commonPropertyGroup.AddProperty(packageVarInvalid, "true").Condition = "'$(" + packageVar + ")' == '' or !" + importElement.Condition;
