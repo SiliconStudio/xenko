@@ -97,10 +97,10 @@ namespace SiliconStudio.Paradox.EntityModel
             previousHeight = MainRenderFrame.Height;
 
             // Update the entities at draw time.
+            renderContext.Time = gameTime;
             SceneInstance.Draw(renderContext);
 
             // Renders the scene
-            renderContext.Time = gameTime;
             SceneInstance.Draw(renderContext, MainRenderFrame);
         }
     }
