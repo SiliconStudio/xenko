@@ -33,6 +33,9 @@ namespace SiliconStudio.Paradox.Physics
             get { return Elements[i]; }
         }
 
+        [DataMemberIgnore]
+        public Simulation Simulation { get; internal set; }
+
         public override PropertyKey GetDefaultKey()
         {
             return Key;
