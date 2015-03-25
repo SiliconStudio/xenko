@@ -16,5 +16,6 @@ class TransformationWAndVP : TransformationBase, PositionStream4, PositionHStrea
         base.PostTransformPosition();
         streams.ShadingPosition = mul(streams.PositionWS, Transformation.ViewProjection);
         streams.PositionH = streams.ShadingPosition;
+        streams.DepthVS = streams.ShadingPosition.w;
     }
 };
