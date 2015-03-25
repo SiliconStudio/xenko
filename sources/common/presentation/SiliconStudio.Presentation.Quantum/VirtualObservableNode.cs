@@ -72,6 +72,7 @@ namespace SiliconStudio.Presentation.Quantum
         public VirtualObservableNode(ObservableViewModel ownerViewModel, string name, SingleObservableNode parentNode, int? order, bool isPrimitive, object initialValue, object index, NodeCommandWrapperBase valueChangedCommand = null)
             : base(ownerViewModel, name, parentNode, order, isPrimitive, index, valueChangedCommand)
         {
+            DependentProperties.Add("TypedValue", new[] { "Value" });
             value = (T)initialValue;
         }
 
@@ -84,9 +85,12 @@ namespace SiliconStudio.Presentation.Quantum
             set
             {
                 bool hasChanged = SetValue(ref this.value, value);
-                if (hasChanged && ValueChangedCommand != null)
+                if (hasChanged)
                 {
-                    ValueChangedCommand.Execute(value);
+                    if (ValueChangedCommand != null)
+                    {
+                        ValueChangedCommand.Execute(value);
+                    }
                     OnValueChanged();
                 }
             }
