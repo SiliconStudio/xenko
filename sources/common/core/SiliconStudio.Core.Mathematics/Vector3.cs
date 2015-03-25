@@ -1406,6 +1406,17 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Divides a vector by the given vector, component-wise.
+        /// </summary>
+        /// <param name="value">The vector to scale.</param>
+        /// <param name="by">The by.</param>
+        /// <returns>The scaled vector.</returns>
+        public static Vector3 operator /(Vector3 value, Vector3 by)
+        {
+            return new Vector3(value.X / by.X, value.Y / by.Y, value.Z / by.Z);
+        }
+
+        /// <summary>
         /// Tests for equality between two objects.
         /// </summary>
         /// <param name="left">The first value to compare.</param>
