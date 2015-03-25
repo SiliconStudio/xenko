@@ -11,17 +11,14 @@ namespace SiliconStudio.Paradox.Effects.Shadows
     /// </remarks>
     internal class ShadowMapCascade<int TCascadeCount, bool TCascadeDebug> : ShadowMapGroup, ShadowMapFilterBase, PositionStream4
     {
-        cbuffer PerPass
+        cbuffer PerPass // TODO: Use a proper cbuffer for this?
         {
-            float4x4 ShadowMatrix;
-            float CascadeSplits[TCascadeCount];
-            float3 CascadeOffsets[TCascadeCount];
-            float3 CascadeScales[TCascadeCount];
+            float4x4 WorldToShadowCascadeUV[TCascadeCount];
         };
 
-        float ComputeShadowFromCascade(float3 shadowPosition, int cascadeIndex)
+        float ComputeShadowFromCascade(float3 shadowPositionWS, int cascadeIndex)
         {
-            shadowPosition = (shadowPosition + CascadeOffsets[cascadeIndex]) * CascadeScales[cascadeIndex];
+            var shadowPosition = mul(float4(shadowPositionWS, 1), WorldToShadowCascadeUV[cascadeIndex]);
             return FilterShadow(shadowPosition.xy, shadowPosition.z);
         }
 
@@ -38,15 +35,13 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             for(int i = 0; i < TCascadeCount - 1; i++) 
             {
                 [flatten]
-                if (streams.DepthVS > CascadeSplits[i])
+                if (streams.DepthVS > WorldToShadowCascadeUV[0][i][3])
                 {
                     cascadeIndex = i + 1;
                 }
             }
 
-            var shadowPosition = mul(float4(streams.Position.xyz, 1), ShadowMatrix).xyz;
-
-            var shadow = ComputeShadowFromCascade(shadowPosition, cascadeIndex);
+            var shadow = ComputeShadowFromCascade(streams.Position.xyz, cascadeIndex);
 
             streams.shadowColor = shadow;
 

@@ -21,29 +21,17 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
         public LightDirectionalShadowMapRenderer()
         {
-            CascadeCasterMatrix = new Matrix[4];
-            CascadeToUVMatrix = new Matrix[4];
+            WorldToShadowCascadeUV = new Matrix[4];
             CascadeSplitRatios = new float[4];
             CascadeSplits = new float[4];
-            CascadeOffsets = new Vector3[4];
-            CascadeScales = new Vector3[4];
-            CascadeRectangleUVs = new Vector4[4];
             CascadeFrustumCorners = new Vector3[8];
         }
 
-        public readonly Matrix[] CascadeCasterMatrix;
-
-        public readonly Matrix[] CascadeToUVMatrix;
+        public readonly Matrix[] WorldToShadowCascadeUV;
 
         public readonly float[] CascadeSplitRatios;
 
         public readonly float[] CascadeSplits;
-
-        public readonly Vector3[] CascadeOffsets;
-
-        public readonly Vector3[] CascadeScales;
-
-        public readonly Vector4[] CascadeRectangleUVs;
 
         private Vector3[] CascadeFrustumCorners;
 
@@ -127,14 +115,6 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             var camera = shadowMapRenderer.Camera;
             var shadowCamera = shadowMapRenderer.ShadowCamera;
 
-            // Calculate the reference matrix to compare between cascades
-            var cameraFrustumBounds = BoundingBox.FromPoints(shadowMapRenderer.FrustumCorner);
-            var cameraUpDir = shadow.Stabilized ? camera.ViewMatrix.Right : Vector3.UnitY;
-            var referenceShadowMatrix = Matrix.LookAtLH(cameraFrustumBounds.Center + direction * 0.5f, cameraFrustumBounds.Center, cameraUpDir);
-            referenceShadowMatrix *= Matrix.OrthoOffCenterLH(-0.5f, 0.5f, -0.5f, 0.5f, 0.0f, 1.0f);
-            referenceShadowMatrix *= Matrix.Scaling(0.5f, -0.5f, 1.0f);
-            referenceShadowMatrix *= Matrix.Translation(0.5f, 0.5f, 0.0f);
-
             // Push a new graphics state
             var graphicsDevice = context.GraphicsDevice;
             graphicsDevice.PushState();
@@ -210,15 +190,10 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 shadowCamera.Update();
 
                 // Calculate View Proj matrix from World space to Cascade space
-                CascadeCasterMatrix[cascadeLevel] = shadowCamera.ViewProjectionMatrix;
+                var cascadeShadowMatrix = shadowCamera.ViewProjectionMatrix;
 
-                // Cascade splits in light space using depth
-                CascadeSplits[cascadeLevel] = camera.NearClipPlane + CascadeSplitRatios[cascadeLevel] * (camera.FarClipPlane - camera.NearClipPlane);
-
-                // Cascade offsets
-                Matrix lightSpaceToWorld;
-                Matrix.Invert(ref shadowMapView, out lightSpaceToWorld);
-                CascadeOffsets[cascadeLevel] = lightSpaceToWorld.TranslationVector;
+                // Cascade splits in light space using depth: Store depth on first CascaderCasterMatrix in last column of each row
+                cascadeShadowMatrix[cascadeLevel, 3] = camera.NearClipPlane + CascadeSplitRatios[cascadeLevel] * (camera.FarClipPlane - camera.NearClipPlane);
 
                 var shadowMapRectangle = lightShadowMap.GetRectangle(cascadeLevel);
 
@@ -226,9 +201,6 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                     (float)shadowMapRectangle.Top / lightShadowMap.Atlas.Height,
                     (float)shadowMapRectangle.Right / lightShadowMap.Atlas.Width,
                     (float)shadowMapRectangle.Bottom / lightShadowMap.Atlas.Height);
-
-                // Copy texture coords without border
-                CascadeRectangleUVs[cascadeLevel] = cascadeTextureCoords;
 
                 //// Add border (avoid using edges due to bilinear filtering and blur)
                 //var borderSizeU = VsmBlurSize / lightShadowMap.Atlas.Width;
@@ -245,18 +217,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
                 // Compute receiver view proj matrix
                 Matrix adjustmentMatrix = Matrix.Scaling(leftX, -leftY, 1.0f) * Matrix.Translation(centerX, centerY, 0.0f);
-                Matrix.Multiply(ref CascadeCasterMatrix[cascadeLevel], ref adjustmentMatrix, out CascadeToUVMatrix[cascadeLevel]);
-
-                // Find offset and scale for the current cascade relative to the reference shadow matrix
-                var uvToWorld = Matrix.Invert(CascadeToUVMatrix[cascadeLevel]);
-                var cascadeCorner1 = Vector3.TransformCoordinate(new Vector3(0, 0, 0), uvToWorld);
-                var cascadeCorner2 = Vector3.TransformCoordinate(new Vector3(1, 1, 1), uvToWorld);
-                Vector3.TransformCoordinate(ref cascadeCorner1, ref referenceShadowMatrix, out cascadeCorner1);
-                Vector3.TransformCoordinate(ref cascadeCorner2, ref referenceShadowMatrix, out cascadeCorner1);
-
-                var cascadeScale = Vector3.One / (cascadeCorner2 - cascadeCorner1);
-                CascadeOffsets[cascadeLevel] = -cascadeCorner1;
-                CascadeScales[cascadeLevel] = cascadeScale;
+                Matrix.Multiply(ref cascadeShadowMatrix, ref adjustmentMatrix, out WorldToShadowCascadeUV[cascadeLevel]);
 
                 // Render to the atlas
                 lightShadowMap.Atlas.RenderFrame.Activate(context);
