@@ -40,5 +40,21 @@ namespace SiliconStudio.Core.Extensions
 
             list.RemoveAt(list.Count - 1);
         }
+
+        /// <summary>
+        /// Gets the item from a list at a specified index. If index is out of the list, returns null.
+        /// </summary>
+        /// <typeparam name="T">Type of the item in the list</typeparam>
+        /// <param name="list">The list.</param>
+        /// <param name="index">The index.</param>
+        /// <returns>The item from a list at a specified index. If index is out of the list, returns null..</returns>
+        public static T GetItemOrNull<T>(this IList<T> list, int index) where T : class
+        {
+            if (list != null && index >= 0 && index < list.Count)
+            {
+                return list[index];
+            }
+            return null;
+        }
     }
 }
