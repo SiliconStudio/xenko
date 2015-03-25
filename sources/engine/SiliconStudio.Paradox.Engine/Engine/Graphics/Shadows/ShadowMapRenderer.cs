@@ -4,7 +4,9 @@
 using System;
 using System.Collections.Generic;
 
+using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Lights;
 using SiliconStudio.Paradox.Engine;
@@ -18,68 +20,134 @@ namespace SiliconStudio.Paradox.Effects.Shadows
     /// <summary>
     /// Handles rendering of shadow map casters.
     /// </summary>
-    public class ShadowMapCasterRenderer : EntityComponentRendererCoreBase
+    public class ShadowMapRenderer : EntityComponentRendererCoreBase
     {
         private FastListStruct<ShadowMapAtlasTexture> atlases;
         private FastListStruct<LightShadowMapTexture> shadowMaps;
 
+        /// <summary>
+        /// Base points for frustum corners.
+        /// </summary>
+        private static readonly Vector3[] FrustumBasePoints =
+        {
+            new Vector3(-1.0f,-1.0f, 0.0f), new Vector3(1.0f,-1.0f, 0.0f), new Vector3(-1.0f,1.0f, 0.0f), new Vector3(1.0f,1.0f, 0.0f),
+            new Vector3(-1.0f,-1.0f, 1.0f), new Vector3(1.0f,-1.0f, 1.0f), new Vector3(-1.0f,1.0f, 1.0f), new Vector3(1.0f,1.0f, 1.0f),
+        };
+
         private readonly int MaximumTextureSize = (int)(MaximumShadowSize * ComputeSizeFactor(LightShadowImportance.High, LightShadowMapSize.Large) * 2.0f);
 
-        private const float MaximumShadowSize = 1024;
+        private readonly static PropertyKey<ShadowMapRenderer> Current = new PropertyKey<ShadowMapRenderer>("ShadowMapRenderer.Current", typeof(ShadowMapRenderer));
 
-        private const float VsmBlurSize = 4.0f;
+        private const float MaximumShadowSize = 1024;
 
         internal static readonly ParameterKey<ShadowMapReceiverInfo[]> Receivers = ParameterKeys.New(new ShadowMapReceiverInfo[1]);
         internal static readonly ParameterKey<ShadowMapReceiverVsmInfo[]> ReceiversVsm = ParameterKeys.New(new ShadowMapReceiverVsmInfo[1]);
         internal static readonly ParameterKey<ShadowMapCascadeLevel[]> LevelReceivers = ParameterKeys.New(new ShadowMapCascadeLevel[1]);
         internal static readonly ParameterKey<int> ShadowMapLightCount = ParameterKeys.New(0);
         
-
         // rectangles to blur for each shadow map
         private HashSet<LightShadowMapTexture> shadowMapTexturesToBlur = new HashSet<LightShadowMapTexture>();
 
-        private readonly SceneGraphicsCompositorLayers compositor;
-
         private readonly Entity cameraEntity;
 
-        private readonly CameraComponent shadowCameraComponent;
+        private readonly ModelComponentRenderer modelRenderer;
 
-        public ShadowMapCasterRenderer()
+        private readonly string effectName;
+
+        private readonly ModelComponentRenderer shadowModelComponentRenderer;
+
+        private readonly RenderItemCollection opaqueRenderItems;
+
+        private readonly RenderItemCollection transparentRenderItems;
+
+        private readonly Dictionary<Type, ILightShadowMapRenderer> renderers;
+
+        private readonly ParameterCollection shadowParameters;
+
+        public ShadowMapRenderer(string effectName)
         {
-            atlases = new FastListStruct<ShadowMapAtlasTexture>();
+            if (effectName == null) throw new ArgumentNullException("effectName");
+            this.effectName = effectName;
+            atlases = new FastListStruct<ShadowMapAtlasTexture>(16);
             shadowMaps = new FastListStruct<LightShadowMapTexture>(16);
 
-            shadowCameraComponent = new CameraComponent();
-            cameraEntity = new Entity() { shadowCameraComponent };
+            opaqueRenderItems = new RenderItemCollection(512, false);
+            transparentRenderItems = new RenderItemCollection(512, true);
 
-            // Declare the compositor used to render the current scene for the shadow mapping
-            compositor = new SceneGraphicsCompositorLayers()
+            renderers = new Dictionary<Type, ILightShadowMapRenderer>();
+
+            FrustumCorner = new Vector3[8];
+            FrustumDirection = new Vector3[4];
+
+            ShadowCamera = new CameraComponent { UseCustomViewMatrix = true, UseCustomProjectionMatrix = true };
+
+            // Creates a model renderer for the shadows casters
+            shadowModelComponentRenderer = new ModelComponentRenderer(effectName + ".ShadowMapCaster")
             {
-                Cameras =
+                Callbacks = new ModelComponentRendererCallback
                 {
-                    shadowCameraComponent
-                },
-                Master =
-                {
-                    Renderers =
-                    {
-                        new SceneCameraRenderer()
-                        {
-                            Mode =
-                            {
-                                RenderComponentTypes = { typeof(CameraComponent), typeof(ModelComponent) }
-                            }
-                        }
-                    }
+                    UpdateMeshes = FilterCasters,
                 }
             };
+
+            shadowParameters = new ParameterCollection();
+        }
+
+        /// <summary>
+        /// The frustum corner positions in world space
+        /// </summary>
+        public readonly Vector3[] FrustumCorner;
+
+        /// <summary>
+        /// The frustum direction in world space
+        /// </summary>
+        public readonly Vector3[] FrustumDirection;
+
+        /// <summary>
+        /// Gets or sets the camera.
+        /// </summary>
+        /// <value>The camera.</value>
+        public CameraComponent Camera { get; private set; }
+
+        /// <summary>
+        /// The shadow camera used for rendering from the shadow space.
+        /// </summary>
+        public readonly CameraComponent ShadowCamera;
+
+        public void Attach(ModelComponentRenderer modelRenderer)
+        {
+            // TODO: Add logic to plug shadow mapping into 
+
         }
 
         public void Draw(RenderContext context)
         {
-            PreDrawCoreInternal(context);
-            DrawCore(context);
-            PostDrawCoreInternal(context);
+            var current = context.Tags.Get(Current);
+            if (current != null)
+            {
+                return;
+            }
+
+            using (var t1 = context.PushTagAndRestore(Current, this))
+            {
+                PreDrawCoreInternal(context);
+                DrawCore(context);
+                PostDrawCoreInternal(context);
+            }
+        }
+
+        public void RenderCasters(RenderContext context)
+        {
+            context.PushParameters(shadowParameters);
+
+            CameraComponentRenderer.UpdateParameters(context, ShadowCamera);
+
+            opaqueRenderItems.Clear();
+            transparentRenderItems.Clear();
+            shadowModelComponentRenderer.Prepare(context, opaqueRenderItems, transparentRenderItems);
+            shadowModelComponentRenderer.Draw(context, opaqueRenderItems, 0, opaqueRenderItems.Count-1);
+
+            context.PopParameters();
         }
 
         protected void DrawCore(RenderContext context)
@@ -88,30 +156,55 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             var sceneInstance = SceneInstance.GetCurrent(context);
             if (sceneInstance == null)
             {
-                throw new InvalidOperationException("ShadowMapCasterRenderer expects to be used inside the context of a SceneInstance.Draw()");
+                throw new InvalidOperationException("ShadowMapRenderer expects to be used inside the context of a SceneInstance.Draw()");
             }
             
             // Gets the current camera
-            var camera = context.GetCurrentCamera();
-            if (camera == null)
+            Camera = context.GetCurrentCamera();
+            if (Camera == null)
             {
                 return;
             }
 
             // Collect all required shadow maps
-            if (!CollectShadowMaps()) 
+            shadowMaps.Clear();
+            CollectShadowMaps();
+
+            // No shadow maps to render
+            if (shadowMaps.Count == 0)
+            {
                 return;
+            }
 
             // Assign rectangles to shadow maps
             AssignRectangles();
 
-            // Get View and Projection matrices
-            var shadowMapContext = new ShadowMapCasterContext(camera);
+            // Update frustum
+            UpdateFrustum();
 
             // Prepare and render shadow maps
             for (int i = 0; i < shadowMaps.Count; i++)
             {
-                shadowMaps[i].Renderer.Render(shadowMapContext, ref shadowMaps.Items[i]);
+                shadowMaps[i].Renderer.Render(context, this, ref shadowMaps.Items[i]);
+            }
+        }
+
+        private void UpdateFrustum()
+        {
+            // Compute frustum-dependent variables (common for all shadow maps)
+            Matrix projectionToWorld;
+            Matrix.Invert(ref Camera.ViewProjectionMatrix, out projectionToWorld);
+
+            // Transform Frustum corners in World Space (8 points) - algorithm is valid only if the view matrix does not do any kind of scale/shear transformation
+            for (int i = 0; i < 8; ++i)
+            {
+                Vector3.TransformCoordinate(ref FrustumBasePoints[i], ref projectionToWorld, out FrustumCorner[i]);
+            }
+
+            // Compute frustum edge directions
+            for (int i = 0; i < 4; i++)
+            {
+                FrustumDirection[i] = Vector3.Normalize(FrustumCorner[i + 4] - FrustumCorner[i]);
             }
         }
 
@@ -151,6 +244,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             // Allocate a new atlas texture
             var texture = Texture.New2D(Context.GraphicsDevice, MaximumTextureSize, MaximumTextureSize, 1, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
             var newAtlas = new ShadowMapAtlasTexture(texture) { FilterType = lightShadowMapTexture.FilterType };
+            AssignRectangles(ref lightShadowMapTexture, newAtlas);
             atlases.Add(newAtlas);
         }
 
@@ -165,18 +259,17 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 var rect = Rectangle.Empty;
                 atlas.Insert(size, size, ref rect);
                 lightShadowMapTexture.SetRectangle(i, rect);
+                lightShadowMapTexture.Atlas = atlas;
             }
         }
 
-        private bool CollectShadowMaps()
+        private void CollectShadowMaps()
         {
             // Gets the LightProcessor
             var lightProcessor = SceneInstance.GetProcessor<LightProcessor>();
             if (lightProcessor == null)
-                return false;
+                return;
 
-            // Prepare shadow map sizes
-            shadowMaps.Clear();
             foreach (var activeLightsPerType in lightProcessor.ActiveLightsWithShadow)
             {
                 var lightType = activeLightsPerType.Key;
@@ -189,6 +282,21 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                     // TODO: We support only ShadowMap in this renderer. Should we pre-organize this in the LightProcessor? (adding for example LightType => ShadowType => LightComponents)
                     var shadowMap = light.Shadow as LightShadowMap;
                     if (shadowMap == null)
+                    {
+                        continue;
+                    }
+
+                    // Check if the light has a shadow map renderer
+                    ILightShadowMapRenderer renderer;
+                    if (!renderers.TryGetValue(lightType, out renderer))
+                    {
+                        // Create renderers just once per ShadowMapRenderer instance
+                        renderer = shadowMap.CreateRenderer(light);
+                        renderers[lightType] = renderer;
+                    }
+
+                    // If no shadow map renderer, skip it.
+                    if (renderer == null)
                     {
                         continue;
                     }
@@ -211,17 +319,9 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                         continue;
                     }
 
-                    shadowMaps.Add(new LightShadowMapTexture(lightComponent, light, shadowMap, shadowMapSize));
+                    shadowMaps.Add(new LightShadowMapTexture(lightComponent, light, shadowMap, shadowMapSize, renderer));
                 }
             }
-
-            // No shadow maps to render
-            if (shadowMaps.Count == 0)
-            {
-                return false;
-            }
-
-            return true;
         }
 
         private static float ComputeSizeFactor(LightShadowImportance importance, LightShadowMapSize shadowMapSize)
@@ -232,6 +332,26 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             // Then reduce the size based on the shadow map size
             factor *= (float)Math.Pow(2.0f, (int)shadowMapSize - 2.0f);
             return factor;
+        }
+
+        private static void FilterCasters(RenderContext context, FastList<RenderMesh> meshes)
+        {
+            for (int i = 0; i < meshes.Count; i++)
+            {
+                var mesh = meshes[i];
+                // If there is no caster
+                if (!mesh.MaterialInstance.IsShadowCaster)
+                {
+                    meshes.SwapRemoveAt(i--);
+                }
+
+                var extension = mesh.Parameters.Get(ParadoxEffectBaseKeys.ExtensionPostVertexStageShader);
+                const string ShadowMapCasterExtension = "ShadowMapCaster";
+                if (extension != ShadowMapCasterExtension)
+                {
+                    mesh.Parameters.Set(ParadoxEffectBaseKeys.ExtensionPostVertexStageShader, ShadowMapCasterExtension);
+                }
+            }
         }
     }
 }

@@ -8,6 +8,6 @@ namespace SiliconStudio.Paradox.Effects.Shadows
     /// </summary>
     public interface ILightShadowMapRenderer
     {
-        void Render(ShadowMapCasterContext shadowContext, ref LightShadowMapTexture lightShadowMap);
+        void Render(RenderContext context, ShadowMapRenderer shadowMapRenderer, ref LightShadowMapTexture lightShadowMap);
     }
 }

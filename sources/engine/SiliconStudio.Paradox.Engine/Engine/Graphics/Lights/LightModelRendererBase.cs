@@ -46,7 +46,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// Filter out the inactive lights.
         /// </summary>
         /// <param name="context">The render context.</param>
-        public void PrepareLights(RenderContext context)
+        public virtual void PrepareLights(RenderContext context)
         {
             lightProcessor = SceneInstance.GetCurrent(context).GetProcessor<LightProcessor>();
 

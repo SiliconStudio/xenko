@@ -4,6 +4,8 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Paradox.Effects.Shadows;
 
 namespace SiliconStudio.Paradox.Effects.Lights
 {
@@ -18,13 +20,17 @@ namespace SiliconStudio.Paradox.Effects.Lights
         PSSM
     }
 
+    public interface ILightShadowMap : ILightShadow
+    {
+        ILightShadowMapRenderer CreateRenderer(ILight light);
+    }
 
     /// <summary>
     /// A shadow map.
     /// </summary>
     [DataContract("LightShadowMap")]
     [Display("ShadowMap")]
-    public class LightShadowMap : ILightShadow
+    public class LightShadowMap : ILightShadowMap
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LightShadowMap"/> class.
@@ -41,6 +47,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             SplitDistance2 = 0.50f;
             SplitDistance3 = 1.00f;
             SplitMode = LightShadowMapSplitMode.Manual;
+            Stabilized = false;
         }
 
         /// <summary>
@@ -74,31 +81,60 @@ namespace SiliconStudio.Paradox.Effects.Lights
         [DefaultValue(LightShadowMapCascadeCount.TwoCascades)]
         public LightShadowMapCascadeCount CascadeCount { get; set; }
 
-        [DataMemberIgnore]
+        /// <summary>
+        /// Gets or sets the split mode.
+        /// </summary>
+        /// <value>The split mode.</value>
+        [DataMember(50)]
+        [DefaultValue(LightShadowMapSplitMode.Manual)]
         public LightShadowMapSplitMode SplitMode { get; set; }
 
         /// <summary>
         /// Gets or sets the minimum distance.
         /// </summary>
         /// <value>The minimum distance.</value>
-        [DataMemberIgnore]
+        [DataMember(60)]
+        [DefaultValue(0.0f)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
         public float MinDistance { get; set; }
 
-        [DataMemberIgnore]
+        [DataMember(70)]
+        [DefaultValue(1.0f)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
         public float MaxDistance { get; set; }
 
-        [DataMemberIgnore]
+        [DataMember(80)]
+        [DefaultValue(0.05f)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
         public float SplitDistance0 { get; set; }
 
-        [DataMemberIgnore]
+        [DataMember(90)]
+        [DefaultValue(0.15f)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
         public float SplitDistance1 { get; set; }
 
-        [DataMemberIgnore]
+        [DataMember(100)]
+        [DefaultValue(0.5f)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
         public float SplitDistance2 { get; set; }
-        [DataMemberIgnore]
+
+        [DataMember(110)]
+        [DefaultValue(1.0f)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
         public float SplitDistance3 { get; set; }
 
-        [DataMemberIgnore]
+        [DataMember(120)]
+        [DefaultValue(false)]
         public bool Stabilized { get; set; }
+
+        public ILightShadowMapRenderer CreateRenderer(ILight light)
+        {
+            if (light is LightDirectional)
+            {
+                return new LightDirectionalShadowMapRenderer();
+            }
+
+            return null;
+        }
     }
 }

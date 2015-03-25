@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Engine
             Projection = CameraProjectionMode.Perspective;
             VerticalFieldOfView = 45.0f;
             OrthographicSize = 10.0f;
-            NearPlane = 10f;
+            NearPlane = 10.0f;
             FarPlane = 200000f;
         }
 

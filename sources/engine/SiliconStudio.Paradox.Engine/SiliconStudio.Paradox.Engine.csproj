@@ -75,6 +75,7 @@
     <Compile Include="DataModel\Interpolator.cs" />
     <Compile Include="Engine\BackgroundComponent.cs" />
     <Compile Include="Engine\BackgroundComponentProcessor.cs" />
+    <Compile Include="Engine\Graphics\MaterialInstance.cs" />
     <Compile Include="Engine\Graphics\ParadoxEffectBaseKeys.cs" />
     <Compile Include="Engine\Graphics\SceneEntityRenderer.cs" />
     <Compile Include="Engine\Graphics\SceneUIRenderer.cs" />
@@ -84,8 +85,7 @@
     <Compile Include="Engine\Graphics\Shadows\LightDirectionalShadowMapRenderer.cs" />
     <Compile Include="Engine\Graphics\Shadows\LightShadowMapTexture.cs" />
     <Compile Include="Engine\Graphics\Shadows\ShadowMapAtlasTexture.cs" />
-    <Compile Include="Engine\Graphics\Shadows\ShadowMapCasterContext.cs" />
-    <Compile Include="Engine\Graphics\Shadows\ShadowMapCasterRenderer.cs" />
+    <Compile Include="Engine\Graphics\Shadows\ShadowMapRenderer.cs" />
     <Compile Include="Engine\Graphics\VirtualResolutionMode.cs" />
     <Compile Include="Engine\Graphics\Lights\DirectLightGroupFixed.cs">
       <DependentUpon>DirectLightGroupFixed.pdxsl</DependentUpon>

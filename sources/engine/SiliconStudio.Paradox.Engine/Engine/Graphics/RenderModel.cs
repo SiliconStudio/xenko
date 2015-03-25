@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.EntityModel;
 
@@ -76,15 +77,20 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 return null;
 
             // Try to get material first from model instance, then model
-            return GetMaterialHelper(ModelComponent.Materials, materialIndex)
-                   ?? GetMaterialHelper(Model.Materials, materialIndex);
+            return ModelComponent.Materials.GetItemOrNull(materialIndex)
+                ?? GetMaterialHelper(Model.Materials, materialIndex);
         }
 
-        private static Material GetMaterialHelper(List<Material> materials, int index)
+        public MaterialInstance GetMaterialInstance(int materialIndex)
+        {
+            return Model.Materials.GetItemOrNull(materialIndex);
+        }
+
+        private static Material GetMaterialHelper(List<MaterialInstance> materials, int index)
         {
             if (materials != null && index < materials.Count)
             {
-                return materials[index];
+                return materials[index].Material;
             }
 
             return null;

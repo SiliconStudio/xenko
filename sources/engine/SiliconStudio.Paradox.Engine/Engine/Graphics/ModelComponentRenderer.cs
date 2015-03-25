@@ -17,8 +17,6 @@ namespace SiliconStudio.Paradox.Effects
     [DataContract]
     public class ModelComponentRendererCallback
     {
-        public static readonly PropertyKey<ModelComponentRendererCallback> Key = new PropertyKey<ModelComponentRendererCallback>("ModelComponentRendererCallback.Key", typeof(ModelComponentRendererCallback));
-
         public delegate void UpdateMeshesDelegate(RenderContext context, FastList<RenderMesh> meshes);
 
         public delegate void PreRenderDelegate(RenderContext context);
@@ -85,6 +83,12 @@ namespace SiliconStudio.Paradox.Effects
                 return effectName;
             }
         }
+
+        /// <summary>
+        /// Gets or sets the callbacks.
+        /// </summary>
+        /// <value>The callbacks.</value>
+        public ModelComponentRendererCallback Callbacks { get; set; }
 
         public DynamicEffectCompiler DynamicEffectCompiler
         {
@@ -170,7 +174,7 @@ namespace SiliconStudio.Paradox.Effects
             }
 
             // Slow path there is a callback
-            var callback = context.Tags.Get(ModelComponentRendererCallback.Key);
+            var callback = Callbacks;
             if (callback != null && callback.UpdateMeshes != null)
             {
                 callback.UpdateMeshes(context, meshesToRender);

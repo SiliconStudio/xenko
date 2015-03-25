@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.BuildEngine;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.DataModel;
@@ -23,7 +24,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 {
     public abstract class ImportModelCommand : SingleFileImportCommand
     {
-        private delegate bool SameGroup(Mesh baseMesh, Mesh newMesh);
+        private delegate bool SameGroup(Effects.Model model, Mesh baseMesh, Mesh newMesh);
 
         /// <inheritdoc/>
         public override IEnumerable<Tuple<string, string>> TagList { get { yield return Tuple.Create("Texture", "Value of the TextureTag property"); } }
@@ -194,9 +195,10 @@ namespace SiliconStudio.Paradox.Assets.Model
                             // refine the groups base on several tests
                             var newMeshGroups = new List<GroupList<int, Mesh>> { meshList };
                             // only regroup meshes if they share the same parameters
-                            newMeshGroups = RefineGroups(newMeshGroups, CompareParameters);
+                            newMeshGroups = RefineGroups(model, newMeshGroups, CompareParameters);
+
                             // only regroup meshes if they share the shadow options
-                            newMeshGroups = RefineGroups(newMeshGroups, CompareShadowOptions);
+                            newMeshGroups = RefineGroups(model, newMeshGroups, CompareShadowOptions);
 
                             // add to the final meshes groups
                             foreach (var sameParamsMeshes in newMeshGroups)
@@ -400,7 +402,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <param name="meshList">The list of mesh groups.</param>
         /// <param name="sameGroupDelegate">The test delegate.</param>
         /// <returns>The new list of mesh groups.</returns>
-        private List<GroupList<int, Mesh>> RefineGroups(List<GroupList<int, Mesh>> meshList, SameGroup sameGroupDelegate)
+        private List<GroupList<int, Mesh>> RefineGroups(Effects.Model model, List<GroupList<int, Mesh>> meshList, SameGroup sameGroupDelegate)
         {
             var finalGroups = new List<GroupList<int, Mesh>>();
             foreach (var meshGroup in meshList)
@@ -411,7 +413,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                     var createNewGroup = true;
                     foreach (var sameParamsMeshes in updatedGroups)
                     {
-                        if (sameGroupDelegate(sameParamsMeshes[0], mesh))
+                        if (sameGroupDelegate(model, sameParamsMeshes[0], mesh))
                         {
                             sameParamsMeshes.Add(mesh);
                             createNewGroup = false;
@@ -572,7 +574,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <param name="newMesh">The mesh to compare.</param>
         /// <param name="extra">Unused parameter.</param>
         /// <returns>True if all the parameters are the same, false otherwise.</returns>
-        private static bool CompareParameters(Mesh baseMesh, Mesh newMesh)
+        private static bool CompareParameters(Effects.Model model, Mesh baseMesh, Mesh newMesh)
         {
             var localParams = baseMesh.Parameters;
             if (localParams == null && newMesh.Parameters == null)
@@ -589,10 +591,14 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <param name="newMesh">The mesh to compare.</param>
         /// <param name="extra">Unused parameter.</param>
         /// <returns>True if the options are the same, false otherwise.</returns>
-        private static bool CompareShadowOptions(Mesh baseMesh, Mesh newMesh)
+        private static bool CompareShadowOptions(Effects.Model model, Mesh baseMesh, Mesh newMesh)
         {
-            return CompareKeyValue(baseMesh.Parameters, newMesh.Parameters, LightingKeys.CastShadows)
-                   && CompareKeyValue(baseMesh.Parameters, newMesh.Parameters, LightingKeys.ReceiveShadows);
+            // TODO: Check is Model the same for the two mesh?
+            var material1 = model.Materials.GetItemOrNull(baseMesh.MaterialIndex);
+            var material2 = model.Materials.GetItemOrNull(newMesh.MaterialIndex);
+
+            return material1 == material2 || (material1 != null && material2 != null && material1.IsShadowCaster == material2.IsShadowCaster &&
+                material1.IsShadowReceiver == material2.IsShadowReceiver);
         }
 
         /// <summary>

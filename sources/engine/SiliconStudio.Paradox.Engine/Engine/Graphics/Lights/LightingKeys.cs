@@ -17,11 +17,7 @@ namespace SiliconStudio.Paradox.Effects
         public static readonly ParameterKey<ShaderSource[]> DirectLightGroups = ParameterKeys.New((ShaderSource[])null);
 
         public static readonly ParameterKey<ShaderSource[]> EnvironmentLights = ParameterKeys.New((ShaderSource[])null);
-
-        public static readonly ParameterKey<bool> ReceiveShadows = ParameterKeys.New(true);
-
-        public static readonly ParameterKey<bool> CastShadows = ParameterKeys.New(true);
-
+       
         private static readonly ShaderSource[] DefaultAmbientLighting = new ShaderSource[] { new ShaderClassSource("LightSimpleAmbient"), };
 
         public static void EnableFixedAmbientLight(ParameterCollection parameters, bool enable)

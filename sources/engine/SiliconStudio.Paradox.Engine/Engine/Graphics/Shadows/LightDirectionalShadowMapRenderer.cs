@@ -5,6 +5,7 @@ using System;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Lights;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Shadows
 {
@@ -46,13 +47,13 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
         private Vector3[] CascadeFrustumCorners;
 
-        private void ComputeCascadeSplits(ShadowMapCasterContext shadowContext, ref LightShadowMapTexture lightShadowMap)
+        private void ComputeCascadeSplits(ShadowMapRenderer shadowContext, ref LightShadowMapTexture lightShadowMap)
         {
             var shadow = lightShadowMap.Shadow;
 
             // TODO: Min and Max distance can be auto-computed from readback from Z buffer
             var minDistance = shadow.MinDistance;
-            var maxDistance = shadow.MinDistance;
+            var maxDistance = shadow.MaxDistance;
 
             if (shadow.SplitMode == LightShadowMapSplitMode.Logarithmic || shadow.SplitMode == LightShadowMapSplitMode.PSSM)
             {
@@ -79,17 +80,29 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             }
             else
             {
-                CascadeSplitRatios[0] = minDistance + shadow.SplitDistance0 * maxDistance;
-                CascadeSplitRatios[1] = minDistance + shadow.SplitDistance1 * maxDistance;
-                CascadeSplitRatios[2] = minDistance + shadow.SplitDistance2 * maxDistance;
-                CascadeSplitRatios[3] = minDistance + shadow.SplitDistance3 * maxDistance;
+                if (lightShadowMap.CascadeCount == 1)
+                {
+                    CascadeSplitRatios[0] = minDistance + shadow.SplitDistance1 * maxDistance;
+                }
+                else if (lightShadowMap.CascadeCount == 2)
+                {
+                    CascadeSplitRatios[0] = minDistance + shadow.SplitDistance1 * maxDistance;
+                    CascadeSplitRatios[1] = minDistance + shadow.SplitDistance3 * maxDistance;
+                }
+                else if (lightShadowMap.CascadeCount == 4)
+                {
+                    CascadeSplitRatios[0] = minDistance + shadow.SplitDistance0 * maxDistance;
+                    CascadeSplitRatios[1] = minDistance + shadow.SplitDistance1 * maxDistance;
+                    CascadeSplitRatios[2] = minDistance + shadow.SplitDistance2 * maxDistance;
+                    CascadeSplitRatios[3] = minDistance + shadow.SplitDistance3 * maxDistance;
+                }
             }
         }
 
-        public void Render(ShadowMapCasterContext shadowContext, ref LightShadowMapTexture lightShadowMap)
+        public void Render(RenderContext context, ShadowMapRenderer shadowMapRenderer, ref LightShadowMapTexture lightShadowMap)
         {
             // Computes the cascade splits
-            ComputeCascadeSplits(shadowContext, ref lightShadowMap);
+            ComputeCascadeSplits(shadowMapRenderer, ref lightShadowMap);
             var direction = lightShadowMap.LightComponent.Direction;
 
             // Fake value
@@ -111,44 +124,55 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
             var shadow = lightShadowMap.Shadow;
             // TODO: Min and Max distance can be auto-computed from readback from Z buffer
-            var minDistance = shadow.MinDistance;
-            var maxDistance = shadow.MinDistance;
-            var camera = shadowContext.Camera;
+            var camera = shadowMapRenderer.Camera;
+            var shadowCamera = shadowMapRenderer.ShadowCamera;
 
+            // Calculate the reference matrix to compare between cascades
+            var cameraFrustumBounds = BoundingBox.FromPoints(shadowMapRenderer.FrustumCorner);
+            var cameraUpDir = shadow.Stabilized ? camera.ViewMatrix.Right : Vector3.UnitY;
+            var referenceShadowMatrix = Matrix.LookAtLH(cameraFrustumBounds.Center + direction * 0.5f, cameraFrustumBounds.Center, cameraUpDir);
+            referenceShadowMatrix *= Matrix.OrthoOffCenterLH(-0.5f, 0.5f, -0.5f, 0.5f, 0.0f, 1.0f);
+            referenceShadowMatrix *= Matrix.Scaling(0.5f, -0.5f, 1.0f);
+            referenceShadowMatrix *= Matrix.Translation(0.5f, 0.5f, 0.0f);
+
+            // Push a new graphics state
+            var graphicsDevice = context.GraphicsDevice;
+            graphicsDevice.PushState();
+
+            float splitMaxRatio = shadow.MinDistance;
             for (int cascadeLevel = 0; cascadeLevel < lightShadowMap.CascadeCount; ++cascadeLevel)
             {
                 // Compute caster view and projection matrices
                 var shadowMapView = Matrix.Zero;
                 var shadowMapProjection = Matrix.Zero;
 
-                float max = minDistance;
-
                 // Calculate frustum corners for this cascade
+                var splitMinRatio = splitMaxRatio;
+                splitMaxRatio = CascadeSplitRatios[cascadeLevel];
                 for (int j = 0; j < 4; j++)
                 {
-                    var min = max;
-                    max = CascadeSplitRatios[cascadeLevel];
-                    CascadeFrustumCorners[j * 2 + 0] = shadowContext.FrustumCorner[j] + shadowContext.FrustumDirection[j] * min;
-                    CascadeFrustumCorners[j * 2 + 1] = shadowContext.FrustumCorner[j] + shadowContext.FrustumDirection[j] * max;
+                    var frustumRange = shadowMapRenderer.FrustumCorner[j + 4] - shadowMapRenderer.FrustumCorner[j];
+                    CascadeFrustumCorners[j] = shadowMapRenderer.FrustumCorner[j] + frustumRange * splitMinRatio;
+                    CascadeFrustumCorners[j + 4] = shadowMapRenderer.FrustumCorner[j] + frustumRange * splitMaxRatio;
                 }
-                var cascadeBounds = BoundingBox.FromPoints(CascadeFrustumCorners);
+                var cascadeBoundWS = BoundingBox.FromPoints(CascadeFrustumCorners);
 
-                var orthoMin = Vector3.Zero;
-                var orthoMax = Vector3.Zero;
+                var cascadeMinBoundLS = Vector3.Zero;
+                var cascadeMaxBoundLS = Vector3.Zero;
 
-                var target = cascadeBounds.Center;
+                var target = cascadeBoundWS.Center;
 
                 if (shadow.Stabilized)
                 {
                     // Compute bounding box center & radius
                     // Note: boundingBox is computed in view space so the computation of the radius is only correct when the view matrix does not do any kind of scale/shear transformation
-                    var radius = (cascadeBounds.Maximum - cascadeBounds.Minimum).Length() * 0.5f;
+                    var radius = (cascadeBoundWS.Maximum - cascadeBoundWS.Minimum).Length() * 0.5f;
 
-                    orthoMax = new Vector3(radius, radius, radius);
-                    orthoMin = -orthoMax;
+                    cascadeMaxBoundLS = new Vector3(radius, radius, radius);
+                    cascadeMinBoundLS = -cascadeMaxBoundLS;
 
                     // Make sure we are using the same direction when stabilizing
-                    upDirection = shadowContext.Camera.ViewMatrix.Right;
+                    upDirection = shadowMapRenderer.Camera.ViewMatrix.Right;
 
                     // Snap camera to texel units (so that shadow doesn't jitter when light doesn't change direction but camera is moving)
                     var shadowMapHalfSize = lightShadowMap.Size * 0.5f;
@@ -160,27 +184,33 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 }
                 else
                 {
-                    var lightViewMatrix = Matrix.LookAtLH(cascadeBounds.Center - direction, cascadeBounds.Center, upDirection);
-                    orthoMin = new Vector3(float.MaxValue);
-                    orthoMax = new Vector3(-float.MaxValue);
+                    // Computes the bouding box of the frustum cascade in light space
+                    var lightViewMatrix = Matrix.LookAtLH(cascadeBoundWS.Center, cascadeBoundWS.Center + direction, upDirection);
+                    cascadeMinBoundLS = new Vector3(float.MaxValue);
+                    cascadeMaxBoundLS = new Vector3(-float.MaxValue);
                     for (int i = 0; i < CascadeFrustumCorners.Length; i++)
                     {
                         Vector3 cornerViewSpace;
                         Vector3.TransformCoordinate(ref CascadeFrustumCorners[i], ref lightViewMatrix, out cornerViewSpace);
 
-                        orthoMin = Vector3.Min(orthoMin, cornerViewSpace);
-                        orthoMax = Vector3.Min(orthoMax, cornerViewSpace);
+                        cascadeMinBoundLS = Vector3.Min(cascadeMinBoundLS, cornerViewSpace);
+                        cascadeMaxBoundLS = Vector3.Max(cascadeMaxBoundLS, cornerViewSpace);
                     }
 
                     // TODO: Adjust orthoSize by taking into account filtering size
                 }
 
                 // Compute caster view and projection matrices
-                shadowMapView = Matrix.LookAtRH(target - direction * orthoMin.Z, target, upDirection); // View;
-                shadowMapProjection = Matrix.OrthoOffCenterRH(orthoMin.X, orthoMax.X, orthoMin.Y, orthoMax.Y, 0.0f, orthoMax.Z - orthoMin.Z); // Projection
+                shadowMapView = Matrix.LookAtLH(target + direction * cascadeMinBoundLS.Z, target, upDirection); // View;
+                shadowMapProjection = Matrix.OrthoOffCenterLH(cascadeMinBoundLS.X, cascadeMaxBoundLS.X, cascadeMinBoundLS.Y, cascadeMaxBoundLS.Y, 0.0f, cascadeMaxBoundLS.Z - cascadeMinBoundLS.Z); // Projection
+
+                // Update the shadow camera
+                shadowCamera.ViewMatrix = shadowMapView;
+                shadowCamera.ProjectionMatrix = shadowMapProjection;
+                shadowCamera.Update();
 
                 // Calculate View Proj matrix from World space to Cascade space
-                Matrix.Multiply(ref shadowMapView, ref shadowMapProjection, out CascadeCasterMatrix[cascadeLevel]);
+                CascadeCasterMatrix[cascadeLevel] = shadowCamera.ViewProjectionMatrix;
 
                 // Cascade splits in light space using depth
                 CascadeSplits[cascadeLevel] = camera.NearClipPlane + CascadeSplitRatios[cascadeLevel] * (camera.FarClipPlane - camera.NearClipPlane);
@@ -214,12 +244,32 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 float centerY = 0.5f * (cascadeTextureCoords.Y + cascadeTextureCoords.W);
 
                 // Compute receiver view proj matrix
-                Matrix adjustmentMatrix = Matrix.Scaling(leftX, -leftY, 0.5f) * Matrix.Translation(centerX, centerY, 0.5f);
+                Matrix adjustmentMatrix = Matrix.Scaling(leftX, -leftY, 1.0f) * Matrix.Translation(centerX, centerY, 0.0f);
                 Matrix.Multiply(ref CascadeCasterMatrix[cascadeLevel], ref adjustmentMatrix, out CascadeToUVMatrix[cascadeLevel]);
+
+                // Find offset and scale for the current cascade relative to the reference shadow matrix
+                var uvToWorld = Matrix.Invert(CascadeToUVMatrix[cascadeLevel]);
+                var cascadeCorner1 = Vector3.TransformCoordinate(new Vector3(0, 0, 0), uvToWorld);
+                var cascadeCorner2 = Vector3.TransformCoordinate(new Vector3(1, 1, 1), uvToWorld);
+                Vector3.TransformCoordinate(ref cascadeCorner1, ref referenceShadowMatrix, out cascadeCorner1);
+                Vector3.TransformCoordinate(ref cascadeCorner2, ref referenceShadowMatrix, out cascadeCorner1);
+
+                var cascadeScale = Vector3.One / (cascadeCorner2 - cascadeCorner1);
+                CascadeOffsets[cascadeLevel] = -cascadeCorner1;
+                CascadeScales[cascadeLevel] = cascadeScale;
+
+                // Render to the atlas
+                lightShadowMap.Atlas.RenderFrame.Activate(context);
+                graphicsDevice.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
+
+                // Render the scene for this cascade
+                shadowMapRenderer.RenderCasters(context);
 
                 //// Copy texture coords with border
                 //cascades[cascadeLevel].CascadeLevels.CascadeTextureCoordsBorder = cascadeTextureCoords;
             }
+
+            graphicsDevice.PopState();
         }
     }
 }

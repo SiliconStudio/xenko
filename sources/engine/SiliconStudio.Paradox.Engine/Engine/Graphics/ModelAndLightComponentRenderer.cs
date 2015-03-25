@@ -3,6 +3,7 @@
 
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Lights;
+using SiliconStudio.Paradox.Effects.Shadows;
 
 namespace SiliconStudio.Paradox.Engine.Graphics
 {
@@ -13,6 +14,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     {
         private LightModelRendererForward lightModelRenderer;
         private ModelComponentRenderer modelRenderer;
+        private bool isPickingRendering;
 
         private SceneCameraRenderer SceneCameraRenderer { get {  return (SceneCameraRenderer)SceneEntityRenderer; } }
 
@@ -24,19 +26,27 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
             var forwardMode = SceneCameraRenderer.Mode as CameraRendererModeForward;
             var effectName =  (forwardMode != null? forwardMode.ModelEffect: null) ?? "";
-            if (Context.IsPicking())
-                effectName += ".ModelComponentPickingEffect";
+            isPickingRendering = Context.IsPicking();
+            if (isPickingRendering)
+            {
+                effectName += ".Picking";
+                Context.Parameters.Set(ParadoxEffectBaseKeys.ExtensionPostVertexStageShader, "ModelComponentPickingEffect");
+            }
 
             // TODO: Add support for mixin overrides
             modelRenderer = ToLoadAndUnload(new ModelComponentRenderer(effectName));
-            lightModelRenderer = new LightModelRendererForward(modelRenderer);
+            if (!isPickingRendering)
+            {
+                lightModelRenderer = new LightModelRendererForward(modelRenderer);
+            }
         }
 
         protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
-            // TODO: Add support for shadows
-            // TODO: We call it directly here but it might be plugged into 
-            lightModelRenderer.PrepareLights(context);
+            if (!isPickingRendering)
+            {
+                lightModelRenderer.PrepareLights(context);
+            }
             modelRenderer.Prepare(context, opaqueList, transparentList);
         }
 

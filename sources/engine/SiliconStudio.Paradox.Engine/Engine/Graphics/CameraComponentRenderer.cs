@@ -52,7 +52,7 @@ namespace SiliconStudio.Paradox.Effects
             viewParameters.Set(CameraKeys.VerticalFieldOfView, camera.VerticalFieldOfView);
             viewParameters.Set(CameraKeys.OrthoSize, camera.OrthographicSize);
             viewParameters.Set(CameraKeys.AspectRatio, camera.AspectRatio);
-            viewParameters.Set(CameraKeys.FocusDistance, camera.FocusDistance);
+            //viewParameters.Set(CameraKeys.FocusDistance, camera.FocusDistance);
         }
     }
 }

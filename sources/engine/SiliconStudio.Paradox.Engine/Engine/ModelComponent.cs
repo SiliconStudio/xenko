@@ -2,6 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
+using System.ComponentModel;
+
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.EntityModel;
@@ -40,6 +42,7 @@ namespace SiliconStudio.Paradox.Engine
         {
             Parameters = new ParameterCollection();
             Model = model;
+            IsShadowCaster = true;
         }
 
         /// <summary>
@@ -49,6 +52,7 @@ namespace SiliconStudio.Paradox.Engine
         /// The model.
         /// </value>
         [DataMemberCustomSerializer]
+        [DataMember(10)]
         public Model Model
         {
             get
@@ -69,6 +73,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The materials overriding <see cref="Effects.Model.Materials"/> ones.
         /// </value>
+        [DataMember(20)]
         public List<Material> Materials
         {
             get { return materials; }
@@ -95,12 +100,23 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The draw order.
         /// </value>
+        [DataMember(30)]
         public float DrawOrder { get; set; }
+
+        /// <summary>
+        /// Gets or sets a boolean indicating if this model component is casting shadows.
+        /// </summary>
+        /// <value>A boolean indicating if this model component is casting shadows.</value>
+        [DataMember(40)]
+        [DefaultValue(true)]
+        [Display("Cast Shadows?")]
+        public bool IsShadowCaster { get; set; }
 
         /// <summary>
         /// Gets the parameters used to render this mesh.
         /// </summary>
         /// <value>The parameters.</value>
+        [DataMember(50)]
         public ParameterCollection Parameters { get; private set; }
 
         private void ModelUpdated()

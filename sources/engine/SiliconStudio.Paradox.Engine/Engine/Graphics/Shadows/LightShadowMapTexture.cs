@@ -14,23 +14,35 @@ namespace SiliconStudio.Paradox.Effects.Shadows
     public struct LightShadowMapTexture
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LightShadowMapTexture"/> struct.
+        /// Initializes a new instance of the <see cref="LightShadowMapTexture" /> struct.
         /// </summary>
+        /// <param name="lightComponent">The light component.</param>
         /// <param name="light">The light component.</param>
         /// <param name="shadowMap">The light.</param>
         /// <param name="size">The shadow map.</param>
-        /// <param name="size">The size.</param>
-        public LightShadowMapTexture(LightComponent lightComponent, IDirectLight light, LightShadowMap shadowMap, int size)
+        /// <param name="renderer">The renderer.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// lightComponent
+        /// or
+        /// light
+        /// or
+        /// shadowMap
+        /// or
+        /// renderer
+        /// </exception>
+        public LightShadowMapTexture(LightComponent lightComponent, IDirectLight light, LightShadowMap shadowMap, int size, ILightShadowMapRenderer renderer)
             : this()
         {
             if (lightComponent == null) throw new ArgumentNullException("lightComponent");
             if (light == null) throw new ArgumentNullException("light");
             if (shadowMap == null) throw new ArgumentNullException("shadowMap");
+            if (renderer == null) throw new ArgumentNullException("renderer");
             LightComponent = lightComponent;
             Light = light;
             Shadow = shadowMap;
             Size = size;
             FilterType = Shadow.Filter == null || !Shadow.Filter.RequiresCustomBuffer() ? null : Shadow.Filter.GetType();
+            Renderer = renderer;
         }
 
         public readonly LightComponent LightComponent;
