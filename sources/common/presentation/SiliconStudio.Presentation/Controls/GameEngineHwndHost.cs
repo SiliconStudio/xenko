@@ -4,10 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 using SiliconStudio.Presentation.Extensions;
 
@@ -75,36 +77,41 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="lParam">The long parameter of the message.</param>
         public void ForwardMessage(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam)
         {
+            DispatcherOperation task;
             switch (msg)
             {
                 case NativeHelper.WM_RBUTTONDOWN:
                     mouseMoveCount = 0;
-                    Dispatcher.Invoke(() =>
-                        {
-                            RaiseMouseButtonEvent(Mouse.PreviewMouseDownEvent, MouseButton.Right);
-                            RaiseMouseButtonEvent(Mouse.MouseDownEvent, MouseButton.Right);
-                        });
+                    task = Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        RaiseMouseButtonEvent(Mouse.PreviewMouseDownEvent, MouseButton.Right);
+                        RaiseMouseButtonEvent(Mouse.MouseDownEvent, MouseButton.Right);
+                    }));
+                    task.Wait(TimeSpan.FromSeconds(1.0f));
                     break;
                 case NativeHelper.WM_RBUTTONUP:
-                    Dispatcher.Invoke(() =>
+                    task = Dispatcher.BeginInvoke(new Action(() =>
                         {
                             RaiseMouseButtonEvent(Mouse.PreviewMouseUpEvent, MouseButton.Right);
                             RaiseMouseButtonEvent(Mouse.MouseUpEvent, MouseButton.Right);
-                        });
+                        }));
+                    task.Wait(TimeSpan.FromSeconds(1.0f));
                     break;
                 case NativeHelper.WM_LBUTTONDOWN:
-                    Dispatcher.Invoke(() =>
+                    task = Dispatcher.BeginInvoke(new Action(() =>
                         {
                             RaiseMouseButtonEvent(Mouse.PreviewMouseDownEvent, MouseButton.Left);
                             RaiseMouseButtonEvent(Mouse.MouseDownEvent, MouseButton.Left);
-                        });
+                        }));
+                    task.Wait(TimeSpan.FromSeconds(1.0f));
                     break;
                 case NativeHelper.WM_LBUTTONUP:
-                    Dispatcher.Invoke(() =>
+                    task = Dispatcher.BeginInvoke(new Action(() =>
                         {
                             RaiseMouseButtonEvent(Mouse.PreviewMouseUpEvent, MouseButton.Left);
                             RaiseMouseButtonEvent(Mouse.MouseUpEvent, MouseButton.Left);
-                        });
+                        }));
+                    task.Wait(TimeSpan.FromSeconds(1.0f));
                     break;
                 case NativeHelper.WM_MOUSEMOVE:
                     ++mouseMoveCount;
