@@ -2,6 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
+using System.ComponentModel;
+
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.EntityModel;
@@ -49,6 +51,7 @@ namespace SiliconStudio.Paradox.Engine
         /// The model.
         /// </value>
         [DataMemberCustomSerializer]
+        [DataMember(10)]
         public Model Model
         {
             get
@@ -69,6 +72,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The materials overriding <see cref="Effects.Model.Materials"/> ones.
         /// </value>
+        [DataMember(20)]
         public List<Material> Materials
         {
             get { return materials; }
@@ -95,6 +99,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The draw order.
         /// </value>
+        [DataMember(15)]
         public float DrawOrder { get; set; }
 
         /// <summary>
