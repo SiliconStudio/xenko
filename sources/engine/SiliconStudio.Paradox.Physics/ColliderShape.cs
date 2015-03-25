@@ -3,7 +3,9 @@
 
 using System;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -92,8 +94,15 @@ namespace SiliconStudio.Paradox.Physics
             }
             set
             {
-                DebugPrimitiveMatrix *= Matrix.Scaling(value);
-                InternalShape.LocalScaling = value;
+                var newScaling = value;
+                
+                if (Is2D) newScaling.Z = 1.0f;
+
+                DebugPrimitiveMatrix *= Matrix.Scaling(newScaling);
+
+                if (Is2D) newScaling.Z = 0.0f;
+
+                InternalShape.LocalScaling = newScaling;
             }
         }
 
@@ -115,6 +124,8 @@ namespace SiliconStudio.Paradox.Physics
         {
             return null;
         }
+
+        public Model DebugModel;
 
         public Matrix DebugPrimitiveMatrix;
 

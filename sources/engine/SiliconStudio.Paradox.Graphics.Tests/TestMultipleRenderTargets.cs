@@ -13,6 +13,7 @@ using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Engine.Graphics.Composers;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Extensions;
+using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
 using SiliconStudio.Paradox.Input;
 
 namespace SiliconStudio.Paradox.Graphics.Tests
@@ -51,8 +52,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 new CameraComponent
                 {
                     AspectRatio = 8/4.8f,
-                    FarPlane = 5,
-                    NearPlane = 1,
+                    FarClipPlane = 5,
+                    NearClipPlane = 1,
                     VerticalFieldOfView = MathUtil.RadiansToDegrees(0.6f),
                     UseCustomViewMatrix = true,
                     ViewMatrix = Matrix.LookAtRH(new Vector3(2,1,2), new Vector3(), Vector3.UnitY),

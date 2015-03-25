@@ -125,8 +125,8 @@ namespace SiliconStudio.Paradox.Engine.Tests
         /// </summary>
         public float NearPlane
         {
-            get { return Camera.NearPlane; }
-            set { Camera.NearPlane = value; }
+            get { return Camera.NearClipPlane; }
+            set { Camera.NearClipPlane = value; }
         }
 
         /// <summary>
@@ -134,8 +134,8 @@ namespace SiliconStudio.Paradox.Engine.Tests
         /// </summary>
         public float FarPlane
         {
-            get { return Camera.FarPlane; }
-            set { Camera.FarPlane = value; }
+            get { return Camera.FarClipPlane; }
+            set { Camera.FarClipPlane = value; }
         }
 
         /// <summary>
@@ -208,8 +208,8 @@ namespace SiliconStudio.Paradox.Engine.Tests
         protected virtual void SetCamera()
         {
             // set the camera values
-            Camera.NearPlane = 0.1f;
-            Camera.FarPlane = 1000f;
+            Camera.NearClipPlane = 0.1f;
+            Camera.FarClipPlane = 1000f;
             Camera.UseCustomViewMatrix = true;
             OnWindowSizeChanged();
         }

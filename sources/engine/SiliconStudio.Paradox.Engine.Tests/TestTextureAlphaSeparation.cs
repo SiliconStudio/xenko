@@ -34,8 +34,8 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
             var cameraComp = Camera.Get<CameraComponent>();
             cameraComp.AspectRatio = 1;
-            cameraComp.FarPlane = 100;
-            cameraComp.NearPlane = 0.1f;
+            cameraComp.FarClipPlane = 100;
+            cameraComp.NearClipPlane = 0.1f;
             cameraComp.UseCustomViewMatrix = true;
             cameraComp.VerticalFieldOfView = MathUtil.GradiansToDegrees(1);
             cameraComp.ViewMatrix = Matrix.LookAtRH(new Vector3(0, 0, -2), dice.Transform.Position, -Vector3.UnitY);

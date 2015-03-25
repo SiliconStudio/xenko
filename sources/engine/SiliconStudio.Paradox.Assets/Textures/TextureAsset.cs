@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
     [DataContract("Texture")]
     [AssetFileExtension(FileExtension)]
     [AssetCompiler(typeof(TextureAssetCompiler))]
-    [ThumbnailCompiler(PreviewerCompilerNames.TextureThumbnailCompilerQualifiedName, true)]
+    [ThumbnailCompiler(PreviewerCompilerNames.TextureThumbnailCompilerQualifiedName, true, Priority = -10000)]
     [Display("Texture", "A texture")]
     public sealed class TextureAsset : AssetImport
     {

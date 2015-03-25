@@ -323,6 +323,66 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Gets or sets the up <see cref="Vector3"/> of the matrix; that is M21, M22, and M23.
+        /// </summary>
+        [DataMemberIgnore]
+        public Vector3 Up
+        {
+            get { return new Vector3(M21, M22, M23); }
+            set { M21 = value.X; M22 = value.Y; M23 = value.Z; }
+        }
+
+        /// <summary>
+        /// Gets or sets the down <see cref="Vector3"/> of the matrix; that is -M21, -M22, and -M23.
+        /// </summary>
+        [DataMemberIgnore]
+        public Vector3 Down
+        {
+            get { return new Vector3(-M21, -M22, -M23); }
+            set { M21 = -value.X; M22 = -value.Y; M23 = -value.Z; }
+        }
+
+        /// <summary>
+        /// Gets or sets the right <see cref="Vector3"/> of the matrix; that is M11, M12, and M13.
+        /// </summary>
+        [DataMemberIgnore]
+        public Vector3 Right
+        {
+            get { return new Vector3(M11, M12, M13); }
+            set { M11 = value.X; M12 = value.Y; M13 = value.Z; }
+        }
+
+        /// <summary>
+        /// Gets or sets the left <see cref="Vector3"/> of the matrix; that is -M11, -M12, and -M13.
+        /// </summary>
+        [DataMemberIgnore]
+        public Vector3 Left
+        {
+            get { return new Vector3(-M11, -M12, -M13); }
+            set { M11 = -value.X; M12 = -value.Y; M13 = -value.Z;}
+        }
+
+        /// <summary>
+        /// Gets or sets the forward <see cref="Vector3"/> of the matrix; that is -M31, -M32, and -M33.
+        /// </summary>
+        [DataMemberIgnore]
+        public Vector3 Forward
+        {
+            get { return new Vector3(-M31, -M32, -M33); }
+            set { M31 = -value.X; M32 = -value.Y; M33 = -value.Z; }
+        }
+
+        /// <summary>
+        /// Gets or sets the backward <see cref="Vector3"/> of the matrix; that is M31, M32, and M33.
+        /// </summary>
+        [DataMemberIgnore]
+        public Vector3 Backward
+        {
+            get { return new Vector3(M31, M32, M33); }
+            set { M31 = value.X; M32 = value.Y; M33 = value.Z; }
+        }
+
+        /// <summary>
         /// Gets a value indicating whether this instance is an identity matrix.
         /// </summary>
         /// <value>

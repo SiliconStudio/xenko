@@ -6,6 +6,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
 
 namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
 {
@@ -21,65 +22,53 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
         /// </summary>
         public PlaneProceduralModel()
         {
-            SizeX = 100.0f;
-            SizeY = 100.0f;
-            TesselationX = 1;
-            TesselationY = 1;
-            ScaleU = 1;
-            ScaleV = 1;
+            Size = new Vector2(100.0f);
+            Tessellation = new Int2(1);
+            UVScales = new Vector2(1);
         }
 
         /// <summary>
-        /// Gets or sets the size x.
+        /// Gets or sets the size of the plane.
         /// </summary>
         /// <value>The size x.</value>
+        /// <userdoc>The size of plane along the X/Y axis</userdoc>
         [DataMember(10)]
         [DefaultValue(100.0f)]
-        public float SizeX { get; set; }
+        [Display("Size")]
+        public Vector2 Size { get; set; }
 
         /// <summary>
-        /// Gets or sets the size y.
+        /// Gets or sets the tessellation of the plane.
         /// </summary>
-        /// <value>The size y.</value>
+        /// <value>The tessellation x.</value>
+        /// <userdoc>The tessellation of the plane along the X/Y axis. That is the number rectangles the plane is made of.</userdoc>
         [DataMember(20)]
-        [DefaultValue(100.0f)]
-        public float SizeY { get; set; }
+        [DefaultValue(1)]
+        [Display("Tessellation")]
+        public Int2 Tessellation { get; set; }
 
         /// <summary>
-        /// Gets or sets the tesselation x.
+        /// Gets or sets the UV scales.
         /// </summary>
-        /// <value>The tesselation x.</value>
+        /// <value>The UV scales</value>
+        /// <userdoc>The scales to apply to the UV coordinates of the plane.</userdoc>
         [DataMember(30)]
-        [DefaultValue(1)]
-        public int TesselationX { get; set; }
+        [DefaultValue(1.0f)]
+        [Display("UV Scales")]
+        public Vector2 UVScales { get; set; }
 
         /// <summary>
-        /// Gets or sets the tesselation y.
+        /// Gets or sets value indicating if a back face should be added.
         /// </summary>
-        /// <value>The tesselation y.</value>
+        /// <userdoc>Check the this combo box to generate a back face to the plane</userdoc>
         [DataMember(40)]
-        [DefaultValue(1)]
-        public int TesselationY { get; set; }
-
-        /// <summary>
-        /// Gets or sets the scale u.
-        /// </summary>
-        /// <value>The scale u.</value>
-        [DataMember(50)]
         [DefaultValue(1.0f)]
-        public float ScaleU { get; set; }
-
-        /// <summary>
-        /// Gets or sets the scale v.
-        /// </summary>
-        /// <value>The scale v.</value>
-        [DataMember(60)]
-        [DefaultValue(1.0f)]
-        public float ScaleV { get; set; }
+        [Display("Back Face")]
+        public bool GenerateBackFace { get; set; }
 
         protected override GeometricMeshData<VertexPositionNormalTexture> CreatePrimitiveMeshData()
         {
-            return GeometricPrimitive.Plane.New(SizeX, SizeY, TesselationX, TesselationY, false, new Vector2(ScaleU, ScaleV));
+            return GeometricPrimitive.Plane.New(Size.X, Size.Y, Tessellation.X, Tessellation.Y, UVScales.X, UVScales.Y, GenerateBackFace);
         }
     }
 }

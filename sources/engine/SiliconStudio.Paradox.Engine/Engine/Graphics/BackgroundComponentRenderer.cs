@@ -54,11 +54,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 if (texture == null)
                     continue;
                 
-                var target = CurrentRenderFrame.RenderTargets[0]; // TODO avoid to hardcode index
+                var target = CurrentRenderFrame;
                 var destination = new RectangleF(0, 0, target.Width, target.Height);
 
                 var imageBufferMinRatio = Math.Min(texture.ViewWidth / (float)target.Width, texture.ViewHeight / (float)target.Height);
-                var sourceSize = new Vector2(target.ViewWidth * imageBufferMinRatio, target.ViewHeight * imageBufferMinRatio);
+                var sourceSize = new Vector2(target.Width * imageBufferMinRatio, target.Height * imageBufferMinRatio);
                 var source = new RectangleF((texture.ViewWidth - sourceSize.X) / 2, (texture.ViewHeight - sourceSize.Y) / 2, sourceSize.X, sourceSize.Y);
 
                 spriteBatch.Draw(texture, destination, source, Color.White, 0, Vector2.Zero);

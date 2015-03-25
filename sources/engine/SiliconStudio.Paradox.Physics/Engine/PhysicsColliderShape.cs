@@ -1,19 +1,19 @@
 ﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Linq;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Contents;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using SiliconStudio.Core;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Physics
 {
     [DataContract]
     [ContentSerializer(typeof(DataContentSerializer<PhysicsColliderShape>))]
+    [DataSerializerGlobal(typeof(CloneSerializer<PhysicsColliderShape>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(ReferenceSerializer<PhysicsColliderShape>), Profile = "Asset")]
     public class PhysicsColliderShape
     {
@@ -121,7 +121,7 @@ namespace SiliconStudio.Paradox.Physics
                 {
                     if (convexDesc.ConvexHulls[0].Count == 1)
                     {
-                        shape = new ConvexHullColliderShape(convexDesc.ConvexHulls[0][0], convexDesc.ConvexHullsIndices[0][0])
+                        shape = new ConvexHullColliderShape(convexDesc.ConvexHulls[0][0], convexDesc.ConvexHullsIndices[0][0], convexDesc.Scaling)
                         {
                             NeedsCustomCollisionCallback = true
                         };
@@ -144,7 +144,7 @@ namespace SiliconStudio.Paradox.Physics
                         var verts = convexDesc.ConvexHulls[0][i];
                         var indices = convexDesc.ConvexHullsIndices[0][i];
 
-                        var subHull = new ConvexHullColliderShape(verts, indices);
+                        var subHull = new ConvexHullColliderShape(verts, indices, convexDesc.Scaling);
                         subHull.UpdateLocalTransformations();
                         subCompound.AddChildShape(subHull);
                     }
@@ -169,7 +169,7 @@ namespace SiliconStudio.Paradox.Physics
 
                     if (verts.Count == 1)
                     {
-                        var subHull = new ConvexHullColliderShape(verts[0], indices[0]);
+                        var subHull = new ConvexHullColliderShape(verts[0], indices[0], convexDesc.Scaling);
                         subHull.UpdateLocalTransformations();
                         compound.AddChildShape(subHull);
                     }
@@ -182,7 +182,7 @@ namespace SiliconStudio.Paradox.Physics
                             var subVerts = verts[b];
                             var subIndex = indices[b];
 
-                            var subHull = new ConvexHullColliderShape(subVerts, subIndex);
+                            var subHull = new ConvexHullColliderShape(subVerts, subIndex, convexDesc.Scaling);
                             subHull.UpdateLocalTransformations();
                             subCompound.AddChildShape(subHull);
                         }

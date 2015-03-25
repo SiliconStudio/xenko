@@ -47,18 +47,11 @@ namespace SiliconStudio.Paradox.Effects
             viewParameters.Set(TransformationKeys.View, camera.ViewMatrix);
             viewParameters.Set(TransformationKeys.Projection, camera.ProjectionMatrix);
             viewParameters.Set(TransformationKeys.ViewProjection, camera.ViewProjectionMatrix);
-
-            viewParameters.Set(CameraKeys.NearClipPlane, camera.NearPlane);
-            viewParameters.Set(CameraKeys.FarClipPlane, camera.FarPlane);
-            if (camera.Projection == CameraProjectionMode.Perspective)
-            {
-                viewParameters.Set(CameraKeys.FieldOfView, camera.VerticalFieldOfView);
-            }
-            else
-            {
-                viewParameters.Set(CameraKeys.OrthoSize, camera.OrthographicSize);
-            }
-            viewParameters.Set(CameraKeys.Aspect, camera.AspectRatio);
+            viewParameters.Set(CameraKeys.NearClipPlane, camera.NearClipPlane);
+            viewParameters.Set(CameraKeys.FarClipPlane, camera.FarClipPlane);
+            viewParameters.Set(CameraKeys.VerticalFieldOfView, camera.VerticalFieldOfView);
+            viewParameters.Set(CameraKeys.OrthoSize, camera.OrthographicSize);
+            viewParameters.Set(CameraKeys.AspectRatio, camera.AspectRatio);
             viewParameters.Set(CameraKeys.FocusDistance, camera.FocusDistance);
         }
     }

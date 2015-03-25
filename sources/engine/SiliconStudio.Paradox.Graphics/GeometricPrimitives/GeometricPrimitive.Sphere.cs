@@ -77,7 +77,7 @@ using System;
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
 {
     public partial class GeometricPrimitive
     {
@@ -163,7 +163,8 @@ namespace SiliconStudio.Paradox.Graphics
                     }
 
                     // the last point equal to the first point
-                    vertices[vertexCount++] = firstHorizontalVertex;
+                    var lastHorizontalVertex = new VertexPositionNormalTexture(firstNormal * radius, firstNormal, new Vector2(1, v));
+                    vertices[vertexCount++] = lastHorizontalVertex;
                 }
 
                 // generate the end extremity points
