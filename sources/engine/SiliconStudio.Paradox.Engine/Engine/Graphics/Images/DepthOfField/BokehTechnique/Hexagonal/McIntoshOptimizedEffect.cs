@@ -20,19 +20,19 @@ namespace SiliconStudio.Paradox.Effects.Images
     {
         internal partial class McIntoshOptimizedEffect  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "McIntoshOptimizedShader");
 
                 {
-                    var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    var __subMixin = new ShaderMixinSource() { Parent = mixin };
                     context.PushComposition(mixin, "directionalBlurA", __subMixin);
                     context.Mixin(__subMixin, "DepthAwareDirectionalBlurUtil", context.GetParam(DepthAwareDirectionalBlurKeys.Count), context.GetParam(DepthAwareDirectionalBlurKeys.TotalTap));
                     context.PopComposition();
                 }
 
                 {
-                    var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    var __subMixin = new ShaderMixinSource() { Parent = mixin };
                     context.PushComposition(mixin, "directionalBlurB", __subMixin);
                     context.Mixin(__subMixin, "DepthAwareDirectionalBlurUtil", context.GetParam(DepthAwareDirectionalBlurKeys.Count), context.GetParam(DepthAwareDirectionalBlurKeys.TotalTap));
                     context.PopComposition();

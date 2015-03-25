@@ -22,9 +22,8 @@ namespace SiliconStudio.Paradox.Effects.Utils
     {
         internal partial class ModelComponentPickingEffect  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                context.CloneParentMixinToCurrent();
                 context.Mixin(mixin, "ModelComponentPickingShader");
             }
 

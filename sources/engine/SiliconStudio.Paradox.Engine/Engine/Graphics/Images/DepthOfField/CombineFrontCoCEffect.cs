@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     {
         internal partial class CombineFrontCoCEffect  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "CombineFrontCoCShader", context.GetParam(CombineLevelsFromCoCKeys.LevelCount));
             }

@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
         public override DatabaseFileProvider FileProvider { get; set; }
 
-        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters)
+        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, CompilerParameters compilerParameters)
         {
             throw new NotSupportedException("Shader Compilation is not allowed at run time on this platform.");
         }

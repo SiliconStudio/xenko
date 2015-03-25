@@ -39,7 +39,6 @@ namespace SiliconStudio.Paradox.Effects
         mixin TransformationBase;
         mixin NormalStream;
         mixin TransformationWAndVP;
-        mixin PositionVertexTransform;
 
         // -----------------------------------------------
         // Performs normal mapping (in case of no-skinning, otherwise it is overloaded below)
@@ -104,8 +103,15 @@ namespace SiliconStudio.Paradox.Effects
             }
         }
 
-        // TODO: Need a flag to detect if we are in scene editor
-        mixin child ModelComponentPickingEffect;
+        // -----------------------------------------------
+        // Mix Extension after vertex stage
+        // -----------------------------------------------
+        var extensionPostVertexStage = ParadoxEffectBaseKeys.ExtensionPostVertexStageShader;
+        if (extensionPostVertexStage != null)
+        {
+            mixin (extensionPostVertexStage);
+            return;
+        }
 
         // -----------------------------------------------
         // Mix material and lighting shading for Pixel Shader
@@ -147,11 +153,5 @@ namespace SiliconStudio.Paradox.Effects
                 mixin compose environmentLights += (environmentLight);
             }
         }
-
-        // -----------------------------------------------
-        // Mix ShadowMap caster 
-        // -----------------------------------------------
-        if (LightingKeys.CastShadows)
-            mixin child ShadowMapCaster;
     };
 }

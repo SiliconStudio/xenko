@@ -20,7 +20,7 @@ namespace Test
     {
         internal partial class ToGlslEffect  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "ToGlslShader");
             }

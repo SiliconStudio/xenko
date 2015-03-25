@@ -25,9 +25,8 @@ namespace Test4
     {
         internal partial class ChildParamsMixin  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                context.CloneParentMixinToCurrent();
                 context.SetParam(TestParameters.TestCount, 1);
                 if (context.GetParam(TestParameters.TestCount) == 1)
                     context.Mixin(mixin, "C1");
@@ -45,17 +44,15 @@ namespace Test4
     {
         internal partial class DefaultSimpleChildParams  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "A");
                 if (context.GetParam(TestParameters.TestCount) == 0)
                     context.Mixin(mixin, "B");
-
+                if (context.ChildEffectName == "ChildParamsMixin")
                 {
-                    var __subMixin = new ShaderMixinSourceTree() { Name = "ChildParamsMixin" };
-                    context.BeginChild(__subMixin);
-                    context.Mixin(__subMixin, "ChildParamsMixin");
-                    context.EndChild();
+                    context.Mixin(mixin, "ChildParamsMixin");
+                    return;
                 }
                 if (context.GetParam(TestParameters.TestCount) == 0)
                     context.Mixin(mixin, "C");

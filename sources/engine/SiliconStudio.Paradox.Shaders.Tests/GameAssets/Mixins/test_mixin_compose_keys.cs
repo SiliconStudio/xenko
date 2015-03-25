@@ -25,7 +25,7 @@ namespace TestABC
     {
         internal partial class ABCSubEffect  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 if (context.GetParam(TestParameters.UseComputeColor2))
                 {
@@ -36,7 +36,7 @@ namespace TestABC
                     context.Mixin(mixin, "ComputeColorRedirect");
 
                     {
-                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        var __subMixin = new ShaderMixinSource() { Parent = mixin };
                         context.PushComposition(mixin, "ColorRedirect", __subMixin);
                         context.Mixin(__subMixin, "ComputeColor2");
                         context.PopComposition();
@@ -60,26 +60,26 @@ namespace TestABC
     {
         internal partial class test_mixin_compose_keys  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "A");
 
                 {
-                    var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    var __subMixin = new ShaderMixinSource() { Parent = mixin };
                     context.PushComposition(mixin, "SubCompute1", __subMixin);
                     context.Mixin(__subMixin, "ABCSubEffect");
                     context.PopComposition();
                 }
 
                 {
-                    var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    var __subMixin = new ShaderMixinSource() { Parent = mixin };
                     context.PushComposition(mixin, "SubCompute2", __subMixin);
                     context.Mixin(__subMixin, "ABCSubEffect");
                     context.PopComposition();
                 }
 
                 {
-                    var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    var __subMixin = new ShaderMixinSource() { Parent = mixin };
                     context.PushCompositionArray(mixin, "SubComputes", __subMixin);
                     context.Mixin(__subMixin, "ABCSubEffect");
                     context.PopComposition();

@@ -13,6 +13,6 @@ namespace SiliconStudio.Paradox.Shaders
         /// </summary>
         /// <param name="mixinTree">The mixin tree.</param>
         /// <param name="context">The context.</param>
-        void Generate(ShaderMixinSourceTree mixinTree, ShaderMixinContext context);
+        void Generate(ShaderMixinSource mixinTree, ShaderMixinContext context);
     }
 }

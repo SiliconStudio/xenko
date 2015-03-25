@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
     {
         internal partial class MultipleRenderTargetsEffect  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "ParadoxForwardShadingEffect");
                 context.Mixin(mixin, "MultipleRenderTargetsEffectShader");

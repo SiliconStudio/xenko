@@ -17,7 +17,7 @@ using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Paradox.Shaders.Compiler
 {
-    public delegate TaskScheduler TaskSchedulerSelector(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters);
+    public delegate TaskScheduler TaskSchedulerSelector(ShaderMixinSource mixinTree, CompilerParameters compilerParameters);
 
     /// <summary>
     /// Checks if an effect has already been compiled in its cache before deferring to a real <see cref="IEffectCompiler"/>.
@@ -55,7 +55,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             }
         }
 
-        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters)
+        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixin, CompilerParameters compilerParameters)
         {
             var database = FileProvider ?? AssetManager.FileProvider;
             if (database == null)
@@ -68,9 +68,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             // Note: this system might need an overhaul... (too many states?)
             base.FileProvider = database;
 
-            var mixin = mixinTree.Mixin;
-            var usedParameters = mixinTree.UsedParameters;
-
+            var usedParameters = mixin.UsedParameters;
             var mixinObjectId = ShaderMixinObjectId.Compute(mixin, usedParameters);
 
             // Final url of the compiled bytecode
@@ -141,7 +139,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 // Compile the mixin in a Task
                 if (CompileEffectAsynchronously)
                 {
-                    var resultTask = Task.Factory.StartNew(() => CompileBytecode(mixinTree, compilerParameters, mixinObjectId, database, compiledUrl, usedParameters), CancellationToken.None, TaskCreationOptions.None, taskSchedulerSelector != null ? taskSchedulerSelector(mixinTree, compilerParameters) : TaskScheduler.Default);
+                    var resultTask = Task.Factory.StartNew(() => CompileBytecode(mixin, compilerParameters, mixinObjectId, database, compiledUrl, usedParameters), CancellationToken.None, TaskCreationOptions.None, taskSchedulerSelector != null ? taskSchedulerSelector(mixin, compilerParameters) : TaskScheduler.Default);
 
                     compilingShaders.Add(mixinObjectId, resultTask);
 
@@ -149,12 +147,12 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 }
                 else
                 {
-                    return CompileBytecode(mixinTree, compilerParameters, mixinObjectId, database, compiledUrl, usedParameters);
+                    return CompileBytecode(mixin, compilerParameters, mixinObjectId, database, compiledUrl, usedParameters);
                 }
             }
         }
 
-        private EffectBytecodeCompilerResult CompileBytecode(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, ObjectId mixinObjectId, DatabaseFileProvider database, string compiledUrl, ShaderMixinParameters usedParameters)
+        private EffectBytecodeCompilerResult CompileBytecode(ShaderMixinSource mixinTree, CompilerParameters compilerParameters, ObjectId mixinObjectId, DatabaseFileProvider database, string compiledUrl, ShaderMixinParameters usedParameters)
         {
             // Open the database for writing
             var log = new LoggerResult();

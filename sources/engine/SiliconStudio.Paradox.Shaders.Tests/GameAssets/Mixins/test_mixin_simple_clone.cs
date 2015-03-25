@@ -20,9 +20,8 @@ namespace Test5
     {
         internal partial class ChildClone  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                context.CloneParentMixinToCurrent();
                 context.Mixin(mixin, "C1");
                 context.Mixin(mixin, "C2");
             }
@@ -39,17 +38,15 @@ namespace Test5
     {
         internal partial class DefaultSimpleClone  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "A");
                 context.Mixin(mixin, "B");
                 context.Mixin(mixin, "C");
-
+                if (context.ChildEffectName == "Test")
                 {
-                    var __subMixin = new ShaderMixinSourceTree() { Name = "Test" };
-                    context.BeginChild(__subMixin);
-                    context.Mixin(__subMixin, "ChildClone");
-                    context.EndChild();
+                    context.Mixin(mixin, "ChildClone");
+                    return;
                 }
             }
 

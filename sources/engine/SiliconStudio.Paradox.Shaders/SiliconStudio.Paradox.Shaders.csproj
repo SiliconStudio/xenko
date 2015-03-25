@@ -47,7 +47,6 @@
     <Compile Include="ShaderArraySource.cs" />
     <Compile Include="EffectBytecode.cs" />
     <Compile Include="IShaderMixinBuilder.cs" />
-    <Compile Include="ShaderMixinSourceTree.cs" />
     <Compile Include="ConstantBufferType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EffectParameterData.cs" />

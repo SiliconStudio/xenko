@@ -7,7 +7,6 @@ namespace SiliconStudio.Paradox.Effects.Utils
 {
     shader ModelComponentPickingEffect
     {
-        mixin clone;
         mixin ModelComponentPickingShader;
     };	
 }
