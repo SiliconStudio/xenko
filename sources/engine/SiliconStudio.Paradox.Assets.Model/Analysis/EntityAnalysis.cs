@@ -133,12 +133,9 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
 
             public override void VisitObject(object obj, ObjectDescriptor descriptor, bool visitMembers)
             {
-                if (obj is EntityComponent)
-                    componentDepth++;
-
                 bool processObject = true;
 
-                if (componentDepth >= 2)
+                if (componentDepth >= 1)
                 {
                     var entity = obj as Entity;
                     if (entity != null)
@@ -154,6 +151,9 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
                         processObject = false;
                     }
                 }
+
+                if (obj is EntityComponent)
+                    componentDepth++;
 
                 if (processObject)
                     base.VisitObject(obj, descriptor, visitMembers);
