@@ -112,20 +112,6 @@ namespace SiliconStudio.Paradox.Engine
         public float AspectRatio { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [auto focus].
-        /// </summary>
-        /// <value><c>true</c> if [auto focus]; otherwise, <c>false</c>.</value>
-        [DataMemberIgnore]
-        public bool AutoFocus { get; set; }
-
-        /// <summary>
-        /// Gets or sets the focus distance.
-        /// </summary>
-        /// <value>The focus distance.</value>
-        [DataMemberIgnore]
-        public float FocusDistance { get; set; }
-
-        /// <summary>
         /// Gets or sets a value indicating whether to use custom <see cref="ViewMatrix"/>. Default is <c>false</c>
         /// </summary>
         /// <value><c>true</c> if use custom <see cref="ViewMatrix"/>; otherwise, <c>false</c>.</value>
