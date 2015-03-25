@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.EntityModel;
@@ -113,7 +114,9 @@ namespace SiliconStudio.Paradox.Engine
                     foreach (var link in renderModel.Links)
                     {
                         var linkTransformation = link.Entity.Transform;
-                        linkTransformation.LocalMatrix = modelViewHierarchy.NodeTransformations[link.NodeIndex].WorldMatrix;
+                        Matrix linkedLocalMatrix;
+                        TransformComponent.CreateMatrixTRS(ref linkTransformation.Position, ref linkTransformation.Rotation, ref linkTransformation.Scale, out linkedLocalMatrix);
+                        Matrix.Multiply(ref linkedLocalMatrix, ref modelViewHierarchy.NodeTransformations[link.NodeIndex].WorldMatrix, out linkTransformation.LocalMatrix);
 
                         linkTransformationToUpdate.Clear();
                         linkTransformationToUpdate.Add(linkTransformation);
