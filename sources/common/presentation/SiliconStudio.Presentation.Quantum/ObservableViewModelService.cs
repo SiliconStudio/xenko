@@ -62,7 +62,7 @@ namespace SiliconStudio.Presentation.Quantum
             associatedDataProviders.Remove(provider);
         }
 
-        internal IDictionary<string, object> RequestAssociatedData(IObservableNode node, bool updatingData)
+        internal Dictionary<string, object> RequestAssociatedData(IObservableNode node, bool updatingData)
         {
             var mergedResult = new Dictionary<string, object>();
             foreach (var provider in associatedDataProviders)

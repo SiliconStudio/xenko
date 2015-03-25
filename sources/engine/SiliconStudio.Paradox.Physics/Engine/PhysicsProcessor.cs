@@ -44,6 +44,9 @@ namespace SiliconStudio.Paradox.Physics
                 TransformComponent = entity.Get(TransformComponent.Key),
                 ModelComponent = entity.Get(ModelComponent.Key)
             };
+
+            data.PhysicsComponent.Simulation = simulation;
+
             return data;
         }
 

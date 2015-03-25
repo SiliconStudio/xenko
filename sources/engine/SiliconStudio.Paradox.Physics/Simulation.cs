@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,12 +50,6 @@ namespace SiliconStudio.Paradox.Physics
         /// Totally disable the simulation if set to true
         /// </summary>
         public static bool DisableSimulation = false;
-
-        static Simulation()
-        {
-            // Preload proper libbulletc native library (depending on CPU type)
-            Core.NativeLibrary.PreloadLibrary("libbulletc.dll");
-        }
 
         /// <summary>
         /// Initializes the Physics engine using the specified flags.

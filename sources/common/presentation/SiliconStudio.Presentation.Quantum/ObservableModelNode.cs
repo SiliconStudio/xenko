@@ -19,7 +19,7 @@ namespace SiliconStudio.Presentation.Quantum
         protected readonly IModelNode SourceNode;
         protected readonly ModelNodePath SourceNodePath;
         private IModelNode targetNode;
-        private IDictionary<string, object> associatedData;
+        private Dictionary<string, object> associatedData;
         private bool isInitialized;
         private int? customOrder;
 
@@ -146,7 +146,7 @@ namespace SiliconStudio.Presentation.Quantum
         public sealed override bool HasDictionary { get { AssertInit(); return (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary); } }
 
         /// <inheritdoc/>
-        public sealed override IDictionary<string, object> AssociatedData { get { return associatedData; } }
+        public sealed override Dictionary<string, object> AssociatedData { get { return associatedData; } }
 
         internal Guid ModelGuid { get { return targetNode.Guid; } }
 
@@ -367,15 +367,21 @@ namespace SiliconStudio.Presentation.Quantum
         {
             bool hasChanged = !Equals(Value, newValue);
             if (!hasChanged)
-               OnPropertyChanging("TypedValue");
+                OnPropertyChanging("TypedValue");
 
             Value = newValue;
-            
+
             if (!hasChanged)
+            {
                 OnPropertyChanged("TypedValue");
+                OnValueChanged();
+            }
         }
 
-        protected virtual void Refresh()
+        /// <summary>
+        /// Refreshes the node commands and children. The source and target model nodes must have been updated first.
+        /// </summary>
+        public virtual void Refresh()
         {
             if (Parent == null) throw new InvalidOperationException("The node to refresh can't be a root node.");
             
@@ -465,6 +471,7 @@ namespace SiliconStudio.Presentation.Quantum
                 if (hasChanged)
                 {
                     OnPropertyChanged("TypedValue");
+                    OnValueChanged();
                     if (parent != null)
                         ((ObservableNode)Parent).NotifyPropertyChanged(Name);
                     string displayName = Owner.FormatSingleUpdateMessage(this, value);

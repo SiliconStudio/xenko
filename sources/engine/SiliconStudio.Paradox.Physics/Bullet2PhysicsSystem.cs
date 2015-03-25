@@ -19,6 +19,12 @@ namespace SiliconStudio.Paradox.Physics
 
         private readonly List<PhysicsScene> scenes = new List<PhysicsScene>();
 
+        static Bullet2PhysicsSystem()
+        {
+            // Preload proper libbulletc native library (depending on CPU type)
+            NativeLibrary.PreloadLibrary("libbulletc.dll");
+        }
+
         public Bullet2PhysicsSystem(IServiceRegistry registry)
             : base(registry)
         {

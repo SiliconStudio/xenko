@@ -116,7 +116,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets additional data associated to this content. This can be used when the content itself does not contain enough information to be used as a view model.
         /// </summary>
-        public abstract IDictionary<string, object> AssociatedData { get; }
+        public abstract Dictionary<string, object> AssociatedData { get; }
 
         /// <summary>
         /// Gets the order number of this node in its parent.
@@ -136,6 +136,9 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public int VisibleChildrenCount { get { return visibleChildrenCount; } private set { SetValue(ref visibleChildrenCount, value); } }
 
+        /// <inheritdoc/>
+        public event EventHandler<EventArgs> ValueChanged;
+        
         /// <inheritdoc/>
         public event EventHandler<EventArgs> IsVisibleChanged;
         
@@ -320,7 +323,14 @@ namespace SiliconStudio.Presentation.Quantum
                 OnPropertyChanged(string.Format("{0}{1}", ObservableViewModel.HasCommandPrefix, commandNames[i]));
             }
         }
-        
+
+        protected void OnValueChanged()
+        {
+            var handler = ValueChanged;
+            if (handler != null)
+                handler(this, EventArgs.Empty);
+        }
+
         protected void CheckDynamicMemberConsistency()
         {
             var memberNames = new HashSet<string>();

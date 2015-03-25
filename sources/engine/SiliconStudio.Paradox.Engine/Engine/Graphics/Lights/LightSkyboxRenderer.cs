@@ -27,6 +27,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         private static readonly ParameterKey<Color3[]> SphericalColorsKey = SphericalHarmonicsEnvironmentColorKeys.SphericalColors.ComposeWith(LightDiffuseColorComposition);
         private static readonly ParameterKey<Texture> SpecularCubeMapkey = RoughnessCubeMapEnvironmentColorKeys.CubeMap.ComposeWith(LightSpecularColorComposition);
         private static readonly ParameterKey<float> SpecularMipCount = RoughnessCubeMapEnvironmentColorKeys.MipCount.ComposeWith(LightSpecularColorComposition);
+        private static readonly ShaderClassSource EmptyComputeEnvironmentColorSource = new ShaderClassSource("IComputeEnvironmentColor");
 
 
         public LightSkyboxRenderer()
@@ -76,6 +77,13 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 var diffuseParameters = skybox.DiffuseLightingParameters;
                 var specularParameters = skybox.SpecularLightingParameters;
 
+                var diffuseShader = diffuseParameters.Get(SkyboxKeys.Shader);
+                var specularCubemap = specularParameters.Get(SkyboxKeys.CubeMap);
+
+                // No diffuse nor specular shader, let's ignore this cubemap
+                if (diffuseShader == null && specularCubemap == null)
+                    continue;
+
                 var intensity = lightComponent.Intensity;
                 if (skyboxComponent.Enabled)
                 {
@@ -91,12 +99,11 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 // Setup diffuse lighting
                 var mixinSource = (ShaderMixinSource)lightShaderGroup.ShaderSource;
 
-                mixinSource.Compositions[LightDiffuseColorComposition] = diffuseParameters.Get(SkyboxKeys.Shader);
+                mixinSource.Compositions[LightDiffuseColorComposition] = diffuseShader ?? EmptyComputeEnvironmentColorSource;
                 // TODO: Use pluggable keys instead of copying parameters
                 lightShaderGroup.Parameters.Set(SphericalColorsKey, diffuseParameters.Get(SphericalHarmonicsEnvironmentColorKeys.SphericalColors));
 
                 // Setup specular lighting
-                var specularCubemap = specularParameters.Get(SkyboxKeys.CubeMap);
                 if (specularCubemap != null)
                 {
                     mixinSource.Compositions[LightSpecularColorComposition] = specularParameters.Get(SkyboxKeys.Shader);
@@ -107,7 +114,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 }
                 else
                 {
-                    mixinSource.Compositions[LightDiffuseColorComposition] = null;
+                    mixinSource.Compositions[LightDiffuseColorComposition] = EmptyComputeEnvironmentColorSource;
                     lightShaderGroup.Parameters.Set(SpecularCubeMapkey, null);
                     lightShaderGroup.Parameters.Set(SpecularMipCount, 0);
                 }

@@ -191,6 +191,7 @@ namespace SiliconStudio.Paradox.Graphics
 
         // Need to change sampler state depending on if texture has mipmap or not during PreDraw
         private bool[] hasMipmaps = new bool[64];
+#endif
 
         private int copyProgram = -1;
         private int copyProgramOffsetLocation = -1;
@@ -201,7 +202,6 @@ namespace SiliconStudio.Paradox.Graphics
             0.0f, 1.0f, 
             1.0f, 1.0f,
         };
-#endif
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
 #if SILICONSTUDIO_PLATFORM_MONO_MOBILE

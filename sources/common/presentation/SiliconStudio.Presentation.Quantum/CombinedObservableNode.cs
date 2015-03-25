@@ -22,7 +22,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         protected static bool ChangeInProgress;
 
-        private IDictionary<string, object> associatedData;
+        private Dictionary<string, object> associatedData;
 
         protected CombinedObservableNode(ObservableViewModel ownerViewModel, string name, CombinedObservableNode parentNode, IEnumerable<SingleObservableNode> combinedNodes, object index)
             : base(ownerViewModel, parentNode, index)
@@ -175,7 +175,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         // TODO: we shall find a better way to handle combined associated data...
         /// <inheritdoc/>
-        public override IDictionary<string, object> AssociatedData { get { return associatedData; } }
+        public override Dictionary<string, object> AssociatedData { get { return associatedData; } }
 
         public void Refresh()
         {
@@ -420,6 +420,7 @@ namespace SiliconStudio.Presentation.Quantum
                 }
                 changedNodes.ForEach(x => x.Refresh());
                 NotifyNodeUpdated();
+                OnValueChanged();
                 string displayName = Owner.FormatCombinedUpdateMessage(this, value);
                 Owner.EndCombinedAction(displayName, Path, value);
             }
