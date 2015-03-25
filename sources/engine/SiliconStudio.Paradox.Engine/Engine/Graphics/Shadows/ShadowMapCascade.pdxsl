@@ -11,29 +11,18 @@ namespace SiliconStudio.Paradox.Effects.Shadows
     /// </remarks>
     internal class ShadowMapCascade<int TCascadeCount, bool TCascadeDebug> : ShadowMapGroup, ShadowMapFilterBase, PositionStream4
     {
-        struct ShadowMapCascadeLevel
-        {
-            matrix ShadowMapWVP;
-            float4 CascadeTextureCoordsBorder;
-            float3 ShadowLightOffset;
-        };
-
         cbuffer PerPass
         {
-            float3 ShadowLightDirection;
-            float ShadowMapDistance;
-            ShadowMapCascadeLevel ShadowMapCascadeLevels[TCascadeCount];
+            float4x4 ShadowMatrix;
+            float CascadeSplits[TCascadeCount];
+            float3 CascadeOffsets[TCascadeCount];
+            float3 CascadeScales[TCascadeCount];
         };
 
-        float2 CalculateShadowMapPosition(int cascadeIndex)
+        float ComputeShadowFromCascade(float3 shadowPosition, int cascadeIndex)
         {
-            var shadowMapPos = mul(streams.PositionWS, ShadowMapCascadeLevels[cascadeIndex].ShadowMapWVP);
-            return shadowMapPos.xy / shadowMapPos.w;
-        }
-
-        float CalculateShadowMapDepth(int cascadeIndex)
-        {
-            return dot(ShadowLightDirection, streams.PositionWS.xyz - ShadowMapCascadeLevels[cascadeIndex].ShadowLightOffset) / ShadowMapDistance;
+            shadowPosition = (shadowPosition + CascadeOffsets[cascadeIndex]) * CascadeScales[cascadeIndex];
+            return FilterShadow(shadowPosition.xy, shadowPosition.z);
         }
 
         override void ComputeShadow(int lightIndex)
@@ -44,54 +33,42 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             float2 shadowMapPos = 0.0;
             float shadowLERP = 0.0f;
 
-            int foundCascadeIndex = TCascadeCount;
-
-            // [unroll] 
-            float shadowMapDepth = 0;
-            for(int cascadeIndex = 0; cascadeIndex < TCascadeCount; cascadeIndex++) 
+            int cascadeIndex = 0;
+            [unroll] 
+            for(int i = 0; i < TCascadeCount - 1; i++) 
             {
-                shadowMapPos = CalculateShadowMapPosition(cascadeIndex);
-                shadowMapDepth = CalculateShadowMapDepth(cascadeIndex);
-
-                if (foundCascadeIndex == TCascadeCount)
+                [flatten]
+                if (streams.DepthVS > CascadeSplits[i])
                 {
-                    float4 cascadeTextureCoordBorder = ShadowMapCascadeLevels[cascadeIndex].CascadeTextureCoordsBorder;
-                    if (all(shadowMapPos > cascadeTextureCoordBorder.xy) && all(shadowMapPos < cascadeTextureCoordBorder.zw))
-                    {
-                        float2 cascadeCenter = (cascadeTextureCoordBorder.xy + cascadeTextureCoordBorder.zw) * 0.5f;
-                        shadowLERP = saturate(4.0 - max(abs(shadowMapPos.x - cascadeCenter.x),abs(shadowMapPos.y - cascadeCenter.y)*TCascadeCount/4.0) * 16.666);
-                        foundCascadeIndex = cascadeIndex;
-                        // Break inside this loop didn't work on OpenGL (very bad perf) => switched to if inside loop
-                        //break;
-                    }
+                    cascadeIndex = i + 1;
                 }
             }
 
-            // Outside of shadow maps
-            if (foundCascadeIndex == TCascadeCount)
-                return;
-        
-            // Calculate shadows with lerp between cascades
-            float shadowMapDistance = shadowMapDepth;
-            float shadow = FilterShadow(shadowMapPos, shadowMapDistance);
-            int nextCascade = foundCascadeIndex + 1;
-            // Only lerp when 
-            if (shadowLERP > 0.0 && shadowLERP < 1.0f && nextCascade < TCascadeCount)
-            {
-                var shadowMapPos1 = CalculateShadowMapPosition(nextCascade);
-                shadowMapDistance = CalculateShadowMapDepth(nextCascade);
-                shadow = lerp(FilterShadow(shadowMapPos1, shadowMapDistance), shadow, shadowLERP);
-            }
+            var shadowPosition = mul(float4(streams.Position.xyz, 1), ShadowMatrix).xyz;
 
-            // Output the shadow color
+            var shadow = ComputeShadowFromCascade(shadowPosition, cascadeIndex);
+
             streams.shadowColor = shadow;
 
+            //// Calculate shadows with lerp between cascades
+            //float shadowMapDistance = shadowMapDepth;
+            //float shadow = FilterShadow(shadowMapPos, shadowMapDistance);
+            //int nextCascade = foundCascadeIndex + 1;
+            //// Only lerp when 
+            //if (shadowLERP > 0.0 && shadowLERP < 1.0f && nextCascade < TCascadeCount)
+            //{
+            //    var shadowMapPos1 = CalculateShadowMapPosition(nextCascade);
+            //    shadowMapDistance = CalculateShadowMapDepth(nextCascade);
+            //    shadow = lerp(FilterShadow(shadowMapPos1, shadowMapDistance), shadow, shadowLERP);
+            //}
+
+            // Output the shadow color
             if (TCascadeDebug)
             {
                 //// Display Cascade with colors in debug mode
                 ////                        GREEN          BLUE           PURPLE         RED            WHITE           
                 static float3 colors[5] = { float3(0,1,0), float3(0,0,1), float3(1,0,1), float3(1,0,0), float3(1,1,1)};
-                streams.shadowColor = shadow * colors[foundCascadeIndex];
+                streams.shadowColor = shadow * colors[cascadeIndex];
             }
         }
     };
