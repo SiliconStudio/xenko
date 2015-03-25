@@ -46,7 +46,8 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         protected override void UndoAction()
         {
-            var node = nodePath.GetSourceNode(out index);
+            object pathIndex;
+            var node = nodePath.GetSourceNode(out pathIndex);
             if (node == null)
                 throw new InvalidOperationException("Unable to retrieve the node to modify in this undo process.");
 
