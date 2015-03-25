@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Physics
         private readonly IReadOnlyList<Vector3> pointsList;
         private readonly IReadOnlyCollection<uint> indicesList; 
 
-        public ConvexHullColliderShape(IReadOnlyList<Vector3> points, IReadOnlyList<uint> indices)
+        public ConvexHullColliderShape(IReadOnlyList<Vector3> points, IReadOnlyList<uint> indices, Vector3 scaling)
         {
             Type = ColliderShapeTypes.ConvexHull;
             Is2D = false;
@@ -23,6 +23,8 @@ namespace SiliconStudio.Paradox.Physics
             InternalShape = new BulletSharp.ConvexHullShape(points);
 
             DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(1, 1, 1) * 1.01f);
+
+            Scaling = scaling;
 
             pointsList = points;
             indicesList = indices;
