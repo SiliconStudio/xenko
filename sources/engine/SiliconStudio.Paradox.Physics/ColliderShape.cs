@@ -94,8 +94,15 @@ namespace SiliconStudio.Paradox.Physics
             }
             set
             {
-                DebugPrimitiveMatrix *= Matrix.Scaling(value);
-                InternalShape.LocalScaling = value;
+                var newScaling = value;
+                
+                if (Is2D) newScaling.Z = 1.0f;
+
+                DebugPrimitiveMatrix *= Matrix.Scaling(newScaling);
+
+                if (Is2D) newScaling.Z = 0.0f;
+
+                InternalShape.LocalScaling = newScaling;
             }
         }
 
