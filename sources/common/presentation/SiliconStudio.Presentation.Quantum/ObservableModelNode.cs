@@ -54,7 +54,7 @@ namespace SiliconStudio.Presentation.Quantum
                 if (memberDescriptor != null)
                 {
                     var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(memberDescriptor.MemberInfo);
-                    if (displayAttribute != null)
+                    if (displayAttribute != null && !string.IsNullOrEmpty(displayAttribute.Name))
                     {
                         DisplayName = displayAttribute.Name;
                     }
