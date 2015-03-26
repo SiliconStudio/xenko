@@ -22,10 +22,9 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <param name="ownerViewModel">The <see cref="ObservableViewModel"/> that owns the new <see cref="SingleObservableNode"/>.</param>
         /// <param name="baseName">The base name of this node. Can be null if <see cref="index"/> is not. If so a name will be automatically generated from the index.</param>
-        /// <param name="parentNode">The parent node of the new <see cref="SingleObservableNode"/>, or <c>null</c> if the node being created is the root node of the view model.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <c>null</c> must be passed otherwise</param>
-        protected SingleObservableNode(ObservableViewModel ownerViewModel, string baseName, ObservableNode parentNode, object index = null)
-            : base(ownerViewModel, parentNode, index)
+        protected SingleObservableNode(ObservableViewModel ownerViewModel, string baseName, object index = null)
+            : base(ownerViewModel, index)
         {
             if (baseName == null && index == null)
                 throw new ArgumentException("baseName and index can't be both null.");
@@ -55,7 +54,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         public VirtualObservableNode CreateVirtualChild(string name, Type contentType, int? order, bool isPrimitive, object initialValue, object index = null, NodeCommandWrapperBase valueChangedCommand = null, IReadOnlyDictionary<string, object> nodeAssociatedData = null)
         {
-            var observableChild = VirtualObservableNode.Create(Owner, name, this, order, isPrimitive, contentType, initialValue, index, valueChangedCommand);
+            var observableChild = VirtualObservableNode.Create(Owner, name, order, isPrimitive, contentType, initialValue, index, valueChangedCommand);
             if (nodeAssociatedData != null)
             {
                 foreach (var data in nodeAssociatedData)

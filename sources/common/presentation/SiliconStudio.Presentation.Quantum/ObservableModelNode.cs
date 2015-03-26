@@ -19,7 +19,7 @@ namespace SiliconStudio.Presentation.Quantum
         protected readonly IModelNode SourceNode;
         protected readonly ModelNodePath SourceNodePath;
         private IModelNode targetNode;
-        private Dictionary<string, object> associatedData;
+        private Dictionary<string, object> associatedData = new Dictionary<string,object>();
         private bool isInitialized;
         private int? customOrder;
 
@@ -29,12 +29,11 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="ownerViewModel">The <see cref="ObservableViewModel"/> that owns the new <see cref="ObservableModelNode"/>.</param>
         /// <param name="baseName">The base name of this node. Can be null if <see cref="index"/> is not. If so a name will be automatically generated from the index.</param>
         /// <param name="isPrimitive">Indicate whether this node should be considered as a primitive node.</param>
-        /// <param name="parentNode">The parent node of the new <see cref="ObservableModelNode"/>, or <c>null</c> if the node being created is the root node of the view model.</param>
         /// <param name="modelNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
         /// <param name="modelNodePath">The <see cref="ModelNodePath"/> corresponding to the given <see cref="modelNode"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <c>null</c> must be passed otherwise</param>
-        protected ObservableModelNode(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, SingleObservableNode parentNode, IModelNode modelNode, ModelNodePath modelNodePath, object index = null)
-            : base(ownerViewModel, baseName, parentNode, index)
+        protected ObservableModelNode(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IModelNode modelNode, ModelNodePath modelNodePath, object index = null)
+            : base(ownerViewModel, baseName, index)
         {
             if (modelNode == null) throw new ArgumentNullException("modelNode");
             if (baseName == null && index == null)
@@ -68,15 +67,14 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="ownerViewModel">The <see cref="ObservableViewModel"/> that owns the new <see cref="ObservableModelNode"/>.</param>
         /// <param name="baseName">The base name of this node. Can be null if <see cref="index"/> is not. If so a name will be automatically generated from the index.</param>
         /// <param name="isPrimitive">Indicate whether this node should be considered as a primitive node.</param>
-        /// <param name="parentNode">The parent node of the new <see cref="ObservableModelNode"/>, or <c>null</c> if the node being created is the root node of the view model.</param>
         /// <param name="modelNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
         /// <param name="modelNodePath">The <see cref="ModelNodePath"/> corresponding to the given node.</param>
         /// <param name="contentType">The type of content contained by the new <see cref="ObservableModelNode"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <c>null</c> must be passed otherwise</param>
         /// <returns>A new instance of <see cref="ObservableModelNode{T}"/> instanced with the given content type as generic argument.</returns>
-        internal static ObservableModelNode Create(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, SingleObservableNode parentNode, IModelNode modelNode, ModelNodePath modelNodePath, Type contentType, object index)
+        internal static ObservableModelNode Create(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IModelNode modelNode, ModelNodePath modelNodePath, Type contentType, object index)
         {
-            var node = (ObservableModelNode)Activator.CreateInstance(typeof(ObservableModelNode<>).MakeGenericType(contentType), ownerViewModel, baseName, isPrimitive, parentNode, modelNode, modelNodePath, index);
+            var node = (ObservableModelNode)Activator.CreateInstance(typeof(ObservableModelNode<>).MakeGenericType(contentType), ownerViewModel, baseName, isPrimitive, modelNode, modelNodePath, index);
             return node;
         }
 
@@ -319,8 +317,8 @@ namespace SiliconStudio.Presentation.Quantum
                             // a boxed float to double for example. Otherwise, we don't want to have a node type that is value-dependent.
                             var type = reference.TargetNode != null && reference.TargetNode.Content.IsPrimitive ? reference.TargetNode.Content.Type : reference.Type;
                             var observableNode = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, false, this, modelNode, modelNodePath, type, reference.Index);
-                            observableNode.Initialize(isUpdating);
                             AddChild(observableNode);
+                            observableNode.Initialize(isUpdating);
                         }
                     }
                 }
@@ -335,8 +333,8 @@ namespace SiliconStudio.Presentation.Quantum
                     foreach (var key in dictionary.GetKeys(modelNode.Content.Value))
                     {
                         var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, this, modelNode, modelNodePath, dictionary.ValueType, key);
-                        observableChild.Initialize(isUpdating);
                         AddChild(observableChild);
+                        observableChild.Initialize(isUpdating);
                     }
                 }
                 else if (list != null && modelNode.Content.Value != null)
@@ -345,8 +343,8 @@ namespace SiliconStudio.Presentation.Quantum
                     for (int i = 0; i < list.GetCollectionCount(modelNode.Content.Value); ++i)
                     {
                         var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, this, modelNode, modelNodePath, list.ElementType, i);
-                        observableChild.Initialize(isUpdating);
                         AddChild(observableChild);
+                        observableChild.Initialize(isUpdating);
                     }
                 }
                 else
@@ -356,8 +354,8 @@ namespace SiliconStudio.Presentation.Quantum
                     {
                         var childPath = ModelNodePath.GetChildPath(modelNodePath, modelNode, child);
                         var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, this, child, childPath, child.Content.Type, null);
-                        observableChild.Initialize(isUpdating);
                         AddChild(observableChild);
+                        observableChild.Initialize(isUpdating);
                     }
                 }
             }
@@ -391,7 +389,7 @@ namespace SiliconStudio.Presentation.Quantum
 
             // Clean the current node so it can be re-initialized (associatedData are overwritten in Initialize)
             ClearCommands();
-            foreach (var child in Children.ToList())
+            foreach (var child in Children.Cast<ObservableNode>().ToList())
                 RemoveChild(child);
 
             Initialize(true);
@@ -427,12 +425,11 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="ownerViewModel">The <see cref="ObservableViewModel"/> that owns the new <see cref="ObservableModelNode"/>.</param>
         /// <param name="baseName">The base name of this node. Can be null if <see cref="index"/> is not. If so a name will be automatically generated from the index.</param>
         /// <param name="isPrimitive">Indicate whether this node should be considered as a primitive node.</param>
-        /// <param name="parentNode">The parent node of the new <see cref="ObservableModelNode"/>, or <c>null</c> if the node being created is the root node of the view model.</param>
         /// <param name="modelNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
         /// <param name="modelNodePath">The <see cref="ModelNodePath"/> corresponding to the given <see cref="modelNode"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <c>null</c> must be passed otherwise</param>
-        public ObservableModelNode(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, SingleObservableNode parentNode, IModelNode modelNode, ModelNodePath modelNodePath, object index)
-            : base(ownerViewModel, baseName, isPrimitive, parentNode, modelNode, modelNodePath, index)
+        public ObservableModelNode(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IModelNode modelNode, ModelNodePath modelNodePath, object index)
+            : base(ownerViewModel, baseName, isPrimitive, modelNode, modelNodePath, index)
         {
             DependentProperties.Add("TypedValue", new[] { "Value" });
         }

@@ -27,11 +27,10 @@ namespace SiliconStudio.Presentation.Quantum
         private string displayName;
         private int visibleChildrenCount;
 
-        protected ObservableNode(ObservableViewModel ownerViewModel, IObservableNode parentNode, object index = null)
+        protected ObservableNode(ObservableViewModel ownerViewModel, object index = null)
             : base(ownerViewModel.ServiceProvider)
         {
             Owner = ownerViewModel;
-            Parent = parentNode;
             Index = index;
             Guid = Guid.NewGuid();
             IsVisible = true;
@@ -210,7 +209,6 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 Name = newName;
             }
-            Parent = newParent;
             ((ObservableNode)newParent).AddChild(this);
             UpdateCommandPath();
         }
@@ -271,11 +269,13 @@ namespace SiliconStudio.Presentation.Quantum
             OnPropertyChanged(propertyName, ObservableViewModel.HasChildPrefix + propertyName);
         }
 
-        internal void AddChild(IObservableNode node)
+        internal void AddChild(ObservableNode node)
         {
             if (node == null) throw new ArgumentNullException("node");
+            if (node.Parent != null) throw new InvalidOperationException("The node already have a parent.");
             if (children.Contains(node)) throw new InvalidOperationException("The node is already in the children list of its parent.");
             NotifyPropertyChanging(node.Name);
+            node.Parent = this;
             children.Add(node);
             NotifyPropertyChanged(node.Name);
 
@@ -284,7 +284,7 @@ namespace SiliconStudio.Presentation.Quantum
             node.IsVisibleChanged += ChildVisibilityChanged;
         }
 
-        internal void RemoveChild(IObservableNode node)
+        internal void RemoveChild(ObservableNode node)
         {
             if (node == null) throw new ArgumentNullException("node");
             if (!children.Contains(node)) throw new InvalidOperationException("The node is not in the children list of its parent.");
@@ -294,6 +294,7 @@ namespace SiliconStudio.Presentation.Quantum
             node.IsVisibleChanged -= ChildVisibilityChanged;
 
             NotifyPropertyChanging(node.Name);
+            node.Parent = null;
             children.Remove(node);
             NotifyPropertyChanged(node.Name);
         }
