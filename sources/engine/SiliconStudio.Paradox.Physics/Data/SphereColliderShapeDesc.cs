@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <userdoc>
         /// The radius of the sphere/circle.
         /// </userdoc>
-        [DataMember(30)]
-        public float Radius;
+        [DataMember(30)] 
+        public float Radius = 1.0f;
     }
 }

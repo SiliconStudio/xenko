@@ -24,8 +24,8 @@ namespace SiliconStudio.Paradox.Physics
         /// <userdoc>
         /// Half Extent size of the cylinder.
         /// </userdoc>
-        [DataMember(30)]
-        public Vector3 HalfExtents;
+        [DataMember(30)] 
+        public Vector3 HalfExtents = Vector3.One;
 
         /// <userdoc>
         /// The up axis of the cylinder, this must be either (1,0,0),(0,1,0),(0,0,1).

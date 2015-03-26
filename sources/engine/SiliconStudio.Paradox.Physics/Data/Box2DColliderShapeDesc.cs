@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <userdoc>
         /// Half Extent size of the box.
         /// </userdoc>
-        [DataMember(30)]
-        public Vector2 HalfExtent;
+        [DataMember(30)] 
+        public Vector2 HalfExtent = Vector2.One;
     }
 }

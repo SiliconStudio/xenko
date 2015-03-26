@@ -114,17 +114,6 @@ namespace SiliconStudio.Paradox.Physics
         /// </userdoc>
         public float StepHeight { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="PhysicsElement"/> is representing a sprite.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if sprite; otherwise, <c>false</c>.
-        /// </value>
-        /// <userdoc>
-        /// If this element is associated with a Sprite Component's sprite. This is necessary because Sprites use an inverted Y axis and the physics engine must be aware of that.
-        /// </userdoc>
-        public bool Sprite { get; set; }
-
         #region Ignore or Private/Internal
 
         internal Collider InternalCollider;
@@ -193,12 +182,6 @@ namespace SiliconStudio.Paradox.Physics
                 translation = entity.Transform.Position;
             }
 
-            //Invert up axis in the case of a Sprite
-            if (Sprite)
-            {
-                translation.Y = -translation.Y;
-            }
-
             derivedTransformation = Matrix.RotationQuaternion(rotation) * Matrix.Translation(translation);
 
             //Handle collider shape offset
@@ -241,12 +224,6 @@ namespace SiliconStudio.Paradox.Physics
 
             var rotation = Quaternion.RotationMatrix(physicsTransform);
             var translation = physicsTransform.TranslationVector;
-
-            //Invert up axis in the case of a Sprite
-            if (Sprite)
-            {
-                translation.Y = -translation.Y;
-            }
 
             if (entity.Transform.UseTRS)
             {

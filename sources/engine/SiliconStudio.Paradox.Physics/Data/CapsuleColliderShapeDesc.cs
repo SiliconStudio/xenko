@@ -30,14 +30,14 @@ namespace SiliconStudio.Paradox.Physics
         /// <userdoc>
         /// The radius of the capsule.
         /// </userdoc>
-        [DataMember(40)]
-        public float Radius;
+        [DataMember(40)] 
+        public float Radius = 0.5f;
 
         /// <userdoc>
         /// The height of the capsule.
         /// </userdoc>
-        [DataMember(50)]
-        public float Height;
+        [DataMember(50)] 
+        public float Height = 1.0f;
 
         /// <userdoc>
         /// The up axis of the capsule, this must be either (1,0,0),(0,1,0),(0,0,1).
