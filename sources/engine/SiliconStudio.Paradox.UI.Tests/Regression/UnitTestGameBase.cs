@@ -85,6 +85,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             UIScene.AddChild(SceneUIRoot);
 
             SceneUIRenderer.VirtualResolution = new Int3(1000, 500, 500);
+            SceneUIRenderer.VirtualResolutionMode = VirtualResolutionMode.WidthHeightDepth;
         }
 
         protected virtual void SpecificDrawBeforeUI(RenderContext context, RenderFrame renderFrame)
