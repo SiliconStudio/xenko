@@ -124,6 +124,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ThresholdAlphaCoCFront.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Engine\RenderModelCollection.cs" />
     <Compile Include="Engine\ScriptComponent.cs" />
     <Compile Include="Engine\CameraProcessor.cs" />
     <Compile Include="Engine\CameraProjectionMode.cs" />
@@ -1679,7 +1680,6 @@
     <Compile Include="Engine\Graphics\RenderFrameDescriptor.cs" />
     <Compile Include="Engine\Graphics\RenderFrameFormat.cs" />
     <Compile Include="Engine\Graphics\RenderFrameSizeMode.cs" />
-    <Compile Include="Engine\Graphics\RenderingParameters.cs" />
     <Compile Include="Engine\Graphics\Composers\SceneGraphicsLayer.cs" />
     <Compile Include="Engine\Graphics\Shadows\ShadowGroup.cs">
       <DependentUpon>ShadowGroup.pdxsl</DependentUpon>
@@ -2017,6 +2017,7 @@
     <Compile Include="Data\GeometricPrimitiveExtension.cs" />
     <Compile Include="EntityModel\DefaultEntityComponentRendererAttribute.cs" />
     <Compile Include="EntityModel\EntityComponentRendererType.cs" />
+    <Compile Include="EntityModel\EntityGroupMask.cs" />
     <Compile Include="EntityModel\EntityReference.cs" />
     <Compile Include="EntityModel\GizmoBase.cs" />
     <Compile Include="EntityModel\GizmoContext.cs" />

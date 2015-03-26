@@ -56,8 +56,9 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 return;
             }
 
-            directLightGroup.ProcessLights(context, lightProcessor.ActiveDirectLights, Enabled);
-            environmentLightGroup.ProcessLights(context, lightProcessor.ActiveEnvironmentLights, Enabled);
+            directLightGroup.ProcessLights(context, lightProcessor.ActiveDirectLights, Enabled, false);
+            directLightGroup.ProcessLights(context, lightProcessor.ActiveLightsWithShadow, Enabled, true);
+            environmentLightGroup.ProcessLights(context, lightProcessor.ActiveEnvironmentLights, Enabled, false);
         }
 
         /// <summary>
@@ -97,7 +98,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
             public readonly List<ShaderSource> CurrentShaderSources;
 
-            public void ProcessLights(RenderContext context, Dictionary<Type, LightComponentCollection> activeLights, bool enabled)
+            public void ProcessLights(RenderContext context, Dictionary<Type, LightComponentCollection> activeLights, bool enabled, bool isLightWithShadow)
             {
                 var passParameters = context.Parameters;
 
@@ -110,7 +111,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
                         var lightType = lightTypeProcessor.Key;
                         var lightRenderProcessor = lightTypeProcessor.Value;
 
-                        PrepareLights(context, passParameters, lightRenderProcessor, lightType, activeLights);
+                        PrepareLights(context, passParameters, lightRenderProcessor, lightType, activeLights, isLightWithShadow);
                     }
 
                     // TODO: Support for RenderLayer (we have to move this per mesh instead), optimize for the case all renderlayers are affected
@@ -147,14 +148,14 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 return rawCompositeKey;
             }
 
-            private void PrepareLights(RenderContext context, ParameterCollection passParameters, LightGroupRendererBase lightGroupProcessor, Type lightType, Dictionary<Type, LightComponentCollection> lightsPerType)
+            private void PrepareLights(RenderContext context, ParameterCollection passParameters, LightGroupRendererBase lightGroupProcessor, Type lightType, Dictionary<Type, LightComponentCollection> lightsPerType, bool isLightWithShadow)
             {
                 LightComponentCollection lights;
                 if (lightsPerType.TryGetValue(lightType, out lights))
                 {
                     if (lights.Count > 0)
                     {
-                        var lightShaderGroups = lightGroupProcessor.PrepareLights(context, lights);
+                        var lightShaderGroups = lightGroupProcessor.PrepareLights(context, lights, isLightWithShadow);
 
                         foreach (var lightShaderGroup in lightShaderGroups)
                         {

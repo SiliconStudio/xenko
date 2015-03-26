@@ -9,7 +9,6 @@ using SiliconStudio.Core.Extensions;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Games;
 
 namespace SiliconStudio.Paradox.Engine
 {
@@ -18,6 +17,8 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     public class ModelProcessor : EntityProcessor<RenderModel>
     {
+        private readonly RenderModelCollection[] allModelGroups; 
+
         /// <summary>
         /// The link transformation to update.
         /// </summary>
@@ -30,7 +31,12 @@ namespace SiliconStudio.Paradox.Engine
         public ModelProcessor()
             : base(new PropertyKey[] { ModelComponent.Key, TransformComponent.Key })
         {
-            Models = new List<RenderModel>();
+            ModelGroups = new List<RenderModelCollection>();
+            allModelGroups = new RenderModelCollection[32];
+            for (int i = 0; i < allModelGroups.Length; i++)
+            {
+                allModelGroups[i] = new RenderModelCollection((EntityGroup)i);
+            }
         }
 
         protected override RenderModel GenerateAssociatedData(Entity entity)
@@ -42,7 +48,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets the current models to render.
         /// </summary>
         /// <value>The current models to render.</value>
-        public List<RenderModel> Models { get; private set; }
+        public List<RenderModelCollection> ModelGroups { get; private set; }
 
         public EntityLink LinkEntity(Entity linkedEntity, ModelComponent modelComponent, string boneName)
         {
@@ -78,9 +84,15 @@ namespace SiliconStudio.Paradox.Engine
 
         public override void Draw(RenderContext context)
         {
-            Models.Clear();
+            // Clear previous model groups
+            foreach (var modelGroup in ModelGroups)
+            {
+                modelGroup.Clear();
+            }
 
-            // Collect models for this frame
+            var groupMaskUsed = EntityGroupMask.None;
+
+            // Collect models for this frame, and dispatch them to list of group
             foreach (var matchingEntity in enabledEntities)
             {
                 var renderModel = matchingEntity.Value;
@@ -94,7 +106,11 @@ namespace SiliconStudio.Paradox.Engine
                 // Update the group in case it changed
                 renderModel.Update();
 
-                Models.Add(renderModel);
+                // Add the render model to the specified collection group
+                var groupIndex = (int)renderModel.Group;
+                groupMaskUsed |= (EntityGroupMask)(1 << groupIndex);
+                var modelCollection = allModelGroups[groupIndex];
+                modelCollection.Add(renderModel);
 
                 var modelViewHierarchy = renderModel.ModelComponent.ModelViewHierarchy;
                 var transformationComponent = renderModel.TransformComponent;
@@ -129,9 +145,20 @@ namespace SiliconStudio.Paradox.Engine
                 //// Upload skinning blend matrices
                 //MeshSkinningUpdater.Update(modelViewHierarchy, renderModel);
             }
+
+            // Collect model groups
+            for (int groupIndex = 0, groupMask = (int)groupMaskUsed; groupMask != 0; groupMask = groupMask >> 1, groupIndex++)
+            {
+                if ((groupMask & 1) == 0)
+                {
+                    continue;
+                }
+
+                var modelGroup = allModelGroups[groupIndex];
+                ModelGroups.Add(modelGroup);
+            }
         }
 
-        
         public struct EntityLink
         {
             public int NodeIndex;

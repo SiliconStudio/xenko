@@ -54,7 +54,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             }
         }
 
-        public override List<LightShaderGroup> PrepareLights(RenderContext context, LightComponentCollection lights)
+        public override List<LightShaderGroup> PrepareLights(RenderContext context, LightComponentCollection lights, bool isLightWithShadow)
         {
             var count = Math.Min(lights.Count, LightMax);
 

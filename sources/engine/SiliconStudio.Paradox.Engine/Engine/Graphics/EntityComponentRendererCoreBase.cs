@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// Gets the current culling mask.
         /// </summary>
         /// <value>The current culling mask.</value>
-        public EntityGroup CurrentCullingMask { get; private set; }
+        public EntityGroupMask CurrentCullingMask { get; private set; }
 
         /// <summary>
         /// Gets the current render frame. Only valid from <see cref="RendererBase.DrawCore"/> method.

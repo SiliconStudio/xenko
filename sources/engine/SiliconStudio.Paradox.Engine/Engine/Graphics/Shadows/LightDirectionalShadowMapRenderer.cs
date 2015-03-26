@@ -23,17 +23,17 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         {
             WorldToShadowCascadeUV = new Matrix[4];
             CascadeSplitRatios = new float[4];
-            CascadeSplits = new float[4];
+            CascadeSplits = new Vector4();
             CascadeFrustumCorners = new Vector3[8];
         }
 
-        public readonly Matrix[] WorldToShadowCascadeUV;
+        private readonly Matrix[] WorldToShadowCascadeUV;
 
-        public readonly float[] CascadeSplitRatios;
+        private readonly float[] CascadeSplitRatios;
 
-        public readonly float[] CascadeSplits;
+        private Vector4 CascadeSplits;
 
-        private Vector3[] CascadeFrustumCorners;
+        private readonly Vector3[] CascadeFrustumCorners;
 
         private void ComputeCascadeSplits(ShadowMapRenderer shadowContext, ref LightShadowMapTexture lightShadowMap)
         {
@@ -193,7 +193,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 var cascadeShadowMatrix = shadowCamera.ViewProjectionMatrix;
 
                 // Cascade splits in light space using depth: Store depth on first CascaderCasterMatrix in last column of each row
-                cascadeShadowMatrix[cascadeLevel, 3] = camera.NearClipPlane + CascadeSplitRatios[cascadeLevel] * (camera.FarClipPlane - camera.NearClipPlane);
+                CascadeSplits[cascadeLevel] = camera.NearClipPlane + CascadeSplitRatios[cascadeLevel] * (camera.FarClipPlane - camera.NearClipPlane);
 
                 var shadowMapRectangle = lightShadowMap.GetRectangle(cascadeLevel);
 

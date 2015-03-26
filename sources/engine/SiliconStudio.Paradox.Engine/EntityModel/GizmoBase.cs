@@ -25,7 +25,12 @@ namespace SiliconStudio.Paradox.EntityModel
         /// The default entity group of the gizmo.
         /// </summary>
         public const EntityGroup DefaultGroup = EntityGroup.Group1;
-        
+
+        /// <summary>
+        /// The default entity group of the gizmo.
+        /// </summary>
+        public const EntityGroupMask DefaultGroupMask = EntityGroupMask.Group1;
+
         /// <summary>
         /// Gets the scene instance in charge of the gizmos.
         /// </summary>

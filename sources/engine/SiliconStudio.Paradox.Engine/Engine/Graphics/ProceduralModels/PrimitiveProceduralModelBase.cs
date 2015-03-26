@@ -86,7 +86,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
             meshDraw.PrimitiveType = PrimitiveType.TriangleList;
 
             var mesh = new Mesh { Draw = meshDraw, BoundingBox = boundingBox };
-            mesh.Parameters.Set(RenderingParameters.EntityGroup, EntityGroup.All);
 
             model.BoundingBox = boundingBox;
             model.Add(mesh);

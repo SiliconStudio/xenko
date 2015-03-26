@@ -13,7 +13,8 @@ namespace SiliconStudio.Paradox.Effects.Shadows
     {
         cbuffer PerPass // TODO: Use a proper cbuffer for this?
         {
-            float4x4 WorldToShadowCascadeUV[TCascadeCount];
+            float4 CascadeDepthSplits;
+            float4x3 WorldToShadowCascadeUV[TCascadeCount];
         };
 
         float ComputeShadowFromCascade(float3 shadowPositionWS, int cascadeIndex)
@@ -27,22 +28,18 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             base.ComputeShadow(lightIndex);
 
             // Only support a single light per group
-            float2 shadowMapPos = 0.0;
-            float shadowLERP = 0.0f;
-
             int cascadeIndex = 0;
             [unroll] 
             for(int i = 0; i < TCascadeCount - 1; i++) 
             {
                 [flatten]
-                if (streams.DepthVS > WorldToShadowCascadeUV[0][i][3])
+                if (streams.DepthVS > CascadeDepthSplits[i])
                 {
                     cascadeIndex = i + 1;
                 }
             }
 
             var shadow = ComputeShadowFromCascade(streams.Position.xyz, cascadeIndex);
-
             streams.shadowColor = shadow;
 
             //// Calculate shadows with lerp between cascades

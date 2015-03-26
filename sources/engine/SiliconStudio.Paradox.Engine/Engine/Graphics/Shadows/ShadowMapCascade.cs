@@ -18,6 +18,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 {
     internal static partial class ShadowMapCascadeKeys
     {
+        public static readonly ParameterKey<Vector4> CascadeDepthSplits = ParameterKeys.New<Vector4>();
         public static readonly ParameterKey<Matrix[]> WorldToShadowCascadeUV = ParameterKeys.New<Matrix[]>();
     }
 }

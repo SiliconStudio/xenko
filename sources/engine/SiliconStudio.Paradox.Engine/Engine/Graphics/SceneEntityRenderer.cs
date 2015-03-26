@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// </summary>
         protected SceneEntityRenderer()
         {
-            CullingMask = EntityGroup.All;
+            CullingMask = EntityGroupMask.All;
         }
 
         /// <summary>
@@ -32,8 +32,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// </summary>
         /// <value>The culling mask.</value>
         [DataMember(30)]
-        [DefaultValue(EntityGroup.All)]
-        public EntityGroup CullingMask { get; set; }
+        [DefaultValue(EntityGroupMask.All)]
+        public EntityGroupMask CullingMask { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating the current rendering is for picking or not.

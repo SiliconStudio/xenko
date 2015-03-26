@@ -62,7 +62,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                     continue;
 
                 // Perform culling on group and accept
-                if ((spriteState.SpriteComponent.Entity.Group & CurrentCullingMask) == 0)
+                if (!CurrentCullingMask.Contains(spriteState.SpriteComponent.Entity.Group))
                     continue;
 
                 // Project the position

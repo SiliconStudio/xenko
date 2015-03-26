@@ -30,11 +30,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         public EntityGroup Group { get; private set; }
 
-        public bool IsGroupUpdated { get; private set; }
-
         internal void Update()
         {
-            IsGroupUpdated = Entity.Group != Group;
             Group = Entity.Group;
             var previousModel = Model;
             Model = ModelComponent.Model;

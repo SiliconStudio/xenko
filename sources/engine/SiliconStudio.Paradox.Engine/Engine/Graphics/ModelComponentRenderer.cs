@@ -14,33 +14,17 @@ using SiliconStudio.Paradox.Engine.Graphics;
 namespace SiliconStudio.Paradox.Effects
 {
 
-    [DataContract]
     public class ModelComponentRendererCallback
     {
         public delegate void UpdateMeshesDelegate(RenderContext context, FastList<RenderMesh> meshes);
 
-        public delegate void PreRenderDelegate(RenderContext context);
-
-        public delegate void PostRenderDelegate(RenderContext context);
-
-        public delegate void PreEffectUpdateDelegate(RenderContext context, RenderMesh renderMesh);
+        public delegate void PreRenderGroupDelegate(RenderContext context, EntityGroup group);
 
         public delegate void PostEffectUpdateDelegate(RenderContext context, RenderMesh renderMesh);
 
-        [DataMemberIgnore]
-        public UpdateMeshesDelegate UpdateMeshes { get; set; }
+        public UpdateMeshesDelegate UpdateMeshes;
 
-        [DataMemberIgnore]
-        public PreRenderDelegate PreRender { get; set; }
-
-        [DataMemberIgnore]
-        public PostRenderDelegate PostRender { get; set; }
-
-        [DataMemberIgnore]
-        public PreEffectUpdateDelegate PreEffectUpdate { get; set; }
-
-        [DataMemberIgnore]
-        public PostEffectUpdateDelegate PostEffectUpdate { get; set; }
+        public PreRenderGroupDelegate PreRenderGroup;
     }
 
     /// <summary>
@@ -59,6 +43,8 @@ namespace SiliconStudio.Paradox.Effects
         
         public override bool SupportPicking { get { return true; } }
 
+        private int previousGroup;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelComponentRenderer" /> class.
         /// </summary>
@@ -74,6 +60,8 @@ namespace SiliconStudio.Paradox.Effects
             meshesToRender = new FastList<RenderMesh>();
 
             modelRenderSlot = -1;
+
+            Callbacks = new ModelComponentRendererCallback();
         }
 
         public string EffectName
@@ -88,7 +76,7 @@ namespace SiliconStudio.Paradox.Effects
         /// Gets or sets the callbacks.
         /// </summary>
         /// <value>The callbacks.</value>
-        public ModelComponentRendererCallback Callbacks { get; set; }
+        public ModelComponentRendererCallback Callbacks { get; private set; }
 
         public DynamicEffectCompiler DynamicEffectCompiler
         {
@@ -116,6 +104,9 @@ namespace SiliconStudio.Paradox.Effects
                 return;
             }
 
+            // Initialize the current group
+            previousGroup = -1;
+
             // If we don't have yet a render slot, create a new one
             if (modelRenderSlot < 0)
             {
@@ -130,36 +121,39 @@ namespace SiliconStudio.Paradox.Effects
             var viewProjectionMatrix = camera.ViewProjectionMatrix;
 
             // Get all meshes from render models
-            foreach (var renderModel in modelProcessor.Models)
+            foreach (var renderModelGroup in modelProcessor.ModelGroups)
             {
-                // Always prepare the slot for the render meshes even if they are not used.
-                EnsureRenderMeshes(renderModel);
-
                 // Perform culling on group and accept
-                if ((renderModel.Group & CurrentCullingMask) == 0)
+                if (!CurrentCullingMask.Contains(renderModelGroup.Group))
                 {
                     continue;
                 }
 
-                var meshes = PrepareModelForRendering(context, renderModel);
-
-                foreach (var renderMesh in meshes)
+                foreach (var renderModel in renderModelGroup)
                 {
-                    if (!renderMesh.Enabled)
+                    // Always prepare the slot for the render meshes even if they are not used.
+                    EnsureRenderMeshes(renderModel);
+
+                    var meshes = PrepareModelForRendering(context, renderModel);
+
+                    foreach (var renderMesh in meshes)
                     {
-                        continue;
+                        if (!renderMesh.Enabled)
+                        {
+                            continue;
+                        }
+
+                        // Project the position
+                        // TODO: This could be done in a SIMD batch, but we need to figure-out how to plugin in with RenderMesh object
+                        var worldPosition = new Vector4(renderMesh.Parameters.Get(TransformationKeys.World).TranslationVector, 1.0f);
+                        Vector4 projectedPosition;
+                        Vector4.Transform(ref worldPosition, ref viewProjectionMatrix, out projectedPosition);
+                        var projectedZ = projectedPosition.Z / projectedPosition.W;
+
+                        renderMesh.UpdateMaterial();
+                        var list = renderMesh.HasTransparency ? transparentList : opaqueList;
+                        list.Add(new RenderItem(this, renderMesh, projectedZ));
                     }
-
-                    // Project the position
-                    // TODO: This could be done in a SIMD batch, but we need to figure-out how to plugin in with RenderMesh object
-                    var worldPosition = new Vector4(renderMesh.Parameters.Get(TransformationKeys.World).TranslationVector, 1.0f);
-                    Vector4 projectedPosition;
-                    Vector4.Transform(ref worldPosition, ref viewProjectionMatrix, out projectedPosition);
-                    var projectedZ = projectedPosition.Z / projectedPosition.W;
-
-                    renderMesh.UpdateMaterial();
-                    var list = renderMesh.HasTransparency ? transparentList : opaqueList;
-                    list.Add(new RenderItem(this, renderMesh, projectedZ));
                 }
             }
         }
@@ -174,32 +168,32 @@ namespace SiliconStudio.Paradox.Effects
             }
 
             // Slow path there is a callback
-            var callback = Callbacks;
-            if (callback != null && callback.UpdateMeshes != null)
+            if (Callbacks.UpdateMeshes != null)
             {
-                callback.UpdateMeshes(context, meshesToRender);
+                Callbacks.UpdateMeshes(context, meshesToRender);
             }
-            var preEffectUpdate = callback != null ? callback.PreEffectUpdate : null;
-            var postEffectUpdate = callback != null ? callback.PostEffectUpdate : null;
+
+            // Fetch callback on PreRenderGroup
+            var preRenderGroup = Callbacks.PreRenderGroup;
 
             foreach (var mesh in meshesToRender)
             {
-                // Perform an pre-draw per RenderMesh
-                if (preEffectUpdate != null)
+                // If the EntityGroup is changing, call the callback to allow to plug specific parameters for this group
+                if (preRenderGroup != null)
                 {
-                    preEffectUpdate(context, mesh);
+                    var group = mesh.RenderModel.Group;
+                    if (previousGroup != (int)group)
+                    {
+                        preRenderGroup(context, group);
+                        previousGroup = (int)group;
+                    }
                 }
 
                 // Update Effect and mesh
                 UpdateEffect(context, mesh, context.Parameters);
 
+                // Draw the mesh
                 mesh.Draw(context);
-
-                // Perform a post-draw per RenderMesh
-                if (postEffectUpdate != null)
-                {
-                    postEffectUpdate(context, mesh);
-                }
             }
         }
 

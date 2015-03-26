@@ -84,7 +84,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             // Creates a model renderer for the shadows casters
             shadowModelComponentRenderer = new ModelComponentRenderer(effectName + ".ShadowMapCaster")
             {
-                Callbacks = new ModelComponentRendererCallback
+                Callbacks = 
                 {
                     UpdateMeshes = FilterCasters,
                 }
@@ -234,12 +234,14 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             for (int i = 0; i < atlases.Count; i++)
             {
                 var atlas = atlases[i];
-                if (atlas.FilterType == lightShadowMapTexture.FilterType && atlas.TryInsert(size, size, lightShadowMapTexture.CascadeCount))
+                if (atlas.TryInsert(size, size, lightShadowMapTexture.CascadeCount))
                 {
                     AssignRectangles(ref lightShadowMapTexture, atlas);
                     return;
                 }
             }
+
+            // TODO: handle FilterType texture creation here
             
             // Allocate a new atlas texture
             var texture = Texture.New2D(Context.GraphicsDevice, MaximumTextureSize, MaximumTextureSize, 1, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource);

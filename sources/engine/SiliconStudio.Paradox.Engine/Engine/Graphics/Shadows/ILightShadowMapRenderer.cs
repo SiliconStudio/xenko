@@ -3,10 +3,15 @@
 
 namespace SiliconStudio.Paradox.Effects.Shadows
 {
+
+    public interface ILightShadowRenderer
+    {
+    }
+
     /// <summary>
     /// Interface to render a shadow map.
     /// </summary>
-    public interface ILightShadowMapRenderer
+    public interface ILightShadowMapRenderer : ILightShadowRenderer
     {
         void Render(RenderContext context, ShadowMapRenderer shadowMapRenderer, ref LightShadowMapTexture lightShadowMap);
     }

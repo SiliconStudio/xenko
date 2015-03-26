@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             foreach (var backgroundComponent in backgroundProcessor.Backgrounds)
             {
                 // Perform culling on group and accept
-                if ((backgroundComponent.Entity.Group & CurrentCullingMask) == 0)
+                if (!CurrentCullingMask.Contains(backgroundComponent.Entity.Group))
                     continue;
 
                 opaqueList.Add(new RenderItem(this, backgroundComponent, 0.0f)); // render background first so that it can replace a clear frame

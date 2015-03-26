@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
             Type = new LightDirectional();
             Intensity = 1.0f;
-            Groups = EntityGroup.All;
+            CullingMask = EntityGroupMask.All;
         }
 
         /// <summary>
@@ -60,8 +60,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// The layer mask.
         /// </value>
         [DataMember(40)]
-        [DefaultValue(EntityGroup.All)]
-        public EntityGroup Groups { get; set; }
+        [DefaultValue(EntityGroupMask.All)]
+        public EntityGroupMask CullingMask { get; set; }
 
         /// <summary>
         /// Gets the light position in World-Space (computed by the <see cref="LightProcessor"/>). See remarks.
