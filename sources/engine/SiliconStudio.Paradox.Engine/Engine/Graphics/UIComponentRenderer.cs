@@ -196,6 +196,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 // build the world matrix of the UI
                 var worldTranslation = virtualResolution.XY() / 2;
                 var worldMatrix = uiElementState.TransformComponent.WorldMatrix;
+                worldMatrix.M42 = -worldMatrix.M42; // compensate for the projection matrix with inverted Y axis.
                 worldMatrix.M41 -= worldTranslation.X * worldMatrix.M11 + worldTranslation.Y * worldMatrix.M21;
                 worldMatrix.M42 -= worldTranslation.X * worldMatrix.M12 + worldTranslation.Y * worldMatrix.M22;
                 worldMatrix.M43 -= worldTranslation.X * worldMatrix.M13 + worldTranslation.Y * worldMatrix.M23;
