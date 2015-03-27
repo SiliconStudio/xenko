@@ -117,6 +117,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ThresholdAlphaCoCFront.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Engine\ScriptCollection.cs" />
     <Compile Include="Engine\ScriptComponent.cs" />
     <Compile Include="Engine\CameraProcessor.cs" />
     <Compile Include="Engine\CameraProjectionMode.cs" />
