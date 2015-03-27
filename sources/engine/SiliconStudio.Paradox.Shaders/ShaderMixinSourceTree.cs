@@ -61,7 +61,6 @@ namespace SiliconStudio.Paradox.Shaders
         /// Gets the used parameters for this mixin tree.
         /// </summary>
         /// <value>The used parameters.</value>
-        [DataMemberIgnore]
         public ShaderMixinParameters UsedParameters { get; set; }
 
         /// <summary>

@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             return shaderSourceId;
         }
 
-        public override DatabaseFileProvider FileProvider { get; set; }
+        public override IVirtualFileProvider FileProvider { get; set; }
 
         public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters)
         {

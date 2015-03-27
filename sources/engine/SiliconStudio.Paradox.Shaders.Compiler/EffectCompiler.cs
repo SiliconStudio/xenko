@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
         public Dictionary<string, string> UrlToFilePath { get; private set; }
 
-        public override DatabaseFileProvider FileProvider { get; set; }
+        public override IVirtualFileProvider FileProvider { get; set; }
         public bool UseFileSystem { get; set; }
 
         public EffectCompiler()

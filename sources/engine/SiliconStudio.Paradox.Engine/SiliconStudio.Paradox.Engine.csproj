@@ -73,6 +73,7 @@
     <Compile Include="DataModel\CompressedTimeSpan.cs" />
     <Compile Include="DataModel\AnimationCurveEvaluatorOptimizedQuaternionGroup.cs" />
     <Compile Include="DataModel\Interpolator.cs" />
+    <Compile Include="Effects\EffectCompilerRemote.cs" />
     <Compile Include="Engine\BackgroundComponent.cs" />
     <Compile Include="Engine\BackgroundComponentProcessor.cs" />
     <Compile Include="Engine\Graphics\SceneEntityRenderer.cs" />

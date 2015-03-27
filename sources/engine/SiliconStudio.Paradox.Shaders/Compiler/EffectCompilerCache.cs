@@ -37,7 +37,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
         public bool CompileEffectAsynchronously { get; set; }
 
-        public override DatabaseFileProvider FileProvider { get; set; }
+        public override IVirtualFileProvider FileProvider { get; set; }
 
         public EffectCompilerCache(EffectCompilerBase compiler, TaskSchedulerSelector taskSchedulerSelector = null) : base(compiler)
         {
@@ -57,7 +57,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
         public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters)
         {
-            var database = FileProvider ?? AssetManager.FileProvider;
+            var database = (FileProvider ?? AssetManager.FileProvider) as DatabaseFileProvider;
             if (database == null)
             {
                 throw new NotSupportedException("Using the cache requires to AssetManager.FileProvider to be valid.");
@@ -89,7 +89,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 }
 
                 // On non Windows platform, we are expecting to have the bytecode stored directly
-                if (!Platform.IsWindowsDesktop && bytecode == null)
+                if (Compiler is NullEffectCompiler && bytecode == null)
                 {
                     var stringBuilder = new StringBuilder();
                     stringBuilder.AppendFormat("Unable to find compiled shaders [{0}] for mixin [{1}] with parameters [{2}]", compiledUrl, mixin, usedParameters.ToStringDetailed());

@@ -24,12 +24,9 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         /// <value>
         /// The database file provider.
         /// </value>
-        public abstract DatabaseFileProvider FileProvider { get; set; }
+        public abstract IVirtualFileProvider FileProvider { get; set; }
 
-        public virtual ObjectId GetShaderSourceHash(string type)
-        {
-            return ObjectId.Empty;
-        }
+        public abstract ObjectId GetShaderSourceHash(string type);
 
         /// <summary>
         /// Remove cached files for modified shaders

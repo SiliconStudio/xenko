@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             get { return compiler; }
         }
 
-        public override DatabaseFileProvider FileProvider
+        public override IVirtualFileProvider FileProvider
         {
             get { return compiler.FileProvider; }
             set { compiler.FileProvider = value; }

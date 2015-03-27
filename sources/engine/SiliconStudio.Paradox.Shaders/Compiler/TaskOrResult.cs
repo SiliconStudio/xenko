@@ -37,6 +37,14 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             return Result;
         }
 
+        public Task<T> AwaitResult()
+        {
+            if (Task != null)
+                return Task;
+
+            return System.Threading.Tasks.Task.FromResult(Result);
+        }
+
         public T GetCurrentResult()
         {
             if (Task != null)
