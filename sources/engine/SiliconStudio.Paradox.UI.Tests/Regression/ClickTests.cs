@@ -55,7 +55,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
             elements = new List<Button> { element1, element2, element3, element4 };
 
-            SceneUIComponent.RootElement = canvas;
+            UIComponent.RootElement = canvas;
         }
 
         protected override void Update(GameTime gameTime)

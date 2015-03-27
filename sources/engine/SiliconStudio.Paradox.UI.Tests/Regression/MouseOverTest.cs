@@ -46,8 +46,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             await base.LoadContent();
 
             var background = new Entity { new BackgroundComponent { Texture = Asset.Load<Texture>("ParadoxBackground") } };
-            background.Group = CameraRenderedGroup;
-            UIScene.AddChild(background);
+            Scene.AddChild(background);
 
             button1 = new Button { Content = new TextBlock { Text = "text block button 1", Font = Asset.Load<SpriteFont>("CourierNew12")} };
             button1.SetCanvasRelativePosition(new Vector3(0.025f, 0.05f, 0f));
@@ -77,7 +76,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             canvas.MouseOverStateChanged += (sender, args) => { triggeredCanvas = true;};
             stackPanel.MouseOverStateChanged += (sender, args) => { triggeredStackPanel = true;};
 
-            SceneUIComponent.RootElement = canvas;
+            UIComponent.RootElement = canvas;
         }
 
         protected override void RegisterTests()

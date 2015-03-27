@@ -94,9 +94,8 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             uniformGrid.Children.Add(modal2);
             uniformGrid.Children.Add(lifeBar);
             uniformGrid.Children.Add(quitGameButton);
-
-
-            SceneUIComponent.RootElement = uniformGrid;
+            
+            UIComponent.RootElement = uniformGrid;
         }
 
         private void Modal1OnOutsideClick(object sender, RoutedEventArgs routedEventArgs)

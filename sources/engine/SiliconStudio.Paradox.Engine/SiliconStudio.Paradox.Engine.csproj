@@ -76,7 +76,6 @@
     <Compile Include="Engine\BackgroundComponent.cs" />
     <Compile Include="Engine\BackgroundComponentProcessor.cs" />
     <Compile Include="Engine\Graphics\SceneEntityRenderer.cs" />
-    <Compile Include="Engine\Graphics\SceneUIRenderer.cs" />
     <Compile Include="Engine\Graphics\CameraComponentRendererExtensions.cs" />
     <Compile Include="Engine\Graphics\DynamicEffectParameterUpdaterDefinition.cs" />
     <Compile Include="Engine\Graphics\VirtualResolutionMode.cs" />

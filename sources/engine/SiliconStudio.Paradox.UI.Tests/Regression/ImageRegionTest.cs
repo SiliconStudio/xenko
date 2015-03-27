@@ -69,7 +69,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             stackPanel.Children.Add(image4);
             stackPanel.Children.Add(image5);
 
-            SceneUIComponent.RootElement = new ScrollViewer { Content = stackPanel };
+            UIComponent.RootElement = new ScrollViewer { Content = stackPanel };
         }
 
         protected override void RegisterTests()

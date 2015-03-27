@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            SceneUIComponent.RootElement = new ImageElement { Source = new UIImage(Asset.Load<Texture>("uv"))};
+            UIComponent.RootElement = new ImageElement { Source = new UIImage(Asset.Load<Texture>("uv"))};
         }
 
         protected override void RegisterTests()

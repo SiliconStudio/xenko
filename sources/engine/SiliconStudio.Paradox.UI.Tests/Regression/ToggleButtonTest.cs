@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
                 HorizontalAlignment = HorizontalAlignment.Center,
             };
 
-            SceneUIComponent.RootElement = toggle;
+            UIComponent.RootElement = toggle;
         }
 
         protected override void Update(GameTime gameTime)

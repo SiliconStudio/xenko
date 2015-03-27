@@ -24,23 +24,15 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// </summary>
     public class UnitTestGameBase : GraphicsTestBase
     {
-        protected const EntityGroup UIRendereredGroup = EntityGroup.Group1;
-        protected const EntityGroup CameraRenderedGroup = EntityGroup.Group2;
-
         protected readonly Logger Logger = GlobalLogger.GetLogger("Test Game");
         
         private Vector2 lastTouchPosition;
 
-        protected readonly CameraRendererModeForward SceneCameraRenderer = new CameraRendererModeForward { Name = "Camera UI" };
-        protected readonly SceneUIRenderer SceneUIRenderer = new SceneUIRenderer { Name = "Scene UI", CullingMask = UIRendereredGroup };
+        protected readonly CameraRendererModeForward SceneCameraRenderer = new CameraRendererModeForward { Name = "Camera Renderers" };
 
-        protected Scene UIScene;
-
-        protected Entity CameraUIRoot = new Entity("Root entity of camera UI") { new UIComponent()  };
-        protected Entity SceneUIRoot = new Entity("Root entity of scene UI") { new UIComponent() };
-
-        protected UIComponent CameraUIComponent { get {  return CameraUIRoot.Get<UIComponent>(); } }
-        protected UIComponent SceneUIComponent { get {  return SceneUIRoot.Get<UIComponent>(); } }
+        protected Scene Scene;
+        protected Entity UIRoot = new Entity("Root entity of camera UI") { new UIComponent()  };
+        protected UIComponent UIComponent { get {  return UIRoot.Get<UIComponent>(); } }
 
         /// <summary>
         /// Create an instance of the game test
@@ -50,7 +42,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             StopOnFrameCount = -1;
 
             GraphicsDeviceManager.PreferredGraphicsProfile = new [] { GraphicsProfile.Level_11_0 };
-            UIScene = new Scene
+            Scene = new Scene
             {
                 Settings =
                 {
@@ -65,27 +57,18 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     
                                 new SceneDelegateRenderer(SpecificDrawBeforeUI) { Name = "Delegate before main UI"},
 
-                                new SceneCameraRenderer
-                                {
-                                    CullingMask = CameraRenderedGroup,
-                                    Mode = SceneCameraRenderer,
-                                },
-                                
-                                SceneUIRenderer
+                                new SceneCameraRenderer { Mode = SceneCameraRenderer },
                             }
                         }
                     }
                 }
             };
 
-            CameraUIRoot.Group = CameraRenderedGroup;
-            SceneUIRoot.Group = UIRendereredGroup;
+            Scene.AddChild(UIRoot);
 
-            UIScene.AddChild(CameraUIRoot);
-            UIScene.AddChild(SceneUIRoot);
-
-            SceneUIRenderer.VirtualResolution = new Int3(1000, 500, 500);
-            SceneUIRenderer.VirtualResolutionMode = VirtualResolutionMode.WidthHeightDepth;
+            UIComponent.IsFullScreen = true;
+            UIComponent.VirtualResolution = new Vector3(1000, 500, 500);
+            UIComponent.VirtualResolutionMode = VirtualResolutionMode.FixedWidthFixedHeight;
         }
 
         protected virtual void SpecificDrawBeforeUI(RenderContext context, RenderFrame renderFrame)
@@ -122,7 +105,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
             Window.IsMouseVisible = true;
 
-            SceneSystem.SceneInstance = new SceneInstance(Services, UIScene);
+            SceneSystem.SceneInstance = new SceneInstance(Services, Scene);
         }
 
         protected override void Update(GameTime gameTime)
