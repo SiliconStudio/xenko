@@ -52,11 +52,11 @@ namespace SiliconStudio.Paradox.EffectCompilerServer
                 // Create an effect compiler per connection
                 var effectCompiler = new EffectCompiler();
 
-                //var tempFilename = Path.GetTempFileName();
-                //var fileStream = new FileStream(tempFilename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+                var tempFilename = Path.GetTempFileName();
+                var fileStream = new FileStream(tempFilename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
 
                 // TODO: Properly close the file, and choose where to copy/move it?
-                //var recordedEffectCompile = new EffectLogStore(fileStream);
+                var recordedEffectCompile = new EffectLogStore(fileStream);
 
                 // TODO: This should come from an "init" packet
                 effectCompiler.SourceDirectories.Add(EffectCompilerBase.DefaultSourceShaderFolder);
