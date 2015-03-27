@@ -75,6 +75,7 @@
     <Compile Include="DataModel\Interpolator.cs" />
     <Compile Include="Engine\BackgroundComponent.cs" />
     <Compile Include="Engine\BackgroundComponentProcessor.cs" />
+    <Compile Include="Engine\Graphics\Lights\LightComponentCollectionGroup.cs" />
     <Compile Include="Engine\Graphics\MaterialInstance.cs" />
     <Compile Include="Engine\Graphics\ParadoxEffectBaseKeys.cs" />
     <Compile Include="Engine\Graphics\SceneEntityRenderer.cs" />
@@ -2018,6 +2019,7 @@
     <Compile Include="EntityModel\DefaultEntityComponentRendererAttribute.cs" />
     <Compile Include="EntityModel\EntityComponentRendererType.cs" />
     <Compile Include="EntityModel\EntityGroupMask.cs" />
+    <Compile Include="EntityModel\EntityGroupMaskExtensions.cs" />
     <Compile Include="EntityModel\EntityReference.cs" />
     <Compile Include="EntityModel\GizmoBase.cs" />
     <Compile Include="EntityModel\GizmoContext.cs" />

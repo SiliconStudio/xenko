@@ -272,7 +272,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             if (lightProcessor == null)
                 return;
 
-            foreach (var activeLightsPerType in lightProcessor.ActiveLightsWithShadow)
+            foreach (var activeLightsPerType in lightProcessor.ActiveDirectLightsWithShadow)
             {
                 var lightType = activeLightsPerType.Key;
                 var lightComponents = activeLightsPerType.Value;

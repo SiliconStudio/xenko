@@ -50,12 +50,4 @@ namespace SiliconStudio.Paradox.Effects
 
         All = 0xffffffff
     }
-
-    public static class EntityGroupMaskExtensions
-    {
-        public static bool Contains(this EntityGroupMask mask, EntityGroup group)
-        {
-            return ((uint)mask & (uint)group) != 0;
-        }
-    }
 }

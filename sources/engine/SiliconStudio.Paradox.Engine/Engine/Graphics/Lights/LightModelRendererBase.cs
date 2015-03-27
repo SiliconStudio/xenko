@@ -57,7 +57,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             }
 
             directLightGroup.ProcessLights(context, lightProcessor.ActiveDirectLights, Enabled, false);
-            directLightGroup.ProcessLights(context, lightProcessor.ActiveLightsWithShadow, Enabled, true);
+            directLightGroup.ProcessLights(context, lightProcessor.ActiveDirectLightsWithShadow, Enabled, true);
             environmentLightGroup.ProcessLights(context, lightProcessor.ActiveEnvironmentLights, Enabled, false);
         }
 

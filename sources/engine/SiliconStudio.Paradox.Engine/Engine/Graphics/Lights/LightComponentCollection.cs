@@ -6,7 +6,7 @@ using SiliconStudio.Core.Collections;
 namespace SiliconStudio.Paradox.Effects.Lights
 {
     /// <summary>
-    /// A list of <see cref="LightComponent"/>.
+    /// A list of <see cref="LightComponent"/> for a specified <see cref="EntityGroupMask"/>.
     /// </summary>
     public class LightComponentCollection : FastList<LightComponent>
     {
@@ -25,5 +25,11 @@ namespace SiliconStudio.Paradox.Effects.Lights
             : base(capacity)
         {
         }
+
+        /// <summary>
+        /// Gets or sets the culling mask.
+        /// </summary>
+        /// <value>The culling mask.</value>
+        public EntityGroupMask CullingMask { get; internal set; }
     }
 }
