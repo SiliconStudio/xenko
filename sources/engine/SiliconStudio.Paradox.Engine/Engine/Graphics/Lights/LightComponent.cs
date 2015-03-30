@@ -79,6 +79,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
         [DataMemberIgnore]
         public Vector3 Direction { get; internal set; }
 
+        internal LightComponentCollectionGroup Group { get; set; }
+
         public override PropertyKey GetDefaultKey()
         {
             return Key;

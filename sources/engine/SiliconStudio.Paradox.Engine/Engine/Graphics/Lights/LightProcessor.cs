@@ -17,6 +17,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
     {
         private const int DefaultLightCapacityCount = 512;
 
+        private readonly List<LightComponent> lightsCollected;
+
         private readonly LightComponentCollection lights;
 
         /// <summary>
@@ -70,7 +72,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
         public override void Draw(RenderContext context)
         {
-            // 1) Clear the cache of current lights
+            // 1) Clear the cache of current lights (without destroying collections but keeping previously allocated ones)
             ClearCache();
 
             // 2) Prepare lights to be dispatched to the correct light group
@@ -79,61 +81,46 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 PrepareLight(lights.Items[i]);
             }
 
-            // 3) Allocate collection based on prepass
-            AllocateCollections();
+            // 3) Allocate collection based on their culling mask
+            AllocateCollectionsPerGroupOfCullingMask();
 
-            // 4) Collect light to the correct light group
-            for (int i = 0; i < lights.Count; i++)
+            // 4) Collect lights to the correct light collection group
+            foreach (var light in lightsCollected)
             {
-                CollectLight(lights.Items[i]);
+                light.Group.AddLight(light);
             }
         }
 
-        private void AllocateCollections()
+        private void AllocateCollectionsPerGroupOfCullingMask()
         {
-            foreach (var lightPair in ActiveDirectLights)
-            {
-                lightPair.Value.AllocateCollections();
-            }
+            AllocateCollectionsPerGroupOfCullingMask(ActiveDirectLights);
+            AllocateCollectionsPerGroupOfCullingMask(ActiveDirectLightsWithShadow);
+            AllocateCollectionsPerGroupOfCullingMask(ActiveEnvironmentLights);
+        }
 
-            foreach (var lightPair in ActiveEnvironmentLights)
+        private static void AllocateCollectionsPerGroupOfCullingMask(Dictionary<Type, LightComponentCollectionGroup> lights)
+        {
+            foreach (var lightPair in lights)
             {
-                lightPair.Value.AllocateCollections();
-            }
-
-            foreach (var lightPair in ActiveDirectLightsWithShadow)
-            {
-                lightPair.Value.AllocateCollections();
+                lightPair.Value.AllocateCollectionsPerGroupOfCullingMask();
             }
         }
 
         private void ClearCache()
         {
-            foreach (var lightPair in ActiveDirectLights)
-            {
-                lightPair.Value.Clear();
-            }
+            lightsCollected.Clear();
 
-            foreach (var lightPair in ActiveEnvironmentLights)
-            {
-                lightPair.Value.Clear();
-            }
-
-            foreach (var lightPair in ActiveDirectLightsWithShadow)
-            {
-                lightPair.Value.Clear();
-            }
+            ClearCache(ActiveDirectLights);
+            ClearCache(ActiveDirectLightsWithShadow);
+            ClearCache(ActiveEnvironmentLights);
         }
 
-        private void CollectLight(LightComponent light)
+        private static void ClearCache(Dictionary<Type, LightComponentCollectionGroup> lights)
         {
-            if (light.Type == null || !light.Enabled)
+            foreach (var lightPair in lights)
             {
-                return;
+                lightPair.Value.Clear();
             }
-
-            var lightGroup = GetLightGroup(light);
-            lightGroup.AddLight(light);
         }
 
         private void PrepareLight(LightComponent light)
@@ -144,6 +131,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             }
             var lightGroup = GetLightGroup(light);
             lightGroup.PrepareLight(light);
+            light.Group = lightGroup;
 
             // Update direction for light
             Vector3 lightDirection;
@@ -151,23 +139,19 @@ namespace SiliconStudio.Paradox.Effects.Lights
             Vector3.TransformNormal(ref lightDir, ref light.Entity.Transform.WorldMatrix, out lightDirection);
             lightDirection.Normalize();
             light.Direction = lightDirection;
+
+            lightsCollected.Add(light);
         }
 
         private LightComponentCollectionGroup GetLightGroup(LightComponent light)
         {
-            var type = light.Type.GetType();
             var directLight = light.Type as IDirectLight;
-            Dictionary<Type, LightComponentCollectionGroup> cache;
-            if (directLight != null)
-            {
-                cache = directLight.Shadow != null && directLight.Shadow.Enabled ? ActiveDirectLightsWithShadow : ActiveDirectLights;
-            }
-            else
-            {
-                cache = ActiveEnvironmentLights;
-            }
+            var cache = (directLight != null)
+                ? directLight.Shadow != null && directLight.Shadow.Enabled ? ActiveDirectLightsWithShadow : ActiveDirectLights
+                : ActiveEnvironmentLights;
 
             LightComponentCollectionGroup lightGroup;
+            var type = light.Type.GetType();
             if (!cache.TryGetValue(type, out lightGroup))
             {
                 lightGroup = new LightComponentCollectionGroup();
