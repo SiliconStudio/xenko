@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Build file used to build Paradox and package it from the command line
+Build file used to build Paradox and package it from the command line.
+Example of use: 
+"C:\Program Files (x86)\MSBuild\12.0\Bin\MSBuild" Paradox.build /t:PackageLauncher
 -->
 <Project ToolsVersion="12.0" DefaultTarget="Help" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
@@ -51,6 +53,22 @@ Build file used to build Paradox and package it from the command line
   </Target>
 
   <!--
+  VSIX Paradox plugin
+  Don't forget to build for VS2013 by using MSBuild 12.0, 
+  or if you're using a newer version of MSBuild, pass the flag /p:VisualStudioVersion=12.0 when calling MSBuild in the command line.
+  -->
+  <Target Name="VSIXPlugin">
+    <ItemGroup>
+      <FilesToDelete Include="$(MSBuildThisFileDirectory)SiliconStudio.Paradox.VisualStudio.Package.*.nupkg"/>
+    </ItemGroup>
+
+    <Delete Files="@(FilesToDelete)"/>
+
+    <MSBuild Targets="91-VisualStudio\SiliconStudio_Paradox_VisualStudio_Package" Projects="$(ParadoxSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+    <Exec Command='"$(NuGetPath)" pack "$(ParadoxRoot)sources\tools\SiliconStudio.Paradox.VisualStudio.Package\SiliconStudio.Paradox.VisualStudio.Package.nuspec" -BasePath "$(ParadoxRoot)Bin\Windows-Direct3D11"' />
+  </Target>  
+  
+  <!--
   Package Installer: ParadoxSetup.exe
   -->
   <Target Name="PackageInstaller" DependsOnTargets="PackageLauncher">
@@ -66,6 +84,7 @@ Build file used to build Paradox and package it from the command line
     <CallTarget Targets="Build"/>
     <CallTarget Targets="Package"/>
     <CallTarget Targets="PackageInstaller"/>
+	<CallTarget Targets="VSIXPlugin"/>
   </Target>
   
   <!--

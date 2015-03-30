@@ -268,6 +268,7 @@
     <EmbeddedResource Include="NShader\Common\ParadoxShaderKeywords.map" />
     <None Include="NShader\Common\ShaderMPLexer.lex" />
     <None Include="packages.config" />
+    <None Include="SiliconStudio.Paradox.VisualStudio.Package.nuspec" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
