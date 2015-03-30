@@ -73,7 +73,10 @@ namespace SiliconStudio.Paradox.Effects.Lights
         public override void Draw(RenderContext context)
         {
             // 1) Clear the cache of current lights (without destroying collections but keeping previously allocated ones)
-            ClearCache();
+            lightsCollected.Clear();
+            ClearCache(ActiveDirectLights);
+            ClearCache(ActiveDirectLightsWithShadow);
+            ClearCache(ActiveEnvironmentLights);
 
             // 2) Prepare lights to be dispatched to the correct light group
             for (int i = 0; i < lights.Count; i++)
@@ -82,7 +85,9 @@ namespace SiliconStudio.Paradox.Effects.Lights
             }
 
             // 3) Allocate collection based on their culling mask
-            AllocateCollectionsPerGroupOfCullingMask();
+            AllocateCollectionsPerGroupOfCullingMask(ActiveDirectLights);
+            AllocateCollectionsPerGroupOfCullingMask(ActiveDirectLightsWithShadow);
+            AllocateCollectionsPerGroupOfCullingMask(ActiveEnvironmentLights);
 
             // 4) Collect lights to the correct light collection group
             foreach (var light in lightsCollected)
@@ -91,28 +96,12 @@ namespace SiliconStudio.Paradox.Effects.Lights
             }
         }
 
-        private void AllocateCollectionsPerGroupOfCullingMask()
-        {
-            AllocateCollectionsPerGroupOfCullingMask(ActiveDirectLights);
-            AllocateCollectionsPerGroupOfCullingMask(ActiveDirectLightsWithShadow);
-            AllocateCollectionsPerGroupOfCullingMask(ActiveEnvironmentLights);
-        }
-
         private static void AllocateCollectionsPerGroupOfCullingMask(Dictionary<Type, LightComponentCollectionGroup> lights)
         {
             foreach (var lightPair in lights)
             {
                 lightPair.Value.AllocateCollectionsPerGroupOfCullingMask();
             }
-        }
-
-        private void ClearCache()
-        {
-            lightsCollected.Clear();
-
-            ClearCache(ActiveDirectLights);
-            ClearCache(ActiveDirectLightsWithShadow);
-            ClearCache(ActiveEnvironmentLights);
         }
 
         private static void ClearCache(Dictionary<Type, LightComponentCollectionGroup> lights)
