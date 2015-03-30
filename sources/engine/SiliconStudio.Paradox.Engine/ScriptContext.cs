@@ -33,6 +33,8 @@ namespace SiliconStudio.Paradox
         EffectSystem EffectSystem { get; }
 
         AudioSystem Audio { get; }
+
+        SpriteAnimationSystem SpriteAnimation { get; }
     }
 
     [DataContract("ScriptContext")]
@@ -62,10 +64,14 @@ namespace SiliconStudio.Paradox
             SceneSystem = Services.GetSafeServiceAs<SceneSystem>();
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
             Audio = Services.GetSafeServiceAs<AudioSystem>();
+            SpriteAnimation = Services.GetSafeServiceAs<SpriteAnimationSystem>();
         }
 
         [DataMemberIgnore]
         public AudioSystem Audio { get; private set; }
+
+        [DataMemberIgnore]
+        public SpriteAnimationSystem SpriteAnimation { get; private set; }
 
         [DataMemberIgnore]
         public IServiceRegistry Services { get; private set; }
