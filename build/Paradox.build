@@ -12,7 +12,7 @@ Build file used to build Paradox and package it from the command line
     <BuildProperties Condition="'$(SiliconStudioSign)' != ''">$(BuildProperties);SiliconStudioSign=$(SiliconStudioSign)</BuildProperties>
     <BuildProperties Condition="'$(SiliconStudioOfficialBuild)' != ''">$(BuildProperties);SiliconStudioOfficialBuild=$(SiliconStudioOfficialBuild)</BuildProperties>
     <ILRepackPath>$(ParadoxRootBin)ILRepack.exe</ILRepackPath>
-    <NuGetPath>$(ParadoxRootBin)NuGet.exe</NuGetPath>
+    <NuGetPath>$(MSBuildThisFileDirectory).nuget\NuGet.exe</NuGetPath>
     <SiliconStudioStoreUrl>https://store.paradox3d.net</SiliconStudioStoreUrl>
     <AdvancedInstallerPath>$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 11.5\bin\x86\advinst.exe</AdvancedInstallerPath>
   </PropertyGroup>
