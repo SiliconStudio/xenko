@@ -32,6 +32,8 @@ namespace SiliconStudio.Paradox.Effects
     /// </summary>
     public class ModelComponentRenderer : EntityComponentRendererBase
     {
+        private readonly static PropertyKey<ModelComponentRenderer> Current = new PropertyKey<ModelComponentRenderer>("ModelComponentRenderer.Current", typeof(ModelComponentRenderer));
+
         private int modelRenderSlot;
 
         private ModelProcessor modelProcessor;
@@ -210,6 +212,30 @@ namespace SiliconStudio.Paradox.Effects
             }
 
             base.Unload();
+        }
+
+        /// <summary>
+        /// Gets the attached <see cref="ModelComponentRenderer"/> from the specified component.
+        /// </summary>
+        /// <param name="component">The component.</param>
+        /// <returns>ModelComponentRenderer.</returns>
+        /// <exception cref="System.ArgumentNullException">component</exception>
+        public static ModelComponentRenderer GetAttached(ComponentBase component)
+        {
+            if (component == null) throw new ArgumentNullException("component");
+            return component.Tags.Get(Current);
+        }
+
+        /// <summary>
+        /// Attaches a <see cref="ModelComponentRenderer"/> to the specified component.
+        /// </summary>
+        /// <param name="component">The component.</param>
+        /// <param name="renderer">The renderer.</param>
+        /// <exception cref="System.ArgumentNullException">component</exception>
+        public static void Attach(ComponentBase component, ModelComponentRenderer renderer)
+        {
+            if (component == null) throw new ArgumentNullException("component");
+            component.Tags.Set(Current, renderer);
         }
 
         private void EnsureRenderMeshes(RenderModel renderModel)

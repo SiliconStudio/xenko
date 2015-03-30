@@ -76,6 +76,7 @@
     <Compile Include="Engine\BackgroundComponent.cs" />
     <Compile Include="Engine\BackgroundComponentProcessor.cs" />
     <Compile Include="Engine\Graphics\Lights\LightComponentCollectionGroup.cs" />
+    <Compile Include="Engine\Graphics\Lights\LightComponentRenderer.cs" />
     <Compile Include="Engine\Graphics\MaterialInstance.cs" />
     <Compile Include="Engine\Graphics\ParadoxEffectBaseKeys.cs" />
     <Compile Include="Engine\Graphics\SceneEntityRenderer.cs" />
@@ -1413,7 +1414,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Engine\Graphics\Shadows\ShadowMapParameters.cs" />
-    <Compile Include="Engine\Graphics\ModelAndLightComponentRenderer.cs" />
+    <Compile Include="Engine\Graphics\ModelComponentAndPickingRenderer.cs" />
     <Compile Include="Engine\Graphics\RendererBase.cs" />
     <Compile Include="Engine\Graphics\RenderFrame.cs" />
     <Compile Include="Engine\Graphics\Materials\Shaders\IMaterialSpecularMicrofacetFresnelFunction.cs">

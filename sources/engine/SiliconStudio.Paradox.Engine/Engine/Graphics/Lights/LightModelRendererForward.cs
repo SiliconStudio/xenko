@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Paradox.Effects.Shadows;
+using SiliconStudio.Paradox.Engine.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Lights
 {
@@ -10,30 +11,38 @@ namespace SiliconStudio.Paradox.Effects.Lights
     /// </summary>
     public class LightModelRendererForward : LightModelRendererBase
     {
-        private readonly ShadowMapRenderer shadowRenderer;
+        private ShadowMapRenderer shadowRenderer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LightModelRendererForward"/> class.
+        /// Initializes a new instance of the <see cref="LightModelRendererForward" /> class.
         /// </summary>
-        /// <param name="modelRenderer">The model renderer.</param>
-        public LightModelRendererForward(ModelComponentRenderer modelRenderer)
-            : base(modelRenderer)
+        public LightModelRendererForward()
         {
             RegisterLightGroupProcessor<LightDirectional>(new LightDirectionalGroupRenderer());
             RegisterLightGroupProcessor<LightSkybox>(new LightSkyboxRenderer());
             RegisterLightGroupProcessor<LightAmbient>(new LightAmbientRenderer());
-
-            // TODO: this is temporary, we need to have a pluggable renderer for shadow maps
-            shadowRenderer = new ShadowMapRenderer(modelRenderer.EffectName);
-            shadowRenderer.Attach(modelRenderer);
         }
 
-        public override void PrepareLights(RenderContext context)
+        protected override void DrawCore(RenderContext context)
         {
-            base.PrepareLights(context);
+            var sceneCamera = context.Tags.Get(SceneEntityRenderer.Current) as SceneCameraRenderer;
+            if (sceneCamera != null)
+            {
+                var modelRenderer = ModelComponentRenderer.GetAttached(sceneCamera);
+                if (modelRenderer != null)
+                {
+                    if (shadowRenderer == null)
+                    {
+                        // TODO: this is temporary, we need to have a pluggable renderer for shadow maps
+                        shadowRenderer = new ShadowMapRenderer(modelRenderer.EffectName);
+                        shadowRenderer.Attach(modelRenderer);
+                    }
 
-            // TODO: this is temporary, we need to have a pluggable renderer for shadow maps
-            shadowRenderer.Draw(context);
+                    // TODO: this is temporary, we need to have a pluggable renderer for shadow maps
+                    shadowRenderer.Draw(context);
+                }
+            }
+            base.PrepareLights(context);
         }
     }
 }

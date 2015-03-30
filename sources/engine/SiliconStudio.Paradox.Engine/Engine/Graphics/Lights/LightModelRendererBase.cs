@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Shaders;
 
@@ -14,26 +15,18 @@ namespace SiliconStudio.Paradox.Effects.Lights
     /// <summary>
     /// TODO: Refactor this class
     /// </summary>
-    public abstract class LightModelRendererBase
+    public abstract class LightModelRendererBase : RendererBase
     {
         private readonly LightGroupProcessor directLightGroup;
         private readonly LightGroupProcessor environmentLightGroup;
 
         private LightProcessor lightProcessor;
 
-        protected LightModelRendererBase(ModelComponentRenderer modelRenderer)
+        protected LightModelRendererBase()
         {
-            if (modelRenderer == null) throw new ArgumentNullException("modelRenderer");
-            Enabled = true;
-            Services = modelRenderer.Services;
-
             directLightGroup = new LightGroupProcessor("directLightGroups", LightingKeys.DirectLightGroups);
             environmentLightGroup = new LightGroupProcessor("environmentLights", LightingKeys.EnvironmentLights);
         }
-
-        public IServiceRegistry Services { get; private set; }
-
-        public bool Enabled { get; set; }
 
         public void RegisterLightGroupProcessor<T>(LightGroupRendererBase processor)
         {
@@ -46,7 +39,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// Filter out the inactive lights.
         /// </summary>
         /// <param name="context">The render context.</param>
-        public virtual void PrepareLights(RenderContext context)
+        protected virtual void PrepareLights(RenderContext context)
         {
             lightProcessor = SceneInstance.GetCurrent(context).GetProcessor<LightProcessor>();
 
@@ -59,14 +52,6 @@ namespace SiliconStudio.Paradox.Effects.Lights
             directLightGroup.ProcessLights(context, lightProcessor.ActiveDirectLights, Enabled, false);
             directLightGroup.ProcessLights(context, lightProcessor.ActiveDirectLightsWithShadow, Enabled, true);
             environmentLightGroup.ProcessLights(context, lightProcessor.ActiveEnvironmentLights, Enabled, false);
-        }
-
-        /// <summary>
-        /// Clear the light lists.
-        /// </summary>
-        /// <param name="context">The render context.</param>
-        private void PostRender(RenderContext context)
-        {
         }
 
         /// <summary>

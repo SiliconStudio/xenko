@@ -2,21 +2,16 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Lights;
-using SiliconStudio.Paradox.Effects.Shadows;
 
 namespace SiliconStudio.Paradox.Engine.Graphics
 {
     /// <summary>
-    /// The main renderer for <see cref="ModelComponent"/> and <see cref="LightComponent"/>.
+    /// The main renderer for <see cref="ModelComponent"/>.
     /// </summary>
-    public class ModelAndLightComponentRenderer : EntityComponentRendererBase
+    public class ModelComponentAndPickingRenderer : EntityComponentRendererBase
     {
-        private LightModelRendererForward lightModelRenderer;
         private ModelComponentRenderer modelRenderer;
         private bool isPickingRendering;
-
-        private SceneCameraRenderer SceneCameraRenderer { get {  return (SceneCameraRenderer)SceneEntityRenderer; } }
 
         public override bool SupportPicking { get { return true; } }
 
@@ -24,7 +19,13 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         {
             base.InitializeCore();
 
-            var forwardMode = SceneCameraRenderer.Mode as CameraRendererModeForward;
+            var sceneCameraRenderer = SceneEntityRenderer as SceneCameraRenderer;
+            if (sceneCameraRenderer == null)
+            {
+                return;
+            }
+
+            var forwardMode = sceneCameraRenderer.Mode as CameraRendererModeForward;
             var effectName =  (forwardMode != null? forwardMode.ModelEffect: null) ?? "";
             isPickingRendering = Context.IsPicking();
             if (isPickingRendering)
@@ -33,20 +34,14 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 Context.Parameters.Set(ParadoxEffectBaseKeys.ExtensionPostVertexStageShader, "ModelComponentPickingEffect");
             }
 
-            // TODO: Add support for mixin overrides
             modelRenderer = ToLoadAndUnload(new ModelComponentRenderer(effectName));
-            if (!isPickingRendering)
-            {
-                lightModelRenderer = new LightModelRendererForward(modelRenderer);
-            }
+
+            // Setup the ModelComponentRenderer as the main rendeer for the scene Camera Renderer
+            ModelComponentRenderer.Attach(sceneCameraRenderer, modelRenderer);
         }
 
         protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
-            if (!isPickingRendering)
-            {
-                lightModelRenderer.PrepareLights(context);
-            }
             modelRenderer.Prepare(context, opaqueList, transparentList);
         }
 
