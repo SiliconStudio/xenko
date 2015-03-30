@@ -31,6 +31,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         protected readonly CameraRendererModeForward SceneCameraRenderer = new CameraRendererModeForward { Name = "Camera Renderers" };
 
         protected Scene Scene;
+        protected Entity Camera = new Entity("Scene camera") { new CameraComponent() };
         protected Entity UIRoot = new Entity("Root entity of camera UI") { new UIComponent()  };
         protected UIComponent UIComponent { get {  return UIRoot.Get<UIComponent>(); } }
 
@@ -48,7 +49,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
                 {
                     GraphicsCompositor = new SceneGraphicsCompositorLayers
                     {
-                        Cameras = { new CameraComponent() },
+                        Cameras = { Camera.Get<CameraComponent>() },
                         Master =
                         {
                             Renderers =
@@ -65,6 +66,9 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             };
 
             Scene.AddChild(UIRoot);
+            Scene.AddChild(Camera);
+
+            Camera.Transform.Position = new Vector3(0, 0, 1000);
 
             UIComponent.IsFullScreen = true;
             UIComponent.VirtualResolution = new Vector3(1000, 500, 500);

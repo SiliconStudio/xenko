@@ -50,7 +50,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Paradox.UI.Tests.Regression.EditTextTest</StartupObject>
+    <StartupObject>SiliconStudio.Paradox.UI.Tests.Regression.InSceneUITest</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
@@ -201,6 +201,7 @@
     <Compile Include="Regression\ImageRotatedTest.cs" />
     <Compile Include="Regression\ImageSeparateAlphaTest.cs" />
     <Compile Include="Regression\ImageTest.cs" />
+    <Compile Include="Regression\InSceneUITest.cs" />
     <Compile Include="Regression\LeaveEnterTest.cs" />
     <Compile Include="Regression\ModalElementTest.cs" />
     <Compile Include="Regression\MouseOverTest.cs" />

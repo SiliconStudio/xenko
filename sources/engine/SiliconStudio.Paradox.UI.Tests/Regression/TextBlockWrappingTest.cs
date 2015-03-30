@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public TextBlockWrappingTest()
         {
-            CurrentVersion = 3;
+            CurrentVersion = 4;
         }
 
         protected override async Task LoadContent()
