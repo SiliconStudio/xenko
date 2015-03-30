@@ -260,8 +260,10 @@ namespace SiliconStudio.Assets
             foreach (var package in packages)
             {
 
-                // TODO This is to process the Paradox package only, we don't want the VSIX package. Make this clean.
-                if (!package.Id.StartsWith("Paradox")) continue;
+                if (package.Tags != null && package.Tags.Contains("internal"))
+                {
+                    continue; // We don't want to polute the Common.targets file with internal packages
+                }
 
                 var packageVar = GetPackageVersionVariable(package.Id);
                 var packageTarget = String.Format(@"$(MSBuildThisFileDirectory)..\{0}\{1}.{2}\Targets\{1}.targets", RepositoryPath, package.Id, "$(" + packageVar + ")");
