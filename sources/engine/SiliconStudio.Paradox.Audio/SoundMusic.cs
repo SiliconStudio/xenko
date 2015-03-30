@@ -29,11 +29,11 @@ namespace SiliconStudio.Paradox.Audio
     public sealed class SoundMusic : SoundInstanceBase
     {
 #if SILICONSTUDIO_PLATFORM_ANDROID
-        internal readonly string FileName;
-        internal readonly long StartPosition;
-        internal readonly long Length;
+        internal string FileName;
+        internal long StartPosition;
+        internal long Length;
 #else
-        internal readonly MemoryStream Stream;
+        internal MemoryStream Stream;
 #endif
 
         /// <summary>
@@ -64,14 +64,8 @@ namespace SiliconStudio.Paradox.Audio
 
             // TODO: Not portable on WindowsStore
 
-            var ret = new SoundMusic(engine, stream);
-
-            ret.ResetStateToDefault();
-            ret.Name = "SoundMusic " + soundMusicCreationCount;
-
-            engine.RegisterSound(ret);
-
-            Interlocked.Increment(ref soundMusicCreationCount);
+            var ret = new SoundMusic(engine);
+            ret.Load(stream);
 
             return ret;
         }
@@ -80,9 +74,15 @@ namespace SiliconStudio.Paradox.Audio
         /// The number of SoundMusic Created so far. Used only to give a unique name to the SoundEffect.
         /// </summary>
         private static int soundMusicCreationCount;
-        
-        private SoundMusic(AudioEngine engine, Stream stream)
+
+        // for serialization
+        internal SoundMusic(AudioEngine engine)
             : base(engine)
+        {
+        }
+
+        // for serialization
+        internal void Load(Stream stream)
         {
 #if SILICONSTUDIO_PLATFORM_ANDROID
             var virtualStream = stream as VirtualFileStream;
@@ -103,6 +103,13 @@ namespace SiliconStudio.Paradox.Audio
             Stream = memoryStream;
             Stream.Position = 0;
 #endif
+
+            ResetStateToDefault();
+            Name = "SoundMusic " + soundMusicCreationCount;
+
+            AudioEngine.RegisterSound(this);
+
+            Interlocked.Increment(ref soundMusicCreationCount);
         }
 
         private void ResetStateToDefault()
