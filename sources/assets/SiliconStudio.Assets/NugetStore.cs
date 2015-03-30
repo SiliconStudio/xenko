@@ -388,7 +388,7 @@ namespace SiliconStudio.Assets
                 return;
             }
 
-            var files = Directory.EnumerateFiles(Path.Combine(packageDirectory, DefaultBinDirectory), "*.vsix", SearchOption.AllDirectories);
+            var files = Directory.EnumerateFiles(packageDirectory, "*.vsix", SearchOption.AllDirectories);
             foreach (var file in files)
             {
                 InstallVsix(vsixInstallerPath, file);
