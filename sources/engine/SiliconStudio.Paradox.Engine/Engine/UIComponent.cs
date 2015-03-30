@@ -24,6 +24,7 @@ namespace SiliconStudio.Paradox.Engine
 
         public UIComponent()
         {
+            SnapText = true;
             IsFullScreen = true;
             VirtualResolution = new Vector3(1280, 720, 1000);
             VirtualResolutionMode = VirtualResolutionMode.FixedWidthAdaptableHeight;
@@ -54,6 +55,15 @@ namespace SiliconStudio.Paradox.Engine
         [DataMember(30)]
         [Display("Virtual Resolution")]
         public Vector3 VirtualResolution { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value indicating of the UI texts should be snapped to closest pixel.
+        /// </summary>
+        /// <userdoc>If checked, all the text of the UI is snapped to the closest pixel (pixel perfect).</userdoc>
+        [DataMember(40)]
+        [Display("Snap Text")]
+        [DefaultValue(true)]
+        public bool SnapText { get; set; }
 
         /// <summary>
         /// Gets or sets the camera.

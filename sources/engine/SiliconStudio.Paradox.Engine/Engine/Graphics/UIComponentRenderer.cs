@@ -78,6 +78,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 if ((uiRoot.UIComponent.Entity.Group & CurrentCullingMask) == 0)
                     continue;
 
+                // skips empty UI elements
+                if(uiRoot.UIComponent.RootElement == null)
+                    continue;
+
                 // Project the position
                 // TODO: This code is duplicated from SpriteComponent -> unify it at higher level?
                 var worldPosition = new Vector4(uiRoot.TransformComponent.WorldMatrix.TranslationVector, 1.0f);
@@ -85,13 +89,14 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 float projectedZ;
                 if (uiRoot.UIComponent.IsFullScreen)
                 {
-                    Vector4 projectedPosition;
-                    Vector4.Transform(ref worldPosition, ref viewParameters.ViewProjectionMatrix, out projectedPosition);
-                    projectedZ = projectedPosition.Z / projectedPosition.W;
+                    projectedZ = -uiRoot.TransformComponent.WorldMatrix.M43;
                 }
                 else
                 {
-                    projectedZ = -uiRoot.TransformComponent.WorldMatrix.M43;
+                    Vector4 projectedPosition;
+                    var cameraComponent = context.Tags.Get(CameraComponentRenderer.Current);
+                    Vector4.Transform(ref worldPosition, ref cameraComponent.ViewProjectionMatrix, out projectedPosition);
+                    projectedZ = projectedPosition.Z / projectedPosition.W;
                 }
 
                 transparentList.Add(new RenderItem(this, uiRoot, projectedZ));
@@ -158,7 +163,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 var uiComponent = uiElementState.UIComponent;
                 var rootElement = uiComponent.RootElement;
                 if (rootElement == null)
-                    return;
+                    continue;
 
                 var updatableRootElement = (IUIElementUpdate)rootElement;
 
@@ -191,7 +196,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 renderingContext.ProjectionMatrix = viewParameters.ProjectionMatrix;
                 renderingContext.ViewProjectionMatrix = viewParameters.ViewProjectionMatrix;
                 renderingContext.DepthStencilBuffer = uiComponent.IsFullScreen ? scopedDepthBuffer : CurrentRenderFrame.DepthStencil;
-                renderingContext.ShouldSnapText = uiComponent.IsFullScreen; // snaps only if rendered from the SceneUIRenderer
+                renderingContext.ShouldSnapText = uiComponent.SnapText;
 
                 // build the world matrix of the UI
                 var worldTranslation = virtualResolution.XY() / 2;
@@ -202,17 +207,22 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 worldMatrix.M43 -= worldTranslation.X * worldMatrix.M13 + worldTranslation.Y * worldMatrix.M23;
 
                 // calculate an estimate of the UI real size by projecting the element virtual resolution on the screen
-                var projectedVirtualWidth = virtualResolution.X * new Vector3(worldMatrix.M11, worldMatrix.M12, worldMatrix.M13);
-                var projectedVirtualHeight = virtualResolution.Y * new Vector3(worldMatrix.M21, worldMatrix.M22, worldMatrix.M23);
-                Vector3.TransformNormal(ref projectedVirtualWidth, ref viewParameters.ViewMatrix, out projectedVirtualWidth);
-                Vector3.TransformNormal(ref projectedVirtualHeight, ref viewParameters.ViewMatrix, out projectedVirtualHeight);
-                var projectedVirtualWidthLength = (viewportTargetRatio * (Vector2)projectedVirtualWidth).Length();
-                var projectedVirtualHeightLength = (viewportTargetRatio * (Vector2)projectedVirtualHeight).Length();
+                var virtualWidth = Vector4.One;
+                var virtualHeight = Vector4.One;
+                for (int i = 0; i < 3; i++)
+                {
+                    virtualWidth[i] = virtualResolution.X * worldMatrix[0+i] + worldMatrix[8 + i] * worldMatrix.M43;
+                    virtualHeight[i] = virtualResolution.Y * worldMatrix[4+i] + worldMatrix[8 + i] * worldMatrix.M43;
+                }
+                Vector4.Transform(ref virtualWidth, ref viewParameters.ViewProjectionMatrix, out virtualWidth);
+                Vector4.Transform(ref virtualHeight, ref viewParameters.ViewProjectionMatrix, out virtualHeight);
+                var projectedVirtualWidth = viewportSize * virtualWidth.XY() / (2 * virtualWidth.W);
+                var projectedVirtualHeight= viewportSize * virtualHeight.XY() / (2 * virtualHeight.W);
 
                 // update layouting context.
                 layoutingContext.VirtualResolution = virtualResolution;
                 layoutingContext.RealResolution = viewportSize;
-                layoutingContext.RealVirtualResolutionRatio = new Vector2(viewportSize.X / projectedVirtualWidthLength, viewportSize.Y / projectedVirtualHeightLength);
+                layoutingContext.RealVirtualResolutionRatio = new Vector2(projectedVirtualWidth.Length() / virtualResolution.X, projectedVirtualHeight.Length() / virtualResolution.Y);
                 rootElement.LayoutingContext = layoutingContext;
 
                 // perform the time-based updates of the UI element
