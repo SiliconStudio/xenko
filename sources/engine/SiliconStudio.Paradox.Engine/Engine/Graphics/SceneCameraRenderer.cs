@@ -3,6 +3,7 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Engine.Graphics.Composers;
@@ -26,6 +27,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         public SceneCameraRenderer()
         {
             Mode = new CameraRendererModeForward();
+            PreRenderers = new SafeList<IGraphicsRenderer>();
+            PostRenderers = new SafeList<IGraphicsRenderer>();
         }
 
         /// <summary>
@@ -50,6 +53,20 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         [DataMemberIgnore]
         public ShaderSource MaterialFilter { get; set; }
 
+        /// <summary>
+        /// Gets the pre-renderers attached to this instance that are called before rendering this camera.
+        /// </summary>
+        /// <value>The pre renderers.</value>
+        [DataMemberIgnore]
+        public SafeList<IGraphicsRenderer> PreRenderers { get; private set; }
+
+        /// <summary>
+        /// Gets the post-renderers attached to this instance that are called after rendering this camera.
+        /// </summary>
+        /// <value>The post renderers.</value>
+        [DataMemberIgnore]
+        public SafeList<IGraphicsRenderer> PostRenderers { get; private set; }
+
         protected override void DrawCore(RenderContext context, RenderFrame output)
         {
             // Early exit if some properties are null
@@ -69,13 +86,27 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             using (context.PushTagAndRestore(Current, this))
             using (context.PushTagAndRestore(CameraComponentRenderer.Current, camera))
             {
+                // Run all pre-renderers
+                foreach (var renderer in PreRenderers)
+                {
+                    renderer.Draw(context);
+                }
+
+                // TODO: Find a better extensibility point for PixelStageSurfaceFilter
                 var currentFilter = context.Parameters.Get(MaterialKeys.PixelStageSurfaceFilter);
                 if (!ReferenceEquals(currentFilter, MaterialFilter))
                 {
                     context.Parameters.Set(MaterialKeys.PixelStageSurfaceFilter, MaterialFilter);
                 }
 
+                // Draw the scene based on its drawing mode (e.g. implementation forward or deferred... etc.)
                 Mode.Draw(context);
+
+                // Run all post-renderers
+                foreach (var renderer in PostRenderers)
+                {
+                    renderer.Draw(context);
+                }
             }
         }
     }
