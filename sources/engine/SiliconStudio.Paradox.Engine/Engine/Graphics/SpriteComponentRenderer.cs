@@ -130,6 +130,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                     color = (Color)new Color4(spriteComp.Id);
                 }
 
+                // skip the sprite if no texture is set.
+                if (texture == null)
+                    continue;
+
                 // determine the size of the element depending on the extrusion method.
                 var elementSize = Vector2.One;
                 if (spriteComp.ExtrusionMethod == SpriteExtrusionMethod.UnitHeightSpriteRatio)
