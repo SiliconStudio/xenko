@@ -16,6 +16,7 @@ namespace SiliconStudio.Core.Extensions
         static TypeDescriptorExtensions()
         {
             AssemblyRegistry.AssemblyRegistered += ClearCache;
+            AssemblyRegistry.AssemblyUnregistered += ClearCache;
         }
 
         public static bool MatchType(this ITypeDescriptor descriptor, Type type)
@@ -49,7 +50,7 @@ namespace SiliconStudio.Core.Extensions
                     if (allTypes.Count == 0)
                     {
                         // Just keep a list of assemblies in order to check which assemblies was scanned by this method
-                        allAssemblies.AddRange(AppDomain.CurrentDomain.GetAssemblies());
+                        allAssemblies.AddRange(AssemblyRegistry.Find(AssemblyCommonCategories.Assets));
                         allTypes.AddRange(allAssemblies.SelectMany(x => x.GetTypes().Where(IsInstantiableType)));
                     }
 

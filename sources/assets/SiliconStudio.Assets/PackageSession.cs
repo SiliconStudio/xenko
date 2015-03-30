@@ -99,6 +99,15 @@ namespace SiliconStudio.Assets
             {
                 dependencies.Dispose();
             }
+
+            foreach (var assembly in assemblyContainer.LoadedAssemblies)
+            {
+                // Unregisters assemblies that have been registered in Package.Load => Package.LoadAssemblyReferencesForPackage
+                AssemblyRegistry.Unregister(assembly.Value);
+
+                // Unload assembly
+                assemblyContainer.UnloadAssembly(assembly.Value);
+            }
         }
 
         /// <summary>

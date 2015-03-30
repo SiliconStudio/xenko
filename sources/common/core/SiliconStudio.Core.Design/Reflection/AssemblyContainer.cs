@@ -37,6 +37,17 @@ namespace SiliconStudio.Core.Reflection
         {
         }
 
+        public Dictionary<string, Assembly> LoadedAssemblies
+        {
+            get
+            {
+                lock (loadedAssemblies)
+                {
+                    return new Dictionary<string, Assembly>(loadedAssemblies);
+                }
+            }
+        }
+
         public Assembly LoadAssemblyFromPath(string assemblyFullPath, ILogger outputLog = null, List<string> lookupDirectoryList = null)
         {
             if (assemblyFullPath == null) throw new ArgumentNullException("assemblyFullPath");
