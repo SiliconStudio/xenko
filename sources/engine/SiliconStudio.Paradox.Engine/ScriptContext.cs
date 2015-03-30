@@ -1,8 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Threading.Tasks;
-
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
@@ -11,7 +9,6 @@ using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Input;
-using SiliconStudio.Paradox.UI;
 
 namespace SiliconStudio.Paradox
 {
@@ -36,8 +33,6 @@ namespace SiliconStudio.Paradox
         EffectSystem EffectSystem { get; }
 
         AudioSystem Audio { get; }
-
-        UISystem UI { get; }
     }
 
     [DataContract("ScriptContext")]
@@ -67,7 +62,6 @@ namespace SiliconStudio.Paradox
             SceneSystem = Services.GetSafeServiceAs<SceneSystem>();
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
             Audio = Services.GetSafeServiceAs<AudioSystem>();
-            UI = Services.GetSafeServiceAs<UISystem>();
         }
 
         [DataMemberIgnore]
@@ -92,9 +86,6 @@ namespace SiliconStudio.Paradox
                 return graphicsDeviceService.GraphicsDevice;
             }
         }
-
-        [DataMemberIgnore]
-        public UISystem UI { get; private set; }
 
         [DataMemberIgnore]
         public InputManager Input { get; private set; }
