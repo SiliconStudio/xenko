@@ -35,7 +35,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         public TestGeometricPrimitives()
         {
-            CurrentVersion = 2;
+            CurrentVersion = 3;
         }
 
         protected override void RegisterTests()
@@ -68,7 +68,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                                  GeometricPrimitive.GeoSphere.New(GraphicsDevice),
                                  GeometricPrimitive.Cylinder.New(GraphicsDevice),
                                  GeometricPrimitive.Torus.New(GraphicsDevice),
-                                 GeometricPrimitive.Teapot.New(GraphicsDevice)
+                                 GeometricPrimitive.Teapot.New(GraphicsDevice),
+                                 GeometricPrimitive.Capsule.New(GraphicsDevice, 0.25f, 0.3f)
                              };
 
 
@@ -125,8 +126,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 var primitive = primitives[i];
 
                 // Calculate the translation
-                float dx = ((i + 1) % 4);
-                float dy = ((i + 1) / 4);
+                float dx = (i % 4);
+                float dy = (i >> 2);
 
                 float x = (dx - 1.5f) * 1.7f;
                 float y = 1.0f - 2.0f * dy;

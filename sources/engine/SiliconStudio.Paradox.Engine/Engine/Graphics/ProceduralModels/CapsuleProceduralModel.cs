@@ -52,7 +52,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
 
         protected override GeometricMeshData<VertexPositionNormalTexture> CreatePrimitiveMeshData()
         {
-            return GeometricPrimitive.Capsule.New(Radius, Height, Tessellation);
+            return GeometricPrimitive.Capsule.New(Height, Radius, Tessellation);
         }
     }
 }
