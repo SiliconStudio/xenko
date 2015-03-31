@@ -23,8 +23,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// </summary>
         public LightSpot()
         {
-            Range = 1.0f;
             Angle = 30.0f;
+            Range = 1000.0f;
             ShadowImportance = LightShadowImportance.Medium;
         }
 
@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// Gets or sets the range distance the light is affecting.
         /// </summary>
         /// <value>The range.</value>
-        [DefaultValue(1.0f)]
+        [DefaultValue(1000.0f)]
         public float Range { get; set; }
 
         /// <summary>
