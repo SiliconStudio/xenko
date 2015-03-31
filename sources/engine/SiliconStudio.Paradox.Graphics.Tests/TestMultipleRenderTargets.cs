@@ -28,9 +28,16 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         private Entity mainCamera;
 
-        public TestMultipleRenderTargets()
+        private bool rotateModel;
+
+        public TestMultipleRenderTargets() : this(true)
         {
-            CurrentVersion = 2;
+        }
+
+        public TestMultipleRenderTargets(bool rotateModel)
+        {
+            CurrentVersion = 3;
+            this.rotateModel = rotateModel;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
         }
 
@@ -93,7 +100,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             scene.AddChild(ambientLight);
 
             // Add a custom script
-            Script.Add(GameScript1);
+            if (rotateModel)
+                Script.Add(GameScript1);
         }
 
         private void CreatePipeline()
@@ -170,7 +178,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         [Test]
         public void RunMultipleRenderTargets()
         {
-            RunGameTest(new TestMultipleRenderTargets());
+            RunGameTest(new TestMultipleRenderTargets(false));
         }
     }
 }
