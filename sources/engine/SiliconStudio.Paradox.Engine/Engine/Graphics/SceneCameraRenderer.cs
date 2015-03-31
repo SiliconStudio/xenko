@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.ComponentModel;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
@@ -16,10 +18,12 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     /// </summary>
     [DataContract("SceneCameraRenderer")]
     [Display("Render Camera")]
-    public sealed class SceneCameraRenderer : SceneEntityRenderer
+    public sealed class SceneCameraRenderer : SceneRendererViewportBase
     {
-        // TODO: Add option for Occlusion culling
-        // TODO: Add support for fixed aspect ratio and auto-centered-viewport
+        /// <summary>
+        /// Property key to access the current <see cref="SceneCameraRenderer"/> from <see cref="RenderContext.Tags"/>.
+        /// </summary>
+        public static readonly PropertyKey<SceneCameraRenderer> Current = new PropertyKey<SceneCameraRenderer>("SceneCameraRenderer.Current", typeof(SceneCameraRenderer));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneCameraRenderer"/> class.
@@ -29,6 +33,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             Mode = new CameraRendererModeForward();
             PreRenderers = new SafeList<IGraphicsRenderer>();
             PostRenderers = new SafeList<IGraphicsRenderer>();
+            CullingMask = EntityGroupMask.All;
         }
 
         /// <summary>
@@ -45,6 +50,20 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// <value>The camera.</value>
         [DataMember(20)]
         public SceneCameraSlotIndex Camera { get; set; }
+
+        /// <summary>
+        /// Gets or sets the culling mask.
+        /// </summary>
+        /// <value>The culling mask.</value>
+        [DataMember(30)]
+        [DefaultValue(EntityGroupMask.All)]
+        public EntityGroupMask CullingMask { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value indicating the current rendering is for picking or not.
+        /// </summary>
+        [DataMemberIgnore]
+        public bool IsPickingMode { get; set; }
 
         /// <summary>
         /// Gets or sets the material filter used to render this scene camera.

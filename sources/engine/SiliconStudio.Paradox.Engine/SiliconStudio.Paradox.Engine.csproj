@@ -80,7 +80,6 @@
     <Compile Include="Engine\Graphics\Lights\LightComponentRenderer.cs" />
     <Compile Include="Engine\Graphics\MaterialInstance.cs" />
     <Compile Include="Engine\Graphics\ParadoxEffectBaseKeys.cs" />
-    <Compile Include="Engine\Graphics\SceneEntityRenderer.cs" />
     <Compile Include="Engine\Graphics\CameraComponentRendererExtensions.cs" />
     <Compile Include="Engine\Graphics\DynamicEffectParameterUpdaterDefinition.cs" />
     <Compile Include="Engine\Graphics\Shadows\ILightShadowMapRenderer.cs" />

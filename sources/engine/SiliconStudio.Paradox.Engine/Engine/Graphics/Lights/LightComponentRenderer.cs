@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
             base.InitializeCore();
 
-            var sceneCameraRenderer = SceneEntityRenderer as SceneCameraRenderer;
+            var sceneCameraRenderer = SceneCameraRenderer as SceneCameraRenderer;
             if (sceneCameraRenderer == null)
             {
                 return;

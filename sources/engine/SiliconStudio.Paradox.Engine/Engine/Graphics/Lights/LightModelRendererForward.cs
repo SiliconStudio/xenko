@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
         protected override void DrawCore(RenderContext context)
         {
-            var sceneCamera = context.Tags.Get(SceneEntityRenderer.Current) as SceneCameraRenderer;
+            var sceneCamera = context.Tags.Get(SceneCameraRenderer.Current);
             if (sceneCamera != null)
             {
                 var modelRenderer = ModelComponentRenderer.GetAttached(sceneCamera);

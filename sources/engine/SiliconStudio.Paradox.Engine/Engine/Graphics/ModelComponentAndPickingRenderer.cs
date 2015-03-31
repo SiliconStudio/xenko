@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         {
             base.InitializeCore();
 
-            var sceneCameraRenderer = SceneEntityRenderer as SceneCameraRenderer;
+            var sceneCameraRenderer = SceneCameraRenderer as SceneCameraRenderer;
             if (sceneCameraRenderer == null)
             {
                 return;

@@ -95,18 +95,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         private void DrawRendererInternal(RenderContext context, IEntityComponentRenderer renderer, RenderItemCollection renderItems, int fromIndex, int toIndex)
         {
-            //var currentSceneEntityRenderer = context.Tags.Get(SceneEntityRenderer.Current);
-            //if (currentSceneEntityRenderer == null)
-            //{
-            //    return;
-            //}
-
-            //// Make sure the render frame and viewport is correctly setup
-            //currentSceneEntityRenderer.ActivateOutput(context, !renderer.IsWritingToDepth);
-
-            // Make sure that states are clean before rendering
             var graphicsDevice = context.GraphicsDevice;
-            
             graphicsDevice.PushState();
             renderer.Draw(context, renderItems, fromIndex, toIndex);
             graphicsDevice.PopState();

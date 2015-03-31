@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// Gets the camera renderer.
         /// </summary>
         /// <value>The camera renderer.</value>
-        public SceneEntityRenderer SceneEntityRenderer { get; private set; }
+        public SceneCameraRenderer SceneCameraRenderer { get; private set; }
 
         /// <summary>
         /// Gets the current culling mask.
@@ -53,8 +53,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             Services = Context.Services;
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
             SceneInstance = SceneInstance.GetCurrent(Context);
-            SceneEntityRenderer = Context.Tags.GetSafe(SceneEntityRenderer.Current);
-            CurrentCullingMask = SceneEntityRenderer.CullingMask;
+            SceneCameraRenderer = Context.Tags.GetSafe(SceneCameraRenderer.Current);
+            CurrentCullingMask = SceneCameraRenderer.CullingMask;
         }
 
         protected override void PreDrawCore(RenderContext context)
