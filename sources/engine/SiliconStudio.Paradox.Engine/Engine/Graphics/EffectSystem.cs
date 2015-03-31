@@ -46,7 +46,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>
         /// The database file provider.
         /// </value>
-        public DatabaseFileProvider FileProvider
+        public IVirtualFileProvider FileProvider
         {
             get { return compiler.FileProvider ?? AssetManager.FileProvider; }
         }

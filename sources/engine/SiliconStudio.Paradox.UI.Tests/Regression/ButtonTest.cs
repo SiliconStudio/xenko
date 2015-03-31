@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
             button = new Button();
 
-            SceneUIComponent.RootElement = button;
+            UIComponent.RootElement = button;
         }
 
         protected override void RegisterTests()

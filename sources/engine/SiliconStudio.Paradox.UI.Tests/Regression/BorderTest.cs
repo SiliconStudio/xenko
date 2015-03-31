@@ -37,7 +37,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
             ResetBorderElement();
 
-            SceneUIComponent.RootElement = new Canvas { Children = { border } };
+            UIComponent.RootElement = new Canvas { Children = { border } };
         }
 
         protected override void Update(GameTime gameTime)

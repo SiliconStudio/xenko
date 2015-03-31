@@ -73,6 +73,7 @@
     <Compile Include="DataModel\CompressedTimeSpan.cs" />
     <Compile Include="DataModel\AnimationCurveEvaluatorOptimizedQuaternionGroup.cs" />
     <Compile Include="DataModel\Interpolator.cs" />
+    <Compile Include="Effects\EffectCompilerRemote.cs" />
     <Compile Include="Engine\BackgroundComponent.cs" />
     <Compile Include="Engine\BackgroundComponentProcessor.cs" />
     <Compile Include="Engine\Graphics\Lights\LightComponentCollectionGroup.cs" />
@@ -80,7 +81,6 @@
     <Compile Include="Engine\Graphics\MaterialInstance.cs" />
     <Compile Include="Engine\Graphics\ParadoxEffectBaseKeys.cs" />
     <Compile Include="Engine\Graphics\SceneEntityRenderer.cs" />
-    <Compile Include="Engine\Graphics\SceneUIRenderer.cs" />
     <Compile Include="Engine\Graphics\CameraComponentRendererExtensions.cs" />
     <Compile Include="Engine\Graphics\DynamicEffectParameterUpdaterDefinition.cs" />
     <Compile Include="Engine\Graphics\Shadows\ILightShadowMapRenderer.cs" />
@@ -127,6 +127,7 @@
       <DependentUpon>ThresholdAlphaCoCFront.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Engine\RenderModelCollection.cs" />
+    <Compile Include="Engine\ScriptCollection.cs" />
     <Compile Include="Engine\ScriptComponent.cs" />
     <Compile Include="Engine\CameraProcessor.cs" />
     <Compile Include="Engine\CameraProjectionMode.cs" />

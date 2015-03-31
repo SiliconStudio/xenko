@@ -61,7 +61,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             grid.Children.Add(imgElt3);
             grid.Children.Add(imgElt4);
 
-            SceneUIComponent.RootElement = grid;
+            UIComponent.RootElement = grid;
         }
 
         [Test]

@@ -102,7 +102,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             baseGrid.Children.Add(grid);
             baseGrid.Children.Add(canvas);
 
-            SceneUIComponent.RootElement = baseGrid;
+            UIComponent.RootElement = baseGrid;
         }
 
         private void CreateAndInsertButton(UniformGrid grid, int c, int r)

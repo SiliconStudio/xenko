@@ -14,16 +14,16 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// <summary>
         /// The resolution is determined by the width, height and depth of the field.
         /// </summary>
-        WidthHeightDepth,
+        FixedWidthFixedHeight,
 
         /// <summary>
         /// The resolution is determined by the width, the ratio of the target, and the depth.
         /// </summary>
-        WidthDepthTargetRatio,
+        FixedWidthAdaptableHeight,
 
         /// <summary>
         /// The resolution is determined by the height, the ratio of the target, and the depth.
         /// </summary>
-        HeightDepthTargetRatio,
+        FixedHeightAdaptableWidth,
     }
 }

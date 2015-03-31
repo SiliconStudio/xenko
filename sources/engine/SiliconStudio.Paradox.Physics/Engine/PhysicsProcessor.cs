@@ -7,10 +7,8 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Threading;
 
 namespace SiliconStudio.Paradox.Physics
@@ -86,7 +84,7 @@ namespace SiliconStudio.Paradox.Physics
             element.Data = data;
             element.BoneIndex = -1;
 
-            if (!element.Sprite && !element.LinkedBoneName.IsNullOrEmpty())
+            if (!element.LinkedBoneName.IsNullOrEmpty())
             {
                 element.BoneIndex = data.ModelComponent.ModelViewHierarchy.Nodes.IndexOf(x => x.Name == element.LinkedBoneName);
 

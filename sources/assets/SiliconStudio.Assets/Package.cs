@@ -766,6 +766,12 @@ namespace SiliconStudio.Assets
                         {
                             log.Error("Unable to load assembly reference [{0}]", assemblyPath);
                         }
+
+                        if (assembly != null)
+                        {
+                            // Register assembly in the registry
+                            AssemblyRegistry.Register(assembly, AssemblyCommonCategories.Assets);
+                        }
                     }
                     catch (Exception ex)
                     {

@@ -108,7 +108,8 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The aspect ratio.
         /// </value>
-        [DataMemberIgnore]
+        [DataMember(40)]
+        [DefaultValue(16f / 9f)]
         public float AspectRatio { get; set; }
 
         /// <summary>

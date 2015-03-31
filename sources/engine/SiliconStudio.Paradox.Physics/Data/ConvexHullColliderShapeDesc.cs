@@ -40,8 +40,8 @@ namespace SiliconStudio.Paradox.Physics
         /// <userdoc>
         /// The scaling of the generated convex hull.
         /// </userdoc>
-        [DataMember(45)]
-        public Vector3 Scaling = new Vector3(1, 1, 1);
+        [DataMember(45)] 
+        public Vector3 Scaling = Vector3.One;
 
         /// <userdoc>
         /// Control how many sub convex hulls will be created, more depth will result in a more complex decomposition.

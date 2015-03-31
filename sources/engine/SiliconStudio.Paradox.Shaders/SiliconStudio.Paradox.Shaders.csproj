@@ -62,7 +62,6 @@
     <Compile Include="EffectParameterClass.cs" />
     <Compile Include="ShaderMixinParameters.cs" />
     <Compile Include="EffectParameterType.cs" />
-    <Compile Include="ShaderMixinSourceTreeExtensions.cs" />
     <Compile Include="ShaderSource.cs" />
     <Compile Include="ShaderStage.cs" />
     <Compile Include="ShaderStreamOutputDeclarationEntry.cs" />

@@ -62,7 +62,11 @@ namespace SiliconStudio.Paradox.Assets.Effect
         {
             var compiler = GetOrCreateEffectCompiler(context);
 
-            var isPdxfx = ShaderMixinManager.Contains(effectName);
+            // Get main effect name (before the first dot)
+            string subEffect;
+            var mainEffectName = EffectCompilerBase.GetEffectName(effectName, out subEffect);
+
+            var isPdxfx = ShaderMixinManager.Contains(mainEffectName);
             var source = isPdxfx ? new ShaderMixinGeneratorSource(effectName) : (ShaderSource)new ShaderClassSource(effectName);
 
             int permutationCount;

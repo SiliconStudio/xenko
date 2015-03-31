@@ -41,7 +41,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         private readonly List<UIComponentProcessor.UIComponentState> uiElementStates = new List<UIComponentProcessor.UIComponentState>();
 
-        private readonly CameraState cameraState = new CameraState();
+        private readonly ViewParameters viewParameters = new ViewParameters();
 
         private Vector2 viewportTargetRatio;
 
@@ -72,23 +72,32 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             if (uiProcessor == null)
                 return;
 
-            // update the needed camera parameters
-            var cameraComponent = context.Tags.Get(CameraComponentRenderer.Current);
-            cameraState.Update(cameraComponent);
-
             foreach (var uiRoot in uiProcessor.UIRoots)
             {
                 // Perform culling on group and accept
                 if (!CurrentCullingMask.Contains(uiRoot.UIComponent.Entity.Group))
                     continue;
 
+                // skips empty UI elements
+                if(uiRoot.UIComponent.RootElement == null)
+                    continue;
+
                 // Project the position
                 // TODO: This code is duplicated from SpriteComponent -> unify it at higher level?
                 var worldPosition = new Vector4(uiRoot.TransformComponent.WorldMatrix.TranslationVector, 1.0f);
 
-                Vector4 projectedPosition;
-                Vector4.Transform(ref worldPosition, ref cameraState.ViewProjectionMatrix, out projectedPosition);
-                var projectedZ = projectedPosition.Z / projectedPosition.W;
+                float projectedZ;
+                if (uiRoot.UIComponent.IsFullScreen)
+                {
+                    projectedZ = -uiRoot.TransformComponent.WorldMatrix.M43;
+                }
+                else
+                {
+                    Vector4 projectedPosition;
+                    var cameraComponent = context.Tags.Get(CameraComponentRenderer.Current);
+                    Vector4.Transform(ref worldPosition, ref cameraComponent.ViewProjectionMatrix, out projectedPosition);
+                    projectedZ = projectedPosition.Z / projectedPosition.W;
+                }
 
                 transparentList.Add(new RenderItem(this, uiRoot, projectedZ));
             }
@@ -107,19 +116,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             // evaluate the current draw time (game instance is null for thumbnails)
             var drawTime = game != null ? game.DrawTime : new GameTime();
             
-            // determine if we need to clear depth buffer and the virtual resolution scales.
-            var sceneUIRenderer = context.Tags.Get(SceneEntityRenderer.Current) as SceneUIRenderer;
-            var shouldClearDepth = sceneUIRenderer != null && sceneUIRenderer.ClearDepthBuffer;
-            var virtualResolutionScales = sceneUIRenderer != null ? sceneUIRenderer.VirtualResolutionFactor : new Vector3(1);
-
             // update the rendering context
             renderingContext.Time = drawTime;
-            renderingContext.ViewMatrix = cameraState.ViewMatrix;
-            renderingContext.ProjectionMatrix = cameraState.ProjectionMatrix;
-            renderingContext.ViewProjectionMatrix = cameraState.ViewProjectionMatrix;
             renderingContext.RenderTarget = CurrentRenderFrame.RenderTargets[0]; // TODO: avoid hardcoded index 0
-            renderingContext.DepthStencilBuffer = CurrentRenderFrame.DepthStencil;
-            renderingContext.ShouldSnapText = sceneUIRenderer != null; // snaps only if rendered from the SceneUIRenderer
 
             // cache the ratio between viewport and target.
             var viewportSize = context.GraphicsDevice.Viewport.Size;
@@ -145,39 +144,85 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 ClearPointerEvents();
             }
 
+            // allocate temporary graphics resources if needed
+            Texture scopedDepthBuffer = null;
+            foreach (var uiElement in uiElementStates)
+            {
+                if (uiElement.UIComponent.IsFullScreen)
+                {
+                    var renderTarget = renderingContext.RenderTarget;
+                    var description = TextureDescription.New2D(renderTarget.Width, renderTarget.Height, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
+                    scopedDepthBuffer = PushScopedResource(context.Allocator.GetTemporaryTexture(description));
+                    break;
+                }
+            }
+            
             // render the UI elements of all the entities
             foreach (var uiElementState in uiElementStates)
             {
-                var rootElement = uiElementState.UIComponent.RootElement;
+                var uiComponent = uiElementState.UIComponent;
+                var rootElement = uiComponent.RootElement;
                 if (rootElement == null)
-                    return;
+                    continue;
 
                 var updatableRootElement = (IUIElementUpdate)rootElement;
 
-                // calculate the size of the virtual resolution (UI canvas)
-                var worldMatrix = uiElementState.TransformComponent.WorldMatrix;
-                var worldScales = new Vector3(worldMatrix.Row1.XYZ().Length(), worldMatrix.Row2.XYZ().Length(), worldMatrix.Row3.XYZ().Length());
-                var virtualResolution = worldScales * virtualResolutionScales;
+                // calculate the size of the virtual resolution depending on target size (UI canvas)
+                var virtualResolution = uiComponent.VirtualResolution;
+                var targetSize = new Vector2(renderingContext.RenderTarget.Width, renderingContext.RenderTarget.Height);
+                if (uiComponent.IsFullScreen)
+                {
+                    // update the virtual resolution of the renderer
+                    if (uiComponent.VirtualResolutionMode == VirtualResolutionMode.FixedWidthAdaptableHeight)
+                        virtualResolution.Y = virtualResolution.X * targetSize.Y / targetSize.X;
+                    if (uiComponent.VirtualResolutionMode == VirtualResolutionMode.FixedHeightAdaptableWidth)
+                        virtualResolution.X = virtualResolution.Y * targetSize.X / targetSize.Y;
+                }
+                
+                // Update the view parameters
+                if (uiComponent.IsFullScreen)
+                {
+                    viewParameters.Update(virtualResolution);
+                }
+                else
+                {
+                    var cameraComponent = context.Tags.Get(CameraComponentRenderer.Current);
+                    viewParameters.Update(cameraComponent);
+                }
+                
+                // update the rendering context values specific to this element
                 renderingContext.Resolution = virtualResolution;
+                renderingContext.ViewMatrix = viewParameters.ViewMatrix;
+                renderingContext.ProjectionMatrix = viewParameters.ProjectionMatrix;
+                renderingContext.ViewProjectionMatrix = viewParameters.ViewProjectionMatrix;
+                renderingContext.DepthStencilBuffer = uiComponent.IsFullScreen ? scopedDepthBuffer : CurrentRenderFrame.DepthStencil;
+                renderingContext.ShouldSnapText = uiComponent.SnapText;
 
                 // build the world matrix of the UI
                 var worldTranslation = virtualResolution.XY() / 2;
+                var worldMatrix = uiElementState.TransformComponent.WorldMatrix;
+                worldMatrix.M42 = -worldMatrix.M42; // compensate for the projection matrix with inverted Y axis.
                 worldMatrix.M41 -= worldTranslation.X * worldMatrix.M11 + worldTranslation.Y * worldMatrix.M21;
                 worldMatrix.M42 -= worldTranslation.X * worldMatrix.M12 + worldTranslation.Y * worldMatrix.M22;
                 worldMatrix.M43 -= worldTranslation.X * worldMatrix.M13 + worldTranslation.Y * worldMatrix.M23;
 
                 // calculate an estimate of the UI real size by projecting the element virtual resolution on the screen
-                var projectedVirtualWidth = virtualResolution.X * new Vector3(worldMatrix.M11, worldMatrix.M12, worldMatrix.M13);
-                var projectedVirtualHeight = virtualResolution.Y * new Vector3(worldMatrix.M21, worldMatrix.M22, worldMatrix.M23);
-                Vector3.TransformNormal(ref projectedVirtualWidth, ref cameraState.ViewMatrix, out projectedVirtualWidth);
-                Vector3.TransformNormal(ref projectedVirtualHeight, ref cameraState.ViewMatrix, out projectedVirtualHeight);
-                var projectedVirtualWidthLength = (viewportTargetRatio * (Vector2)projectedVirtualWidth).Length();
-                var projectedVirtualHeightLength = (viewportTargetRatio * (Vector2)projectedVirtualHeight).Length();
+                var virtualWidth = Vector4.One;
+                var virtualHeight = Vector4.One;
+                for (int i = 0; i < 3; i++)
+                {
+                    virtualWidth[i] = virtualResolution.X * worldMatrix[0+i] + worldMatrix[8 + i] * worldMatrix.M43;
+                    virtualHeight[i] = virtualResolution.Y * worldMatrix[4+i] + worldMatrix[8 + i] * worldMatrix.M43;
+                }
+                Vector4.Transform(ref virtualWidth, ref viewParameters.ViewProjectionMatrix, out virtualWidth);
+                Vector4.Transform(ref virtualHeight, ref viewParameters.ViewProjectionMatrix, out virtualHeight);
+                var projectedVirtualWidth = viewportSize * virtualWidth.XY() / (2 * virtualWidth.W);
+                var projectedVirtualHeight= viewportSize * virtualHeight.XY() / (2 * virtualHeight.W);
 
                 // update layouting context.
                 layoutingContext.VirtualResolution = virtualResolution;
                 layoutingContext.RealResolution = viewportSize;
-                layoutingContext.RealVirtualResolutionRatio = new Vector2(viewportSize.X / projectedVirtualWidthLength, viewportSize.Y / projectedVirtualHeightLength);
+                layoutingContext.RealVirtualResolutionRatio = new Vector2(projectedVirtualWidth.Length() / virtualResolution.X, projectedVirtualHeight.Length() / virtualResolution.Y);
                 rootElement.LayoutingContext = layoutingContext;
 
                 // perform the time-based updates of the UI element
@@ -192,13 +237,16 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 updatableRootElement.UpdateElementState(0);
                 uiElementState.LastWorldMatrix = worldMatrix;
 
-                // clear the Depth buffer if required
-                if (shouldClearDepth)
-                    context.GraphicsDevice.Clear(CurrentRenderFrame.DepthStencil, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
+                // clear and set the Depth buffer as required
+                if (uiComponent.IsFullScreen)
+                {
+                    context.GraphicsDevice.Clear(renderingContext.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
+                }
+                context.GraphicsDevice.SetDepthAndRenderTarget(renderingContext.DepthStencilBuffer, renderingContext.RenderTarget);
 
                 // start the image draw session
                 renderingContext.StencilTestReferenceValue = 0;
-                batch.Begin(ref cameraState.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(ref viewParameters.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
 
                 // Render the UI elements in the final render target
                 ReccursiveDrawWithClipping(context, rootElement);
@@ -206,6 +254,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 // end the image draw session
                 batch.End();
             }
+
+            // revert the depth stencil buffer to the default value 
+            context.GraphicsDevice.SetDepthAndRenderTargets(CurrentRenderFrame.DepthStencil, CurrentRenderFrame.RenderTargets);
         }
 
         private void ReccursiveDrawWithClipping(RenderContext context, UIElement element)
@@ -224,13 +275,13 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 batch.End();
                 
                 // render the clipping region
-                batch.Begin(ref cameraState.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.ColorDisabled, uiSystem.IncreaseStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(ref viewParameters.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.ColorDisabled, uiSystem.IncreaseStencilValueState, renderingContext.StencilTestReferenceValue);
                 renderer.RenderClipping(element, renderingContext);
                 batch.End();
 
                 // update context and restart the batch
                 renderingContext.StencilTestReferenceValue += 1;
-                batch.Begin(ref cameraState.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(ref viewParameters.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
             }
 
             // render the design of the element
@@ -249,13 +300,13 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 renderingContext.DepthBias = element.MaxChildrenDepthBias;
 
                 // render the clipping region
-                batch.Begin(ref cameraState.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.ColorDisabled, uiSystem.DecreaseStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(ref viewParameters.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.ColorDisabled, uiSystem.DecreaseStencilValueState, renderingContext.StencilTestReferenceValue);
                 renderer.RenderClipping(element, renderingContext);
                 batch.End();
 
                 // update context and restart the batch
                 renderingContext.StencilTestReferenceValue -= 1;
-                batch.Begin(ref cameraState.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(ref viewParameters.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
             }
         }
 
@@ -493,8 +544,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             var positionForHitTest = Vector2.Demodulate(position, viewportTargetRatio) - new Vector2(0.5f);
 
             // calculate the ray corresponding to the click
-            var rayDirectionView = Vector3.Normalize(new Vector3(positionForHitTest.X * cameraState.FrustumHeight * cameraState.AspectRatio, positionForHitTest.Y * cameraState.FrustumHeight, -1));
-            var clickRay = new Ray(cameraState.ViewMatrixInverse.TranslationVector, Vector3.TransformNormal(rayDirectionView, cameraState.ViewMatrixInverse));
+            var rayDirectionView = Vector3.Normalize(new Vector3(positionForHitTest.X * viewParameters.FrustumHeight * viewParameters.AspectRatio, positionForHitTest.Y * viewParameters.FrustumHeight, -1));
+            var clickRay = new Ray(viewParameters.ViewMatrixInverse.TranslationVector, Vector3.TransformNormal(rayDirectionView, viewParameters.ViewMatrixInverse));
 
             // perform the hit test
             UIElement clickedElement = null;
@@ -522,7 +573,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 // Calculate the depth of the element with the depth bias so that hit test corresponds to visuals.
                 Vector4 projectedIntersection;
                 var intersection4 = new Vector4(intersection, 1);
-                Vector4.Transform(ref intersection4, ref cameraState.ViewProjectionMatrix, out projectedIntersection);
+                Vector4.Transform(ref intersection4, ref viewParameters.ViewProjectionMatrix, out projectedIntersection);
                 var depthWithBias = projectedIntersection.Z / projectedIntersection.W - element.DepthBias * BatchBase<int>.DepthBiasShiftOneUnit;
 
                 // update the closest element hit
@@ -554,7 +605,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             rendererManager.RegisterRenderer(element, renderer);
         }
 
-        private class CameraState
+        private class ViewParameters
         {
             public float AspectRatio;
             public float FrustumHeight;
@@ -575,6 +626,26 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 // Adapt the projection matrix to the UI coordinate system (Y axis inversed)
                 ProjectionMatrix.M22 = -ProjectionMatrix.M22;
                 ViewProjectionMatrix.Column2 = -ViewProjectionMatrix.Column2;
+            }
+
+            public void Update(Vector3 virtualResolution)
+            {
+                var nearPlane = 1f;
+                var farPlane = nearPlane + 2 * virtualResolution.Z;
+                var zOffset = virtualResolution.Z + 1f;
+                var aspectRatio = virtualResolution.X / virtualResolution.Y;
+                var verticalFov = (float)Math.Atan2(virtualResolution.Y / 2, zOffset) * 2;
+
+                var cameraComponent = new CameraComponent(nearPlane, farPlane)
+                {
+                    AspectRatio = aspectRatio,
+                    VerticalFieldOfView = MathUtil.RadiansToDegrees(verticalFov),
+                    ViewMatrix = Matrix.LookAtRH(new Vector3(0, 0, zOffset), Vector3.Zero, Vector3.UnitY),
+                    ProjectionMatrix = Matrix.PerspectiveFovRH(verticalFov, aspectRatio, nearPlane, farPlane),
+                };
+                Matrix.Multiply(ref cameraComponent.ViewMatrix, ref cameraComponent.ProjectionMatrix, out cameraComponent.ViewProjectionMatrix);
+
+                Update(cameraComponent);
             }
         }
     }

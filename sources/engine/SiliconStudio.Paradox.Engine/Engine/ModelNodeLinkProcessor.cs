@@ -27,9 +27,6 @@ namespace SiliconStudio.Paradox.Engine
 
         protected override void OnEntityAdding(Entity entity, ModelNodeLinkComponent data)
         {
-            entity.Transform.UseTRS = false;
-            entity.Transform.isSpecialRoot = true;
-
             data.Processor = this;
 
             if (meshProcessor == null)
@@ -64,11 +61,15 @@ namespace SiliconStudio.Paradox.Engine
                 if (meshProcessor == null)
                     meshProcessor = EntityManager.GetProcessor<ModelProcessor>();
 
+                if (meshProcessor == null) // (no model in the scene)
+                    return;
+
                 foreach (var transformationLinkComponent in DirtyLinks)
                 {
                     // ModelNodeLinkComponent has been changed, regenerate link
                     meshProcessor.UnlinkEntity(transformationLinkComponent.EntityLink);
-                    meshProcessor.LinkEntity(transformationLinkComponent.Entity, transformationLinkComponent.Target, transformationLinkComponent.NodeName);
+                    if(transformationLinkComponent.Target != null)
+                        meshProcessor.LinkEntity(transformationLinkComponent.Entity, transformationLinkComponent.Target, transformationLinkComponent.NodeName);
                 }
 
                 DirtyLinks.Clear();

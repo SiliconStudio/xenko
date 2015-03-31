@@ -225,24 +225,24 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
             // testing that a null thickness return a good value
             var size = 1000 * rand.NextVector3();
             var emptyThickness = Thickness.UniformCuboid(0f);
-            Assert.AreEqual(size, CalculateSizeWithoutThickness(ref size, ref emptyThickness));
+            AssertAreNearlySame(size, CalculateSizeWithoutThickness(ref size, ref emptyThickness));
 
             // testing with a positive thickness
             size = 1000 * Vector3.One;
             var thickness = rand.NextThickness(100, 200, 300, 400, 500, 600);
             var expectedSize = new Vector3(size.X - thickness.Left - thickness.Right, size.Y - thickness.Top - thickness.Bottom, size.Z - thickness.Back - thickness.Front);
-            Assert.AreEqual(expectedSize, CalculateSizeWithoutThickness(ref size, ref thickness));
+            AssertAreNearlySame(expectedSize, CalculateSizeWithoutThickness(ref size, ref thickness));
 
             // testing with a negative thickness 
             size = 1000 * Vector3.One;
             thickness = -rand.NextThickness(100, 200, 300, 400, 500, 600);
             expectedSize = new Vector3(size.X - thickness.Left - thickness.Right, size.Y - thickness.Top - thickness.Bottom, size.Z - thickness.Back - thickness.Front);
-            Assert.AreEqual(expectedSize, CalculateSizeWithoutThickness(ref size, ref thickness));
+            AssertAreNearlySame(expectedSize, CalculateSizeWithoutThickness(ref size, ref thickness));
 
             // test with a over constrained thickness
             size = 100 * rand.NextVector3();
             thickness = new Thickness(100, 200, 300, 400, 500, 600);
-            Assert.AreEqual(Vector3.Zero, CalculateSizeWithoutThickness(ref size, ref thickness));
+            AssertAreNearlySame(Vector3.Zero, CalculateSizeWithoutThickness(ref size, ref thickness));
         }
 
         /// <summary>

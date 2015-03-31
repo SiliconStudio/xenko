@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 {
     public abstract class ModelAssetImporter : AssetImporterBase
     {
-        private static readonly Type[] supportedTypes = { typeof(EntityAsset), typeof(ModelAsset), typeof(TextureAsset), typeof(MaterialAsset), typeof(AnimationAsset) };
+        private static readonly Type[] supportedTypes = { typeof(ModelAsset), typeof(TextureAsset), typeof(MaterialAsset), typeof(AnimationAsset) };
 
         public override AssetImporterParameters GetDefaultParameters(bool isForReImport)
         {
@@ -48,10 +48,9 @@ namespace SiliconStudio.Paradox.Assets.Model
 
             var entityInfo = GetEntityInfo(localPath, importParameters.Logger);
 
-            var isImportingEntity = importParameters.IsTypeSelectedForOutput<EntityAsset>();
+            //var isImportingEntity = importParameters.IsTypeSelectedForOutput<EntityAsset>();
 
-            var isImportingModel = importParameters.IsTypeSelectedForOutput<ModelAsset>() ||
-                                   isImportingEntity;
+            var isImportingModel = importParameters.IsTypeSelectedForOutput<ModelAsset>();
 
             var isImportingMaterial = importParameters.IsTypeSelectedForOutput<MaterialAsset>() ||
                                       isImportingModel;
@@ -80,16 +79,16 @@ namespace SiliconStudio.Paradox.Assets.Model
             // 4. Model
             if (isImportingModel)
             {
-                var modelItem = ImportModel(rawAssetReferences, localPath, localPath, entityInfo, isImportingEntity);
+                var modelItem = ImportModel(rawAssetReferences, localPath, localPath, entityInfo, false);
 
-                // 4. Entity
-                if (isImportingEntity)
-                {
-                    var entityAssetItem = ImportEntity(rawAssetReferences, localPath, modelItem);
-
-                    // Apply EntityAnalysis 
-                    EntityAnalysis.UpdateEntityReferences(((EntityAsset)entityAssetItem.Asset).Hierarchy);
-                }
+                // 5. Entity (currently disabled)
+                //if (isImportingEntity)
+                //{
+                //    var entityAssetItem = ImportEntity(rawAssetReferences, localPath, modelItem);
+                //
+                //    // Apply EntityAnalysis 
+                //    EntityAnalysis.UpdateEntityReferences(((EntityAsset)entityAssetItem.Asset).Hierarchy);
+                //}
             }
 
             return rawAssetReferences;

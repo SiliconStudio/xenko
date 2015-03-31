@@ -94,6 +94,7 @@ namespace SiliconStudio.Core.Yaml
                         LimitPrimitiveFlowSequence = 0,
                         Attributes = new AtributeRegistryFilter(),
                         PreferredIndent = 4,
+                        EmitShortTypeName = true,
                     };
 
                 foreach (var registeredAssembly in RegisteredAssemblies)

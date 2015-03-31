@@ -82,7 +82,12 @@ namespace SiliconStudio.Quantum
             lock (lockObject)
             {
                 IModelNode result;
-                return modelsByGuid.TryGetValue(guid, out result) ? result : null;
+                if (modelsByGuid.TryGetValue(guid, out result))
+                {
+                    if (result != null)
+                        UpdateReferences(result);
+                }
+                return result;
             }
         }
 
@@ -117,8 +122,6 @@ namespace SiliconStudio.Quantum
                 if (guidContainer != null && (rootObject == null || !rootObject.GetType().IsValueType))
                 {
                     result = GetModelNode(rootObject);
-                    if (result != null)
-                        UpdateReferences(result);
                 }
 
                 return result ?? CreateModelNode(rootObject, type, referencer);

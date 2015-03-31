@@ -222,7 +222,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         private static ObservableModelNode DefaultCreateNode(ObservableViewModel viewModel, string baseName, bool isPrimitive, SingleObservableNode parentNode, IModelNode modelNode, ModelNodePath modelNodePath, Type contentType, object index)
         {
-            return ObservableModelNode.Create(viewModel, baseName, isPrimitive, parentNode, modelNode, modelNodePath, contentType, index);
+            return ObservableModelNode.Create(viewModel, baseName, isPrimitive, modelNode, modelNodePath, contentType, index);
         }
     }
 }

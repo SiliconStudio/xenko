@@ -46,7 +46,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
         /// <value>The type of skybox.</value>
         [DataMember(10)]
         [NotNull]
-        [Display("Type")]
+        [Display("Type", AlwaysExpand = true)]
         public ISkyboxModel Model { get; set; }
 
         /// <summary>

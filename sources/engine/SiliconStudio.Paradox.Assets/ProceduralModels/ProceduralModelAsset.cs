@@ -5,7 +5,6 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Paradox.Effects.ProceduralModels;
 using SiliconStudio.Paradox.Engine.Graphics.ProceduralModels;
 
 namespace SiliconStudio.Paradox.Assets.ProceduralModels
@@ -15,7 +14,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
     /// </summary>
     [DataContract("ProceduralModelAsset")]
     [AssetFileExtension(FileExtension)]
-    //[ThumbnailCompiler(PreviewerCompilerNames.MaterialThumbnailCompilerQualifiedName, true)] // TODO: Add preview
+    [ThumbnailCompiler(PreviewerCompilerNames.ProceduralModelThumbnailCompilerQualifiedName, true)] 
     [AssetCompiler(typeof(ProceduralModelAssetCompiler))]
     [Display("Procedural Model", "A procedural model")]
     public sealed class ProceduralModelAsset : Asset

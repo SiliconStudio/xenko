@@ -13,8 +13,8 @@ namespace SiliconStudio.Presentation.Quantum
         private readonly int? order;
         private readonly bool isPrimitive;
 
-        protected VirtualObservableNode(ObservableViewModel ownerViewModel, string name, SingleObservableNode parentNode, int? order, bool isPrimitive, object index, NodeCommandWrapperBase valueChangedCommand)
-            : base(ownerViewModel, name, parentNode, index)
+        protected VirtualObservableNode(ObservableViewModel ownerViewModel, string name, int? order, bool isPrimitive, object index, NodeCommandWrapperBase valueChangedCommand)
+            : base(ownerViewModel, name, index)
         {
             this.order = order;
             this.isPrimitive = isPrimitive;
@@ -22,9 +22,9 @@ namespace SiliconStudio.Presentation.Quantum
             ValueChangedCommand = valueChangedCommand;
         }
 
-        internal static VirtualObservableNode Create(ObservableViewModel ownerViewModel, string name, IObservableNode parentNode, int? order, bool isPrimitive, Type contentType, object initialValue, object index, NodeCommandWrapperBase valueChangedCommand)
+        internal static VirtualObservableNode Create(ObservableViewModel ownerViewModel, string name, int? order, bool isPrimitive, Type contentType, object initialValue, object index, NodeCommandWrapperBase valueChangedCommand)
         {
-            var node = (VirtualObservableNode)Activator.CreateInstance(typeof(VirtualObservableNode<>).MakeGenericType(contentType), ownerViewModel, name, parentNode, order, isPrimitive, initialValue, index, valueChangedCommand);
+            var node = (VirtualObservableNode)Activator.CreateInstance(typeof(VirtualObservableNode<>).MakeGenericType(contentType), ownerViewModel, name, order, isPrimitive, initialValue, index, valueChangedCommand);
             return node;
         }
 
@@ -48,7 +48,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         public void ClearChildren()
         {
-            foreach (var child in Children.ToList())
+            foreach (var child in Children.Cast<ObservableNode>().ToList())
             {
                 RemoveChild(child);
             }
@@ -69,9 +69,10 @@ namespace SiliconStudio.Presentation.Quantum
     {
         private T value;
 
-        public VirtualObservableNode(ObservableViewModel ownerViewModel, string name, SingleObservableNode parentNode, int? order, bool isPrimitive, object initialValue, object index, NodeCommandWrapperBase valueChangedCommand = null)
-            : base(ownerViewModel, name, parentNode, order, isPrimitive, index, valueChangedCommand)
+        public VirtualObservableNode(ObservableViewModel ownerViewModel, string name, int? order, bool isPrimitive, object initialValue, object index, NodeCommandWrapperBase valueChangedCommand = null)
+            : base(ownerViewModel, name, order, isPrimitive, index, valueChangedCommand)
         {
+            DependentProperties.Add("TypedValue", new[] { "Value" });
             value = (T)initialValue;
         }
 
@@ -84,9 +85,12 @@ namespace SiliconStudio.Presentation.Quantum
             set
             {
                 bool hasChanged = SetValue(ref this.value, value);
-                if (hasChanged && ValueChangedCommand != null)
+                if (hasChanged)
                 {
-                    ValueChangedCommand.Execute(value);
+                    if (ValueChangedCommand != null)
+                    {
+                        ValueChangedCommand.Execute(value);
+                    }
                     OnValueChanged();
                 }
             }

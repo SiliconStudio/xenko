@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.Engine
 
         public ScriptComponent()
         {
-            Scripts = new TrackingCollection<Script>();
+            Scripts = new ScriptCollection();
             Scripts.CollectionChanged += (sender, args) =>
             {
                 var script = (Script)args.Item;

@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
             grid = new UniformGrid { Children = { slider } };
 
-            SceneUIComponent.RootElement = grid;
+            UIComponent.RootElement = grid;
         }
 
         private void SetSliderImages(bool setRotatedImages)

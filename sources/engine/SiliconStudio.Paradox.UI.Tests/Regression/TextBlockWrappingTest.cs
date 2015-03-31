@@ -21,14 +21,14 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public TextBlockWrappingTest()
         {
-            CurrentVersion = 3;
+            CurrentVersion = 4;
         }
 
         protected override async Task LoadContent()
         {
             await base.LoadContent();
 
-            SceneUIRenderer.VirtualResolution = new Int3(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height, 500);
+            UIComponent.VirtualResolution = new Vector3(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height, 500);
             
             textBlock = new TextBlock
             {
@@ -51,7 +51,7 @@ Does it work with kanjis too? let's see that in the following line. Here we goes
                 BackgroundImage = new UIImage(Asset.Load<Texture>("DumbWhite"))
             };
 
-            SceneUIComponent.RootElement = decorator;
+            UIComponent.RootElement = decorator;
         }
 
         protected override void Update(GameTime gameTime)

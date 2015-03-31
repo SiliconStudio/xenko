@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <summary>
         /// The file provider used to load shader sources.
         /// </summary>
-        private readonly DatabaseFileProvider fileProvider;
+        private readonly IVirtualFileProvider fileProvider;
 
         private const string DefaultEffectFileExtension = ".pdxsl";
 
@@ -52,7 +52,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// Initializes a new instance of the <see cref="ShaderSourceManager" /> class.
         /// </summary>
         /// <param name="fileProvider">The file provider to use for loading shader sources.</param>
-        public ShaderSourceManager(DatabaseFileProvider fileProvider)
+        public ShaderSourceManager(IVirtualFileProvider fileProvider)
         {
             this.fileProvider = fileProvider;
             LookupDirectoryList = new List<string>();

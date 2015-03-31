@@ -24,8 +24,8 @@ namespace SiliconStudio.Presentation.Quantum
 
         private Dictionary<string, object> associatedData;
 
-        protected CombinedObservableNode(ObservableViewModel ownerViewModel, string name, CombinedObservableNode parentNode, IEnumerable<SingleObservableNode> combinedNodes, object index)
-            : base(ownerViewModel, parentNode, index)
+        protected CombinedObservableNode(ObservableViewModel ownerViewModel, string name, IEnumerable<SingleObservableNode> combinedNodes, object index)
+            : base(ownerViewModel, index)
         {
             this.combinedNodes = new List<SingleObservableNode>(combinedNodes);
             Name = name;
@@ -148,7 +148,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         internal static CombinedObservableNode Create(ObservableViewModel ownerViewModel, string name, CombinedObservableNode parent, Type contentType, IEnumerable<SingleObservableNode> combinedNodes, object index)
         {
-            var node = (CombinedObservableNode)Activator.CreateInstance(typeof(CombinedObservableNode<>).MakeGenericType(contentType), ownerViewModel, name, parent, combinedNodes, index);
+            var node = (CombinedObservableNode)Activator.CreateInstance(typeof(CombinedObservableNode<>).MakeGenericType(contentType), ownerViewModel, name, combinedNodes, index);
             return node;
         }
 
@@ -191,7 +191,7 @@ namespace SiliconStudio.Presentation.Quantum
                 {
                     ClearCommands();
 
-                    foreach (var child in Children.ToList())
+                    foreach (var child in Children.Cast<ObservableNode>().ToList())
                         RemoveChild(child);
 
                     foreach (var modelNode in CombinedNodes.OfType<ObservableModelNode>())
@@ -390,8 +390,8 @@ namespace SiliconStudio.Presentation.Quantum
 
     public class CombinedObservableNode<T> : CombinedObservableNode
     {
-        public CombinedObservableNode(ObservableViewModel ownerViewModel, string name, CombinedObservableNode parentNode, IEnumerable<SingleObservableNode> combinedNodes, object index)
-            : base(ownerViewModel, name, parentNode, combinedNodes, index)
+        public CombinedObservableNode(ObservableViewModel ownerViewModel, string name, IEnumerable<SingleObservableNode> combinedNodes, object index)
+            : base(ownerViewModel, name, combinedNodes, index)
         {
             DependentProperties.Add("TypedValue", new[] { "Value" });
         }
