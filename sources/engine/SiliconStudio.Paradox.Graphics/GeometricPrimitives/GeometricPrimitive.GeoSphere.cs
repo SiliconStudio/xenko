@@ -122,10 +122,12 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// <param name="diameter">The diameter.</param>
             /// <param name="tessellation">The tessellation.</param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
+            /// <param name="uScale">The scale to apply on the u component of the texture coordinates</param>
+            /// <param name="vScale">The scale to apply on the v component of the texture coordinates</param>
             /// <returns>A Geodesic sphere.</returns>
-            public static GeometricPrimitive New(GraphicsDevice graphicsDevice, float diameter = 1.0f, int tessellation = 3, bool toLeftHanded = false)
+            public static GeometricPrimitive New(GraphicsDevice graphicsDevice, float diameter = 1.0f, int tessellation = 3, float uScale = 1f, float vScale = 1f, bool toLeftHanded = false)
             {
-                return new GeometricPrimitive(graphicsDevice, New(diameter, tessellation, toLeftHanded));
+                return new GeometricPrimitive(graphicsDevice, New(diameter, tessellation, uScale, vScale, toLeftHanded));
             }
 
             /// <summary>
@@ -134,11 +136,13 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// <param name="diameter">The diameter.</param>
             /// <param name="tessellation">The tessellation.</param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
+            /// <param name="uScale">The scale to apply on the u component of the texture coordinates</param>
+            /// <param name="vScale">The scale to apply on the v component of the texture coordinates</param>
             /// <returns>A Geodesic sphere.</returns>
-            public static GeometricMeshData<VertexPositionNormalTexture> New(float diameter = 1.0f, int tessellation = 3, bool toLeftHanded = false)
+            public static GeometricMeshData<VertexPositionNormalTexture> New(float diameter = 1.0f, int tessellation = 3, float uScale = 1f, float vScale = 1f, bool toLeftHanded = false)
             {
                 var sphere = new GeoSphereData();
-                return sphere.Create(diameter, tessellation, toLeftHanded);
+                return sphere.Create(diameter, tessellation, uScale, vScale, toLeftHanded);
             }
 
             private struct GeoSphereData
@@ -161,9 +165,11 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
                 /// </summary>
                 /// <param name="diameter">The diameter.</param>
                 /// <param name="tessellation">The tessellation.</param>
+                /// <param name="uScale">The scale to apply on the u component of the texture coordinates</param>
+                /// <param name="vScale">The scale to apply on the v component of the texture coordinates</param>
                 /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
                 /// <returns>A Geodesic sphere.</returns>
-                public unsafe GeometricMeshData<VertexPositionNormalTexture> Create(float diameter = 1.0f, int tessellation = 3, bool toLeftHanded = false)
+                public unsafe GeometricMeshData<VertexPositionNormalTexture> Create(float diameter = 1.0f, int tessellation = 3, float uScale = 1f, float vScale = 1f, bool toLeftHanded = false)
                 {
                     if (tessellation < 3)
                         tessellation = 3;
@@ -266,8 +272,8 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
                         float longitude = (float)Math.Atan2(normal.X, -normal.Z);
                         float latitude = (float)Math.Acos(normal.Y);
 
-                        float u = (float)(longitude / (Math.PI * 2.0) + 0.5);
-                        float v = (float)(latitude / Math.PI);
+                        float u = uScale * (float)(longitude / (Math.PI * 2.0) + 0.5);
+                        float v = vScale * (float)(latitude / Math.PI);
 
                         var texcoord = new Vector2(1.0f - u, v);
                         vertices.Add(new VertexPositionNormalTexture(pos, normal, texcoord));
