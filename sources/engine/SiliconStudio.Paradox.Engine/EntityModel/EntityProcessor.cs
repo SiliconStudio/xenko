@@ -20,6 +20,11 @@ namespace SiliconStudio.Paradox.EntityModel
         internal ProfilingKey DrawProfilingKey;
         private readonly PropertyKey[] requiredKeys;
 
+        /// <summary>
+        /// Tags associated to this entity processor
+        /// </summary>
+        public PropertyContainer Tags;
+
         public bool Enabled
         {
             get { return enabled; }
