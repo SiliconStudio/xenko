@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("CameraComponent")]
     [Display(130, "Camera")]
-    [GizmoEntityFactory(GizmoEntityFactoryNames.CameraGizmoEntityFactoryQualifiedName)]
+    [GizmoEntity(GizmoEntityNames.CameraGizmoEntityQualifiedName)]
     [DefaultEntityComponentRenderer(typeof(CameraComponentRenderer), -1000)]
     public sealed class CameraComponent : EntityComponent
     {

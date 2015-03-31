@@ -7,14 +7,17 @@ using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Paradox.EntityModel
 {
-    public class GizmoEntityFactoryAttribute : DynamicTypeAttributeBase
+    /// <summary>
+    /// Specify the GizmoEntity class to use for designated type.
+    /// </summary>
+    public class GizmoEntityAttribute : DynamicTypeAttributeBase
     {
-        public GizmoEntityFactoryAttribute(Type type)
+        public GizmoEntityAttribute(Type type)
             : base(type)
         {
         }
 
-        public GizmoEntityFactoryAttribute(string typeName)
+        public GizmoEntityAttribute(string typeName)
             : base(typeName)
         {
         }

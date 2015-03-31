@@ -70,12 +70,10 @@ namespace SiliconStudio.Paradox.EntityModel
         /// <summary>
         /// Creates a new instance of <see cref="GizmoBase"/>.
         /// </summary>
-        /// <param name="sceneEntity">The entity of the scene associated to the gizmo</param>
         /// <param name="group">The entity group of the gizmo</param>
-        protected GizmoBase(Entity sceneEntity, EntityGroup group = DefaultGroup)
+        protected GizmoBase(EntityGroup group = DefaultGroup)
         {
             entityGroup = group;
-            SceneEntity = sceneEntity;
         }
 
         public virtual bool IsEnabled
@@ -97,14 +95,18 @@ namespace SiliconStudio.Paradox.EntityModel
 
         public abstract bool IsUnderMouse(GizmoContext context);
 
-        public virtual void Initialize(SceneInstance sceneInstance)
+        public virtual void Initialize(SceneInstance sceneInstance, Entity sceneEntity)
         {
+            SceneEntity = sceneEntity;
             SceneInstance = sceneInstance;
             Input = Services.GetServiceAs<InputManager>();
             graphicsDeviceService = Services.GetServiceAs<IGraphicsDeviceService>();
             RootEntity = Create();
-            AssignEntityGroupToEntity(RootEntity);
-            sceneInstance.Scene.AddChild(RootEntity);
+            if (RootEntity != null)
+            {
+                AssignEntityGroupToEntity(RootEntity);
+                sceneInstance.Scene.AddChild(RootEntity);
+            }
             IsSelected = false;
         }
 
@@ -112,7 +114,8 @@ namespace SiliconStudio.Paradox.EntityModel
         {
             base.Destroy();
 
-            SceneInstance.Remove(RootEntity);
+            if (RootEntity != null)
+                SceneInstance.Scene.RemoveChild(RootEntity);
         }
 
         /// <summary>
@@ -132,7 +135,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
         public virtual void Update(GizmoContext context)
         {
-            if (SceneEntity == null)
+            if (SceneEntity == null || RootEntity == null)
                 return;
 
             var scale = context.SceneUnit;
