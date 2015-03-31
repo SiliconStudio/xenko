@@ -43,6 +43,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
         private readonly List<LightComponentCollection> lightCollectionActive;
         private readonly List<LightComponent> allLights;
 
+        private readonly List<LightComponent> allLightsWithShadows;
+
         // a 32 bits * 2 entry per bits storing for each bit:
         // [0] The 'and' mask of all active light culling mask associated to this bit
         // [1] The index of the associated collection in the lightCollectionPool
@@ -59,6 +61,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             lightCollectionActive = new List<LightComponentCollection>();
             groupMasks = new uint[32 * 2];
             allLights = new List<LightComponent>();
+            allLightsWithShadows = new List<LightComponent>();
             allMasks = new HashSet<EntityGroupMask>();
         }
 
@@ -107,6 +110,18 @@ namespace SiliconStudio.Paradox.Effects.Lights
         }
 
         /// <summary>
+        /// Gets the lights with shadows.
+        /// </summary>
+        /// <value>The lights with shadows.</value>
+        public List<LightComponent> AllLightsWithShadows
+        {
+            get
+            {
+                return allLightsWithShadows;
+            }
+        }
+
+        /// <summary>
         /// Gets the number of <see cref="LightComponentCollection"/> stored in this group.
         /// </summary>
         /// <value>The number of <see cref="LightComponentCollection"/> stored in this group.</value>
@@ -121,6 +136,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         internal unsafe void Clear()
         {
             allLights.Clear();
+            allLightsWithShadows.Clear();
             allMasks.Clear();
 
             fixed (void* ptr = groupMasks)
@@ -225,6 +241,13 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
             // Keep a list of all lights for this group
             allLights.Add(lightComponent);
+
+            // If the light has shadows, populate a separate list
+            var directLight = lightComponent.Type as IDirectLight;
+            if (directLight != null && directLight.Shadow != null && directLight.Shadow.Enabled)
+            {
+                allLightsWithShadows.Add(lightComponent);
+            }
         }
 
         public List<Lights.LightComponentCollection>.Enumerator GetEnumerator()
