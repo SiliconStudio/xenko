@@ -23,16 +23,9 @@ namespace SiliconStudio.Paradox.Effects.Shadows
     public class ShadowMapRenderer : EntityComponentRendererCoreBase
     {
         private FastListStruct<ShadowMapAtlasTexture> atlases;
-        private FastListStruct<LightShadowMapTexture> shadowMaps;
 
-        /// <summary>
-        /// Base points for frustum corners.
-        /// </summary>
-        private static readonly Vector3[] FrustumBasePoints =
-        {
-            new Vector3(-1.0f,-1.0f, 0.0f), new Vector3(1.0f,-1.0f, 0.0f), new Vector3(-1.0f,1.0f, 0.0f), new Vector3(1.0f,1.0f, 0.0f),
-            new Vector3(-1.0f,-1.0f, 1.0f), new Vector3(1.0f,-1.0f, 1.0f), new Vector3(-1.0f,1.0f, 1.0f), new Vector3(1.0f,1.0f, 1.0f),
-        };
+        private List<LightShadowMapTexture> allocatedShadowMapTextures;
+        private FastListStruct<LightShadowMapTexture> shadowMaps;
 
         private readonly int MaximumTextureSize = (int)(MaximumShadowSize * ComputeSizeFactor(LightShadowImportance.High, LightShadowMapSize.Large) * 2.0f);
 
@@ -70,14 +63,13 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             this.effectName = effectName;
             atlases = new FastListStruct<ShadowMapAtlasTexture>(16);
             shadowMaps = new FastListStruct<LightShadowMapTexture>(16);
+            allocatedShadowMapTextures = new List<LightShadowMapTexture>();
 
             opaqueRenderItems = new RenderItemCollection(512, false);
             transparentRenderItems = new RenderItemCollection(512, true);
 
-            renderers = new Dictionary<Type, ILightShadowMapRenderer>();
 
-            FrustumCorner = new Vector3[8];
-            FrustumDirection = new Vector3[4];
+            renderers = new Dictionary<Type, ILightShadowMapRenderer>();
 
             ShadowCamera = new CameraComponent { UseCustomViewMatrix = true, UseCustomProjectionMatrix = true };
 
@@ -92,16 +84,6 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
             shadowParameters = new ParameterCollection();
         }
-
-        /// <summary>
-        /// The frustum corner positions in world space
-        /// </summary>
-        public readonly Vector3[] FrustumCorner;
-
-        /// <summary>
-        /// The frustum direction in world space
-        /// </summary>
-        public readonly Vector3[] FrustumDirection;
 
         /// <summary>
         /// Gets or sets the camera.
@@ -179,9 +161,6 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             // Assign rectangles to shadow maps
             AssignRectangles();
 
-            // Update frustum
-            UpdateFrustum();
-
             // Prepare and render shadow maps
             for (int i = 0; i < shadowMaps.Count; i++)
             {
@@ -189,24 +168,6 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             }
         }
 
-        private void UpdateFrustum()
-        {
-            // Compute frustum-dependent variables (common for all shadow maps)
-            Matrix projectionToWorld;
-            Matrix.Invert(ref Camera.ViewProjectionMatrix, out projectionToWorld);
-
-            // Transform Frustum corners in World Space (8 points) - algorithm is valid only if the view matrix does not do any kind of scale/shear transformation
-            for (int i = 0; i < 8; ++i)
-            {
-                Vector3.TransformCoordinate(ref FrustumBasePoints[i], ref projectionToWorld, out FrustumCorner[i]);
-            }
-
-            // Compute frustum edge directions
-            for (int i = 0; i < 4; i++)
-            {
-                FrustumDirection[i] = Vector3.Normalize(FrustumCorner[i + 4] - FrustumCorner[i]);
-            }
-        }
 
         private void AssignRectangles()
         {
@@ -272,12 +233,14 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             if (lightProcessor == null)
                 return;
 
-            foreach (var activeLightsPerType in lightProcessor.ActiveDirectLightsWithShadow)
+            var directLights = lightProcessor.ActiveDirectLights;
+
+            foreach (var activeLightsPerType in directLights)
             {
                 var lightType = activeLightsPerType.Key;
-                var lightComponents = activeLightsPerType.Value;
+                var lightCollectionGroup = activeLightsPerType.Value;
 
-                foreach (var lightComponent in lightComponents)
+                foreach (var lightComponent in lightCollectionGroup.AllLightsWithShadows)
                 {
                     var light = (IDirectLight)lightComponent.Type;
 
@@ -321,7 +284,19 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                         continue;
                     }
 
-                    shadowMaps.Add(new LightShadowMapTexture(lightComponent, light, shadowMap, shadowMapSize, renderer));
+                    LightShadowMapTexture shadowMapTexture;
+                    if (shadowMaps.Count < allocatedShadowMapTextures.Count)
+                    {
+                        shadowMapTexture = allocatedShadowMapTextures[shadowMaps.Count];
+                    }
+                    else
+                    {
+                        shadowMapTexture = new LightShadowMapTexture();
+                        allocatedShadowMapTextures.Add(shadowMapTexture);
+                    }
+
+                    shadowMapTexture.Initialize(lightComponent, light, shadowMap, shadowMapSize, renderer);
+                    shadowMaps.Add(shadowMapTexture);
                 }
             }
         }
@@ -342,7 +317,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             {
                 var mesh = meshes[i];
                 // If there is no caster
-                if (!mesh.MaterialInstance.IsShadowCaster)
+                if (!mesh.MaterialInstance.IsShadowCaster || !mesh.RenderModel.ModelComponent.IsShadowCaster)
                 {
                     meshes.SwapRemoveAt(i--);
                 }

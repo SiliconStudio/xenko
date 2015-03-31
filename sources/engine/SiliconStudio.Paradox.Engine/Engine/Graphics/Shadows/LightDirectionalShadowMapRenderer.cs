@@ -5,6 +5,7 @@ using System;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Lights;
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Shadows
@@ -19,21 +20,43 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         /// </summary>
         private static readonly Vector3[] VectorUps = { Vector3.UnitZ, Vector3.UnitY, Vector3.UnitX };
 
+        /// <summary>
+        /// Base points for frustum corners.
+        /// </summary>
+        private static readonly Vector3[] FrustumBasePoints =
+        {
+            new Vector3(-1.0f,-1.0f, 0.0f), new Vector3(1.0f,-1.0f, 0.0f), new Vector3(-1.0f,1.0f, 0.0f), new Vector3(1.0f,1.0f, 0.0f),
+            new Vector3(-1.0f,-1.0f, 1.0f), new Vector3(1.0f,-1.0f, 1.0f), new Vector3(-1.0f,1.0f, 1.0f), new Vector3(1.0f,1.0f, 1.0f),
+        };
+
         public LightDirectionalShadowMapRenderer()
         {
-            WorldToShadowCascadeUV = new Matrix[4];
             CascadeSplitRatios = new float[4];
-            CascadeSplits = new Vector4();
             CascadeFrustumCorners = new Vector3[8];
+            FrustumCorner = new Vector3[8];
         }
-
-        private readonly Matrix[] WorldToShadowCascadeUV;
 
         private readonly float[] CascadeSplitRatios;
 
-        private Vector4 CascadeSplits;
-
         private readonly Vector3[] CascadeFrustumCorners;
+
+        /// <summary>
+        /// The frustum corner positions in world space
+        /// </summary>
+        public readonly Vector3[] FrustumCorner;
+
+        private void UpdateFrustum(CameraComponent camera)
+        {
+            // Compute frustum-dependent variables (common for all shadow maps)
+            Matrix projectionToWorld;
+            Matrix.Invert(ref camera.ViewProjectionMatrix, out projectionToWorld);
+
+            // Transform Frustum corners in World Space (8 points) - algorithm is valid only if the view matrix does not do any kind of scale/shear transformation
+            for (int i = 0; i < 8; ++i)
+            {
+                Vector3.TransformCoordinate(ref FrustumBasePoints[i], ref projectionToWorld, out FrustumCorner[i]);
+            }
+        }
 
         private void ComputeCascadeSplits(ShadowMapRenderer shadowContext, ref LightShadowMapTexture lightShadowMap)
         {
@@ -89,6 +112,9 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
         public void Render(RenderContext context, ShadowMapRenderer shadowMapRenderer, ref LightShadowMapTexture lightShadowMap)
         {
+            // Update the frustum infos
+            UpdateFrustum(shadowMapRenderer.Camera);
+
             // Computes the cascade splits
             ComputeCascadeSplits(shadowMapRenderer, ref lightShadowMap);
             var direction = lightShadowMap.LightComponent.Direction;
@@ -131,9 +157,9 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 splitMaxRatio = CascadeSplitRatios[cascadeLevel];
                 for (int j = 0; j < 4; j++)
                 {
-                    var frustumRange = shadowMapRenderer.FrustumCorner[j + 4] - shadowMapRenderer.FrustumCorner[j];
-                    CascadeFrustumCorners[j] = shadowMapRenderer.FrustumCorner[j] + frustumRange * splitMinRatio;
-                    CascadeFrustumCorners[j + 4] = shadowMapRenderer.FrustumCorner[j] + frustumRange * splitMaxRatio;
+                    var frustumRange = FrustumCorner[j + 4] - FrustumCorner[j];
+                    CascadeFrustumCorners[j] = FrustumCorner[j] + frustumRange * splitMinRatio;
+                    CascadeFrustumCorners[j + 4] = FrustumCorner[j] + frustumRange * splitMaxRatio;
                 }
                 var cascadeBoundWS = BoundingBox.FromPoints(CascadeFrustumCorners);
 
@@ -193,7 +219,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 var cascadeShadowMatrix = shadowCamera.ViewProjectionMatrix;
 
                 // Cascade splits in light space using depth: Store depth on first CascaderCasterMatrix in last column of each row
-                CascadeSplits[cascadeLevel] = camera.NearClipPlane + CascadeSplitRatios[cascadeLevel] * (camera.FarClipPlane - camera.NearClipPlane);
+                lightShadowMap.CascadeSplits[cascadeLevel] = camera.NearClipPlane + CascadeSplitRatios[cascadeLevel] * (camera.FarClipPlane - camera.NearClipPlane);
 
                 var shadowMapRectangle = lightShadowMap.GetRectangle(cascadeLevel);
 
@@ -217,7 +243,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
                 // Compute receiver view proj matrix
                 Matrix adjustmentMatrix = Matrix.Scaling(leftX, -leftY, 1.0f) * Matrix.Translation(centerX, centerY, 0.0f);
-                Matrix.Multiply(ref cascadeShadowMatrix, ref adjustmentMatrix, out WorldToShadowCascadeUV[cascadeLevel]);
+                Matrix.Multiply(ref cascadeShadowMatrix, ref adjustmentMatrix, out lightShadowMap.WorldToShadowCascadeUV[cascadeLevel]);
 
                 // Render to the atlas
                 lightShadowMap.Atlas.RenderFrame.Activate(context);
@@ -225,7 +251,6 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
                 // Render the scene for this cascade
                 shadowMapRenderer.RenderCasters(context);
-
                 //// Copy texture coords with border
                 //cascades[cascadeLevel].CascadeLevels.CascadeTextureCoordsBorder = cascadeTextureCoords;
             }
