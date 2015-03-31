@@ -9,13 +9,13 @@ using SiliconStudio.Core.Serialization;
 namespace SiliconStudio.Assets.Analysis
 {
     /// <summary>
-    /// Updateable reference link returned by <see cref="AssetReferenceAnalysis.Visit"/>.
+    /// Updatable reference link returned by <see cref="AssetReferenceAnalysis.Visit"/>.
     /// </summary>
     [DebuggerDisplay("{Path}")]
     public class AssetReferenceLink
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AssetReferenceLink" /> struct.
+        /// Initializes a new instance of the <see cref="AssetReferenceLink" /> class.
         /// </summary>
         /// <param name="path">The path.</param>
         /// <param name="reference">The reference.</param>
