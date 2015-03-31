@@ -16,14 +16,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
             base.InitializeCore();
 
-            var sceneCameraRenderer = SceneCameraRenderer as SceneCameraRenderer;
-            if (sceneCameraRenderer == null)
-            {
-                return;
-            }
-
             // TODO: restrict to forward mode only for now
-            var forwardMode = sceneCameraRenderer.Mode as CameraRendererModeForward;
+            var forwardMode = SceneCameraRenderer.Mode as CameraRendererModeForward;
             if (forwardMode != null)
             {
                 lightModelRendererForward = ToLoadAndUnload(new LightModelRendererForward());

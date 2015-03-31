@@ -19,13 +19,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         {
             base.InitializeCore();
 
-            var sceneCameraRenderer = SceneCameraRenderer as SceneCameraRenderer;
-            if (sceneCameraRenderer == null)
-            {
-                return;
-            }
-
-            var forwardMode = sceneCameraRenderer.Mode as CameraRendererModeForward;
+            var forwardMode = SceneCameraRenderer.Mode as CameraRendererModeForward;
             var effectName =  (forwardMode != null? forwardMode.ModelEffect: null) ?? "";
             isPickingRendering = Context.IsPicking();
             if (isPickingRendering)
@@ -37,7 +31,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             modelRenderer = ToLoadAndUnload(new ModelComponentRenderer(effectName));
 
             // Setup the ModelComponentRenderer as the main rendeer for the scene Camera Renderer
-            ModelComponentRenderer.Attach(sceneCameraRenderer, modelRenderer);
+            ModelComponentRenderer.Attach(SceneCameraRenderer, modelRenderer);
         }
 
         protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
