@@ -43,6 +43,7 @@ namespace SiliconStudio.Paradox.Engine
             Parameters = new ParameterCollection();
             Model = model;
             IsShadowCaster = true;
+            IsShadowReceiver = true;
         }
 
         /// <summary>
@@ -111,6 +112,15 @@ namespace SiliconStudio.Paradox.Engine
         [DefaultValue(true)]
         [Display("Cast Shadows?")]
         public bool IsShadowCaster { get; set; }
+
+        /// <summary>
+        /// Gets or sets a boolean indicating if this model component is receiving shadows.
+        /// </summary>
+        /// <value>A boolean indicating if this model component is receiving shadows.</value>
+        [DataMember(40)]
+        [DefaultValue(true)]
+        [Display("Receive Shadows?")]
+        public bool IsShadowReceiver { get; set; }
 
         /// <summary>
         /// Gets the parameters used to render this mesh.
