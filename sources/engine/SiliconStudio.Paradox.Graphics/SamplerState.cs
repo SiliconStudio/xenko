@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         // For FakeSamplerState.
-        public SamplerState(SamplerStateDescription description)
+        private SamplerState(SamplerStateDescription description)
         {
             Description = description;
         }
@@ -40,6 +40,16 @@ namespace SiliconStudio.Paradox.Graphics
                 }
             }
             return samplerState;
+        }
+        
+        /// <summary>
+        /// Create a new fake sampler state for serialization.
+        /// </summary>
+        /// <param name="description">The description of the sampler state</param>
+        /// <returns>The fake sampler state</returns>
+        public static SamplerState NewFake(SamplerStateDescription description)
+        {
+            return new SamplerState(description);
         }
 
         protected override void Destroy()

@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.Graphics
                 stream.Serialize(ref rasterizerStateDescription, mode);
                 rasterizerState = graphicsDeviceService != null
                     ? RasterizerState.New(graphicsDeviceService.GraphicsDevice, rasterizerStateDescription)
-                    : new RasterizerState(rasterizerStateDescription);
+                    : RasterizerState.NewFake(rasterizerStateDescription);
             }
         }
     }

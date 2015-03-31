@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.Graphics
                 stream.Serialize(ref depthStencilStateDescription, mode);
                 depthStencilState = graphicsDeviceService != null
                     ? DepthStencilState.New(graphicsDeviceService.GraphicsDevice, depthStencilStateDescription)
-                    : new DepthStencilState(depthStencilStateDescription);
+                    : DepthStencilState.NewFake(depthStencilStateDescription);
             }
         }
     }

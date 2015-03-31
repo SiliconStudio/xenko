@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         // For FakeBlendState.
-        public BlendState(BlendStateDescription description)
+        private BlendState(BlendStateDescription description)
         {
             Description = description;
         }
@@ -49,6 +49,17 @@ namespace SiliconStudio.Paradox.Graphics
                 }
             }
             return blendState;
+        }
+
+
+        /// <summary>
+        /// Create a new fake blend state for serialization.
+        /// </summary>
+        /// <param name="description">The description of the blend state</param>
+        /// <returns>The fake blend state</returns>
+        public static BlendState NewFake(BlendStateDescription description)
+        {
+            return new BlendState(description);
         }
 
         protected override void Destroy()
