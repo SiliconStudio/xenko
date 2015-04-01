@@ -198,6 +198,16 @@ namespace SiliconStudio.Paradox.EntityModel
                 enabledEntities.Remove(entity);
                 matchingEntities.Remove(entity);
             }
+            else if (entityMatch) // && entityMatch
+            {
+                // one of the components of the entity changed we need to regenerate the AssociatedData
+                OnEntityRemoved(entity, entityData);
+                entityData = GenerateAssociatedData(entity);
+                OnEntityAdding(entity, entityData);
+                matchingEntities[entity] = entityData;
+                if (EntityManager.IsEnabled(entity))
+                    enabledEntities[entity] = entityData;
+            }
         }
 
         /// <summary>Generates associated data to the given entity.</summary>
