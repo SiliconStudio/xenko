@@ -234,6 +234,14 @@ namespace SiliconStudio.Paradox.Effects
             if (effectInstance.ParameterCollectionGroup == null || !ArrayExtensions.ArraysReferenceEqual(effectInstance.ParameterCollectionGroup.ParameterCollections, parameterCollections))
             {
                 effectInstance.ParameterCollectionGroup = new DynamicEffectParameterCollectionGroup(parameterCollections.ToArray());
+
+                // Reset counters, to force comparison of values again (in DynamicEffectParameterCollectionGroup.HasChanged).
+                // (ideally, we should only reset counters of collections that changed to avoid unecessary comparisons)
+                var sortedCounters = effectInstance.UpdaterDefinition.SortedCounters;
+                for (int i = 0; i < sortedCounters.Length; ++i)
+                {
+                    sortedCounters[i] = 0;
+                }
             }
 
             effectInstance.ParameterCollectionGroup.Update(effectInstance.UpdaterDefinition);
