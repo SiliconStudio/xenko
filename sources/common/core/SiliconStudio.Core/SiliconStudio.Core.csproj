@@ -61,6 +61,7 @@
     <Compile Include="CategoryAttribute.cs" />
     <Compile Include="Collections\ITrackingCollectionChanged.cs" />
     <Compile Include="Collections\KeyedSortedList.cs" />
+    <Compile Include="Collections\PoolListStruct.cs" />
     <Compile Include="Collections\SafeList.cs" />
     <Compile Include="Annotations\DataMemberRangeAttribute.cs" />
     <Compile Include="Diagnostics\ForwardingLoggerResult.cs" />
