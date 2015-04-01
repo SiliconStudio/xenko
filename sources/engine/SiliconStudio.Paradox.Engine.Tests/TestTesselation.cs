@@ -51,7 +51,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
         }
 
         public TestTesselation(bool isDebug)
-            : base("ParadoxBaseShader")
+            : base("ParadoxEffectBase")
         {
             CurrentVersion = 1;
             debug = isDebug;
@@ -174,10 +174,15 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
         private void ChangeModel(int offset)
         {
+            if (currentEntity != null)
+            {
+                Scene.RemoveChild(currentEntity);
+                currentEntity = null;
+            }
+
             currentModelIndex = (currentModelIndex + offset + entities.Count) % entities.Count;
             currentEntity = entities[currentModelIndex];
 
-            Scene.Transform.Children.Clear();
             Scene.AddChild(currentEntity);
 
             ChangeMaterial(0);
