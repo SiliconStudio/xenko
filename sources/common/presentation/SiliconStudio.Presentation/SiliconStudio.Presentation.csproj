@@ -58,6 +58,9 @@
     <Compile Include="Commands\SystemCommand.cs" />
     <Compile Include="Commands\SystemCommands.cs" />
     <Compile Include="Controls\FilteringComboBox.cs" />
+    <Compile Include="Controls\Int2Editor.cs" />
+    <Compile Include="Controls\Int3Editor.cs" />
+    <Compile Include="Controls\Int4Editor.cs" />
     <Compile Include="Controls\MatrixEditor.cs" />
     <Compile Include="Controls\PropertyView.cs" />
     <Compile Include="Controls\PropertyViewItem.cs" />
