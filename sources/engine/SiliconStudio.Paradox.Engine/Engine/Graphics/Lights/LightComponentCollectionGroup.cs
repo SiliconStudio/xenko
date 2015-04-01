@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Paradox.Effects.Lights
 {
@@ -39,8 +39,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         //
         // We are also able to retreive efficiently a LightComponentCollection for a specific group mask
 
-        private readonly LightComponentCollection[] lightCollectionPool;
-        private readonly List<LightComponentCollection> lightCollectionActive;
+        private PoolListStruct<LightComponentCollection> lightCollectionPool;
         private readonly List<LightComponent> allLights;
 
         private readonly List<LightComponent> allLightsWithShadows;
@@ -57,8 +56,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// </summary>
         internal LightComponentCollectionGroup()
         {
-            lightCollectionPool = new LightComponentCollection[32];
-            lightCollectionActive = new List<LightComponentCollection>();
+            lightCollectionPool = new PoolListStruct<LightComponentCollection>(32, LightComponentCollectionFactory);
             groupMasks = new uint[32 * 2];
             allLights = new List<LightComponent>();
             allLightsWithShadows = new List<LightComponent>();
@@ -75,8 +73,6 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
             get
             {
-                if (index < 0 || index > lightCollectionActive.Count - 1)
-                    throw new ArgumentOutOfRangeException("index [{0}] out of range [0, {1}]".ToFormat(index, lightCollectionActive.Count - 1));
                 return lightCollectionPool[index];
             }
         }
@@ -129,7 +125,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
             get
             {
-                return lightCollectionActive.Count;
+                return lightCollectionPool.Count;
             }
         }
 
@@ -143,7 +139,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 Interop.memset(ptr, 0, groupMasks.Length);
             
             // Only clear collections that were previously allocated (no need to iterate on all collections from the pool)
-            foreach (var collection in lightCollectionActive)
+            foreach (var collection in lightCollectionPool)
             {
                 collection.Clear();
             }
@@ -177,8 +173,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
         internal void AllocateCollectionsPerGroupOfCullingMask()
         {
-            // Iterate only on the maximum of group mask
-            lightCollectionActive.Clear();
+            // Clear the pool (but keep instances already created)
+            lightCollectionPool.Clear();
 
             // At worst, we have 32 collections (one per bit active in the culling mask)
             for (int i = 0; i < groupMasks.Length; i++)
@@ -191,7 +187,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
                 // Check if there is a previous collection for the current mask
                 int collectionIndex = -1;
-                for (int j = 0; j < lightCollectionActive.Count; j++)
+                for (int j = 0; j < lightCollectionPool.Count; j++)
                 {
                     if ((int)lightCollectionPool[j].CullingMask == mask)
                     {
@@ -203,17 +199,10 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 // If no collection found for this mask, create a new one
                 if (collectionIndex < 0)
                 {
-                    collectionIndex = lightCollectionActive.Count;
+                    collectionIndex = lightCollectionPool.Count;
 
                     // Use a pool to avoid recreating collections
-                    var collection = lightCollectionPool[collectionIndex];
-                    if (collection == null)
-                    {
-                        lightCollectionPool[collectionIndex] = collection = new LightComponentCollection();
-                    }
-
-                    // Add it to the list of active collection
-                    lightCollectionActive.Add(collection);
+                    var collection = lightCollectionPool.Add();
 
                     // The selected collection is associated with the specified mask
                     collection.CullingMask = (EntityGroupMask)mask;
@@ -229,7 +218,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             var cullingMask = lightComponent.CullingMask;
 
             // Iterate only on allocated collections
-            foreach (var lightCollectionGroup in lightCollectionActive)
+            foreach (var lightCollectionGroup in lightCollectionPool)
             {
                 // Check if a light culling mask belong to the current group
                 if ((lightCollectionGroup.CullingMask & cullingMask) == 0)
@@ -250,19 +239,24 @@ namespace SiliconStudio.Paradox.Effects.Lights
             }
         }
 
-        public List<Lights.LightComponentCollection>.Enumerator GetEnumerator()
+        public FastListStruct<LightComponentCollection>.Enumerator GetEnumerator()
         {
-            return lightCollectionActive.GetEnumerator();
+            return lightCollectionPool.GetEnumerator();
         }
 
         IEnumerator<LightComponentCollection> IEnumerable<LightComponentCollection>.GetEnumerator()
         {
-            return lightCollectionActive.GetEnumerator();
+            return lightCollectionPool.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return lightCollectionActive.GetEnumerator();
+            return lightCollectionPool.GetEnumerator();
+        }
+
+        private static LightComponentCollection LightComponentCollectionFactory()
+        {
+            return new LightComponentCollection();
         }
     }
 }
