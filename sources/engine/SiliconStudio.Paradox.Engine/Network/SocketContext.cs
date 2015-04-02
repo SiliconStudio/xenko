@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using SiliconStudio.Core.Diagnostics;
 #if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
 using System;
 using System.Collections.Generic;
@@ -15,10 +14,7 @@ using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using System.Collections;
 using SiliconStudio.Core.Serialization;
-
-#if NET45
-using TaskEx = System.Threading.Tasks.Task;
-#endif
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Paradox.Engine.Network
 {
@@ -128,7 +124,7 @@ namespace SiliconStudio.Paradox.Engine.Network
                     // Mute connection errors
                 }
 
-                await TaskEx.Delay(100);
+                await Task.Delay(100);
             }
 
             // Start message loop
