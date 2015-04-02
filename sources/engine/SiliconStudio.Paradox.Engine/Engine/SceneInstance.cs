@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Linq;
 using System.Reflection;
 
 using SiliconStudio.Core;
@@ -232,7 +233,7 @@ namespace SiliconStudio.Paradox.Engine
                 return;
             }
             var renderType = Type.GetType(rendererTypeAttribute.TypeName);
-            if (renderType != null && typeof(IEntityComponentRenderer).GetTypeInfo().IsAssignableFrom(renderType.GetTypeInfo()) && renderType.GetTypeInfo().GetConstructor(Type.EmptyTypes) != null)
+            if (renderType != null && typeof(IEntityComponentRenderer).GetTypeInfo().IsAssignableFrom(renderType.GetTypeInfo()) && renderType.GetTypeInfo().DeclaredConstructors.Any(x => !x.IsStatic && x.GetParameters().Length == 0))
             {
                 var entityComponentRendererType = new EntityComponentRendererType(type, renderType, rendererTypeAttribute.Order);
                 RendererTypes.Add(entityComponentRendererType);

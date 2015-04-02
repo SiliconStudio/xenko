@@ -168,18 +168,14 @@ namespace SiliconStudio.Paradox
 
                 // Transpose old properties/fields to new instance?
                 // TODO: Currently only handle simple case (properties of same type), this need to be improved! (reuse an existing system?)
-                foreach (var targetProperty in scriptType.GetProperties(BindingFlags.Instance | BindingFlags.Public))
+                foreach (var targetProperty in scriptType.GetTypeInfo().DeclaredProperties)
                 {
-                    if (!targetProperty.CanRead || !targetProperty.CanWrite)
+                    if (!CheckPropertyIsTransferable(targetProperty))
                         continue;
 
                     // Find a matching property (same name, type, readable & writeable)
-                    var sourceProperty = script.GetType().GetProperty(targetProperty.Name, BindingFlags.Instance | BindingFlags.Public);
-                    if (sourceProperty == null || !sourceProperty.CanRead || !sourceProperty.CanWrite || sourceProperty.PropertyType != targetProperty.PropertyType)
-                        continue;
-
-                    // Does it contain DataMemberIgnoreAttribute?
-                    if (targetProperty.GetCustomAttribute<DataMemberIgnoreAttribute>() != null)
+                    var sourceProperty = script.GetType().GetTypeInfo().GetDeclaredProperty(targetProperty.Name);
+                    if (sourceProperty == null || !CheckPropertyIsTransferable(sourceProperty) || sourceProperty.PropertyType != targetProperty.PropertyType)
                         continue;
 
                     // Copy value
@@ -202,12 +198,29 @@ namespace SiliconStudio.Paradox
             }
         }
 
+        private static bool CheckPropertyIsTransferable(PropertyInfo targetProperty)
+        {
+            // Check that there is a getter and setter
+            if (!targetProperty.CanRead || !targetProperty.CanWrite)
+                return false;
+
+            // Only public non-static properties
+            if (!targetProperty.GetMethod.IsPublic || !targetProperty.SetMethod.IsPublic || !targetProperty.GetMethod.IsStatic)
+                return false;
+
+            // Does it contain DataMemberIgnoreAttribute?
+            if (targetProperty.GetCustomAttribute<DataMemberIgnoreAttribute>() != null)
+                return false;
+
+            return true;
+        }
+
         public void ProcessAssemblyUnload(Assembly assembly)
         {
             // Check list of running script if any should be "paused"
             foreach (var script in registeredScripts)
             {
-                if (script.GetType().Assembly != assembly)
+                if (script.GetType().GetTypeInfo().Assembly != assembly)
                     continue;
 
                 // Unregister it from launches (in case it wasn't done yet)
