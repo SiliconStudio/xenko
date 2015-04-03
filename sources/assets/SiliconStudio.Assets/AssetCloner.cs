@@ -1,7 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+using System.Collections.Generic;
 using System.IO;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
@@ -16,6 +17,19 @@ namespace SiliconStudio.Assets
         private readonly bool referencesAsNull;
         private readonly object streamOrValueType;
 
+        private readonly List<object> invariantObjects;
+        public static SerializerSelector ClonerSelector { get; internal set; }
+        public static PropertyKey<List<object>> InvariantObjectListProperty = new PropertyKey<List<object>>("InvariantObjectList", typeof(AssetCloner));
+
+        static AssetCloner()
+        {
+            ClonerSelector = new SerializerSelector();
+            ClonerSelector.RegisterProfile("Default");
+            ClonerSelector.RegisterProfile("Asset");
+            ClonerSelector.RegisterProfile("AssetClone");
+            ClonerSelector.ReuseReferences = true;
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AssetCloner" /> struct.
         /// </summary>
@@ -25,16 +39,20 @@ namespace SiliconStudio.Assets
         public AssetCloner(object value, bool keepOnlySealedOverride = false, bool referencesAsNull = false)
         {
             this.referencesAsNull = referencesAsNull;
+            invariantObjects = null;
+
             // Clone only if value is not a value type
             if (value != null && !value.GetType().IsValueType)
             {
+                invariantObjects = new List<object>();
                 // TODO: keepOnlySealedOverride is currently ignored
                 // TODO Clone is not supporting SourceCodeAsset (The SourceCodeAsset.Text won't be cloned)
                 var stream = new MemoryStream();
                 var writer = new BinarySerializationWriter(stream);
-                writer.Context.SerializerSelector = SerializerSelector.AssetWithReuse;
+                writer.Context.SerializerSelector = ClonerSelector;
                 var refFlag = referencesAsNull ? ContentSerializerContext.AttachedReferenceSerialization.AsNull
                                                : ContentSerializerContext.AttachedReferenceSerialization.AsSerializableVersion;
+                writer.Context.Set(InvariantObjectListProperty, invariantObjects);
                 writer.Context.Set(ContentSerializerContext.SerializeAttachedReferenceProperty, refFlag);
                 writer.SerializeExtended(value, ArchiveMode.Serialize);
                 writer.Flush();
@@ -58,9 +76,10 @@ namespace SiliconStudio.Assets
             {
                 stream.Position = 0;
                 var reader = new BinarySerializationReader(stream);
-                reader.Context.SerializerSelector = SerializerSelector.AssetWithReuse;
+                reader.Context.SerializerSelector = ClonerSelector;
                 var refFlag = referencesAsNull ? ContentSerializerContext.AttachedReferenceSerialization.AsNull
                                            : ContentSerializerContext.AttachedReferenceSerialization.AsSerializableVersion;
+                reader.Context.Set(InvariantObjectListProperty, invariantObjects);
                 reader.Context.Set(ContentSerializerContext.SerializeAttachedReferenceProperty, refFlag);
                 object newObject = null;
                 reader.SerializeExtended(ref newObject, ArchiveMode.Deserialize);
