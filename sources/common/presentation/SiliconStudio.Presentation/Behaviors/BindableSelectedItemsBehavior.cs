@@ -49,7 +49,7 @@ namespace SiliconStudio.Presentation.Behaviors
         public ObservableList<object> SelectedItems { get { return (ObservableList<object>)GetValue(SelectedItemsProperty); } set { SetValue(SelectedItemsProperty, value); } }
 
         /// <summary>
-        /// Gets or sets whether changes in the selected item collection of the view model should give the focus to the control.
+        /// Gets or sets whether changes in the selected item collection of the view model should give the focus to the control. The focus is not given if the selection is cleared.
         /// </summary>
         public bool GiveFocusOnSelectionChange { get { return (bool)GetValue(GiveFocusOnSelectionChangeProperty); } set { SetValue(GiveFocusOnSelectionChangeProperty, value); } }
 
@@ -221,7 +221,7 @@ namespace SiliconStudio.Presentation.Behaviors
                         SelectedItemsInAssociatedObject.Remove(removedItem);
                 }
 
-                if (GiveFocusOnSelectionChange)
+                if (SelectedItemsInAssociatedObject.Count > 0 && GiveFocusOnSelectionChange)
                 {
                     AssociatedObject.Focus();
                 }
