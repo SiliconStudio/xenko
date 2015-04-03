@@ -13,6 +13,7 @@ namespace SiliconStudio.Core.Serialization
     {
         public override void Serialize(ref T obj, ArchiveMode mode, SerializationStream stream)
         {
+            var referenceSerialization = stream.Context.Get(ContentSerializerContext.SerializeAttachedReferenceProperty);
             var contentSerializerContext = stream.Context.Get(ContentSerializerContext.ContentSerializerContextProperty);
             if (contentSerializerContext != null)
             {
@@ -48,7 +49,14 @@ namespace SiliconStudio.Core.Serialization
                     }
                 }
             }
-            else if (stream.Context.Get(ContentSerializerContext.SerializeAttachedReferenceProperty))
+            else if (referenceSerialization == ContentSerializerContext.AttachedReferenceSerialization.AsNull)
+            {
+                if (mode == ArchiveMode.Deserialize)
+                {
+                    obj = default(T);
+                }
+            }
+            else if (referenceSerialization == ContentSerializerContext.AttachedReferenceSerialization.AsSerializableVersion)
             {
                 if (mode == ArchiveMode.Serialize)
                 {
@@ -57,6 +65,7 @@ namespace SiliconStudio.Core.Serialization
                     if (attachedReference == null || attachedReference.Url == null)
                         throw new InvalidOperationException("Error when serializing reference.");
 
+                    // TODO: Do not use string
                     stream.Write(obj.GetType().AssemblyQualifiedName);
                     stream.Write(attachedReference.Id);
                     stream.Write(attachedReference.Url);

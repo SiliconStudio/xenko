@@ -13,6 +13,7 @@ namespace SiliconStudio.Assets
     /// </summary>
     public struct AssetCloner
     {
+        private readonly bool referencesAsNull;
         private readonly object streamOrValueType;
 
         /// <summary>
@@ -20,8 +21,10 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="value">The value to clone.</param>
         /// <param name="keepOnlySealedOverride">if set to <c>true</c> to discard override information except sealed.</param>
-        public AssetCloner(object value, bool keepOnlySealedOverride = false)
+        /// <param name="referencesAsNull">if set to <c>true</c>, attached references will be cloned as <c>null</c>.</param>
+        public AssetCloner(object value, bool keepOnlySealedOverride = false, bool referencesAsNull = false)
         {
+            this.referencesAsNull = referencesAsNull;
             // Clone only if value is not a value type
             if (value != null && !value.GetType().IsValueType)
             {
@@ -30,7 +33,9 @@ namespace SiliconStudio.Assets
                 var stream = new MemoryStream();
                 var writer = new BinarySerializationWriter(stream);
                 writer.Context.SerializerSelector = SerializerSelector.AssetWithReuse;
-                writer.Context.Set(ContentSerializerContext.SerializeAttachedReferenceProperty, true);
+                var refFlag = referencesAsNull ? ContentSerializerContext.AttachedReferenceSerialization.AsNull
+                                               : ContentSerializerContext.AttachedReferenceSerialization.AsSerializableVersion;
+                writer.Context.Set(ContentSerializerContext.SerializeAttachedReferenceProperty, refFlag);
                 writer.SerializeExtended(value, ArchiveMode.Serialize);
                 writer.Flush();
 
@@ -54,7 +59,9 @@ namespace SiliconStudio.Assets
                 stream.Position = 0;
                 var reader = new BinarySerializationReader(stream);
                 reader.Context.SerializerSelector = SerializerSelector.AssetWithReuse;
-                reader.Context.Set(ContentSerializerContext.SerializeAttachedReferenceProperty, true);
+                var refFlag = referencesAsNull ? ContentSerializerContext.AttachedReferenceSerialization.AsNull
+                                           : ContentSerializerContext.AttachedReferenceSerialization.AsSerializableVersion;
+                reader.Context.Set(ContentSerializerContext.SerializeAttachedReferenceProperty, refFlag);
                 object newObject = null;
                 reader.SerializeExtended(ref newObject, ArchiveMode.Deserialize);
                 return newObject;
@@ -68,14 +75,15 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="asset">The asset.</param>
         /// <param name="keepOnlySealedOverride">if set to <c>true</c> to discard override information except sealed.</param>
+        /// <param name="referencesAsNull">if set to <c>true</c>, attached references will be cloned as <c>null</c>.</param>
         /// <returns>A clone of the asset.</returns>
-        public static object Clone(object asset, bool keepOnlySealedOverride = false)
+        public static object Clone(object asset, bool keepOnlySealedOverride = false, bool referencesAsNull = false)
         {
             if (asset == null)
             {
                 return null;
             }
-            var cloner = new AssetCloner(asset, keepOnlySealedOverride);
+            var cloner = new AssetCloner(asset, keepOnlySealedOverride, referencesAsNull);
             return cloner.Clone();
         }
     }
