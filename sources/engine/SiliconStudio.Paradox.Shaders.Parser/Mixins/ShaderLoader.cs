@@ -342,7 +342,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             }
         }
 
-        public ShaderClassType ParseSource(string shaderSource, LoggerResult log)
+        public static ShaderClassType ParseSource(string shaderSource, LoggerResult log)
         {
             var parsingResult = ParadoxShaderParser.TryParse(shaderSource, null);
             parsingResult.CopyTo(log);
