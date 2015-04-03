@@ -60,7 +60,7 @@ namespace SiliconStudio.Paradox.Engine
 
             public Vector3 LastIntersectionPoint;
 
-            public Matrix LastWorldMatrix;
+            public Matrix LastRootMatrix;
         }
     }
 }

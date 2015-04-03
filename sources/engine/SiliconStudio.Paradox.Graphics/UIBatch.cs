@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics.Internals;
 
 namespace SiliconStudio.Paradox.Graphics
@@ -80,47 +79,47 @@ namespace SiliconStudio.Paradox.Graphics
             // cube
             count = 0;
             indices = PrimiteTypeToIndices[(int)PrimitiveType.Cube];
-            indices[count++] = 0; //back
-            indices[count++] = 2;
-            indices[count++] = 1;
+            indices[count++] = 0; //front
             indices[count++] = 1;
             indices[count++] = 2;
-            indices[count++] = 3;
-
-            indices[count++] = 5; // right
-            indices[count++] = 1;
-            indices[count++] = 7;
             indices[count++] = 1;
             indices[count++] = 3;
-            indices[count++] = 7;
-
-            indices[count++] = 4; // front
-            indices[count++] = 5;
-            indices[count++] = 6;
-            indices[count++] = 5;
-            indices[count++] = 7;
-            indices[count++] = 6;
-
-            indices[count++] = 0; // left
-            indices[count++] = 4;
-            indices[count++] = 2;
-            indices[count++] = 4;
-            indices[count++] = 6;
             indices[count++] = 2;
 
-            indices[count++] = 0; // top 
-            indices[count++] = 1;
-            indices[count++] = 4;
-            indices[count++] = 1;
+            indices[count++] = 1; // right
             indices[count++] = 5;
+            indices[count++] = 7;
+            indices[count++] = 1;
+            indices[count++] = 7;
+            indices[count++] = 3;
+
+            indices[count++] = 5; // back
             indices[count++] = 4;
+            indices[count++] = 6;
+            indices[count++] = 5;
+            indices[count++] = 6;
+            indices[count++] = 7;
+
+            indices[count++] = 4; // left
+            indices[count++] = 0;
+            indices[count++] = 2;
+            indices[count++] = 4;
+            indices[count++] = 2;
+            indices[count++] = 6;
+
+            indices[count++] = 1; // top 
+            indices[count++] = 0;
+            indices[count++] = 4;
+            indices[count++] = 1;
+            indices[count++] = 4;
+            indices[count++] = 5;
 
             indices[count++] = 2; // bottom 
-            indices[count++] = 6;
-            indices[count++] = 3;
             indices[count++] = 3;
             indices[count++] = 6;
-            indices[count  ] = 7;
+            indices[count++] = 3;
+            indices[count++] = 7;
+            indices[count  ] = 6;
 
             // reverse cube
             var cubeIndices = PrimiteTypeToIndices[(int)PrimitiveType.Cube];

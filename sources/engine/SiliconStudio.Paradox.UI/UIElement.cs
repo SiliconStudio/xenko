@@ -128,7 +128,7 @@ namespace SiliconStudio.Paradox.UI
         private float depth = float.NaN;
         private HorizontalAlignment horizontalAlignment = HorizontalAlignment.Stretch;
         private VerticalAlignment verticalAlignment = VerticalAlignment.Stretch;
-        private DepthAlignment depthAlignment = DepthAlignment.Back;
+        private DepthAlignment depthAlignment = DepthAlignment.Center;
         private float maximumWidth = float.PositiveInfinity;
         private float maximumHeight = float.PositiveInfinity;
         private float maximumDepth = float.PositiveInfinity;
@@ -1292,7 +1292,7 @@ namespace SiliconStudio.Paradox.UI
             var usedSpaceWithThickness = CalculateSizeWithThickness(ref usedSpaceWithoutThickness, ref thickness);
 
             // set offset for left and stretch alignments
-            var offsets = new Vector3(thickness.Left, thickness.Top, thickness.Back);
+            var offsets = new Vector3(thickness.Left, thickness.Top, thickness.Front);
 
             // align the element horizontally
             switch (HorizontalAlignment)
@@ -1322,7 +1322,7 @@ namespace SiliconStudio.Paradox.UI
                 case DepthAlignment.Center:
                     offsets.Z += (providedSpace.Z - usedSpaceWithThickness.Z) / 2;
                     break;
-                case DepthAlignment.Front:
+                case DepthAlignment.Back:
                     offsets.Z += providedSpace.Z - usedSpaceWithThickness.Z;
                     break;
             }
