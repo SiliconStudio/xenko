@@ -151,6 +151,7 @@ namespace SiliconStudio.Paradox.Input
                 var inputWndProcPtr = Marshal.GetFunctionPointerForDelegate(inputWndProc);
                 Win32Native.SetWindowLong(new HandleRef(this, uiControl.Handle), Win32Native.WindowLongType.WndProc, inputWndProcPtr);
             }
+            uiControl.GotFocus += (_, e) => OnUiControlGotFocus();
             uiControl.LostFocus += (_, e) => OnUiControlLostFocus();
             uiControl.MouseMove += (_, e) => OnMouseMoveEvent(new Vector2(e.X, e.Y));
             uiControl.MouseDown += (_, e) => { uiControl.Focus(); OnMouseInputEvent(new Vector2(e.X, e.Y), ConvertMouseButton(e.Button), InputEventType.Down); };
@@ -268,7 +269,20 @@ namespace SiliconStudio.Paradox.Input
                     uiControl.Capture = true;
             }
         }
-        
+
+        private void OnUiControlGotFocus()
+        {
+            lock (KeyboardInputEvents)
+            {
+                foreach (var key in mapKeys)
+                {
+                    var state = Win32Native.GetKeyState((int)key.Key);
+                    if ((state & 0x8000) == 0x8000)
+                        KeyboardInputEvents.Add(new KeyboardInputEvent { Key = key.Value, Type = InputEventType.Down, OutOfFocus = true });
+                }
+            }
+        }
+
         private void OnUiControlLostFocus()
         {
             LostFocus = true;
