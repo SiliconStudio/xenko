@@ -73,6 +73,15 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="world"></param>
         public void Rotate(Matrix world)
         {
+            Rotate(ref world);
+        }
+
+        /// <summary>
+        /// Rotate this Bounding box (the world matrix will be modified).
+        /// </summary>
+        /// <param name="world"></param>
+        public void Rotate(ref Matrix world)
+        {
             // http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
             // Compute transformed AABB (by world)
             var center = Center;
@@ -92,7 +101,7 @@ namespace SiliconStudio.Core.Mathematics
                 }
             }
 
-            Vector3.TransformNormal(ref extent, ref world, out extent);            
+            Vector3.TransformNormal(ref extent, ref world, out Extent);
         }
 
         public bool Equals(BoundingBoxExt other)
