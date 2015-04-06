@@ -182,7 +182,9 @@ namespace SiliconStudio.Paradox.Engine
             // TODO: Should we throw an error if Projection is not set?
             if (!UseCustomProjectionMatrix)
             {
-                ProjectionMatrix = Projection == CameraProjectionMode.Perspective ? Matrix.PerspectiveFovRH(MathUtil.DegreesToRadians(VerticalFieldOfView), AspectRatio, NearClipPlane, FarClipPlane) : Matrix.OrthoRH(OrthographicSize, OrthographicSize, NearClipPlane, FarClipPlane);
+                ProjectionMatrix = Projection == CameraProjectionMode.Perspective ? 
+                    Matrix.PerspectiveFovRH(MathUtil.DegreesToRadians(VerticalFieldOfView), AspectRatio, NearClipPlane, FarClipPlane) :
+                    Matrix.OrthoRH(AspectRatio * OrthographicSize, OrthographicSize, NearClipPlane, FarClipPlane);
             }
 
             // Update ViewProjectionMatrix
