@@ -7,6 +7,7 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Presentation.ViewModel.ActionStack;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
@@ -406,6 +407,12 @@ namespace SiliconStudio.Presentation.Quantum
             OnPropertyChanged("IsPrimitive", "HasList", "HasDictionary");
         }
 
+        protected virtual ViewModelActionItem CreateValueChangedActionItem(object previousValue, object newValue)
+        {
+            string displayName = Owner.FormatSingleUpdateMessage(this, newValue);
+            return new ValueChangedActionItem(displayName, Owner.ObservableViewModelService, SourceNodePath, Path, Owner.Identifier, Index, Owner.Dirtiables, previousValue);
+        }
+
         protected static IModelNode GetTargetNode(IModelNode sourceNode, object index)
         {
             var objectReference = sourceNode.Content.Reference as ObjectReference;
@@ -476,8 +483,7 @@ namespace SiliconStudio.Presentation.Quantum
                     OnValueChanged();
                     if (parent != null)
                         ((ObservableNode)Parent).NotifyPropertyChanged(Name);
-                    string displayName = Owner.FormatSingleUpdateMessage(this, value);
-                    Owner.RegisterAction(displayName, SourceNodePath, Path, Index, value, previousValue);
+                    Owner.RegisterAction(Path, CreateValueChangedActionItem(previousValue, value));
                 }
             }
         }

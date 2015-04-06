@@ -9,6 +9,7 @@ using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Extensions;
 using SiliconStudio.Presentation.Services;
 using SiliconStudio.Presentation.ViewModel;
+using SiliconStudio.Presentation.ViewModel.ActionStack;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
@@ -179,12 +180,10 @@ namespace SiliconStudio.Presentation.Quantum
                 nodeChangeList.Add(observableNodePath);
         }
 
-        internal void RegisterAction(string displayName, ModelNodePath nodePath, string observableNodePath, object index, object newValue, object previousValue)
+        internal void RegisterAction(string observableNodePath, ViewModelActionItem actionItem)
         {
             // This must be done before adding the action item to the stack!
             NotifyNodeChanged(observableNodePath);
-
-            var actionItem = new ValueChangedActionItem(displayName, observableViewModelService, nodePath, observableNodePath, Identifier, index, dirtiables, previousValue);
             ActionStack.Add(actionItem);
         }
 
