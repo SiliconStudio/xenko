@@ -96,6 +96,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 {
                     Vector4 projectedPosition;
                     var cameraComponent = context.Tags.Get(CameraComponentRenderer.Current);
+                    if (cameraComponent == null)
+                        continue;
+
                     Vector4.Transform(ref worldPosition, ref cameraComponent.ViewProjectionMatrix, out projectedPosition);
                     projectedZ = projectedPosition.Z / projectedPosition.W;
                 }

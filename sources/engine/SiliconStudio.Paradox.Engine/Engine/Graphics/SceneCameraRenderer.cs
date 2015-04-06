@@ -60,10 +60,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
             // Gets the current camera state from the slot
             var camera = context.GetCameraFromSlot(Camera);
-            if (camera == null)
-            {
-                return;
-            }
 
             // Draw this camera.
             using (context.PushTagAndRestore(Current, this))
