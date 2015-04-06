@@ -16,8 +16,6 @@ namespace SiliconStudio.Paradox
     {
         IServiceRegistry Services { get; }
 
-        object Parameter { get; set; }
-
         IGame Game { get; }
 
         AssetManager Asset { get; }
@@ -75,8 +73,6 @@ namespace SiliconStudio.Paradox
 
         [DataMemberIgnore]
         public IServiceRegistry Services { get; private set; }
-
-        public object Parameter { get; set; }
 
         [DataMemberIgnore]
         public IGame Game { get; private set; }
