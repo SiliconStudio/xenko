@@ -21,11 +21,14 @@
     <Compile Include="EntityAsset.cs" />
     <Compile Include="EntityAssetCompiler.cs" />
     <Compile Include="EntityAssetOperations.cs" />
+    <Compile Include="EntityComponentReference.cs" />
     <Compile Include="EntityHierarchyDiffNodeBuilder.cs" />
     <Compile Include="EntityDiffNode.cs" />
+    <Compile Include="EntityReference.cs" />
     <Compile Include="EntitySerializer.cs" />
     <Compile Include="EntityTreeAsset.cs" />
     <Compile Include="FbxAssetImporter.cs" />
+    <Compile Include="IEntityComponentReference.cs" />
     <Compile Include="MaterialInstance.cs" />
     <Compile Include="ImportAssimpCommand.cs" />
     <Compile Include="ImportFbxCommand.cs" />

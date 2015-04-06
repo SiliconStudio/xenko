@@ -1,15 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
+
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.EntityModel;
 
-namespace SiliconStudio.Paradox.EntityModel
+namespace SiliconStudio.Paradox.Assets.Model
 {
-    public struct EntityPathReference
-    {
-        public EntityReference[] Path { get; set; }
-    }
-
     [DataContract]
     [DataStyle(DataStyle.Compact)]
     public sealed class EntityComponentReference : IEntityComponentReference

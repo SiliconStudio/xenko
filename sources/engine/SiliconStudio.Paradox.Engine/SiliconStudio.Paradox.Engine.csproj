@@ -2007,16 +2007,13 @@
     <Compile Include="EntityModel\DefaultEntityComponentProcessorAttribute.cs" />
     <Compile Include="EntityModel\EntityComponentEventArgs.cs" />
     <Compile Include="Effects\EffectCompileRequest.cs" />
-    <Compile Include="EntityModel\EntityComponentReference.cs" />
     <Compile Include="Data\GeometricPrimitiveExtension.cs" />
     <Compile Include="EntityModel\DefaultEntityComponentRendererAttribute.cs" />
     <Compile Include="EntityModel\EntityComponentRendererType.cs" />
-    <Compile Include="EntityModel\EntityReference.cs" />
     <Compile Include="EntityModel\GizmoBase.cs" />
     <Compile Include="EntityModel\GizmoContext.cs" />
     <Compile Include="EntityModel\GizmoEntityAttribute.cs" />
     <Compile Include="EntityModel\GizmoEntityNames.cs" />
-    <Compile Include="EntityModel\IEntityComponentReference.cs" />
     <Compile Include="Data\SimpleExtensions.cs" />
     <Compile Include="Data\MergeExtensions.cs" />
     <Compile Include="Data\SplitExtensions.cs" />
