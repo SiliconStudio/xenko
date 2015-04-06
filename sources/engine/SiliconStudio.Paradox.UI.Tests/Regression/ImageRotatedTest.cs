@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     {
         public ImageRotatedTest()
         {
-            CurrentVersion = 4;
+            CurrentVersion = 5;
         }
 
         protected override void RegisterTests()

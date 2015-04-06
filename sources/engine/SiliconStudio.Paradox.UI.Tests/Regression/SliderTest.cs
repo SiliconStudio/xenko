@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public SliderTest()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 2;
         }
 
         protected override async Task LoadContent()
@@ -210,7 +210,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public void DrawTest11()
         {
-            slider.LocalMatrix = Matrix.Translation(20, 30, 0) * Matrix.RotationYawPitchRoll(0.1f, 0.2f, 0.3f);
+            slider.LocalMatrix = Matrix.Translation(20, 30, 0) * Matrix.RotationYawPitchRoll(-0.1f, -0.2f, 0.3f);
         }
 
         [Test]
