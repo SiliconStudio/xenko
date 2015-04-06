@@ -82,7 +82,8 @@ namespace SiliconStudio.Presentation.Quantum
                 throw new InvalidOperationException("Unable to retrieve the node on which to apply the undo operation.");
 
             var modelNodeToken = (ModelNodeToken)token.TokenValue;
-            var newValue = NodeCommand.Undo(modelNode.Content.Value, modelNodeToken.Token);
+            var currentValue = modelNode.GetValue(index);
+            var newValue = NodeCommand.Undo(currentValue, modelNodeToken.Token);
             modelNode.SetValue(newValue, index);
             Refresh(modelNode, index);
 
