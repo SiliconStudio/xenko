@@ -85,7 +85,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         protected virtual void Initialize(bool isUpdating)
         {
-            var targetNodePath = ModelNodePath.GetChildPath(SourceNodePath, SourceNode, targetNode);
+            var targetNodePath = SourceNodePath.GetChildPath(SourceNode, targetNode);
             if (targetNodePath == null || !targetNodePath.IsValid)
                 throw new InvalidOperationException("Unable to retrieve the path of the given model node.");
 
@@ -93,7 +93,7 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 // When the references are not processed, there is no actual target node.
                 // However, the commands need the index to be able to properly set the modified value
-                targetNodePath = targetNodePath.PushElement(Index, ModelNodePath.NodePathElementType.Index);
+                targetNodePath = targetNodePath.PushElement(Index, ModelNodePath.ElementType.Index);
             }
 
             foreach (var command in targetNode.Commands)
@@ -357,7 +357,7 @@ namespace SiliconStudio.Presentation.Quantum
                     // Single non-reference primitive object
                     foreach (var child in modelNode.Children)
                     {
-                        var childPath = ModelNodePath.GetChildPath(modelNodePath, modelNode, child);
+                        var childPath = modelNodePath.GetChildPath(modelNode, child);
                         var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, child, childPath, child.Content.Type, null);
                         AddChild(observableChild);
                         observableChild.Initialize(isUpdating);
