@@ -53,7 +53,7 @@ namespace SiliconStudio.Paradox.Effects
                 boundingBoxExt.Rotate(mat1);
 
                 // Perform frustum culling
-                if (!frustum.Intersects(ref boundingBoxExt))
+                if (!frustum.Contains(ref boundingBoxExt))
                 {
                     meshes.SwapRemoveAt(i--);
                 }
