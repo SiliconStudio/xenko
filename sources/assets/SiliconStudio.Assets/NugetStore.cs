@@ -33,10 +33,7 @@ namespace SiliconStudio.Assets
 
         public const string DefaultConfig = "store.config";
 
-        /// <summary>
-        /// Used to lookup for Vsix
-        /// </summary>
-        private const string DefaultBinDirectory = "Bin";
+        public const string OverrideConfig = "store.local.config";
 
         private readonly PhysicalFileSystem rootFileSystem;
         private readonly ISettings settings;
@@ -48,19 +45,30 @@ namespace SiliconStudio.Assets
         private readonly PackageManager manager;
         private ILogger logger;
 
-        public NugetStore(string rootDirectory, string configFile = DefaultConfig)
+        public NugetStore(string rootDirectory, string configFile = DefaultConfig, string overrideFile = OverrideConfig)
         {
             if (rootDirectory == null) throw new ArgumentNullException("rootDirectory");
             if (configFile == null) throw new ArgumentNullException("configFile");
+            if (overrideFile == null) throw new ArgumentNullException("overrideFile");
 
-            var configFilePath = Path.Combine(rootDirectory, configFile);
+            // First try the override file with custom settings
+            var configFileName = overrideFile;
+            var configFilePath = Path.Combine(rootDirectory, configFileName);
+
             if (!File.Exists(configFilePath))
             {
-                throw new ArgumentException(String.Format("Invalid installation. Configuration file [{0}] not found", configFile), "configFile");
+                // Override file does not exist, fallback to default config file
+                configFileName = configFile;
+                configFilePath = Path.Combine(rootDirectory, configFileName);
+
+                if (!File.Exists(configFilePath))
+                {
+                    throw new ArgumentException(String.Format("Invalid installation. Configuration file [{0}] not found", configFile), "configFile");
+                }
             }
 
             rootFileSystem = new PhysicalFileSystem(rootDirectory);
-            settings = NuGet.Settings.LoadDefaultSettings(rootFileSystem, configFile, null);
+            settings = NuGet.Settings.LoadDefaultSettings(rootFileSystem, configFileName, null);
 
             string installPath = settings.GetRepositoryPath();
             packagesFileSystem = new PhysicalFileSystem(installPath);
