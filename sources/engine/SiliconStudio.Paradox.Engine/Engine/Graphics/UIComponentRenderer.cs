@@ -200,15 +200,17 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 // calculate an estimate of the UI real size by projecting the element virtual resolution on the screen
                 var virtualOrigin = viewParameters.ViewProjectionMatrix.Row4;
                 var virtualWidth = new Vector4(virtualResolution.X/2, 0, 0, 1);
-                var virtualHeight = new Vector4(0,virtualResolution.Y/2, 0, 1);
+                var virtualHeight = new Vector4(0, virtualResolution.Y / 2, 0, 1);
+                var transformedVirtualWidth = Vector4.Zero; 
+                var transformedVirtualHeight = Vector4.Zero;
                 for (int i = 0; i < 4; i++)
                 {
-                    virtualWidth[i] = virtualWidth[0] * viewParameters.ViewProjectionMatrix[0 + i] + viewParameters.ViewProjectionMatrix[12 + i];
-                    virtualHeight[i] = virtualHeight[1] * viewParameters.ViewProjectionMatrix[4 + i] + viewParameters.ViewProjectionMatrix[12 + i];
+                    transformedVirtualWidth[i] = virtualWidth[0] * viewParameters.ViewProjectionMatrix[0 + i] + viewParameters.ViewProjectionMatrix[12 + i];
+                    transformedVirtualHeight[i] = virtualHeight[1] * viewParameters.ViewProjectionMatrix[4 + i] + viewParameters.ViewProjectionMatrix[12 + i];
                 }
                 var projectedOrigin = virtualOrigin.XY() / virtualOrigin.W;
-                var projectedVirtualWidth = viewportSize * (virtualWidth.XY() / virtualWidth.W - projectedOrigin);
-                var projectedVirtualHeight= viewportSize * (virtualHeight.XY() / virtualHeight.W - projectedOrigin);
+                var projectedVirtualWidth = viewportSize * (transformedVirtualWidth.XY() / transformedVirtualWidth.W - projectedOrigin);
+                var projectedVirtualHeight = viewportSize * (transformedVirtualHeight.XY() / transformedVirtualHeight.W - projectedOrigin);
                 
                 // update layouting context.
                 layoutingContext.VirtualResolution = virtualResolution;
