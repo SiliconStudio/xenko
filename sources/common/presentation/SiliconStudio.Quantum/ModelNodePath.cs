@@ -166,7 +166,6 @@ namespace SiliconStudio.Quantum
 
         public ModelNodePath Clone(IModelNode newRoot)
         {
-            if (newRoot == null) throw new ArgumentNullException("newRoot");
             var clone = new ModelNodePath { RootNode = newRoot, targetIsRootNode = targetIsRootNode };
             clone.path.AddRange(path);
             return clone;

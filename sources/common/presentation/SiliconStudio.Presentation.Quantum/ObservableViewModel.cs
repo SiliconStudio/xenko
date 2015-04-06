@@ -19,13 +19,12 @@ namespace SiliconStudio.Presentation.Quantum
     /// <param name="viewModel">The <see cref="ObservableViewModel"/> that owns the new <see cref="ObservableModelNode"/>.</param>
     /// <param name="baseName">The base name of this node. Can be null if <see paramref="index"/> is not. If so a name will be automatically generated from the index.</param>
     /// <param name="isPrimitive">Indicate whether this node should be considered as a primitive node.</param>
-    /// <param name="parentNode">The parent node of the new <see cref="ObservableModelNode"/>, or <c>null</c> if the node being created is the root node of the view model.</param>
     /// <param name="modelNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
     /// <param name="modelNodePath">The <see cref="ModelNodePath"/> corresponding to the given node.</param>
     /// <param name="contentType">The type of content contained by the new <see cref="ObservableModelNode"/>.</param>
     /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <c>null</c> must be passed otherwise</param>
     /// <returns>A new instance of <see cref="ObservableModelNode"/> corresponding to the given parameters.</returns>
-    public delegate ObservableModelNode CreateNodeDelegate(ObservableViewModel viewModel, string baseName, bool isPrimitive, SingleObservableNode parentNode, IModelNode modelNode, ModelNodePath modelNodePath, Type contentType, object index);
+    public delegate ObservableModelNode CreateNodeDelegate(ObservableViewModel viewModel, string baseName, bool isPrimitive, IModelNode modelNode, ModelNodePath modelNodePath, Type contentType, object index);
 
     public class ObservableViewModel : EditableViewModel, IDisposable
     {
@@ -74,7 +73,7 @@ namespace SiliconStudio.Presentation.Quantum
             : this(serviceProvider, modelContainer, dirtiables.SafeArgument("dirtiables").ToList())
         {
             if (modelNode == null) throw new ArgumentNullException("modelNode");
-            var node = observableViewModelService.ObservableNodeFactory(this, "Root", modelNode.Content.IsPrimitive, null, modelNode, new ModelNodePath(modelNode), modelNode.Content.Type, null);
+            var node = observableViewModelService.ObservableNodeFactory(this, "Root", modelNode.Content.IsPrimitive, modelNode, new ModelNodePath(modelNode), modelNode.Content.Type, null);
             Identifier = new ObservableViewModelIdentifier(node.ModelGuid);
             node.Initialize();
             RootNode = node;
@@ -220,7 +219,7 @@ namespace SiliconStudio.Presentation.Quantum
             nodeChangeList.Clear();
         }
 
-        private static ObservableModelNode DefaultCreateNode(ObservableViewModel viewModel, string baseName, bool isPrimitive, SingleObservableNode parentNode, IModelNode modelNode, ModelNodePath modelNodePath, Type contentType, object index)
+        private static ObservableModelNode DefaultCreateNode(ObservableViewModel viewModel, string baseName, bool isPrimitive, IModelNode modelNode, ModelNodePath modelNodePath, Type contentType, object index)
         {
             return ObservableModelNode.Create(viewModel, baseName, isPrimitive, modelNode, modelNodePath, contentType, index);
         }

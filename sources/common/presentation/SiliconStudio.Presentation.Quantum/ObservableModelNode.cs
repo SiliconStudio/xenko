@@ -321,7 +321,7 @@ namespace SiliconStudio.Presentation.Quantum
                             // In this case, we must set the actual type to have type converter working, since they usually can't convert
                             // a boxed float to double for example. Otherwise, we don't want to have a node type that is value-dependent.
                             var type = reference.TargetNode != null && reference.TargetNode.Content.IsPrimitive ? reference.TargetNode.Content.Type : reference.Type;
-                            var observableNode = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, false, this, modelNode, modelNodePath, type, reference.Index);
+                            var observableNode = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, false, modelNode, modelNodePath, type, reference.Index);
                             AddChild(observableNode);
                             observableNode.Initialize(isUpdating);
                         }
@@ -337,7 +337,7 @@ namespace SiliconStudio.Presentation.Quantum
                     // Dictionary of primitive objects
                     foreach (var key in dictionary.GetKeys(modelNode.Content.Value))
                     {
-                        var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, this, modelNode, modelNodePath, dictionary.ValueType, key);
+                        var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, modelNode, modelNodePath, dictionary.ValueType, key);
                         AddChild(observableChild);
                         observableChild.Initialize(isUpdating);
                     }
@@ -347,7 +347,7 @@ namespace SiliconStudio.Presentation.Quantum
                     // List of primitive objects
                     for (int i = 0; i < list.GetCollectionCount(modelNode.Content.Value); ++i)
                     {
-                        var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, this, modelNode, modelNodePath, list.ElementType, i);
+                        var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, modelNode, modelNodePath, list.ElementType, i);
                         AddChild(observableChild);
                         observableChild.Initialize(isUpdating);
                     }
@@ -358,7 +358,7 @@ namespace SiliconStudio.Presentation.Quantum
                     foreach (var child in modelNode.Children)
                     {
                         var childPath = ModelNodePath.GetChildPath(modelNodePath, modelNode, child);
-                        var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, this, child, childPath, child.Content.Type, null);
+                        var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, child, childPath, child.Content.Type, null);
                         AddChild(observableChild);
                         observableChild.Initialize(isUpdating);
                     }
