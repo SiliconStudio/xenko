@@ -135,7 +135,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 if (uiElement.UIComponent.IsFullScreen)
                 {
                     var renderTarget = renderingContext.RenderTarget;
-                    var description = TextureDescription.New2D(renderTarget.Width, renderTarget.Height, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
+                    var description = TextureDescription.New2D(renderTarget.Width, renderTarget.Height, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil);
                     scopedDepthBuffer = PushScopedResource(context.Allocator.GetTemporaryTexture(description));
                     break;
                 }
