@@ -48,20 +48,12 @@ namespace SiliconStudio.Paradox.Engine
         [Display("Full Screen")]
         [DefaultValue(true)]
         public bool IsFullScreen { get; set; }
-        /// <summary>
-        /// Gets or sets the value indicating whether the UI should be displayed as billboard.
-        /// </summary>
-        /// <userdoc>If checked, the UI is displayed as a billboard. That is, it is automatically rotated parallel to the screen.</userdoc>
-        [DataMember(30)]
-        [Display("Billboard")]
-        [DefaultValue(true)]
-        public bool IsBillboard{ get; set; }
 
         /// <summary>
         /// Gets or sets the virtual resolution of the UI in virtual pixels.
         /// </summary>
         /// <userdoc>The value in pixels of the resolution of the UI</userdoc>
-        [DataMember(40)]
+        [DataMember(30)]
         [Display("Virtual Resolution")]
         public Vector3 VirtualResolution { get; set; }
 
@@ -70,10 +62,19 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         /// <value>The camera.</value>
         /// <userdoc>Indicate how the virtual resolution value should be interpreted</userdoc>
-        [DataMember(50)]
+        [DataMember(40)]
         [Display("Virtual Resolution Mode")]
         [DefaultValue(VirtualResolutionMode.FixedWidthAdaptableHeight)]
         public VirtualResolutionMode VirtualResolutionMode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value indicating whether the UI should be displayed as billboard.
+        /// </summary>
+        /// <userdoc>If checked, the UI is displayed as a billboard. That is, it is automatically rotated parallel to the screen.</userdoc>
+        [DataMember(50)]
+        [Display("Billboard")]
+        [DefaultValue(true)]
+        public bool IsBillboard { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating of the UI texts should be snapped to closest pixel.
