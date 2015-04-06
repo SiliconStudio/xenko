@@ -4,7 +4,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
+using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Lights;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Core;
@@ -129,6 +132,13 @@ namespace SiliconStudio.Paradox.Engine
         [DataMember(50)]
         public ParameterCollection Parameters { get; private set; }
 
+        /// <summary>
+        /// Gets the bounding sphere in world space.
+        /// </summary>
+        /// <value>The bounding sphere.</value>
+        [DataMemberIgnore]
+        public BoundingSphere BoundingSphere { get; private set; }
+
         private void ModelUpdated()
         {
             if (model != null)
@@ -143,6 +153,25 @@ namespace SiliconStudio.Paradox.Engine
                     modelViewHierarchy = new ModelViewHierarchyUpdater(model);
                 }
             }
+        }
+
+        internal void Update(ref Matrix worldMatrix)
+        {
+            // Update model view hierarchy node matrices
+            modelViewHierarchy.NodeTransformations[0].LocalMatrix = worldMatrix;
+            modelViewHierarchy.UpdateMatrices();
+
+            // Update the bounding sphere in world space
+            var meshes = Model.Meshes;
+            var modelBoundingSphere = new BoundingSphere();
+            foreach (var mesh in meshes)
+            {
+                var meshBoundingSphere = mesh.BoundingSphere;
+                modelViewHierarchy.TransformCoordinateToWorld(mesh.NodeIndex, meshBoundingSphere.Center);
+                BoundingSphere.Merge(ref modelBoundingSphere, ref meshBoundingSphere, out modelBoundingSphere);
+            }
+
+            BoundingSphere = modelBoundingSphere;
         }
 
         public override PropertyKey GetDefaultKey()

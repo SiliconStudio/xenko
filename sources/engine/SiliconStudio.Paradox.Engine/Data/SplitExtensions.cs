@@ -28,12 +28,10 @@ namespace SiliconStudio.Paradox.Extensions
                 {
                     foreach (var draw in drawDatas)
                     {
-                        var newMeshData = new Mesh
+                        var newMeshData = new Mesh(draw, mesh.Parameters)
                             {
                                 MaterialIndex = mesh.MaterialIndex,
-                                Parameters = mesh.Parameters,
                                 Name = mesh.Name,
-                                Draw = draw,
                                 NodeIndex = mesh.NodeIndex,
                                 Skinning = mesh.Skinning,
                             };

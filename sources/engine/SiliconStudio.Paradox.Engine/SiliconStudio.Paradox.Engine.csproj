@@ -2078,7 +2078,7 @@
     <Compile Include="Engine\AudioListenerProcessor.cs" />
     <Compile Include="Engine\AudioEmitterProcessor.cs" />
     <Compile Include="Engine\AudioSystem.cs" />
-    <Compile Include="Data\BoundingBoxExtensions.cs" />
+    <Compile Include="Data\BoundingExtensions.cs" />
     <Compile Include="Data\HalfBufferExtensions.cs" />
     <Compile Include="Data\PolySortExtensions.cs" />
     <Compile Include="Engine\Graphics\IModelInstance.cs" />

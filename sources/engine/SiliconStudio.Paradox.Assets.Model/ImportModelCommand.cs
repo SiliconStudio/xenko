@@ -126,15 +126,6 @@ namespace SiliconStudio.Paradox.Assets.Model
                             commandContext.Logger.Error("TessellationAEN is not supported in {0}", ContextAsString);
                             hasErrors = true;
                         }
-
-                        // For now, make sure the mesh parameters list exists.
-                        if (mesh.Parameters == null)
-                            mesh.Parameters = new ParameterCollection();
-
-                        // TODO: Regression: Lighting configuration is currently unsupported in new material model
-                        // TODO: remove this when Lighting configuration will be behind a key in mesh parameters. This case will be handled by the code just above
-                        // set the lighting configuration description
-                        //mesh.Parameters.Set(LightingKeys.LightingConfigurations, new ContentReference<LightingConfigurationsSetData>(materialReference.LightingParameters.Id, materialReference.LightingParameters.Location));
                     }
 
                     // split the meshes if necessary
@@ -207,9 +198,8 @@ namespace SiliconStudio.Paradox.Assets.Model
                                 var newMeshList = sameParamsMeshes.Select(x => x.Draw).ToList().GroupDrawData(Allow32BitIndex);
                                 foreach (var generatedMesh in newMeshList)
                                 {
-                                    finalMeshes.Add(new Mesh {
+                                    finalMeshes.Add(new Mesh(generatedMesh, baseMesh.Parameters) {
                                             MaterialIndex = baseMesh.MaterialIndex,
-                                            Parameters = baseMesh.Parameters,
                                             Name = baseMesh.Name,
                                             Draw = generatedMesh,
                                             NodeIndex = meshList.Key,
@@ -287,12 +277,13 @@ namespace SiliconStudio.Paradox.Assets.Model
                         model.Meshes = finalMeshes;
                         model.Hierarchy.Nodes = newNodes.ToArray();
 
-                        hierarchyUpdater = new ModelViewHierarchyUpdater(model.Hierarchy.Nodes);
+                        hierarchyUpdater = new ModelViewHierarchyUpdater(model);
                         hierarchyUpdater.UpdateMatrices();
                     }
 
                     // bounding boxes
                     var modelBoundingBox = model.BoundingBox;
+                    var modelBoundingSphere = model.BoundingSphere;
                     foreach (var mesh in model.Meshes)
                     {
                         var vertexBuffers = mesh.Draw.VertexBuffers;
@@ -300,18 +291,21 @@ namespace SiliconStudio.Paradox.Assets.Model
                         {
                             // Compute local mesh bounding box (no node transformation)
                             Matrix matrix = Matrix.Identity;
-                            mesh.BoundingBox = vertexBuffers[0].ComputeBoundingBox(ref matrix);
+                            mesh.BoundingBox = vertexBuffers[0].ComputeBounds(ref matrix, out mesh.BoundingSphere);
 
                             // Compute model bounding box (includes node transformation)
                             hierarchyUpdater.GetWorldMatrix(mesh.NodeIndex, out matrix);
-                            var meshBoundingBox = vertexBuffers[0].ComputeBoundingBox(ref matrix);
+                            BoundingSphere meshBoundingSphere;
+                            var meshBoundingBox = vertexBuffers[0].ComputeBounds(ref matrix, out meshBoundingSphere);
                             BoundingBox.Merge(ref modelBoundingBox, ref meshBoundingBox, out modelBoundingBox);
+                            BoundingSphere.Merge(ref modelBoundingSphere, ref meshBoundingSphere, out modelBoundingSphere);
                         }
 
                         // TODO: temporary Always try to compact
                         mesh.Draw.CompactIndexBuffer();
                     }
                     model.BoundingBox = modelBoundingBox;
+                    model.BoundingSphere = modelBoundingSphere;
 
                     // merges all the Draw VB and IB together to produce one final VB and IB by entity.
                     var sizeVertexBuffer = model.Meshes.SelectMany(x => x.Draw.VertexBuffers).Select(x => x.Buffer.GetSerializationData().Content.Length).Sum();

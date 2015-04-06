@@ -8,6 +8,7 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Lights;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.EntityModel;
 
@@ -18,6 +19,8 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     public class ModelProcessor : EntityProcessor<RenderModel>
     {
+        // TODO: ModelProcessor should be decoupled from RenderModel
+
         private readonly RenderModelCollection[] allModelGroups; 
 
         /// <summary>
@@ -46,7 +49,7 @@ namespace SiliconStudio.Paradox.Engine
         }
 
         /// <summary>
-        /// Gets the current models to render.
+        /// Gets the current models to render per group.
         /// </summary>
         /// <value>The current models to render.</value>
         public List<RenderModelCollection> ModelGroups { get; private set; }
@@ -113,14 +116,13 @@ namespace SiliconStudio.Paradox.Engine
                 var modelCollection = allModelGroups[groupIndex];
                 modelCollection.Add(renderModel);
 
+                var modelComponent = renderModel.ModelComponent;
                 var modelViewHierarchy = renderModel.ModelComponent.ModelViewHierarchy;
                 var transformationComponent = renderModel.TransformComponent;
 
                 var links = renderModel.Links;
 
-                // Update model view hierarchy node matrices
-                modelViewHierarchy.NodeTransformations[0].LocalMatrix = transformationComponent.WorldMatrix;
-                modelViewHierarchy.UpdateMatrices();
+                modelComponent.Update(ref transformationComponent.WorldMatrix);
 
                 if (links != null)
                 {

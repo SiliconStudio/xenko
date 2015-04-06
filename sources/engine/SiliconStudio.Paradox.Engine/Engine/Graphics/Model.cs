@@ -12,6 +12,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Graphics.Data;
 
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
@@ -82,6 +83,12 @@ namespace SiliconStudio.Paradox.Effects
         /// </value>
         public BoundingBox BoundingBox { get; set; }
 
+        /// <summary>
+        /// Gets or sets the bounding sphere encompassing all the <see cref="Meshes"/> (not including animation).
+        /// </summary>
+        /// <value>The bounding sphere.</value>
+        public BoundingSphere BoundingSphere { get; set; }
+
         // Temporarily removed
         //[DataMemberConvert]
         //public ParameterCollection Parameters
@@ -121,56 +128,6 @@ namespace SiliconStudio.Paradox.Effects
             return meshes.Cast<object>().Concat(materials).GetEnumerator();
         }
 
-        public static Model FromGeometricMeshData(GraphicsDevice graphicsDevice, GeometricMeshData<VertexPositionNormalTexture> geometryMesh)
-        {
-            var vertices = geometryMesh.Vertices;
-
-            // compute the bounding box of the primitive
-            var boundingBox = new BoundingBox();
-            for (int i = 0; i < vertices.Length; i++)
-                BoundingBox.Merge(ref boundingBox, ref vertices[i].Position, out boundingBox);
-
-            return FromGeometricMeshData(graphicsDevice, geometryMesh, boundingBox, VertexPositionNormalTexture.Layout);
-        }
-
-        public static Model FromGeometricMeshData<T>(GraphicsDevice graphicsDevice, GeometricMeshData<T> geometryMesh, BoundingBox boundingBox, VertexDeclaration layout) where T : struct, IVertex
-        {
-            var meshDraw = new MeshDraw();
-
-            var vertices = geometryMesh.Vertices;
-            var indices = geometryMesh.Indices;
-
-            if (indices.Length < 0xFFFF)
-            {
-                var indicesShort = new ushort[indices.Length];
-                for (int i = 0; i < indicesShort.Length; i++)
-                {
-                    indicesShort[i] = (ushort)indices[i];
-                }
-                meshDraw.IndexBuffer = new IndexBufferBinding(Buffer.Index.New(graphicsDevice, indicesShort).RecreateWith(indicesShort), false, indices.Length);
-            }
-            else
-            {
-                if (graphicsDevice.Features.Profile <= GraphicsProfile.Level_9_3)
-                {
-                    throw new InvalidOperationException("Cannot generate more than 65535 indices on feature level HW <= 9.3");
-                }
-
-                meshDraw.IndexBuffer = new IndexBufferBinding(Buffer.Index.New(graphicsDevice, indices).RecreateWith(indices), true, indices.Length);
-            }
-
-            meshDraw.VertexBuffers = new[] { new VertexBufferBinding(Buffer.Vertex.New(graphicsDevice, vertices).RecreateWith(vertices), layout, vertices.Length) };
-
-            meshDraw.DrawCount = indices.Length;
-            meshDraw.PrimitiveType = PrimitiveType.TriangleList;
-
-            var mesh = new Mesh { Draw = meshDraw, BoundingBox = boundingBox };
-            var model = new Model { BoundingBox = boundingBox };
-            model.Add(mesh);
-
-            return model;
-        }
-
         /// <summary>
         /// Create a clone with its own ParameterCollection.
         /// It allows reuse of a single Model for multiple ModelComponent.
@@ -190,7 +147,6 @@ namespace SiliconStudio.Paradox.Effects
             foreach (var mesh in Meshes)
             {
                 var meshCopy = new Mesh(mesh);
-                meshCopy.Parameters = meshCopy.Parameters.Clone();
                 result.Meshes.Add(meshCopy);
             }
 
