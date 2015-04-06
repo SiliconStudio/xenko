@@ -1345,6 +1345,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">The first vector to add.</param>
         /// <param name="right">The second vector to add.</param>
         /// <returns>The sum of the two vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 operator +(Vector3 left, Vector3 right)
         {
             return new Vector3(left.X + right.X, left.Y + right.Y, left.Z + right.Z);
@@ -1355,6 +1356,7 @@ namespace SiliconStudio.Core.Mathematics
         /// </summary>
         /// <param name="value">The vector to assert (unchange).</param>
         /// <returns>The asserted (unchanged) vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 operator +(Vector3 value)
         {
             return value;
@@ -1366,6 +1368,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">The first vector to subtract.</param>
         /// <param name="right">The second vector to subtract.</param>
         /// <returns>The difference of the two vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 operator -(Vector3 left, Vector3 right)
         {
             return new Vector3(left.X - right.X, left.Y - right.Y, left.Z - right.Z);
@@ -1377,6 +1380,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">The first vector to multiply.</param>
         /// <param name="right">The second vector to multiply.</param>
         /// <returns>The multiplication of the two vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 operator *(Vector3 left, Vector3 right)
         {
             return new Vector3(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
@@ -1387,6 +1391,7 @@ namespace SiliconStudio.Core.Mathematics
         /// </summary>
         /// <param name="value">The vector to negate.</param>
         /// <returns>A vector facing in the opposite direction.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 operator -(Vector3 value)
         {
             return new Vector3(-value.X, -value.Y, -value.Z);
@@ -1398,6 +1403,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="value">The vector to scale.</param>
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <returns>The scaled vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 operator *(float scale, Vector3 value)
         {
             return new Vector3(value.X * scale, value.Y * scale, value.Z * scale);
@@ -1409,9 +1415,34 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="value">The vector to scale.</param>
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <returns>The scaled vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 operator *(Vector3 value, float scale)
         {
             return new Vector3(value.X * scale, value.Y * scale, value.Z * scale);
+        }
+
+        /// <summary>
+        /// Adds a vector with the given value.
+        /// </summary>
+        /// <param name="value">The vector to scale.</param>
+        /// <param name="scale">The amount by which to scale the vector.</param>
+        /// <returns>The vector offset.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 operator +(Vector3 value, float scale)
+        {
+            return new Vector3(value.X + scale, value.Y + scale, value.Z + scale);
+        }
+
+        /// <summary>
+        /// Substracts a vector by the given value.
+        /// </summary>
+        /// <param name="value">The vector to scale.</param>
+        /// <param name="scale">The amount by which to scale the vector.</param>
+        /// <returns>The vector offset.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 operator -(Vector3 value, float scale)
+        {
+            return new Vector3(value.X - scale, value.Y - scale, value.Z - scale);
         }
 
         /// <summary>
@@ -1420,6 +1451,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="value">The vector to scale.</param>
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <returns>The scaled vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 operator /(Vector3 value, float scale)
         {
             return new Vector3(value.X / scale, value.Y / scale, value.Z / scale);
@@ -1431,6 +1463,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="value">The vector to scale.</param>
         /// <param name="by">The by.</param>
         /// <returns>The scaled vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 operator /(Vector3 value, Vector3 by)
         {
             return new Vector3(value.X / by.X, value.Y / by.Y, value.Z / by.Z);
