@@ -181,6 +181,7 @@
     <Compile Include="Program.cs" />
     <Compile Label="Paradox.DoNotSync" Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RandomExtension.cs" />
+    <Compile Include="Regression\BillboardModeTests.cs" />
     <Compile Include="Regression\BorderImageTest.cs" />
     <Compile Include="Regression\BorderTest.cs" />
     <Compile Include="Regression\ButtonTest.cs" />
@@ -210,6 +211,7 @@
     <Compile Include="Regression\ScrollViewerTest.cs" />
     <Compile Include="Regression\SliderTest.cs" />
     <Compile Include="Regression\StackPanelTest.cs" />
+    <Compile Include="Regression\TestCamera.cs" />
     <Compile Include="Regression\TextBlockTest.cs" />
     <Compile Include="Regression\TextBlockWrappingTest.cs" />
     <Compile Include="Regression\ToggleButtonTest.cs" />

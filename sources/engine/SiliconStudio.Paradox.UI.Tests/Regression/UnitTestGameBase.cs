@@ -33,7 +33,20 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         protected Scene Scene;
         protected Entity Camera = new Entity("Scene camera") { new CameraComponent() };
         protected Entity UIRoot = new Entity("Root entity of camera UI") { new UIComponent()  };
+
+        private readonly SceneGraphicsCompositorLayers graphicsCompositor;
+
         protected UIComponent UIComponent { get {  return UIRoot.Get<UIComponent>(); } }
+
+        protected CameraComponent CameraComponent
+        {
+            get { return Camera.Get<CameraComponent>(); }
+            set
+            {
+                Camera.Add(value);
+                graphicsCompositor.Cameras[0] = value;
+            }
+        }
 
         /// <summary>
         /// Create an instance of the game test
@@ -43,27 +56,23 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             StopOnFrameCount = -1;
 
             GraphicsDeviceManager.PreferredGraphicsProfile = new [] { GraphicsProfile.Level_11_0 };
-            Scene = new Scene
-            {
-                Settings =
-                {
-                    GraphicsCompositor = new SceneGraphicsCompositorLayers
-                    {
-                        Cameras = { Camera.Get<CameraComponent>() },
-                        Master =
-                        {
-                            Renderers =
-                            {
-                                new ClearRenderFrameRenderer { Color = Color.Green, Name = "Clear frame" },
-    
-                                new SceneDelegateRenderer(SpecificDrawBeforeUI) { Name = "Delegate before main UI"},
 
-                                new SceneCameraRenderer { Mode = SceneCameraRenderer },
-                            }
-                        }
+            graphicsCompositor = new SceneGraphicsCompositorLayers
+            {
+                Cameras = { Camera.Get<CameraComponent>() },
+                Master =
+                {
+                    Renderers =
+                    {
+                        new ClearRenderFrameRenderer { Color = Color.Green, Name = "Clear frame" },
+
+                        new SceneDelegateRenderer(SpecificDrawBeforeUI) { Name = "Delegate before main UI" },
+
+                        new SceneCameraRenderer { Mode = SceneCameraRenderer },
                     }
                 }
             };
+            Scene = new Scene { Settings = { GraphicsCompositor = graphicsCompositor } };
 
             Scene.AddChild(UIRoot);
             Scene.AddChild(Camera);

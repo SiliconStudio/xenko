@@ -620,6 +620,27 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 // extract the world matrix of the UI entity
                 var worldMatrix = entity.Get<TransformComponent>().WorldMatrix;
 
+                // rotate the UI element perpendicular to the camera view vector, if billboard is activated
+                var uiComponent = entity.Get<UIComponent>();
+                if (!uiComponent.IsFullScreen && uiComponent.IsBillboard)
+                {
+                    Matrix viewInverse;
+                    Matrix.Invert(ref camera.ViewMatrix, out viewInverse);
+
+                    // remove scale of the camera
+                    viewInverse.Row1 /= viewInverse.Row1.XYZ().Length();
+                    viewInverse.Row2 /= viewInverse.Row2.XYZ().Length();
+
+                    // set the scale of the object
+                    viewInverse.Row1 *= worldMatrix.Row1.XYZ().Length();
+                    viewInverse.Row2 *= worldMatrix.Row2.XYZ().Length();
+
+                    // set the adjusted world matrix
+                    worldMatrix.Row1 = viewInverse.Row1;
+                    worldMatrix.Row2 = viewInverse.Row2;
+                    worldMatrix.Row3 = viewInverse.Row3;
+                }
+
                 // Rotation of Pi along 0x to go from UI space to world space
                 worldMatrix.Row2 = -worldMatrix.Row2; 
                 worldMatrix.Row3 = -worldMatrix.Row3;
