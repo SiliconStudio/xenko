@@ -49,27 +49,11 @@ namespace SiliconStudio.Paradox.Effects
                 renderMesh.Mesh.Parameters.Get(TransformationKeys.World, out mat1);
 
                 // Compute transformed AABB (by world)
-                var boundingBox = renderMesh.Mesh.BoundingBox;
-                var center = boundingBox.Center;
-                var extent = boundingBox.Extent;
-
-                Vector3.TransformCoordinate(ref center, ref mat1, out center);
-
-                // Update world matrix into absolute form
-                unsafe
-                {
-                    float* matrixData = &mat1.M11;
-                    for (int j = 0; j < 16; ++j)
-                    {
-                        *matrixData = Math.Abs(*matrixData);
-                        ++matrixData;
-                    }
-                }
-
-                Vector3.TransformNormal(ref extent, ref mat1, out extent);
+                var boundingBoxExt = new BoundingBoxExt(renderMesh.Mesh.BoundingBox);
+                boundingBoxExt.Rotate(mat1);
 
                 // Perform frustum culling
-                if (!Collision.FrustumContainsBox(ref frustum, ref center, ref extent))
+                if (!frustum.Intersects(ref boundingBoxExt))
                 {
                     meshes.SwapRemoveAt(i--);
                 }

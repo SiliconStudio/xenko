@@ -1462,27 +1462,40 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Determines whether a <see cref="BoundingFrustum"/> intersects or contains an AABB determined by its center and extent.
+        /// Determines whether a <see cref="BoundingFrustum" /> intersects or contains an AABB determined by its center and extent.
         /// Faster variant specific for frustum culling.
         /// </summary>
         /// <param name="frustum">The frustum.</param>
-        /// <param name="center">The center.</param>
-        /// <param name="extent">The extent.</param>
-        /// <returns></returns>
-        public static bool FrustumContainsBox(ref BoundingFrustum frustum, ref Vector3 center, ref Vector3 extent)
+        /// <param name="boundingBoxExt">The bounding box ext.</param>
+        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
+        public static bool FrustumContainsBox(ref BoundingFrustum frustum, ref BoundingBoxExt boundingBoxExt)
         {
             unsafe
             {
                 fixed (Plane* planeStart = &frustum.Plane1)
+                fixed (Vector3* pExtent = &boundingBoxExt.Extent)
                 {
                     var plane = planeStart;
                     for (int i = 0; i < 6; ++i)
                     {
-                        if (Vector3.Dot(center, plane->Normal)
-                            + extent.X * Math.Abs(plane->Normal.X)
-                            + extent.Y * Math.Abs(plane->Normal.Y)
-                            + extent.Z * Math.Abs(plane->Normal.Z)
-                            <= -plane->D)
+                        // Previous code:
+                        //if (Vector3.Dot(boundingBoxExt.Center, plane->Normal)
+                        //    + boundingBoxExt.Extent.X * Math.Abs(plane->Normal.X)
+                        //    + boundingBoxExt.Extent.Y * Math.Abs(plane->Normal.Y)
+                        //    + boundingBoxExt.Extent.Z * Math.Abs(plane->Normal.Z)
+                        //    <= -plane->D)
+
+                        // Optimized version (only 1 dot and cheaper Math.Abs)
+                        // https://fgiesen.wordpress.com/2010/10/17/view-frustum-culling/
+                        // return dot3(center, plane) + dot3(extent, absPlane) <= -plane.w;
+                        // or
+                        // vector4 signFlip = componentwise_and(plane, 0x80000000);
+                        // vector3 centerOffset = xor(extent, signFlip)
+                        // dot3(center + centerOffset, plane) <= -plane.w;
+                        var dist = plane->Normal.X * (*(float*)((((uint*)&plane->Normal)[0] & 0x80000000) ^ ((uint*)pExtent)[0]) + boundingBoxExt.Center.X);
+                        dist += plane->Normal.Y * (*(float*)((((uint*)&plane->Normal)[1] & 0x80000000) ^ ((uint*)pExtent)[1]) + boundingBoxExt.Center.Y);
+                        dist += plane->Normal.Z * (*(float*)((((uint*)&plane->Normal)[2] & 0x80000000) ^ ((uint*)pExtent)[2]) + boundingBoxExt.Center.Z);
+                        if (dist <= -plane->D)
                             return false;
 
                         plane++;
