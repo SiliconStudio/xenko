@@ -18,13 +18,17 @@ namespace SiliconStudio.Paradox.Effects
     {
         public delegate void UpdateMeshesDelegate(RenderContext context, FastList<RenderMesh> meshes);
 
-        public delegate void PreRenderGroupDelegate(RenderContext context, EntityGroup group);
+        public delegate void PreRenderMeshDelegate(RenderContext context, RenderMesh renderMesh);
 
         public delegate void PostEffectUpdateDelegate(RenderContext context, RenderMesh renderMesh);
 
+        public delegate void PreRenderModelDelegate(RenderContext context, RenderModel renderModel);
+
+        public PreRenderModelDelegate PreRenderModel;
+
         public UpdateMeshesDelegate UpdateMeshes;
 
-        public PreRenderGroupDelegate PreRenderGroup;
+        public PreRenderMeshDelegate PreRenderMesh;
     }
 
     /// <summary>
@@ -44,8 +48,6 @@ namespace SiliconStudio.Paradox.Effects
         private readonly string effectName;
         
         public override bool SupportPicking { get { return true; } }
-
-        private int previousGroup;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelComponentRenderer" /> class.
@@ -106,9 +108,6 @@ namespace SiliconStudio.Paradox.Effects
                 return;
             }
 
-            // Initialize the current group
-            previousGroup = -1;
-
             // If we don't have yet a render slot, create a new one
             if (modelRenderSlot < 0)
             {
@@ -122,6 +121,8 @@ namespace SiliconStudio.Paradox.Effects
 
             var viewProjectionMatrix = camera.ViewProjectionMatrix;
 
+            var preRenderModel = Callbacks.PreRenderModel;
+
             // Get all meshes from render models
             foreach (var renderModelGroup in modelProcessor.ModelGroups)
             {
@@ -133,6 +134,11 @@ namespace SiliconStudio.Paradox.Effects
 
                 foreach (var renderModel in renderModelGroup)
                 {
+                    if (preRenderModel != null)
+                    {
+                        preRenderModel(context, renderModel);
+                    }
+
                     // Always prepare the slot for the render meshes even if they are not used.
                     EnsureRenderMeshes(renderModel);
 
@@ -176,19 +182,14 @@ namespace SiliconStudio.Paradox.Effects
             }
 
             // Fetch callback on PreRenderGroup
-            var preRenderGroup = Callbacks.PreRenderGroup;
+            var preRenderMesh = Callbacks.PreRenderMesh;
 
             foreach (var mesh in meshesToRender)
             {
                 // If the EntityGroup is changing, call the callback to allow to plug specific parameters for this group
-                if (preRenderGroup != null)
+                if (preRenderMesh != null)
                 {
-                    var group = mesh.RenderModel.Group;
-                    if (previousGroup != (int)group)
-                    {
-                        preRenderGroup(context, group);
-                        previousGroup = (int)group;
-                    }
+                    preRenderMesh(context, mesh);
                 }
 
                 // Update Effect and mesh

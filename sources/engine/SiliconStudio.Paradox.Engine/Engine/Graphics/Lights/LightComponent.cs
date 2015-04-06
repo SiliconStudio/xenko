@@ -64,22 +64,69 @@ namespace SiliconStudio.Paradox.Effects.Lights
         public EntityGroupMask CullingMask { get; set; }
 
         /// <summary>
-        /// Gets the light position in World-Space (computed by the <see cref="LightProcessor"/>). See remarks.
+        /// Gets the light position in World-Space (computed by the <see cref="LightProcessor"/>) (readonly field). See remarks.
         /// </summary>
         /// <value>The position.</value>
         /// <remarks>This property should only be used inside a renderer and not from a script as it is updated after scripts</remarks>
         [DataMemberIgnore]
-        public Vector3 Position { get; internal set; }
+        public Vector3 Position;
 
         /// <summary>
-        /// Gets the light direction in World-Space (computed by the <see cref="LightProcessor"/>).
+        /// Gets the light direction in World-Space (computed by the <see cref="LightProcessor"/>) (readonly field).
         /// </summary>
         /// <value>The direction.</value>
         /// <remarks>This property should only be used inside a renderer and not from a script as it is updated after scripts</remarks>
         [DataMemberIgnore]
-        public Vector3 Direction { get; internal set; }
+        public Vector3 Direction;
 
-        internal LightComponentCollectionGroup Group { get; set; }
+        /// <summary>
+        /// The bounding box of this light in WS after the <see cref="LightProcessor"/> has been applied (readonly field).
+        /// </summary>
+        [DataMemberIgnore]
+        public BoundingBox BoundingBox;
+
+        /// <summary>
+        /// The bounding box extents of this light in WS after the <see cref="LightProcessor"/> has been applied (readonly field).
+        /// </summary>
+        [DataMemberIgnore]
+        public BoundingBoxExt BoundingBoxExt;
+
+        /// <summary>
+        /// The determines whether this instance has a valid bounding box (readonly field).
+        /// </summary>
+        [DataMemberIgnore]
+        public bool HasBoundingBox;
+
+        /// <summary>
+        /// Updates this instance( <see cref="Position"/>, <see cref="Direction"/>, <see cref="HasBoundingBox"/>, <see cref="BoundingBox"/>, <see cref="BoundingBoxExt"/>
+        /// </summary>
+        public void Update()
+        {
+            // Compute light direction and position
+            Vector3 lightDirection;
+            var lightDir = DefaultDirection;
+            Vector3.TransformNormal(ref lightDir, ref Entity.Transform.WorldMatrix, out lightDirection);
+            lightDirection.Normalize();
+
+            Position = Entity.Transform.Position;
+            Direction = lightDirection;
+
+            // Compute bounding boxes
+            HasBoundingBox = false;
+            BoundingBox = new BoundingBox();
+            BoundingBoxExt = new BoundingBoxExt();
+
+            var directLight = Type as IDirectLight;
+            if (directLight == null || directLight.HasBoundingBox)
+            {
+                return;
+            }
+
+            // Computes the bounding boxes
+            BoundingBox = directLight.ComputeBounds(Position, Direction);
+            BoundingBoxExt = new BoundingBoxExt(BoundingBox);
+        }
+
 
         public override PropertyKey GetDefaultKey()
         {

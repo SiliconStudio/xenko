@@ -6,6 +6,13 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
     public interface ILightShadowRenderer
     {
+        /// <summary>
+        /// Reset the state of this instance before calling Render method multiple times for different shadow map textures. See remarks.
+        /// </summary>
+        /// <remarks>
+        /// This method allows the implementation to prepare some internal states before being rendered.
+        /// </remarks>
+        void Reset();
     }
 
     /// <summary>
@@ -13,6 +20,8 @@ namespace SiliconStudio.Paradox.Effects.Shadows
     /// </summary>
     public interface ILightShadowMapRenderer : ILightShadowRenderer
     {
-        void Render(RenderContext context, ShadowMapRenderer shadowMapRenderer, ref LightShadowMapTexture lightShadowMap);
+        ILightShadowMapShaderGroupData CreateShaderGroupData(int cascadeCount, int maxLightCount);
+
+        void Render(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap);
     }
 }

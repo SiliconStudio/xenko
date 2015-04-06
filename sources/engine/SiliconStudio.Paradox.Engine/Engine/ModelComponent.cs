@@ -133,11 +133,18 @@ namespace SiliconStudio.Paradox.Engine
         public ParameterCollection Parameters { get; private set; }
 
         /// <summary>
+        /// Gets the bounding box in world space.
+        /// </summary>
+        /// <value>The bounding box.</value>
+        [DataMemberIgnore]
+        public BoundingBox BoundingBox;
+
+        /// <summary>
         /// Gets the bounding sphere in world space.
         /// </summary>
         /// <value>The bounding sphere.</value>
         [DataMemberIgnore]
-        public BoundingSphere BoundingSphere { get; private set; }
+        public BoundingSphere BoundingSphere;
 
         private void ModelUpdated()
         {
@@ -161,16 +168,38 @@ namespace SiliconStudio.Paradox.Engine
             modelViewHierarchy.NodeTransformations[0].LocalMatrix = worldMatrix;
             modelViewHierarchy.UpdateMatrices();
 
-            // Update the bounding sphere in world space
+            // Update the bounding sphere / bounding box in world space
             var meshes = Model.Meshes;
             var modelBoundingSphere = new BoundingSphere();
+            var modelBoundingBox = new BoundingBox();
+            bool hasBoundingBox = false;
+            Matrix world;
             foreach (var mesh in meshes)
             {
                 var meshBoundingSphere = mesh.BoundingSphere;
-                modelViewHierarchy.TransformCoordinateToWorld(mesh.NodeIndex, meshBoundingSphere.Center);
+
+                modelViewHierarchy.GetWorldMatrix(mesh.NodeIndex, out world);
+                Vector3.TransformCoordinate(ref meshBoundingSphere.Center, ref world, out meshBoundingSphere.Center);
                 BoundingSphere.Merge(ref modelBoundingSphere, ref meshBoundingSphere, out modelBoundingSphere);
+
+                var boxExt = new BoundingBoxExt(mesh.BoundingBox);
+                boxExt.Rotate(world);
+                var meshBox = (BoundingBox)boxExt;
+
+                if (hasBoundingBox)
+                {
+                    BoundingBox.Merge(ref modelBoundingBox, ref meshBox, out modelBoundingBox);
+                }
+                else
+                {
+                    modelBoundingBox = meshBox;
+                }
+
+                hasBoundingBox = true;
             }
 
+            // Update the bounds
+            BoundingBox = modelBoundingBox;
             BoundingSphere = modelBoundingSphere;
         }
 

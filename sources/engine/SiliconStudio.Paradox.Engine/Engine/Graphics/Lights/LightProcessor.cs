@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
     {
         private const int DefaultLightCapacityCount = 512;
 
-        private readonly List<LightComponent> lightsCollected;
+        private readonly LightComponentCollection lightsCollected;
 
         private readonly LightComponentCollection lights;
 
@@ -28,30 +28,16 @@ namespace SiliconStudio.Paradox.Effects.Lights
             : base(new PropertyKey[] { LightComponent.Key })
         {
             lights = new LightComponentCollection(DefaultLightCapacityCount);
-
-            // TODO: How should we handle RenderLayer? Should we precalculate layers here?
-            ActiveDirectLights = new Dictionary<Type, LightComponentCollectionGroup>();
-            ActiveEnvironmentLights = new Dictionary<Type, LightComponentCollectionGroup>();
-            ActiveDirectLightsWithShadow = new Dictionary<Type, LightComponentCollectionGroup>();
+            lightsCollected = new LightComponentCollection(DefaultLightCapacityCount);
         }
 
-        /// <summary>
-        /// Gets the lights with a shadow per light type.
-        /// </summary>
-        /// <value>The lights with shadow.</value>
-        public Dictionary<Type, LightComponentCollectionGroup> ActiveDirectLightsWithShadow { get; private set; }
-
-        /// <summary>
-        /// Gets the lights without shadow per light type.
-        /// </summary>
-        /// <value>The lights.</value>
-        public Dictionary<Type, LightComponentCollectionGroup> ActiveDirectLights { get; private set; }
-
-        /// <summary>
-        /// Gets the lights without shadow per light type.
-        /// </summary>
-        /// <value>The lights.</value>
-        public Dictionary<Type, LightComponentCollectionGroup> ActiveEnvironmentLights { get; private set; }
+        public LightComponentCollection Lights
+        {
+            get
+            {
+                return lightsCollected;
+            }
+        }
 
         protected override void OnEntityAdding(Entity entity, LightComponent state)
         {
@@ -74,53 +60,20 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
             // 1) Clear the cache of current lights (without destroying collections but keeping previously allocated ones)
             lightsCollected.Clear();
-            ClearCache(ActiveDirectLights);
-            ClearCache(ActiveDirectLightsWithShadow);
-            ClearCache(ActiveEnvironmentLights);
 
             // 2) Prepare lights to be dispatched to the correct light group
             for (int i = 0; i < lights.Count; i++)
             {
-                PrepareLight(lights.Items[i]);
-            }
-
-            // 3) Allocate collection based on their culling mask
-            AllocateCollectionsPerGroupOfCullingMask(ActiveDirectLights);
-            AllocateCollectionsPerGroupOfCullingMask(ActiveDirectLightsWithShadow);
-            AllocateCollectionsPerGroupOfCullingMask(ActiveEnvironmentLights);
-
-            // 4) Collect lights to the correct light collection group
-            foreach (var light in lightsCollected)
-            {
-                light.Group.AddLight(light);
+                CollectLight(lights.Items[i]);
             }
         }
 
-        private static void AllocateCollectionsPerGroupOfCullingMask(Dictionary<Type, LightComponentCollectionGroup> lights)
-        {
-            foreach (var lightPair in lights)
-            {
-                lightPair.Value.AllocateCollectionsPerGroupOfCullingMask();
-            }
-        }
-
-        private static void ClearCache(Dictionary<Type, LightComponentCollectionGroup> lights)
-        {
-            foreach (var lightPair in lights)
-            {
-                lightPair.Value.Clear();
-            }
-        }
-
-        private void PrepareLight(LightComponent light)
+        private void CollectLight(LightComponent light)
         {
             if (light.Type == null || !light.Enabled)
             {
                 return;
             }
-            var lightGroup = GetLightGroup(light);
-            lightGroup.PrepareLight(light);
-            light.Group = lightGroup;
 
             // Update direction for light
             Vector3 lightDirection;
@@ -130,23 +83,6 @@ namespace SiliconStudio.Paradox.Effects.Lights
             light.Direction = lightDirection;
 
             lightsCollected.Add(light);
-        }
-
-        private LightComponentCollectionGroup GetLightGroup(LightComponent light)
-        {
-            var directLight = light.Type as IDirectLight;
-            var cache = (directLight != null)
-                ? directLight.Shadow != null && directLight.Shadow.Enabled ? ActiveDirectLightsWithShadow : ActiveDirectLights
-                : ActiveEnvironmentLights;
-
-            LightComponentCollectionGroup lightGroup;
-            var type = light.Type.GetType();
-            if (!cache.TryGetValue(type, out lightGroup))
-            {
-                lightGroup = new LightComponentCollectionGroup();
-                cache.Add(type, lightGroup);
-            }
-            return lightGroup;
         }
     }
 }

@@ -6,15 +6,30 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Lights;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Effects.Shadows
 {
+    public interface ILightShadowMapShaderData
+    {
+    }
+
+    public interface ILightShadowMapShaderGroupData
+    {
+        void SetShadowMapShaderData(int index, ILightShadowMapShaderData shaderData);
+
+        void ApplyMixin(ShaderMixinSource mixin, bool debug);
+
+        void ApplyParameters(ParameterCollection parameters);
+    }
+
+
     /// <summary>
     /// An allocated shadow map texture associated to a light.
     /// </summary>
     public class LightShadowMapTexture
     {
-        private static readonly PropertyKey<LightShadowMapTexture> Key = new PropertyKey<LightShadowMapTexture>("LightShadowMapTexture.Key", typeof(LightShadowMapTexture));
+        public delegate void ApplyShadowMapParametersDelegate(LightShadowMapTexture shadowMapTexture, ParameterCollection parameters);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LightShadowMapTexture" /> struct.
@@ -35,8 +50,6 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         /// </exception>
         public LightShadowMapTexture()
         {
-            CascadeSplits = new Vector4();
-            WorldToShadowCascadeUV = new Matrix[4];
         }
 
         public LightComponent LightComponent { get; private set; }
@@ -47,6 +60,10 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
         public Type FilterType { get; private set; }
 
+        public byte TextureId { get; internal set; }
+
+        public byte ShadowType { get; internal set; }
+
         public int Size { get; private set; }
 
         public int CascadeCount { get; set; }
@@ -55,9 +72,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
         public ILightShadowMapRenderer Renderer;
 
-        public Vector4 CascadeSplits;
-
-        public readonly Matrix[] WorldToShadowCascadeUV;
+        public ILightShadowMapShaderData ShaderData;
 
         public void Initialize(LightComponent lightComponent, IDirectLight light, LightShadowMap shadowMap, int size, ILightShadowMapRenderer renderer)
         {
@@ -71,13 +86,6 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             Size = size;
             FilterType = Shadow.Filter == null || !Shadow.Filter.RequiresCustomBuffer() ? null : Shadow.Filter.GetType();
             Renderer = renderer;
-            lightComponent.Tags.Set(Key, this);
-        }
-
-        public static LightShadowMapTexture GetFromLightComponent(LightComponent lightComponent)
-        {
-            if (lightComponent == null) throw new ArgumentNullException("lightComponent");
-            return lightComponent.Tags.Get(Key);
         }
 
         public Rectangle GetRectangle(int i)

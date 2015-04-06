@@ -22,10 +22,11 @@ namespace SiliconStudio.Paradox.Effects.Shadows
     /// </summary>
     public class ShadowMapRenderer : EntityComponentRendererCoreBase
     {
+        // TODO: Extract a common interface and implem for shadow renderer (not only shadow maps)
+
         private FastListStruct<ShadowMapAtlasTexture> atlases;
 
-        private List<LightShadowMapTexture> allocatedShadowMapTextures;
-        private FastListStruct<LightShadowMapTexture> shadowMaps;
+        private PoolListStruct<LightShadowMapTexture> shadowMapTextures;
 
         private readonly int MaximumTextureSize = (int)(MaximumShadowSize * ComputeSizeFactor(LightShadowImportance.High, LightShadowMapSize.Large) * 2.0f);
 
@@ -57,17 +58,22 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
         private readonly ParameterCollection shadowParameters;
 
+        public readonly Dictionary<LightComponent, LightShadowMapTexture> LightComponentsWithShadows;
+
+        private readonly Dictionary<ShaderGroupDataKey, ILightShadowMapShaderGroupData> shaderGroupDatas;
+
+        private List<LightComponent> visibleLights;
+
         public ShadowMapRenderer(string effectName)
         {
             if (effectName == null) throw new ArgumentNullException("effectName");
             this.effectName = effectName;
             atlases = new FastListStruct<ShadowMapAtlasTexture>(16);
-            shadowMaps = new FastListStruct<LightShadowMapTexture>(16);
-            allocatedShadowMapTextures = new List<LightShadowMapTexture>();
+            shadowMapTextures = new PoolListStruct<LightShadowMapTexture>(16, CreateLightShadowMapTexture);
+            LightComponentsWithShadows = new Dictionary<LightComponent, LightShadowMapTexture>(16);
 
             opaqueRenderItems = new RenderItemCollection(512, false);
             transparentRenderItems = new RenderItemCollection(512, true);
-
 
             renderers = new Dictionary<Type, ILightShadowMapRenderer>();
 
@@ -96,13 +102,20 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         /// </summary>
         public readonly CameraComponent ShadowCamera;
 
+        public ILightShadowMapRenderer FindRenderer(Type lightType)
+        {
+            ILightShadowMapRenderer shadowMapRenderer;
+            renderers.TryGetValue(lightType, out shadowMapRenderer);
+            return shadowMapRenderer;
+        }
+
         public void Attach(ModelComponentRenderer modelRenderer)
         {
             // TODO: Add logic to plug shadow mapping into 
 
         }
 
-        public void Draw(RenderContext context)
+        public void Draw(RenderContext context, List<LightComponent> visibleLights)
         {
             var current = context.Tags.Get(Current);
             if (current != null)
@@ -110,6 +123,9 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 return;
             }
 
+            this.visibleLights = visibleLights;
+
+            LightComponentsWithShadows.Clear();
             using (var t1 = context.PushTagAndRestore(Current, this))
             {
                 PreDrawCoreInternal(context);
@@ -118,7 +134,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             }
         }
 
-        public void RenderCasters(RenderContext context)
+        public void RenderCasters(RenderContext context, EntityGroupMask cullingMask)
         {
             context.PushParameters(shadowParameters);
 
@@ -126,6 +142,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
             opaqueRenderItems.Clear();
             transparentRenderItems.Clear();
+            shadowModelComponentRenderer.CurrentCullingMask = cullingMask;
             shadowModelComponentRenderer.Prepare(context, opaqueRenderItems, transparentRenderItems);
             shadowModelComponentRenderer.Draw(context, opaqueRenderItems, 0, opaqueRenderItems.Count-1);
 
@@ -149,11 +166,11 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             }
 
             // Collect all required shadow maps
-            shadowMaps.Clear();
+            shadowMapTextures.Clear();
             CollectShadowMaps();
 
             // No shadow maps to render
-            if (shadowMaps.Count == 0)
+            if (shadowMapTextures.Count == 0)
             {
                 return;
             }
@@ -161,30 +178,36 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             // Assign rectangles to shadow maps
             AssignRectangles();
 
-            // Prepare and render shadow maps
-            for (int i = 0; i < shadowMaps.Count; i++)
+            // Reset the state of renderers
+            foreach (var rendererKeyPairs in renderers)
             {
-                shadowMaps[i].Renderer.Render(context, this, ref shadowMaps.Items[i]);
+                var renderer = rendererKeyPairs.Value;
+                renderer.Reset();
+            }
+
+            // Prepare and render shadow maps
+            foreach (var shadowMapTexture in shadowMapTextures)
+            {
+                shadowMapTexture.Renderer.Render(context, this, shadowMapTexture);
             }
         }
-
 
         private void AssignRectangles()
         {
             // Clear atlases
-            for (int i = 0; i < atlases.Count; i++)
+            foreach (var atlas in atlases)
             {
-                atlases[i].Clear();
+                atlas.Clear();
             }
 
             // Assign rectangles for shadowmaps
-            for (int i = 0; i < shadowMaps.Count; i++)
+            foreach (var shadowMapTexture in shadowMapTextures)
             {
-                AssignRectangles(ref shadowMaps.Items[i]);
+                AssignRectangles(shadowMapTexture);
             }
         }
 
-        private void AssignRectangles(ref LightShadowMapTexture lightShadowMapTexture)
+        private void AssignRectangles(LightShadowMapTexture lightShadowMapTexture)
         {
             // TODO: This is not good to have to detect the light type here
             lightShadowMapTexture.CascadeCount = lightShadowMapTexture.Light is LightDirectional ? (int)lightShadowMapTexture.Shadow.CascadeCount : 1;
@@ -192,9 +215,8 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             var size = lightShadowMapTexture.Size;
 
             // Try to fit the shadow map into an existing atlas
-            for (int i = 0; i < atlases.Count; i++)
+            foreach (var atlas in atlases)
             {
-                var atlas = atlases[i];
                 if (atlas.TryInsert(size, size, lightShadowMapTexture.CascadeCount))
                 {
                     AssignRectangles(ref lightShadowMapTexture, atlas);
@@ -203,6 +225,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             }
 
             // TODO: handle FilterType texture creation here
+            // TODO: This does not work for Omni lights
             
             // Allocate a new atlas texture
             var texture = Texture.New2D(Context.GraphicsDevice, MaximumTextureSize, MaximumTextureSize, 1, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
@@ -228,76 +251,58 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
         private void CollectShadowMaps()
         {
-            // Gets the LightProcessor
-            var lightProcessor = SceneInstance.GetProcessor<LightProcessor>();
-            if (lightProcessor == null)
-                return;
-
-            var directLights = lightProcessor.ActiveDirectLights;
-
-            foreach (var activeLightsPerType in directLights)
+            foreach (var lightComponent in visibleLights)
             {
-                var lightType = activeLightsPerType.Key;
-                var lightCollectionGroup = activeLightsPerType.Value;
-
-                foreach (var lightComponent in lightCollectionGroup.AllLightsWithShadows)
+                var light = lightComponent.Type as IDirectLight;
+                if (light == null)
                 {
-                    var light = (IDirectLight)lightComponent.Type;
-
-                    // TODO: We support only ShadowMap in this renderer. Should we pre-organize this in the LightProcessor? (adding for example LightType => ShadowType => LightComponents)
-                    var shadowMap = light.Shadow as LightShadowMap;
-                    if (shadowMap == null)
-                    {
-                        continue;
-                    }
-
-                    // Check if the light has a shadow map renderer
-                    ILightShadowMapRenderer renderer;
-                    if (!renderers.TryGetValue(lightType, out renderer))
-                    {
-                        // Create renderers just once per ShadowMapRenderer instance
-                        renderer = shadowMap.CreateRenderer(light);
-                        renderers[lightType] = renderer;
-                    }
-
-                    // If no shadow map renderer, skip it.
-                    if (renderer == null)
-                    {
-                        continue;
-                    }
-
-                    var direction = lightComponent.Direction;
-                    var position = lightComponent.Position;
-
-                    // Compute the coverage of this light on the screen
-                    var size = light.ComputeScreenCoverage(Context, position, direction);
-
-                    // Converts the importance into a shadow size factor
-                    var sizeFactor = ComputeSizeFactor(light.ShadowImportance, shadowMap.Size);
-                    
-                    // Compute the size of the final shadow map
-                    // TODO: Handle GraphicsProfile
-                    var shadowMapSize = (int)Math.Min(MaximumShadowSize * sizeFactor, MathUtil.NextPowerOfTwo(size * sizeFactor));
-
-                    if (shadowMapSize <= 0) // TODO: Validate < 0 earlier in the setters
-                    {
-                        continue;
-                    }
-
-                    LightShadowMapTexture shadowMapTexture;
-                    if (shadowMaps.Count < allocatedShadowMapTextures.Count)
-                    {
-                        shadowMapTexture = allocatedShadowMapTextures[shadowMaps.Count];
-                    }
-                    else
-                    {
-                        shadowMapTexture = new LightShadowMapTexture();
-                        allocatedShadowMapTextures.Add(shadowMapTexture);
-                    }
-
-                    shadowMapTexture.Initialize(lightComponent, light, shadowMap, shadowMapSize, renderer);
-                    shadowMaps.Add(shadowMapTexture);
+                    continue;
                 }
+
+                var shadowMap = light.Shadow;
+                if (shadowMap == null || !shadowMap.Enabled)
+                {
+                    continue;
+                }
+
+                // Check if the light has a shadow map renderer
+                var lightType = light.GetType();
+                ILightShadowMapRenderer renderer;
+                if (!renderers.TryGetValue(lightType, out renderer))
+                {
+                    // Create renderers just once per ShadowMapRenderer instance
+                    renderer = shadowMap.CreateRenderer(light);
+                    renderers[lightType] = renderer;
+                }
+
+                // If no shadow map renderer, skip it.
+                if (renderer == null)
+                {
+                    continue;
+                }
+
+                var direction = lightComponent.Direction;
+                var position = lightComponent.Position;
+
+                // Compute the coverage of this light on the screen
+                var size = light.ComputeScreenCoverage(Context, position, direction);
+
+                // Converts the importance into a shadow size factor
+                var sizeFactor = ComputeSizeFactor(shadowMap.Importance, shadowMap.Size);
+                    
+                // Compute the size of the final shadow map
+                // TODO: Handle GraphicsProfile
+                var shadowMapSize = (int)Math.Min(MaximumShadowSize * sizeFactor, MathUtil.NextPowerOfTwo(size * sizeFactor));
+
+                if (shadowMapSize <= 0) // TODO: Validate < 0 earlier in the setters
+                {
+                    continue;
+                }
+
+                // Get or allocate  a ShadowMapTexture
+                var shadowMapTexture = shadowMapTextures.Add();
+                shadowMapTexture.Initialize(lightComponent, light, shadowMap, shadowMapSize, renderer);
+                LightComponentsWithShadows.Add(lightComponent, shadowMapTexture);
             }
         }
 
@@ -328,6 +333,63 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 {
                     mesh.Parameters.Set(ParadoxEffectBaseKeys.ExtensionPostVertexStageShader, ShadowMapCasterExtension);
                 }
+            }
+        }
+
+        private static LightShadowMapTexture CreateLightShadowMapTexture()
+        {
+            return new LightShadowMapTexture();
+        }
+
+        struct ShaderGroupDataKey : IEquatable<ShaderGroupDataKey>
+        {
+            public readonly Texture Texture;
+
+            public readonly ILightShadowMapRenderer Renderer;
+
+            public readonly int CascadeCount;
+
+            public readonly int LightMaxCount;
+
+            public ShaderGroupDataKey(Texture texture, ILightShadowMapRenderer renderer, int cascadeCount, int lightMaxCount)
+            {
+                Texture = texture;
+                Renderer = renderer;
+                CascadeCount = cascadeCount;
+                LightMaxCount = lightMaxCount;
+            }
+
+            public bool Equals(ShaderGroupDataKey other)
+            {
+                return Texture.Equals(other.Texture) && Renderer.Equals(other.Renderer) && CascadeCount == other.CascadeCount && LightMaxCount == other.LightMaxCount;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                return obj is ShaderGroupDataKey && Equals((ShaderGroupDataKey)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hashCode = Texture.GetHashCode();
+                    hashCode = (hashCode * 397) ^ Renderer.GetHashCode();
+                    hashCode = (hashCode * 397) ^ CascadeCount;
+                    hashCode = (hashCode * 397) ^ LightMaxCount;
+                    return hashCode;
+                }
+            }
+
+            public static bool operator ==(ShaderGroupDataKey left, ShaderGroupDataKey right)
+            {
+                return left.Equals(right);
+            }
+
+            public static bool operator !=(ShaderGroupDataKey left, ShaderGroupDataKey right)
+            {
+                return !left.Equals(right);
             }
         }
     }

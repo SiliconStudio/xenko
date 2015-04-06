@@ -9,17 +9,17 @@ namespace SiliconStudio.Paradox.Effects.Shadows
     /// TCascadeCount: Number of cascades.
     /// TCascadeDebug: Flag to enable debug mode (1 color per cascade).
     /// </remarks>
-    internal class ShadowMapCascade<int TCascadeCount, bool TCascadeDebug> : ShadowMapGroup, ShadowMapFilterBase, PositionStream4
+    internal class ShadowMapCascade<int TCascadeCount, int TLightCount, bool TCascadeDebug> : ShadowMapGroup, ShadowMapFilterBase, PositionStream4
     {
         cbuffer PerPass // TODO: Use a proper cbuffer for this?
         {
-            float4 CascadeDepthSplits;
-            float4x3 WorldToShadowCascadeUV[TCascadeCount];
+            float CascadeDepthSplits[TCascadeCount * TLightCount];
+            float4x3 WorldToShadowCascadeUV[TCascadeCount * TLightCount];
         };
 
-        float ComputeShadowFromCascade(float3 shadowPositionWS, int cascadeIndex)
+        float ComputeShadowFromCascade(float3 shadowPositionWS, int cascadeIndex, int lightIndex)
         {
-            var shadowPosition = mul(float4(shadowPositionWS, 1), WorldToShadowCascadeUV[cascadeIndex]);
+            var shadowPosition = mul(float4(shadowPositionWS, 1), WorldToShadowCascadeUV[cascadeIndex + lightIndex * TCascadeCount]);
             return FilterShadow(shadowPosition.xy, shadowPosition.z);
         }
 
@@ -33,13 +33,13 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             for(int i = 0; i < TCascadeCount - 1; i++) 
             {
                 [flatten]
-                if (streams.DepthVS > CascadeDepthSplits[i])
+                if (streams.DepthVS > CascadeDepthSplits[i + lightIndex * TCascadeCount])
                 {
                     cascadeIndex = i + 1;
                 }
             }
 
-            var shadow = ComputeShadowFromCascade(streams.Position.xyz, cascadeIndex);
+            var shadow = ComputeShadowFromCascade(streams.Position.xyz, cascadeIndex, lightIndex);
             streams.shadowColor = shadow;
 
             //// Calculate shadows with lerp between cascades

@@ -10,7 +10,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
     /// </summary>
     public class LightComponentRenderer : EntityComponentRendererBase
     {
-        private LightModelRendererForward lightModelRendererForward;
+        private LightComponentForwardRenderer lightComponentForwardRenderer;
 
         protected override void InitializeCore()
         {
@@ -20,15 +20,15 @@ namespace SiliconStudio.Paradox.Effects.Lights
             var forwardMode = SceneCameraRenderer.Mode as CameraRendererModeForward;
             if (forwardMode != null)
             {
-                lightModelRendererForward = ToLoadAndUnload(new LightModelRendererForward());
+                lightComponentForwardRenderer = ToLoadAndUnload(new LightComponentForwardRenderer());
             }
         }
 
         protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
-            if (lightModelRendererForward != null)
+            if (lightComponentForwardRenderer != null)
             {
-                lightModelRendererForward.Draw(context);
+                lightComponentForwardRenderer.Draw(context);
             }
         }
 

@@ -19,6 +19,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
             Parameters = new ParameterCollection();
         }
 
+        public bool IsEnvironementLightGroup { get; set; }
+
         public ShaderSource ShaderSource { get; set; }
 
         public ParameterCollection Parameters { get; private set; }

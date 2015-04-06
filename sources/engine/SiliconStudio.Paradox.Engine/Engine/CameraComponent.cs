@@ -153,6 +153,12 @@ namespace SiliconStudio.Paradox.Engine
         public Matrix ViewProjectionMatrix;
 
         /// <summary>
+        /// The frustum extracted from the view projection matrix calculated automatically after calling <see cref="Update"/> method.
+        /// </summary>
+        [DataMemberIgnore]
+        public BoundingFrustum Frustum;
+
+        /// <summary>
         /// Calculates the projection matrix and view matrix.
         /// </summary>
         public void Update()
@@ -173,6 +179,9 @@ namespace SiliconStudio.Paradox.Engine
 
             // Update ViewProjectionMatrix
             Matrix.Multiply(ref ViewMatrix, ref ProjectionMatrix, out ViewProjectionMatrix);
+
+            // Update the frustum.
+            Frustum = new BoundingFrustum(ref ViewProjectionMatrix);
         }
 
         public override PropertyKey GetDefaultKey()

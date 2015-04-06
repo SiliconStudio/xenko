@@ -78,6 +78,7 @@
     <Compile Include="Engine\BackgroundComponentProcessor.cs" />
     <Compile Include="Engine\Graphics\Lights\LightComponentCollectionGroup.cs" />
     <Compile Include="Engine\Graphics\Lights\LightComponentRenderer.cs" />
+    <Compile Include="Engine\Graphics\Lights\LightComponentForwardRenderer.cs" />
     <Compile Include="Engine\Graphics\MaterialInstance.cs" />
     <Compile Include="Engine\Graphics\ParadoxEffectBaseKeys.cs" />
     <Compile Include="Engine\Graphics\CameraComponentRendererExtensions.cs" />
@@ -1388,7 +1389,6 @@
     <Compile Include="Engine\Graphics\Lights\LightGroupRendererBase.cs" />
     <Compile Include="Engine\Graphics\Lights\LightingKeys.cs" />
     <Compile Include="Engine\Graphics\Lights\LightModelRendererBase.cs" />
-    <Compile Include="Engine\Graphics\Lights\LightModelRendererForward.cs" />
     <Compile Include="Engine\Graphics\Lights\LightProcessor.cs" />
     <Compile Include="Engine\Graphics\Lights\LightShaderGroup.cs" />
     <Compile Include="Engine\Graphics\Lights\LightShadowMap.cs" />

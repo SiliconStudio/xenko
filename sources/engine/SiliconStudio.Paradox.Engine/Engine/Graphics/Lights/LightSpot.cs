@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
             Range = 1.0f;
             Angle = 30.0f;
-            ShadowImportance = LightShadowImportance.Medium;
+            Shadow.Importance = LightShadowImportance.Medium;
         }
 
         /// <summary>
@@ -41,6 +41,26 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// <value>The spot angle in degrees.</value>
         [DataMemberRange(0.01, 90, 1, 10, 1)]
         public float Angle { get; set; }
+
+        public override bool HasBoundingBox
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        public override BoundingBox ComputeBounds(Vector3 position, Vector3 direction)
+        {
+            // Calculates the bouding box of the spot target
+            var spotTarget = position + direction * Range;
+            var r = (float)Math.Abs(Range * Math.Sin(MathUtil.DegreesToRadians(Angle)));
+            var box = new BoundingBox(spotTarget - r, spotTarget + r);
+
+            // Merge it with the start of the bounding box
+            BoundingBox.Merge(ref box, ref position, out box);
+            return box;
+        }
 
         protected override float ComputeScreenCoverage(CameraComponent camera, Vector3 position, Vector3 direction, float width, float height)
         {

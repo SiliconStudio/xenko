@@ -55,6 +55,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// </summary>
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
         [DataMember(10)]
+        [DefaultValue(false)]
         public bool Enabled { get; set; }
 
         /// <summary>
@@ -72,6 +73,15 @@ namespace SiliconStudio.Paradox.Effects.Lights
         [DataMember(30)]
         [DefaultValue(LightShadowMapSize.Medium)]
         public LightShadowMapSize Size { get; set; }
+
+        /// <summary>
+        /// Gets the importance of the shadow. See remarks.
+        /// </summary>
+        /// <value>The shadow importance.</value>
+        /// <returns>System.Single.</returns>
+        /// <remarks>The higher the importance is, the higher the cost of shadow computation is costly</remarks>
+        [DataMember(35)]
+        public LightShadowImportance Importance { get; set; }
 
         /// <summary>
         /// Gets or Sets the number of cascades for this shadow (valid only for directional lights)
@@ -126,6 +136,14 @@ namespace SiliconStudio.Paradox.Effects.Lights
         [DataMember(120)]
         [DefaultValue(false)]
         public bool Stabilized { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="LightShadowMap"/> is debug.
+        /// </summary>
+        /// <value><c>true</c> if debug; otherwise, <c>false</c>.</value>
+        [DataMember(130)]
+        [DefaultValue(false)]
+        public bool Debug { get; set; }
 
         public ILightShadowMapRenderer CreateRenderer(ILight light)
         {

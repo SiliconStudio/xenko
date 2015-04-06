@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         public LightPoint()
         {
             Radius = 1.0f;
-            ShadowImportance = LightShadowImportance.Low;
+            Shadow.Importance = LightShadowImportance.Low;
         }
 
         /// <summary>
@@ -32,6 +32,19 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// <value>The range.</value>
         [DefaultValue(1.0f)]
         public float Radius{ get; set; }
+
+        public override bool HasBoundingBox
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        public override BoundingBox ComputeBounds(Vector3 positionWS, Vector3 directionWS)
+        {
+            return new BoundingBox(positionWS - Radius, positionWS + Radius);
+        }
 
         protected override float ComputeScreenCoverage(CameraComponent camera, Vector3 position, Vector3 direction, float width, float height)
         {
