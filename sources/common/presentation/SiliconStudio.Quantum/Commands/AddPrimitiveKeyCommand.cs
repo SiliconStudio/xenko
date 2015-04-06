@@ -35,10 +35,10 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public override object Invoke(object currentValue, ITypeDescriptor descriptor, object parameter, out UndoToken undoToken)
+        public override object Invoke(object currentValue, object parameter, out UndoToken undoToken)
         {
-            var dictionaryDescriptor = (DictionaryDescriptor)descriptor;
-            var newKey = dictionaryDescriptor.KeyType != typeof(string) ? Activator.CreateInstance(dictionaryDescriptor.KeyType) : GenerateStringKey(currentValue, descriptor, parameter);
+            var dictionaryDescriptor = (DictionaryDescriptor)TypeDescriptorFactory.Default.Find(currentValue.GetType());
+            var newKey = dictionaryDescriptor.KeyType != typeof(string) ? Activator.CreateInstance(dictionaryDescriptor.KeyType) : GenerateStringKey(currentValue, dictionaryDescriptor, parameter);
             object newItem = null;
             // TODO: Find a better solution that doesn't require to reference Core.Serialization (and unreference this assembly)
             if (!dictionaryDescriptor.ValueType.GetCustomAttributes(typeof(ContentSerializerAttribute), true).Any())
@@ -47,11 +47,11 @@ namespace SiliconStudio.Quantum.Commands
             undoToken = new UndoToken(true, newKey);
             return currentValue;
         }
-
+        
         /// <inheritdoc/>
-        public override object Undo(object currentValue, ITypeDescriptor descriptor, UndoToken undoToken)
+        public override object Undo(object currentValue, UndoToken undoToken)
         {
-            var dictionaryDescriptor = (DictionaryDescriptor)descriptor;
+            var dictionaryDescriptor = (DictionaryDescriptor)TypeDescriptorFactory.Default.Find(currentValue.GetType());
             var key = undoToken.TokenValue;
             dictionaryDescriptor.Remove(currentValue, key);
             return currentValue;

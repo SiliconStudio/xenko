@@ -11,25 +11,49 @@ namespace SiliconStudio.Quantum
     /// <summary>
     /// A class describing the path of a node, relative to a root node. The path can cross references, array, etc.
     /// </summary>
+    /// <remarks>This class is immutable.</remarks>
     public class ModelNodePath
     {
-        private class NodePathItemIndex
+        /// <summary>
+        /// An enum that describes the type of an item of a model node path.
+        /// </summary>
+        public enum NodePathElementType
         {
+            /// <summary>
+            /// This item is a member (child) of the previous node
+            /// </summary>
+            Member,
+            /// <summary>
+            /// This item is the target of the object reference of the previous node.
+            /// </summary>
+            Target,
+            /// <summary>
+            /// This item is the target of a enumerable reference of the previous node corresponding to the associated index.
+            /// </summary>
+            Index,
+        }
+
+        private class NodePathElement
+        {
+            public NodePathElementType Type;
             public object Value;
-            public override string ToString() { return string.Format("[{0}]", Value); }
+            public override string ToString()
+            {
+                switch (Type)
+                {
+                    case NodePathElementType.Member:
+                        return string.Format(".{0}", Value);
+                    case NodePathElementType.Target:
+                        return "-> (Target)";
+                    case NodePathElementType.Index:
+                        return string.Format("[{0}]", Value);
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
         }
 
-        private class NodePathItemMember
-        {
-            public string Name;
-            public override string ToString() { return string.Format(".{0}", Name); } }
-
-        private class NodePathItemTarget
-        {
-            public override string ToString() { return "-> (Target)"; }
-        }
-
-        private readonly List<object> path = new List<object>();
+        private readonly List<NodePathElement> path = new List<NodePathElement>();
         private bool targetIsRootNode;
 
         private ModelNodePath()
@@ -75,25 +99,32 @@ namespace SiliconStudio.Quantum
             targetIndex = null;
             foreach (var itemPath in path)
             {
-                var member = itemPath as NodePathItemMember;
-                var target = itemPath as NodePathItemTarget;
-                var index = itemPath as NodePathItemIndex;
-                if (member != null)
+                targetIndex = null;
+                switch (itemPath.Type)
                 {
-                    node = node.Children.Single(x => x.Name == member.Name);
+                    case NodePathElementType.Member:
+                        var name = (string)itemPath.Value;
+                        node = node.Children.Single(x => x.Name == name);
+                        break;
+                    case NodePathElementType.Target:
+                        if (itemPath != path[path.Count - 1])
+                        {
+                            var objectRefererence = (ObjectReference)node.Content.Reference;
+                            node = objectRefererence.TargetNode;
+                        }
+                        break;
+                    case NodePathElementType.Index:
+                        if (itemPath != path[path.Count - 1])
+                        {
+                            var enumerableReference = (ReferenceEnumerable)node.Content.Reference;
+                            var objectRefererence = enumerableReference.Single(x => Equals(x.Index, itemPath.Value));
+                            node = objectRefererence.TargetNode;
+                        }
+                        targetIndex = itemPath.Value;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
-                else if (target != null && itemPath != path[path.Count - 1])
-                {
-                    var objectRefererence = (ObjectReference)node.Content.Reference;
-                    node = objectRefererence.TargetNode;
-                }
-                else if (index != null && itemPath != path[path.Count - 1])
-                {
-                    var enumerableReference = (ReferenceEnumerable)node.Content.Reference;
-                    var objectRefererence = enumerableReference.Single(x => Equals(x.Index, index.Value));
-                    node = objectRefererence.TargetNode;
-                }
-                targetIndex = index != null ? index.Value : null;
             }
             return node;
         }
@@ -126,6 +157,7 @@ namespace SiliconStudio.Quantum
             return result;
         }
 
+
         /// <inheritdoc/>
         public override string ToString()
         {
@@ -145,6 +177,27 @@ namespace SiliconStudio.Quantum
             return Clone(RootNode);
         }
 
+        public ModelNodePath PushElement(object elementValue, NodePathElementType type)
+        {
+            var result = Clone();
+            switch (type)
+            {
+                case NodePathElementType.Member:
+                    if (!(elementValue is string)) throw new ArgumentException("The value must be a string when type is NodePathElementType.Member.");
+                    break;
+                case NodePathElementType.Target:
+                    if (elementValue != null) throw new ArgumentException("The value must be null when type is NodePathElementType.Target.");
+                    break;
+                case NodePathElementType.Index:
+                    if (elementValue == null) throw new ArgumentException("The value must be non-null when type is NodePathElementType.Target.");
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("type");
+            }
+            result.path.Add(new NodePathElement { Type = type, Value = elementValue });
+            return result;
+        }
+
         private static ModelNodePath GetNextPath(ModelNodePath parentPath, IModelNode parentNode, IModelNode target)
         {
             var result = parentPath.Clone();
@@ -154,22 +207,24 @@ namespace SiliconStudio.Quantum
             var member = parentNode.Children.FirstOrDefault(x => x == target);
             if (member != null)
             {
-                // The target is a direct member of the ModelNode
-                result.path.Add(new NodePathItemMember { Name = member.Name });
+                // The target is a direct member of the parent.
+                result.path.Add(new NodePathElement { Type = NodePathElementType.Member, Value = member.Name });
                 return result;
             }
             var objectReference = parentNode.Content.Reference as ObjectReference;
             if (objectReference != null && objectReference.TargetNode == target)
             {
-                result.path.Add(new NodePathItemTarget());
+                // The target is the node referenced by the parent.
+                result.path.Add(new NodePathElement { Type = NodePathElementType.Target });
                 return result;
             }
 
             member = parentNode.Children.FirstOrDefault(x => x.Content.Reference is ObjectReference && ((ObjectReference)x.Content.Reference).TargetNode == target);
             if (member != null)
             {
-                result.path.Add(new NodePathItemMember { Name = member.Name });
-                result.path.Add(new NodePathItemTarget());
+                // The target is the node referenced by one of the children of the parent.
+                result.path.Add(new NodePathElement { Type = NodePathElementType.Member, Value = member.Name });
+                result.path.Add(new NodePathElement { Type = NodePathElementType.Target });
                 return result;
             }
 
@@ -179,7 +234,8 @@ namespace SiliconStudio.Quantum
                 ObjectReference reference = enumerableReference.FirstOrDefault(x => x.TargetNode == target);
                 if (reference != null)
                 {
-                    result.path.Add(new NodePathItemIndex { Value = reference.Index });
+                    // The target is the node referenced by the parent at a given index.
+                    result.path.Add(new NodePathElement { Type = NodePathElementType.Index, Value = reference.Index });
                     return result;
                 }
             }
@@ -192,8 +248,9 @@ namespace SiliconStudio.Quantum
                     ObjectReference reference = enumerableReference.FirstOrDefault(x => x.TargetNode == target);
                     if (reference != null)
                     {
-                        result.path.Add(new NodePathItemMember { Name = child.Name });
-                        result.path.Add(new NodePathItemIndex { Value = reference.Index });
+                        // The target is the node referenced by one of the children of the parent at a given index.
+                        result.path.Add(new NodePathElement { Type = NodePathElementType.Member, Value = child.Name });
+                        result.path.Add(new NodePathElement { Type = NodePathElementType.Index, Value = reference.Index });
                         return result;
                     }
                 }

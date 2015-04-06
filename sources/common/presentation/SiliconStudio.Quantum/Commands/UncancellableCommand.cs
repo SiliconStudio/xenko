@@ -9,18 +9,18 @@ namespace SiliconStudio.Quantum.Commands
 {
     public abstract class UncancellableCommand : NodeCommand
     {
-        public sealed override object Invoke(object currentValue, ITypeDescriptor descriptor, object parameter, out UndoToken undoToken)
+        public sealed override object Invoke(object currentValue, object parameter, out UndoToken undoToken)
         {
             undoToken = new UndoToken(false);
-            InvokeUncancellable(currentValue, descriptor, parameter);
+            InvokeUncancellable(currentValue, parameter);
             return currentValue;
         }
 
-        public sealed override object Undo(object currentValue, ITypeDescriptor descriptor, UndoToken undoToken)
+        public sealed override object Undo(object currentValue, UndoToken undoToken)
         {
             throw new NotSupportedException("This command is not cancellable.");
         }
 
-        protected abstract void InvokeUncancellable(object currentValue, ITypeDescriptor descriptor, object parameter);
+        protected abstract void InvokeUncancellable(object currentValue, object parameter);
     }
 }

@@ -85,18 +85,25 @@ namespace SiliconStudio.Presentation.Quantum
 
         protected virtual void Initialize(bool isUpdating)
         {
-            TargetNodePath = ModelNodePath.GetChildPath(SourceNodePath, SourceNode, targetNode);
-            if (TargetNodePath == null || !TargetNodePath.IsValid)
+            var targetNodePath = ModelNodePath.GetChildPath(SourceNodePath, SourceNode, targetNode);
+            if (targetNodePath == null || !targetNodePath.IsValid)
                 throw new InvalidOperationException("Unable to retrieve the path of the given model node.");
-            
+
+            if (!targetNode.Content.ShouldProcessReference && Index != null)
+            {
+                // When the references are not processed, there is no actual target node.
+                // However, the commands need the index to be able to properly set the modified value
+                targetNodePath = targetNodePath.PushElement(Index, ModelNodePath.NodePathElementType.Index);
+            }
+
             foreach (var command in targetNode.Commands)
             {
-                var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, Path, Owner, TargetNodePath, Owner.Dirtiables);
+                var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, Path, Owner, targetNodePath, Owner.Dirtiables);
                 AddCommand(commandWrapper);
             }
 
             if (!isPrimitive)
-                GenerateChildren(targetNode, TargetNodePath, isUpdating);
+                GenerateChildren(targetNode, targetNodePath, isUpdating);
 
             isInitialized = true;
 
@@ -149,8 +156,6 @@ namespace SiliconStudio.Presentation.Quantum
         internal Guid ModelGuid { get { return targetNode.Guid; } }
 
         private ObservableModelNode ModelNodeParent { get { for (var p = Parent; p != null; p = p.Parent) { var mp = p as ObservableModelNode; if (mp != null) return mp; } return null; } }
-
-        protected ModelNodePath TargetNodePath { get; private set; }
    
         public void AddAssociatedData(string key, object value)
         {

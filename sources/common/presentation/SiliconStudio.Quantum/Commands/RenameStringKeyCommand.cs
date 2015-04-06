@@ -49,9 +49,9 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public override object Invoke(object currentValue, ITypeDescriptor descriptor, object parameter, out UndoToken undoToken)
+        public override object Invoke(object currentValue, object parameter, out UndoToken undoToken)
         {
-            var dictionaryDescriptor = descriptor as DictionaryDescriptor;
+            var dictionaryDescriptor = TypeDescriptorFactory.Default.Find(currentValue.GetType()) as DictionaryDescriptor;
             var tuple = parameter as Tuple<object, object>;
             if (dictionaryDescriptor == null || tuple == null)
                 throw new InvalidOperationException("This command cannot be executed on the given object.");
@@ -65,9 +65,9 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public override object Undo(object currentValue, ITypeDescriptor descriptor, UndoToken undoToken)
+        public override object Undo(object currentValue, UndoToken undoToken)
         {
-            var dictionaryDescriptor = descriptor as DictionaryDescriptor;
+            var dictionaryDescriptor = TypeDescriptorFactory.Default.Find(currentValue.GetType()) as DictionaryDescriptor;
             var undoData = (UndoTokenData)undoToken.TokenValue;
             if (dictionaryDescriptor == null)
                 throw new InvalidOperationException("This command cannot be cancelled on the given object.");

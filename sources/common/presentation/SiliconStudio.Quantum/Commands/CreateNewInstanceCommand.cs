@@ -6,7 +6,7 @@ using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public class CreateNewInstanceCommand : ModifyValueCommand
+    public class CreateNewInstanceCommand : ChangeValueCommand
     {
         private static readonly object SetToNullObject = new object();
 
@@ -32,8 +32,7 @@ namespace SiliconStudio.Quantum.Commands
             return result;
         }
 
-        /// <inheritdoc/>
-        protected override object ModifyValue(object currentValue, ITypeDescriptor descriptor, object parameter, bool isRedo)
+        protected override object ChangeValue(object currentValue, object parameter, bool isRedo)
         {
             if (parameter == SetToNull)
                 return null;
