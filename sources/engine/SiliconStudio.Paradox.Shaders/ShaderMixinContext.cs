@@ -311,6 +311,10 @@ namespace SiliconStudio.Paradox.Shaders
             {
                 mixinTree.Mixins.Add((ShaderClassSource)shaderSource);
             }
+            else if (shaderSource is ShaderMixinGeneratorSource)
+            {
+                Mixin(mixinTree, ((ShaderMixinGeneratorSource)shaderSource).Name);
+            }
             else
             {
                 throw new InvalidOperationException("ShaderSource [{0}] is not supported (Only ShaderMixinSource and ShaderClassSource)".ToFormat(shaderSource.GetType()));
