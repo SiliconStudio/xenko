@@ -92,12 +92,15 @@ namespace SiliconStudio.Core.Mathematics
             // Update world matrix into absolute form
             unsafe
             {
-                // Perform an abs on the matrix
-                var matrixData = (uint*)&world.M11;
-                for (int j = 0; j < 16; ++j)
+                fixed (void* pMatrix = &world)
                 {
-                    *matrixData &= 0x7FFFFFFF;
-                    ++matrixData;
+                    // Perform an abs on the matrix
+                    var matrixData = (uint*)pMatrix;
+                    for (int j = 0; j < 16; ++j)
+                    {
+                        *matrixData &= 0x7FFFFFFF;
+                        ++matrixData;
+                    }
                 }
             }
 
