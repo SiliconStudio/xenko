@@ -103,8 +103,13 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// <summary>
         /// Updates this instance( <see cref="Position"/>, <see cref="Direction"/>, <see cref="HasBoundingBox"/>, <see cref="BoundingBox"/>, <see cref="BoundingBoxExt"/>
         /// </summary>
-        public void Update()
+        public bool Update()
         {
+            if (Type == null || !Enabled || !Type.Update(this))
+            {
+                return false;
+            }
+
             // Compute light direction and position
             Vector3 lightDirection;
             var lightDir = DefaultDirection;
@@ -124,14 +129,14 @@ namespace SiliconStudio.Paradox.Effects.Lights
             BoundingBoxExt = new BoundingBoxExt();
 
             var directLight = Type as IDirectLight;
-            if (directLight == null || directLight.HasBoundingBox)
+            if (directLight != null && directLight.HasBoundingBox)
             {
-                return;
+                // Computes the bounding boxes
+                BoundingBox = directLight.ComputeBounds(Position, Direction);
+                BoundingBoxExt = new BoundingBoxExt(BoundingBox);
             }
 
-            // Computes the bounding boxes
-            BoundingBox = directLight.ComputeBounds(Position, Direction);
-            BoundingBoxExt = new BoundingBoxExt(BoundingBox);
+            return true;
         }
 
 

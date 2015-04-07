@@ -39,10 +39,6 @@ namespace SiliconStudio.Paradox.Effects.Lights
             // Precreate a fixed list of skybox light shader group. Usually there is only one.
             for (int i = 0; i < LightMax; i++)
             {
-                var mixin = new ShaderMixinSource();
-                mixin.Mixins.Add(new ShaderClassSource("LightSkyboxShader"));
-                mixin.AddComposition(LightDiffuseColorComposition, null);
-                mixin.AddComposition(LightSpecularColorComposition, null);
                 defaultLightShaders.Add(new LightShaderGroup(mixin));
             }
 
@@ -123,6 +119,10 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
         public override LightShaderGroup CreateLightShaderGroup(string compositionName, int compositionIndex, int lightMaxCount, ILightShadowMapShaderGroupData shadowGroup)
         {
+            var mixin = new ShaderMixinSource();
+            mixin.Mixins.Add(new ShaderClassSource("LightSkyboxShader"));
+            mixin.AddComposition(LightDiffuseColorComposition, null);
+            mixin.AddComposition(LightSpecularColorComposition, null);
             
         }
 
@@ -135,12 +135,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             protected override void AddLightInternal(LightComponent light)
             {
                 // TODO: If there is a performance penalty for accessing the SkyboxComponent, this could be prepared by the LightProcessor
-                var skyboxComponent = light.Entity.Get<SkyboxComponent>();
-                if (skyboxComponent == null || skyboxComponent.Skybox == null)
-                {
-                    return;
-                }
-
+                var skyboxComponent = ((LightSkybox)light.Type).SkyboxComponent;
                 var skybox = skyboxComponent.Skybox;
 
                 var diffuseParameters = skybox.DiffuseLightingParameters;

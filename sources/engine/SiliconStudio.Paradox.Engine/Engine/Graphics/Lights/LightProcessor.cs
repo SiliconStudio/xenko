@@ -70,17 +70,10 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
         private void CollectLight(LightComponent light)
         {
-            if (light.Type == null || !light.Enabled)
+            if (!light.Update())
             {
                 return;
             }
-
-            // Update direction for light
-            Vector3 lightDirection;
-            var lightDir = LightComponent.DefaultDirection;
-            Vector3.TransformNormal(ref lightDir, ref light.Entity.Transform.WorldMatrix, out lightDirection);
-            lightDirection.Normalize();
-            light.Direction = lightDirection;
 
             lightsCollected.Add(light);
         }

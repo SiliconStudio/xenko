@@ -26,6 +26,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
         public ILightShadowMapShaderGroupData ShadowGroup { get; private set; }
 
+        public bool IsShaderSourceChanged { get; set; }
+
         public void Reset()
         {
             Count = 0;

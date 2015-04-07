@@ -8,5 +8,6 @@ namespace SiliconStudio.Paradox.Effects.Lights
     /// </summary>
     public interface ILight
     {
+        bool Update(LightComponent lightComponent);
     }
 }

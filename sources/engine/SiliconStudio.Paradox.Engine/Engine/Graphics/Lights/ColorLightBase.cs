@@ -34,5 +34,10 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
             return (Color != null ? Color.ComputeColor() : new Color3(1.0f)).ToLinear() * intensity;
         }
+
+        public bool Update(LightComponent lightComponent)
+        {
+            return true;
+        }
     }
 }
