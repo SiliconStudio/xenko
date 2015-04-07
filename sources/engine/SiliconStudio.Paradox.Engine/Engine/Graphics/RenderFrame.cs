@@ -28,6 +28,13 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// </summary>
         public static readonly PropertyKey<RenderFrame> Current = new PropertyKey<RenderFrame>("RenderFrame.Current", typeof(RenderFrame));
 
+        /// <summary>
+        /// Creates a new render for serialization
+        /// </summary>
+        public RenderFrame()
+        {
+        }
+
         // TODO: Should we move this to Graphics instead?
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderFrame" /> class.
