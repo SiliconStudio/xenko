@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Paradox.Effects.Shadows;
 using SiliconStudio.Paradox.Engine;
@@ -19,21 +20,16 @@ namespace SiliconStudio.Paradox.Effects.Lights
     /// </summary>
     public class LightComponentForwardRenderer : RendererBase
     {
+        private const string DirectLightGroupsCompositionName = "directLightGroups";
+        private const string EnvironmentLightsCompositionName = "environmentLights";
+
         private bool isModelComponentRendererSetup;
-
-        private LightKey currentLightKey;
-
-        private readonly Dictionary<LightKey, LightParameters> lightParametersCache;
 
         private LightProcessor lightProcessor;
 
         private ShadowMapRenderer shadowMapRenderer;
 
         private readonly List<KeyValuePair<Type, LightGroupRendererBase>> lightRenderers;
-
-        private FastListStruct<LightForwardShaderEntryKey> lightShaderKeys;
-
-        private readonly Dictionary<ParameterCompositeKey, ParameterKey> compositeKeys;
 
         private ModelProcessor modelProcessor;
 
@@ -43,7 +39,6 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
         private readonly List<LightComponent> visibleLightsWithShadows;
 
-        private readonly List<LightEntry> visibleLightsPerModel = new List<LightEntry>();
         private readonly List<KeyValuePair<LightGroupRendererBase, LightComponentCollectionGroup>> activeRenderers;
 
         private SceneCameraRenderer sceneCameraRenderer;
@@ -53,26 +48,19 @@ namespace SiliconStudio.Paradox.Effects.Lights
         private readonly Dictionary<ObjectId, ShaderEntry> shaderEntries;
         private readonly Dictionary<ObjectId, ParameterCollectionEntry> lightParameterEntries;
 
+        private readonly List<LightEntry> directLightsPerModel = new List<LightEntry>();
+        private FastListStruct<LightForwardShaderFullEntryKey> directLightShaderGroupEntryKeys;
+
+        private readonly List<LightEntry> environmentLightsPerModel = new List<LightEntry>();
+        private FastListStruct<LightForwardShaderFullEntryKey> environmentLightShaderGroupEntryKeys;
+        private FastListStruct<LightForwardShaderFullEntryKey> directLightShaderGroupEntryKeysNoShadows;
+
         private ShaderEntry currentModelShadersEntry;
 
         private ParameterCollectionEntry currentModelShadersParameters;
 
-        private struct ShaderEntry
-        {
-            public List<ShaderSource> DirectLights;
-
-            public List<ShaderSource> DirectLightsNoShadows;
-
-            public List<ShaderSource> EnvironmentLights;
-        }
-
-        private struct ParameterCollectionEntry
-        {
-            public ParameterCollection Parameters;
-
-            public ParameterCollection ParametersNoShadows;
-        }
-
+        private bool currentModelShadersEntryChanged;
+        private bool currentModelShadersParametersChanged;
 
         /// <summary>
         /// Gets the lights without shadow per light type.
@@ -82,19 +70,20 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
         public LightComponentForwardRenderer()
         {
-            lightParametersCache = new Dictionary<LightKey, LightParameters>();
+            directLightShaderGroupEntryKeys = new FastListStruct<LightForwardShaderFullEntryKey>(32);
+            environmentLightShaderGroupEntryKeys = new FastListStruct<LightForwardShaderFullEntryKey>(32);
+            directLightShaderGroupEntryKeysNoShadows = new FastListStruct<LightForwardShaderFullEntryKey>(32);
+
             //directLightGroup = new LightGroupRenderer("directLightGroups", LightingKeys.DirectLightGroups);
             //environmentLightGroup = new LightGroupRenderer("environmentLights", LightingKeys.EnvironmentLights);
             lightRenderers = new List<KeyValuePair<Type, LightGroupRendererBase>>(16);
-            compositeKeys = new Dictionary<ParameterCompositeKey, ParameterKey>();
-            lightShaderKeys = new FastListStruct<LightForwardShaderEntryKey>(256);
 
             visibleLights = new List<LightComponent>();
             visibleLightsWithShadows = new List<LightComponent>();
 
             shaderEntries = new Dictionary<ObjectId, ShaderEntry>();
 
-            visibleLightsPerModel = new List<LightEntry>(16);
+            directLightsPerModel = new List<LightEntry>(16);
             activeLightGroups = new Dictionary<Type, LightComponentCollectionGroup>();
             activeRenderers = new List<KeyValuePair<LightGroupRendererBase, LightComponentCollectionGroup>>();
 
@@ -149,9 +138,6 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 isModelComponentRendererSetup = true;
             }
 
-            // Reset the curent light key
-            currentLightKey = new LightKey((EntityGroup)0xFFFFFFFF, false);
-
             // Collect all visible lights
             CollectVisibleLights();
 
@@ -174,12 +160,11 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 activeRenderers.Add(new KeyValuePair<LightGroupRendererBase, LightComponentCollectionGroup>(renderer, lightGroup));
             }
 
-            currentModelShadersEntry = new ShaderEntry();
-            currentModelShadersParameters = new ParameterCollectionEntry();
+            currentModelShadersEntry = null;
+            currentModelShadersEntryChanged = true;
 
-            // Process the lights
-            // ProcessLights(context, lightProcessor.ActiveLights, shadowMapRenderer.LightComponentsWithShadows);
-            // ProcessLights(context, lightProcessor.ActiveEnvironmentLights, shadowMapRenderer.LightComponentsWithShadows);
+            currentModelShadersParameters = null;
+            currentModelShadersParametersChanged = true;
         }
 
         /// <summary>
@@ -197,27 +182,31 @@ namespace SiliconStudio.Paradox.Effects.Lights
             var frustum = sceneCamera.Frustum;            
             foreach (var light in lightProcessor.Lights)
             {
+                // If light is not part of the culling mask group, we can skip it
+                var entityLightMask = (EntityGroupMask)(1 << (int)light.Entity.Group);
+                if ((entityLightMask & sceneCullingMask) == 0 && (light.CullingMask & sceneCullingMask) == 0)
+                {
+                    continue;
+                } 
+
+                // If light is not in the frustum, we can skip it
                 var directLight = light.Type as IDirectLight;
                 if (directLight != null && directLight.HasBoundingBox && !frustum.Contains(ref light.BoundingBoxExt))
                 {
                     continue;
                 }
 
-                // If light is not part of the culling mask group, we can skip it
-                var entityLightMask = (EntityGroupMask)(1 << (int)light.Entity.Group);
-                if ((entityLightMask & sceneCullingMask) == 0 && (light.CullingMask & sceneCullingMask) == 0)
-                {
-                    continue;
-                }
-
+                // Find the group for this light
                 var lightGroup = GetLightGroup(light);
                 lightGroup.PrepareLight(light);
 
+                // This is a visible light
                 visibleLights.Add(light);
 
                 // Add light to a special list if it has shadows
                 if (directLight != null && directLight.Shadow != null && directLight.Shadow.Enabled)
                 {
+                    // A visible light with shadows
                     visibleLightsWithShadows.Add(light);
                 }
             }
@@ -233,7 +222,6 @@ namespace SiliconStudio.Paradox.Effects.Lights
             }
         }
 
-
         private void PrepareRenderModelForRendering(RenderContext context, RenderModel model)
         {
             var shaderKeyIdBuilder = new ObjectIdSimpleBuilder();
@@ -244,9 +232,12 @@ namespace SiliconStudio.Paradox.Effects.Lights
             var modelComponent = model.ModelComponent;
             var modelBoundingBox = modelComponent.BoundingBox;
 
-            visibleLightsPerModel.Clear();
+            directLightsPerModel.Clear();
+            directLightShaderGroupEntryKeys.Clear();
+            directLightShaderGroupEntryKeysNoShadows.Clear();
 
-            var currentShaderKey = new LightForwardShaderEntryKey();
+            environmentLightsPerModel.Clear();
+            environmentLightShaderGroupEntryKeys.Clear();
 
             // Iterate in the order of registered active renderers, to make sure we always calculate a shader key in an uniform way
             foreach (var rendererAndlightGroup in activeRenderers)
@@ -255,152 +246,232 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 var lightCollection = rendererAndlightGroup.Value.FindGroup(group);
 
                 int lightMaxCount = lightRenderer.LightMaxCount;
-                byte lightType = lightRenderer.LightType;
-                byte allocCountForNewLightType = lightRenderer.AllocateLightMaxCount ? (byte)lightMaxCount : (byte)1;
+                var lightRendererId = lightRenderer.LightRendererId;
+                var allocCountForNewLightType = lightRenderer.AllocateLightMaxCount ? (byte)lightMaxCount : (byte)1;
 
-                // Iterate on all active lights for this renderer
-                int currentLightCount = 0;
-                foreach (var light in lightCollection)
+                var currentShaderKey = new LightForwardShaderEntryKey();
+
+                // Path for environment lights
+                if (lightRenderer.IsEnvironmentLight)
                 {
-                    var directLight = light.Type as IDirectLight;
-
-                    LightShadowMapTexture shadowTexture = null;
-                    byte shadowType = 0;
-                    byte shadowTextureId = 0;
-                    if (directLight != null)
+                    // The loop is simpler for environment lights (single group per light, no shadow maps, no bounding box...etc)
+                    foreach (var light in lightCollection)
                     {
-                        // Check if the light is intersecting the model
-                        if (directLight.HasBoundingBox && light.BoundingBox.Intersects(ref modelBoundingBox))
+                        currentShaderKey = new LightForwardShaderEntryKey(lightRendererId, 0, allocCountForNewLightType, 0);
+                        unsafe
+                        {
+                            shaderKeyIdBuilder.Write(*(uint*)&currentShaderKey);
+                        }
+                        parametersKeyIdBuilder.Write(light.Id);
+
+                        environmentLightsPerModel.Add(new LightEntry(environmentLightShaderGroupEntryKeys.Count, 0, light, null));
+                        environmentLightShaderGroupEntryKeys.Add(new LightForwardShaderFullEntryKey(currentShaderKey, lightRenderer, null));
+                    }
+                }
+                else
+                {
+                    // direct lights
+                    int directLightCount = 0;
+                    ILightShadowMapRenderer shadowRenderer = null;
+
+                    foreach (var light in lightCollection)
+                    {
+                        var directLight = (IDirectLight)light.Type;
+                        // If the light does not intersects the model, we can skip it
+                        if (directLight.HasBoundingBox && !light.BoundingBox.Intersects(ref modelBoundingBox))
                         {
                             continue;
                         }
 
+                        LightShadowMapTexture shadowTexture;
+                        shadowRenderer = null;
+                        LightShadowType shadowType = 0;
+                        byte shadowTextureId = 0; 
+                        
                         if (shadowMapRenderer.LightComponentsWithShadows.TryGetValue(light, out shadowTexture))
                         {
                             shadowType = shadowTexture.ShadowType;
                             shadowTextureId = shadowTexture.TextureId;
-                        }
-                    }
-
-                    if (shaderKeyIdBuilder.Length == 0)
-                    {
-                        currentShaderKey = new LightForwardShaderEntryKey(lightType, shadowType, allocCountForNewLightType, shadowTextureId);
-                        currentLightCount = 1;
-                    }
-                    else
-                    {
-                        // We are already at the light max count of the renderer
-                        if ((currentLightCount + 1) == lightMaxCount)
-                        {
-                            continue;
+                            shadowRenderer = shadowTexture.Renderer;
                         }
 
-                        if (currentShaderKey.LightType == lightType && currentShaderKey.ShadowType == shadowType && currentShaderKey.ShadowTextureId == shadowTextureId)
+                        if (directLightCount == 0)
                         {
-                            if (!lightRenderer.AllocateLightMaxCount)
-                            {
-                                currentShaderKey.LightCount++;
-                            }
-                            currentLightCount++;
+                            currentShaderKey = new LightForwardShaderEntryKey(lightRendererId, shadowType, allocCountForNewLightType, shadowTextureId);
                         }
                         else
                         {
-                            unsafe
+                            // We are already at the light max count of the renderer
+                            if ((directLightCount + 1) == lightMaxCount)
                             {
-                                shaderKeyIdBuilder.Write(*(uint*)&currentShaderKey);
+                                continue;
                             }
 
-                            currentShaderKey = new LightForwardShaderEntryKey(lightType, shadowType, allocCountForNewLightType, shadowTextureId);
-                            currentLightCount = 1;
+                            if (currentShaderKey.LightRendererId == lightRendererId && currentShaderKey.ShadowType == shadowType && currentShaderKey.ShadowTextureId == shadowTextureId)
+                            {
+                                if (!lightRenderer.AllocateLightMaxCount)
+                                {
+                                    currentShaderKey.LightCount++;
+                                }
+                            }
+                            else
+                            {
+                                unsafe
+                                {
+                                    shaderKeyIdBuilder.Write(*(uint*)&currentShaderKey);
+                                }
+
+                                directLightShaderGroupEntryKeys.Add(new LightForwardShaderFullEntryKey(currentShaderKey, lightRenderer, shadowRenderer));
+                                currentShaderKey = new LightForwardShaderEntryKey(lightRendererId, shadowType, allocCountForNewLightType, shadowTextureId);
+                            }
                         }
+
+                        directLightCount++;
+
+                        parametersKeyIdBuilder.Write(light.Id);
+                        directLightsPerModel.Add(new LightEntry(directLightShaderGroupEntryKeys.Count, directLightShaderGroupEntryKeysNoShadows.Count, light, shadowTexture));
                     }
 
-                    parametersKeyIdBuilder.Write(light.Id);
-                    visibleLightsPerModel.Add(new LightEntry(lightRenderer, light, shadowTexture));
+                    if (directLightCount > 0)
+                    {
+                        directLightShaderGroupEntryKeysNoShadows.Add(new LightForwardShaderFullEntryKey(new LightForwardShaderEntryKey(lightRendererId, 0, (byte)directLightCount, 0), lightRenderer, null));
+
+                        unsafe
+                        {
+                            shaderKeyIdBuilder.Write(*(uint*)&currentShaderKey);
+                        }
+                        directLightShaderGroupEntryKeys.Add(new LightForwardShaderFullEntryKey(currentShaderKey, lightRenderer, shadowRenderer));
+                    }
                 }
             }
 
-            var newShaderEntry = new ShaderEntry();
-            var newParametersEntry = new ParameterCollectionEntry();
-            if (visibleLightsPerModel.Count > 0)
+            // If we have lights, find or create an existing shaders/parameters permutation
+            if (environmentLightsPerModel.Count > 0 || directLightsPerModel.Count > 0)
             {
-                unsafe
-                {
-                    shaderKeyIdBuilder.Write(*(uint*)&currentShaderKey);
-                }
-
+                // Build the keys for Shaders and Parameters permutations
                 ObjectId shaderKeyId;
                 ObjectId parametersKeyId;
                 shaderKeyIdBuilder.ComputeHash(out shaderKeyId);
                 parametersKeyIdBuilder.ComputeHash(out parametersKeyId);
 
-                if (!shaderEntries.TryGetValue(shaderKeyId, out newShaderEntry))
+                var previousModelShadersEntry = currentModelShadersEntry;
+                // If we don't have already this permutation, use it
+                if (!shaderEntries.TryGetValue(shaderKeyId, out currentModelShadersEntry))
                 {
-                    newShaderEntry = CalculateShaderEntry();
-                    shaderEntries.Add(shaderKeyId, newShaderEntry);
+                    currentModelShadersEntry = CalculateShaderEntry();
+                    shaderEntries.Add(shaderKeyId, currentModelShadersEntry);
                 }
+                currentModelShadersEntryChanged = previousModelShadersEntry != currentModelShadersEntry;
 
-                if (!lightParameterEntries.TryGetValue(parametersKeyId, out newParametersEntry))
+                var previousModelShadersParameters = currentModelShadersParameters;
+                if (!lightParameterEntries.TryGetValue(parametersKeyId, out currentModelShadersParameters))
                 {
-                    newParametersEntry = CalculateLightParameters();
-                    lightParameterEntries.Add(parametersKeyId, newParametersEntry);
+                    currentModelShadersParameters = new ParameterCollectionEntry();
+                    lightParameterEntries.Add(parametersKeyId, currentModelShadersParameters);
                 }
+                currentModelShadersParametersChanged = previousModelShadersParameters != currentModelShadersParameters;
+
+                UpdateLightParameters(currentModelShadersParameters);
             }
-
-            var currentDirectLights = currentModelShadersEntry.DirectLights;
-            if (currentDirectLights != newShaderEntry.DirectLights)
-            {
-                currentModelShadersEntry.DirectLights = newShaderEntry.DirectLights;
-            }
-
-            var currentEnvironmentLights = currentModelShadersEntry.EnvironmentLights;
-            if (currentEnvironmentLights != newShaderEntry.EnvironmentLights)
-            {
-                currentModelShadersEntry.EnvironmentLights = newShaderEntry.EnvironmentLights;
-            }
-
-            if (!ReferenceEquals(currentModelShadersParameters.Parameters, newParametersEntry.Parameters))
-            {
-                currentModelShadersParameters.Parameters = newParametersEntry.Parameters;
-            }
-
-            if (!ReferenceEquals(currentModelShadersParameters.ParametersNoShadows, newParametersEntry.ParametersNoShadows))
-            {
-                currentModelShadersParameters.ParametersNoShadows = newParametersEntry.ParametersNoShadows;
-            }
-        }
-
-        struct LightEntry
-        {
-            public LightEntry(LightGroupRendererBase renderer, LightComponent light, LightShadowMapTexture shadow)
-            {
-                Renderer = renderer;
-                Light = light;
-                Shadow = shadow;
-            }
-
-            public LightGroupRendererBase Renderer;
-
-            public LightComponent Light;
-
-            public LightShadowMapTexture Shadow;
         }
 
         private ShaderEntry CalculateShaderEntry()
         {
-            foreach (var lightAndShadow in visibleLightsPerModel)
+            var shaderEntry = new ShaderEntry();
+
+            // Direct Lights (with or without shadows)
+            for (int i = 0; i < directLightShaderGroupEntryKeys.Count; i++)
             {
-                lightAndShadow.Key
+                var shaderGroupEntry = directLightShaderGroupEntryKeys.Items[i];
+                int lightCount = shaderGroupEntry.Key.LightCount;
 
+                ILightShadowMapShaderGroupData shadowGroupData = null;
+                if (shaderGroupEntry.Shadow != null)
+                {
+                    // TODO: Cache ShaderGroupData
+                    shadowGroupData = shaderGroupEntry.Shadow.CreateShaderGroupData(DirectLightGroupsCompositionName, i, shaderGroupEntry.Key.ShadowType, lightCount);
+                }
+                // TODO: Cache LightShaderGroup
+                var lightShaderGroup = shaderGroupEntry.Renderer.CreateLightShaderGroup(DirectLightGroupsCompositionName, i, lightCount, shadowGroupData);
 
-
-
+                shaderEntry.DirectLightGroups.Add(lightShaderGroup);
+                shaderEntry.DirectLightShaders.Add(lightShaderGroup.ShaderSource);
             }
+
+            // All Direct Lights
+            for (int i = 0; i < directLightShaderGroupEntryKeysNoShadows.Count; i++)
+            {
+                var shaderGroupEntry = directLightShaderGroupEntryKeysNoShadows.Items[i];
+
+                // TODO: Cache LightShaderGroup
+                var lightShaderGroup = shaderGroupEntry.Renderer.CreateLightShaderGroup(DirectLightGroupsCompositionName, i, shaderGroupEntry.Key.LightCount, null);
+
+                shaderEntry.DirectLightGroupsNoShadows.Add(lightShaderGroup);
+                shaderEntry.DirectLightShadersNoShadows.Add(lightShaderGroup.ShaderSource);
+            }
+
+            // All Environment lights
+            for (int i = 0; i < environmentLightShaderGroupEntryKeys.Count; i++)
+            {
+                var shaderGroupEntry = environmentLightShaderGroupEntryKeys.Items[i];
+
+                // TODO: Cache LightShaderGroup
+                var lightShaderGroup = shaderGroupEntry.Renderer.CreateLightShaderGroup(EnvironmentLightsCompositionName, i, shaderGroupEntry.Key.LightCount, null);
+
+                shaderEntry.EnvironmentLights.Add(lightShaderGroup);
+                shaderEntry.EnvironmentLightShaders.Add(lightShaderGroup.ShaderSource);
+            }
+
+            return shaderEntry;
         }
 
-        private ParameterCollectionEntry CalculateLightParameters()
+        private void UpdateLightParameters(ParameterCollectionEntry parameterCollectionEntry)
         {
-            throw new NotImplementedException();
+            var directLightGroups = currentModelShadersEntry.DirectLightGroups;
+            var directLightGroupsNoShadows = currentModelShadersEntry.DirectLightGroupsNoShadows;
+            var environmentLights = currentModelShadersEntry.EnvironmentLights;
+
+            var parameters = parameterCollectionEntry.Parameters;
+            var parametersNoShadows = parameterCollectionEntry.ParametersNoShadows;
+
+            if (parameters.Get(LightingKeys.DirectLightGroups) != currentModelShadersEntry.DirectLightShaders)
+                parameters.Set(LightingKeys.DirectLightGroups, currentModelShadersEntry.DirectLightShaders);
+
+            if (parameters.Get(LightingKeys.EnvironmentLights) != currentModelShadersEntry.EnvironmentLightShaders)
+                parameters.Set(LightingKeys.EnvironmentLights, currentModelShadersEntry.EnvironmentLightShaders);
+
+            if (parametersNoShadows.Get(LightingKeys.DirectLightGroups) != currentModelShadersEntry.DirectLightShadersNoShadows)
+                parametersNoShadows.Set(LightingKeys.DirectLightGroups, currentModelShadersEntry.DirectLightShadersNoShadows);
+
+            if (parametersNoShadows.Get(LightingKeys.EnvironmentLights) != currentModelShadersEntry.EnvironmentLightShaders)
+                parametersNoShadows.Set(LightingKeys.EnvironmentLights, currentModelShadersEntry.EnvironmentLightShaders);
+
+            foreach (var lightEntry in directLightsPerModel)
+            {
+                directLightGroups[lightEntry.GroupIndex].AddLight(lightEntry.Light, lightEntry.Shadow);
+                directLightGroupsNoShadows[lightEntry.GroupIndexNoShadows].AddLight(lightEntry.Light, null);
+            }
+
+            foreach (var lightEntry in environmentLightsPerModel)
+            {
+                environmentLights[lightEntry.GroupIndex].AddLight(lightEntry.Light, null);
+            }
+
+            foreach (var lightGroup in directLightGroups)
+            {
+                lightGroup.ApplyParameters(parameters);
+            }
+
+            foreach (var lightGroup in directLightGroupsNoShadows)
+            {
+                lightGroup.ApplyParameters(parametersNoShadows);
+            }
+
+            foreach (var lightGroup in environmentLights)
+            {
+                lightGroup.ApplyParameters(parameters);
+                lightGroup.ApplyParameters(parametersNoShadows);
+            }
         }
 
         private static void AllocateCollectionsPerGroupOfCullingMask(Dictionary<Type, LightComponentCollectionGroup> lights)
@@ -431,245 +502,127 @@ namespace SiliconStudio.Paradox.Effects.Lights
             return lightGroup;
         }
 
-        private void ProcessLights(RenderContext context, Dictionary<Type, LightComponentCollectionGroup> activeLights, Dictionary<LightComponent, LightShadowMapTexture> shadows)
+        private void PreRenderMesh(RenderContext context, RenderMesh renderMesh)
         {
-            foreach (var lightRenderProcessor in lightRenderers)
+            if (currentModelShadersEntryChanged || currentModelShadersParametersChanged)
             {
-                foreach (var lightType in lightRenderProcessor.SupportedLights)
+                var contextParameters = context.Parameters;
+                if (currentModelShadersEntry == null)
                 {
-                    LightComponentCollectionGroup lights;
-                    if (activeLights.TryGetValue(lightType, out lights))
+                    contextParameters.Set(LightingKeys.DirectLightGroups, null);
+                    contextParameters.Set(LightingKeys.EnvironmentLights, null);
+                }
+                else
+                {
+                    var isShadowReceiver = renderMesh.RenderModel.ModelComponent.IsShadowReceiver && renderMesh.MaterialInstance.IsShadowReceiver;
+                    if (isShadowReceiver)
                     {
-                        foreach (var lightCollection in lights)
-                        {
-                            // TODO: Cache ShaderGenerator per light type
-                            var shadowRenderer = shadowMapRenderer.FindRenderer(lightType);
-                            var shaderGenerator = lightRenderProcessor.CreateShaderGenerator(lightCollection, shadowRenderer);
-
-                            var result = shaderGenerator.GenerateShaders(context, shadows);
-                            // TODO: handle result
-                        }
+                        currentModelShadersParameters.Parameters.CopySharedTo(contextParameters);
+                    }
+                    else
+                    {
+                        currentModelShadersParameters.ParametersNoShadows.CopySharedTo(contextParameters);
                     }
                 }
             }
         }
 
-        private void CollectLightsForGroup(RenderContext context, EntityGroup group)
+        private struct LightEntry
         {
-
-            
-        }
-
-        private class LightParameters
-        {
-            public LightParameters()
+            public LightEntry(int currentLightGroupIndex, int currentLightGroupIndexNoShadows, LightComponent light, LightShadowMapTexture shadow)
             {
-                Parameters = new ParameterCollection();
+                GroupIndex = currentLightGroupIndex;
+                GroupIndexNoShadows = currentLightGroupIndexNoShadows;
+                Light = light;
+                Shadow = shadow;
             }
 
-            public readonly ParameterCollection Parameters;
+            public readonly int GroupIndex;
 
-        }
+            public readonly int GroupIndexNoShadows;
 
-        private void PreRenderMesh(RenderContext context, RenderMesh renderMesh)
-        {
-            if (lightProcessor == null)
-            {
-                return;
-            }
+            public readonly LightComponent Light;
 
-            var modelComponent = renderMesh.RenderModel.ModelComponent;
-            var isShadowReceiver = renderMesh.RenderModel.ModelComponent.IsShadowReceiver && renderMesh.MaterialInstance.IsShadowReceiver;
-
-
-
-
-
-
-
-
-            context.Parameters.Set(LightingKeys.DirectLightGroups, newShaderEntry.DirectLights);
-            context.Parameters.Set(LightingKeys.EnvironmentLights, newShaderEntry.EnvironmentLights);
-            currentModelShadersParameters.CopySharedTo(context.Parameters);
-
-
-
-
-
-
-
-
-            var newKey = new LightKey(renderMesh.RenderModel.Group, renderMesh.RenderModel.ModelComponent.IsShadowReceiver);
-            if (currentLightKey == newKey)
-            {
-                return;
-            }
-
-            LightParameters lightParameters;
-            if (!lightParametersCache.TryGetValue(newKey, out lightParameters))
-            {
-                lightParameters = BuildLightParameters(newKey);
-                lightParametersCache.Add(newKey, lightParameters);
-            }
-
-            var parameters = context.Parameters;
-            lightParameters.Parameters.CopySharedTo(parameters);
-        }
-
-        private LightParameters BuildLightParameters(LightKey newKey)
-        {
-            // TODO: Use a pool
-            var lightParameters = new LightParameters();
-
-            foreach (var lightGroup in lightProcessor.ActiveLights)
-            {
-                var lightComponentCollection = lightGroup.Value.FindGroup(newKey.Group);
-
-
-
-            }
-
-            return null;
-        }
-
-        private ParameterKey GetComposedKey(ParameterKey key, string compositionName, int lightGroupIndex)
-        {
-            var compositeKey = new ParameterCompositeKey(key, lightGroupIndex);
-
-            ParameterKey rawCompositeKey;
-            if (!compositeKeys.TryGetValue(compositeKey, out rawCompositeKey))
-            {
-                rawCompositeKey = ParameterKeys.FindByName(string.Format("{0}.{1}[{2}]", key.Name, compositionName, lightGroupIndex));
-                compositeKeys.Add(compositeKey, rawCompositeKey);
-            }
-            return rawCompositeKey;
-        }
-
-        private class LightModelRendererCache
-        {
-            private readonly LightPermutationsEntry[] lights;
-            private readonly LightPermutationsEntry[] lightsNoShadows;
-
-            public LightModelRendererCache()
-            {
-                lights = new LightPermutationsEntry[32];
-                lightsNoShadows = new LightPermutationsEntry[32];
-                for (int i = 0; i < 32; i++)
-                {
-                    lights[i] = new LightPermutationsEntry();
-                    lightsNoShadows[i] = new LightPermutationsEntry();
-                }
-            }
+            public readonly LightShadowMapTexture Shadow;
         }
 
         /// <summary>
         /// We expect this class to be 
         /// </summary>
         [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 4)]
-        struct LightForwardShaderEntryKey
+        private struct LightForwardShaderEntryKey
         {
-            public LightForwardShaderEntryKey(byte lightType, byte shadowType, byte lightCount, byte shadowTextureId)
+            public LightForwardShaderEntryKey(byte lightRendererId, LightShadowType shadowType, byte lightCount, byte shadowTextureId)
             {
-                LightType = lightType;
+                LightRendererId = lightRendererId;
                 ShadowType = shadowType;
                 LightCount = lightCount;
                 ShadowTextureId = shadowTextureId;
             }
 
-            public byte LightType;
+            public readonly byte LightRendererId;
 
-            public byte ShadowType;
+            public readonly LightShadowType ShadowType;
 
             public byte LightCount;
 
-            public byte ShadowTextureId;
+            public readonly byte ShadowTextureId;
         }
 
-
-
-        struct LightKey : IEquatable<LightKey>
+        private struct LightForwardShaderFullEntryKey
         {
-            public LightKey(EntityGroup group, bool hasShadows)
+            public LightForwardShaderFullEntryKey(LightForwardShaderEntryKey key, LightGroupRendererBase renderer, ILightShadowMapRenderer shadowRenderer)
             {
-                Group = group;
-                HasShadows = hasShadows;
+                Key = key;
+                Renderer = renderer;
+                Shadow = shadowRenderer;
             }
 
-            public readonly EntityGroup Group;
+            public readonly LightForwardShaderEntryKey Key;
 
-            public readonly bool HasShadows;
+            public readonly LightGroupRendererBase Renderer;
 
-            public bool Equals(LightKey other)
-            {
-                return Group == other.Group && HasShadows.Equals(other.HasShadows);
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (ReferenceEquals(null, obj)) return false;
-                return obj is LightKey && Equals((LightKey)obj);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    return ((int)Group * 397) ^ HasShadows.GetHashCode();
-                }
-            }
-
-            public static bool operator ==(LightKey left, LightKey right)
-            {
-                return left.Equals(right);
-            }
-
-            public static bool operator !=(LightKey left, LightKey right)
-            {
-                return !left.Equals(right);
-            }
+            public readonly ILightShadowMapRenderer Shadow;
         }
 
-
-
-        /// <summary>
-        /// An internal key to cache {Key,TransformIndex} => CompositeKey
-        /// </summary>
-        private struct ParameterCompositeKey : IEquatable<ParameterCompositeKey>
+        private class ShaderEntry
         {
-            private readonly ParameterKey key;
-
-            private readonly int index;
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="ParameterCompositeKey"/> struct.
-            /// </summary>
-            /// <param name="key">The key.</param>
-            /// <param name="transformIndex">Index of the transform.</param>
-            public ParameterCompositeKey(ParameterKey key, int transformIndex)
+            public ShaderEntry()
             {
-                if (key == null) throw new ArgumentNullException("key");
-                this.key = key;
-                index = transformIndex;
+                DirectLightGroups = new List<LightShaderGroup>();
+                DirectLightGroupsNoShadows = new List<LightShaderGroup>();
+                DirectLightShadersNoShadows = new List<ShaderSource>();
+                EnvironmentLights = new List<LightShaderGroup>();
+
+                DirectLightShaders = new List<ShaderSource>();
+                DirectLightGroupsNoShadows = new List<LightShaderGroup>();
+                EnvironmentLightShaders = new List<ShaderSource>();
             }
 
-            public bool Equals(ParameterCompositeKey other)
+            public readonly List<LightShaderGroup> DirectLightGroups;
+
+            public readonly List<ShaderSource> DirectLightShaders;
+
+            public readonly List<LightShaderGroup> DirectLightGroupsNoShadows;
+
+            public readonly List<ShaderSource> DirectLightShadersNoShadows;
+
+            public readonly List<LightShaderGroup> EnvironmentLights;
+
+            public readonly List<ShaderSource> EnvironmentLightShaders;
+        }
+
+        private class ParameterCollectionEntry
+        {
+            public ParameterCollectionEntry()
             {
-                return key.Equals(other.key) && index == other.index;
+                Parameters = new ParameterCollection();
+                ParametersNoShadows = new ParameterCollection();
             }
 
-            public override bool Equals(object obj)
-            {
-                if (ReferenceEquals(null, obj)) return false;
-                return obj is ParameterCompositeKey && Equals((ParameterCompositeKey)obj);
-            }
+            public readonly ParameterCollection Parameters;
 
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    return (key.GetHashCode() * 397) ^ index;
-                }
-            }
+            public readonly ParameterCollection ParametersNoShadows;
         }
     }
 }

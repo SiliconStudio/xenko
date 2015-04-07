@@ -17,8 +17,6 @@ namespace SiliconStudio.Paradox.Effects.Shadows
     /// </summary>
     public class LightDirectionalShadowMapRenderer : ILightShadowMapRenderer
     {
-        private const string ShaderName = "ShadowMapCascade";
-
         /// <summary>
         /// The various UP vectors to try.
         /// </summary>
@@ -61,9 +59,10 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             shaderDataPoolCascade4.Clear();
         }
 
-        public ILightShadowMapShaderGroupData CreateShaderGroupData(int cascadeCount, int maxLightCount)
+        public ILightShadowMapShaderGroupData CreateShaderGroupData(string compositionKey, int indexInComposition, LightShadowType shadowType, int maxLightCount)
         {
-            return new LightDirectionalShadowMapGroupShaderData(cascadeCount, maxLightCount);
+            var cascadeCount = 1 << ((int)(shadowType & LightShadowType.CascadeMask) - 1);
+            return new LightDirectionalShadowMapGroupShaderData(compositionKey, indexInComposition, cascadeCount, maxLightCount, (shadowType & LightShadowType.Debug) != 0);
         }
 
         public void Render(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap)
@@ -312,44 +311,44 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
         private class LightDirectionalShadowMapGroupShaderData : ILightShadowMapShaderGroupData
         {
-            private readonly ShaderClassSource shaderSource;
-
-            private readonly ShaderClassSource shaderSourceDebug;
+            private const string ShaderName = "ShadowMapCascade";
 
             private readonly int cascadeCount;
 
-            private readonly float[] CascadeSplits;
+            private readonly bool isDebug;
 
-            private readonly Matrix[] WorldToShadowCascadeUV;
+            private readonly float[] cascadeSplits;
+
+            private readonly Matrix[] worldToShadowCascadeUV;
+
+            private readonly ShaderClassSource shadowShader;
+
+            private readonly ParameterKey<float[]> cascadeSplitsKey;
+
+            private readonly ParameterKey<Matrix[]> worldToShadowCascadeUVsKey;
 
             /// <summary>
-            /// Initializes a new instance of the <see cref="LightDirectionalShadowMapGroupShaderData"/> class.
+            /// Initializes a new instance of the <see cref="LightDirectionalShadowMapGroupShaderData" /> class.
             /// </summary>
+            /// <param name="compositionKey">The composition key.</param>
+            /// <param name="indexInComposition">The index in composition.</param>
             /// <param name="cascadeCount">The cascade count.</param>
             /// <param name="lightCountMax">The light count maximum.</param>
-            public LightDirectionalShadowMapGroupShaderData(int cascadeCount, int lightCountMax)
+            /// <param name="isDebug">if set to <c>true</c> [is debug].</param>
+            public LightDirectionalShadowMapGroupShaderData(string compositionKey, int indexInComposition, int cascadeCount, int lightCountMax, bool isDebug)
             {
                 this.cascadeCount = cascadeCount;
-                CascadeSplits = new float[cascadeCount * lightCountMax];
-                WorldToShadowCascadeUV = new Matrix[cascadeCount * lightCountMax];
-                shaderSource = new ShaderClassSource(ShaderName, cascadeCount, lightCountMax, false);
-                shaderSourceDebug = new ShaderClassSource(ShaderName, cascadeCount, lightCountMax, true);
+                this.isDebug = isDebug;
+                cascadeSplits = new float[cascadeCount * lightCountMax];
+                worldToShadowCascadeUV = new Matrix[cascadeCount * lightCountMax];
+                shadowShader = new ShaderClassSource(ShaderName, cascadeCount, lightCountMax, isDebug);
+                cascadeSplitsKey = ShadowMapCascadeKeys.CascadeDepthSplits.ComposeIndexer(compositionKey, indexInComposition);
+                worldToShadowCascadeUVsKey = ShadowMapCascadeKeys.WorldToShadowCascadeUV.ComposeIndexer(compositionKey, indexInComposition);
             }
 
-            public ShaderClassSource ShaderSource
+            public void ApplyShader(ShaderMixinSource mixin)
             {
-                get
-                {
-                    return shaderSource;
-                }
-            }
-
-            public ShaderClassSource ShaderSourceDebug
-            {
-                get
-                {
-                    return shaderSourceDebug;
-                }
+                mixin.Mixins.Add(shadowShader);
             }
 
             public void SetShadowMapShaderData(int index, ILightShadowMapShaderData shaderData)
@@ -360,21 +359,15 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 int splitIndex = index * cascadeCount;
                 for (int i = 0; i < splits.Length; i++)
                 {
-                    CascadeSplits[splitIndex + i] = splits[i];
-                    WorldToShadowCascadeUV[splitIndex + i] = matrices[i];
+                    cascadeSplits[splitIndex + i] = splits[i];
+                    worldToShadowCascadeUV[splitIndex + i] = matrices[i];
                 }
-            }
-
-            public void ApplyMixin(ShaderMixinSource mixin, bool debug)
-            {
-                // TODO: This is not reliable if we need to modify the length of mixins
-                mixin.Mixins.Add(debug ? ShaderSourceDebug : ShaderSource);
             }
 
             public void ApplyParameters(ParameterCollection parameters)
             {
-                parameters.Set(ShadowMapCascadeKeys.CascadeDepthSplits, CascadeSplits);
-                parameters.Set(ShadowMapCascadeKeys.WorldToShadowCascadeUV, WorldToShadowCascadeUV);
+                parameters.Set(cascadeSplitsKey, cascadeSplits);
+                parameters.Set(worldToShadowCascadeUVsKey, worldToShadowCascadeUV);
             }
         }
 

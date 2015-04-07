@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             }
         }
 
-        public override BoundingBox ComputeBounds(RenderContext context, Vector3 positionWS, Vector3 directionWS)
+        public override BoundingBox ComputeBounds(Vector3 position, Vector3 direction)
         {
             throw new NotImplementedException();
         }

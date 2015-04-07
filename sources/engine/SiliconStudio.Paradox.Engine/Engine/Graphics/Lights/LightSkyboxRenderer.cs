@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Effects.Shadows;
 using SiliconStudio.Paradox.Engine.Graphics.Skyboxes;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
@@ -44,16 +45,11 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 mixin.AddComposition(LightSpecularColorComposition, null);
                 defaultLightShaders.Add(new LightShaderGroup(mixin));
             }
-        }
 
-        public override bool IsDirectLight
-        {
-            get
-            {
-                return false;
-            }
+            IsEnvironmentLight = true;
+            LightMaxCount = LightMax;
         }
-
+       
         public override List<LightShaderGroup> PrepareLights(RenderContext context, LightComponentCollection lights, bool isLightWithShadow)
         {
             var count = Math.Min(lights.Count, LightMax);
@@ -123,6 +119,78 @@ namespace SiliconStudio.Paradox.Effects.Lights
             }
 
             return currentLightShaders;
+        }
+
+        public override LightShaderGroup CreateLightShaderGroup(string compositionName, int compositionIndex, int lightMaxCount, ILightShadowMapShaderGroupData shadowGroup)
+        {
+            
+        }
+
+        private class LightSkyBoxShaderGroup : LightShaderGroup
+        {
+            public LightSkyBoxShaderGroup(ShaderMixinSource mixin) : base(mixin, null)
+            {
+            }
+
+            protected override void AddLightInternal(LightComponent light)
+            {
+                // TODO: If there is a performance penalty for accessing the SkyboxComponent, this could be prepared by the LightProcessor
+                var skyboxComponent = light.Entity.Get<SkyboxComponent>();
+                if (skyboxComponent == null || skyboxComponent.Skybox == null)
+                {
+                    return;
+                }
+
+                var skybox = skyboxComponent.Skybox;
+
+                var diffuseParameters = skybox.DiffuseLightingParameters;
+                var specularParameters = skybox.SpecularLightingParameters;
+
+                var diffuseShader = diffuseParameters.Get(SkyboxKeys.Shader);
+                var specularCubemap = specularParameters.Get(SkyboxKeys.CubeMap);
+
+                // No diffuse nor specular shader, let's ignore this cubemap
+                if (diffuseShader == null && specularCubemap == null)
+                    return;
+
+                var intensity = light.Intensity;
+                if (skyboxComponent.Enabled)
+                {
+                    intensity *= skyboxComponent.Intensity;
+                }
+
+                var rotationMatrix = Matrix.RotationQuaternion(light.Entity.Transform.Rotation);
+            }
+
+            protected override void ApplyParametersInternal(ParameterCollection parameters)
+            {
+                // global parameters
+                parameters.Set(LightSkyboxShaderKeys.Intensity, intensity);
+                parameters.Set(LightSkyboxShaderKeys.SkyMatrix, rotationMatrix);
+
+                // Setup diffuse lighting
+                var mixinSource = (ShaderMixinSource)lightShaderGroup.ShaderSource;
+
+                mixinSource.Compositions[LightDiffuseColorComposition] = diffuseShader ?? EmptyComputeEnvironmentColorSource;
+                // TODO: Use pluggable keys instead of copying parameters
+                parameters.Set(SphericalColorsKey, diffuseParameters.Get(SphericalHarmonicsEnvironmentColorKeys.SphericalColors));
+
+                // Setup specular lighting
+                if (specularCubemap != null)
+                {
+                    mixinSource.Compositions[LightSpecularColorComposition] = specularParameters.Get(SkyboxKeys.Shader);
+
+                    // TODO: Use pluggable keys instead of copying manually parameters
+                    parameters.Set(SpecularCubeMapkey, specularCubemap);
+                    parameters.Set(SpecularMipCount, specularCubemap.MipLevels);
+                }
+                else
+                {
+                    mixinSource.Compositions[LightDiffuseColorComposition] = EmptyComputeEnvironmentColorSource;
+                    parameters.Set(SpecularCubeMapkey, null);
+                    parameters.Set(SpecularMipCount, 0);
+                }
+            }
         }
     }
 }

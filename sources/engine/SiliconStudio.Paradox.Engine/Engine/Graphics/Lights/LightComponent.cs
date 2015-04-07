@@ -79,6 +79,9 @@ namespace SiliconStudio.Paradox.Effects.Lights
         [DataMemberIgnore]
         public Vector3 Direction;
 
+        [DataMemberIgnore]
+        public Color3 Color;
+
         /// <summary>
         /// The bounding box of this light in WS after the <see cref="LightProcessor"/> has been applied (readonly field).
         /// </summary>
@@ -110,6 +113,10 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
             Position = Entity.Transform.Position;
             Direction = lightDirection;
+
+            // Color
+            var colorLight = Type as IColorLight;
+            Color = (colorLight != null) ? colorLight.ComputeColor(Intensity) : new Color3();
 
             // Compute bounding boxes
             HasBoundingBox = false;

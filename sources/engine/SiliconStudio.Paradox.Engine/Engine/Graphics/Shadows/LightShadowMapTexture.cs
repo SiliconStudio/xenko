@@ -16,13 +16,26 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
     public interface ILightShadowMapShaderGroupData
     {
-        void SetShadowMapShaderData(int index, ILightShadowMapShaderData shaderData);
+        void ApplyShader(ShaderMixinSource mixin);
 
-        void ApplyMixin(ShaderMixinSource mixin, bool debug);
+        void SetShadowMapShaderData(int index, ILightShadowMapShaderData shaderData);
 
         void ApplyParameters(ParameterCollection parameters);
     }
 
+    [Flags]
+    public enum LightShadowType : byte
+    {
+        Cascade1 = 0x1,
+        Cascade2 = 0x2,
+        Cascade4 = 0x3,
+        
+        CascadeMask = 0x7,
+
+        Debug    = 0x4,
+
+        FilterMask = 0xF0,
+    }
 
     /// <summary>
     /// An allocated shadow map texture associated to a light.
@@ -62,7 +75,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
         public byte TextureId { get; internal set; }
 
-        public byte ShadowType { get; internal set; }
+        public LightShadowType ShadowType { get; internal set; }
 
         public int Size { get; private set; }
 

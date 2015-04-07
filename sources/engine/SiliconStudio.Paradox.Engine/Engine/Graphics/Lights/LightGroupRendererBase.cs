@@ -2,20 +2,38 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Paradox.Effects.Shadows;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Effects.Lights
 {
     public abstract class LightGroupRendererBase
     {
+        private static readonly Dictionary<Type, int> LightRendererIds = new Dictionary<Type, int>();
+
         protected LightGroupRendererBase()
         {
+            int lightRendererId;
+            lock (LightRendererIds)
+            {
+                if (!LightRendererIds.TryGetValue(GetType(), out lightRendererId))
+                {
+                    lightRendererId = LightRendererIds.Count + 1;
+                    LightRendererIds.Add(GetType(), lightRendererId);
+                }
+            }
+
+            LightRendererId = (byte)lightRendererId;
         }
 
-        public byte LightType { get; protected set; }
+        public bool IsEnvironmentLight { get; protected set; }
+
+        public byte LightRendererId { get; private set; }
 
         public bool AllocateLightMaxCount { get; protected set; }
 
@@ -25,6 +43,6 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
         }
 
-        public abstract ILightShaderGenerator CreateShaderGenerator(LightComponentCollection lights, ILightShadowMapRenderer shadowMapRenderer);
+        public abstract LightShaderGroup CreateLightShaderGroup(string compositionName, int compositionIndex, int lightMaxCount, ILightShadowMapShaderGroupData shadowGroup);
     }
 }
