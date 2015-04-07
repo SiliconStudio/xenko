@@ -10,6 +10,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Paradox.Assets.Serializers;
 using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Assets.Model
@@ -21,16 +22,19 @@ namespace SiliconStudio.Paradox.Assets.Model
             foreach (var entityData in asset.Hierarchy.Entities)
             {
                 // TODO: How to make this code pluggable?
+                var modelComponent = entityData.Components.Get(ModelComponent.Key);
+                var spriteComponent = entityData.Components.Get(SpriteComponent.Key);
+                var scriptComponent = entityData.Components.Get(ScriptComponent.Key);
 
                 // determine the underlying source asset exists
-                if (entityData.Components.ContainsKey(ModelComponent.Key))
+                if (modelComponent != null)
                 {
-                    var modelComponent = entityData.Components.Get(ModelComponent.Key);
-                    if (modelComponent == null || modelComponent.Model == null)
+                    if (modelComponent.Model == null)
                     {
                         result.Warning(string.Format("The entity [{0}:{1}] has a model component that does not reference any model.", urlInStorage, entityData.Name));
                         continue;
                     }
+
                     var modelAttachedReference = AttachedReferenceManager.GetAttachedReference(modelComponent.Model);
                     var modelId = modelAttachedReference.Id;
 
@@ -42,12 +46,18 @@ namespace SiliconStudio.Paradox.Assets.Model
                         continue;
                     }
                 }
-                if (entityData.Components.ContainsKey(SpriteComponent.Key))
+                if (spriteComponent != null && spriteComponent.SpriteProvider == null)
                 {
-                    var spriteComponent = entityData.Components.Get(SpriteComponent.Key);
-                    if (spriteComponent == null || spriteComponent.SpriteProvider == null)
+                    result.Warning(string.Format("The entity [{0}:{1}] has a sprite component that does not reference any sprite group.", urlInStorage, entityData.Name));
+                }
+                if (scriptComponent != null)
+                {
+                    foreach (var script in scriptComponent.Scripts)
                     {
-                        result.Warning(string.Format("The entity [{0}:{1}] has a sprite component that does not reference any sprite group.", urlInStorage, entityData.Name));
+                        if (script is UnloadableScript)
+                        {
+                            result.Error(string.Format("The entity [{0}:{1}] reference an invalid script '{2}'.", urlInStorage, entityData.Name, script.GetType().Name));
+                        }
                     }
                 }
             }
