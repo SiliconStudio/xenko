@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         {
             base.InitializeCore();
 
-            spriteBatch = new SpriteBatch(Context.GraphicsDevice);
+            spriteBatch = new SpriteBatch(Context.GraphicsDevice) { VirtualResolution = new Vector3(1)};
         }
 
         protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
@@ -45,6 +45,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         protected override void DrawCore(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
         {
             var graphicsDevice = context.GraphicsDevice;
+            var destination = new RectangleF(0, 0, 1, 1);
+
             spriteBatch.Begin(SpriteSortMode.FrontToBack, graphicsDevice.BlendStates.Opaque, graphicsDevice.SamplerStates.LinearClamp, graphicsDevice.DepthStencilStates.None);
 
             for(var i = fromIndex; i <= toIndex; ++i)
@@ -55,7 +57,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                     continue;
                 
                 var target = CurrentRenderFrame;
-                var destination = new RectangleF(0, 0, target.Width, target.Height);
 
                 var imageBufferMinRatio = Math.Min(texture.ViewWidth / (float)target.Width, texture.ViewHeight / (float)target.Height);
                 var sourceSize = new Vector2(target.Width * imageBufferMinRatio, target.Height * imageBufferMinRatio);
