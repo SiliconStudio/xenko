@@ -75,11 +75,6 @@ namespace SiliconStudio.Core.Extensions
             }
         }
 
-        public static bool IsAbstractAndNonCollection(this ITypeDescriptor descriptor)
-        {
-            return descriptor.Type.IsAbstract && !(descriptor is CollectionDescriptor) && !(descriptor is DictionaryDescriptor);
-        }
-
         /// <summary>
         /// Attempts to return the type of inner values of an <see cref="ITypeDescriptor"/>, if it represents an enumerable type. If the given type descriptor is
         /// a <see cref="CollectionDescriptor"/>, this method will return its <see cref="CollectionDescriptor.ElementType"/> property. If the given type descriptor
