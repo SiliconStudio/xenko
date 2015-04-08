@@ -32,6 +32,7 @@ namespace SiliconStudio.Paradox.Shaders
         /// <value>The name of the pdxfx effect.</value>
         public string Name { get; set; }
 
+        [DataMemberIgnore]
         public ShaderMixinSource Parent { get; set; }
 
         /// <summary>
