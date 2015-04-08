@@ -1332,7 +1332,6 @@ private:
 					}
 					if (meshInfo->HasSkinningPosition || meshInfo->HasSkinningNormal || meshInfo->TotalClusterCount > 0)
 					{
-						nodeMeshData->Parameters = gcnew ParameterCollection();
 						if (meshInfo->HasSkinningPosition)
 							nodeMeshData->Parameters->Set(MaterialKeys::HasSkinningPosition, true);
 						if (meshInfo->HasSkinningNormal)

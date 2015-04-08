@@ -586,8 +586,6 @@ public:
 			
 			if (hasSkinningPosition || hasSkinningNormal || totalClusterCount > 0)
 			{
-				meshData->Parameters = gcnew ParameterCollection();
-
 				if (hasSkinningPosition)
 					meshData->Parameters->Set(MaterialKeys::HasSkinningPosition, true);
 				if (hasSkinningNormal)
