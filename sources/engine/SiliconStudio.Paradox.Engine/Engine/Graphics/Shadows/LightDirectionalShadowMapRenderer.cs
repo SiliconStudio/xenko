@@ -108,6 +108,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 shaderData = shaderDataPoolCascade4.Add();
             }
             lightShadowMap.ShaderData = shaderData;
+            shaderData.Texture = lightShadowMap.Atlas.Texture;
 
             var shadow = lightShadowMap.Shadow;
             // TODO: Min and Max distance can be auto-computed from readback from Z buffer
@@ -304,6 +305,8 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 WorldToShadowCascadeUV = new Matrix[cascadeCount];
             }
 
+            public Texture Texture;
+
             public readonly float[] CascadeSplits;
 
             public readonly Matrix[] WorldToShadowCascadeUV;
@@ -323,9 +326,13 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
             private readonly ShaderMixinSource shadowShader;
 
+            private readonly ParameterKey<Texture> shadowMapTextureKey;
+
             private readonly ParameterKey<float[]> cascadeSplitsKey;
 
             private readonly ParameterKey<Matrix[]> worldToShadowCascadeUVsKey;
+
+            private Texture shadowMapTexture;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="LightDirectionalShadowMapGroupShaderData" /> class.
@@ -348,6 +355,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 mixin.Mixins.Add(new ShaderClassSource("ShadowMapFilterDefault"));
 
                 shadowShader = mixin;
+                shadowMapTextureKey = ShadowMapKeys.Texture.ComposeWith(compositionKey);
                 cascadeSplitsKey = ShadowMapCascadeKeys.CascadeDepthSplits.ComposeWith(compositionKey);
                 worldToShadowCascadeUVsKey = ShadowMapCascadeKeys.WorldToShadowCascadeUV.ComposeWith(compositionKey);
             }
@@ -368,10 +376,17 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                     cascadeSplits[splitIndex + i] = splits[i];
                     worldToShadowCascadeUV[splitIndex + i] = matrices[i];
                 }
+
+                // TODO: should be setup just once at creation time
+                if (index == 0)
+                {
+                    shadowMapTexture = singleLightData.Texture;
+                }
             }
 
             public void ApplyParameters(ParameterCollection parameters)
             {
+                parameters.Set(shadowMapTextureKey, shadowMapTexture);
                 parameters.Set(cascadeSplitsKey, cascadeSplits);
                 parameters.Set(worldToShadowCascadeUVsKey, worldToShadowCascadeUV);
             }
