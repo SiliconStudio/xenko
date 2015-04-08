@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
     /// </summary>
     public interface ILightShadowMapRenderer : ILightShadowRenderer
     {
-        ILightShadowMapShaderGroupData CreateShaderGroupData(string compositionKey, int indexInComposition, LightShadowType shadowType, int maxLightCount);
+        ILightShadowMapShaderGroupData CreateShaderGroupData(string compositionKey, LightShadowType shadowType, int maxLightCount);
 
         void Render(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap);
     }

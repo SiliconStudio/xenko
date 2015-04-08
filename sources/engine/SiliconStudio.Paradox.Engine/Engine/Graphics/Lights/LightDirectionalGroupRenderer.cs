@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             AllocateLightMaxCount = !isLowProfile;
         }
 
-        public override LightShaderGroup CreateLightShaderGroup(string compositionName, int compositionIndex, int lightMaxCount, ILightShadowMapShaderGroupData shadowGroup)
+        public override LightShaderGroup CreateLightShaderGroup(string compositionName, int lightMaxCount, ILightShadowMapShaderGroupData shadowGroup)
         {
             var mixin = new ShaderMixinSource();
             if (AllocateLightMaxCount)
@@ -43,10 +43,30 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 mixin.Mixins.Add(new ShaderClassSource("DirectLightGroupFixed", lightMaxCount));
             }
 
-            return new DirectionalLightShaderGroup(mixin, compositionName, compositionIndex, AllocateLightMaxCount ? LightMaxCount : lightMaxCount, shadowGroup);
+            return new DirectionalLightShaderGroup(mixin, compositionName, shadowGroup);
         }
 
-        class DirectionalLightShaderGroup : LightShaderGroup
+        class DirectionalLightShaderGroup : LightShaderGroupAndDataPool<DirectionalLightShaderGroupData>
+        {
+            internal readonly ParameterKey<int> CountKey;
+            internal readonly ParameterKey<Vector3[]> DirectionsKey;
+            internal readonly ParameterKey<Color3[]> ColorsKey;
+
+            public DirectionalLightShaderGroup(ShaderMixinSource mixin, string compositionName, ILightShadowMapShaderGroupData shadowGroupData)
+                : base(mixin, compositionName, shadowGroupData)
+            {
+                CountKey = DirectLightGroupKeys.LightCount.ComposeWith(compositionName);
+                DirectionsKey = LightDirectionalGroupKeys.LightDirectionsWS.ComposeWith(compositionName);
+                ColorsKey = LightDirectionalGroupKeys.LightColor.ComposeWith(compositionName);
+            }
+
+            protected override DirectionalLightShaderGroupData CreateData()
+            {
+                return new DirectionalLightShaderGroupData(this, ShadowGroup);
+            }
+        }
+
+        class DirectionalLightShaderGroupData : LightShaderGroupData
         {
             private readonly ParameterKey<int> countKey;
             private readonly ParameterKey<Vector3[]> directionsKey;
@@ -54,15 +74,15 @@ namespace SiliconStudio.Paradox.Effects.Lights
             private readonly Vector3[] lightDirections;
             private readonly Color3[] lightColors;
 
-            public DirectionalLightShaderGroup(ShaderMixinSource mixin, string compositionName, int compositionIndex, int size, ILightShadowMapShaderGroupData shadowGroupData)
-                : base(mixin, shadowGroupData)
+            public DirectionalLightShaderGroupData(DirectionalLightShaderGroup group, ILightShadowMapShaderGroupData shadowGroupData)
+                : base(shadowGroupData)
             {
-                countKey = DirectLightGroupKeys.LightCount.ComposeIndexer(compositionName, compositionIndex);
-                directionsKey = LightDirectionalGroupKeys.LightDirectionsWS.ComposeIndexer(compositionName, compositionIndex);
-                colorsKey = LightDirectionalGroupKeys.LightColor.ComposeIndexer(compositionName, compositionIndex);
+                countKey = group.CountKey;
+                directionsKey = group.DirectionsKey;
+                colorsKey = group.ColorsKey;
 
-                lightDirections = new Vector3[size];
-                lightColors = new Color3[size];
+                lightDirections = new Vector3[StaticLightMaxCount];
+                lightColors = new Color3[StaticLightMaxCount];
             }
 
             protected override void AddLightInternal(LightComponent light)

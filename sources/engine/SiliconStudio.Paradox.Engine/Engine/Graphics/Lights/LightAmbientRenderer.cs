@@ -22,20 +22,35 @@ namespace SiliconStudio.Paradox.Effects.Lights
             IsEnvironmentLight = true;
         }
 
-        public override LightShaderGroup CreateLightShaderGroup(string compositionName, int compositionIndex, int lightMaxCount, ILightShadowMapShaderGroupData shadowGroup)
+        public override LightShaderGroup CreateLightShaderGroup(string compositionName, int lightMaxCount, ILightShadowMapShaderGroupData shadowGroup)
         {
-            return new LightAmbientShaderGroup(compositionName, compositionIndex, mixin);
+            return new LightAmbientShaderGroup(mixin, compositionName);
         }
 
-        private class LightAmbientShaderGroup : LightShaderGroup
+        private class LightAmbientShaderGroup : LightShaderGroupAndDataPool<LightAmbientShaderGroupData>
         {
-            private ParameterKey<Color3> ambientLightKey;
+            internal readonly ParameterKey<Color3> AmbientLightKey;
+            public LightAmbientShaderGroup(ShaderMixinSource mixin, string compositionName)
+                : base(mixin, compositionName, null)
+            {
+                AmbientLightKey = LightSimpleAmbientKeys.AmbientLight.ComposeWith(compositionName);
+            }
+
+            protected override LightAmbientShaderGroupData CreateData()
+            {
+                return new LightAmbientShaderGroupData(this);
+            }
+        }
+
+        private class LightAmbientShaderGroupData : LightShaderGroupData
+        {
+            private readonly ParameterKey<Color3> ambientLightKey;
             private Color3 color;
 
-            public LightAmbientShaderGroup(string compositionName, int compositionIndex, ShaderMixinSource mixin)
-                : base(mixin, null)
+            public LightAmbientShaderGroupData(LightAmbientShaderGroup group)
+                : base(null)
             {
-                ambientLightKey = LightSimpleAmbientKeys.AmbientLight.ComposeIndexer(compositionName, compositionIndex);
+                ambientLightKey = group.AmbientLightKey;
             }
 
             protected override void AddLightInternal(LightComponent light)

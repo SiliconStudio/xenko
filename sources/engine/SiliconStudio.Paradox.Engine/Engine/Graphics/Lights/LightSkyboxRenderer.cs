@@ -20,13 +20,42 @@ namespace SiliconStudio.Paradox.Effects.Lights
             LightMaxCount = 4;
         }
        
-        public override LightShaderGroup CreateLightShaderGroup(string compositionName, int compositionIndex, int lightMaxCount, ILightShadowMapShaderGroupData shadowGroup)
+        public override LightShaderGroup CreateLightShaderGroup(string compositionName, int lightMaxCount, ILightShadowMapShaderGroupData shadowGroup)
         {
             var mixin = new ShaderMixinGeneratorSource("LightSkyboxEffect");
-            return new LightSkyBoxShaderGroup(compositionName, compositionIndex, mixin);
+            return new LightSkyBoxShaderGroup(mixin, compositionName);
         }
 
-        private class LightSkyBoxShaderGroup : LightShaderGroup
+        private class LightSkyBoxShaderGroup : LightShaderGroupAndDataPool<LightSkyBoxShaderGroupData>
+        {
+            internal readonly ParameterKey<float> IntensityKey;
+            internal readonly ParameterKey<Matrix> SkyMatrixKey;
+            internal readonly ParameterKey<ShaderSource> LightDiffuseColorKey;
+            internal readonly ParameterKey<ShaderSource> LightSpecularColorKey;
+            internal readonly ParameterKey<Color3[]> SphericalColorsKey;
+            internal readonly ParameterKey<Texture> SpecularCubeMapkey;
+            internal readonly ParameterKey<float> SpecularMipCountKey;
+
+            public LightSkyBoxShaderGroup(ShaderSource mixin, string compositionName)
+                : base(mixin, compositionName, null)
+            {
+                IntensityKey = LightSkyboxShaderKeys.Intensity.ComposeWith(compositionName);
+                SkyMatrixKey = LightSkyboxShaderKeys.SkyMatrix.ComposeWith(compositionName);
+                LightDiffuseColorKey = LightSkyboxShaderKeys.LightDiffuseColor.ComposeWith("lightDiffuseColor." + compositionName);
+                LightSpecularColorKey = LightSkyboxShaderKeys.LightSpecularColor.ComposeWith("lightSpecularColor." + compositionName);
+
+                SphericalColorsKey = SphericalHarmonicsEnvironmentColorKeys.SphericalColors.ComposeWith("lightDiffuseColor." + compositionName);
+                SpecularCubeMapkey = RoughnessCubeMapEnvironmentColorKeys.CubeMap.ComposeWith("lightSpecularColor." + compositionName);
+                SpecularMipCountKey = RoughnessCubeMapEnvironmentColorKeys.MipCount.ComposeWith("lightSpecularColor." + compositionName);
+            }
+
+            protected override LightSkyBoxShaderGroupData CreateData()
+            {
+                return new LightSkyBoxShaderGroupData(this);
+            }
+        }
+
+        private class LightSkyBoxShaderGroupData : LightShaderGroupData
         {
             private readonly ParameterKey<float> intensityKey;
 
@@ -58,17 +87,16 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
             private Texture specularCubemap;
 
-            public LightSkyBoxShaderGroup(string compositionName, int compositionIndex, ShaderSource mixin)
-                : base(mixin, null)
+            public LightSkyBoxShaderGroupData(LightSkyBoxShaderGroup group) : base(null)
             {
-                intensityKey = LightSkyboxShaderKeys.Intensity.ComposeIndexer(compositionName, compositionIndex);
-                skyMatrixKey = LightSkyboxShaderKeys.SkyMatrix.ComposeIndexer(compositionName, compositionIndex);
-                lightDiffuseColorKey = LightSkyboxShaderKeys.LightDiffuseColor.ComposeIndexer("lightDiffuseColor." + compositionName, compositionIndex);
-                lightSpecularColorKey = LightSkyboxShaderKeys.LightSpecularColor.ComposeIndexer("lightSpecularColor." + compositionName, compositionIndex);
+                intensityKey = group.IntensityKey;
+                skyMatrixKey = group.SkyMatrixKey;
+                lightDiffuseColorKey = group.LightDiffuseColorKey;
+                lightSpecularColorKey = group.LightSpecularColorKey;
 
-                sphericalColorsKey = SphericalHarmonicsEnvironmentColorKeys.SphericalColors.ComposeIndexer("lightDiffuseColor." + compositionName, compositionIndex);
-                specularCubeMapkey = RoughnessCubeMapEnvironmentColorKeys.CubeMap.ComposeIndexer("lightSpecularColor." + compositionName, compositionIndex);
-                specularMipCountKey = RoughnessCubeMapEnvironmentColorKeys.MipCount.ComposeIndexer("lightSpecularColor." + compositionName, compositionIndex);
+                sphericalColorsKey = group.SphericalColorsKey;
+                specularCubeMapkey = group.SpecularCubeMapkey;
+                specularMipCountKey = group.SpecularMipCountKey;
             }
 
             protected override void AddLightInternal(LightComponent light)

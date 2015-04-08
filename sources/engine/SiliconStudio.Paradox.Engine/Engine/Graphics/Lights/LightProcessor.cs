@@ -1,11 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-using System.Collections.Generic;
-
 using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Effects.Lights
@@ -31,6 +27,10 @@ namespace SiliconStudio.Paradox.Effects.Lights
             lightsCollected = new LightComponentCollection(DefaultLightCapacityCount);
         }
 
+        /// <summary>
+        /// Gets the active lights.
+        /// </summary>
+        /// <value>The lights.</value>
         public LightComponentCollection Lights
         {
             get
@@ -64,18 +64,15 @@ namespace SiliconStudio.Paradox.Effects.Lights
             // 2) Prepare lights to be dispatched to the correct light group
             for (int i = 0; i < lights.Count; i++)
             {
-                CollectLight(lights.Items[i]);
-            }
-        }
+                var light = lights.Items[i];
 
-        private void CollectLight(LightComponent light)
-        {
-            if (!light.Update())
-            {
-                return;
-            }
+                if (!light.Update())
+                {
+                    continue;
+                }
 
-            lightsCollected.Add(light);
+                lightsCollected.Add(light);
+            }
         }
     }
 }

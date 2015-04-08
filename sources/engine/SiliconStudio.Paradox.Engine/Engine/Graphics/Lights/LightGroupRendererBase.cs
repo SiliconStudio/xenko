@@ -43,6 +43,6 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
         }
 
-        public abstract LightShaderGroup CreateLightShaderGroup(string compositionName, int compositionIndex, int lightMaxCount, ILightShadowMapShaderGroupData shadowGroup);
+        public abstract LightShaderGroup CreateLightShaderGroup(string compositionName, int lightMaxCount, ILightShadowMapShaderGroupData shadowGroup);
     }
 }

@@ -59,10 +59,10 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             shaderDataPoolCascade4.Clear();
         }
 
-        public ILightShadowMapShaderGroupData CreateShaderGroupData(string compositionKey, int indexInComposition, LightShadowType shadowType, int maxLightCount)
+        public ILightShadowMapShaderGroupData CreateShaderGroupData(string compositionKey, LightShadowType shadowType, int maxLightCount)
         {
             var cascadeCount = 1 << ((int)(shadowType & LightShadowType.CascadeMask) - 1);
-            return new LightDirectionalShadowMapGroupShaderData(compositionKey, indexInComposition, cascadeCount, maxLightCount, (shadowType & LightShadowType.Debug) != 0);
+            return new LightDirectionalShadowMapGroupShaderData(compositionKey, cascadeCount, maxLightCount, (shadowType & LightShadowType.Debug) != 0);
         }
 
         public void Render(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap)
@@ -335,15 +335,15 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             /// <param name="cascadeCount">The cascade count.</param>
             /// <param name="lightCountMax">The light count maximum.</param>
             /// <param name="isDebug">if set to <c>true</c> [is debug].</param>
-            public LightDirectionalShadowMapGroupShaderData(string compositionKey, int indexInComposition, int cascadeCount, int lightCountMax, bool isDebug)
+            public LightDirectionalShadowMapGroupShaderData(string compositionKey, int cascadeCount, int lightCountMax, bool isDebug)
             {
                 this.cascadeCount = cascadeCount;
                 this.isDebug = isDebug;
                 cascadeSplits = new float[cascadeCount * lightCountMax];
                 worldToShadowCascadeUV = new Matrix[cascadeCount * lightCountMax];
                 shadowShader = new ShaderClassSource(ShaderName, cascadeCount, lightCountMax, isDebug);
-                cascadeSplitsKey = ShadowMapCascadeKeys.CascadeDepthSplits.ComposeIndexer(compositionKey, indexInComposition);
-                worldToShadowCascadeUVsKey = ShadowMapCascadeKeys.WorldToShadowCascadeUV.ComposeIndexer(compositionKey, indexInComposition);
+                cascadeSplitsKey = ShadowMapCascadeKeys.CascadeDepthSplits.ComposeWith(compositionKey);
+                worldToShadowCascadeUVsKey = ShadowMapCascadeKeys.WorldToShadowCascadeUV.ComposeWith(compositionKey);
             }
 
             public void ApplyShader(ShaderMixinSource mixin)

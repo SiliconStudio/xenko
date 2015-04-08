@@ -16,6 +16,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
     [DataContract("LightComponent")]
     [Display(120, "Light")]
     [GizmoEntityFactory(GizmoEntityFactoryNames.LightGizmoEntityFactoryQualifiedName)]
+    [DefaultEntityComponentRenderer(typeof(LightComponentRenderer), -10)]
     [DefaultEntityComponentProcessorAttribute(typeof(LightProcessor))]
     public sealed class LightComponent : EntityComponent
     {
