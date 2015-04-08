@@ -32,7 +32,8 @@ namespace SiliconStudio.Paradox
         /// <value>
         /// The entity this script is attached to.
         /// </value>
-        protected Entity Entity
+        [DataMemberIgnore]
+        public Entity Entity
         {
             // Note: we might want to make this property public?
             get { return ScriptComponent != null ? ScriptComponent.Entity : null; }
