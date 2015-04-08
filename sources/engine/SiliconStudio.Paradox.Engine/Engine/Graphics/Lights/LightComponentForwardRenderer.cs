@@ -280,8 +280,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 {
                     ILightShadowMapRenderer shadowRenderer = null;
 
-                    // direct lights
-                    for (int i = 0; i < lightMaxCount; i++)
+                    for (int i = 0; i < lightCollection.Count; i++)
                     {
                         var light = lightCollection[i];
                         var directLight = (IDirectLight)light.Type;
@@ -330,11 +329,16 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
                         parametersKeyIdBuilder.Write(light.Id);
                         directLightsPerModel.Add(new LightEntry(directLightShaderGroupEntryKeys.Count, directLightShaderGroupEntryKeysNoShadows.Count, light, shadowTexture));
+
+                        if (directLightsPerModel.Count == lightMaxCount)
+                        {
+                            break;
+                        }
                     }
 
-                    if (lightMaxCount > 0)
+                    if (directLightsPerModel.Count > 0)
                     {
-                        directLightShaderGroupEntryKeysNoShadows.Add(new LightForwardShaderFullEntryKey(new LightForwardShaderEntryKey(lightRendererId, 0, (byte)lightMaxCount, 0), lightRenderer, null));
+                        directLightShaderGroupEntryKeysNoShadows.Add(new LightForwardShaderFullEntryKey(new LightForwardShaderEntryKey(lightRendererId, 0, (byte)directLightsPerModel.Count, 0), lightRenderer, null));
 
                         unsafe
                         {
