@@ -214,6 +214,16 @@ namespace SiliconStudio.Core.Serialization.Assets
             return reference != null ? reference.Object : null;
         }
 
+        /// <summary>
+        /// Gets a previously loaded asset from its URL.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <returns></returns>
+        public object Get(string url)
+        {
+            return Get(typeof(object), url);
+        }
+
         public bool TryGetAssetUrl(object obj, out string url)
         {
             if (obj == null) throw new ArgumentNullException("obj");
