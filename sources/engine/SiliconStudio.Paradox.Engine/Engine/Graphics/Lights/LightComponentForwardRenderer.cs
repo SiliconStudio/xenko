@@ -302,7 +302,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 }
                 else
                 {
-                    ILightShadowMapRenderer shadowRenderer = null;
+                    ILightShadowMapRenderer currentShadowRenderer = null;
 
                     for (int i = 0; i < lightCollection.Count; i++)
                     {
@@ -315,20 +315,21 @@ namespace SiliconStudio.Paradox.Effects.Lights
                         }
 
                         LightShadowMapTexture shadowTexture;
-                        shadowRenderer = null;
                         LightShadowType shadowType = 0;
+                        ILightShadowMapRenderer newShadowRenderer = null;
                         byte shadowTextureId = 0;
 
                         if (shadowMapRenderer.LightComponentsWithShadows.TryGetValue(light, out shadowTexture))
                         {
                             shadowType = shadowTexture.ShadowType;
                             shadowTextureId = shadowTexture.TextureId;
-                            shadowRenderer = shadowTexture.Renderer;
+                            newShadowRenderer = shadowTexture.Renderer;
                         }
 
                         if (i == 0)
                         {
                             currentShaderKey = new LightForwardShaderEntryKey(lightRendererId, shadowType, allocCountForNewLightType, shadowTextureId);
+                            currentShadowRenderer = newShadowRenderer;
                         }
                         else
                         {
@@ -346,13 +347,15 @@ namespace SiliconStudio.Paradox.Effects.Lights
                                     shaderKeyIdBuilder.Write(*(uint*)&currentShaderKey);
                                 }
 
-                                directLightShaderGroupEntryKeys.Add(new LightForwardShaderFullEntryKey(currentShaderKey, lightRenderer, shadowRenderer));
+                                directLightShaderGroupEntryKeys.Add(new LightForwardShaderFullEntryKey(currentShaderKey, lightRenderer, currentShadowRenderer));
                                 currentShaderKey = new LightForwardShaderEntryKey(lightRendererId, shadowType, allocCountForNewLightType, shadowTextureId);
+                                currentShadowRenderer = newShadowRenderer;
                             }
                         }
 
                         parametersKeyIdBuilder.Write(light.Id);
                         directLightsPerModel.Add(new LightEntry(directLightShaderGroupEntryKeys.Count, directLightShaderGroupEntryKeysNoShadows.Count, light, shadowTexture));
+
 
                         if (directLightsPerModel.Count == lightMaxCount)
                         {
@@ -368,7 +371,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
                         {
                             shaderKeyIdBuilder.Write(*(uint*)&currentShaderKey);
                         }
-                        directLightShaderGroupEntryKeys.Add(new LightForwardShaderFullEntryKey(currentShaderKey, lightRenderer, shadowRenderer));
+                        directLightShaderGroupEntryKeys.Add(new LightForwardShaderFullEntryKey(currentShaderKey, lightRenderer, currentShadowRenderer));
                     }
                 }
             }

@@ -99,6 +99,26 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             Size = size;
             FilterType = Shadow.Filter == null || !Shadow.Filter.RequiresCustomBuffer() ? null : Shadow.Filter.GetType();
             Renderer = renderer;
+
+            ShadowType = 0;
+            switch (shadowMap.CascadeCount)
+            {
+                case LightShadowMapCascadeCount.OneCascade:
+                    ShadowType |= LightShadowType.Cascade1;
+                    break;
+                case LightShadowMapCascadeCount.TwoCascades:
+                    ShadowType |= LightShadowType.Cascade2;
+                    break;
+                case LightShadowMapCascadeCount.FourCascades:
+                    ShadowType |= LightShadowType.Cascade4;
+                    break;
+            }
+
+            // TODO: Add filter mask to ShadowType
+            if (shadowMap.Debug)
+            {
+                ShadowType |= LightShadowType.Debug;
+            }
         }
 
         public Rectangle GetRectangle(int i)

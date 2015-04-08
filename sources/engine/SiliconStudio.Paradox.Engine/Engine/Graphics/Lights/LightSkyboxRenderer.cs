@@ -41,8 +41,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
             {
                 IntensityKey = LightSkyboxShaderKeys.Intensity.ComposeWith(compositionName);
                 SkyMatrixKey = LightSkyboxShaderKeys.SkyMatrix.ComposeWith(compositionName);
-                LightDiffuseColorKey = LightSkyboxShaderKeys.LightDiffuseColor.ComposeWith("lightDiffuseColor." + compositionName);
-                LightSpecularColorKey = LightSkyboxShaderKeys.LightSpecularColor.ComposeWith("lightSpecularColor." + compositionName);
+                LightDiffuseColorKey = LightSkyboxShaderKeys.LightDiffuseColor.ComposeWith(compositionName);
+                LightSpecularColorKey = LightSkyboxShaderKeys.LightSpecularColor.ComposeWith(compositionName);
 
                 SphericalColorsKey = SphericalHarmonicsEnvironmentColorKeys.SphericalColors.ComposeWith("lightDiffuseColor." + compositionName);
                 SpecularCubeMapkey = RoughnessCubeMapEnvironmentColorKeys.CubeMap.ComposeWith("lightSpecularColor." + compositionName);
@@ -87,6 +87,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
             private Texture specularCubemap;
 
+            private int specularCubemapLevels;
+
             public LightSkyBoxShaderGroupData(LightSkyBoxShaderGroup group) : base(null)
             {
                 intensityKey = group.IntensityKey;
@@ -114,16 +116,14 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
                 rotationMatrix = lightSkybox.SkyMatrix;
 
-                // We expect the Skybox to be immutable
-                if (previousSkybox == skybox)
-                {
-                    return;
-                }
-
                 var diffuseParameters = skybox.DiffuseLightingParameters;
                 var specularParameters = skybox.SpecularLightingParameters;
 
                 specularCubemap = specularParameters.Get(SkyboxKeys.CubeMap);
+                if (specularCubemap != null)
+                {
+                    specularCubemapLevels = specularCubemap.MipLevels;
+                }
                 sphericalColors = diffuseParameters.Get(SphericalHarmonicsEnvironmentColorKeys.SphericalColors);
                 lightDiffuseColorShader = diffuseParameters.Get(SkyboxKeys.Shader) ?? EmptyComputeEnvironmentColorSource;
                 lightSpecularColorShader = specularParameters.Get(SkyboxKeys.Shader) ?? EmptyComputeEnvironmentColorSource;
@@ -148,7 +148,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
                 parameters.Set(sphericalColorsKey, sphericalColors);
                 parameters.Set(specularCubeMapkey, specularCubemap);
-                parameters.Set(specularMipCountKey, specularCubemap.MipLevels);
+                parameters.Set(specularMipCountKey, specularCubemapLevels);
             }
         }
     }

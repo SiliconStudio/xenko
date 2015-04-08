@@ -229,7 +229,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             
             // Allocate a new atlas texture
             var texture = Texture.New2D(Context.GraphicsDevice, MaximumTextureSize, MaximumTextureSize, 1, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
-            var newAtlas = new ShadowMapAtlasTexture(texture) { FilterType = lightShadowMapTexture.FilterType };
+            var newAtlas = new ShadowMapAtlasTexture(texture, atlases.Count) { FilterType = lightShadowMapTexture.FilterType };
             AssignRectangles(ref lightShadowMapTexture, newAtlas);
             atlases.Add(newAtlas);
         }
@@ -239,13 +239,15 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             // Make sure the atlas cleared (will be clear just once)
             atlas.ClearRenderTarget(Context);
 
+            lightShadowMapTexture.TextureId = (byte)atlas.Id;
+            lightShadowMapTexture.Atlas = atlas;
+
             var size = lightShadowMapTexture.Size;
             for (int i = 0; i < lightShadowMapTexture.CascadeCount; i++)
             {
                 var rect = Rectangle.Empty;
                 atlas.Insert(size, size, ref rect);
                 lightShadowMapTexture.SetRectangle(i, rect);
-                lightShadowMapTexture.Atlas = atlas;
             }
         }
 

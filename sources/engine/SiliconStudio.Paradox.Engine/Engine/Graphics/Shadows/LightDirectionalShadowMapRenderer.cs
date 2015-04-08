@@ -321,7 +321,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
             private readonly Matrix[] worldToShadowCascadeUV;
 
-            private readonly ShaderClassSource shadowShader;
+            private readonly ShaderMixinSource shadowShader;
 
             private readonly ParameterKey<float[]> cascadeSplitsKey;
 
@@ -341,14 +341,20 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 this.isDebug = isDebug;
                 cascadeSplits = new float[cascadeCount * lightCountMax];
                 worldToShadowCascadeUV = new Matrix[cascadeCount * lightCountMax];
-                shadowShader = new ShaderClassSource(ShaderName, cascadeCount, lightCountMax, isDebug);
+
+                var mixin = new ShaderMixinSource();
+                mixin.Mixins.Add(new ShaderClassSource(ShaderName, cascadeCount, lightCountMax, isDebug));
+                // TODO: Temporary passing filter here
+                mixin.Mixins.Add(new ShaderClassSource("ShadowMapFilterDefault"));
+
+                shadowShader = mixin;
                 cascadeSplitsKey = ShadowMapCascadeKeys.CascadeDepthSplits.ComposeWith(compositionKey);
                 worldToShadowCascadeUVsKey = ShadowMapCascadeKeys.WorldToShadowCascadeUV.ComposeWith(compositionKey);
             }
 
             public void ApplyShader(ShaderMixinSource mixin)
             {
-                mixin.Mixins.Add(shadowShader);
+                mixin.CloneFrom(shadowShader);
             }
 
             public void SetShadowMapShaderData(int index, ILightShadowMapShaderData shaderData)

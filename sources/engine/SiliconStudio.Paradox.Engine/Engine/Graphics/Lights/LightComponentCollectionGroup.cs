@@ -136,7 +136,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             allMasks.Clear();
 
             fixed (void* ptr = groupMasks)
-                Interop.memset(ptr, 0, groupMasks.Length);
+                Interop.memset(ptr, 0, groupMasks.Length * sizeof(uint));
             
             // Only clear collections that were previously allocated (no need to iterate on all collections from the pool)
             foreach (var collection in lightCollectionPool)
@@ -189,7 +189,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 int collectionIndex = -1;
                 for (int j = 0; j < lightCollectionPool.Count; j++)
                 {
-                    if ((int)lightCollectionPool[j].CullingMask == mask)
+                    if ((uint)lightCollectionPool[j].CullingMask == mask)
                     {
                         collectionIndex = j;
                         break;

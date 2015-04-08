@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
         float ComputeShadowFromCascade(float3 shadowPositionWS, int cascadeIndex, int lightIndex)
         {
-            var shadowPosition = mul(float4(shadowPositionWS, 1), WorldToShadowCascadeUV[cascadeIndex + lightIndex * TCascadeCount]);
+            float3 shadowPosition = mul(float4(shadowPositionWS, 1), WorldToShadowCascadeUV[cascadeIndex + lightIndex * TCascadeCount]);
             return FilterShadow(shadowPosition.xy, shadowPosition.z);
         }
 

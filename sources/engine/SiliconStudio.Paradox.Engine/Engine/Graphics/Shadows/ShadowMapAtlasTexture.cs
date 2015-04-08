@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
     /// </summary>
     public class ShadowMapAtlasTexture : GuillotinePacker
     {
-        public ShadowMapAtlasTexture(Texture texture)
+        public ShadowMapAtlasTexture(Texture texture, int textureId)
         {
             if (texture == null) throw new ArgumentNullException("texture");
             Texture = texture;
@@ -23,7 +23,10 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             Height = texture.Height;
 
             RenderFrame = RenderFrame.FromTexture((Texture)null, texture);
+            Id = textureId;
         }
+
+        public int Id { get; private set; }
 
         public readonly int Width;
 

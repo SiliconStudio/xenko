@@ -30,9 +30,10 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 {
 
                     {
+                        var __mixinToCompose__ = context.GetParam(LightSkyboxShaderKeys.LightDiffuseColor);
                         var __subMixin = new ShaderMixinSource();
                         context.PushComposition(mixin, "lightDiffuseColor", __subMixin);
-                        context.Mixin(__subMixin, context.GetParam(LightSkyboxShaderKeys.LightDiffuseColor));
+                        context.Mixin(__subMixin, __mixinToCompose__);
                         context.PopComposition();
                     }
                 }
@@ -40,9 +41,10 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 {
 
                     {
+                        var __mixinToCompose__ = context.GetParam(LightSkyboxShaderKeys.LightSpecularColor);
                         var __subMixin = new ShaderMixinSource();
                         context.PushComposition(mixin, "lightSpecularColor", __subMixin);
-                        context.Mixin(__subMixin, context.GetParam(LightSkyboxShaderKeys.LightSpecularColor));
+                        context.Mixin(__subMixin, __mixinToCompose__);
                         context.PopComposition();
                     }
                 }

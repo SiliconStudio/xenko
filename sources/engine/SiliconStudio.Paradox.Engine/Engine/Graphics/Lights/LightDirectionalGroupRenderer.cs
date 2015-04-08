@@ -43,6 +43,11 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 mixin.Mixins.Add(new ShaderClassSource("DirectLightGroupFixed", lightMaxCount));
             }
 
+            if (shadowGroup != null)
+            {
+                shadowGroup.ApplyShader(mixin);
+            }
+
             return new DirectionalLightShaderGroup(mixin, compositionName, shadowGroup);
         }
 
