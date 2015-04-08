@@ -93,6 +93,7 @@ namespace SiliconStudio.Paradox.Engine
             {
                 modelGroup.Clear();
             }
+            ModelGroups.Clear();
 
             var groupMaskUsed = EntityGroupMask.None;
 
