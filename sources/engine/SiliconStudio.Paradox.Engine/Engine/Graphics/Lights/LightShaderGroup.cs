@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
 {
     public abstract class LightShaderGroup
     {
-        protected LightShaderGroup(ShaderMixinSource mixin, ILightShadowMapShaderGroupData shadowGroup)
+        protected LightShaderGroup(ShaderSource mixin, ILightShadowMapShaderGroupData shadowGroup)
         {
             if (mixin == null) throw new ArgumentNullException("mixin");
             ShaderSource = mixin;
@@ -20,13 +20,11 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
         public bool IsEnvironementLightGroup { get; set; }
 
-        public ShaderMixinSource ShaderSource { get; private set; }
+        public ShaderSource ShaderSource { get; private set; }
 
         public int Count { get; private set; }
 
         public ILightShadowMapShaderGroupData ShadowGroup { get; private set; }
-
-        public bool IsShaderSourceChanged { get; set; }
 
         public void Reset()
         {

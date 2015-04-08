@@ -79,6 +79,13 @@
     <Compile Include="Engine\Graphics\Lights\LightComponentCollectionGroup.cs" />
     <Compile Include="Engine\Graphics\Lights\LightComponentRenderer.cs" />
     <Compile Include="Engine\Graphics\Lights\LightComponentForwardRenderer.cs" />
+    <Compile Include="Engine\Graphics\Lights\LightSkyboxEffect.cs">
+      <DependentUpon>LightSkyboxEffect.pdxfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Engine\Graphics\Lights\LightSkyboxShaderKeys.cs" />
     <Compile Include="Engine\Graphics\MaterialInstance.cs" />
     <Compile Include="Engine\Graphics\ParadoxEffectBaseKeys.cs" />
     <Compile Include="Engine\Graphics\CameraComponentRendererExtensions.cs" />
@@ -2844,6 +2851,10 @@
     <None Include="Engine\Graphics\Lights\LightStream.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LightStream.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Lights\LightSkyboxEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>LightSkyboxEffect.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Materials\IMaterialSurfaceDomain.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

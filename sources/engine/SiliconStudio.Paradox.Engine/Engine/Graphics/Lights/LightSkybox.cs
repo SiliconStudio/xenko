@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine.Graphics.Skyboxes;
 
 namespace SiliconStudio.Paradox.Effects.Lights
@@ -20,10 +21,14 @@ namespace SiliconStudio.Paradox.Effects.Lights
         [DataMemberIgnore]
         public SkyboxComponent SkyboxComponent { get; private set; }
 
+        [DataMemberIgnore]
+        public Matrix SkyMatrix;
+
         public bool Update(LightComponent lightComponent)
         {
+            SkyMatrix = Matrix.RotationQuaternion(lightComponent.Entity.Transform.Rotation);
             SkyboxComponent = lightComponent.Entity.Get<SkyboxComponent>();
-            return SkyboxComponent != null && SkyboxComponent.Skybox == null;
+            return SkyboxComponent != null && SkyboxComponent.Skybox != null;
         }
     }
 }
