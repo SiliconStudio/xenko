@@ -18,7 +18,6 @@ namespace SiliconStudio.Paradox.Effects
         private static ModelNodeDefinition[] defaultModelNodeDefinition
             = { new ModelNodeDefinition { Name = "Root", ParentIndex = -1, Transform = { Scaling = Vector3.One }, Flags = ModelNodeFlags.Default } };
 
-        private Model model;
         private ModelNodeDefinition[] nodes;
         private ModelNodeTransformation[] nodeTransformations;
 
@@ -38,14 +37,27 @@ namespace SiliconStudio.Paradox.Effects
         /// <param name="model">The model.</param>
         public ModelViewHierarchyUpdater(Model model)
         {
-            Initialize(model);
+            if (model == null) throw new ArgumentNullException("model");
+            Initialize(model.Hierarchy != null ? model.Hierarchy.Nodes : null);
         }
 
-        public void Initialize(Model newModel)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ModelViewHierarchyUpdater" /> class.
+        /// </summary>
+        /// <param name="newNodes">The new nodes.</param>
+        public ModelViewHierarchyUpdater(ModelNodeDefinition[] newNodes)
         {
-            if (model == null) throw new ArgumentNullException("model");
-            this.model = newModel;
-            this.nodes = model.Hierarchy != null ? model.Hierarchy.Nodes : defaultModelNodeDefinition;
+            Initialize(newNodes);
+        }
+
+        public void Initialize(ModelNodeDefinition[] newNodes)
+        {
+            if (this.nodes == newNodes && this.nodes != null)
+            {
+                return;
+            }
+
+            this.nodes = newNodes ?? defaultModelNodeDefinition;
 
             if (nodeTransformations == null || nodeTransformations.Length < this.nodes.Length)
                 nodeTransformations = new ModelNodeTransformation[this.nodes.Length];
