@@ -58,6 +58,7 @@ namespace SiliconStudio.Core.Collections
         /// </summary>
         public void Reset()
         {
+            Clear();
             for (int i = 0; i < allocated.Count; i++)
             {
                 allocated[i] = null;
