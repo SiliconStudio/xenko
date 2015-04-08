@@ -178,7 +178,7 @@ namespace SiliconStudio.Paradox.Engine
 
         private void UpdateFromChild()
         {
-            // If this scene instance is coming from a SceneChildComponent, check that the Scene hasn't changed
+            // If this scene instance is coming from a ChildSceneComponent, check that the Scene hasn't changed
             // If the scene has changed, we need to recreate a new SceneInstance with the new scene
             if (previousScene != Scene)
             {

@@ -10,7 +10,7 @@ using SiliconStudio.Paradox.EntityModel;
 namespace SiliconStudio.Paradox.Engine
 {
     /// <summary>
-    /// A renderer for a child scene defined by a <see cref="SceneChildComponent"/>.
+    /// A renderer for a child scene defined by a <see cref="ChildSceneComponent"/>.
     /// </summary>
     [DataContract("SceneChildRenderer")]
     [Display("Render Child Scene")]
@@ -29,10 +29,10 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneChildRenderer"/> class.
         /// </summary>
-        /// <param name="sceneChild">The scene child.</param>
-        public SceneChildRenderer(SceneChildComponent sceneChild)
+        /// <param name="childScene">The scene child.</param>
+        public SceneChildRenderer(ChildSceneComponent childScene)
         {
-            SceneChild = sceneChild;
+            ChildScene = childScene;
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         /// <value>The scene.</value>
         [DataMember(10)]
-        public SceneChildComponent SceneChild { get; set; }
+        public ChildSceneComponent ChildScene { get; set; }
 
         /// <summary>
         /// Gets or sets the graphics compositor override, allowing to override the composition of the scene.
@@ -68,7 +68,7 @@ namespace SiliconStudio.Paradox.Engine
 
         protected override void DrawCore(RenderContext context, RenderFrame output)
         {
-            if (SceneChild == null || !SceneChild.Enabled)
+            if (ChildScene == null || !ChildScene.Enabled)
             {
                 return;
             }
@@ -80,7 +80,7 @@ namespace SiliconStudio.Paradox.Engine
                 return;
             }
 
-            SceneInstance sceneInstance = sceneChildProcessor.GetSceneInstance(SceneChild);
+            SceneInstance sceneInstance = sceneChildProcessor.GetSceneInstance(ChildScene);
             if (sceneInstance != null)
             {
                 sceneInstance.Draw(context, output, GraphicsCompositorOverride);

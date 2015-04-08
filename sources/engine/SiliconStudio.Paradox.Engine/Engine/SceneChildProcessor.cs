@@ -13,35 +13,35 @@ namespace SiliconStudio.Paradox.Engine
     /// The scene child processor to handle a child scene. See remarks.
     /// </summary>
     /// <remarks>
-    /// This processor is handling specially an entity with a <see cref="SceneChildComponent"/>. If an scene component is found, it will
+    /// This processor is handling specially an entity with a <see cref="ChildSceneComponent"/>. If an scene component is found, it will
     /// create a sub-<see cref="EntityManager"/> dedicated to handle the entities inside the child scene.
     /// </remarks>
-    public sealed class SceneChildProcessor : EntityProcessor<SceneChildComponent>
+    public sealed class SceneChildProcessor : EntityProcessor<ChildSceneComponent>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneChildProcessor"/> class.
         /// </summary>
         public SceneChildProcessor()
-            : base(SceneChildComponent.Key)
+            : base(ChildSceneComponent.Key)
         {
         }
 
-        public SceneInstance GetSceneInstance(SceneChildComponent component)
+        public SceneInstance GetSceneInstance(ChildSceneComponent component)
         {
             return component.SceneInstance;
         }
 
-        protected override SceneChildComponent GenerateAssociatedData(Entity entity)
+        protected override ChildSceneComponent GenerateAssociatedData(Entity entity)
         {
-            return entity.Get<SceneChildComponent>();
+            return entity.Get<ChildSceneComponent>();
         }
 
-        protected override void OnEntityAdding(Entity entity, SceneChildComponent component)
+        protected override void OnEntityAdding(Entity entity, ChildSceneComponent component)
         {
             component.SceneInstance = new SceneInstance(EntityManager.Services, component.Scene, EntityManager.GetProcessor<ScriptProcessor>() != null);
         }
 
-        protected override void OnEntityRemoved(Entity entity, SceneChildComponent component)
+        protected override void OnEntityRemoved(Entity entity, ChildSceneComponent component)
         {
             if (component != null)
             {
@@ -73,7 +73,7 @@ namespace SiliconStudio.Paradox.Engine
                 {
                     var sceneInstance = childComponent.SceneInstance;
                     if (sceneInstance.Scene != childComponent.Scene)
-                        throw new InvalidOperationException("The scene instance does not match the scene of the SceneChildComponent. Has it been modified after Update?");
+                        throw new InvalidOperationException("The scene instance does not match the scene of the ChildSceneComponent. Has it been modified after Update?");
                     
                     childComponent.SceneInstance.Draw(context);
                 }

@@ -1986,8 +1986,8 @@
     <Compile Include="Engine\ISpriteProvider.cs" />
     <Compile Include="Engine\ModelProcessor.cs" />
     <Compile Include="Engine\Graphics\RenderModel.cs" />
-    <Compile Include="Engine\SceneChildComponent.cs" />
-    <Compile Include="Engine\SceneChildComponentChangedEventArgs.cs" />
+    <Compile Include="Engine\ChildSceneComponent.cs" />
+    <Compile Include="Engine\ChildSceneComponentChangedEventArgs.cs" />
     <Compile Include="Engine\SceneChildProcessor.cs" />
     <Compile Include="Engine\SceneComponent.cs" />
     <Compile Include="Engine\SceneEditorCameraSettings.cs" />
