@@ -531,6 +531,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     {
                         OpenBrace();
                         WriteLinkLine(mixinStatement);
+                        Write("var __mixinToCompose__ = ");
+                        WriteMixinName(mixinName);
+                        WriteLine(";");
                         WriteLine("var __subMixin = new ShaderMixinSource();");
 
                         WriteLinkLine(mixinStatement);
@@ -539,8 +542,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         WriteLine(", __subMixin);");
 
                         WriteLinkLine(mixinStatement);
-                        Write("context.Mixin(__subMixin, ");
-                        WriteMixinName(mixinName);
+                        Write("context.Mixin(__subMixin, __mixinToCompose__");
                         WriteGenericParameters(genericParameters);
                         WriteLine(");");
 
