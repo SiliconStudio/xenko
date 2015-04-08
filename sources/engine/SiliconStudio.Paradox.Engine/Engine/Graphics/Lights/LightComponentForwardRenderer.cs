@@ -55,6 +55,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
         private FastListStruct<LightForwardShaderFullEntryKey> environmentLightShaderGroupEntryKeys;
         private FastListStruct<LightForwardShaderFullEntryKey> directLightShaderGroupEntryKeysNoShadows;
 
+        private PoolListStruct<ParameterCollectionEntry> parameterCollectionEntryPool;
+
         private ShaderEntry currentModelShadersEntry;
 
         private ParameterCollectionEntry currentModelShadersParameters;
@@ -73,6 +75,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             directLightShaderGroupEntryKeys = new FastListStruct<LightForwardShaderFullEntryKey>(32);
             environmentLightShaderGroupEntryKeys = new FastListStruct<LightForwardShaderFullEntryKey>(32);
             directLightShaderGroupEntryKeysNoShadows = new FastListStruct<LightForwardShaderFullEntryKey>(32);
+            parameterCollectionEntryPool = new PoolListStruct<ParameterCollectionEntry>(16, CreateParameterCollectionEntry);
 
             //directLightGroup = new LightGroupRenderer("directLightGroups", LightingKeys.DirectLightGroups);
             //environmentLightGroup = new LightGroupRenderer("environmentLights", LightingKeys.EnvironmentLights);
@@ -94,7 +97,6 @@ namespace SiliconStudio.Paradox.Effects.Lights
             RegisterLightGroupRenderer(typeof(LightSkybox), new LightSkyboxRenderer());
             RegisterLightGroupRenderer(typeof(LightAmbient), new LightAmbientRenderer());
         }
-
 
         protected void RegisterLightGroupRenderer(Type lightType, LightGroupRendererBase renderer)
         {
@@ -165,6 +167,10 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
             currentModelShadersParameters = null;
             currentModelShadersParametersChanged = true;
+
+            // Clear the cache of parameter entries
+            lightParameterEntries.Clear();
+            parameterCollectionEntryPool.Clear();
         }
 
         /// <summary>
@@ -355,6 +361,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 parametersKeyIdBuilder.ComputeHash(out parametersKeyId);
 
                 var previousModelShadersEntry = currentModelShadersEntry;
+
+                // Calculate the shader parameters just once
                 // If we don't have already this permutation, use it
                 if (!shaderEntries.TryGetValue(shaderKeyId, out currentModelShadersEntry))
                 {
@@ -363,15 +371,20 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 }
                 currentModelShadersEntryChanged = previousModelShadersEntry != currentModelShadersEntry;
 
+                // Calculate the shader parameters just once per light combination and for this rendering pass
                 var previousModelShadersParameters = currentModelShadersParameters;
                 if (!lightParameterEntries.TryGetValue(parametersKeyId, out currentModelShadersParameters))
                 {
-                    currentModelShadersParameters = new ParameterCollectionEntry();
+                    currentModelShadersParameters = parameterCollectionEntryPool.Add();
+                    
+                    // TODO: Should we clear the parameters?
+                    // currentModelShadersParameters.Parameters.Clear();
+                    // currentModelShadersParameters.ParametersNoShadows.Clear();
+
+                    UpdateLightParameters(currentModelShadersParameters);
                     lightParameterEntries.Add(parametersKeyId, currentModelShadersParameters);
                 }
                 currentModelShadersParametersChanged = previousModelShadersParameters != currentModelShadersParameters;
-
-                UpdateLightParameters(currentModelShadersParameters);
             }
         }
 
@@ -525,6 +538,11 @@ namespace SiliconStudio.Paradox.Effects.Lights
                     }
                 }
             }
+        }
+
+        private static ParameterCollectionEntry CreateParameterCollectionEntry()
+        {
+            return new ParameterCollectionEntry();
         }
 
         private struct LightEntry
