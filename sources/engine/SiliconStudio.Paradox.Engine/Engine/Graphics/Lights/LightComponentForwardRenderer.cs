@@ -445,17 +445,10 @@ namespace SiliconStudio.Paradox.Effects.Lights
             var parameters = parameterCollectionEntry.Parameters;
             var parametersNoShadows = parameterCollectionEntry.ParametersNoShadows;
 
-            if (parameters.Get(LightingKeys.DirectLightGroups) != currentModelShadersEntry.DirectLightShaders)
-                parameters.Set(LightingKeys.DirectLightGroups, currentModelShadersEntry.DirectLightShaders);
-
-            if (parameters.Get(LightingKeys.EnvironmentLights) != currentModelShadersEntry.EnvironmentLightShaders)
-                parameters.Set(LightingKeys.EnvironmentLights, currentModelShadersEntry.EnvironmentLightShaders);
-
-            if (parametersNoShadows.Get(LightingKeys.DirectLightGroups) != currentModelShadersEntry.DirectLightShadersNoShadows)
-                parametersNoShadows.Set(LightingKeys.DirectLightGroups, currentModelShadersEntry.DirectLightShadersNoShadows);
-
-            if (parametersNoShadows.Get(LightingKeys.EnvironmentLights) != currentModelShadersEntry.EnvironmentLightShaders)
-                parametersNoShadows.Set(LightingKeys.EnvironmentLights, currentModelShadersEntry.EnvironmentLightShaders);
+            parameters.Set(LightingKeys.DirectLightGroups, currentModelShadersEntry.DirectLightShaders);
+            parameters.Set(LightingKeys.EnvironmentLights, currentModelShadersEntry.EnvironmentLightShaders);
+            parametersNoShadows.Set(LightingKeys.DirectLightGroups, currentModelShadersEntry.DirectLightShadersNoShadows);
+            parametersNoShadows.Set(LightingKeys.EnvironmentLights, currentModelShadersEntry.EnvironmentLightShaders);
 
             foreach (var lightEntry in directLightsPerModel)
             {
