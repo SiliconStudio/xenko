@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Collections.Generic;
-
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Shadows;
 using SiliconStudio.Paradox.Shaders;
@@ -20,7 +18,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
             mixin = new ShaderMixinSource();
             mixin.Mixins.Add(new ShaderClassSource("LightSimpleAmbient"));
-            LightMaxCount = 1;
+            LightMaxCount = 4;
+            IsEnvironmentLight = true;
         }
 
         public override LightShaderGroup CreateLightShaderGroup(string compositionName, int compositionIndex, int lightMaxCount, ILightShadowMapShaderGroupData shadowGroup)

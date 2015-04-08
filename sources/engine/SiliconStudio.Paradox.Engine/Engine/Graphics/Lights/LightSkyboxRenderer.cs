@@ -17,6 +17,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         public LightSkyboxRenderer()
         {
             IsEnvironmentLight = true;
+            LightMaxCount = 4;
         }
        
         public override LightShaderGroup CreateLightShaderGroup(string compositionName, int compositionIndex, int lightMaxCount, ILightShadowMapShaderGroupData shadowGroup)

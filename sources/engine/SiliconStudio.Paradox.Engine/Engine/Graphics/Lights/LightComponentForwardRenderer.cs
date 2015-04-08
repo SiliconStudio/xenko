@@ -94,8 +94,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
             // TODO: Make this pluggable
             RegisterLightGroupRenderer(typeof(LightDirectional), new LightDirectionalGroupRenderer());
-            RegisterLightGroupRenderer(typeof(LightSkybox), new LightSkyboxRenderer());
             RegisterLightGroupRenderer(typeof(LightAmbient), new LightAmbientRenderer());
+            RegisterLightGroupRenderer(typeof(LightSkybox), new LightSkyboxRenderer());
         }
 
         protected void RegisterLightGroupRenderer(Type lightType, LightGroupRendererBase renderer)
@@ -251,9 +251,9 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 var lightRenderer = rendererAndlightGroup.Key;
                 var lightCollection = rendererAndlightGroup.Value.FindGroup(group);
 
-                int lightMaxCount = lightRenderer.LightMaxCount;
+                int lightMaxCount = Math.Min(lightCollection.Count, lightRenderer.LightMaxCount);
                 var lightRendererId = lightRenderer.LightRendererId;
-                var allocCountForNewLightType = lightRenderer.AllocateLightMaxCount ? (byte)lightMaxCount : (byte)1;
+                var allocCountForNewLightType = lightRenderer.AllocateLightMaxCount ? (byte)lightRenderer.LightMaxCount : (byte)1;
 
                 var currentShaderKey = new LightForwardShaderEntryKey();
 
@@ -261,8 +261,10 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 if (lightRenderer.IsEnvironmentLight)
                 {
                     // The loop is simpler for environment lights (single group per light, no shadow maps, no bounding box...etc)
-                    foreach (var light in lightCollection)
+
+                    for(int i = 0; i < lightMaxCount; i++)
                     {
+                        var light = lightCollection[i];
                         currentShaderKey = new LightForwardShaderEntryKey(lightRendererId, 0, allocCountForNewLightType, 0);
                         unsafe
                         {
@@ -276,12 +278,12 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 }
                 else
                 {
-                    // direct lights
-                    int directLightCount = 0;
                     ILightShadowMapRenderer shadowRenderer = null;
 
-                    foreach (var light in lightCollection)
+                    // direct lights
+                    for (int i = 0; i < lightMaxCount; i++)
                     {
+                        var light = lightCollection[i];
                         var directLight = (IDirectLight)light.Type;
                         // If the light does not intersects the model, we can skip it
                         if (directLight.HasBoundingBox && !light.BoundingBox.Intersects(ref modelBoundingBox))
@@ -292,8 +294,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
                         LightShadowMapTexture shadowTexture;
                         shadowRenderer = null;
                         LightShadowType shadowType = 0;
-                        byte shadowTextureId = 0; 
-                        
+                        byte shadowTextureId = 0;
+
                         if (shadowMapRenderer.LightComponentsWithShadows.TryGetValue(light, out shadowTexture))
                         {
                             shadowType = shadowTexture.ShadowType;
@@ -301,18 +303,12 @@ namespace SiliconStudio.Paradox.Effects.Lights
                             shadowRenderer = shadowTexture.Renderer;
                         }
 
-                        if (directLightCount == 0)
+                        if (i == 0)
                         {
                             currentShaderKey = new LightForwardShaderEntryKey(lightRendererId, shadowType, allocCountForNewLightType, shadowTextureId);
                         }
                         else
                         {
-                            // We are already at the light max count of the renderer
-                            if ((directLightCount + 1) == lightMaxCount)
-                            {
-                                continue;
-                            }
-
                             if (currentShaderKey.LightRendererId == lightRendererId && currentShaderKey.ShadowType == shadowType && currentShaderKey.ShadowTextureId == shadowTextureId)
                             {
                                 if (!lightRenderer.AllocateLightMaxCount)
@@ -332,15 +328,13 @@ namespace SiliconStudio.Paradox.Effects.Lights
                             }
                         }
 
-                        directLightCount++;
-
                         parametersKeyIdBuilder.Write(light.Id);
                         directLightsPerModel.Add(new LightEntry(directLightShaderGroupEntryKeys.Count, directLightShaderGroupEntryKeysNoShadows.Count, light, shadowTexture));
                     }
 
-                    if (directLightCount > 0)
+                    if (lightMaxCount > 0)
                     {
-                        directLightShaderGroupEntryKeysNoShadows.Add(new LightForwardShaderFullEntryKey(new LightForwardShaderEntryKey(lightRendererId, 0, (byte)directLightCount, 0), lightRenderer, null));
+                        directLightShaderGroupEntryKeysNoShadows.Add(new LightForwardShaderFullEntryKey(new LightForwardShaderEntryKey(lightRendererId, 0, (byte)lightMaxCount, 0), lightRenderer, null));
 
                         unsafe
                         {
