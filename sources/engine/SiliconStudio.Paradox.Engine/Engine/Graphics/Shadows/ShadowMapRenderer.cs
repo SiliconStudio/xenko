@@ -262,7 +262,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 }
 
                 var shadowMap = light.Shadow;
-                if (shadowMap == null || !shadowMap.Enabled)
+                if (!shadowMap.Enabled)
                 {
                     continue;
                 }

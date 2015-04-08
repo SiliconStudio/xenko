@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// Gets or sets the shadow.
         /// </summary>
         /// <value>The shadow.</value>
-        LightShadowMap Shadow { get; set; }
+        LightShadowMap Shadow { get; }
 
         /// <summary>
         /// Gets a value indicating whether this instance has a bounding box.

@@ -233,7 +233,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
             // If the light has shadows, populate a separate list
             var directLight = lightComponent.Type as IDirectLight;
-            if (directLight != null && directLight.Shadow != null && directLight.Shadow.Enabled)
+            if (directLight != null && directLight.Shadow.Enabled)
             {
                 allLightsWithShadows.Add(lightComponent);
             }

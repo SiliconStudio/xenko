@@ -234,7 +234,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 visibleLights.Add(light);
 
                 // Add light to a special list if it has shadows
-                if (directLight != null && directLight.Shadow != null && directLight.Shadow.Enabled)
+                if (directLight != null && directLight.Shadow.Enabled)
                 {
                     // A visible light with shadows
                     visibleLightsWithShadows.Add(light);
