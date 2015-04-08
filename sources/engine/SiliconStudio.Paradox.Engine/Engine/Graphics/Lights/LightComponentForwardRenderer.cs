@@ -39,14 +39,14 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
         private readonly List<LightComponent> visibleLightsWithShadows;
 
-        private readonly List<KeyValuePair<LightGroupRendererBase, LightComponentCollectionGroup>> activeRenderers;
+        private readonly List<ActiveLightGroupRenderer> activeRenderers;
 
         private SceneCameraRenderer sceneCameraRenderer;
 
         private EntityGroupMask sceneCullingMask;
 
-        private readonly Dictionary<ObjectId, ShaderEntry> shaderEntries;
-        private readonly Dictionary<ObjectId, ParameterCollectionEntry> lightParameterEntries;
+        private readonly Dictionary<ObjectId, LightShaderPermutationEntry> shaderEntries;
+        private readonly Dictionary<ObjectId, LightParametersPermutationEntry> lightParameterEntries;
 
         private readonly List<LightEntry> directLightsPerModel = new List<LightEntry>();
         private FastListStruct<LightForwardShaderFullEntryKey> directLightShaderGroupEntryKeys;
@@ -55,11 +55,11 @@ namespace SiliconStudio.Paradox.Effects.Lights
         private FastListStruct<LightForwardShaderFullEntryKey> environmentLightShaderGroupEntryKeys;
         private FastListStruct<LightForwardShaderFullEntryKey> directLightShaderGroupEntryKeysNoShadows;
 
-        private PoolListStruct<ParameterCollectionEntry> parameterCollectionEntryPool;
+        private PoolListStruct<LightParametersPermutationEntry> parameterCollectionEntryPool;
 
-        private ShaderEntry currentModelShadersEntry;
+        private LightShaderPermutationEntry currentModelLightShadersPermutationEntry;
 
-        private ParameterCollectionEntry currentModelShadersParameters;
+        private LightParametersPermutationEntry currentModelShadersParameters;
 
         private readonly Dictionary<RenderModel, RenderModelLights> modelToLights;
 
@@ -69,12 +69,18 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// <value>The lights.</value>
         private readonly Dictionary<Type, LightComponentCollectionGroup> activeLightGroups;
 
+        /// <summary>
+        /// Gets the lights without shadow per light type.
+        /// </summary>
+        /// <value>The lights.</value>
+        private readonly Dictionary<Type, LightComponentCollectionGroup> activeLightGroupsWithShadows;
+
         private static readonly string[] DirectLightGroupsCompositionNames;
         private static readonly string[] EnvironmentLightGroupsCompositionNames;
 
         static LightComponentForwardRenderer()
         {
-            // TODO: 32 is hardcoded and will generate a NullReferenceException in CalculateShaderEntry
+            // TODO: 32 is hardcoded and will generate a NullReferenceException in CreateShaderPermutationEntry
             DirectLightGroupsCompositionNames = new string[32];
             for (int i = 0; i < DirectLightGroupsCompositionNames.Length; i++)
             {
@@ -93,22 +99,23 @@ namespace SiliconStudio.Paradox.Effects.Lights
             directLightShaderGroupEntryKeys = new FastListStruct<LightForwardShaderFullEntryKey>(32);
             environmentLightShaderGroupEntryKeys = new FastListStruct<LightForwardShaderFullEntryKey>(32);
             directLightShaderGroupEntryKeysNoShadows = new FastListStruct<LightForwardShaderFullEntryKey>(32);
-            parameterCollectionEntryPool = new PoolListStruct<ParameterCollectionEntry>(16, CreateParameterCollectionEntry);
+            parameterCollectionEntryPool = new PoolListStruct<LightParametersPermutationEntry>(16, CreateParameterCollectionEntry);
 
             //directLightGroup = new LightGroupRenderer("directLightGroups", LightingKeys.DirectLightGroups);
             //environmentLightGroup = new LightGroupRenderer("environmentLights", LightingKeys.EnvironmentLights);
             lightRenderers = new List<KeyValuePair<Type, LightGroupRendererBase>>(16);
 
-            visibleLights = new List<LightComponent>();
-            visibleLightsWithShadows = new List<LightComponent>();
+            visibleLights = new List<LightComponent>(1024);
+            visibleLightsWithShadows = new List<LightComponent>(1024);
 
-            shaderEntries = new Dictionary<ObjectId, ShaderEntry>();
+            shaderEntries = new Dictionary<ObjectId, LightShaderPermutationEntry>(1024);
 
             directLightsPerModel = new List<LightEntry>(16);
-            activeLightGroups = new Dictionary<Type, LightComponentCollectionGroup>();
-            activeRenderers = new List<KeyValuePair<LightGroupRendererBase, LightComponentCollectionGroup>>();
+            activeLightGroups = new Dictionary<Type, LightComponentCollectionGroup>(16);
+            activeLightGroupsWithShadows = new Dictionary<Type, LightComponentCollectionGroup>(16);
+            activeRenderers = new List<ActiveLightGroupRenderer>(16);
 
-            lightParameterEntries = new Dictionary<ObjectId, ParameterCollectionEntry>();
+            lightParameterEntries = new Dictionary<ObjectId, LightParametersPermutationEntry>(32);
 
             // TODO: Make this pluggable
             RegisterLightGroupRenderer(typeof(LightDirectional), new LightDirectionalGroupRenderer());
@@ -143,7 +150,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             }
             sceneCullingMask = sceneCameraRenderer.CullingMask;
 
-            // Setup the callback on the ModelRenderer and shadow map renderer
+            // Setup the callback on the ModelRenderer and shadow map LightGroupRenderer
             if (!isModelComponentRendererSetup)
             {
                 var modelRenderer = ModelComponentRenderer.GetAttached(sceneCameraRenderer);
@@ -162,25 +169,15 @@ namespace SiliconStudio.Paradox.Effects.Lights
             CollectVisibleLights();
 
             // Draw shadow maps
-            shadowMapRenderer.Draw(context, visibleLightsWithShadows);
-
-            // Prepare active renderers
-            activeRenderers.Clear();
-            foreach (var lightTypeAndRenderer in lightRenderers)
+            if (visibleLightsWithShadows.Count > 0)
             {
-                LightComponentCollectionGroup lightGroup;
-                if (!activeLightGroups.TryGetValue(lightTypeAndRenderer.Key, out lightGroup) || lightGroup.Count == 0)
-                {
-                    continue;
-                }
-
-                var renderer = lightTypeAndRenderer.Value;
-                renderer.Initialize(context);
-
-                activeRenderers.Add(new KeyValuePair<LightGroupRendererBase, LightComponentCollectionGroup>(renderer, lightGroup));
+                shadowMapRenderer.Draw(context, visibleLightsWithShadows);
             }
 
-            currentModelShadersEntry = null;
+            // Prepare active renderers in an ordered list (by type and shadow on/off)
+            CollectActiveLightRenderers(context);
+
+            currentModelLightShadersPermutationEntry = null;
             currentModelShadersParameters = null;
 
             // Clear the cache of parameter entries
@@ -197,6 +194,41 @@ namespace SiliconStudio.Paradox.Effects.Lights
             }
         }
 
+        private void CollectActiveLightRenderers(RenderContext context)
+        {
+            activeRenderers.Clear();
+            foreach (var lightTypeAndRenderer in lightRenderers)
+            {
+                LightComponentCollectionGroup lightGroup;
+                activeLightGroups.TryGetValue(lightTypeAndRenderer.Key, out lightGroup);
+
+                var renderer = lightTypeAndRenderer.Value;
+                bool rendererToInitialize = false;
+                if (lightGroup != null && lightGroup.Count > 0)
+                {
+                    activeRenderers.Add(new ActiveLightGroupRenderer(renderer, lightGroup));
+                    rendererToInitialize = true;
+                }
+
+                if (renderer.CanHaveShadows)
+                {
+                    LightComponentCollectionGroup lightGroupWithShadows;
+                    activeLightGroupsWithShadows.TryGetValue(lightTypeAndRenderer.Key, out lightGroupWithShadows);
+
+                    if (lightGroupWithShadows != null && lightGroupWithShadows.Count > 0)
+                    {
+                        activeRenderers.Add(new ActiveLightGroupRenderer(renderer, lightGroupWithShadows));
+                        rendererToInitialize = true;
+                    }
+                }
+
+                if (rendererToInitialize)
+                {
+                    renderer.Initialize(context);
+                }
+            }
+        }
+
         /// <summary>
         /// Collects the visible lights by intersecting them with the frustum.
         /// </summary>
@@ -207,6 +239,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
             // 1) Clear the cache of current lights (without destroying collections but keeping previously allocated ones)
             ClearCache(activeLightGroups);
+            ClearCache(activeLightGroupsWithShadows);
 
             // 2) Cull lights with the frustum
             var frustum = sceneCamera.Frustum;            
@@ -243,6 +276,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
             // 3) Allocate collection based on their culling mask
             AllocateCollectionsPerGroupOfCullingMask(activeLightGroups);
+            AllocateCollectionsPerGroupOfCullingMask(activeLightGroupsWithShadows);
 
             // 4) Collect lights to the correct light collection group
             foreach (var light in visibleLights)
@@ -269,11 +303,15 @@ namespace SiliconStudio.Paradox.Effects.Lights
             environmentLightsPerModel.Clear();
             environmentLightShaderGroupEntryKeys.Clear();
 
-            // Iterate in the order of registered active renderers, to make sure we always calculate a shader key in an uniform way
-            foreach (var rendererAndlightGroup in activeRenderers)
+            // This loop is looking for visible lights per render model and calculate a ShaderId and ParametersId
+            // TODO: Part of this loop could be processed outisde of the PrepareRenderModelForRendering
+            // For example: Environment lights or directional lights are always active, so we could pregenerate part of the 
+            // id and groups outside this loop. Also considering that each light renderer has a maximum of lights
+            // we could pre
+            foreach (var activeRenderer in activeRenderers)
             {
-                var lightRenderer = rendererAndlightGroup.Key;
-                var lightCollection = rendererAndlightGroup.Value.FindGroup(group);
+                var lightRenderer = activeRenderer.LightRenderer;
+                var lightCollection = activeRenderer.LightGroup.FindLightCollectionByGroup(group);
 
                 int lightMaxCount = Math.Min(lightCollection.Count, lightRenderer.LightMaxCount);
                 var lightRendererId = lightRenderer.LightRendererId;
@@ -387,28 +425,59 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
                 // Calculate the shader parameters just once
                 // If we don't have already this permutation, use it
-                ShaderEntry newShaderEntry;
-                if (!shaderEntries.TryGetValue(shaderKeyId, out newShaderEntry))
+                LightShaderPermutationEntry newLightShaderPermutationEntry;
+                if (!shaderEntries.TryGetValue(shaderKeyId, out newLightShaderPermutationEntry))
                 {
-                    newShaderEntry = CalculateShaderEntry();
-                    shaderEntries.Add(shaderKeyId, newShaderEntry);
+                    newLightShaderPermutationEntry = CreateShaderPermutationEntry();
+                    shaderEntries.Add(shaderKeyId, newLightShaderPermutationEntry);
                 }
 
-                ParameterCollectionEntry newShaderEntryParameters;
+                LightParametersPermutationEntry newShaderEntryParameters;
                 // Calculate the shader parameters just once per light combination and for this rendering pass
                 if (!lightParameterEntries.TryGetValue(parametersKeyId, out newShaderEntryParameters))
                 {
-                    newShaderEntryParameters = UpdateLightParameters(newShaderEntry);
+                    newShaderEntryParameters = CreateParametersPermutationEntry(newLightShaderPermutationEntry);
                     lightParameterEntries.Add(parametersKeyId, newShaderEntryParameters);
                 }
 
-                modelToLights.Add(model, new RenderModelLights(newShaderEntry, newShaderEntryParameters));
+                modelToLights.Add(model, new RenderModelLights(newLightShaderPermutationEntry, newShaderEntryParameters));
             }
         }
 
-        private ShaderEntry CalculateShaderEntry()
+        private void PreRenderMesh(RenderContext context, RenderMesh renderMesh)
         {
-            var shaderEntry = new ShaderEntry();
+            var contextParameters = context.Parameters;
+            RenderModelLights renderModelLights;
+            if (!modelToLights.TryGetValue(renderMesh.RenderModel, out renderModelLights))
+            {
+                contextParameters.Set(LightingKeys.DirectLightGroups, null);
+                contextParameters.Set(LightingKeys.EnvironmentLights, null);
+                return;
+            }
+
+            if (currentModelLightShadersPermutationEntry != renderModelLights.LightShadersPermutation || currentModelShadersParameters != renderModelLights.Parameters)
+            {
+                currentModelLightShadersPermutationEntry = renderModelLights.LightShadersPermutation;
+                currentModelShadersParameters = renderModelLights.Parameters;
+
+                var isShadowReceiver = renderMesh.RenderModel.ModelComponent.IsShadowReceiver;
+                if (renderMesh.MaterialInstance != null)
+                    isShadowReceiver = isShadowReceiver && renderMesh.MaterialInstance.IsShadowReceiver;
+
+                if (isShadowReceiver)
+                {
+                    currentModelShadersParameters.Parameters.CopySharedTo(contextParameters);
+                }
+                else
+                {
+                    currentModelShadersParameters.ParametersNoShadows.CopySharedTo(contextParameters);
+                }
+            }
+        }
+
+        private LightShaderPermutationEntry CreateShaderPermutationEntry()
+        {
+            var shaderEntry = new LightShaderPermutationEntry();
 
             // Direct Lights (with or without shadows)
             for (int i = 0; i < directLightShaderGroupEntryKeys.Count; i++)
@@ -417,13 +486,13 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 int lightCount = shaderGroupEntry.Key.LightCount;
 
                 ILightShadowMapShaderGroupData shadowGroupData = null;
-                if (shaderGroupEntry.Shadow != null)
+                if (shaderGroupEntry.ShadowRenderer != null)
                 {
                     // TODO: Cache ShaderGroupData
-                    shadowGroupData = shaderGroupEntry.Shadow.CreateShaderGroupData(DirectLightGroupsCompositionNames[i], shaderGroupEntry.Key.ShadowType, lightCount);
+                    shadowGroupData = shaderGroupEntry.ShadowRenderer.CreateShaderGroupData(DirectLightGroupsCompositionNames[i], shaderGroupEntry.Key.ShadowType, lightCount);
                 }
                 // TODO: Cache LightShaderGroup
-                var lightShaderGroup = shaderGroupEntry.Renderer.CreateLightShaderGroup(DirectLightGroupsCompositionNames[i], lightCount, shadowGroupData);
+                var lightShaderGroup = shaderGroupEntry.LightGroupRenderer.CreateLightShaderGroup(DirectLightGroupsCompositionNames[i], lightCount, shadowGroupData);
 
                 shaderEntry.DirectLightGroups.Add(lightShaderGroup);
                 shaderEntry.DirectLightShaders.Add(lightShaderGroup.ShaderSource);
@@ -435,7 +504,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 var shaderGroupEntry = directLightShaderGroupEntryKeysNoShadows.Items[i];
 
                 // TODO: Cache LightShaderGroup
-                var lightShaderGroup = shaderGroupEntry.Renderer.CreateLightShaderGroup(DirectLightGroupsCompositionNames[i], shaderGroupEntry.Key.LightCount, null);
+                var lightShaderGroup = shaderGroupEntry.LightGroupRenderer.CreateLightShaderGroup(DirectLightGroupsCompositionNames[i], shaderGroupEntry.Key.LightCount, null);
 
                 shaderEntry.DirectLightGroupsNoShadows.Add(lightShaderGroup);
                 shaderEntry.DirectLightShadersNoShadows.Add(lightShaderGroup.ShaderSource);
@@ -447,7 +516,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 var shaderGroupEntry = environmentLightShaderGroupEntryKeys.Items[i];
 
                 // TODO: Cache LightShaderGroup
-                var lightShaderGroup = shaderGroupEntry.Renderer.CreateLightShaderGroup(EnvironmentLightGroupsCompositionNames[i], shaderGroupEntry.Key.LightCount, null);
+                var lightShaderGroup = shaderGroupEntry.LightGroupRenderer.CreateLightShaderGroup(EnvironmentLightGroupsCompositionNames[i], shaderGroupEntry.Key.LightCount, null);
 
                 shaderEntry.EnvironmentLights.Add(lightShaderGroup);
                 shaderEntry.EnvironmentLightShaders.Add(lightShaderGroup.ShaderSource);
@@ -456,7 +525,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             return shaderEntry;
         }
 
-        private ParameterCollectionEntry UpdateLightParameters(ShaderEntry shaderEntry)
+        private LightParametersPermutationEntry CreateParametersPermutationEntry(LightShaderPermutationEntry lightShaderPermutationEntry)
         {
             var parameterCollectionEntry = parameterCollectionEntryPool.Add();
             parameterCollectionEntry.Clear();
@@ -465,17 +534,17 @@ namespace SiliconStudio.Paradox.Effects.Lights
             var directLightGroupsNoShadows = parameterCollectionEntry.DirectLightGroupsNoShadowDatas;
             var environmentLights = parameterCollectionEntry.EnvironmentLightDatas;
             
-            foreach (var directLightGroup in shaderEntry.DirectLightGroups)
+            foreach (var directLightGroup in lightShaderPermutationEntry.DirectLightGroups)
             {
                 directLightGroups.Add(directLightGroup.CreateGroupData());
             }
 
-            foreach (var directLightGroupNoShadow in shaderEntry.DirectLightGroupsNoShadows)
+            foreach (var directLightGroupNoShadow in lightShaderPermutationEntry.DirectLightGroupsNoShadows)
             {
                 directLightGroupsNoShadows.Add(directLightGroupNoShadow.CreateGroupData());
             }
 
-            foreach (var environmentLightGroup in shaderEntry.EnvironmentLights)
+            foreach (var environmentLightGroup in lightShaderPermutationEntry.EnvironmentLights)
             {
                 environmentLights.Add(environmentLightGroup.CreateGroupData());
             }
@@ -483,10 +552,10 @@ namespace SiliconStudio.Paradox.Effects.Lights
             var parameters = parameterCollectionEntry.Parameters;
             var parametersNoShadows = parameterCollectionEntry.ParametersNoShadows;
 
-            parameters.Set(LightingKeys.DirectLightGroups, shaderEntry.DirectLightShaders);
-            parameters.Set(LightingKeys.EnvironmentLights, shaderEntry.EnvironmentLightShaders);
-            parametersNoShadows.Set(LightingKeys.DirectLightGroups, shaderEntry.DirectLightShadersNoShadows);
-            parametersNoShadows.Set(LightingKeys.EnvironmentLights, shaderEntry.EnvironmentLightShaders);
+            parameters.Set(LightingKeys.DirectLightGroups, lightShaderPermutationEntry.DirectLightShaders);
+            parameters.Set(LightingKeys.EnvironmentLights, lightShaderPermutationEntry.EnvironmentLightShaders);
+            parametersNoShadows.Set(LightingKeys.DirectLightGroups, lightShaderPermutationEntry.DirectLightShadersNoShadows);
+            parametersNoShadows.Set(LightingKeys.EnvironmentLights, lightShaderPermutationEntry.EnvironmentLightShaders);
 
             foreach (var lightEntry in directLightsPerModel)
             {
@@ -537,46 +606,24 @@ namespace SiliconStudio.Paradox.Effects.Lights
         private LightComponentCollectionGroup GetLightGroup(LightComponent light)
         {
             LightComponentCollectionGroup lightGroup;
+
+            var directLight = light.Type as IDirectLight;
+            var lightGroups = directLight != null && directLight.Shadow.Enabled
+                ? activeLightGroupsWithShadows
+                : activeLightGroups;
+
             var type = light.Type.GetType();
-            if (!activeLightGroups.TryGetValue(type, out lightGroup))
+            if (!lightGroups.TryGetValue(type, out lightGroup))
             {
                 lightGroup = new LightComponentCollectionGroup();
-                activeLightGroups.Add(type, lightGroup);
+                lightGroups.Add(type, lightGroup);
             }
             return lightGroup;
         }
 
-        private void PreRenderMesh(RenderContext context, RenderMesh renderMesh)
+        private static LightParametersPermutationEntry CreateParameterCollectionEntry()
         {
-            var contextParameters = context.Parameters;
-            RenderModelLights renderModelLights;
-            if (!modelToLights.TryGetValue(renderMesh.RenderModel, out renderModelLights))
-            {
-                contextParameters.Set(LightingKeys.DirectLightGroups, null);
-                contextParameters.Set(LightingKeys.EnvironmentLights, null);
-                return;
-            }
-
-            if (currentModelShadersEntry != renderModelLights.Shaders || currentModelShadersParameters != renderModelLights.Parameters)
-            {
-                currentModelShadersEntry = renderModelLights.Shaders;
-                currentModelShadersParameters = renderModelLights.Parameters;
-
-                var isShadowReceiver = renderMesh.RenderModel.ModelComponent.IsShadowReceiver && renderMesh.MaterialInstance.IsShadowReceiver;
-                if (isShadowReceiver)
-                {
-                    currentModelShadersParameters.Parameters.CopySharedTo(contextParameters);
-                }
-                else
-                {
-                    currentModelShadersParameters.ParametersNoShadows.CopySharedTo(contextParameters);
-                }
-            }
-        }
-
-        private static ParameterCollectionEntry CreateParameterCollectionEntry()
-        {
-            return new ParameterCollectionEntry();
+            return new LightParametersPermutationEntry();
         }
 
         private struct LightEntry
@@ -623,23 +670,23 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
         private struct LightForwardShaderFullEntryKey
         {
-            public LightForwardShaderFullEntryKey(LightForwardShaderEntryKey key, LightGroupRendererBase renderer, ILightShadowMapRenderer shadowRenderer)
+            public LightForwardShaderFullEntryKey(LightForwardShaderEntryKey key, LightGroupRendererBase lightGroupRenderer, ILightShadowMapRenderer shadowRenderer)
             {
                 Key = key;
-                Renderer = renderer;
-                Shadow = shadowRenderer;
+                LightGroupRenderer = lightGroupRenderer;
+                ShadowRenderer = shadowRenderer;
             }
 
             public readonly LightForwardShaderEntryKey Key;
 
-            public readonly LightGroupRendererBase Renderer;
+            public readonly LightGroupRendererBase LightGroupRenderer;
 
-            public readonly ILightShadowMapRenderer Shadow;
+            public readonly ILightShadowMapRenderer ShadowRenderer;
         }
 
-        private class ShaderEntry
+        private class LightShaderPermutationEntry
         {
-            public ShaderEntry()
+            public LightShaderPermutationEntry()
             {
                 DirectLightGroups = new List<LightShaderGroup>();
                 DirectLightGroupsNoShadows = new List<LightShaderGroup>();
@@ -682,9 +729,22 @@ namespace SiliconStudio.Paradox.Effects.Lights
             public readonly List<ShaderSource> EnvironmentLightShaders;
         }
 
-        private class ParameterCollectionEntry
+        private struct ActiveLightGroupRenderer
         {
-            public ParameterCollectionEntry()
+            public ActiveLightGroupRenderer(LightGroupRendererBase lightRenderer, LightComponentCollectionGroup lightGroup)
+            {
+                LightRenderer = lightRenderer;
+                LightGroup = lightGroup;
+            }
+
+            public readonly LightGroupRendererBase LightRenderer;
+
+            public readonly LightComponentCollectionGroup LightGroup;
+        }
+
+        private class LightParametersPermutationEntry
+        {
+            public LightParametersPermutationEntry()
             {
                 Parameters = new ParameterCollection();
                 ParametersNoShadows = new ParameterCollection();
@@ -713,15 +773,15 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
         struct RenderModelLights
         {
-            public RenderModelLights(ShaderEntry shaders, ParameterCollectionEntry parameters)
+            public RenderModelLights(LightShaderPermutationEntry lightShadersPermutation, LightParametersPermutationEntry parameters)
             {
-                Shaders = shaders;
+                LightShadersPermutation = lightShadersPermutation;
                 Parameters = parameters;
             }
 
-            public readonly ShaderEntry Shaders;
+            public readonly LightShaderPermutationEntry LightShadersPermutation;
 
-            public readonly ParameterCollectionEntry Parameters;
+            public readonly LightParametersPermutationEntry Parameters;
         }
     }
 }

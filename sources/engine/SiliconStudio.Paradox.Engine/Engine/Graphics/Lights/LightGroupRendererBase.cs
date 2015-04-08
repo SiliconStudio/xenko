@@ -39,6 +39,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
         public int LightMaxCount { get; protected set; }
 
+        public bool CanHaveShadows { get; protected set; }
+
         public virtual void Initialize(RenderContext context)
         {
         }

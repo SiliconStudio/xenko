@@ -3,6 +3,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
@@ -12,6 +13,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
     /// <summary>
     /// A list of <see cref="LightComponentCollection"/> for a particular type of light (direct light, direct light + shadows, environment lights).
     /// </summary>
+    [DebuggerDisplay("LightCollections[{Count}]")]
     public sealed class LightComponentCollectionGroup : IEnumerable<LightComponentCollection>
     {
         // The reason of this class is to store lights according to their culling mask while minimizing the number of LightComponentCollection needed
@@ -58,8 +60,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
             lightCollectionPool = new PoolListStruct<LightComponentCollection>(32, LightComponentCollectionFactory);
             groupMasks = new uint[32 * 2];
-            allLights = new List<LightComponent>();
-            allLightsWithShadows = new List<LightComponent>();
+            allLights = new List<LightComponent>(128);
+            allLightsWithShadows = new List<LightComponent>(128);
             allMasks = new HashSet<EntityGroupMask>();
         }
 
@@ -82,7 +84,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// </summary>
         /// <param name="group">The group.</param>
         /// <returns>LightComponentCollection.</returns>
-        public LightComponentCollection FindGroup(EntityGroup group)
+        public LightComponentCollection FindLightCollectionByGroup(EntityGroup group)
         {
             // If a mask is not zero, then we have a collection associated for this bit
             int groupBaseIndex = (int)group * 2;

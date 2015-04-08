@@ -21,6 +21,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         public LightDirectionalGroupRenderer()
         {
             LightMaxCount = StaticLightMaxCount;
+            CanHaveShadows = true;
         }
 
         public override void Initialize(RenderContext context)
