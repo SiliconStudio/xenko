@@ -10,10 +10,10 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         /// <summary>
         /// Calculate the shadow factor based on the shadow map texture, the position, a sampler
         /// </summary>
-        float FilterShadow(float2 position, float lightDepth)
+        float FilterShadow(float2 position, float positionDepth)
         {
             // TODO: Use SampleCmpLevelZero instead
-            return shadowMapTexture.SampleCmp(LinearBorderSampler, position, lightDepth);
+            return shadowMapTexture.SampleLevel(LinearBorderSampler, position, 0).r < positionDepth ? 0 : 1;
         }
     };
 }
