@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
     }
 
     [Flags]
-    public enum LightShadowType : byte
+    public enum LightShadowType : ushort // DO NOT CHANGE the size of this type. It is used to caculate the shaderKeyId in LightComponentForwardRenderer. 
     {
         Cascade1 = 0x1,
         Cascade2 = 0x2,
@@ -107,6 +107,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             Size = size;
             FilterType = Shadow.Filter == null || !Shadow.Filter.RequiresCustomBuffer() ? null : Shadow.Filter.GetType();
             Renderer = renderer;
+            Atlas = null; // Reset the atlas, It will be setup after
 
             ShadowType = 0;
             switch (shadowMap.CascadeCount)

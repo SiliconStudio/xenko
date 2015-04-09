@@ -327,7 +327,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
                     for(int i = 0; i < lightMaxCount; i++)
                     {
                         var light = lightCollection[i];
-                        currentShaderKey = new LightForwardShaderEntryKey(lightRendererId, 0, allocCountForNewLightType, 0);
+                        currentShaderKey = new LightForwardShaderEntryKey(lightRendererId, 0, allocCountForNewLightType);
                         unsafe
                         {
                             shaderKeyIdBuilder.Write(*(uint*)&currentShaderKey);
@@ -355,23 +355,21 @@ namespace SiliconStudio.Paradox.Effects.Lights
                         LightShadowMapTexture shadowTexture;
                         LightShadowType shadowType = 0;
                         ILightShadowMapRenderer newShadowRenderer = null;
-                        byte shadowTextureId = 0;
 
                         if (shadowMapRenderer.LightComponentsWithShadows.TryGetValue(light, out shadowTexture))
                         {
                             shadowType = shadowTexture.ShadowType;
-                            shadowTextureId = shadowTexture.TextureId;
                             newShadowRenderer = shadowTexture.Renderer;
                         }
 
                         if (i == 0)
                         {
-                            currentShaderKey = new LightForwardShaderEntryKey(lightRendererId, shadowType, allocCountForNewLightType, shadowTextureId);
+                            currentShaderKey = new LightForwardShaderEntryKey(lightRendererId, shadowType, allocCountForNewLightType);
                             currentShadowRenderer = newShadowRenderer;
                         }
                         else
                         {
-                            if (currentShaderKey.LightRendererId == lightRendererId && currentShaderKey.ShadowType == shadowType && currentShaderKey.ShadowTextureId == shadowTextureId)
+                            if (currentShaderKey.LightRendererId == lightRendererId && currentShaderKey.ShadowType == shadowType)
                             {
                                 if (!lightRenderer.AllocateLightMaxCount)
                                 {
@@ -386,7 +384,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
                                 }
 
                                 directLightShaderGroupEntryKeys.Add(new LightForwardShaderFullEntryKey(currentShaderKey, lightRenderer, currentShadowRenderer));
-                                currentShaderKey = new LightForwardShaderEntryKey(lightRendererId, shadowType, allocCountForNewLightType, shadowTextureId);
+                                currentShaderKey = new LightForwardShaderEntryKey(lightRendererId, shadowType, allocCountForNewLightType);
                                 currentShadowRenderer = newShadowRenderer;
                             }
                         }
@@ -403,7 +401,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
                     if (directLightsPerModel.Count > 0)
                     {
-                        directLightShaderGroupEntryKeysNoShadows.Add(new LightForwardShaderFullEntryKey(new LightForwardShaderEntryKey(lightRendererId, 0, (byte)directLightsPerModel.Count, 0), lightRenderer, null));
+                        directLightShaderGroupEntryKeysNoShadows.Add(new LightForwardShaderFullEntryKey(new LightForwardShaderEntryKey(lightRendererId, 0, (byte)directLightsPerModel.Count), lightRenderer, null));
 
                         unsafe
                         {
@@ -651,21 +649,18 @@ namespace SiliconStudio.Paradox.Effects.Lights
         [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 4)]
         private struct LightForwardShaderEntryKey
         {
-            public LightForwardShaderEntryKey(byte lightRendererId, LightShadowType shadowType, byte lightCount, byte shadowTextureId)
+            public LightForwardShaderEntryKey(byte lightRendererId, LightShadowType shadowType, byte lightCount)
             {
                 LightRendererId = lightRendererId;
                 ShadowType = shadowType;
                 LightCount = lightCount;
-                ShadowTextureId = shadowTextureId;
             }
 
             public readonly byte LightRendererId;
 
-            public readonly LightShadowType ShadowType;
-
             public byte LightCount;
 
-            public readonly byte ShadowTextureId;
+            public readonly LightShadowType ShadowType;
         }
 
         private struct LightForwardShaderFullEntryKey
