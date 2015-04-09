@@ -22,6 +22,7 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         public SceneProcessor() : base(SceneComponent.Key)
         {
+            Order = -10000;
         }
 
         /// <summary>
@@ -29,7 +30,7 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         /// <param name="sceneInstance">The scene instance.</param>
         /// <exception cref="System.ArgumentNullException">sceneEntityRoot</exception>
-        public SceneProcessor(SceneInstance sceneInstance) : base(SceneComponent.Key)
+        public SceneProcessor(SceneInstance sceneInstance) : this()
         {
             if (sceneInstance == null) throw new ArgumentNullException("sceneInstance");
             this.sceneInstance = sceneInstance;
