@@ -21,6 +21,7 @@ namespace SiliconStudio.Paradox.Engine
             : base(new PropertyKey[] { CameraComponent.Key })
         {
             Cameras = new List<CameraComponent>();
+            Order = -10;
         }
 
         protected override CameraComponent GenerateAssociatedData(Entity entity)

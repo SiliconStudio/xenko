@@ -210,11 +210,11 @@ namespace SiliconStudio.Paradox.Engine
 
             // Initialize processors
             if (enableScripting)
-                Processors.Add(new ScriptProcessor());
-            Processors.Add(new SceneProcessor(this));
-            Processors.Add(new HierarchicalProcessor()); // Important to pre-register this processor
-            Processors.Add(new TransformProcessor());
-            Processors.Add(new CameraProcessor()); // By default, as a scene without a camera is not really possible
+                AddProcessor(new ScriptProcessor());   // Order: -100000
+            AddProcessor(new SceneProcessor(this));    // Order: -10000
+            AddProcessor(new HierarchicalProcessor()); // Order: -1000  - Important to pre-register this processor
+            AddProcessor(new TransformProcessor());    // Order: -100
+            AddProcessor(new CameraProcessor());       // Order: -10    - By default, as a scene without a camera is not really possible
             Add(Scene);
 
             // TODO: RendererTypes could be done outside this instance.

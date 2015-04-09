@@ -50,6 +50,12 @@ namespace SiliconStudio.Paradox.EntityModel
         }
 
         /// <summary>
+        /// Gets or sets the order of this processor.
+        /// </summary>
+        /// <value>The order.</value>
+        public int Order { get; protected set; }
+
+        /// <summary>
         /// Performs work related to this processor.
         /// </summary>
         /// <param name="time"></param>

@@ -21,6 +21,7 @@ namespace SiliconStudio.Paradox.Engine
         {
             rootEntities = new TrackingHashSet<Entity>();
             rootEntities.CollectionChanged += rootEntities_CollectionChanged;
+            Order = -1000;
         }
 
         /// <summary>
