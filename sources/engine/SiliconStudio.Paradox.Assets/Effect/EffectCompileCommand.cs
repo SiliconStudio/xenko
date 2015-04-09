@@ -24,13 +24,15 @@ namespace SiliconStudio.Paradox.Assets.Effect
         private static readonly PropertyKey<EffectCompilerBase> CompilerKey = new PropertyKey<EffectCompilerBase>("CompilerKey", typeof(EffectCompileCommand));
 
         private readonly AssetCompilerContext context;
+        private readonly UDirectory baseUrl;
         private string effectName;
         private CompilerParameters compilerParameters;
         private static Dictionary<string, int> PermutationCount = new Dictionary<string, int>();
 
-        public EffectCompileCommand(AssetCompilerContext context, string effectName, CompilerParameters compilerParameters)
+        public EffectCompileCommand(AssetCompilerContext context, UDirectory baseUrl, string effectName, CompilerParameters compilerParameters)
         {
             this.context = context;
+            this.baseUrl = baseUrl;
             this.effectName = effectName;
             this.compilerParameters = compilerParameters;
         }
@@ -91,17 +93,17 @@ namespace SiliconStudio.Paradox.Assets.Effect
                 commandContext.RegisterInputDependency(new ObjectUrl(UrlType.Internal, EffectCompilerBase.GetStoragePathFromShaderType(className)));
             }
 
-            //// Generate sourcecode if configured
-            //if (compilerParameters.ContainsKey(EffectSourceCodeKeys.Enable))
-            //{
-            //    var outputDirectory = UPath.Combine(context.Package.RootDirectory, baseUrl);
-            //    var outputClassFile = effectName + ".bytecode." + compilerParameters.Platform + "." + compilerParameters.Profile + ".cs";
-            //    var fullOutputClassFile = Path.Combine(outputDirectory, outputClassFile);
+            // Generate sourcecode if configured
+            if (compilerParameters.ContainsKey(EffectSourceCodeKeys.Enable))
+            {
+                var outputDirectory = UPath.Combine(context.Package.RootDirectory, baseUrl);
+                var outputClassFile = effectName + ".bytecode." + compilerParameters.Platform + "." + compilerParameters.Profile + ".cs";
+                var fullOutputClassFile = Path.Combine(outputDirectory.ToWindowsPath(), outputClassFile);
 
-            //    commandContext.Logger.Info("Writing shader bytecode to .cs source [{0}]", fullOutputClassFile);
-            //    using (var stream = new FileStream(fullOutputClassFile, FileMode.Create, FileAccess.Write, FileShare.Write))
-            //        EffectByteCodeToSourceCodeWriter.Write(effectName, compilerParameters, compilerResults.MainBytecode, new StreamWriter(stream, Encoding.UTF8));
-            //}
+                commandContext.Logger.Info("Writing shader bytecode to .cs source [{0}]", fullOutputClassFile);
+                using (var stream = new FileStream(fullOutputClassFile, FileMode.Create, FileAccess.Write, FileShare.Write))
+                    EffectByteCodeToSourceCodeWriter.Write(effectName, compilerParameters, compilerResults.Bytecode.WaitForResult().Bytecode, new StreamWriter(stream, System.Text.Encoding.UTF8));
+            }
 
             return Task.FromResult(ResultStatus.Successful);
         }
