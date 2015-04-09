@@ -14,12 +14,12 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         cbuffer PerPass // TODO: Use a proper cbuffer for this?
         {
             float CascadeDepthSplits[TCascadeCount * TLightCount];
-            float4x3 WorldToShadowCascadeUV[TCascadeCount * TLightCount];
+            float4x4 WorldToShadowCascadeUV[TCascadeCount * TLightCount];
         };
 
         float ComputeShadowFromCascade(float3 shadowPositionWS, int cascadeIndex, int lightIndex)
         {
-            float3 shadowPosition = mul(float4(shadowPositionWS, 1), WorldToShadowCascadeUV[cascadeIndex + lightIndex * TCascadeCount]);
+            float3 shadowPosition = mul(float4(shadowPositionWS, 1), WorldToShadowCascadeUV[cascadeIndex + lightIndex * TCascadeCount]).xyz;
             return FilterShadow(shadowPosition.xy, shadowPosition.z);
         }
 
@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 }
             }
 
-            var shadow = ComputeShadowFromCascade(streams.Position.xyz, cascadeIndex, lightIndex);
+            var shadow = ComputeShadowFromCascade(streams.PositionWS.xyz, cascadeIndex, lightIndex);
             streams.shadowColor = shadow;
 
             //// Calculate shadows with lerp between cascades
@@ -60,7 +60,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 //// Display Cascade with colors in debug mode
                 ////                        GREEN          BLUE           PURPLE         RED            WHITE           
                 static float3 colors[5] = { float3(0,1,0), float3(0,0,1), float3(1,0,1), float3(1,0,0), float3(1,1,1)};
-                streams.shadowColor = shadow * colors[cascadeIndex];
+                streams.shadowColor = shadow + 0.25 * colors[cascadeIndex];
             }
         }
     };
