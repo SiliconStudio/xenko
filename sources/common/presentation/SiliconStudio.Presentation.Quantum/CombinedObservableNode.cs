@@ -7,6 +7,7 @@ using System.Linq;
 
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Commands;
+using SiliconStudio.Presentation.Extensions;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
@@ -22,7 +23,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         protected static bool ChangeInProgress;
 
-        private Dictionary<string, object> associatedData;
+        private Dictionary<string, object> associatedData = new Dictionary<string, object>();
 
         protected CombinedObservableNode(ObservableViewModel ownerViewModel, string name, IEnumerable<SingleObservableNode> combinedNodes, object index)
             : base(ownerViewModel, index)
@@ -112,7 +113,7 @@ namespace SiliconStudio.Presentation.Quantum
 
             if (Owner.ObservableViewModelService != null)
             {
-                if (associatedData != null)
+                if (associatedData.Count > 0)
                 {
                     foreach (var key in associatedData.Keys.ToList())
                     {
@@ -124,7 +125,7 @@ namespace SiliconStudio.Presentation.Quantum
 
                 var data = Owner.ObservableViewModelService.RequestAssociatedData(this, isUpdating);
                 data.ForEach(x => OnPropertyChanging(x.Key));
-                SetValue(ref associatedData, data, "AssociatedData");
+                SetValue(() => associatedData.AddRange(data), "AssociatedData");
                 data.Reverse().ForEach(x => OnPropertyChanged(x.Key));
 
                 // TODO: we add associatedData added to SingleObservableNode this way, but it's a bit dangerous. Maybe we should check that all combined nodes have this data entry, and all with the same value.
@@ -245,8 +246,8 @@ namespace SiliconStudio.Presentation.Quantum
                 var contentType = children.Value.First().Type;
                 var index = children.Value.First().Index;
                 CombinedObservableNode child = Create(Owner, children.Key, this, contentType, children.Value, index);
-                child.Initialize(isUpdating);
                 AddChild(child);
+                child.Initialize(isUpdating);
             }
         }
 
@@ -261,10 +262,10 @@ namespace SiliconStudio.Presentation.Quantum
                 var contentType = children.Value.First().Type;
                 var name = string.Format("Item {0}", currentIndex);
                 CombinedObservableNode child = Create(Owner, name, this, contentType, children.Value, currentIndex);
+                AddChild(child);
                 child.Initialize(isUpdating);
                 child.DisplayName = name;
                 ++currentIndex;
-                AddChild(child);
             }
         }
 
