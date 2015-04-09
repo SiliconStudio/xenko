@@ -338,6 +338,14 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
             private Texture shadowMapTexture;
 
+            private ParameterKey<Vector2> shadowMapTextureSizeKey;
+
+            private ParameterKey<Vector2> shadowMapTextureTexelSizeKey;
+
+
+            private Vector2 shadowMapTextureSize;
+            private Vector2 shadowMapTextureTexelSize;
+
             /// <summary>
             /// Initializes a new instance of the <see cref="LightDirectionalShadowMapGroupShaderData" /> class.
             /// </summary>
@@ -354,10 +362,27 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 var mixin = new ShaderMixinSource();
                 mixin.Mixins.Add(new ShaderClassSource(ShaderName, cascadeCount, lightCountMax, (this.shadowType & LightShadowType.BlendCascade) != 0, (this.shadowType & LightShadowType.Debug) != 0));
                 // TODO: Temporary passing filter here
-                mixin.Mixins.Add(new ShaderClassSource("ShadowMapFilterDefault"));
+
+                switch (shadowType & LightShadowType.FilterMask)
+                {
+                    case LightShadowType.PCF3x3:
+                        mixin.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", 3));
+                        break;
+                    case LightShadowType.PCF5x5:
+                        mixin.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", 5));
+                        break;
+                    case LightShadowType.PCF7x7:
+                        mixin.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", 7));
+                        break;
+                    default:
+                        mixin.Mixins.Add(new ShaderClassSource("ShadowMapFilterDefault"));
+                        break;
+                }
 
                 shadowShader = mixin;
                 shadowMapTextureKey = ShadowMapKeys.Texture.ComposeWith(compositionKey);
+                shadowMapTextureSizeKey = ShadowMapKeys.TextureSize.ComposeWith(compositionKey);
+                shadowMapTextureTexelSizeKey = ShadowMapKeys.TextureTexelSize.ComposeWith(compositionKey);
                 cascadeSplitsKey = ShadowMapCascadeKeys.CascadeDepthSplits.ComposeWith(compositionKey);
                 worldToShadowCascadeUVsKey = ShadowMapCascadeKeys.WorldToShadowCascadeUV.ComposeWith(compositionKey);
             }
@@ -383,12 +408,19 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 if (index == 0)
                 {
                     shadowMapTexture = singleLightData.Texture;
+                    if (shadowMapTexture != null)
+                    {
+                        shadowMapTextureSize = new Vector2(shadowMapTexture.Width, shadowMapTexture.Height);
+                        shadowMapTextureTexelSize = 1.0f / shadowMapTextureSize;
+                    }
                 }
             }
 
             public void ApplyParameters(ParameterCollection parameters)
             {
                 parameters.Set(shadowMapTextureKey, shadowMapTexture);
+                parameters.Set(shadowMapTextureSizeKey, shadowMapTextureSize);
+                parameters.Set(shadowMapTextureTexelSizeKey, shadowMapTextureTexelSize);
                 parameters.Set(cascadeSplitsKey, cascadeSplits);
                 parameters.Set(worldToShadowCascadeUVsKey, worldToShadowCascadeUV);
             }

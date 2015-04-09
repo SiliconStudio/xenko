@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             {
                 // Sample the next cascade, and blend between the two results to
                 // smooth the transition
-                const float BlendThreshold = 0.2f;
+                const float BlendThreshold = 0.5f;
                 float nextSplit = CascadeDepthSplits[cascadeIndex];
                 float splitSize = cascadeIndex == 0 ? nextSplit : nextSplit - CascadeDepthSplits[cascadeIndex - 1];
                 float splitDist = (nextSplit - streams.DepthVS) / splitSize;
@@ -53,7 +53,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 if(splitDist <= BlendThreshold && cascadeIndex != TCascadeCount - 1)
                 {
                     float nextShadow = ComputeShadowFromCascade(streams.PositionWS.xyz, cascadeIndex + 1, lightIndex);
-                    float lerpAmt = smoothstep(0.0f, BlendThreshold, splitDist);
+                    float lerpAmt = smoothstep(0.0f, 1.0f, splitDist / BlendThreshold);
                     shadow = lerp(nextShadow, shadow, lerpAmt);
                 }
             }

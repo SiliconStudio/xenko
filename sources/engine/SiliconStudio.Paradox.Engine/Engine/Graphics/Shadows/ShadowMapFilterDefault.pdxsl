@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         float FilterShadow(float2 position, float positionDepth)
         {
             // TODO: Use SampleCmpLevelZero instead
-            return shadowMapTexture.SampleLevel(LinearBorderSampler, position, 0).r < positionDepth ? 0 : 1;
+            return ShadowMapTexture.SampleLevel(LinearBorderSampler, position, 0).r < positionDepth ? 0 : 1;
         }
     };
 }

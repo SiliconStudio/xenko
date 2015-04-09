@@ -37,6 +37,12 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         BlendCascade = 0x8,
 
         FilterMask = 0xF0,
+
+        PCF3x3 = 0x10,
+
+        PCF5x5 = 0x20,
+
+        PCF7x7 = 0x30
     }
 
     /// <summary>
@@ -125,6 +131,23 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             if (shadowMap.IsBlendingCascades)
             {
                 ShadowType |= LightShadowType.BlendCascade;
+            }
+
+            var pcfFilter = shadowMap.Filter as LightShadowMapFilterTypePcf;
+            if (pcfFilter != null)
+            {
+                switch (pcfFilter.FilterSize)
+                {
+                    case LightShadowMapFilterTypePcfSize.Filter3x3:
+                        ShadowType |= LightShadowType.PCF3x3;
+                        break;
+                    case LightShadowMapFilterTypePcfSize.Filter5x5:
+                        ShadowType |= LightShadowType.PCF5x5;
+                        break;
+                    case LightShadowMapFilterTypePcfSize.Filter7x7:
+                        ShadowType |= LightShadowType.PCF7x7;
+                        break;
+                }
             }
         }
 
