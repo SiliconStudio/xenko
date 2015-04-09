@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             // setup the camera
             var camera = new TestCamera { Yaw = 0, Pitch = 0, Position = new Vector3(0, 0, 1000), MoveSpeed = 100 };
             CameraComponent = camera.Camera;
-            Script.AddScript(camera);
+            Script.Add(camera);
 
             UIRoot.Transform.Rotation = Quaternion.RotationX(MathUtil.Pi / 3f);
             UIComponent.RootElement = new ImageElement { Source = new UIImage(Asset.Load<Texture>("uv"))};

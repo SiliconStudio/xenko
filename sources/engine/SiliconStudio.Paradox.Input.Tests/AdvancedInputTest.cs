@@ -113,7 +113,7 @@ namespace SiliconStudio.Paradox.Input.Tests
             Input.ActivatedGestures.Add(new GestureConfigTap());
 
             // add a task to the task scheduler that will be executed asynchronously 
-            Script.Add(UpdateInputStates);
+            Script.AddTask(UpdateInputStates);
 
             return Task.FromResult(0);
         }

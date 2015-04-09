@@ -49,7 +49,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             var camera = new TestCamera { Yaw = MathUtil.Pi/4, Pitch = MathUtil.Pi/4, Position = new Vector3(500, 500, 500), MoveSpeed = 100 };
             camera.SetTarget(cube, true);
             CameraComponent = camera.Camera;
-            Script.AddScript(camera);
+            Script.Add(camera);
         }
 
         protected override void RegisterTests()

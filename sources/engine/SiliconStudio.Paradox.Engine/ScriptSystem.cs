@@ -62,7 +62,7 @@ namespace SiliconStudio.Paradox
                 var asyncScript = script as AsyncScript;
                 if (asyncScript != null)
                 {
-                    script.MicroThread = Add(asyncScript.Execute);
+                    script.MicroThread = AddTask(asyncScript.Execute);
                 }
             }
             scriptsToStart.Clear();
@@ -94,19 +94,9 @@ namespace SiliconStudio.Paradox
         /// </summary>
         /// <param name="microThreadFunction">The micro thread function.</param>
         /// <returns>MicroThread.</returns>
-        public MicroThread Add(Func<Task> microThreadFunction)
+        public MicroThread AddTask(Func<Task> microThreadFunction)
         {
             return Scheduler.Add(microThreadFunction);
-        }
-
-        /// <summary>
-        /// Adds the specified script.
-        /// </summary>
-        /// <param name="script">The script.</param>
-        /// <returns>MicroThread.</returns>
-        public MicroThread Add(AsyncScript script)
-        {
-            return Scheduler.Add(script.Execute);
         }
 
         /// <summary>
@@ -119,7 +109,11 @@ namespace SiliconStudio.Paradox
             await Scheduler.WhenAll(microThreads);
         }
 
-        public void AddScript(Script script)
+        /// <summary>
+        /// Add the provided script to the script system.
+        /// </summary>
+        /// <param name="script">The script to add</param>
+        public void Add(Script script)
         {
             script.Initialize(Services);
             registeredScripts.Add(script);
@@ -135,7 +129,11 @@ namespace SiliconStudio.Paradox
             }
         }
 
-        public void RemoveScript(Script script)
+        /// <summary>
+        /// Remove the provided script from the script system.
+        /// </summary>
+        /// <param name="script">The script to remove</param>
+        public void Remove(Script script)
         {
             // Make sure it's not registered in any pending list
             scriptsToStart.Remove(script);
@@ -193,7 +191,7 @@ namespace SiliconStudio.Paradox
                 }
                 else
                 {
-                    AddScript(script);
+                    Add(script);
                 }
             }
         }
