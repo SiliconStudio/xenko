@@ -9,7 +9,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
     /// TCascadeCount: Number of cascades.
     /// TCascadeDebug: Flag to enable debug mode (1 color per cascade).
     /// </remarks>
-    internal class ShadowMapCascade<int TCascadeCount, int TLightCount, bool TCascadeDebug> : ShadowMapGroup, ShadowMapFilterBase, PositionStream4
+    internal class ShadowMapCascade<int TCascadeCount, int TLightCount, bool TBlendCascades, bool TCascadeDebug> : ShadowMapGroup, ShadowMapFilterBase, PositionStream4
     {
         cbuffer PerPass // TODO: Use a proper cbuffer for this?
         {
@@ -40,7 +40,23 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             }
 
             var shadow = ComputeShadowFromCascade(streams.PositionWS.xyz, cascadeIndex, lightIndex);
-            streams.shadowColor = shadow;
+
+            if (TBlendCascades)
+            {
+                // Sample the next cascade, and blend between the two results to
+                // smooth the transition
+                const float BlendThreshold = 0.2f;
+                float nextSplit = CascadeDepthSplits[cascadeIndex];
+                float splitSize = cascadeIndex == 0 ? nextSplit : nextSplit - CascadeDepthSplits[cascadeIndex - 1];
+                float splitDist = (nextSplit - streams.DepthVS) / splitSize;
+
+                if(splitDist <= BlendThreshold && cascadeIndex != TCascadeCount - 1)
+                {
+                    float nextShadow = ComputeShadowFromCascade(streams.PositionWS.xyz, cascadeIndex + 1, lightIndex);
+                    float lerpAmt = smoothstep(0.0f, BlendThreshold, splitDist);
+                    shadow = lerp(nextShadow, shadow, lerpAmt);
+                }
+            }
 
             //// Calculate shadows with lerp between cascades
             //float shadowMapDistance = shadowMapDepth;
@@ -58,9 +74,13 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             if (TCascadeDebug)
             {
                 //// Display Cascade with colors in debug mode
-                ////                        GREEN          BLUE           PURPLE         RED            WHITE           
-                static float3 colors[5] = { float3(0,1,0), float3(0,0,1), float3(1,0,1), float3(1,0,0), float3(1,1,1)};
-                streams.shadowColor = shadow + 0.25 * colors[cascadeIndex];
+                ////                                   GREEN          BLUE           PURPLE         RED            WHITE           
+                static const float3 colors[5] = { float3(0,1,0), float3(0,0,1), float3(1,0,1), float3(1,0,0), float3(1,1,1)};
+                streams.shadowColor = colors[cascadeIndex] * shadow;
+            }
+            else
+            {
+                streams.shadowColor = shadow;
             }
         }
     };

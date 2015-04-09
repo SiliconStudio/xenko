@@ -47,7 +47,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             SplitDistance2 = 0.50f;
             SplitDistance3 = 1.00f;
             SplitMode = LightShadowMapSplitMode.Manual;
-            Stabilized = false;
+            StabilizationMode = LightShadowMapStabilizationMode.None;
         }
 
         /// <summary>
@@ -99,6 +99,18 @@ namespace SiliconStudio.Paradox.Effects.Lights
         [DefaultValue(LightShadowMapSplitMode.Manual)]
         public LightShadowMapSplitMode SplitMode { get; set; }
 
+        [DataMember(55)]
+        [DefaultValue(LightShadowMapStabilizationMode.None)]
+        public LightShadowMapStabilizationMode StabilizationMode { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is filtering accross cascades.
+        /// </summary>
+        /// <value><c>true</c> if this instance is filtering accross cascades; otherwise, <c>false</c>.</value>
+        [DataMember(57)]
+        [DefaultValue(false)]
+        public bool IsBlendingCascades { get; set; }
+
         /// <summary>
         /// Gets or sets the minimum distance.
         /// </summary>
@@ -132,10 +144,6 @@ namespace SiliconStudio.Paradox.Effects.Lights
         [DefaultValue(1.0f)]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
         public float SplitDistance3 { get; set; }
-
-        [DataMember(120)]
-        [DefaultValue(false)]
-        public bool Stabilized { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="LightShadowMap"/> is debug.

@@ -30,9 +30,11 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         Cascade2 = 0x2,
         Cascade4 = 0x3,
         
-        CascadeMask = 0x7,
+        CascadeMask = 0x3,
 
-        Debug    = 0x4,
+        Debug = 0x4,
+
+        BlendCascade = 0x8,
 
         FilterMask = 0xF0,
     }
@@ -118,6 +120,11 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             if (shadowMap.Debug)
             {
                 ShadowType |= LightShadowType.Debug;
+            }
+
+            if (shadowMap.IsBlendingCascades)
+            {
+                ShadowType |= LightShadowType.BlendCascade;
             }
         }
 
