@@ -43,8 +43,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
             if (TBlendCascades)
             {
-                // Sample the next cascade, and blend between the two results to
-                // smooth the transition
+                // Use blending technique from MJP
                 const float BlendThreshold = 0.5f;
                 float nextSplit = CascadeDepthSplits[cascadeIndex];
                 float splitSize = cascadeIndex == 0 ? nextSplit : nextSplit - CascadeDepthSplits[cascadeIndex - 1];
@@ -57,18 +56,6 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                     shadow = lerp(nextShadow, shadow, lerpAmt);
                 }
             }
-
-            //// Calculate shadows with lerp between cascades
-            //float shadowMapDistance = shadowMapDepth;
-            //float shadow = FilterShadow(shadowMapPos, shadowMapDistance);
-            //int nextCascade = foundCascadeIndex + 1;
-            //// Only lerp when 
-            //if (shadowLERP > 0.0 && shadowLERP < 1.0f && nextCascade < TCascadeCount)
-            //{
-            //    var shadowMapPos1 = CalculateShadowMapPosition(nextCascade);
-            //    shadowMapDistance = CalculateShadowMapDepth(nextCascade);
-            //    shadow = lerp(FilterShadow(shadowMapPos1, shadowMapDistance), shadow, shadowLERP);
-            //}
 
             // Output the shadow color
             if (TCascadeDebug)
