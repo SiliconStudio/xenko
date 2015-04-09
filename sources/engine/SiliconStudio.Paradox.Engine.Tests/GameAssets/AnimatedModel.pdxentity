@@ -9,9 +9,9 @@ Hierarchy:
         -   Name: knight
             Components:
                 ModelComponent.Key:
+                    Model: 53b953af-1d02-459e-a96f-b40805964d59:knight Model
                     DrawOrder: 0
                     Materials: []
-                    Model: 53b953af-1d02-459e-a96f-b40805964d59:knight Model
                     Parameters: {}
                 TransformComponent.Key:
                     Position: {X: 0, Y: 0, Z: 0}
@@ -31,9 +31,9 @@ Hierarchy:
                 -   Name: Entity
                     Components:
                         ModelComponent.Key:
+                            Model: 53b953af-1d02-459e-a96f-b40805964d59:knight Model
                             DrawOrder: 0
                             Materials: []
-                            Model: 53b953af-1d02-459e-a96f-b40805964d59:knight Model
                             Parameters: {}
                         TransformComponent.Key:
                             Position: {X: 0, Y: 0, Z: 0}
