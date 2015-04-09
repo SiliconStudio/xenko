@@ -7,7 +7,6 @@ using System.Reflection;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Engine.Graphics.Composers;
@@ -138,10 +137,10 @@ namespace SiliconStudio.Paradox.Engine
                 if (graphicsCompositor != null)
                 {
                     // Push context (pop after using)
-                    using (var t1 = context.PushTagAndRestore(RenderFrame.Current, toFrame))
-                    using (var t2 = context.PushTagAndRestore(SceneGraphicsLayer.Master, toFrame))
-                    using (var t3 = context.PushTagAndRestore(Current, this))
-                    using (var t4 = context.PushTagAndRestore(CameraRendererMode.RendererTypesKey, RendererTypes))
+                    using (context.PushTagAndRestore(RenderFrame.Current, toFrame))
+                    using (context.PushTagAndRestore(SceneGraphicsLayer.Master, toFrame))
+                    using (context.PushTagAndRestore(Current, this))
+                    using (context.PushTagAndRestore(CameraRendererMode.RendererTypesKey, RendererTypes))
                     {
                         graphicsCompositor.Draw(context);
                     }
