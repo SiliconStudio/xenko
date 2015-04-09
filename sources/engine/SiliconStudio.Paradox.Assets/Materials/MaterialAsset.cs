@@ -73,14 +73,13 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DataMember(30)]
         public ParameterCollection Parameters { get; set; }
 
-        public IEnumerable<AssetReference<MaterialAsset>> FindMaterialReferences()
+        public IEnumerable<Material> FindMaterialReferences()
         {
             foreach (var layer in Layers)
             {
                 if (layer.Material != null)
                 {
-                    var reference = AttachedReferenceManager.GetAttachedReference(layer.Material);
-                    yield return new AssetReference<MaterialAsset>(reference.Id, reference.Url);
+                    yield return layer.Material;
                 }
             }
         }
@@ -112,11 +111,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
         }
 
         /// <inheritdoc/>
-        public IEnumerable<IContentReference> EnumerateCompileTimeDependencies()
+        public IEnumerable<AttachedReference> EnumerateCompileTimeDependencies()
         {
             foreach (var materialReference in FindMaterialReferences())
             {
-                yield return materialReference;
+                yield return AttachedReferenceManager.GetAttachedReference(materialReference);
             }
         }
     }

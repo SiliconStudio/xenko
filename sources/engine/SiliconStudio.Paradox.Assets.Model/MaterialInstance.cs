@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// The material the mesh uses.
         /// </userdoc>
         [DataMember(20)]
-        public AssetReference<MaterialAsset> Material;
+        public Material Material;
 
         /// <summary>
         /// The mesh parameters.

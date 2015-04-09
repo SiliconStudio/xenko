@@ -199,6 +199,8 @@ namespace SiliconStudio.Assets
     [DataContract("aref")]
     [DataStyle(DataStyle.Compact)]
     [DataSerializer(typeof(AssetReferenceDataSerializer<>), Mode = DataSerializerGenericMode.GenericArguments)]
+    // TODO: Check if we can get completely rid of this right now (serializers, etc.)
+    [Obsolete("This type of reference won't be supported in the future")]
     public sealed class AssetReference<T> : AssetReference where T : Asset
     {
         /// <summary>
