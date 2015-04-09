@@ -7,6 +7,7 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Paradox.Engine.Graphics;
 
 namespace SiliconStudio.Paradox.Assets.RenderFrames
 {
@@ -27,7 +28,7 @@ namespace SiliconStudio.Paradox.Assets.RenderFrames
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var assetManager = new AssetManager();
-                assetManager.Save(Url, asset.Descriptor);
+                assetManager.Save(Url, RenderFrame.NewFake(asset.Descriptor));
 
                 return Task.FromResult(ResultStatus.Successful);
             }

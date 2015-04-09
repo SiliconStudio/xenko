@@ -19,9 +19,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     [DataSerializer(typeof(RenderFrameSerializer))]
     public class RenderFrame : IDisposable
     {
-        private readonly bool isOwner;
-
-        private readonly Texture ReferenceTexture;
+        private bool isOwner;
+        private Texture ReferenceTexture;
 
         /// <summary>
         /// Property key to access the Current <see cref="RenderFrame"/> from <see cref="RenderContext.Tags"/>.
@@ -34,38 +33,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         public RenderFrame()
         {
         }
-
-        // TODO: Should we move this to Graphics instead?
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RenderFrame" /> class.
-        /// </summary>
-        /// <param name="descriptor">The descriptor.</param>
-        /// <param name="renderTargets">The render target.</param>
-        /// <param name="depthStencil">The depth stencil.</param>
-        /// <param name="isOwner">if set to <c>true</c> this instance is owning the rendertargets and depth stencil buffer.</param>
-        private RenderFrame(RenderFrameDescriptor descriptor, Texture[] renderTargets, Texture depthStencil, bool isOwner)
-        {
-            Descriptor = descriptor;
-            RenderTargets = renderTargets;
-            DepthStencil = depthStencil;
-            this.isOwner = isOwner;
-            if (renderTargets != null)
-            {
-                foreach (var renderTarget in renderTargets)
-                {
-                    if (renderTarget != null)
-                    {
-                        ReferenceTexture = renderTarget;
-                        break;
-                    }
-                }
-            }
-            if (ReferenceTexture == null && depthStencil != null)
-            {
-                ReferenceTexture = depthStencil;
-            }
-        }
-
+        
         /// <summary>
         /// Gets the descriptor of this render frame.
         /// </summary>
@@ -243,7 +211,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             descriptor.Width = referenceTexture.Width;
             descriptor.Height = referenceTexture.Height;
 
-            return new RenderFrame(descriptor, renderTextures, depthStencilTexture, false);
+            var renderFrame = new RenderFrame();
+            renderFrame.InitializeFrom(descriptor, renderTextures, depthStencilTexture, false);
+            return renderFrame;
         }
 
         /// <summary>
@@ -264,6 +234,16 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         }
 
         /// <summary>
+        /// Creates a fake instance of <see cref="RenderFrame"/> for serialization.
+        /// </summary>
+        /// <param name="frameDescriptor">The frame descriptor.</param>
+        /// <returns>A new instance of <see cref="RenderFrame"/>.</returns>
+        public static RenderFrame NewFake(RenderFrameDescriptor frameDescriptor)
+        {
+            return new RenderFrame { Descriptor = frameDescriptor};
+        }
+        
+        /// <summary>
         /// Creates a new instance of <see cref="RenderFrame"/> from the specified parameters.
         /// </summary>
         /// <param name="graphicsDevice">The graphics device.</param>
@@ -277,37 +257,45 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// </exception>
         public static RenderFrame New(GraphicsDevice graphicsDevice, RenderFrameDescriptor frameDescriptor, RenderFrame referenceFrame = null)
         {
-            if (graphicsDevice == null) throw new ArgumentNullException("graphicsDevice");
-
             // Just return null if no render frame is defined
             if (frameDescriptor.DepthFormat == RenderFrameDepthFormat.None && frameDescriptor.Format == RenderFrameFormat.None)
-            {
                 return null;
-            }
 
-            var referenceTexture = referenceFrame != null ? referenceFrame.ReferenceTexture : graphicsDevice.BackBuffer;
+            var renderFrame = new RenderFrame();
+            renderFrame.InitializeFrom(graphicsDevice, frameDescriptor, referenceFrame);
+            return renderFrame;
+        }
 
-            int width = frameDescriptor.Width;
-            int height = frameDescriptor.Height;
+        internal void InitializeFrom(GraphicsDevice device, RenderFrameDescriptor description, RenderFrame referenceFrame = null)
+        {
+            if (device == null) throw new ArgumentNullException("device");
 
-            if (frameDescriptor.Mode == RenderFrameSizeMode.Relative)
+            if (description.DepthFormat == RenderFrameDepthFormat.None && description.Format == RenderFrameFormat.None)
+                return;
+
+            var referenceTexture = referenceFrame != null ? referenceFrame.ReferenceTexture : device.BackBuffer;
+
+            int width = description.Width;
+            int height = description.Height;
+
+            if (description.Mode == RenderFrameSizeMode.Relative)
             {
                 width = (width * referenceTexture.Width) / 100;
                 height = (height * referenceTexture.Height) / 100;
             }
 
             var pixelFormat = PixelFormat.None;
-            if (frameDescriptor.Format == RenderFrameFormat.LDR)
+            if (description.Format == RenderFrameFormat.LDR)
             {
                 pixelFormat = PixelFormat.R8G8B8A8_UNorm;
             }
-            else if (frameDescriptor.Format == RenderFrameFormat.HDR)
+            else if (description.Format == RenderFrameFormat.HDR)
             {
                 pixelFormat = PixelFormat.R16G16B16A16_Float;
             }
 
             var depthFormat = PixelFormat.None;
-            switch (frameDescriptor.DepthFormat)
+            switch (description.DepthFormat)
             {
                 case RenderFrameDepthFormat.Depth:
                     depthFormat = PixelFormat.D32_Float;
@@ -321,34 +309,60 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             Texture renderTarget = null;
             if (pixelFormat != PixelFormat.None)
             {
-                renderTarget = Texture.New2D(graphicsDevice, width, height, 1, pixelFormat, TextureFlags.RenderTarget | TextureFlags.ShaderResource);    
+                renderTarget = Texture.New2D(device, width, height, 1, pixelFormat, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
             }
 
             // Create the depth stencil buffer
             Texture depthStencil = null;
 
             // TODO: Better handle the case where shared cannot be used. Should we throw an exception?
-            if (frameDescriptor.DepthFormat == RenderFrameDepthFormat.Shared && referenceFrame != null && referenceFrame.DepthStencil != null &&
+            if (description.DepthFormat == RenderFrameDepthFormat.Shared && referenceFrame != null && referenceFrame.DepthStencil != null &&
                 referenceFrame.DepthStencil.Width == width && referenceFrame.DepthStencil.Height == height)
             {
                 depthStencil = referenceFrame.DepthStencil;
             }
-            else if (frameDescriptor.DepthFormat == RenderFrameDepthFormat.Depth || frameDescriptor.DepthFormat == RenderFrameDepthFormat.DepthAndStencil)
+            else if (description.DepthFormat == RenderFrameDepthFormat.Depth || description.DepthFormat == RenderFrameDepthFormat.DepthAndStencil)
             {
-                depthStencil = Texture.New2D(graphicsDevice, width, height, 1, depthFormat, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
+                var depthStencilExtraFlag = device.Features.Profile >= GraphicsProfile.Level_10_0 ? TextureFlags.ShaderResource : TextureFlags.None;
+                depthStencil = Texture.New2D(device, width, height, 1, depthFormat, TextureFlags.DepthStencil | depthStencilExtraFlag);
             }
 
-            // Create a render frame.
-            return new RenderFrame(frameDescriptor, renderTarget != null ? new [] { renderTarget } : null, depthStencil, true);
+            InitializeFrom(description, renderTarget != null ? new[] { renderTarget } : null, depthStencil, true);
+        }
+        
+        // TODO: Should we move this to Graphics instead?
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RenderFrame" /> class.
+        /// </summary>
+        /// <param name="descriptor">The descriptor.</param>
+        /// <param name="renderTargets">The render target.</param>
+        /// <param name="depthStencil">The depth stencil.</param>
+        /// <param name="ownsResources">if set to <c>true</c> this instance is owning the rendertargets and depth stencil buffer.</param>
+        private void InitializeFrom(RenderFrameDescriptor descriptor, Texture[] renderTargets, Texture depthStencil, bool ownsResources)
+        {
+            Descriptor = descriptor;
+            RenderTargets = renderTargets;
+            DepthStencil = depthStencil;
+            isOwner = ownsResources;
+            if (renderTargets != null)
+            {
+                foreach (var renderTarget in renderTargets)
+                {
+                    if (renderTarget != null)
+                    {
+                        ReferenceTexture = renderTarget;
+                        break;
+                    }
+                }
+            }
+            if (ReferenceTexture == null && depthStencil != null)
+            {
+                ReferenceTexture = depthStencil;
+            }
         }
 
         internal class RenderFrameSerializer : DataSerializer<RenderFrame>
         {
-            public override void PreSerialize(ref RenderFrame renderFrame, ArchiveMode mode, SerializationStream stream)
-            {
-                // Do not create object during preserialize (OK because not recursive)
-            }
-
             public override void Serialize(ref RenderFrame renderFrame, ArchiveMode mode, SerializationStream stream)
             {
                 if (mode == ArchiveMode.Deserialize)
@@ -357,7 +371,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                     var graphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
 
                     var descriptor = stream.Read<RenderFrameDescriptor>();
-                    renderFrame = New(graphicsDeviceService.GraphicsDevice, descriptor);
+                    renderFrame.InitializeFrom(graphicsDeviceService.GraphicsDevice, descriptor);
                 }
                 else
                 {
