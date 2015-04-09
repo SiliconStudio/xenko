@@ -109,7 +109,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                             commandContext.Logger.Warning(string.Format("The material [{0}] is null in the list of materials.", modelMaterial.Name));
                             continue;
                         }
-                        model.Materials.Add(modelMaterial.Material);
+                        model.Materials.Add(AttachedReferenceManager.CreateSerializableVersion<Material>(modelMaterial.Material.Id, modelMaterial.Material.Location));
                     }
 
                     model.BoundingBox = BoundingBox.Empty;

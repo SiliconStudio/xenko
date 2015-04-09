@@ -49,7 +49,7 @@ namespace SiliconStudio.Assets.Compiler
             {
                 foreach (var dependentAssetReference in assetWithCompileTimeDependencies.EnumerateCompileTimeDependencies())
                 {
-                    var dependentAssetItem = packageSession.FindAsset(dependentAssetReference.Id) ?? packageSession.FindAsset(dependentAssetReference.Url);
+                    var dependentAssetItem = packageSession.FindAsset(dependentAssetReference.Id) ?? packageSession.FindAsset(dependentAssetReference.Location);
                     var dependentAsset = dependentAssetItem != null ? dependentAssetItem.Asset : null;
                     if (dependentAsset == null)
                         continue;

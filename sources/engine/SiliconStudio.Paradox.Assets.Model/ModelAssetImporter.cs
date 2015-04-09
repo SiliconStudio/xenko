@@ -13,7 +13,6 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.Assets.Model.Analysis;
 using SiliconStudio.Paradox.Assets.Textures;
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Importer.Common;
@@ -167,11 +166,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                 {
                     var foundMaterial = loadedMaterials.FirstOrDefault(x => x.Location == new UFile(material.Key, null));
                     if (foundMaterial != null)
-                    {
-                        var materialReference = AttachedReferenceManager.CreateSerializableVersion<Material>(foundMaterial.Id, foundMaterial.Location);
-                        asset.Materials.Add(new ModelMaterial { Name = material.Key, Material = materialReference });
-
-                    }
+                        asset.Materials.Add(new ModelMaterial { Name = material.Key, Material = new AssetReference<MaterialAsset>(foundMaterial.Id, foundMaterial.Location) });
                 }
             }
 

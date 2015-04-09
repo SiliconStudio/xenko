@@ -57,7 +57,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
                 {
                     foreach (var dependency in Asset.Model.GetDependencies())
                     {
-                        yield return new ObjectUrl(UrlType.Internal, dependency.Url);
+                        yield return new ObjectUrl(UrlType.Internal, dependency.Location);
                     }
                 }
             }

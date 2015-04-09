@@ -2,7 +2,6 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Assets.Materials;
-using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Assets.Model
 {
@@ -28,7 +27,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// The material.
         /// </value>
         [DataMember(20)]
-        public Material Material { get; set; }
+        public AssetReference<MaterialAsset> Material { get; set; }
 
         /// <summary>
         /// Gets the difference key.

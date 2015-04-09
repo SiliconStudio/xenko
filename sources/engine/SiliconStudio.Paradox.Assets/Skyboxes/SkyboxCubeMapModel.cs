@@ -34,12 +34,12 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
             return new ShaderClassSource("ComputeSkyboxCubeMapColor", key);
         }
 
-        public IEnumerable<AttachedReference> GetDependencies()
+        public IEnumerable<IContentReference> GetDependencies()
         {
             if (CubeMap != null)
             {
                 var reference = AttachedReferenceManager.GetAttachedReference(CubeMap);
-                yield return reference;
+                yield return new AssetReference<TextureAsset>(reference.Id, reference.Url);
             }
         }
     }

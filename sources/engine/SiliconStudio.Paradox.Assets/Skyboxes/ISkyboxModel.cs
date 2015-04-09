@@ -15,6 +15,6 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
     {
         ShaderSource Generate(SkyboxGeneratorContext context);
 
-        IEnumerable<AttachedReference> GetDependencies();
+        IEnumerable<IContentReference> GetDependencies();
     }
 }
