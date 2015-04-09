@@ -25,10 +25,12 @@
     <Compile Include="EntityHierarchyDiffNodeBuilder.cs" />
     <Compile Include="EntityDiffNode.cs" />
     <Compile Include="EntityReference.cs" />
+    <Compile Include="EntityScriptReference.cs" />
     <Compile Include="EntitySerializer.cs" />
     <Compile Include="EntityTreeAsset.cs" />
     <Compile Include="FbxAssetImporter.cs" />
     <Compile Include="IEntityComponentReference.cs" />
+    <Compile Include="IEntityScriptReference.cs" />
     <Compile Include="MaterialInstance.cs" />
     <Compile Include="ImportAssimpCommand.cs" />
     <Compile Include="ImportFbxCommand.cs" />
