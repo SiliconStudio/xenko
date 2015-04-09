@@ -16,14 +16,26 @@ namespace SiliconStudio.Paradox.Engine
     /// This processor is handling specially an entity with a <see cref="ChildSceneComponent"/>. If an scene component is found, it will
     /// create a sub-<see cref="EntityManager"/> dedicated to handle the entities inside the child scene.
     /// </remarks>
-    public sealed class SceneChildProcessor : EntityProcessor<ChildSceneComponent>
+    public sealed class ChildSceneProcessor : EntityProcessor<ChildSceneComponent>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SceneChildProcessor"/> class.
+        /// Initializes a new instance of the <see cref="ChildSceneProcessor"/> class.
         /// </summary>
-        public SceneChildProcessor()
+        public ChildSceneProcessor()
             : base(ChildSceneComponent.Key)
         {
+        }
+
+        /// <summary>
+        /// Returns the scene containing the processor.
+        /// </summary>
+        private Scene ContainingScene
+        {
+            get
+            {
+                var sceneInstance = EntityManager as SceneInstance;
+                return sceneInstance != null ? sceneInstance.Scene : null;
+            }
         }
 
         public SceneInstance GetSceneInstance(ChildSceneComponent component)
@@ -38,7 +50,9 @@ namespace SiliconStudio.Paradox.Engine
 
         protected override void OnEntityAdding(Entity entity, ChildSceneComponent component)
         {
-            component.SceneInstance = new SceneInstance(EntityManager.Services, component.Scene, EntityManager.GetProcessor<ScriptProcessor>() != null);
+            // safe guard for infinite recursion when setting component child scene on the scene that contains it.
+            var scene = ContainingScene != component.Scene ? component.Scene : null;
+            component.SceneInstance = new SceneInstance(EntityManager.Services, scene, EntityManager.GetProcessor<ScriptProcessor>() != null);
         }
 
         protected override void OnEntityRemoved(Entity entity, ChildSceneComponent component)
@@ -52,13 +66,15 @@ namespace SiliconStudio.Paradox.Engine
 
         public override void Update(GameTime time)
         {
-            foreach (var entity in enabledEntities)
+            foreach (var childComponent in enabledEntities.Values)
             {
-                var childComponent = entity.Value;
                 if (childComponent.Enabled)
-                {
+                { 
+                    // safe guard against infinite recursion
+                    var currentScene = ContainingScene != childComponent.Scene ? childComponent.Scene : null;
+
                     // Copy back the scene from the component to the instance
-                    childComponent.SceneInstance.Scene = childComponent.Scene;
+                    childComponent.SceneInstance.Scene = currentScene;
                     childComponent.SceneInstance.Update(time);
                 }
             }
@@ -66,13 +82,12 @@ namespace SiliconStudio.Paradox.Engine
 
         public override void Draw(RenderContext context)
         {
-            foreach (var entity in enabledEntities)
+            foreach (var childComponent in enabledEntities.Values)
             {
-                var childComponent = entity.Value;
                 if (childComponent.Enabled)
                 {
                     var sceneInstance = childComponent.SceneInstance;
-                    if (sceneInstance.Scene != childComponent.Scene)
+                    if (ContainingScene != childComponent.Scene && sceneInstance.Scene != childComponent.Scene)
                         throw new InvalidOperationException("The scene instance does not match the scene of the ChildSceneComponent. Has it been modified after Update?");
                     
                     childComponent.SceneInstance.Draw(context);

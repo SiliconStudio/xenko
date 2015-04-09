@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Engine
     public sealed class SceneChildRenderer : SceneRendererBase
     {
         private EntityManager currentEntityManager;
-        private SceneChildProcessor sceneChildProcessor;
+        private ChildSceneProcessor childSceneProcessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneChildRenderer"/> class.
@@ -73,14 +73,14 @@ namespace SiliconStudio.Paradox.Engine
                 return;
             }
 
-            sceneChildProcessor = sceneChildProcessor  ?? currentEntityManager.GetProcessor<SceneChildProcessor>();
+            childSceneProcessor = childSceneProcessor  ?? currentEntityManager.GetProcessor<ChildSceneProcessor>();
 
-            if (sceneChildProcessor == null)
+            if (childSceneProcessor == null)
             {
                 return;
             }
 
-            SceneInstance sceneInstance = sceneChildProcessor.GetSceneInstance(ChildScene);
+            SceneInstance sceneInstance = childSceneProcessor.GetSceneInstance(ChildScene);
             if (sceneInstance != null)
             {
                 sceneInstance.Draw(context, output, GraphicsCompositorOverride);

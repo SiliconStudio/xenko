@@ -1988,7 +1988,7 @@
     <Compile Include="Engine\Graphics\RenderModel.cs" />
     <Compile Include="Engine\ChildSceneComponent.cs" />
     <Compile Include="Engine\ChildSceneComponentChangedEventArgs.cs" />
-    <Compile Include="Engine\SceneChildProcessor.cs" />
+    <Compile Include="Engine\ChildSceneProcessor.cs" />
     <Compile Include="Engine\SceneComponent.cs" />
     <Compile Include="Engine\SceneEditorCameraSettings.cs" />
     <Compile Include="Engine\SceneEditorGraphicsModeHDRSettings.cs" />
