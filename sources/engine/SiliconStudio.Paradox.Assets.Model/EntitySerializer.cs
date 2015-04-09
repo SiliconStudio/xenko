@@ -40,21 +40,35 @@ namespace SiliconStudio.Paradox.Assets.Model
                     var entityComponent = objectContext.Instance as EntityComponent;
                     var entityScript = objectContext.Instance as Script;
                     if (entityComponent != null)
+                    {
                         objectContext.Instance = new EntityComponentReference(entityComponent);
+                    }
                     else if (entityScript != null && levelSinceScriptComponent != 1)
-                        objectContext.Instance = new EntityScriptReference(entityScript);
+                    {
+                        var script = new EntityScriptReference(entityScript);
+                        objectContext.Instance = script;
+                        objectContext.Tag = objectContext.Settings.TagTypeRegistry.TagFromType(entityScript.GetType());
+                    }
                     else if (objectContext.Instance is Entity)
+                    {
                         objectContext.Instance = new EntityReference { Id = ((Entity)objectContext.Instance).Id };
+                    }
                 }
                 else
                 {
                     var type = objectContext.Descriptor.Type;
                     if (typeof(EntityComponent).IsAssignableFrom(type))
+                    {
                         objectContext.Instance = new EntityComponentReference();
+                    }
                     else if (typeof(Script).IsAssignableFrom(type) && levelSinceScriptComponent != 1)
-                        objectContext.Instance = new EntityScriptReference();
+                    {
+                        objectContext.Instance = new EntityScriptReference { ScriptType = objectContext.Descriptor.Type };
+                    }
                     else if (type == typeof(Entity))
+                    {
                         objectContext.Instance = new EntityReference();
+                    }
                 }
             }
 
@@ -79,7 +93,8 @@ namespace SiliconStudio.Paradox.Assets.Model
                     }
                     else if (entityScriptReference != null)
                     {
-                        var entityScript = new UnloadableScript { Id = entityScriptReference.Id }; // UnloadableScript is used here only because Script is abstract and can't be instantiated.
+                        var entityScript = (Script)Activator.CreateInstance(entityScriptReference.ScriptType);
+                        entityScript.Id = entityScriptReference.Id;
                         var entityReference = new Entity { Id = entityScriptReference.Entity.Id };
                         entityReference.Add(new ScriptComponent { Scripts = { entityScript } });
 

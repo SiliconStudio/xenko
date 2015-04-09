@@ -9,7 +9,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 {
     [DataContract]
     [DataStyle(DataStyle.Compact)]
-    public sealed class EntityScriptReference : IEntityScriptReference
+    public class EntityScriptReference : IEntityScriptReference
     {
         public EntityScriptReference()
         {
@@ -17,8 +17,9 @@ namespace SiliconStudio.Paradox.Assets.Model
 
         public EntityScriptReference(Script script)
         {
-            Entity = script.Entity;
             Id = script.Id;
+            Entity = script.Entity;
+            ScriptType = script.GetType();
         }
 
         [DataMember(10)]
@@ -27,9 +28,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         [DataMember(20)]
         public Guid Id { get; set; }
 
-        public static EntityScriptReference New(Script script)
-        {
-            return new EntityScriptReference(script);
-        }
+        [DataMemberIgnore]
+        public Type ScriptType { get; set; }
     }
 }

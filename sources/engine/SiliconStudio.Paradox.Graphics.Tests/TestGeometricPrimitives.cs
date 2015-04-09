@@ -68,7 +68,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                                  GeometricPrimitive.Plane.New(GraphicsDevice),
                                  GeometricPrimitive.Cube.New(GraphicsDevice),
                                  GeometricPrimitive.Sphere.New(GraphicsDevice),
-                                 GeometricPrimitive.GeoSphere.New(GraphicsDevice),
+                                 GeometricPrimitive.GeoSphere.New(GraphicsDevice, 1, 4, 2, 2),
                                  GeometricPrimitive.Cylinder.New(GraphicsDevice),
                                  GeometricPrimitive.Torus.New(GraphicsDevice),
                                  GeometricPrimitive.Teapot.New(GraphicsDevice),
