@@ -2,6 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Diagnostics;
+using System.Windows;
 
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
@@ -120,7 +122,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             graphicsDevice.PushState();
 
             var cameraDepthRange = camera.FarClipPlane - camera.NearClipPlane;
-            var snapRadiusValue = (cascadeSplitRatios[0] - shadow.MinDistance) * cameraDepthRange * (float)Math.Atan(MathUtil.DegreesToRadians(camera.VerticalFieldOfView/2)) * 2.0f / 6.0f;
+            var snapRadiusValue = (cascadeSplitRatios[0] - shadow.MinDistance) * cameraDepthRange * (float)Math.Atan(MathUtil.DegreesToRadians(camera.VerticalFieldOfView/2)) / 6.0f;
 
             float splitMaxRatio = shadow.MinDistance;
             for (int cascadeLevel = 0; cascadeLevel < cascadeCount; ++cascadeLevel)
@@ -134,27 +136,28 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                     cascadeFrustumCornersWS[j] = frustumCorners[j] + frustumRange * splitMinRatio;
                     cascadeFrustumCornersWS[j + 4] = frustumCorners[j] + frustumRange * splitMaxRatio;
                 }
-                var cascadeBoundWS = BoundingBox.FromPoints(cascadeFrustumCornersWS);
 
                 Vector3 cascadeMinBoundLS;
                 Vector3 cascadeMaxBoundLS;
+                Vector3 target;
 
-                var target = cascadeBoundWS.Center;
-
-                if (shadow.StabilizationMode == LightShadowMapStabilizationMode.ViewSnapping)
+                if (shadow.StabilizationMode == LightShadowMapStabilizationMode.ViewSnapping || shadow.StabilizationMode == LightShadowMapStabilizationMode.ProjectionSnapping)
                 {
                     // Make sure we are using the same direction when stabilizing
-                    upDirection = Vector3.UnitY;
-
-                    //side = Vector3.Normalize(Vector3.Cross(Vector3.UnitY, direction));
-                    //upDirection = Vector3.Normalize(Vector3.Cross(direction, side));
+                    //upDirection = Vector3.UnitY;
+                    var cascadeBoundWS = BoundingSphere.FromPoints(cascadeFrustumCornersWS);
 
                     // Compute bounding box center & radius
                     // Note: boundingBox is computed in view space so the computation of the radius is only correct when the view matrix does not do any kind of scale/shear transformation
-                    var radius = (cascadeBoundWS.Maximum - cascadeBoundWS.Minimum).Length() * 0.5f;
+                    target = cascadeBoundWS.Center;
+                    var radius = cascadeBoundWS.Radius;
 
+                    // Snap the radius so that it doesn't change when rotating
                     var snapRadius = (float)Math.Ceiling(radius / snapRadiusValue) * snapRadiusValue;
                     radius = snapRadius;
+
+                    //var snapRadius = (float)Math.Ceiling(radius / snapRadiusValue) * snapRadiusValue;
+                    //radius = snapRadius;
 
                     //var shadowMapHalfSize = lightShadowMap.Size * 0.5f;
                     //var scalingMatrix = Matrix.Scaling(shadowMapHalfSize / radius);
@@ -173,17 +176,26 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                     cascadeMaxBoundLS = new Vector3(radius, radius, radius);
                     cascadeMinBoundLS = -cascadeMaxBoundLS;
 
-                    //// Snap camera to texel units (so that shadow doesn't jitter when light doesn't change direction but camera is moving)
-                    //// Technique from ShaderX7 - Practical Cascaded Shadows Maps -  p310-311 
-                    //float x = (float)Math.Ceiling(Vector3.Dot(target, side) * shadowMapHalfSize / radius) * radius / shadowMapHalfSize;
-                    //float y = (float)Math.Ceiling(Vector3.Dot(target, upDirection) * shadowMapHalfSize / radius) * radius / shadowMapHalfSize;
-                    //float z = Vector3.Dot(target, direction);
+                    if (shadow.StabilizationMode == LightShadowMapStabilizationMode.ViewSnapping)
+                    {
+                        // Snap camera to texel units (so that shadow doesn't jitter when light doesn't change direction but camera is moving)
+                        // Technique from ShaderX7 - Practical Cascaded Shadows Maps -  p310-311 
+                        var shadowMapHalfSize = lightShadowMap.Size * 0.5f;
+                        side = Vector3.Normalize(Vector3.Cross(Vector3.UnitY, direction));
+                        upDirection = Vector3.Normalize(Vector3.Cross(direction, side));
+                        float x = (float)Math.Ceiling(Vector3.Dot(target, upDirection) * shadowMapHalfSize / radius) * radius / shadowMapHalfSize;
+                        float y = (float)Math.Ceiling(Vector3.Dot(target, side) * shadowMapHalfSize / radius) * radius / shadowMapHalfSize;
+                        float z = Vector3.Dot(target, direction);
 
-                    ////target = up * x + side * y + direction * R32G32B32_Float.Dot(target, direction);
-                    //target = side * x + upDirection * y + direction * z;
+                        //target = up * x + side * y + direction * R32G32B32_Float.Dot(target, direction);
+                        target = upDirection * x + side * y + direction * z;
+                    }
                 }
                 else
                 {
+                    var cascadeBoundWS = BoundingBox.FromPoints(cascadeFrustumCornersWS);
+                    target = cascadeBoundWS.Center;
+
                     upDirection = Vector3.UnitY;
                     // Computes the bouding box of the frustum cascade in light space
                     var lightViewMatrix = Matrix.LookAtLH(cascadeBoundWS.Center, cascadeBoundWS.Center + direction, upDirection);
@@ -207,7 +219,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 shadowCamera.Update();
 
                 // Stabilize the Shadow matrix on the projection
-                //if (shadow.StabilizationMode == LightShadowMapStabilizationMode.ProjectionSnapping)
+                if (shadow.StabilizationMode == LightShadowMapStabilizationMode.ProjectionSnapping)
                 {
                     var shadowPixelPosition = shadowCamera.ViewProjectionMatrix.TranslationVector * lightShadowMap.Size * 0.5f;
                     shadowPixelPosition.Z = 0;
