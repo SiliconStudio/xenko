@@ -35,7 +35,9 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
         private readonly float[] cascadeSplitRatios;
         private readonly Vector3[] cascadeFrustumCornersWS;
-        private readonly Vector3[] frustumCorners;
+        private readonly Vector3[] cascadeFrustumCornersVS;
+        private readonly Vector3[] frustumCornersWS;
+        private readonly Vector3[] frustumCornersVS;
 
         private PoolListStruct<LightDirectionalShadowMapShaderData> shaderDataPoolCascade1;
         private PoolListStruct<LightDirectionalShadowMapShaderData> shaderDataPoolCascade2;
@@ -48,7 +50,9 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         {
             cascadeSplitRatios = new float[4];
             cascadeFrustumCornersWS = new Vector3[8];
-            frustumCorners = new Vector3[8];
+            cascadeFrustumCornersVS = new Vector3[8];
+            frustumCornersWS = new Vector3[8];
+            frustumCornersVS = new Vector3[8];
             shaderDataPoolCascade1 = new PoolListStruct<LightDirectionalShadowMapShaderData>(4, CreateLightDirectionalShadowMapShaderDataCascade1);
             shaderDataPoolCascade2 = new PoolListStruct<LightDirectionalShadowMapShaderData>(4, CreateLightDirectionalShadowMapShaderDataCascade2);
             shaderDataPoolCascade4 = new PoolListStruct<LightDirectionalShadowMapShaderData>(4, CreateLightDirectionalShadowMapShaderDataCascade4);
@@ -72,6 +76,9 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             // TODO: Min and Max distance can be auto-computed from readback from Z buffer
             var camera = shadowMapRenderer.Camera;
             var shadowCamera = shadowMapRenderer.ShadowCamera;
+
+            var viewToWorld = camera.ViewMatrix;
+            viewToWorld.Invert();
 
             // Update the frustum infos
             UpdateFrustum(shadowMapRenderer.Camera);
@@ -121,9 +128,6 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             var graphicsDevice = context.GraphicsDevice;
             graphicsDevice.PushState();
 
-            var cameraDepthRange = camera.FarClipPlane - camera.NearClipPlane;
-            var snapRadiusValue = (cascadeSplitRatios[0] - shadow.MinDistance) * cameraDepthRange * (float)Math.Atan(MathUtil.DegreesToRadians(camera.VerticalFieldOfView/2)) / 6.0f;
-
             float splitMaxRatio = shadow.MinDistance;
             for (int cascadeLevel = 0; cascadeLevel < cascadeCount; ++cascadeLevel)
             {
@@ -132,9 +136,14 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 splitMaxRatio = cascadeSplitRatios[cascadeLevel];
                 for (int j = 0; j < 4; j++)
                 {
-                    var frustumRange = frustumCorners[j + 4] - frustumCorners[j];
-                    cascadeFrustumCornersWS[j] = frustumCorners[j] + frustumRange * splitMinRatio;
-                    cascadeFrustumCornersWS[j + 4] = frustumCorners[j] + frustumRange * splitMaxRatio;
+                    // Calculate frustum in WS and VS
+                    var frustumRange = frustumCornersWS[j + 4] - frustumCornersWS[j];
+                    cascadeFrustumCornersWS[j] = frustumCornersWS[j] + frustumRange * splitMinRatio;
+                    cascadeFrustumCornersWS[j + 4] = frustumCornersWS[j] + frustumRange * splitMaxRatio;
+
+                    frustumRange = frustumCornersVS[j + 4] - frustumCornersVS[j];
+                    cascadeFrustumCornersVS[j] = frustumCornersVS[j] + frustumRange * splitMinRatio;
+                    cascadeFrustumCornersVS[j + 4] = frustumCornersVS[j] + frustumRange * splitMaxRatio;
                 }
 
                 Vector3 cascadeMinBoundLS;
@@ -144,34 +153,11 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 if (shadow.StabilizationMode == LightShadowMapStabilizationMode.ViewSnapping || shadow.StabilizationMode == LightShadowMapStabilizationMode.ProjectionSnapping)
                 {
                     // Make sure we are using the same direction when stabilizing
-                    //upDirection = Vector3.UnitY;
-                    var cascadeBoundWS = BoundingSphere.FromPoints(cascadeFrustumCornersWS);
+                    var boundingVS = BoundingSphere.FromPoints(cascadeFrustumCornersVS);
 
                     // Compute bounding box center & radius
-                    // Note: boundingBox is computed in view space so the computation of the radius is only correct when the view matrix does not do any kind of scale/shear transformation
-                    target = cascadeBoundWS.Center;
-                    var radius = cascadeBoundWS.Radius;
-
-                    // Snap the radius so that it doesn't change when rotating
-                    var snapRadius = (float)Math.Ceiling(radius / snapRadiusValue) * snapRadiusValue;
-                    radius = snapRadius;
-
-                    //var snapRadius = (float)Math.Ceiling(radius / snapRadiusValue) * snapRadiusValue;
-                    //radius = snapRadius;
-
-                    //var shadowMapHalfSize = lightShadowMap.Size * 0.5f;
-                    //var scalingMatrix = Matrix.Scaling(shadowMapHalfSize / radius);
-                    //var lookAt = Matrix.LookAtLH(Vector3.Zero, direction, upDirection);
-                    //lookAt *= scalingMatrix;
-                    //Matrix lookAtInverse;
-                    //Matrix.Invert(ref lookAt, out lookAtInverse);
-
-                    //var targetInFrustum = Vector3.TransformCoordinate(target, lookAt);
-                    //targetInFrustum.X = (float)Math.Round(targetInFrustum.X);
-                    //targetInFrustum.Y = (float)Math.Round(targetInFrustum.Y);
-                    //var newTarget = Vector3.TransformCoordinate(targetInFrustum, lookAtInverse);
-
-                    //target = newTarget;
+                    target = Vector3.TransformCoordinate(boundingVS.Center, viewToWorld);
+                    var radius = boundingVS.Radius;
 
                     cascadeMaxBoundLS = new Vector3(radius, radius, radius);
                     cascadeMinBoundLS = -cascadeMaxBoundLS;
@@ -274,14 +260,18 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
         private void UpdateFrustum(CameraComponent camera)
         {
+            var projectionToView = camera.ProjectionMatrix;
+            projectionToView.Invert();
+
             // Compute frustum-dependent variables (common for all shadow maps)
-            Matrix projectionToWorld;
-            Matrix.Invert(ref camera.ViewProjectionMatrix, out projectionToWorld);
+            var projectionToWorld = camera.ViewProjectionMatrix;
+            projectionToWorld.Invert();
 
             // Transform Frustum corners in World Space (8 points) - algorithm is valid only if the view matrix does not do any kind of scale/shear transformation
             for (int i = 0; i < 8; ++i)
             {
-                Vector3.TransformCoordinate(ref FrustumBasePoints[i], ref projectionToWorld, out frustumCorners[i]);
+                Vector3.TransformCoordinate(ref FrustumBasePoints[i], ref projectionToWorld, out frustumCornersWS[i]);
+                Vector3.TransformCoordinate(ref FrustumBasePoints[i], ref projectionToView, out frustumCornersVS[i]);
             }
         }
 
