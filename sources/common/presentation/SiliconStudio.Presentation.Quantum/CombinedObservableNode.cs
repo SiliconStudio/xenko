@@ -17,13 +17,11 @@ namespace SiliconStudio.Presentation.Quantum
         private readonly List<SingleObservableNode> combinedNodes;
         private readonly List<object> combinedNodeInitialValues;
         private readonly HashSet<object> distinctCombinedNodeInitialValues;
+        private readonly Dictionary<string, object> associatedData = new Dictionary<string, object>();
         private readonly int? order;
 
         protected static readonly HashSet<CombinedObservableNode> ChangedNodes = new HashSet<CombinedObservableNode>();
-
         protected static bool ChangeInProgress;
-
-        private Dictionary<string, object> associatedData = new Dictionary<string, object>();
 
         protected CombinedObservableNode(ObservableViewModel ownerViewModel, string name, IEnumerable<SingleObservableNode> combinedNodes, object index)
             : base(ownerViewModel, index)
@@ -194,7 +192,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         // TODO: we shall find a better way to handle combined associated data...
         /// <inheritdoc/>
-        public override Dictionary<string, object> AssociatedData { get { return associatedData; } }
+        public override IReadOnlyDictionary<string, object> AssociatedData { get { return associatedData; } }
 
         public void Refresh()
         {

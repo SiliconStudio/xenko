@@ -164,7 +164,7 @@ namespace SiliconStudio.Presentation.Quantum
         public sealed override bool HasDictionary { get { AssertInit(); return (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary); } }
 
         /// <inheritdoc/>
-        public sealed override Dictionary<string, object> AssociatedData { get { return associatedData; } }
+        public sealed override IReadOnlyDictionary<string, object> AssociatedData { get { return associatedData; } }
 
         internal Guid ModelGuid { get { return targetNode.Guid; } }
 
@@ -172,9 +172,15 @@ namespace SiliconStudio.Presentation.Quantum
    
         public void AddAssociatedData(string key, object value)
         {
-            // TODO: make AssociatedData a read-only dictionary publicly and manage all add/remove this way!
             OnPropertyChanging(key);
-            AssociatedData.Add(key, value);
+            associatedData.Add(key, value);
+            OnPropertyChanged(key);
+        }
+
+        public void AddOrUpdateAssociatedData(string key, object value)
+        {
+            OnPropertyChanging(key);
+            associatedData[key] = value;
             OnPropertyChanged(key);
         }
 

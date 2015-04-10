@@ -28,7 +28,7 @@ namespace SiliconStudio.Presentation.Quantum
             return node;
         }
 
-        public override Dictionary<string, object> AssociatedData { get { return associatedData; } }
+        public override IReadOnlyDictionary<string, object> AssociatedData { get { return associatedData; } }
 
         public override int? Order { get { return order; } }
         
@@ -42,6 +42,20 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets the command to execute when the value of this node is changed.
         /// </summary>
         public NodeCommandWrapperBase ValueChangedCommand { get; private set; }
+
+        public void AddAssociatedData(string key, object value)
+        {
+            OnPropertyChanging(key);
+            associatedData.Add(key, value);
+            OnPropertyChanged(key);
+        }
+
+        public void AddOrUpdateAssociatedData(string key, object value)
+        {
+            OnPropertyChanging(key);
+            associatedData[key] = value;
+            OnPropertyChanged(key);
+        }
 
         /// <summary>
         /// Clears the list of children from this <see cref="VirtualObservableNode"/>.
@@ -57,11 +71,6 @@ namespace SiliconStudio.Presentation.Quantum
         public new void AddCommand(INodeCommandWrapper command)
         {
             base.AddCommand(command);
-        }
-
-        internal void AddAssociatedData(string key, object data)
-        {
-            associatedData.Add(key, data);
         }
     }
 
