@@ -2,14 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace SiliconStudio.Presentation.Quantum
 {
     public abstract class VirtualObservableNode : SingleObservableNode
     {
-        private readonly Dictionary<string, object> associatedData = new Dictionary<string,object>();
         private readonly int? order;
         private readonly bool isPrimitive;
 
@@ -28,8 +26,6 @@ namespace SiliconStudio.Presentation.Quantum
             return node;
         }
 
-        public override IReadOnlyDictionary<string, object> AssociatedData { get { return associatedData; } }
-
         public override int? Order { get { return order; } }
         
         public override bool HasList { get { return typeof(ICollection).IsAssignableFrom(Type); } }
@@ -42,20 +38,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets the command to execute when the value of this node is changed.
         /// </summary>
         public NodeCommandWrapperBase ValueChangedCommand { get; private set; }
-
-        public void AddAssociatedData(string key, object value)
-        {
-            OnPropertyChanging(key);
-            associatedData.Add(key, value);
-            OnPropertyChanged(key);
-        }
-
-        public void AddOrUpdateAssociatedData(string key, object value)
-        {
-            OnPropertyChanging(key);
-            associatedData[key] = value;
-            OnPropertyChanged(key);
-        }
 
         /// <summary>
         /// Clears the list of children from this <see cref="VirtualObservableNode"/>.

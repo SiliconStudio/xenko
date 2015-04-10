@@ -22,6 +22,7 @@ namespace SiliconStudio.Presentation.Quantum
     {
         private readonly AutoUpdatingSortedObservableCollection<IObservableNode> children = new AutoUpdatingSortedObservableCollection<IObservableNode>(new AnonymousComparer<IObservableNode>(CompareChildren));
         private readonly ObservableCollection<INodeCommandWrapper> commands = new ObservableCollection<INodeCommandWrapper>();
+        private readonly Dictionary<string, object> associatedData = new Dictionary<string, object>();
         private bool isVisible;
         private bool isReadOnly;
         private string displayName;
@@ -117,7 +118,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets additional data associated to this content. This can be used when the content itself does not contain enough information to be used as a view model.
         /// </summary>
-        public abstract IReadOnlyDictionary<string, object> AssociatedData { get; }
+        public IReadOnlyDictionary<string, object> AssociatedData { get { return associatedData; } }
 
         /// <summary>
         /// Gets the order number of this node in its parent.
@@ -157,6 +158,46 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets or sets the state flags associated to this node.
         /// </summary>
         public ViewModelContentState LoadState { get; set; }
+
+        public void AddAssociatedData(string key, object value)
+        {
+            if (initializingChildren != null)
+            {
+                OnPropertyChanging(key);
+            }
+            associatedData.Add(key, value);
+            if (initializingChildren != null)
+            {
+                OnPropertyChanged(key);
+            }
+        }
+
+        public void AddOrUpdateAssociatedData(string key, object value)
+        {
+            if (initializingChildren != null)
+            {
+                OnPropertyChanging(key);
+            }
+            associatedData[key] = value;
+            if (initializingChildren != null)
+            {
+                OnPropertyChanged(key);
+            }
+        }
+
+        public bool RemoveAssociatedData(string key)
+        {
+            if (initializingChildren != null)
+            {
+                OnPropertyChanging(key);
+            }
+            var result = associatedData.Remove(key);
+            if (initializingChildren != null)
+            {
+                OnPropertyChanged(key);
+            }
+            return result;
+        }
 
         /// <summary>
         /// Indicates whether this node can be moved.

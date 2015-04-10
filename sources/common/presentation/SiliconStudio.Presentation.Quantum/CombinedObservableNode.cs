@@ -7,7 +7,6 @@ using System.Linq;
 
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Commands;
-using SiliconStudio.Presentation.Extensions;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
@@ -17,7 +16,6 @@ namespace SiliconStudio.Presentation.Quantum
         private readonly List<SingleObservableNode> combinedNodes;
         private readonly List<object> combinedNodeInitialValues;
         private readonly HashSet<object> distinctCombinedNodeInitialValues;
-        private readonly Dictionary<string, object> associatedData = new Dictionary<string, object>();
         private readonly int? order;
 
         protected static readonly HashSet<CombinedObservableNode> ChangedNodes = new HashSet<CombinedObservableNode>();
@@ -111,39 +109,16 @@ namespace SiliconStudio.Presentation.Quantum
 
             if (Owner.ObservableViewModelService != null)
             {
-                if (associatedData.Count > 0)
+                foreach (var key in AssociatedData.Keys.ToList())
                 {
-                    foreach (var key in associatedData.Keys.ToList())
-                    {
-                        OnPropertyChanging(key);
-                        associatedData.Remove(key);
-                        OnPropertyChanged(key);
-                    }
+                    RemoveAssociatedData(key);
                 }
 
-                var data = Owner.ObservableViewModelService.RequestAssociatedData(this, isUpdating);
-                if (isUpdating)
+                Owner.ObservableViewModelService.RequestAssociatedData(this, isUpdating);
+                // TODO: we add associatedData added to SingleObservableNode this way, but it's a bit dangerous. Maybe we should check that all combined nodes have this data entry, and all with the same value.
+                foreach (var singleData in CombinedNodes.SelectMany(x => x.AssociatedData).Where(x => !AssociatedData.ContainsKey(x.Key)))
                 {
-                    data.ForEach(x => OnPropertyChanging(x.Key));
-                    SetValue(() => associatedData.AddRange(data), "AssociatedData");
-                    data.Reverse().ForEach(x => OnPropertyChanged(x.Key));
-
-                    // TODO: we add associatedData added to SingleObservableNode this way, but it's a bit dangerous. Maybe we should check that all combined nodes have this data entry, and all with the same value.
-                    foreach (var singleData in CombinedNodes.SelectMany(x => x.AssociatedData).Where(x => !associatedData.ContainsKey(x.Key)))
-                    {
-                        OnPropertyChanging(singleData.Key);
-                        associatedData.Add(singleData.Key, singleData.Value);
-                        OnPropertyChanged(singleData.Key);
-                    }
-                }
-                else
-                {
-                    associatedData.AddRange(data);
-                    // TODO: we add associatedData added to SingleObservableNode this way, but it's a bit dangerous. Maybe we should check that all combined nodes have this data entry, and all with the same value.
-                    foreach (var singleData in CombinedNodes.SelectMany(x => x.AssociatedData).Where(x => !associatedData.ContainsKey(x.Key)))
-                    {
-                        associatedData.Add(singleData.Key, singleData.Value);
-                    }
+                    AddAssociatedData(singleData.Key, singleData.Value);
                 }
             }
 
@@ -189,10 +164,6 @@ namespace SiliconStudio.Presentation.Quantum
 
         /// <inheritdoc/>
         public override sealed bool HasDictionary { get { return CombinedNodes.First().HasDictionary; } }
-
-        // TODO: we shall find a better way to handle combined associated data...
-        /// <inheritdoc/>
-        public override IReadOnlyDictionary<string, object> AssociatedData { get { return associatedData; } }
 
         public void Refresh()
         {

@@ -20,7 +20,6 @@ namespace SiliconStudio.Presentation.Quantum
         protected readonly IModelNode SourceNode;
         protected readonly ModelNodePath SourceNodePath;
         private IModelNode targetNode;
-        private Dictionary<string, object> associatedData = new Dictionary<string,object>();
         private bool isInitialized;
         private int? customOrder;
 
@@ -110,28 +109,12 @@ namespace SiliconStudio.Presentation.Quantum
 
             if (Owner.ObservableViewModelService != null)
             {
-                if (associatedData != null)
+                foreach (var key in AssociatedData.Keys.ToList())
                 {
-                    foreach (var key in associatedData.Keys.ToList())
-                    {
-                        OnPropertyChanging(key);
-                        associatedData.Remove(key);
-                        OnPropertyChanged(key);
-                    }
+                    RemoveAssociatedData(key);
                 }
 
-                var data = Owner.ObservableViewModelService.RequestAssociatedData(this, isUpdating);
-
-                if (isUpdating)
-                {
-                    data.ForEach(x => OnPropertyChanging(x.Key));
-                    SetValue(ref associatedData, data, "AssociatedData");
-                    data.Reverse().ForEach(x => OnPropertyChanged(x.Key));
-                }
-                else
-                {
-                    associatedData = data;
-                }
+                Owner.ObservableViewModelService.RequestAssociatedData(this, isUpdating);
             }
 
             if (!isUpdating)
@@ -163,27 +146,10 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public sealed override bool HasDictionary { get { AssertInit(); return (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary); } }
 
-        /// <inheritdoc/>
-        public sealed override IReadOnlyDictionary<string, object> AssociatedData { get { return associatedData; } }
-
         internal Guid ModelGuid { get { return targetNode.Guid; } }
 
         private ObservableModelNode ModelNodeParent { get { for (var p = Parent; p != null; p = p.Parent) { var mp = p as ObservableModelNode; if (mp != null) return mp; } return null; } }
    
-        public void AddAssociatedData(string key, object value)
-        {
-            OnPropertyChanging(key);
-            associatedData.Add(key, value);
-            OnPropertyChanged(key);
-        }
-
-        public void AddOrUpdateAssociatedData(string key, object value)
-        {
-            OnPropertyChanging(key);
-            associatedData[key] = value;
-            OnPropertyChanged(key);
-        }
-
         /// <summary>
         /// Indicates whether this <see cref="ObservableModelNode"/> instance corresponds to the given <see cref="IModelNode"/>.
         /// </summary>

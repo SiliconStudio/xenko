@@ -3,8 +3,6 @@
 using System;
 using System.Collections.Generic;
 
-using SiliconStudio.Core.Extensions;
-
 namespace SiliconStudio.Presentation.Quantum
 {
     /// <summary>
@@ -12,7 +10,7 @@ namespace SiliconStudio.Presentation.Quantum
     /// </summary>
     public class ObservableViewModelService
     {
-        private readonly List<Action<IObservableNode, IDictionary<string, object>>> associatedDataProviders = new List<Action<IObservableNode, IDictionary<string, object>>>();
+        private readonly List<Action<ObservableNode>> associatedDataProviders = new List<Action<ObservableNode>>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObservableViewModelService"/> class.
@@ -48,7 +46,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// Register a method that will associate additional data to an instance of <see cref="IObservableNode"/>.
         /// </summary>
         /// <param name="provider">The method that will associate additional data to an instance of <see cref="IObservableNode"/>.</param>
-        public void RegisterAssociatedDataProvider(Action<IObservableNode, IDictionary<string, object>> provider)
+        public void RegisterAssociatedDataProvider(Action<ObservableNode> provider)
         {
             associatedDataProviders.Add(provider);
         }
@@ -57,25 +55,17 @@ namespace SiliconStudio.Presentation.Quantum
         /// Unregister a previoulsy registered method that was associating additional data to an instance of <see cref="IObservableNode"/>.
         /// </summary>
         /// <param name="provider">The previoulsy registered method that was associating additional additional data to an instance of <see cref="IObservableNode"/>.</param>
-        public void UnregisterAssociatedDataProvider(Action<IObservableNode, IDictionary<string, object>> provider)
+        public void UnregisterAssociatedDataProvider(Action<ObservableNode> provider)
         {
             associatedDataProviders.Remove(provider);
         }
 
-        internal Dictionary<string, object> RequestAssociatedData(IObservableNode node, bool updatingData)
+        internal void RequestAssociatedData(ObservableNode node, bool updatingData)
         {
-            var mergedResult = new Dictionary<string, object>();
             foreach (var provider in associatedDataProviders)
             {
-                var data = new Dictionary<string, object>();
-                provider(node, data);
-                // We use the Add method the first time to prevent unspotted key collision.
-                if (updatingData)
-                    data.ForEach(x => mergedResult.Add(x.Key, x.Value));
-                else
-                    data.ForEach(x => mergedResult[x.Key] = x.Value);
+                provider(node);
             }
-            return mergedResult;
         }
     }
 }
