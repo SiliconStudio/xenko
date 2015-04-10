@@ -223,6 +223,14 @@ namespace SiliconStudio.Shaders.Convertor
         public bool ViewFrustumRemap { get; set; }
 
         /// <summary>
+        /// Gets or sets a variable name that will be checked to know if render target needs to be flipped. Null means nothing happens.
+        /// </summary>
+        /// <value>
+        /// The name of the variable to check if render target needs to be flipped.
+        /// </value>
+        public string FlipRenderTargetFlag { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether this instance is point sprite shader.
         /// </summary>
         /// <value>
@@ -3841,32 +3849,39 @@ namespace SiliconStudio.Shaders.Convertor
         /// </summary>
         private void RemapCoordinates(StatementList list)
         {
-            if (ViewFrustumRemap && pipelineStage == PipelineStage.Vertex && entryPoint is MethodDefinition)
+            if (pipelineStage == PipelineStage.Vertex && entryPoint is MethodDefinition)
             {
-                // Add gl_Position.z = gl_Position.z * 2.0f - gl_Position.w
-                list.Add(
-                    new ExpressionStatement(
-                        new AssignmentExpression(
-                            AssignmentOperator.Default,
-                            new MemberReferenceExpression(new VariableReferenceExpression("gl_Position"), "z"),
-                            new BinaryExpression(
-                                BinaryOperator.Minus,
+                if (ViewFrustumRemap)
+                {
+                    // Add gl_Position.z = gl_Position.z * 2.0f - gl_Position.w
+                    list.Add(
+                        new ExpressionStatement(
+                            new AssignmentExpression(
+                                AssignmentOperator.Default,
+                                new MemberReferenceExpression(new VariableReferenceExpression("gl_Position"), "z"),
                                 new BinaryExpression(
-                                    BinaryOperator.Multiply,
-                                    new MemberReferenceExpression(new VariableReferenceExpression("gl_Position"), "z"),
-                                    new LiteralExpression(2.0f)),
-                                new MemberReferenceExpression(new VariableReferenceExpression("gl_Position"), "w"))
-                            )));
-                list.Add(
-                    new ExpressionStatement(
-                        new AssignmentExpression(
+                                    BinaryOperator.Minus,
+                                    new BinaryExpression(
+                                        BinaryOperator.Multiply,
+                                        new MemberReferenceExpression(new VariableReferenceExpression("gl_Position"), "z"),
+                                        new LiteralExpression(2.0f)),
+                                    new MemberReferenceExpression(new VariableReferenceExpression("gl_Position"), "w"))
+                                )));
+                }
+
+                if (FlipRenderTargetFlag != null)
+                {
+                    list.Add(
+                        new ExpressionStatement(
+                            new AssignmentExpression(
                                 AssignmentOperator.Default,
                                 new MemberReferenceExpression(new VariableReferenceExpression("gl_Position"), "y"),
                                 new BinaryExpression(
-                                    BinaryOperator.Multiply, 
-                                    new VariableReferenceExpression("ParadoxFlipRendertarget"), 
+                                    BinaryOperator.Multiply,
+                                    new VariableReferenceExpression(FlipRenderTargetFlag),
                                     new MemberReferenceExpression(new VariableReferenceExpression("gl_Position"), "y"))
                                 )));
+                }
             }
         }
 
