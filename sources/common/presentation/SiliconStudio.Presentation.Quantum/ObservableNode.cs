@@ -26,6 +26,8 @@ namespace SiliconStudio.Presentation.Quantum
         private bool isReadOnly;
         private string displayName;
         private int visibleChildrenCount;
+        
+        private List<IObservableNode> initializingChildren = new List<IObservableNode>();
 
         protected ObservableNode(ObservableViewModel ownerViewModel, object index = null)
             : base(ownerViewModel.ServiceProvider)
@@ -105,7 +107,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets the list of children nodes.
         /// </summary>
-        public IReadOnlyCollection<IObservableNode> Children { get { return children; } }
+        public IReadOnlyCollection<IObservableNode> Children { get { return initializingChildren != null ? (IReadOnlyCollection<IObservableNode>)initializingChildren : children; } }
 
         /// <summary>
         /// Gets the list of commands available in this node.
@@ -269,34 +271,64 @@ namespace SiliconStudio.Presentation.Quantum
             OnPropertyChanged(propertyName, ObservableViewModel.HasChildPrefix + propertyName);
         }
 
-        internal void AddChild(ObservableNode node)
+        protected void FinalizeChildrenInitialization()
+        {
+            foreach (var child in initializingChildren)
+            {
+                children.Add(child);
+            }
+            initializingChildren = null;
+        }
+
+        protected void AddChild(ObservableNode node)
         {
             if (node == null) throw new ArgumentNullException("node");
             if (node.Parent != null) throw new InvalidOperationException("The node already have a parent.");
-            if (children.Contains(node)) throw new InvalidOperationException("The node is already in the children list of its parent.");
-            NotifyPropertyChanging(node.Name);
+            if (Children.Contains(node)) throw new InvalidOperationException("The node is already in the children list of its parent.");
+            if (initializingChildren == null)
+            {
+                NotifyPropertyChanging(node.Name);
+            }
             node.Parent = this;
-            children.Add(node);
-            NotifyPropertyChanged(node.Name);
 
+            if (initializingChildren == null)
+            {
+                children.Add(node);
+                NotifyPropertyChanged(node.Name);
+            }
+            else
+            {
+                initializingChildren.Add(node);
+            }
             if (node.IsVisible)
                 ++VisibleChildrenCount;    
             node.IsVisibleChanged += ChildVisibilityChanged;
         }
 
-        internal void RemoveChild(ObservableNode node)
+        protected void RemoveChild(ObservableNode node)
         {
             if (node == null) throw new ArgumentNullException("node");
-            if (!children.Contains(node)) throw new InvalidOperationException("The node is not in the children list of its parent.");
+            if (!Children.Contains(node)) throw new InvalidOperationException("The node is not in the children list of its parent.");
 
             if (node.IsVisible)
                 --VisibleChildrenCount;
             node.IsVisibleChanged -= ChildVisibilityChanged;
 
-            NotifyPropertyChanging(node.Name);
+            if (initializingChildren == null)
+            {
+                NotifyPropertyChanging(node.Name);
+            }
+
             node.Parent = null;
-            children.Remove(node);
-            NotifyPropertyChanged(node.Name);
+            if (initializingChildren == null)
+            {
+                children.Remove(node);
+                NotifyPropertyChanged(node.Name);
+            }
+            else
+            {
+                initializingChildren.Remove(node);
+            }
         }
         
         protected void AddCommand(INodeCommandWrapper command)
@@ -372,6 +404,31 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
+        private static bool DebugQuantumPropertyChanges = true;
+
+        protected override void OnPropertyChanging(params string[] propertyNames)
+        {
+            if (DebugQuantumPropertyChanges && HasPropertyChangingSubscriber)
+            {
+                foreach (var property in propertyNames)
+                {
+                    Owner.Logger.Debug(@"Node Property changing: [{0}].{1}", Path, property);
+                }
+            }
+            base.OnPropertyChanging(propertyNames);
+        }
+
+        protected override void OnPropertyChanged(params string[] propertyNames)
+        {
+            if (DebugQuantumPropertyChanges && HasPropertyChangedSubscriber)
+            {
+                foreach (var property in propertyNames)
+                {
+                    Owner.Logger.Debug(@"Node Property changed: [{0}].{1}", Path, property);
+                }
+            }
+            base.OnPropertyChanged(propertyNames);
+        }
         private void UpdateCommandPath()
         {
             foreach (var commandWrapper in Commands.OfType<NodeCommandWrapperBase>())

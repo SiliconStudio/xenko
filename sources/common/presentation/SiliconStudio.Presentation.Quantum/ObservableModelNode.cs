@@ -122,9 +122,21 @@ namespace SiliconStudio.Presentation.Quantum
 
                 var data = Owner.ObservableViewModelService.RequestAssociatedData(this, isUpdating);
 
-                data.ForEach(x => OnPropertyChanging(x.Key));
-                SetValue(ref associatedData, data, "AssociatedData");
-                data.Reverse().ForEach(x => OnPropertyChanged(x.Key));
+                if (isUpdating)
+                {
+                    data.ForEach(x => OnPropertyChanging(x.Key));
+                    SetValue(ref associatedData, data, "AssociatedData");
+                    data.Reverse().ForEach(x => OnPropertyChanged(x.Key));
+                }
+                else
+                {
+                    associatedData = data;
+                }
+            }
+
+            if (!isUpdating)
+            {
+                FinalizeChildrenInitialization();
             }
             
             CheckDynamicMemberConsistency();

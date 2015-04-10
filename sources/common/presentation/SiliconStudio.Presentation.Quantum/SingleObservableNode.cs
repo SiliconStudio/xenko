@@ -62,6 +62,7 @@ namespace SiliconStudio.Presentation.Quantum
                     observableChild.AddAssociatedData(data.Key, data.Value);
                 }
             }
+            observableChild.FinalizeChildrenInitialization();
             AddChild(observableChild);
             return observableChild;
         }
