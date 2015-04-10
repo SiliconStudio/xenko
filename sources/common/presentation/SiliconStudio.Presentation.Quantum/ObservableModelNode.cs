@@ -437,7 +437,6 @@ namespace SiliconStudio.Presentation.Quantum
         {
             get
             {
-                AssertInit();
                 return (T)GetModelContentValue();
             }
             set
