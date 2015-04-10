@@ -51,26 +51,19 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             {
                 shadow = ComputeShadowFromCascade(streams.PositionWS.xyz, cascadeIndex, lightIndex);
 
-                // Use blending technique from MJP
-                const float BlendThreshold = 0.1f;
                 float nextSplit = CascadeDepthSplits[cascadeIndexBase + cascadeIndex];
                 float splitSize = cascadeIndex == 0 ? nextSplit : nextSplit - CascadeDepthSplits[cascadeIndexBase + cascadeIndex - 1];
                 float splitDist = (nextSplit - streams.DepthVS) / splitSize;
-                float lerpAmt = smoothstep(0.0f, 1.0f, splitDist / BlendThreshold);
-                if (TBlendCascades)
+                float lerpAmt = smoothstep(0.0f, 1.0f, splitDist);
+
+                if (cascadeIndex == TCascadeCount - 1)
                 {
-                    if(splitDist <= BlendThreshold && cascadeIndex != TCascadeCount - 1)
-                    {
-                        float nextShadow = ComputeShadowFromCascade(streams.PositionWS.xyz, cascadeIndex + 1, lightIndex);
-                        shadow = lerp(nextShadow, shadow, lerpAmt);
-                    }
+                    shadow = lerp(1.0f, shadow, lerpAmt);
                 }
-                else if (cascadeIndex == TCascadeCount - 1)
+                else if (TBlendCascades)
                 {
-                    if(splitDist <= BlendThreshold)
-                    {
-                        shadow = lerp(1.0f, shadow, lerpAmt);
-                    }
+                    float nextShadow = ComputeShadowFromCascade(streams.PositionWS.xyz, cascadeIndex + 1, lightIndex);
+                    shadow = lerp(nextShadow, shadow, lerpAmt);
                 }
             }
 
