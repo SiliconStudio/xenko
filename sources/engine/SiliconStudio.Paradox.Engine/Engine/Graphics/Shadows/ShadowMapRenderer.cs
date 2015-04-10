@@ -64,6 +64,8 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
         private List<LightComponent> visibleLights;
 
+        private RasterizerState shadowRasterizerState;
+
         public ShadowMapRenderer(string effectName)
         {
             if (effectName == null) throw new ArgumentNullException("effectName");
@@ -140,6 +142,10 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
             CameraComponentRenderer.UpdateParameters(context, ShadowCamera);
 
+            // When rendering shadow maps, objects should not be culled by the rasterizer (in case the object is out of the frustum but cast
+            // a shadow into the frustum)
+            context.GraphicsDevice.SetRasterizerState(shadowRasterizerState);
+
             opaqueRenderItems.Clear();
             transparentRenderItems.Clear();
             shadowModelComponentRenderer.CurrentCullingMask = cullingMask;
@@ -147,6 +153,14 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             shadowModelComponentRenderer.Draw(context, opaqueRenderItems, 0, opaqueRenderItems.Count-1);
 
             context.PopParameters();
+        }
+
+        protected override void InitializeCore()
+        {
+            base.InitializeCore();
+
+            var shadowRenderState = new RasterizerStateDescription(CullMode.None) { DepthClipEnable = false };
+            shadowRasterizerState = RasterizerState.New(Context.GraphicsDevice, shadowRenderState);
         }
 
         protected void DrawCore(RenderContext context)

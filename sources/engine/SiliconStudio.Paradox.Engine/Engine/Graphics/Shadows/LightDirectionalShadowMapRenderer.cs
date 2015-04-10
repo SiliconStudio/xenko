@@ -66,6 +66,11 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
         public void Render(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap)
         {
+            var shadow = lightShadowMap.Shadow;
+            // TODO: Min and Max distance can be auto-computed from readback from Z buffer
+            var camera = shadowMapRenderer.Camera;
+            var shadowCamera = shadowMapRenderer.ShadowCamera;
+
             // Update the frustum infos
             UpdateFrustum(shadowMapRenderer.Camera);
 
@@ -108,15 +113,14 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             }
             lightShadowMap.ShaderData = shaderData;
             shaderData.Texture = lightShadowMap.Atlas.Texture;
-
-            var shadow = lightShadowMap.Shadow;
-            // TODO: Min and Max distance can be auto-computed from readback from Z buffer
-            var camera = shadowMapRenderer.Camera;
-            var shadowCamera = shadowMapRenderer.ShadowCamera;
-
+            shaderData.DepthBias = shadow.DepthBias;
+            
             // Push a new graphics state
             var graphicsDevice = context.GraphicsDevice;
             graphicsDevice.PushState();
+
+            var cameraDepthRange = camera.FarClipPlane - camera.NearClipPlane;
+            var snapRadiusValue = (cascadeSplitRatios[0] - shadow.MinDistance) * cameraDepthRange * (float)Math.Atan(MathUtil.DegreesToRadians(camera.VerticalFieldOfView/2)) * 2.0f / 6.0f;
 
             float splitMaxRatio = shadow.MinDistance;
             for (int cascadeLevel = 0; cascadeLevel < cascadeCount; ++cascadeLevel)
@@ -140,23 +144,43 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 if (shadow.StabilizationMode == LightShadowMapStabilizationMode.ViewSnapping)
                 {
                     // Make sure we are using the same direction when stabilizing
-                    //upDirection = Vector3.UnitY;
+                    upDirection = Vector3.UnitY;
+
+                    //side = Vector3.Normalize(Vector3.Cross(Vector3.UnitY, direction));
+                    //upDirection = Vector3.Normalize(Vector3.Cross(direction, side));
 
                     // Compute bounding box center & radius
                     // Note: boundingBox is computed in view space so the computation of the radius is only correct when the view matrix does not do any kind of scale/shear transformation
                     var radius = (cascadeBoundWS.Maximum - cascadeBoundWS.Minimum).Length() * 0.5f;
 
+                    var snapRadius = (float)Math.Ceiling(radius / snapRadiusValue) * snapRadiusValue;
+                    radius = snapRadius;
+
+                    //var shadowMapHalfSize = lightShadowMap.Size * 0.5f;
+                    //var scalingMatrix = Matrix.Scaling(shadowMapHalfSize / radius);
+                    //var lookAt = Matrix.LookAtLH(Vector3.Zero, direction, upDirection);
+                    //lookAt *= scalingMatrix;
+                    //Matrix lookAtInverse;
+                    //Matrix.Invert(ref lookAt, out lookAtInverse);
+
+                    //var targetInFrustum = Vector3.TransformCoordinate(target, lookAt);
+                    //targetInFrustum.X = (float)Math.Round(targetInFrustum.X);
+                    //targetInFrustum.Y = (float)Math.Round(targetInFrustum.Y);
+                    //var newTarget = Vector3.TransformCoordinate(targetInFrustum, lookAtInverse);
+
+                    //target = newTarget;
+
                     cascadeMaxBoundLS = new Vector3(radius, radius, radius);
                     cascadeMinBoundLS = -cascadeMaxBoundLS;
 
-                    // Snap camera to texel units (so that shadow doesn't jitter when light doesn't change direction but camera is moving)
-                    // Technique from ShaderX7 - Practical Cascaded Shadows Maps -  p310-311 
-                    var shadowMapHalfSize = lightShadowMap.Size * 0.5f;
-                    float x = (float)Math.Ceiling(Vector3.Dot(target, upDirection) * shadowMapHalfSize / radius) * radius / shadowMapHalfSize;
-                    float y = (float)Math.Ceiling(Vector3.Dot(target, side) * shadowMapHalfSize / radius) * radius / shadowMapHalfSize;
-                    float z = Vector3.Dot(target, direction);
-                    //target = up * x + side * y + direction * R32G32B32_Float.Dot(target, direction);
-                    target = upDirection * x + side * y + direction * z;
+                    //// Snap camera to texel units (so that shadow doesn't jitter when light doesn't change direction but camera is moving)
+                    //// Technique from ShaderX7 - Practical Cascaded Shadows Maps -  p310-311 
+                    //float x = (float)Math.Ceiling(Vector3.Dot(target, side) * shadowMapHalfSize / radius) * radius / shadowMapHalfSize;
+                    //float y = (float)Math.Ceiling(Vector3.Dot(target, upDirection) * shadowMapHalfSize / radius) * radius / shadowMapHalfSize;
+                    //float z = Vector3.Dot(target, direction);
+
+                    ////target = up * x + side * y + direction * R32G32B32_Float.Dot(target, direction);
+                    //target = side * x + upDirection * y + direction * z;
                 }
                 else
                 {
@@ -183,7 +207,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 shadowCamera.Update();
 
                 // Stabilize the Shadow matrix on the projection
-                if (shadow.StabilizationMode == LightShadowMapStabilizationMode.ProjectionSnapping)
+                //if (shadow.StabilizationMode == LightShadowMapStabilizationMode.ProjectionSnapping)
                 {
                     var shadowPixelPosition = shadowCamera.ViewProjectionMatrix.TranslationVector * lightShadowMap.Size * 0.5f;
                     shadowPixelPosition.Z = 0;
@@ -313,6 +337,8 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
             public readonly float[] CascadeSplits;
 
+            public float DepthBias;
+
             public readonly Matrix[] WorldToShadowCascadeUV;
         }
 
@@ -328,6 +354,14 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
             private readonly Matrix[] worldToShadowCascadeUV;
 
+            private readonly float[] depthBiases;
+
+            private Texture shadowMapTexture;
+
+            private Vector2 shadowMapTextureSize;
+
+            private Vector2 shadowMapTextureTexelSize;
+
             private readonly ShaderMixinSource shadowShader;
 
             private readonly ParameterKey<Texture> shadowMapTextureKey;
@@ -336,15 +370,11 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
             private readonly ParameterKey<Matrix[]> worldToShadowCascadeUVsKey;
 
-            private Texture shadowMapTexture;
+            private readonly ParameterKey<float[]> depthBiasesKey;
 
-            private ParameterKey<Vector2> shadowMapTextureSizeKey;
+            private readonly ParameterKey<Vector2> shadowMapTextureSizeKey;
 
-            private ParameterKey<Vector2> shadowMapTextureTexelSizeKey;
-
-
-            private Vector2 shadowMapTextureSize;
-            private Vector2 shadowMapTextureTexelSize;
+            private readonly ParameterKey<Vector2> shadowMapTextureTexelSizeKey;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="LightDirectionalShadowMapGroupShaderData" /> class.
@@ -358,6 +388,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 this.cascadeCount = 1 << ((int)(shadowType & LightShadowType.CascadeMask) - 1);
                 cascadeSplits = new float[cascadeCount * lightCountMax];
                 worldToShadowCascadeUV = new Matrix[cascadeCount * lightCountMax];
+                depthBiases = new float[lightCountMax];
 
                 var mixin = new ShaderMixinSource();
                 mixin.Mixins.Add(new ShaderClassSource(ShaderName, cascadeCount, lightCountMax, (this.shadowType & LightShadowType.BlendCascade) != 0, (this.shadowType & LightShadowType.Debug) != 0));
@@ -385,6 +416,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 shadowMapTextureTexelSizeKey = ShadowMapKeys.TextureTexelSize.ComposeWith(compositionKey);
                 cascadeSplitsKey = ShadowMapCascadeKeys.CascadeDepthSplits.ComposeWith(compositionKey);
                 worldToShadowCascadeUVsKey = ShadowMapCascadeKeys.WorldToShadowCascadeUV.ComposeWith(compositionKey);
+                depthBiasesKey = ShadowMapCascadeKeys.DepthBiases.ComposeWith(compositionKey);
             }
 
             public void ApplyShader(ShaderMixinSource mixin)
@@ -403,6 +435,8 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                     cascadeSplits[splitIndex + i] = splits[i];
                     worldToShadowCascadeUV[splitIndex + i] = matrices[i];
                 }
+
+                depthBiases[index] = singleLightData.DepthBias;
 
                 // TODO: should be setup just once at creation time
                 if (index == 0)
@@ -423,6 +457,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 parameters.Set(shadowMapTextureTexelSizeKey, shadowMapTextureTexelSize);
                 parameters.Set(cascadeSplitsKey, cascadeSplits);
                 parameters.Set(worldToShadowCascadeUVsKey, worldToShadowCascadeUV);
+                parameters.Set(depthBiasesKey, depthBiases);
             }
         }
 

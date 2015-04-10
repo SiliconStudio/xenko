@@ -39,15 +39,16 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
             Enabled = false;
             Size = LightShadowMapSize.Medium;
-            CascadeCount = LightShadowMapCascadeCount.TwoCascades;
+            CascadeCount = LightShadowMapCascadeCount.FourCascades;
             MinDistance = 0.0f;
             MaxDistance = 1.0f;
             SplitDistance0 = 0.05f;
             SplitDistance1 = 0.15f;
             SplitDistance2 = 0.50f;
             SplitDistance3 = 1.00f;
-            SplitMode = LightShadowMapSplitMode.Manual;
-            StabilizationMode = LightShadowMapStabilizationMode.None;
+            SplitMode = LightShadowMapSplitMode.PSSM;
+            StabilizationMode = LightShadowMapStabilizationMode.ProjectionSnapping;
+            DepthBias = 1.0f;
         }
 
         /// <summary>
@@ -88,7 +89,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// </summary>
         /// <value>The number of cascades for this shadow.</value>
         [DataMember(40)]
-        [DefaultValue(LightShadowMapCascadeCount.TwoCascades)]
+        [DefaultValue(LightShadowMapCascadeCount.FourCascades)]
         public LightShadowMapCascadeCount CascadeCount { get; set; }
 
         /// <summary>
@@ -96,11 +97,11 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// </summary>
         /// <value>The split mode.</value>
         [DataMember(50)]
-        [DefaultValue(LightShadowMapSplitMode.Manual)]
+        [DefaultValue(LightShadowMapSplitMode.PSSM)]
         public LightShadowMapSplitMode SplitMode { get; set; }
 
         [DataMember(55)]
-        [DefaultValue(LightShadowMapStabilizationMode.None)]
+        [DefaultValue(LightShadowMapStabilizationMode.ProjectionSnapping)]
         public LightShadowMapStabilizationMode StabilizationMode { get; set; }
 
         /// <summary>
@@ -110,6 +111,14 @@ namespace SiliconStudio.Paradox.Effects.Lights
         [DataMember(57)]
         [DefaultValue(false)]
         public bool IsBlendingCascades { get; set; }
+
+        /// <summary>
+        /// Gets or sets the depth bias.
+        /// </summary>
+        /// <value>The bias.</value>
+        [DataMember(58)]
+        [DefaultValue(1.0f)]
+        public float DepthBias { get; set; }
 
         /// <summary>
         /// Gets or sets the minimum distance.

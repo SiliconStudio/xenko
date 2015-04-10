@@ -15,17 +15,23 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         {
             float CascadeDepthSplits[TCascadeCount * TLightCount];
             float4x4 WorldToShadowCascadeUV[TCascadeCount * TLightCount];
+            float DepthBiases[TLightCount];
         };
 
         float ComputeShadowFromCascade(float3 shadowPositionWS, int cascadeIndex, int lightIndex)
         {
             float3 shadowPosition = mul(float4(shadowPositionWS, 1), WorldToShadowCascadeUV[cascadeIndex + lightIndex * TCascadeCount]).xyz;
-            return FilterShadow(shadowPosition.xy, shadowPosition.z);
+            var depthVS = shadowPosition.z;
+            depthVS -= DepthBiases[lightIndex];
+
+            return FilterShadow(shadowPosition.xy, depthVS);
         }
 
         override void ComputeShadow(int lightIndex)
         {
             base.ComputeShadow(lightIndex);
+
+            int cascadeIndexBase = lightIndex * TCascadeCount;
 
             // Only support a single light per group
             int cascadeIndex = 0;
@@ -33,27 +39,38 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             for(int i = 0; i < TCascadeCount - 1; i++) 
             {
                 [flatten]
-                if (streams.DepthVS > CascadeDepthSplits[i + lightIndex * TCascadeCount])
+                if (streams.DepthVS > CascadeDepthSplits[cascadeIndexBase + i])
                 {
                     cascadeIndex = i + 1;
                 }
             }
 
-            var shadow = ComputeShadowFromCascade(streams.PositionWS.xyz, cascadeIndex, lightIndex);
+            float shadow = 1.0;
 
-            if (TBlendCascades)
+            if (cascadeIndex < TCascadeCount)
             {
-                // Use blending technique from MJP
-                const float BlendThreshold = 0.5f;
-                float nextSplit = CascadeDepthSplits[cascadeIndex];
-                float splitSize = cascadeIndex == 0 ? nextSplit : nextSplit - CascadeDepthSplits[cascadeIndex - 1];
-                float splitDist = (nextSplit - streams.DepthVS) / splitSize;
+                shadow = ComputeShadowFromCascade(streams.PositionWS.xyz, cascadeIndex, lightIndex);
 
-                if(splitDist <= BlendThreshold && cascadeIndex != TCascadeCount - 1)
+                // Use blending technique from MJP
+                const float BlendThreshold = 0.1f;
+                float nextSplit = CascadeDepthSplits[cascadeIndexBase + cascadeIndex];
+                float splitSize = cascadeIndex == 0 ? nextSplit : nextSplit - CascadeDepthSplits[cascadeIndexBase + cascadeIndex - 1];
+                float splitDist = (nextSplit - streams.DepthVS) / splitSize;
+                float lerpAmt = smoothstep(0.0f, 1.0f, splitDist / BlendThreshold);
+                if (TBlendCascades)
                 {
-                    float nextShadow = ComputeShadowFromCascade(streams.PositionWS.xyz, cascadeIndex + 1, lightIndex);
-                    float lerpAmt = smoothstep(0.0f, 1.0f, splitDist / BlendThreshold);
-                    shadow = lerp(nextShadow, shadow, lerpAmt);
+                    if(splitDist <= BlendThreshold && cascadeIndex != TCascadeCount - 1)
+                    {
+                        float nextShadow = ComputeShadowFromCascade(streams.PositionWS.xyz, cascadeIndex + 1, lightIndex);
+                        shadow = lerp(nextShadow, shadow, lerpAmt);
+                    }
+                }
+                else if (cascadeIndex == TCascadeCount - 1)
+                {
+                    if(splitDist <= BlendThreshold)
+                    {
+                        shadow = lerp(1.0f, shadow, lerpAmt);
+                    }
                 }
             }
 
