@@ -106,20 +106,16 @@ namespace SiliconStudio.Presentation.Quantum
                     //GenerateListChildren(allChildren, isUpdating);
                 }
             }
-
-            if (Owner.ObservableViewModelService != null)
+            foreach (var key in AssociatedData.Keys.ToList())
             {
-                foreach (var key in AssociatedData.Keys.ToList())
-                {
-                    RemoveAssociatedData(key);
-                }
+                RemoveAssociatedData(key);
+            }
 
-                Owner.ObservableViewModelService.RequestAssociatedData(this, isUpdating);
-                // TODO: we add associatedData added to SingleObservableNode this way, but it's a bit dangerous. Maybe we should check that all combined nodes have this data entry, and all with the same value.
-                foreach (var singleData in CombinedNodes.SelectMany(x => x.AssociatedData).Where(x => !AssociatedData.ContainsKey(x.Key)))
-                {
-                    AddAssociatedData(singleData.Key, singleData.Value);
-                }
+            Owner.ObservableViewModelService.RequestAssociatedData(this, isUpdating);
+            // TODO: we add associatedData added to SingleObservableNode this way, but it's a bit dangerous. Maybe we should check that all combined nodes have this data entry, and all with the same value.
+            foreach (var singleData in CombinedNodes.SelectMany(x => x.AssociatedData).Where(x => !AssociatedData.ContainsKey(x.Key)))
+            {
+                AddAssociatedData(singleData.Key, singleData.Value);
             }
 
             if (!isUpdating)
@@ -408,7 +404,6 @@ namespace SiliconStudio.Presentation.Quantum
                 }
                 changedNodes.ForEach(x => x.Refresh());
                 NotifyNodeUpdated();
-                OnValueChanged();
                 string displayName = Owner.FormatCombinedUpdateMessage(this, value);
                 Owner.EndCombinedAction(displayName, Path, value);
             }
@@ -420,6 +415,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override sealed object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
 
+        // TODO: use DependentProperties property
         protected override void NotifyNodeUpdating()
         {
             OnPropertyChanging("TypedValue", "HasMultipleValues", "IsPrimitive", "HasList", "HasDictionary");
@@ -428,6 +424,7 @@ namespace SiliconStudio.Presentation.Quantum
         protected override void NotifyNodeUpdated()
         {
             OnPropertyChanged("TypedValue", "HasMultipleValues", "IsPrimitive", "HasList", "HasDictionary");
+            OnValueChanged();
         }
     }
 }
