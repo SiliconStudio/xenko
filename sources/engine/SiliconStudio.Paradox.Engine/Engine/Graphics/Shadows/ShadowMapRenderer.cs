@@ -11,7 +11,6 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects.Lights;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Graphics;
-using SiliconStudio.Paradox.Engine.Graphics.Composers;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 
@@ -223,9 +222,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
         private void AssignRectangles(LightShadowMapTexture lightShadowMapTexture)
         {
-            // TODO: This is not good to have to detect the light type here
-            lightShadowMapTexture.CascadeCount = lightShadowMapTexture.Light is LightDirectional ? (int)lightShadowMapTexture.Shadow.CascadeCount : 1;
-
+            lightShadowMapTexture.CascadeCount = lightShadowMapTexture.Shadow.GetCascadeCount();
             var size = lightShadowMapTexture.Size;
 
             // Try to fit the shadow map into an existing atlas

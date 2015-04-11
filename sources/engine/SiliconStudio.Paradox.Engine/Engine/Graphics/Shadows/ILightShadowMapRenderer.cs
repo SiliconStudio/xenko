@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using SiliconStudio.Paradox.Effects.Lights;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Effects.Shadows
@@ -22,6 +23,8 @@ namespace SiliconStudio.Paradox.Effects.Shadows
     /// </summary>
     public interface ILightShadowMapRenderer : ILightShadowRenderer
     {
+        LightShadowType GetShadowType(LightShadowMap lightShadowMap);
+
         ILightShadowMapShaderGroupData CreateShaderGroupData(string compositionKey, LightShadowType shadowType, int maxLightCount);
 
         void Render(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap);

@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
             Range = 1.0f;
             Angle = 30.0f;
-            Shadow.Importance = LightShadowImportance.Medium;
+            Shadow = new LightStandardShadowMap() { Importance = LightShadowImportance.Medium };
         }
 
         /// <summary>

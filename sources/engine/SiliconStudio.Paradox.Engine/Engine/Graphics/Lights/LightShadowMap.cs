@@ -20,35 +20,20 @@ namespace SiliconStudio.Paradox.Effects.Lights
         PSSM
     }
 
-    public interface ILightShadowMap : ILightShadow
-    {
-        ILightShadowMapRenderer CreateRenderer(ILight light);
-    }
-
     /// <summary>
     /// A shadow map.
     /// </summary>
     [DataContract("LightShadowMap")]
     [Display("ShadowMap")]
-    public class LightShadowMap : ILightShadowMap
+    public abstract class LightShadowMap : ILightShadow
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LightShadowMap"/> class.
         /// </summary>
-        public LightShadowMap()
+        protected LightShadowMap()
         {
             Enabled = false;
             Size = LightShadowMapSize.Medium;
-            CascadeCount = LightShadowMapCascadeCount.FourCascades;
-            MinDistance = 0.0f;
-            MaxDistance = 1.0f;
-            SplitDistance0 = 0.05f;
-            SplitDistance1 = 0.15f;
-            SplitDistance2 = 0.50f;
-            SplitDistance3 = 1.00f;
-            SplitMode = LightShadowMapSplitMode.PSSM;
-            StabilizationMode = LightShadowMapStabilizationMode.ProjectionSnapping;
-            DepthBias = 1.0f;
         }
 
         /// <summary>
@@ -83,6 +68,59 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// <remarks>The higher the importance is, the higher the cost of shadow computation is costly</remarks>
         [DataMember(35)]
         public LightShadowImportance Importance { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="LightShadowMap"/> is debug.
+        /// </summary>
+        /// <value><c>true</c> if debug; otherwise, <c>false</c>.</value>
+        [DataMember(200)]
+        [DefaultValue(false)]
+        public bool Debug { get; set; }
+
+        public virtual ILightShadowMapRenderer CreateRenderer(ILight light)
+        {
+            return null;
+        }
+
+        public virtual int GetCascadeCount()
+        {
+            return 1;
+        }
+    }
+
+
+    /// <summary>
+    /// A standard shadow map.
+    /// </summary>
+    [DataContract("LightStandardShadowMap")]
+    [Display("Standard ShadowMap")]
+    public class LightStandardShadowMap : LightShadowMap
+    {
+    }
+
+    /// <summary>
+    /// A directional shadow map.
+    /// </summary>
+    [DataContract("LightDirectionalShadowMap")]
+    [Display("Directional ShadowMap")]
+    public class LightDirectionalShadowMap : LightShadowMap
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LightShadowMap"/> class.
+        /// </summary>
+        public LightDirectionalShadowMap()
+        {
+            CascadeCount = LightShadowMapCascadeCount.FourCascades;
+            MinDistance = 0.0f;
+            MaxDistance = 1.0f;
+            SplitDistance0 = 0.05f;
+            SplitDistance1 = 0.15f;
+            SplitDistance2 = 0.50f;
+            SplitDistance3 = 1.00f;
+            SplitMode = LightShadowMapSplitMode.PSSM;
+            StabilizationMode = LightShadowMapStabilizationMode.ProjectionSnapping;
+            DepthBias = 1.0f;
+        }
 
         /// <summary>
         /// Gets or Sets the number of cascades for this shadow (valid only for directional lights)
@@ -154,15 +192,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
         public float SplitDistance3 { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="LightShadowMap"/> is debug.
-        /// </summary>
-        /// <value><c>true</c> if debug; otherwise, <c>false</c>.</value>
-        [DataMember(130)]
-        [DefaultValue(false)]
-        public bool Debug { get; set; }
-
-        public ILightShadowMapRenderer CreateRenderer(ILight light)
+        public override ILightShadowMapRenderer CreateRenderer(ILight light)
         {
             if (light is LightDirectional)
             {
@@ -170,6 +200,11 @@ namespace SiliconStudio.Paradox.Effects.Lights
             }
 
             return null;
+        }
+
+        public override int GetCascadeCount()
+        {
+            return (int)CascadeCount;
         }
     }
 }

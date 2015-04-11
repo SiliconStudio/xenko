@@ -19,7 +19,6 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// </summary>
         protected DirectLightBase()
         {
-            Shadow = new LightShadowMap();
         }
 
         /// <summary>
@@ -28,7 +27,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// <value>The shadow.</value>
         [DataMember(200)]
         [DefaultValue(null)]
-        public LightShadowMap Shadow { get; private set; }
+        public LightShadowMap Shadow { get; protected set; }
 
         public abstract bool HasBoundingBox { get; }
 

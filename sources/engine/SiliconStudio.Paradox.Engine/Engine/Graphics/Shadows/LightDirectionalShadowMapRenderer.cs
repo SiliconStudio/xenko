@@ -14,10 +14,61 @@ using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Effects.Shadows
 {
+
+    public abstract class LightShadowMapRendererBase : ILightShadowMapRenderer
+    {
+        public abstract void Reset();
+
+        public virtual LightShadowType GetShadowType(LightShadowMap shadowMap)
+        {
+            // TODO: MOVE THIS TO BASE TYPE
+            var shadowType = (LightShadowType)0;
+            switch (shadowMap.GetCascadeCount())
+            {
+                case 1:
+                    shadowType |= LightShadowType.Cascade1;
+                    break;
+                case 2:
+                    shadowType |= LightShadowType.Cascade2;
+                    break;
+                case 4:
+                    shadowType |= LightShadowType.Cascade4;
+                    break;
+            }
+
+            var pcfFilter = shadowMap.Filter as LightShadowMapFilterTypePcf;
+            if (pcfFilter != null)
+            {
+                switch (pcfFilter.FilterSize)
+                {
+                    case LightShadowMapFilterTypePcfSize.Filter3x3:
+                        shadowType |= LightShadowType.PCF3x3;
+                        break;
+                    case LightShadowMapFilterTypePcfSize.Filter5x5:
+                        shadowType |= LightShadowType.PCF5x5;
+                        break;
+                    case LightShadowMapFilterTypePcfSize.Filter7x7:
+                        shadowType |= LightShadowType.PCF7x7;
+                        break;
+                }
+            }
+
+            if (shadowMap.Debug)
+            {
+                shadowType |= LightShadowType.Debug;
+            }
+            return shadowType;
+        }
+
+        public abstract ILightShadowMapShaderGroupData CreateShaderGroupData(string compositionKey, LightShadowType shadowType, int maxLightCount);
+
+        public abstract void Render(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap);
+    }
+
     /// <summary>
     /// Renders a shadow map from a directional light.
     /// </summary>
-    public class LightDirectionalShadowMapRenderer : ILightShadowMapRenderer
+    public class LightDirectionalShadowMapRenderer : LightShadowMapRendererBase
     {
         /// <summary>
         /// The various UP vectors to try.
@@ -58,21 +109,35 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             shaderDataPoolCascade4 = new PoolListStruct<LightDirectionalShadowMapShaderData>(4, CreateLightDirectionalShadowMapShaderDataCascade4);
         }
         
-        public void Reset()
+        public override void Reset()
         {
             shaderDataPoolCascade1.Clear();
             shaderDataPoolCascade2.Clear();
             shaderDataPoolCascade4.Clear();
         }
 
-        public ILightShadowMapShaderGroupData CreateShaderGroupData(string compositionKey, LightShadowType shadowType, int maxLightCount)
+        public override LightShadowType GetShadowType(LightShadowMap shadowMapArg)
+        {
+            var shadowMap = (LightDirectionalShadowMap)shadowMapArg;
+
+            var shadowType = base.GetShadowType(shadowMapArg);
+
+            if (shadowMap.IsBlendingCascades)
+            {
+                shadowType |= LightShadowType.BlendCascade;
+            }
+
+            return shadowType;
+        }
+
+        public override ILightShadowMapShaderGroupData CreateShaderGroupData(string compositionKey, LightShadowType shadowType, int maxLightCount)
         {
             return new LightDirectionalShadowMapGroupShaderData(compositionKey, shadowType, maxLightCount);
         }
 
-        public void Render(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap)
+        public override void Render(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap)
         {
-            var shadow = lightShadowMap.Shadow;
+            var shadow = (LightDirectionalShadowMap)lightShadowMap.Shadow;
             // TODO: Min and Max distance can be auto-computed from readback from Z buffer
             var camera = shadowMapRenderer.Camera;
             var shadowCamera = shadowMapRenderer.ShadowCamera;
@@ -277,7 +342,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
         private void ComputeCascadeSplits(ShadowMapRenderer shadowContext, ref LightShadowMapTexture lightShadowMap)
         {
-            var shadow = lightShadowMap.Shadow;
+            var shadow = (LightDirectionalShadowMap)lightShadowMap.Shadow;
 
             // TODO: Min and Max distance can be auto-computed from readback from Z buffer
             var minDistance = shadow.MinDistance;

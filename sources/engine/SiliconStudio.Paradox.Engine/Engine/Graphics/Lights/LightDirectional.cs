@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
     {
         public LightDirectional()
         {
-            Shadow.Importance = LightShadowImportance.High;
+            Shadow = new LightDirectionalShadowMap { Importance = LightShadowImportance.High };
         }
 
         public override bool HasBoundingBox

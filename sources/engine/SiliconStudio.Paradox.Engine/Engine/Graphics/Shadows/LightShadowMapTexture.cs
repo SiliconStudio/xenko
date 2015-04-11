@@ -109,47 +109,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             Renderer = renderer;
             Atlas = null; // Reset the atlas, It will be setup after
 
-            ShadowType = 0;
-            switch (shadowMap.CascadeCount)
-            {
-                case LightShadowMapCascadeCount.OneCascade:
-                    ShadowType |= LightShadowType.Cascade1;
-                    break;
-                case LightShadowMapCascadeCount.TwoCascades:
-                    ShadowType |= LightShadowType.Cascade2;
-                    break;
-                case LightShadowMapCascadeCount.FourCascades:
-                    ShadowType |= LightShadowType.Cascade4;
-                    break;
-            }
-
-            // TODO: Add filter mask to ShadowType
-            if (shadowMap.Debug)
-            {
-                ShadowType |= LightShadowType.Debug;
-            }
-
-            if (shadowMap.IsBlendingCascades)
-            {
-                ShadowType |= LightShadowType.BlendCascade;
-            }
-
-            var pcfFilter = shadowMap.Filter as LightShadowMapFilterTypePcf;
-            if (pcfFilter != null)
-            {
-                switch (pcfFilter.FilterSize)
-                {
-                    case LightShadowMapFilterTypePcfSize.Filter3x3:
-                        ShadowType |= LightShadowType.PCF3x3;
-                        break;
-                    case LightShadowMapFilterTypePcfSize.Filter5x5:
-                        ShadowType |= LightShadowType.PCF5x5;
-                        break;
-                    case LightShadowMapFilterTypePcfSize.Filter7x7:
-                        ShadowType |= LightShadowType.PCF7x7;
-                        break;
-                }
-            }
+            ShadowType = renderer.GetShadowType(Shadow);
         }
 
         public Rectangle GetRectangle(int i)
