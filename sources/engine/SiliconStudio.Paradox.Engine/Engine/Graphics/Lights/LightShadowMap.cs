@@ -9,17 +9,6 @@ using SiliconStudio.Paradox.Effects.Shadows;
 
 namespace SiliconStudio.Paradox.Effects.Lights
 {
-
-    [DataContract("LightShadowMapSplitMode")]
-    public enum LightShadowMapSplitMode
-    {
-        Manual,
-
-        Logarithmic,
-
-        PSSM
-    }
-
     /// <summary>
     /// A shadow map.
     /// </summary>
@@ -66,7 +55,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// <value>The shadow importance.</value>
         /// <returns>System.Single.</returns>
         /// <remarks>The higher the importance is, the higher the cost of shadow computation is costly</remarks>
-        [DataMember(35)]
+        [DataMember(40)]
         public LightShadowImportance Importance { get; set; }
 
         /// <summary>
@@ -98,6 +87,122 @@ namespace SiliconStudio.Paradox.Effects.Lights
     {
     }
 
+
+    [DataContract]
+    public abstract class LightDirectionalPartitionMode
+    {
+        
+    }
+
+    /// <summary>
+    /// Manual partition. This class cannot be inherited.
+    /// </summary>
+    [DataContract("LightDirectionalPartitionManual")]
+    [Display("Manual")]
+    public sealed class LightDirectionalPartitionManual : LightDirectionalPartitionMode
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LightDirectionalManualPartitionMode"/> class.
+        /// </summary>
+        public LightDirectionalPartitionManual()
+        {
+            SplitDistance0 = 0.05f;
+            SplitDistance1 = 0.15f;
+            SplitDistance2 = 0.50f;
+            SplitDistance3 = 1.00f;
+        }
+
+        [DataMember(10)]
+        [DefaultValue(0.05f)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
+        public float SplitDistance0 { get; set; }
+
+        [DataMember(20)]
+        [DefaultValue(0.15f)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
+        public float SplitDistance1 { get; set; }
+
+        [DataMember(30)]
+        [DefaultValue(0.5f)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
+        public float SplitDistance2 { get; set; }
+
+        [DataMember(40)]
+        [DefaultValue(1.0f)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
+        public float SplitDistance3 { get; set; }
+    }
+
+    [DataContract("LightDirectionalPartitionLogarithmic")]
+    [Display("Logarithmic")]
+    public sealed class LightDirectionalPartitionLogarithmic : LightDirectionalPartitionMode
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LightDirectionalPartitionLogarithmic"/> class.
+        /// </summary>
+        public LightDirectionalPartitionLogarithmic()
+        {
+            PSSMFactor = 0.5f;
+        }
+
+
+        [DataMember(10)]
+        [DefaultValue(0.5f)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
+        [Display("PSSM Factor")]
+        public float PSSMFactor { get; set; }
+    }
+
+    [DataContract]
+    public abstract class LightDirectionalDepthRangeMode
+    {
+    }
+
+
+    [DataContract("LightDirectionalDepthRangeManual")]
+    [Display("Manual")]
+    public sealed class LightDirectionalDepthRangeManual : LightDirectionalDepthRangeMode
+    {
+        public LightDirectionalDepthRangeManual()
+        {
+            MinDistance = 0.0f;
+            MaxDistance = 1.0f;
+            IsBlendingCascades = true;
+        }
+
+        /// <summary>
+        /// Gets or sets the minimum distance.
+        /// </summary>
+        /// <value>The minimum distance.</value>
+        [DataMember(10)]
+        [DefaultValue(0.0f)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
+        public float MinDistance { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum distance.
+        /// </summary>
+        /// <value>The maximum distance.</value>
+        [DataMember(20)]
+        [DefaultValue(1.0f)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
+        public float MaxDistance { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is filtering accross cascades.
+        /// </summary>
+        /// <value><c>true</c> if this instance is filtering accross cascades; otherwise, <c>false</c>.</value>
+        [DataMember(30)]
+        [DefaultValue(true)]
+        public bool IsBlendingCascades { get; set; }
+    }
+
+    [DataContract("LightDirectionalDepthRangeAuto")]
+    [Display("Auto")]
+    public sealed class LightDirectionalDepthRangeAuto : LightDirectionalDepthRangeMode
+    {
+    }
+
     /// <summary>
     /// A directional shadow map.
     /// </summary>
@@ -111,100 +216,50 @@ namespace SiliconStudio.Paradox.Effects.Lights
         public LightDirectionalShadowMap()
         {
             CascadeCount = LightShadowMapCascadeCount.FourCascades;
-            PSSMBlend = 0.5f;
-            MinDistance = 0.0f;
-            MaxDistance = 1.0f;
-            SplitDistance0 = 0.05f;
-            SplitDistance1 = 0.15f;
-            SplitDistance2 = 0.50f;
-            SplitDistance3 = 1.00f;
-            SplitMode = LightShadowMapSplitMode.PSSM;
+
+
+            DepthRangeMode = new LightDirectionalDepthRangeAuto();
+            PartitionMode = new LightDirectionalPartitionLogarithmic();
+
             StabilizationMode = LightShadowMapStabilizationMode.ProjectionSnapping;
-            DepthBias = 1.0f;
+            DepthBias = 0.001f;
         }
 
         /// <summary>
         /// Gets or Sets the number of cascades for this shadow (valid only for directional lights)
         /// </summary>
         /// <value>The number of cascades for this shadow.</value>
-        [DataMember(40)]
+        [DataMember(50)]
         [DefaultValue(LightShadowMapCascadeCount.FourCascades)]
         public LightShadowMapCascadeCount CascadeCount { get; set; }
 
-        /// <summary>
-        /// Gets or sets the split mode.
-        /// </summary>
-        /// <value>The split mode.</value>
-        [DataMember(50)]
-        [DefaultValue(LightShadowMapSplitMode.PSSM)]
-        public LightShadowMapSplitMode SplitMode { get; set; }
-
-        [DataMember(55)]
+        [DataMember(60)]
         [DefaultValue(LightShadowMapStabilizationMode.ProjectionSnapping)]
         public LightShadowMapStabilizationMode StabilizationMode { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this instance is filtering accross cascades.
+        /// Gets or sets the depth range mode.
         /// </summary>
-        /// <value><c>true</c> if this instance is filtering accross cascades; otherwise, <c>false</c>.</value>
-        [DataMember(57)]
-        [DefaultValue(false)]
-        public bool IsBlendingCascades { get; set; }
+        /// <value>The depth range mode.</value>
+        [DataMember(80)]
+        [NotNull]
+        public LightDirectionalDepthRangeMode DepthRangeMode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the partition mode.
+        /// </summary>
+        /// <value>The partition mode.</value>
+        [DataMember(90)]
+        [NotNull]
+        public LightDirectionalPartitionMode PartitionMode { get; set; }
 
         /// <summary>
         /// Gets or sets the depth bias.
         /// </summary>
         /// <value>The bias.</value>
-        [DataMember(58)]
-        [DefaultValue(1.0f)]
-        public float DepthBias { get; set; }
-
-        [DataMember(59)]
-        [DefaultValue(false)]
-        public bool AutoComputeMinMax { get; set; }
-
-        /// <summary>
-        /// Gets or sets the minimum distance.
-        /// </summary>
-        /// <value>The minimum distance.</value>
-        [DataMember(60)]
-        [DefaultValue(0.5f)]
-        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
-        public float PSSMBlend { get; set; }
-
-        /// <summary>
-        /// Gets or sets the minimum distance.
-        /// </summary>
-        /// <value>The minimum distance.</value>
         [DataMember(100)]
-        [DefaultValue(0.0f)]
-        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
-        public float MinDistance { get; set; }
-
-        [DataMember(110)]
-        [DefaultValue(1.0f)]
-        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
-        public float MaxDistance { get; set; }
-
-        [DataMember(120)]
-        [DefaultValue(0.05f)]
-        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
-        public float SplitDistance0 { get; set; }
-
-        [DataMember(130)]
-        [DefaultValue(0.15f)]
-        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
-        public float SplitDistance1 { get; set; }
-
-        [DataMember(140)]
-        [DefaultValue(0.5f)]
-        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
-        public float SplitDistance2 { get; set; }
-
-        [DataMember(150)]
-        [DefaultValue(1.0f)]
-        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
-        public float SplitDistance3 { get; set; }
+        [DefaultValue(0.001f)]
+        public float DepthBias { get; set; }
 
         public override ILightShadowMapRenderer CreateRenderer(ILight light)
         {

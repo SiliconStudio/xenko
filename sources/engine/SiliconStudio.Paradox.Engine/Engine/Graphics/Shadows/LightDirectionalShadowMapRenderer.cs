@@ -125,13 +125,14 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
             var shadowType = base.GetShadowType(shadowMapArg);
 
-            if (shadowMap.IsBlendingCascades)
+            var manualDepthRange = shadowMap.DepthRangeMode as LightDirectionalDepthRangeManual;
+            if (manualDepthRange != null && manualDepthRange.IsBlendingCascades)
             {
                 shadowType |= LightShadowType.BlendCascade;
             }
-            if (!shadowMap.AutoComputeMinMax)
+            if (shadowMap.DepthRangeMode is LightDirectionalDepthRangeAuto)
             {
-                shadowType |= LightShadowType.BlendLastCascade;
+                shadowType |= LightShadowType.DepthRangeAuto;
             }
 
             return shadowType;
@@ -225,7 +226,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 Vector3 cascadeMaxBoundLS;
                 Vector3 target;
 
-                if (!shadow.AutoComputeMinMax && (shadow.StabilizationMode == LightShadowMapStabilizationMode.ViewSnapping || shadow.StabilizationMode == LightShadowMapStabilizationMode.ProjectionSnapping))
+                if (!(shadow.DepthRangeMode is LightDirectionalDepthRangeAuto) && (shadow.StabilizationMode == LightShadowMapStabilizationMode.ViewSnapping || shadow.StabilizationMode == LightShadowMapStabilizationMode.ProjectionSnapping))
                 {
                     // Make sure we are using the same direction when stabilizing
                     var boundingVS = BoundingSphere.FromPoints(cascadeFrustumCornersVS);
@@ -368,11 +369,11 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         {
             var shadow = (LightDirectionalShadowMap)lightShadowMap.Shadow;
 
-            // TODO: Min and Max distance can be auto-computed from readback from Z buffer
-            var minDistance = shadow.MinDistance;
-            var maxDistance = shadow.MaxDistance;
+            var minDistance = 0.0f;
+            var maxDistance = 1.0f;
 
-            if (shadow.AutoComputeMinMax)
+            var manualDepthRange = shadow.DepthRangeMode as LightDirectionalDepthRangeManual;
+            if (shadow.DepthRangeMode is LightDirectionalDepthRangeAuto)
             {
                 var depthReadBack = DepthReadback.GetDepthReadback(context);
                 if (depthReadBack.IsResultAvailable)
@@ -389,8 +390,15 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                     Debug.WriteLine("[{0}] MinMaxDepth: ({1}, {2})", context.Time.FrameCount, minDepthLinear, maxDepthLinear);
                 }
             }
+            else if (manualDepthRange != null)
+            {
+                minDistance = manualDepthRange.MinDistance;
+                maxDistance = manualDepthRange.MaxDistance;
+            }
 
-            if (shadow.SplitMode == LightShadowMapSplitMode.Logarithmic || shadow.SplitMode == LightShadowMapSplitMode.PSSM)
+            var manualPartitionMode = shadow.PartitionMode as LightDirectionalPartitionManual;
+            var logarithmicPartitionMode = shadow.PartitionMode as LightDirectionalPartitionLogarithmic;
+            if (logarithmicPartitionMode != null)
             {
                 var nearClip = shadowContext.Camera.NearClipPlane;
                 var farClip = shadowContext.Camera.FarClipPlane;
@@ -401,7 +409,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
                 var range = maxZ - minZ;
                 var ratio = maxZ / minZ;
-                var logRatio = shadow.SplitMode == LightShadowMapSplitMode.Logarithmic ? 1.0f : shadow.PSSMBlend;
+                var logRatio = MathUtil.Clamp(1.0f - logarithmicPartitionMode.PSSMFactor, 0.0f, 1.0f);
 
                 for (int cascadeLevel = 0; cascadeLevel < lightShadowMap.CascadeCount; ++cascadeLevel)
                 {
@@ -413,23 +421,23 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                     cascadeSplitRatios[cascadeLevel] = (distance - nearClip) / rangeClip;  // Normalize cascade splits to [0,1]
                 }
             }
-            else
+            else if (manualPartitionMode != null)
             {
                 if (lightShadowMap.CascadeCount == 1)
                 {
-                    cascadeSplitRatios[0] = minDistance + shadow.SplitDistance1 * maxDistance;
+                    cascadeSplitRatios[0] = minDistance + manualPartitionMode.SplitDistance1 * maxDistance;
                 }
                 else if (lightShadowMap.CascadeCount == 2)
                 {
-                    cascadeSplitRatios[0] = minDistance + shadow.SplitDistance1 * maxDistance;
-                    cascadeSplitRatios[1] = minDistance + shadow.SplitDistance3 * maxDistance;
+                    cascadeSplitRatios[0] = minDistance + manualPartitionMode.SplitDistance1 * maxDistance;
+                    cascadeSplitRatios[1] = minDistance + manualPartitionMode.SplitDistance3 * maxDistance;
                 }
                 else if (lightShadowMap.CascadeCount == 4)
                 {
-                    cascadeSplitRatios[0] = minDistance + shadow.SplitDistance0 * maxDistance;
-                    cascadeSplitRatios[1] = minDistance + shadow.SplitDistance1 * maxDistance;
-                    cascadeSplitRatios[2] = minDistance + shadow.SplitDistance2 * maxDistance;
-                    cascadeSplitRatios[3] = minDistance + shadow.SplitDistance3 * maxDistance;
+                    cascadeSplitRatios[0] = minDistance + manualPartitionMode.SplitDistance0 * maxDistance;
+                    cascadeSplitRatios[1] = minDistance + manualPartitionMode.SplitDistance1 * maxDistance;
+                    cascadeSplitRatios[2] = minDistance + manualPartitionMode.SplitDistance2 * maxDistance;
+                    cascadeSplitRatios[3] = minDistance + manualPartitionMode.SplitDistance3 * maxDistance;
                 }
             }
 
@@ -556,7 +564,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 depthBiases = new float[lightCountMax];
 
                 var mixin = new ShaderMixinSource();
-                mixin.Mixins.Add(new ShaderClassSource(ShaderName, cascadeCount, lightCountMax, (this.shadowType & LightShadowType.BlendCascade) != 0 && (this.shadowType & LightShadowType.BlendLastCascade) != 0, (this.shadowType & LightShadowType.BlendLastCascade) != 0, (this.shadowType & LightShadowType.Debug) != 0));
+                mixin.Mixins.Add(new ShaderClassSource(ShaderName, cascadeCount, lightCountMax, (this.shadowType & LightShadowType.BlendCascade) != 0, (this.shadowType & LightShadowType.DepthRangeAuto) != 0, (this.shadowType & LightShadowType.Debug) != 0));
                 // TODO: Temporary passing filter here
 
                 switch (shadowType & LightShadowType.FilterMask)

@@ -26,6 +26,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// Gets or sets the shadow.
         /// </summary>
         /// <value>The shadow.</value>
+        [Category]
         [DataMember(200)]
         public LightShadowMap Shadow { get; set; }
 

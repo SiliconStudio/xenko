@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
         BlendCascade = 0x8,
 
-        BlendLastCascade = 0x10,
+        DepthRangeAuto = 0x10,
 
         FilterMask = 0xF00,
 
