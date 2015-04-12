@@ -76,6 +76,19 @@
     <Compile Include="Effects\EffectCompilerRemote.cs" />
     <Compile Include="Engine\BackgroundComponent.cs" />
     <Compile Include="Engine\BackgroundComponentProcessor.cs" />
+    <Compile Include="Engine\Graphics\Images\ImageMinMax\ImageMinMax.cs" />
+    <Compile Include="Engine\Graphics\Images\ImageMinMax\ImageMinMaxShader.cs">
+      <DependentUpon>ImageMinMaxShader.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Engine\Graphics\Images\ImageMinMax\ImageMinMaxEffect.cs">
+      <DependentUpon>ImageMinMaxEffect.pdxfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Engine\Graphics\Lights\LightComponentCollectionGroup.cs" />
     <Compile Include="Engine\Graphics\Lights\LightComponentRenderer.cs" />
     <Compile Include="Engine\Graphics\Lights\LightComponentForwardRenderer.cs" />
@@ -2760,6 +2773,14 @@
     <None Include="Engine\Graphics\Images\ImageEffectShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ImageEffectShader1.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Images\ImageMinMax\ImageMinMaxShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ImageMinMaxShader.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Images\ImageMinMax\ImageMinMaxEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ImageMinMaxEffect.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Images\ImageScaler\ImageScalerEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
