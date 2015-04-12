@@ -82,7 +82,7 @@ class __Texture1DArray<T> {
 
 	// SM 5.0
 	T mips.operator[][](in  uint mipSlice,in  uint2 pos);	
-	
+
     T operator[](in  uint2 pos);
 };
 
@@ -115,6 +115,21 @@ class __Texture2D<T> {
 	  in  int2 offset
 	);	
 	
+	T GatherRed(
+		in  sampler s,
+		in  float2 location
+		);
+
+	T GatherGreen(
+		in  sampler s,
+		in  float2 location
+		);
+
+	T GatherBlue(
+		in  sampler s,
+		in  float2 location
+		);
+
 	T GatherRed(
 	  in  sampler s,
 	  in  float2 location,
