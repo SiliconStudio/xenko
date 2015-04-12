@@ -38,11 +38,11 @@ namespace SiliconStudio.Paradox.Effects.Materials
                         break;
                     }
 
-                    // Compute the light color and direction
-                    lightGroup.PrepareDirectLight(i);
-
                     // Compute common material shading streams (TODO: This is temporary)
                     PrepareMaterialPerDirectLight();
+
+                    // Compute the light color and direction
+                    lightGroup.PrepareDirectLight(i);
 
                     // Iterate on shading models
                     foreach(var surface in surfaces)

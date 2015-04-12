@@ -9,20 +9,31 @@ namespace SiliconStudio.Paradox.Effects.Shadows
     /// TCascadeCount: Number of cascades.
     /// TCascadeDebug: Flag to enable debug mode (1 color per cascade).
     /// </remarks>
-    internal class ShadowMapCascade<int TCascadeCount, int TLightCount, bool TBlendCascades, bool TDepthRangeAuto, bool TCascadeDebug> : ShadowMapGroup, ShadowMapFilterBase, PositionStream4
+    internal class ShadowMapCascade<int TCascadeCount, int TLightCount, bool TBlendCascades, bool TDepthRangeAuto, bool TCascadeDebug> : MaterialPixelShadingStream, ShadowMapGroup, ShadowMapFilterBase, PositionStream4
     {
         cbuffer PerPass // TODO: Use a proper cbuffer for this?
         {
             float CascadeDepthSplits[TCascadeCount * TLightCount];
             float4x4 WorldToShadowCascadeUV[TCascadeCount * TLightCount];
             float DepthBiases[TLightCount];
+            float OffsetScales[TLightCount];
         };
+
+        float3 GetShadowPositionOffset(float offsetScale, float nDotL, float3 normal)
+        {
+            float normalOffsetScale = saturate(1.0f - nDotL);
+            return 2.0f * ShadowMapTextureTexelSize.x * offsetScale * normalOffsetScale * normal;
+        }
 
         float ComputeShadowFromCascade(float3 shadowPositionWS, int cascadeIndex, int lightIndex)
         {
+            //float3 shadowPositionWSddx = ddx_fine(shadowPositionWS);
+            //float3 shadowPositionWSddy = ddy_fine(shadowPositionWS);
+
             float3 shadowPosition = mul(float4(shadowPositionWS, 1), WorldToShadowCascadeUV[cascadeIndex + lightIndex * TCascadeCount]).xyz;
             var depthVS = shadowPosition.z;
             depthVS -= DepthBiases[lightIndex];
+
 
             return FilterShadow(shadowPosition.xy, depthVS);
         }
@@ -47,9 +58,14 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
             float shadow = 1.0;
 
+            // Offset the shadow position
+            float3 shadowPosition = streams.PositionWS.xyz;
+            shadowPosition += GetShadowPositionOffset(OffsetScales[lightIndex], streams.NdotL, streams.normalWS);
+
+            // If we are within the cascades
             if (cascadeIndex < TCascadeCount)
             {
-                shadow = ComputeShadowFromCascade(streams.PositionWS.xyz, cascadeIndex, lightIndex);
+                shadow = ComputeShadowFromCascade(shadowPosition, cascadeIndex, lightIndex);
 
                 float nextSplit = CascadeDepthSplits[cascadeIndexBase + cascadeIndex];
                 float splitSize = cascadeIndex == 0 ? nextSplit : nextSplit - CascadeDepthSplits[cascadeIndexBase + cascadeIndex - 1];
@@ -65,7 +81,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 }
                 else if (TBlendCascades)
                 {
-                    float nextShadow = ComputeShadowFromCascade(streams.PositionWS.xyz, cascadeIndex + 1, lightIndex);
+                    float nextShadow = ComputeShadowFromCascade(shadowPosition, cascadeIndex + 1, lightIndex);
                     shadow = lerp(nextShadow, shadow, lerpAmt);
                 }
             }

@@ -196,6 +196,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             lightShadowMap.ShaderData = shaderData;
             shaderData.Texture = lightShadowMap.Atlas.Texture;
             shaderData.DepthBias = shadow.DepthBias;
+            shaderData.OffsetScale = shadow.NormalOffsetScale;
 
             var cameraDepthRange = camera.FarClipPlane - camera.NearClipPlane;
             var snapRadiusValue = 512; //(cascadeSplitRatios[cascadeCount-1] - minMaxDistance.X) * cameraDepthRange * (float)Math.Atan(MathUtil.DegreesToRadians(camera.VerticalFieldOfView / 2)) / 3.0f;
@@ -512,6 +513,8 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
             public float DepthBias;
 
+            public float OffsetScale;
+
             public readonly Matrix[] WorldToShadowCascadeUV;
         }
 
@@ -529,6 +532,8 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
             private readonly float[] depthBiases;
 
+            private readonly float[] offsetScales;
+
             private Texture shadowMapTexture;
 
             private Vector2 shadowMapTextureSize;
@@ -544,6 +549,8 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             private readonly ParameterKey<Matrix[]> worldToShadowCascadeUVsKey;
 
             private readonly ParameterKey<float[]> depthBiasesKey;
+
+            private readonly ParameterKey<float[]> offsetScalesKey;
 
             private readonly ParameterKey<Vector2> shadowMapTextureSizeKey;
 
@@ -562,6 +569,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 cascadeSplits = new float[cascadeCount * lightCountMax];
                 worldToShadowCascadeUV = new Matrix[cascadeCount * lightCountMax];
                 depthBiases = new float[lightCountMax];
+                offsetScales = new float[lightCountMax];
 
                 var mixin = new ShaderMixinSource();
                 mixin.Mixins.Add(new ShaderClassSource(ShaderName, cascadeCount, lightCountMax, (this.shadowType & LightShadowType.BlendCascade) != 0, (this.shadowType & LightShadowType.DepthRangeAuto) != 0, (this.shadowType & LightShadowType.Debug) != 0));
@@ -590,6 +598,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 cascadeSplitsKey = ShadowMapCascadeKeys.CascadeDepthSplits.ComposeWith(compositionKey);
                 worldToShadowCascadeUVsKey = ShadowMapCascadeKeys.WorldToShadowCascadeUV.ComposeWith(compositionKey);
                 depthBiasesKey = ShadowMapCascadeKeys.DepthBiases.ComposeWith(compositionKey);
+                offsetScalesKey = ShadowMapCascadeKeys.OffsetScales.ComposeWith(compositionKey);
             }
 
             public void ApplyShader(ShaderMixinSource mixin)
@@ -610,6 +619,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 }
 
                 depthBiases[index] = singleLightData.DepthBias;
+                offsetScales[index] = singleLightData.OffsetScale;
 
                 // TODO: should be setup just once at creation time
                 if (index == 0)
@@ -631,6 +641,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 parameters.Set(cascadeSplitsKey, cascadeSplits);
                 parameters.Set(worldToShadowCascadeUVsKey, worldToShadowCascadeUV);
                 parameters.Set(depthBiasesKey, depthBiases);
+                parameters.Set(offsetScalesKey, offsetScales);
             }
         }
 

@@ -254,12 +254,20 @@ namespace SiliconStudio.Paradox.Effects.Lights
         public LightDirectionalPartitionMode PartitionMode { get; set; }
 
         /// <summary>
-        /// Gets or sets the depth bias.
+        /// Gets or sets the depth bias used for shadow map comparison.
         /// </summary>
         /// <value>The bias.</value>
         [DataMember(100)]
         [DefaultValue(0.001f)]
         public float DepthBias { get; set; }
+
+        /// <summary>
+        /// Gets or sets the offset scale in world space unit along the surface normal.
+        /// </summary>
+        /// <value>The offset scale.</value>
+        [DataMember(110)]
+        [DefaultValue(0.0f)]
+        public float NormalOffsetScale { get; set; }
 
         public override ILightShadowMapRenderer CreateRenderer(ILight light)
         {

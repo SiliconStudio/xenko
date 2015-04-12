@@ -21,5 +21,6 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         public static readonly ParameterKey<float[]> CascadeDepthSplits = ParameterKeys.New<float[]>();
         public static readonly ParameterKey<Matrix[]> WorldToShadowCascadeUV = ParameterKeys.New<Matrix[]>();
         public static readonly ParameterKey<float[]> DepthBiases = ParameterKeys.New<float[]>();
+        public static readonly ParameterKey<float[]> OffsetScales = ParameterKeys.New<float[]>();
     }
 }
