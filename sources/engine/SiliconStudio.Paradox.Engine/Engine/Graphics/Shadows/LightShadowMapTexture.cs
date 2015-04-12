@@ -36,13 +36,15 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
         BlendCascade = 0x8,
 
-        FilterMask = 0xF0,
+        BlendLastCascade = 0x10,
 
-        PCF3x3 = 0x10,
+        FilterMask = 0xF00,
 
-        PCF5x5 = 0x20,
+        PCF3x3 = 0x100,
 
-        PCF7x7 = 0x30
+        PCF5x5 = 0x200,
+
+        PCF7x7 = 0x300
     }
 
     /// <summary>

@@ -9,7 +9,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
     /// TCascadeCount: Number of cascades.
     /// TCascadeDebug: Flag to enable debug mode (1 color per cascade).
     /// </remarks>
-    internal class ShadowMapCascade<int TCascadeCount, int TLightCount, bool TBlendCascades, bool TCascadeDebug> : ShadowMapGroup, ShadowMapFilterBase, PositionStream4
+    internal class ShadowMapCascade<int TCascadeCount, int TLightCount, bool TBlendCascades, bool TBlendLast, bool TCascadeDebug> : ShadowMapGroup, ShadowMapFilterBase, PositionStream4
     {
         cbuffer PerPass // TODO: Use a proper cbuffer for this?
         {
@@ -58,7 +58,10 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
                 if (cascadeIndex == TCascadeCount - 1)
                 {
-                    shadow = lerp(1.0f, shadow, lerpAmt);
+                    if (TBlendLast)
+                    {
+                        shadow = lerp(1.0f, shadow, lerpAmt);
+                    }
                 }
                 else if (TBlendCascades)
                 {

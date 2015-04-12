@@ -111,6 +111,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         public LightDirectionalShadowMap()
         {
             CascadeCount = LightShadowMapCascadeCount.FourCascades;
+            PSSMBlend = 0.5f;
             MinDistance = 0.0f;
             MaxDistance = 1.0f;
             SplitDistance0 = 0.05f;
@@ -158,36 +159,49 @@ namespace SiliconStudio.Paradox.Effects.Lights
         [DefaultValue(1.0f)]
         public float DepthBias { get; set; }
 
+        [DataMember(59)]
+        [DefaultValue(false)]
+        public bool AutoComputeMinMax { get; set; }
+
         /// <summary>
         /// Gets or sets the minimum distance.
         /// </summary>
         /// <value>The minimum distance.</value>
         [DataMember(60)]
+        [DefaultValue(0.5f)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
+        public float PSSMBlend { get; set; }
+
+        /// <summary>
+        /// Gets or sets the minimum distance.
+        /// </summary>
+        /// <value>The minimum distance.</value>
+        [DataMember(100)]
         [DefaultValue(0.0f)]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
         public float MinDistance { get; set; }
 
-        [DataMember(70)]
+        [DataMember(110)]
         [DefaultValue(1.0f)]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
         public float MaxDistance { get; set; }
 
-        [DataMember(80)]
+        [DataMember(120)]
         [DefaultValue(0.05f)]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
         public float SplitDistance0 { get; set; }
 
-        [DataMember(90)]
+        [DataMember(130)]
         [DefaultValue(0.15f)]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
         public float SplitDistance1 { get; set; }
 
-        [DataMember(100)]
+        [DataMember(140)]
         [DefaultValue(0.5f)]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
         public float SplitDistance2 { get; set; }
 
-        [DataMember(110)]
+        [DataMember(150)]
         [DefaultValue(1.0f)]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
         public float SplitDistance3 { get; set; }

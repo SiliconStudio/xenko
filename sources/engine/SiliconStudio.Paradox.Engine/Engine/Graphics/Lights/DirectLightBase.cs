@@ -12,6 +12,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
     /// <summary>
     /// Base implementation of <see cref="IDirectLight"/>.
     /// </summary>
+    [DataContract()]
     public abstract class DirectLightBase : ColorLightBase, IDirectLight
     {
         /// <summary>
@@ -26,8 +27,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// </summary>
         /// <value>The shadow.</value>
         [DataMember(200)]
-        [DefaultValue(null)]
-        public LightShadowMap Shadow { get; protected set; }
+        public LightShadowMap Shadow { get; set; }
 
         public abstract bool HasBoundingBox { get; }
 

@@ -2,13 +2,16 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Windows;
+using System.IO;
 
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Effects.Images;
 using SiliconStudio.Paradox.Effects.Lights;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 
@@ -126,6 +129,10 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             {
                 shadowType |= LightShadowType.BlendCascade;
             }
+            if (!shadowMap.AutoComputeMinMax)
+            {
+                shadowType |= LightShadowType.BlendLastCascade;
+            }
 
             return shadowType;
         }
@@ -149,7 +156,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             UpdateFrustum(shadowMapRenderer.Camera);
 
             // Computes the cascade splits
-            ComputeCascadeSplits(shadowMapRenderer, ref lightShadowMap);
+            var minMaxDistance = ComputeCascadeSplits(context, shadowMapRenderer, ref lightShadowMap);
             var direction = lightShadowMap.LightComponent.Direction;
 
             // Fake value
@@ -188,12 +195,15 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             lightShadowMap.ShaderData = shaderData;
             shaderData.Texture = lightShadowMap.Atlas.Texture;
             shaderData.DepthBias = shadow.DepthBias;
-            
+
+            var cameraDepthRange = camera.FarClipPlane - camera.NearClipPlane;
+            var snapRadiusValue = 512; //(cascadeSplitRatios[cascadeCount-1] - minMaxDistance.X) * cameraDepthRange * (float)Math.Atan(MathUtil.DegreesToRadians(camera.VerticalFieldOfView / 2)) / 3.0f;
+
             // Push a new graphics state
             var graphicsDevice = context.GraphicsDevice;
             graphicsDevice.PushState();
 
-            float splitMaxRatio = shadow.MinDistance;
+            float splitMaxRatio = minMaxDistance.X;
             for (int cascadeLevel = 0; cascadeLevel < cascadeCount; ++cascadeLevel)
             {
                 // Calculate frustum corners for this cascade
@@ -215,7 +225,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 Vector3 cascadeMaxBoundLS;
                 Vector3 target;
 
-                if (shadow.StabilizationMode == LightShadowMapStabilizationMode.ViewSnapping || shadow.StabilizationMode == LightShadowMapStabilizationMode.ProjectionSnapping)
+                if (!shadow.AutoComputeMinMax && (shadow.StabilizationMode == LightShadowMapStabilizationMode.ViewSnapping || shadow.StabilizationMode == LightShadowMapStabilizationMode.ProjectionSnapping))
                 {
                     // Make sure we are using the same direction when stabilizing
                     var boundingVS = BoundingSphere.FromPoints(cascadeFrustumCornersVS);
@@ -223,6 +233,13 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                     // Compute bounding box center & radius
                     target = Vector3.TransformCoordinate(boundingVS.Center, viewToWorld);
                     var radius = boundingVS.Radius;
+
+                    //if (shadow.AutoComputeMinMax)
+                    //{
+                    //    var snapRadius = (float)Math.Ceiling(radius / snapRadiusValue) * snapRadiusValue;
+                    //    Debug.WriteLine("Radius: {0} SnapRadius: {1} (snap: {2})", radius, snapRadius, snapRadiusValue);
+                    //    radius = snapRadius;
+                    //}
 
                     cascadeMaxBoundLS = new Vector3(radius, radius, radius);
                     cascadeMinBoundLS = -cascadeMaxBoundLS;
@@ -340,13 +357,38 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             }
         }
 
-        private void ComputeCascadeSplits(ShadowMapRenderer shadowContext, ref LightShadowMapTexture lightShadowMap)
+        private static float ToLinearDepth(float depthZ, ref Matrix projectionMatrix)
+        {
+            // as projection matrix is RH we calculate it like this
+            var denominator = (depthZ + projectionMatrix.M33);
+            return projectionMatrix.M43 / denominator;
+        }
+
+        private Vector2 ComputeCascadeSplits(RenderContext context, ShadowMapRenderer shadowContext, ref LightShadowMapTexture lightShadowMap)
         {
             var shadow = (LightDirectionalShadowMap)lightShadowMap.Shadow;
 
             // TODO: Min and Max distance can be auto-computed from readback from Z buffer
             var minDistance = shadow.MinDistance;
             var maxDistance = shadow.MaxDistance;
+
+            if (shadow.AutoComputeMinMax)
+            {
+                var depthReadBack = DepthReadback.GetDepthReadback(context);
+                if (depthReadBack.IsResultAvailable)
+                {
+                    var depthMinMax = depthReadBack.DepthMinMax;
+                    var nearClip = shadowContext.Camera.NearClipPlane;
+                    var farClip = shadowContext.Camera.FarClipPlane;
+                    var rangeClip = farClip - nearClip;
+                    var minDepthLinear = ToLinearDepth(depthMinMax.X, ref shadowContext.Camera.ProjectionMatrix);
+                    var maxDepthLinear = ToLinearDepth(depthMinMax.Y, ref shadowContext.Camera.ProjectionMatrix);
+                    minDistance = (minDepthLinear - nearClip) / rangeClip;
+                    maxDistance = (maxDepthLinear - nearClip) / rangeClip;
+
+                    Debug.WriteLine("[{0}] MinMaxDepth: ({1}, {2})", context.Time.FrameCount, minDepthLinear, maxDepthLinear);
+                }
+            }
 
             if (shadow.SplitMode == LightShadowMapSplitMode.Logarithmic || shadow.SplitMode == LightShadowMapSplitMode.PSSM)
             {
@@ -359,7 +401,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
                 var range = maxZ - minZ;
                 var ratio = maxZ / minZ;
-                var logRatio = shadow.SplitMode == LightShadowMapSplitMode.Logarithmic ? 1.0f : 0.0f;
+                var logRatio = shadow.SplitMode == LightShadowMapSplitMode.Logarithmic ? 1.0f : shadow.PSSMBlend;
 
                 for (int cascadeLevel = 0; cascadeLevel < lightShadowMap.CascadeCount; ++cascadeLevel)
                 {
@@ -388,6 +430,62 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                     cascadeSplitRatios[1] = minDistance + shadow.SplitDistance1 * maxDistance;
                     cascadeSplitRatios[2] = minDistance + shadow.SplitDistance2 * maxDistance;
                     cascadeSplitRatios[3] = minDistance + shadow.SplitDistance3 * maxDistance;
+                }
+            }
+
+            return new Vector2(minDistance, maxDistance);
+        }
+
+        private class DepthReadback : RendererBase
+        {
+            public static DepthReadback GetDepthReadback(RenderContext context)
+            {
+                var sceneCameraRenderer = context.Tags.Get(SceneCameraRenderer.Current);
+                DepthReadback depthReadBack;
+                for (int i = 0; i < sceneCameraRenderer.PostRenderers.Count; i++)
+                {
+                    depthReadBack = sceneCameraRenderer.PostRenderers[i] as DepthReadback;
+                    if (depthReadBack != null)
+                    {
+                        return depthReadBack;
+                    }
+                }
+
+                depthReadBack = new DepthReadback();
+                sceneCameraRenderer.PostRenderers.Add(depthReadBack);
+                return depthReadBack;
+            }
+
+            private ImageMinMax minMax;
+
+            protected override void InitializeCore()
+            {
+                base.InitializeCore();
+
+                minMax = ToLoadAndUnload(new ImageMinMax());
+            }
+
+            public bool IsResultAvailable { get; private set; }
+
+            public Vector2 DepthMinMax { get; private set; }
+
+            protected override void DrawCore(RenderContext context)
+            {
+                try
+                {
+                    context.GraphicsDevice.PushState();
+                    minMax.SetInput(context.GraphicsDevice.DepthStencilBuffer);
+                    minMax.Draw(context);
+
+                    IsResultAvailable = minMax.IsResultAvailable;
+                    if (IsResultAvailable)
+                    {
+                        DepthMinMax = minMax.Result;
+                    }
+                }
+                finally 
+                {
+                    context.GraphicsDevice.PopState();
                 }
             }
         }
@@ -458,7 +556,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 depthBiases = new float[lightCountMax];
 
                 var mixin = new ShaderMixinSource();
-                mixin.Mixins.Add(new ShaderClassSource(ShaderName, cascadeCount, lightCountMax, (this.shadowType & LightShadowType.BlendCascade) != 0, (this.shadowType & LightShadowType.Debug) != 0));
+                mixin.Mixins.Add(new ShaderClassSource(ShaderName, cascadeCount, lightCountMax, (this.shadowType & LightShadowType.BlendCascade) != 0 && (this.shadowType & LightShadowType.BlendLastCascade) != 0, (this.shadowType & LightShadowType.BlendLastCascade) != 0, (this.shadowType & LightShadowType.Debug) != 0));
                 // TODO: Temporary passing filter here
 
                 switch (shadowType & LightShadowType.FilterMask)
