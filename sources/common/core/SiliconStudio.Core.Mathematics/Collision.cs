@@ -1492,9 +1492,16 @@ namespace SiliconStudio.Core.Mathematics
                         // vector4 signFlip = componentwise_and(plane, 0x80000000);
                         // vector3 centerOffset = xor(extent, signFlip)
                         // dot3(center + centerOffset, plane) <= -plane.w;
-                        var dist = plane->Normal.X * (*(float*)((((uint*)&plane->Normal)[0] & 0x80000000) ^ ((uint*)pExtent)[0]) + boundingBoxExt.Center.X);
-                        dist += plane->Normal.Y * (*(float*)((((uint*)&plane->Normal)[1] & 0x80000000) ^ ((uint*)pExtent)[1]) + boundingBoxExt.Center.Y);
-                        dist += plane->Normal.Z * (*(float*)((((uint*)&plane->Normal)[2] & 0x80000000) ^ ((uint*)pExtent)[2]) + boundingBoxExt.Center.Z);
+
+                        uint val = (((uint*)&plane->Normal)[0] & 0x80000000) ^ ((uint*)pExtent)[0];
+                        var dist = plane->Normal.X * ((*(float*)(&val)) + boundingBoxExt.Center.X);
+
+                        val = (((uint*)&plane->Normal)[1] & 0x80000000) ^ ((uint*)pExtent)[1];
+                        dist += plane->Normal.Y * ((*(float*)(&val)) + boundingBoxExt.Center.Y);
+
+                        val = (((uint*)&plane->Normal)[2] & 0x80000000) ^ ((uint*)pExtent)[2];
+                        dist += plane->Normal.Z * ((*(float*)(&val)) + boundingBoxExt.Center.Z);
+
                         if (dist <= -plane->D)
                             return false;
 
