@@ -1788,10 +1788,10 @@
                             </Border.Background>
                         </Border>
                         <Grid x:Name="IndeterminateRoot" Visibility="Collapsed">
-                            <Rectangle Margin="{TemplateBinding BorderThickness}" x:Name="IndeterminateSolidFill" Opacity="1" RenderTransformOrigin="0.5,0.5" RadiusX="2" RadiusY="2" Fill="{DynamicResource ControlBackgroundBrush}" Stroke="#FF448DCA" StrokeThickness="0" />
-                            <Rectangle Margin="{TemplateBinding BorderThickness}" x:Name="IndeterminateGradientFill" RadiusX="2" RadiusY="2" StrokeThickness="1">
+                            <Rectangle Margin="{TemplateBinding BorderThickness}" x:Name="IndeterminateSolidFill" Opacity="1" RenderTransformOrigin="0.5,0.5" Fill="{StaticResource SelectedBackgroundBrush}" Stroke="#FF448DCA" StrokeThickness="0" />
+                            <Rectangle Margin="{TemplateBinding BorderThickness}" x:Name="IndeterminateGradientFill" StrokeThickness="1">
                                 <Rectangle.Fill>
-                                    <LinearGradientBrush EndPoint="0.508,1.394" StartPoint="0.401,-0.394" SpreadMethod="Repeat">
+                                    <!--<LinearGradientBrush EndPoint="0.508,1.394" StartPoint="0.401,-0.394" SpreadMethod="Repeat">
                                         <LinearGradientBrush.Transform>
                                             <TransformGroup>
                                                 <TranslateTransform X="0" />
@@ -1801,6 +1801,22 @@
                                         <GradientStop Color="#FEA1A1A1" Offset="1" />
                                         <GradientStop Color="#00FEFEFE" Offset="0.517" />
                                         <GradientStop Color="#FEA1A1A1" Offset="0.517" />
+                                    </LinearGradientBrush>-->
+                                    <LinearGradientBrush EndPoint="0,1"
+                                                             MappingMode="Absolute"
+                                                             SpreadMethod="Repeat"
+                                                             StartPoint="20,1">
+                                        <LinearGradientBrush.Transform>
+                                            <TransformGroup>
+                                                <TranslateTransform X="0"
+                                                                        x:Name="xTransform" />
+                                                <SkewTransform AngleX="-30" />
+                                            </TransformGroup>
+                                        </LinearGradientBrush.Transform>
+                                        <GradientStop Color="#33858585" Offset="0" />
+                                        <GradientStop Color="#33999999" Offset="0.65" />
+                                        <GradientStop Color="#4C000000" Offset="0.10" />
+                                        <GradientStop Color="#4C000000" Offset="0.55" />
                                     </LinearGradientBrush>
                                 </Rectangle.Fill>
                             </Rectangle>
@@ -1820,7 +1836,7 @@
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndeterminateGradientFill" Storyboard.TargetProperty="(Shape.Fill).(Brush.Transform).(TransformGroup.Children)[0].X" RepeatBehavior="Forever">
                                             <SplineDoubleKeyFrame KeyTime="0" Value="0" />
-                                            <SplineDoubleKeyFrame KeyTime="00:00:2.4" Value="145" />
+                                            <SplineDoubleKeyFrame KeyTime="00:00:.30" Value="20" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </BeginStoryboard>
