@@ -51,7 +51,7 @@ namespace SiliconStudio.Core.Mathematics
         {
             get
             {
-                return (Center - Extent) * 2;
+                return Center - Extent;
             }
         }
 
@@ -63,7 +63,7 @@ namespace SiliconStudio.Core.Mathematics
         {
             get
             {
-                return (Center + Extent) * 2;
+                return Center + Extent;
             }
         }
 
