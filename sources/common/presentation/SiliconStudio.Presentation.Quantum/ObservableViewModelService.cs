@@ -60,7 +60,7 @@ namespace SiliconStudio.Presentation.Quantum
             associatedDataProviders.Remove(provider);
         }
 
-        internal void RequestAssociatedData(ObservableNode node, bool updatingData)
+        internal void RequestAssociatedData(ObservableNode node)
         {
             foreach (var provider in associatedDataProviders)
             {

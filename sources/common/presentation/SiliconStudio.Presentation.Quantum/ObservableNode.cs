@@ -320,11 +320,16 @@ namespace SiliconStudio.Presentation.Quantum
 
         protected void FinalizeChildrenInitialization()
         {
-            foreach (var child in initializingChildren)
+            if (initializingChildren != null)
             {
-                children.Add(child);
+                OnPropertyChanging("Children");
+                foreach (var child in initializingChildren)
+                {
+                    children.Add(child);
+                }
+                initializingChildren = null;
+                OnPropertyChanged("Children");
             }
-            initializingChildren = null;
         }
 
         protected void AddChild(ObservableNode node)
