@@ -76,15 +76,15 @@
     <Compile Include="Effects\EffectCompilerRemote.cs" />
     <Compile Include="Engine\BackgroundComponent.cs" />
     <Compile Include="Engine\BackgroundComponentProcessor.cs" />
-    <Compile Include="Engine\Graphics\Images\ImageMinMax\ImageMinMax.cs" />
-    <Compile Include="Engine\Graphics\Images\ImageMinMax\ImageMinMaxShader.cs">
-      <DependentUpon>ImageMinMaxShader.pdxsl</DependentUpon>
+    <Compile Include="Engine\Graphics\Images\DepthMinMax\DepthMinMax.cs" />
+    <Compile Include="Engine\Graphics\Images\DepthMinMax\DepthMinMaxShader.cs">
+      <DependentUpon>DepthMinMaxShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Images\ImageMinMax\ImageMinMaxEffect.cs">
-      <DependentUpon>ImageMinMaxEffect.pdxfx</DependentUpon>
+    <Compile Include="Engine\Graphics\Images\DepthMinMax\DepthMinMaxEffect.cs">
+      <DependentUpon>DepthMinMaxEffect.pdxfx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -92,6 +92,7 @@
     <Compile Include="Engine\Graphics\Lights\LightComponentCollectionGroup.cs" />
     <Compile Include="Engine\Graphics\Lights\LightComponentRenderer.cs" />
     <Compile Include="Engine\Graphics\Lights\LightComponentForwardRenderer.cs" />
+    <Compile Include="Engine\Graphics\Lights\LightDirectionalShadowMap.cs" />
     <Compile Include="Engine\Graphics\Lights\LightShadowMapStabilizationMode.cs" />
     <Compile Include="Engine\Graphics\Lights\LightSkyboxEffect.cs">
       <DependentUpon>LightSkyboxEffect.pdxfx</DependentUpon>
@@ -100,6 +101,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Engine\Graphics\Lights\LightSkyboxShaderKeys.cs" />
+    <Compile Include="Engine\Graphics\Lights\LightStandardShadowMap.cs" />
     <Compile Include="Engine\Graphics\MaterialInstance.cs" />
     <Compile Include="Engine\Graphics\ParadoxEffectBaseKeys.cs" />
     <Compile Include="Engine\Graphics\CameraComponentRendererExtensions.cs" />
@@ -2774,13 +2776,13 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ImageEffectShader1.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Images\ImageMinMax\ImageMinMaxShader.pdxsl">
+    <None Include="Engine\Graphics\Images\DepthMinMax\DepthMinMaxShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ImageMinMaxShader.cs</LastGenOutput>
+      <LastGenOutput>DepthMinMaxShader.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Images\ImageMinMax\ImageMinMaxEffect.pdxfx">
+    <None Include="Engine\Graphics\Images\DepthMinMax\DepthMinMaxEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ImageMinMaxEffect.cs</LastGenOutput>
+      <LastGenOutput>DepthMinMaxEffect.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Images\ImageScaler\ImageScalerEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>

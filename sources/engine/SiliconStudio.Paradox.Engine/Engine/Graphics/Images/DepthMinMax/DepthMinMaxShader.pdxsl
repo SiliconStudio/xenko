@@ -6,7 +6,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     /// <summary>
     /// A reduction shader
     /// </summary>
-    class ImageMinMaxShader<bool TFirstPass> : ImageEffectShader
+    class DepthMinMaxShader<bool TFirstPass> : ImageEffectShader
     {
         Texture2D<float> TextureMap;
         Texture2D<float2> TextureReduction;

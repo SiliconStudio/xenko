@@ -18,18 +18,18 @@ namespace SiliconStudio.Paradox.Effects.Images
 {
     internal static partial class ShaderMixins
     {
-        internal partial class ImageMinMaxEffect  : IShaderMixinBuilder
+        internal partial class DepthMinMaxEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                context.Mixin(mixin, "ImageMinMaxShader", context.GetParam(ImageMinMax.IsFirstPassKey));
+                context.Mixin(mixin, "DepthMinMaxShader", context.GetParam(DepthMinMax.IsFirstPassKey));
             }
 
             [ModuleInitializer]
             internal static void __Initialize__()
 
             {
-                ShaderMixinManager.Register("ImageMinMaxEffect", new ImageMinMaxEffect());
+                ShaderMixinManager.Register("DepthMinMaxEffect", new DepthMinMaxEffect());
             }
         }
     }

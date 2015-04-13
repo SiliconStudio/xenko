@@ -16,7 +16,7 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
-    public static partial class ImageMinMaxShaderKeys
+    public static partial class DepthMinMaxShaderKeys
     {
         public static readonly ParameterKey<Texture> TextureMap = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<Texture> TextureReduction = ParameterKeys.New<Texture>();

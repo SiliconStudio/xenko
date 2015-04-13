@@ -125,12 +125,12 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
             var shadowType = base.GetShadowType(shadowMapArg);
 
-            var manualDepthRange = shadowMap.DepthRangeMode as LightDirectionalDepthRangeManual;
+            var manualDepthRange = shadowMap.DepthRangeMode as LightDirectionalShadowMap.DepthRangeManual;
             if (manualDepthRange != null && manualDepthRange.IsBlendingCascades)
             {
                 shadowType |= LightShadowType.BlendCascade;
             }
-            if (shadowMap.DepthRangeMode is LightDirectionalDepthRangeAuto)
+            if (shadowMap.DepthRangeMode is LightDirectionalShadowMap.DepthRangeAuto)
             {
                 shadowType |= LightShadowType.DepthRangeAuto;
             }
@@ -195,8 +195,8 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             }
             lightShadowMap.ShaderData = shaderData;
             shaderData.Texture = lightShadowMap.Atlas.Texture;
-            shaderData.DepthBias = shadow.DepthBias;
-            shaderData.OffsetScale = shadow.NormalOffsetScale;
+            shaderData.DepthBias = shadow.BiasParameters.DepthBias;
+            shaderData.OffsetScale = shadow.BiasParameters.NormalOffsetScale;
 
             var cameraDepthRange = camera.FarClipPlane - camera.NearClipPlane;
             var snapRadiusValue = 512; //(cascadeSplitRatios[cascadeCount-1] - minMaxDistance.X) * cameraDepthRange * (float)Math.Atan(MathUtil.DegreesToRadians(camera.VerticalFieldOfView / 2)) / 3.0f;
@@ -227,7 +227,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 Vector3 cascadeMaxBoundLS;
                 Vector3 target;
 
-                if (!(shadow.DepthRangeMode is LightDirectionalDepthRangeAuto) && (shadow.StabilizationMode == LightShadowMapStabilizationMode.ViewSnapping || shadow.StabilizationMode == LightShadowMapStabilizationMode.ProjectionSnapping))
+                if (!(shadow.DepthRangeMode is LightDirectionalShadowMap.DepthRangeAuto) && (shadow.StabilizationMode == LightShadowMapStabilizationMode.ViewSnapping || shadow.StabilizationMode == LightShadowMapStabilizationMode.ProjectionSnapping))
                 {
                     // Make sure we are using the same direction when stabilizing
                     var boundingVS = BoundingSphere.FromPoints(cascadeFrustumCornersVS);
@@ -373,8 +373,8 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             var minDistance = 0.0f;
             var maxDistance = 1.0f;
 
-            var manualDepthRange = shadow.DepthRangeMode as LightDirectionalDepthRangeManual;
-            if (shadow.DepthRangeMode is LightDirectionalDepthRangeAuto)
+            var manualDepthRange = shadow.DepthRangeMode as LightDirectionalShadowMap.DepthRangeManual;
+            if (shadow.DepthRangeMode is LightDirectionalShadowMap.DepthRangeAuto)
             {
                 var depthReadBack = DepthReadback.GetDepthReadback(context);
                 if (depthReadBack.IsResultAvailable)
@@ -397,8 +397,8 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 maxDistance = manualDepthRange.MaxDistance;
             }
 
-            var manualPartitionMode = shadow.PartitionMode as LightDirectionalPartitionManual;
-            var logarithmicPartitionMode = shadow.PartitionMode as LightDirectionalPartitionLogarithmic;
+            var manualPartitionMode = shadow.PartitionMode as LightDirectionalShadowMap.PartitionManual;
+            var logarithmicPartitionMode = shadow.PartitionMode as LightDirectionalShadowMap.PartitionLogarithmic;
             if (logarithmicPartitionMode != null)
             {
                 var nearClip = shadowContext.Camera.NearClipPlane;
@@ -465,13 +465,13 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 return depthReadBack;
             }
 
-            private ImageMinMax minMax;
+            private DepthMinMax minMax;
 
             protected override void InitializeCore()
             {
                 base.InitializeCore();
 
-                minMax = ToLoadAndUnload(new ImageMinMax());
+                minMax = ToLoadAndUnload(new DepthMinMax());
             }
 
             public bool IsResultAvailable { get; private set; }

@@ -3,10 +3,10 @@
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
-    shader ImageMinMaxEffect
+    shader DepthMinMaxEffect
     {
-        using params ImageMinMax;
+        using params DepthMinMax;
 
-        mixin ImageMinMaxShader<ImageMinMax.IsFirstPassKey>;
+        mixin DepthMinMaxShader<DepthMinMax.IsFirstPassKey>;
     };
 }

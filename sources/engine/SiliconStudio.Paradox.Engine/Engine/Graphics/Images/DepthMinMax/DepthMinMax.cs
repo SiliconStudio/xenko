@@ -4,13 +4,11 @@
 using System;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Images;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
-    public class ImageMinMax : ImageEffect
+    public class DepthMinMax : ImageEffect
     {
         internal static ParameterKey<bool> IsFirstPassKey = ParameterKeys.New<bool>();
 
@@ -18,7 +16,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         private ImageReadback<Vector2> readback;
 
-        public ImageMinMax()
+        public DepthMinMax()
         {
         }
 
@@ -26,7 +24,7 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             base.InitializeCore();
 
-            effect = ToLoadAndUnload(new ImageEffectShader("ImageMinMaxEffect"));
+            effect = ToLoadAndUnload(new ImageEffectShader("DepthMinMaxEffect"));
             readback = ToLoadAndUnload(new ImageReadback<Vector2>(Context));
         }
 
@@ -47,11 +45,23 @@ namespace SiliconStudio.Paradox.Effects.Images
             bool isFirstPass = true;
             while (nextSize.Width > 3 && nextSize.Height > 3)
             {
+                var previousSize = nextSize;
                 nextSize = nextSize.Down2();
+
+                // If the next half size of the texture is not an exact *2, make it 1 pixel larger to avoid loosing pixels min/max.
+                if ((nextSize.Width * 2) < previousSize.Width)
+                {
+                    nextSize.Width += 1;
+                }
+                if ((nextSize.Height * 2) < previousSize.Height)
+                {
+                    nextSize.Height += 1;
+                }
+
                 downTexture = NewScopedRenderTarget2D(nextSize.Width, nextSize.Height, PixelFormat.R32G32_Float, 1);
 
-                effect.Parameters.Set(ImageMinMaxShaderKeys.TextureMap, fromTexture);
-                effect.Parameters.Set(ImageMinMaxShaderKeys.TextureReduction, fromTexture);
+                effect.Parameters.Set(DepthMinMaxShaderKeys.TextureMap, fromTexture);
+                effect.Parameters.Set(DepthMinMaxShaderKeys.TextureReduction, fromTexture);
 
                 effect.SetOutput(downTexture);
                 effect.Parameters.Set(IsFirstPassKey, isFirstPass);
