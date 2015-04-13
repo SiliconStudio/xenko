@@ -1473,6 +1473,27 @@ namespace SiliconStudio.Core.Mathematics
             unsafe
             {
                 fixed (Plane* planeStart = &frustum.Plane1)
+                {
+                    var plane = planeStart;
+                    for (int i = 0; i < 6; ++i)
+                    {
+                        // Previous code:
+                        if (Vector3.Dot(boundingBoxExt.Center, plane->Normal)
+                            + boundingBoxExt.Extent.X * Math.Abs(plane->Normal.X)
+                            + boundingBoxExt.Extent.Y * Math.Abs(plane->Normal.Y)
+                            + boundingBoxExt.Extent.Z * Math.Abs(plane->Normal.Z)
+                            <= -plane->D)
+                            return false;
+                        plane++;
+                    }
+                }
+
+                return true;
+            }
+/*
+            unsafe
+            {
+                fixed (Plane* planeStart = &frustum.Plane1)
                 fixed (Vector3* pExtent = &boundingBoxExt.Extent)
                 {
                     var plane = planeStart;
@@ -1511,6 +1532,7 @@ namespace SiliconStudio.Core.Mathematics
 
                 return true;
             }
+ */
         }
     }
 }
