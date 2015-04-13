@@ -202,6 +202,17 @@ namespace SiliconStudio.Paradox.Effects.Images
                 CameraComponentRenderer.UpdateParameters(context, camera);
             }
 
+            if (!Enabled)
+            {
+                if (input != output)
+                {
+                    Scaler.SetInput(input);
+                    Scaler.SetOutput(output);
+                    Scaler.Draw(context);
+                }
+                return;
+            }
+
             // If input == output, than copy the input to a temporary texture
             if (input == output)
             {
@@ -225,7 +236,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             // Luminance pass (only if tone mapping is enabled)
             // TODO: This is not super pluggable to have this kind of dependencies. Check how to improve this
-            if (colorTransformsGroup.Transforms.IsEnabled<ToneMap>())
+            if (colorTransformsGroup.Enabled && colorTransformsGroup.Transforms.IsEnabled<ToneMap>())
             {
                 const int LocalLuminanceDownScale = 3;
                 var lumSize = currentInput.Size.Down2(LocalLuminanceDownScale);
