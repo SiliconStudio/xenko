@@ -68,19 +68,19 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Rotate this Bounding box
+        /// Transform this Bounding box
         /// </summary>
         /// <param name="world"></param>
-        public void Rotate(Matrix world)
+        public void Transform(Matrix world)
         {
-            Rotate(ref world);
+            Transform(ref world);
         }
 
         /// <summary>
-        /// Rotate this Bounding box (the world matrix will be modified).
+        /// Transform this Bounding box (the world matrix will be modified).
         /// </summary>
         /// <param name="world"></param>
-        public void Rotate(ref Matrix world)
+        public void Transform(ref Matrix world)
         {
             // http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
             // Compute transformed AABB (by world)
@@ -95,10 +95,11 @@ namespace SiliconStudio.Core.Mathematics
                 fixed (void* pMatrix = &world)
                 {
                     // Perform an abs on the matrix
-                    var matrixData = (uint*)pMatrix;
+                    var matrixData = (float*)pMatrix;
                     for (int j = 0; j < 16; ++j)
                     {
-                        *matrixData &= 0x7FFFFFFF;
+                        //*matrixData &= 0x7FFFFFFF;
+                        *matrixData = Math.Abs(*matrixData);
                         ++matrixData;
                     }
                 }

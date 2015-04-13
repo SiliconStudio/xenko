@@ -183,7 +183,7 @@ namespace SiliconStudio.Paradox.Engine
                 BoundingSphere.Merge(ref modelBoundingSphere, ref meshBoundingSphere, out modelBoundingSphere);
 
                 var boxExt = new BoundingBoxExt(mesh.BoundingBox);
-                boxExt.Rotate(world);
+                boxExt.Transform(world);
                 var meshBox = (BoundingBox)boxExt;
 
                 if (hasBoundingBox)

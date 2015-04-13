@@ -50,7 +50,7 @@ namespace SiliconStudio.Paradox.Effects
 
                 // Compute transformed AABB (by world)
                 var boundingBoxExt = new BoundingBoxExt(renderMesh.Mesh.BoundingBox);
-                boundingBoxExt.Rotate(mat1);
+                boundingBoxExt.Transform(mat1);
 
                 // Perform frustum culling
                 if (!frustum.Contains(ref boundingBoxExt))
