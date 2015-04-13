@@ -47,7 +47,8 @@ namespace SiliconStudio.Paradox.Assets.Model
                 {
                     InverseNormals = this.InverseNormals,
                     TextureTagSymbol = this.TextureTagSymbol,
-                    AllowUnsignedBlendIndices = this.AllowUnsignedBlendIndices
+                    AllowUnsignedBlendIndices = this.AllowUnsignedBlendIndices,
+                    ScaleImport = this.ScaleImport
                 };
         }
 

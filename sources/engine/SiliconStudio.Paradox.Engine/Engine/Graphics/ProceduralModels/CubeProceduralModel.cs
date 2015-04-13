@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
         /// </summary>
         public CubeProceduralModel()
         {
-            Size = 100.0f;
+            Size = 1.0f;
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
         /// </summary>
         /// <value>The size.</value>
         [DataMember(10)]
-        [DefaultValue(100.0f)]
+        [DefaultValue(1.0f)]
         public float Size { get; set; }
 
         protected override GeometricMeshData<VertexPositionNormalTexture> CreatePrimitiveMeshData()

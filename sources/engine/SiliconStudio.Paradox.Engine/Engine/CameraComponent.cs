@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Create a new <see cref="CameraComponent"/> instance.
         /// </summary>
         public CameraComponent()
-            : this(10f , 100000f)
+            : this(0.1f , 1000f)
         {
         }
 
@@ -43,7 +43,7 @@ namespace SiliconStudio.Paradox.Engine
         {
             Projection = CameraProjectionMode.Perspective;
             VerticalFieldOfView = 45.0f;
-            OrthographicSize = 10.0f;
+            OrthographicSize = 1.0f;
 
             // TODO: Handle Aspect ratio differently
             AspectRatio = 16f / 9f;
@@ -78,7 +78,7 @@ namespace SiliconStudio.Paradox.Engine
         /// The vertical field of view.
         /// </value>
         [DataMember(10)]
-        [DefaultValue(10.0f)]
+        [DefaultValue(1.0f)]
         [Display("Orthographic Size")]
         public float OrthographicSize { get; set; }
 
@@ -89,7 +89,7 @@ namespace SiliconStudio.Paradox.Engine
         /// The near plane distance.
         /// </value>
         [DataMember(20)]
-        [DefaultValue(10f)]
+        [DefaultValue(0.1f)]
         public float NearClipPlane { get; set; }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace SiliconStudio.Paradox.Engine
         /// The far plane distance.
         /// </value>
         [DataMember(30)]
-        [DefaultValue(100000f)]
+        [DefaultValue(1000f)]
         public float FarClipPlane { get; set; }
 
         /// <summary>

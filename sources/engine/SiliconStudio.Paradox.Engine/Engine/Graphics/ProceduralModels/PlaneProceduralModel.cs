@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
         /// </summary>
         public PlaneProceduralModel()
         {
-            Size = new Vector2(100.0f);
+            Size = new Vector2(1.0f);
             Tessellation = new Int2(1);
             UVScales = new Vector2(1);
         }
@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
         /// <value>The size x.</value>
         /// <userdoc>The size of plane along the X/Y axis</userdoc>
         [DataMember(10)]
-        [DefaultValue(100.0f)]
+        [DefaultValue(1.0f)]
         [Display("Size")]
         public Vector2 Size { get; set; }
 

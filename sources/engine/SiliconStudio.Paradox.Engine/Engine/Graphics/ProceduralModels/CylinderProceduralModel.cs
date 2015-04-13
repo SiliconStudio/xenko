@@ -21,8 +21,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
         /// </summary>
         public CylinderProceduralModel()
         {
-            Height = 100.0f;
-            Diameter = 100.0f;
+            Height = 1.0f;
+            Diameter = 1.0f;
             Tessellation = 32;
             ScaleUV = 1;
         }
@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
         /// </summary>
         /// <value>The height.</value>
         [DataMember(10)]
-        [DefaultValue(100.0f)]
+        [DefaultValue(1.0f)]
         public float Height { get; set; }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
         /// </summary>
         /// <value>The diameter.</value>
         [DataMember(20)]
-        [DefaultValue(100.0f)]
+        [DefaultValue(1.0f)]
         public float Diameter { get; set; }
 
         /// <summary>

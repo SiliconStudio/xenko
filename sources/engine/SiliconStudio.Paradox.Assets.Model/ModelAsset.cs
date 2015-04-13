@@ -38,11 +38,21 @@ namespace SiliconStudio.Paradox.Assets.Model
         public ModelAsset()
         {
             SerializedVersion = AssetFormatVersion;
+            ScaleImport = 0.01f;
             Materials = new List<ModelMaterial>();
             Nodes = new List<NodeInformation>();
             SetDefaults();
         }
-        
+
+        /// <summary>
+        /// Gets or sets the scale import.
+        /// </summary>
+        /// <value>The scale import.</value>
+        /// <userdoc>The scale applied when importing a model.</userdoc>
+        [DataMember(10)]
+        [DefaultValue(0.01f)]
+        public float ScaleImport { get; set; }
+
         /// <summary>
         /// The materials.
         /// </summary>

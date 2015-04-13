@@ -43,6 +43,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                                 Compact = asset.Compact,
                                 PreservedNodes = asset.PreservedNodes,
                                 Materials = asset.Materials,
+                                ScaleImport = asset.ScaleImport,
                             },
                     };
             }
@@ -59,6 +60,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                                 Compact = asset.Compact,
                                 PreservedNodes = asset.PreservedNodes,
                                 Materials = asset.Materials,
+                                ScaleImport = asset.ScaleImport,
                             },
                     };
             }

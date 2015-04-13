@@ -47,6 +47,8 @@ namespace SiliconStudio.Paradox.Assets.Model
         public bool Allow32BitIndex { get; set; }
         public bool AllowUnsignedBlendIndices { get; set; }
 
+        public float ScaleImport { get; set; }
+
         protected ImportModelCommand()
         {
             // Set default values

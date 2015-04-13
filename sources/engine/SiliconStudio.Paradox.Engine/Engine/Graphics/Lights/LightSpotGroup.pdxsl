@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         float GetDistanceAttenuation(float3 lightVector , float lightInvSquareRadius)
         {
 	        float d2 = dot(lightVector , lightVector);
-	        float attenuation = 100000.0 / (max(d2 , 0.01 * 0.01));
+	        float attenuation = 1.0 / (max(d2 , 0.01 * 0.01));
 	        attenuation *= SmoothDistanceAttenuation(d2 , lightInvSquareRadius);
 	        return attenuation;
         } 
