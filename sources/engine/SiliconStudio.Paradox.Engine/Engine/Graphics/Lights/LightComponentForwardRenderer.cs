@@ -169,10 +169,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             CollectVisibleLights();
 
             // Draw shadow maps
-            if (visibleLightsWithShadows.Count > 0)
-            {
-                shadowMapRenderer.Draw(context, visibleLightsWithShadows);
-            }
+            shadowMapRenderer.Draw(context, visibleLightsWithShadows);
 
             // Prepare active renderers in an ordered list (by type and shadow on/off)
             CollectActiveLightRenderers(context);

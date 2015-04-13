@@ -116,6 +116,11 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
         }
 
+        /// <summary>
+        /// Draws the specified context.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="visibleLights">The visible lights.</param>
         public void Draw(RenderContext context, List<LightComponent> visibleLights)
         {
             var current = context.Tags.Get(Current);
@@ -126,7 +131,6 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
             this.visibleLights = visibleLights;
 
-            LightComponentsWithShadows.Clear();
             using (var t1 = context.PushTagAndRestore(Current, this))
             {
                 PreDrawCoreInternal(context);
@@ -178,8 +182,11 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 return;
             }
 
-            // Collect all required shadow maps
+            // Clear currently associated shadows
             shadowMapTextures.Clear();
+            LightComponentsWithShadows.Clear();
+
+            // Collect all required shadow maps
             CollectShadowMaps();
 
             // No shadow maps to render
