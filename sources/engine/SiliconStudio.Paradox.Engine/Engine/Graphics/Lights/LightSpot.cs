@@ -24,7 +24,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
         public LightSpot()
         {
             Range = 100.0f;
-            Angle = 30.0f;
+            AngleInner = 30.0f;
+            AngleOuter = 35.0f;
             Shadow = new LightStandardShadowMap() { Importance = LightShadowImportance.Medium };
         }
 
@@ -42,7 +43,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// <value>The spot angle in degrees.</value>
         [DataMember(20)]
         [DataMemberRange(0.01, 90, 1, 10, 1)]
-        public float Angle { get; set; }
+        [DefaultValue(30.0f)]
+        public float AngleInner { get; set; }
 
         /// <summary>
         /// Gets or sets the spot angle in degrees.
@@ -50,8 +52,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// <value>The spot angle in degrees.</value>
         [DataMember(30)]
         [DataMemberRange(0.01, 90, 1, 10, 1)]
-        [DefaultValue(0.0f)]
-        public float InnerAngle { get; set; }
+        [DefaultValue(35.0f)]
+        public float AngleOuter { get; set; }
 
         [DataMemberIgnore]
         internal float InvSquareRange;
@@ -66,9 +68,10 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
             var range = Math.Max(0.001f, Range);
             InvSquareRange = 1.0f / (range * range);
-            var innerAngle = Math.Min(InnerAngle, Angle);
-            var cosInner = (float)Math.Cos(MathUtil.DegreesToRadians(innerAngle));
-            var cosOuter = (float)Math.Cos(MathUtil.DegreesToRadians(Angle));
+            var innerAngle = Math.Min(AngleInner, AngleOuter);
+            var outerAngle = Math.Max(AngleInner, AngleOuter);
+            var cosInner = (float)Math.Cos(MathUtil.DegreesToRadians(innerAngle / 2));
+            var cosOuter = (float)Math.Cos(MathUtil.DegreesToRadians(outerAngle / 2));
             LightAngleScale = 1.0f / Math.Max(0.001f, cosInner - cosOuter);
             LightAngleOffset = -cosOuter * LightAngleScale;
             return true;
@@ -86,7 +89,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
             // Calculates the bouding box of the spot target
             var spotTarget = position + direction * Range;
-            var r = (float)Math.Abs(Range * Math.Sin(MathUtil.DegreesToRadians(Angle)));
+            var r = (float)Math.Abs(Range * Math.Sin(MathUtil.DegreesToRadians(AngleOuter / 2.0f))) * 1.73205080f; // * length(vector3(r,r,r))
             var box = new BoundingBox(spotTarget - r, spotTarget + r);
 
             // Merge it with the start of the bounding box
@@ -105,7 +108,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             Vector4.Transform(ref targetPosition, ref camera.ViewProjectionMatrix, out projectedTarget);
 
             var d = Math.Abs(projectedTarget.W) + 0.00001f;
-            var r = Range * Math.Sin(MathUtil.DegreesToRadians(Angle));
+            var r = Range * Math.Sin(MathUtil.DegreesToRadians(AngleOuter/2.0f));
             var coTanFovBy2 = camera.ProjectionMatrix.M22;
             var pr = r * coTanFovBy2 / (Math.Sqrt(d * d - r * r) + 0.00001f);
 
