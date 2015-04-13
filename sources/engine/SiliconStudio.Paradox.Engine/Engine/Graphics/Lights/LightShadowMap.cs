@@ -22,6 +22,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
             Enabled = false;
             Size = LightShadowMapSize.Medium;
+            BiasParameters = new ShadowMapBiasParameters();
         }
 
         /// <summary>
@@ -57,6 +58,15 @@ namespace SiliconStudio.Paradox.Effects.Lights
         [DataMember(40)]
         public LightShadowImportance Importance { get; set; }
 
+
+        /// <summary>
+        /// Gets the bias parameters.
+        /// </summary>
+        /// <value>The bias parameters.</value>
+        [DataMember(100)]
+        [Display("Bias Parameters", AlwaysExpand = true)]
+        public ShadowMapBiasParameters BiasParameters { get; private set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="LightShadowMap"/> is debug.
         /// </summary>
@@ -68,6 +78,37 @@ namespace SiliconStudio.Paradox.Effects.Lights
         public virtual int GetCascadeCount()
         {
             return 1;
+        }
+
+        /// <summary>
+        /// Bias parameters used for shadow map.
+        /// </summary>
+        [DataContract("LightShadowMap.ShadowMapBiasParameters")]
+        public sealed class ShadowMapBiasParameters
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ShadowMapBiasParameters"/> class.
+            /// </summary>
+            public ShadowMapBiasParameters()
+            {
+                DepthBias = 0.001f;
+            }
+
+            /// <summary>
+            /// Gets or sets the depth bias used for shadow map comparison.
+            /// </summary>
+            /// <value>The bias.</value>
+            [DataMember(10)]
+            [DefaultValue(0.001f)]
+            public float DepthBias { get; set; }
+
+            /// <summary>
+            /// Gets or sets the offset scale in world space unit along the surface normal.
+            /// </summary>
+            /// <value>The offset scale.</value>
+            [DataMember(20)]
+            [DefaultValue(0.0f)]
+            public float NormalOffsetScale { get; set; }
         }
     }
 }

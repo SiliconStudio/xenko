@@ -166,6 +166,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 // TODO: Make this pluggable
                 shadowMapRenderer = new ShadowMapRenderer(modelRenderer.EffectName);
                 shadowMapRenderer.Renderers.Add(typeof(LightDirectional), new LightDirectionalShadowMapRenderer());
+                shadowMapRenderer.Renderers.Add(typeof(LightSpot), new LightSpotShadowMapRenderer());
 
                 isModelComponentRendererSetup = true;
             }

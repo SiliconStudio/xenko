@@ -2,9 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
@@ -17,57 +14,6 @@ using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Effects.Shadows
 {
-
-    public abstract class LightShadowMapRendererBase : ILightShadowMapRenderer
-    {
-        public abstract void Reset();
-
-        public virtual LightShadowType GetShadowType(LightShadowMap shadowMap)
-        {
-            // TODO: MOVE THIS TO BASE TYPE
-            var shadowType = (LightShadowType)0;
-            switch (shadowMap.GetCascadeCount())
-            {
-                case 1:
-                    shadowType |= LightShadowType.Cascade1;
-                    break;
-                case 2:
-                    shadowType |= LightShadowType.Cascade2;
-                    break;
-                case 4:
-                    shadowType |= LightShadowType.Cascade4;
-                    break;
-            }
-
-            var pcfFilter = shadowMap.Filter as LightShadowMapFilterTypePcf;
-            if (pcfFilter != null)
-            {
-                switch (pcfFilter.FilterSize)
-                {
-                    case LightShadowMapFilterTypePcfSize.Filter3x3:
-                        shadowType |= LightShadowType.PCF3x3;
-                        break;
-                    case LightShadowMapFilterTypePcfSize.Filter5x5:
-                        shadowType |= LightShadowType.PCF5x5;
-                        break;
-                    case LightShadowMapFilterTypePcfSize.Filter7x7:
-                        shadowType |= LightShadowType.PCF7x7;
-                        break;
-                }
-            }
-
-            if (shadowMap.Debug)
-            {
-                shadowType |= LightShadowType.Debug;
-            }
-            return shadowType;
-        }
-
-        public abstract ILightShadowMapShaderGroupData CreateShaderGroupData(string compositionKey, LightShadowType shadowType, int maxLightCount);
-
-        public abstract void Render(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap);
-    }
-
     /// <summary>
     /// Renders a shadow map from a directional light.
     /// </summary>
@@ -517,7 +463,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
         private class LightDirectionalShadowMapGroupShaderData : ILightShadowMapShaderGroupData
         {
-            private const string ShaderName = "ShadowMapCascade";
+            private const string ShaderName = "ShadowMapReceiverDirectional";
 
             private readonly LightShadowType shadowType;
 
@@ -569,7 +515,8 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 offsetScales = new float[lightCountMax];
 
                 var mixin = new ShaderMixinSource();
-                mixin.Mixins.Add(new ShaderClassSource(ShaderName, cascadeCount, lightCountMax, (this.shadowType & LightShadowType.BlendCascade) != 0, (this.shadowType & LightShadowType.DepthRangeAuto) != 0, (this.shadowType & LightShadowType.Debug) != 0));
+                var isDepthRangeAuto = (this.shadowType & LightShadowType.DepthRangeAuto) != 0;
+                mixin.Mixins.Add(new ShaderClassSource(ShaderName, cascadeCount, lightCountMax, (this.shadowType & LightShadowType.BlendCascade) != 0 && !isDepthRangeAuto, isDepthRangeAuto, (this.shadowType & LightShadowType.Debug) != 0));
                 // TODO: Temporary passing filter here
 
                 switch (shadowType & LightShadowType.FilterMask)
@@ -592,10 +539,10 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 shadowMapTextureKey = ShadowMapKeys.Texture.ComposeWith(compositionKey);
                 shadowMapTextureSizeKey = ShadowMapKeys.TextureSize.ComposeWith(compositionKey);
                 shadowMapTextureTexelSizeKey = ShadowMapKeys.TextureTexelSize.ComposeWith(compositionKey);
-                cascadeSplitsKey = ShadowMapCascadeKeys.CascadeDepthSplits.ComposeWith(compositionKey);
-                worldToShadowCascadeUVsKey = ShadowMapCascadeKeys.WorldToShadowCascadeUV.ComposeWith(compositionKey);
-                depthBiasesKey = ShadowMapCascadeKeys.DepthBiases.ComposeWith(compositionKey);
-                offsetScalesKey = ShadowMapCascadeKeys.OffsetScales.ComposeWith(compositionKey);
+                cascadeSplitsKey = ShadowMapReceiverDirectionalKeys.CascadeDepthSplits.ComposeWith(compositionKey);
+                worldToShadowCascadeUVsKey = ShadowMapReceiverBaseKeys.WorldToShadowCascadeUV.ComposeWith(compositionKey);
+                depthBiasesKey = ShadowMapReceiverBaseKeys.DepthBiases.ComposeWith(compositionKey);
+                offsetScalesKey = ShadowMapReceiverBaseKeys.OffsetScales.ComposeWith(compositionKey);
             }
 
             public void ApplyShader(ShaderMixinSource mixin)

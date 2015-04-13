@@ -64,6 +64,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
         [DataMemberIgnore]
         internal float LightAngleOffset;
 
+        internal float LightRadiusAtTarget;
+
         public override bool Update(LightComponent lightComponent)
         {
             var range = Math.Max(0.001f, Range);
@@ -74,6 +76,9 @@ namespace SiliconStudio.Paradox.Effects.Lights
             var cosOuter = (float)Math.Cos(MathUtil.DegreesToRadians(outerAngle / 2));
             LightAngleScale = 1.0f / Math.Max(0.001f, cosInner - cosOuter);
             LightAngleOffset = -cosOuter * LightAngleScale;
+
+            LightRadiusAtTarget = (float)Math.Abs(Range * Math.Sin(MathUtil.DegreesToRadians(outerAngle / 2.0f)));
+
             return true;
         }
 
@@ -89,7 +94,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
             // Calculates the bouding box of the spot target
             var spotTarget = position + direction * Range;
-            var r = (float)Math.Abs(Range * Math.Sin(MathUtil.DegreesToRadians(AngleOuter / 2.0f))) * 1.73205080f; // * length(vector3(r,r,r))
+            var r = LightRadiusAtTarget * 1.73205080f; // * length(vector3(r,r,r))
             var box = new BoundingBox(spotTarget - r, spotTarget + r);
 
             // Merge it with the start of the bounding box
