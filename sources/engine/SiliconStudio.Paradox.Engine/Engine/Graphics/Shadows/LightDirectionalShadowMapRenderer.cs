@@ -125,14 +125,13 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
             var shadowType = base.GetShadowType(shadowMapArg);
 
-            var manualDepthRange = shadowMap.DepthRangeMode as LightDirectionalShadowMap.DepthRangeManual;
-            if (manualDepthRange != null && manualDepthRange.IsBlendingCascades)
-            {
-                shadowType |= LightShadowType.BlendCascade;
-            }
-            if (shadowMap.DepthRangeMode is LightDirectionalShadowMap.DepthRangeAuto)
+            if (shadowMap.DepthRange.IsAutomatic)
             {
                 shadowType |= LightShadowType.DepthRangeAuto;
+            }
+            else if (shadowMap.DepthRange.IsBlendingCascades)
+            {
+                shadowType |= LightShadowType.BlendCascade;
             }
 
             return shadowType;
@@ -227,7 +226,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 Vector3 cascadeMaxBoundLS;
                 Vector3 target;
 
-                if (!(shadow.DepthRangeMode is LightDirectionalShadowMap.DepthRangeAuto) && (shadow.StabilizationMode == LightShadowMapStabilizationMode.ViewSnapping || shadow.StabilizationMode == LightShadowMapStabilizationMode.ProjectionSnapping))
+                if (!shadow.DepthRange.IsAutomatic && (shadow.StabilizationMode == LightShadowMapStabilizationMode.ViewSnapping || shadow.StabilizationMode == LightShadowMapStabilizationMode.ProjectionSnapping))
                 {
                     // Make sure we are using the same direction when stabilizing
                     var boundingVS = BoundingSphere.FromPoints(cascadeFrustumCornersVS);
@@ -373,8 +372,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             var minDistance = 0.0f;
             var maxDistance = 1.0f;
 
-            var manualDepthRange = shadow.DepthRangeMode as LightDirectionalShadowMap.DepthRangeManual;
-            if (shadow.DepthRangeMode is LightDirectionalShadowMap.DepthRangeAuto)
+            if (shadow.DepthRange.IsAutomatic)
             {
                 var depthReadBack = DepthReadback.GetDepthReadback(context);
                 if (depthReadBack.IsResultAvailable)
@@ -391,10 +389,10 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                     Debug.WriteLine("[{0}] MinMaxDepth: ({1}, {2})", context.Time.FrameCount, minDepthLinear, maxDepthLinear);
                 }
             }
-            else if (manualDepthRange != null)
+            else
             {
-                minDistance = manualDepthRange.MinDistance;
-                maxDistance = manualDepthRange.MaxDistance;
+                minDistance = shadow.DepthRange.MinDistance;
+                maxDistance = shadow.DepthRange.MaxDistance;
             }
 
             var manualPartitionMode = shadow.PartitionMode as LightDirectionalShadowMap.PartitionManual;

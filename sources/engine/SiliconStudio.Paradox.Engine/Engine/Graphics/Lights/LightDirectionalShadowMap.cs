@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         public LightDirectionalShadowMap()
         {
             CascadeCount = LightShadowMapCascadeCount.FourCascades;
-            DepthRangeMode = new DepthRangeAuto();
+            DepthRange = new DepthRangeParameters();
             PartitionMode = new PartitionLogarithmic();
             StabilizationMode = LightShadowMapStabilizationMode.ProjectionSnapping;
             BiasParameters = new ShadowMapBiasParameters();
@@ -46,7 +46,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// <value>The depth range mode.</value>
         [DataMember(80)]
         [NotNull]
-        public DepthRangeModeBase DepthRangeMode { get; set; }
+        [Display("Depth Range", AlwaysExpand = true)]
+        public DepthRangeParameters DepthRange { get; private set; }
 
         /// <summary>
         /// Gets or sets the partition mode.
@@ -154,26 +155,31 @@ namespace SiliconStudio.Paradox.Effects.Lights
         }
 
         /// <summary>
-        /// Base class for the depth range mode.
-        /// </summary>
-        [DataContract]
-        public abstract class DepthRangeModeBase
-        {
-        }
-
-        /// <summary>
         /// The depth range is set manually. This class cannot be inherited.
         /// </summary>
-        [DataContract("LightDirectionalShadowMap.DepthRangeManual")]
-        [Display("Manual")]
-        public sealed class DepthRangeManual : DepthRangeModeBase
+        [DataContract("LightDirectionalShadowMap.DepthRangeParameters")]
+        [Display("Depth Range Parameters")]
+        public sealed class DepthRangeParameters
         {
-            public DepthRangeManual()
+            /// <summary>
+            /// Initializes a new instance of the <see cref="DepthRangeParameters"/> class.
+            /// </summary>
+            public DepthRangeParameters()
             {
+                IsAutomatic = true;
                 MinDistance = 0.0f;
                 MaxDistance = 1.0f;
                 IsBlendingCascades = true;
             }
+
+            /// <summary>
+            /// Gets or sets a value indicating whether this instance is automatic.
+            /// </summary>
+            /// <value><c>true</c> if this instance is automatic; otherwise, <c>false</c>.</value>
+            [DataMember(0)]
+            [DefaultValue(true)]
+            [Display("Automatic?")]
+            public bool IsAutomatic { get; set; }
 
             /// <summary>
             /// Gets or sets the minimum distance.
@@ -201,15 +207,6 @@ namespace SiliconStudio.Paradox.Effects.Lights
             [DefaultValue(true)]
             [Display("Blend Cascades?")]
             public bool IsBlendingCascades { get; set; }
-        }
-
-        /// <summary>
-        /// The depth range is calculated automatically from depth buffer from camera view. This class cannot be inherited.
-        /// </summary>
-        [DataContract("LightDirectionalShadowMap.DepthRangeAuto")]
-        [Display("Auto")]
-        public sealed class DepthRangeAuto : DepthRangeModeBase
-        {
         }
 
         /// <summary>
