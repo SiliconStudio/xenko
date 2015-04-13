@@ -69,12 +69,8 @@ namespace SiliconStudio.Paradox.Engine
             foreach (var childComponent in enabledEntities.Values)
             {
                 if (childComponent.Enabled)
-                { 
-                    // safe guard against infinite recursion
-                    var currentScene = ContainingScene != childComponent.Scene ? childComponent.Scene : null;
-
-                    // Copy back the scene from the component to the instance
-                    childComponent.SceneInstance.Scene = currentScene;
+                {
+                    UpdateSceneInstance(childComponent);
                     childComponent.SceneInstance.Update(time);
                 }
             }
@@ -82,16 +78,25 @@ namespace SiliconStudio.Paradox.Engine
 
         public override void Draw(RenderContext context)
         {
-            foreach (var childComponent in enabledEntities.Values)
+            foreach (ChildSceneComponent childComponent in enabledEntities.Values)
             {
                 if (childComponent.Enabled)
                 {
-                    var sceneInstance = childComponent.SceneInstance;
-                    if (ContainingScene != childComponent.Scene && sceneInstance.Scene != childComponent.Scene)
-                        throw new InvalidOperationException("The scene instance does not match the scene of the ChildSceneComponent. Has it been modified after Update?");
-                    
+                    UpdateSceneInstance(childComponent);
                     childComponent.SceneInstance.Draw(context);
                 }
+            }
+        }
+
+        private void UpdateSceneInstance(ChildSceneComponent childComponent)
+        {
+            if (childComponent.Enabled)
+            {
+                // safe guard against infinite recursion
+                var currentScene = ContainingScene != childComponent.Scene ? childComponent.Scene : null;
+
+                // Copy back the scene from the component to the instance
+                childComponent.SceneInstance.Scene = currentScene;
             }
         }
     }
