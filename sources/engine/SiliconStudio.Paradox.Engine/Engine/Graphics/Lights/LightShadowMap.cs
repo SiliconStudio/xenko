@@ -65,11 +65,6 @@ namespace SiliconStudio.Paradox.Effects.Lights
         [DefaultValue(false)]
         public bool Debug { get; set; }
 
-        public virtual ILightShadowMapRenderer CreateRenderer(ILight light)
-        {
-            return null;
-        }
-
         public virtual int GetCascadeCount()
         {
             return 1;

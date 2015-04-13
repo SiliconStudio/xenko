@@ -119,6 +119,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
             // TODO: Make this pluggable
             RegisterLightGroupRenderer(typeof(LightDirectional), new LightDirectionalGroupRenderer());
+            RegisterLightGroupRenderer(typeof(LightSpot), new LightSpotGroupRenderer());
             RegisterLightGroupRenderer(typeof(LightAmbient), new LightAmbientRenderer());
             RegisterLightGroupRenderer(typeof(LightSkybox), new LightSkyboxRenderer());
         }
@@ -161,7 +162,11 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
                 modelRenderer.Callbacks.PreRenderModel += PrepareRenderModelForRendering;
                 modelRenderer.Callbacks.PreRenderMesh += PreRenderMesh;
+
+                // TODO: Make this pluggable
                 shadowMapRenderer = new ShadowMapRenderer(modelRenderer.EffectName);
+                shadowMapRenderer.Renderers.Add(typeof(LightDirectional), new LightDirectionalShadowMapRenderer());
+
                 isModelComponentRendererSetup = true;
             }
 

@@ -385,8 +385,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                     var maxDepthLinear = ToLinearDepth(depthMinMax.Y, ref shadowContext.Camera.ProjectionMatrix);
                     minDistance = (minDepthLinear - nearClip) / rangeClip;
                     maxDistance = (maxDepthLinear - nearClip) / rangeClip;
-
-                    Debug.WriteLine("[{0}] MinMaxDepth: ({1}, {2})", context.Time.FrameCount, minDepthLinear, maxDepthLinear);
+                    // Debug.WriteLine("[{0}] MinMaxDepth: ({1}, {2})", context.Time.FrameCount, minDepthLinear, maxDepthLinear);
                 }
             }
             else

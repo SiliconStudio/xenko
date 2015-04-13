@@ -65,21 +65,10 @@ namespace SiliconStudio.Paradox.Effects.Lights
         [Display("Bias Parameters", AlwaysExpand = true)]
         public ShadowMapBiasParameters BiasParameters { get; private set; }
 
-        public override ILightShadowMapRenderer CreateRenderer(ILight light)
-        {
-            if (light is LightDirectional)
-            {
-                return new LightDirectionalShadowMapRenderer();
-            }
-
-            return null;
-        }
-
         public override int GetCascadeCount()
         {
             return (int)CascadeCount;
         }
-
 
         /// <summary>
         /// Base class for the partition mode.

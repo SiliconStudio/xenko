@@ -1,0 +1,79 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Paradox.Effects.Lights
+{
+    /// <summary>
+    /// Defines a group of spot lights
+    /// </summary>
+    class LightSpotGroup<int TMaxLightCount> : DirectLightGroup, NormalStream, PositionStream4
+    {
+        cbuffer PerObject
+        {
+            float3 LightPositionWS[TMaxLightCount];
+            float3 LightDirectionsWS[TMaxLightCount];
+            float3 LightAngleOffsetAndInvSquareRadius[TMaxLightCount];
+            [Color]
+            float3 LightColor[TMaxLightCount];
+        }
+
+        override int GetMaxLightCount()
+        {
+            return TMaxLightCount;
+        }
+
+        // Code from "Moving Frostbite to Physically Based Rendering"  Rousiers, Charles De Lagarde, Sébastien p32
+        float SmoothDistanceAttenuation(float squaredDistance , float lightInvSquareRadius) 
+        {
+	        float factor = squaredDistance * lightInvSquareRadius;
+	        float smoothFactor = saturate (1.0f - factor * factor);
+	        return smoothFactor * smoothFactor;
+        }
+
+        float GetDistanceAttenuation(float3 lightVector , float lightInvSquareRadius)
+        {
+	        float d2 = dot(lightVector , lightVector);
+	        float attenuation = 100000.0 / (max(d2 , 0.01 * 0.01));
+	        attenuation *= SmoothDistanceAttenuation(d2 , lightInvSquareRadius);
+	        return attenuation;
+        } 
+
+        float GetAngleAttenuation(float3 lightVector , float3 lightDirection , float lightAngleScale , float lightAngleOffset)
+        {
+	        // On the CPU
+	        // float lightAngleScale = 1.0f / max (0.001f, (cosInner - cosOuter));
+	        // float lightAngleOffset = -cosOuter * angleScale;
+	        float cd = dot(lightDirection , lightVector);
+	        float attenuation = saturate(cd * lightAngleScale + lightAngleOffset);
+	        // smooth the transition
+	        attenuation *= attenuation;
+	        return attenuation;
+        }
+
+        /// <summary>
+        /// Compute the light color/direction for the specified index within this group
+        /// </summary>
+        override void PrepareDirectLight(int lightIndex)
+        {
+            float3 lightVector = LightPositionWS[lightIndex] - streams.PositionWS;
+            float lightVectorLength = length(lightVector);
+            float3 lightVectorNorm = lightVector / lightVectorLength;
+
+            float3 lightAngleOffsetAndInvSquareRadius = LightAngleOffsetAndInvSquareRadius[lightIndex];
+            float2 lightAngleAndOffset = lightAngleOffsetAndInvSquareRadius.xy;
+            float lightInvSquareRadius = lightAngleOffsetAndInvSquareRadius.z;
+
+            // TODO: Add support for disk based Directional light
+            float3 lightDirection = -LightDirectionsWS[lightIndex];
+
+            float attenuation = 1;
+            attenuation *= GetDistanceAttenuation(lightVector , lightInvSquareRadius);
+            attenuation *= GetAngleAttenuation(lightVectorNorm, lightDirection, lightAngleAndOffset.x, lightAngleAndOffset.y);
+
+            streams.lightColor = LightColor[lightIndex] * attenuation;
+            streams.lightDirectionWS = lightDirection;
+
+            // Base will compute shadow and Color with NdotL
+            base.PrepareDirectLight(lightIndex);
+        }
+    };
+}

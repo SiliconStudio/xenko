@@ -103,6 +103,14 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         /// </summary>
         public readonly CameraComponent ShadowCamera;
 
+        public Dictionary<Type, ILightShadowMapRenderer> Renderers
+        {
+            get
+            {
+                return renderers;
+            }
+        }
+
         public ILightShadowMapRenderer FindRenderer(Type lightType)
         {
             ILightShadowMapRenderer shadowMapRenderer;
@@ -289,14 +297,6 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 var lightType = light.GetType();
                 ILightShadowMapRenderer renderer;
                 if (!renderers.TryGetValue(lightType, out renderer))
-                {
-                    // Create renderers just once per ShadowMapRenderer instance
-                    renderer = shadowMap.CreateRenderer(light);
-                    renderers[lightType] = renderer;
-                }
-
-                // If no shadow map renderer, skip it.
-                if (renderer == null)
                 {
                     continue;
                 }

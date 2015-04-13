@@ -92,6 +92,13 @@
     <Compile Include="Engine\Graphics\Lights\LightComponentCollectionGroup.cs" />
     <Compile Include="Engine\Graphics\Lights\LightComponentRenderer.cs" />
     <Compile Include="Engine\Graphics\Lights\LightComponentForwardRenderer.cs" />
+    <Compile Include="Engine\Graphics\Lights\LightSpotlGroupRenderer.cs" />
+    <Compile Include="Engine\Graphics\Lights\LightSpotGroup.cs">
+      <DependentUpon>LightSpotGroup.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Engine\Graphics\Lights\LightDirectionalShadowMap.cs" />
     <Compile Include="Engine\Graphics\Lights\LightShadowMapStabilizationMode.cs" />
     <Compile Include="Engine\Graphics\Lights\LightSkyboxEffect.cs">
@@ -2859,6 +2866,10 @@
     <None Include="Engine\Graphics\Lights\EnvironmentLightArray.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>EnvironmentLightArray.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Lights\LightSpotGroup.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>LightSpotGroup.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Lights\LightDirectionalGroup.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

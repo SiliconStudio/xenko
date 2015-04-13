@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// </summary>
         public LightSpot()
         {
-            Range = 1.0f;
+            Range = 100.0f;
             Angle = 30.0f;
             Shadow = new LightStandardShadowMap() { Importance = LightShadowImportance.Medium };
         }
@@ -32,15 +32,47 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// Gets or sets the range distance the light is affecting.
         /// </summary>
         /// <value>The range.</value>
-        [DefaultValue(1.0f)]
+        [DataMember(10)]
+        [DefaultValue(100.0f)]
         public float Range { get; set; }
 
         /// <summary>
         /// Gets or sets the spot angle in degrees.
         /// </summary>
         /// <value>The spot angle in degrees.</value>
+        [DataMember(20)]
         [DataMemberRange(0.01, 90, 1, 10, 1)]
         public float Angle { get; set; }
+
+        /// <summary>
+        /// Gets or sets the spot angle in degrees.
+        /// </summary>
+        /// <value>The spot angle in degrees.</value>
+        [DataMember(30)]
+        [DataMemberRange(0.01, 90, 1, 10, 1)]
+        [DefaultValue(0.0f)]
+        public float InnerAngle { get; set; }
+
+        [DataMemberIgnore]
+        internal float InvSquareRange;
+
+        [DataMemberIgnore]
+        internal float LightAngleScale;
+
+        [DataMemberIgnore]
+        internal float LightAngleOffset;
+
+        public override bool Update(LightComponent lightComponent)
+        {
+            var range = Math.Max(0.001f, Range);
+            InvSquareRange = 1.0f / (range * range);
+            var innerAngle = Math.Min(InnerAngle, Angle);
+            var cosInner = (float)Math.Cos(MathUtil.DegreesToRadians(innerAngle));
+            var cosOuter = (float)Math.Cos(MathUtil.DegreesToRadians(Angle));
+            LightAngleScale = 1.0f / Math.Max(0.001f, cosInner - cosOuter);
+            LightAngleOffset = -cosOuter * LightAngleScale;
+            return true;
+        }
 
         public override bool HasBoundingBox
         {
