@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// </summary>
         public LightSpot()
         {
-            Range = 100.0f;
+            Range = 3.0f;
             AngleInner = 30.0f;
             AngleOuter = 35.0f;
             Shadow = new LightStandardShadowMap() { Importance = LightShadowImportance.Medium };

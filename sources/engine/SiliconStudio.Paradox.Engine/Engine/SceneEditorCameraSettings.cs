@@ -21,10 +21,10 @@ namespace SiliconStudio.Paradox.Engine
         public SceneEditorCameraSettings()
         {
             Projection = CameraProjectionMode.Perspective;
-            VerticalFieldOfView = 45.0f;
-            OrthographicSize = 10.0f;
-            NearPlane = 10.0f;
-            FarPlane = 200000f;
+            VerticalFieldOfView = CameraComponent.DefaultVerticalFieldOfView;
+            OrthographicSize = CameraComponent.DefaultOrthographicSize;
+            NearPlane = CameraComponent.DefaultNearClipPlane;
+            FarPlane = CameraComponent.DefaultFarClipPlane;
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Engine
         /// The vertical field of view.
         /// </value>
         [DataMember(30)]
-        [DefaultValue(45.0f)]
+        [DefaultValue(CameraComponent.DefaultVerticalFieldOfView)]
         [Display("Field Of View")]
         [DataMemberRange(1.0, 179.0, 1.0, 10.0, 0)]
         public float VerticalFieldOfView { get; set; }
@@ -54,7 +54,7 @@ namespace SiliconStudio.Paradox.Engine
         /// The vertical field of view.
         /// </value>
         [DataMember(40)]
-        [DefaultValue(10.0f)]
+        [DefaultValue(CameraComponent.DefaultOrthographicSize)]
         [Display("Orthographic Size")]
         public float OrthographicSize { get; set; }
 
@@ -65,7 +65,7 @@ namespace SiliconStudio.Paradox.Engine
         /// The near plane distance.
         /// </value>
         [DataMember(50)]
-        [DefaultValue(10f)]
+        [DefaultValue(CameraComponent.DefaultNearClipPlane)]
         public float NearPlane { get; set; }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace SiliconStudio.Paradox.Engine
         /// The far plane distance.
         /// </value>
         [DataMember(60)]
-        [DefaultValue(200000f)]
+        [DefaultValue(CameraComponent.DefaultFarClipPlane)]
         public float FarPlane { get; set; }
 
         /// <summary>
