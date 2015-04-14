@@ -87,13 +87,10 @@ namespace SiliconStudio.Paradox.Graphics
             // Create a new graphics device
             Features = new GraphicsDeviceFeatures(this);
 
-            if (SamplerStates == null)
-            {
-                SamplerStates = new SamplerStateFactory(this);
-                BlendStates = new BlendStateFactory(this);
-                RasterizerStates = new RasterizerStateFactory(this);
-                DepthStencilStates = new DepthStencilStateFactory(this);
-            }
+            SamplerStates = new SamplerStateFactory(this);
+            BlendStates = new BlendStateFactory(this);
+            RasterizerStates = new RasterizerStateFactory(this);
+            DepthStencilStates = new DepthStencilStateFactory(this);
 
             currentState = null;
             allocatedStates.Clear();
@@ -117,6 +114,11 @@ namespace SiliconStudio.Paradox.Graphics
             if (DepthStencilBuffer != null)
                 DepthStencilBuffer.Dispose();
             primitiveQuad.Dispose();
+
+            SamplerStates = null;
+            BlendStates = null;
+            RasterizerStates = null;
+            DepthStencilStates = null;
 
             base.Destroy();
         }
