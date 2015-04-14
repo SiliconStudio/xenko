@@ -423,7 +423,7 @@ namespace SiliconStudio.Paradox.Games
         /// </summary>
         public void ApplyChanges()
         {
-            if (GraphicsDevice == null || deviceSettingsChanged)
+            if (GraphicsDevice != null && deviceSettingsChanged)
             {
                 ChangeOrCreateDevice(false);
             }
@@ -818,7 +818,10 @@ namespace SiliconStudio.Paradox.Games
                 resizedBackBufferWidth = game.Window.ClientBounds.Width;
                 resizedBackBufferHeight = game.Window.ClientBounds.Height;
                 isBackBufferToResize = true;
-                ChangeOrCreateDevice(false);
+                if (GraphicsDevice != null)
+                {
+                    ChangeOrCreateDevice(false);
+                }
             }
         }
 
@@ -826,7 +829,10 @@ namespace SiliconStudio.Paradox.Games
         {
             if ((!isChangingDevice && ((game.Window.ClientBounds.Height != 0) || (game.Window.ClientBounds.Width != 0))) && (game.Window.CurrentOrientation != currentWindowOrientation))
             {
-                ChangeOrCreateDevice(false);
+                if (GraphicsDevice != null)
+                {
+                    ChangeOrCreateDevice(false);
+                }
             }
         }
 
