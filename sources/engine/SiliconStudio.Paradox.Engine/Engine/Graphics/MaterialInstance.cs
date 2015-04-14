@@ -12,6 +12,7 @@ namespace SiliconStudio.Paradox.Effects
     /// A <see cref="Material"/> instance.
     /// </summary>
     [DataContract("MaterialInstance")]
+    [InlineProperty]
     public class MaterialInstance
     {
         /// <summary>
@@ -31,7 +32,6 @@ namespace SiliconStudio.Paradox.Effects
             IsShadowCaster = true;
             IsShadowReceiver = true;
         }
-
 
         /// <summary>
         /// Gets or sets the material.
