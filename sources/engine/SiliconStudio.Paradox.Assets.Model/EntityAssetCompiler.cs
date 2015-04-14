@@ -12,6 +12,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Assets.Serializers;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Assets.Model
 {
@@ -62,13 +63,16 @@ namespace SiliconStudio.Paradox.Assets.Model
                 }
             }
 
-            result.BuildSteps = new AssetBuildStep(AssetItem) { new EntityCombineCommand(urlInStorage, asset) };
+            result.BuildSteps = new AssetBuildStep(AssetItem) { new EntityCombineCommand(urlInStorage, AssetItem.Package, asset) };
         }
 
         private class EntityCombineCommand : AssetCommand<EntityAsset>
         {
-            public EntityCombineCommand(string url, EntityAsset asset) : base(url, asset)
+            private readonly Package package;
+
+            public EntityCombineCommand(string url, Package package, EntityAsset asset) : base(url, asset)
             {
+                this.package = package;
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
@@ -78,7 +82,27 @@ namespace SiliconStudio.Paradox.Assets.Model
                 var rootEntity = asset.Hierarchy.Entities[asset.Hierarchy.RootEntity];
                 assetManager.Save(Url, rootEntity);
 
+                // Save the default settings
+                if (IsDefaultScene())
+                {
+                    assetManager.Save(GameSettingsAsset.AssetUrl, GameSettingsAsset.CreateFromPackage(package));
+                }
+
                 return Task.FromResult(ResultStatus.Successful);
+            }
+
+            protected override void ComputeParameterHash(BinarySerializationWriter writer)
+            {
+                base.ComputeParameterHash(writer);
+                var gameSettings = GameSettingsAsset.CreateFromPackage(package);
+                writer.Write(gameSettings);
+            }
+
+            private bool IsDefaultScene()
+            {
+                var defaultScene = GameSettingsAsset.GetDefaultScene(package);
+                if (defaultScene == null) return false;
+                return (defaultScene.Location == Url);
             }
 
             public override string ToString()

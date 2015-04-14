@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
@@ -30,6 +31,8 @@ namespace SiliconStudio.Paradox
         private readonly GameFontSystem gameFontSystem;
 
         private readonly LogListener logListener;
+
+        private readonly String settingsAssetURL = "__GameSettings__";
 
         /// <summary>
         /// Gets the graphics device manager.
@@ -142,6 +145,11 @@ namespace SiliconStudio.Paradox
         }
 
         /// <summary>
+        /// Automatically initializes game settings like default scene, resolution, graphics profile.
+        /// </summary>
+        public bool AutoLoadDefaultSettings { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Game"/> class.
         /// </summary>
         public Game()
@@ -191,6 +199,8 @@ namespace SiliconStudio.Paradox
 
             // Creates the graphics device manager
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
+
+            AutoLoadDefaultSettings = true;
         }
 
         protected override void Destroy()
@@ -203,12 +213,25 @@ namespace SiliconStudio.Paradox
 
         protected override void Initialize()
         {
-            base.Initialize();
-
+            // Init assets
             if (Context.InitializeDatabase)
             {
                 InitializeAssetDatabase();
             }
+
+            // Read and set game settings
+            SceneSystem.AutoLoadDefaultScene = AutoLoadDefaultSettings;
+            if (AutoLoadDefaultSettings && Asset.Exists(settingsAssetURL))
+            {
+                var settings = Asset.Load<GameSettings>(settingsAssetURL);
+                var deviceManager = (GraphicsDeviceManager)Services.GetSafeServiceAs<IGraphicsDeviceManager>();
+                if (settings.DefaultGraphicsProfileUsed > 0) deviceManager.PreferredGraphicsProfile = new[] { settings.DefaultGraphicsProfileUsed };
+                if (settings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = settings.DefaultBackBufferWidth;
+                if (settings.DefaultBackBufferHeight > 0) deviceManager.PreferredBackBufferHeight = settings.DefaultBackBufferHeight;
+                SceneSystem.InitialSceneUrl = settings.DefaultSceneUrl;
+            }
+
+            base.Initialize(); 
 
             EffectSystem = new EffectSystem(Services);
             GameSystems.Add(EffectSystem);

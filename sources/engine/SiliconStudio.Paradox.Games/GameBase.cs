@@ -51,7 +51,7 @@ namespace SiliconStudio.Paradox.Games
         private ProfilingState profilingDraw;
         private TimeSpan singleFrameUpdateTime;
         private IGraphicsDeviceService graphicsDeviceService;
-        private IGraphicsDeviceManager graphicsDeviceManager;
+        protected IGraphicsDeviceManager graphicsDeviceManager;
         private ResumeManager resumeManager;
         private bool isEndRunRequired;
         private bool isExiting;
@@ -361,8 +361,8 @@ namespace SiliconStudio.Paradox.Games
 
                 using (var profile = Profiler.Begin(GameProfilingKeys.GameInitialize))
                 {
-                    // Make sure that the device is already created
-                    graphicsDeviceManager.CreateDevice();
+                    // Initialize this instance and all game systems
+                    Initialize();
 
                     // Gets the graphics device service
                     graphicsDeviceService = Services.GetService(typeof(IGraphicsDeviceService)) as IGraphicsDeviceService;
@@ -380,8 +380,8 @@ namespace SiliconStudio.Paradox.Games
                     // Bind Graphics Context enabling initialize to use GL API eg. SetData to texture ...etc
                     BeginDraw();
 
-                    // Initialize this instance and all game systems
-                    Initialize();
+                    // Setup the graphics device if it was not already setup.
+                    SetupGraphicsDeviceEvents();
 
                     LoadContentInternal();
 
@@ -747,9 +747,8 @@ namespace SiliconStudio.Paradox.Games
         /// <summary>Called after the Game and GraphicsDevice are created, but before LoadContent.  Reference page contains code sample.</summary>
         protected virtual void Initialize()
         {
-            // Setup the graphics device if it was not already setup.
-            SetupGraphicsDeviceEvents();
-
+            // Make sure that the device is already created
+            graphicsDeviceManager.CreateDevice();
             GameSystems.Initialize();
         }
 
