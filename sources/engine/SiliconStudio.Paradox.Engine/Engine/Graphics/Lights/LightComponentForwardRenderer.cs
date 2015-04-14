@@ -122,6 +122,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             // TODO: Make this pluggable
             RegisterLightGroupRenderer(typeof(LightDirectional), new LightDirectionalGroupRenderer());
             RegisterLightGroupRenderer(typeof(LightSpot), new LightSpotGroupRenderer());
+            RegisterLightGroupRenderer(typeof(LightPoint), new LightPointGroupRenderer());
             RegisterLightGroupRenderer(typeof(LightAmbient), new LightAmbientRenderer());
             RegisterLightGroupRenderer(typeof(LightSkybox), new LightSkyboxRenderer());
         }
