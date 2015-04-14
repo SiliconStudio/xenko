@@ -107,12 +107,12 @@ namespace SiliconStudio.Paradox.Assets.Model
                     // Apply materials
                     foreach (var modelMaterial in Materials)
                     {
-                        if (modelMaterial.Material == null)
+                        if (modelMaterial.MaterialInstance == null || modelMaterial.MaterialInstance.Material == null)
                         {
                             commandContext.Logger.Warning(string.Format("The material [{0}] is null in the list of materials.", modelMaterial.Name));
                             continue;
-                        }
-                        model.Materials.Add(AttachedReferenceManager.CreateSerializableVersion<Material>(modelMaterial.Material.Id, modelMaterial.Material.Location));
+                        }                       
+                        model.Materials.Add(modelMaterial.MaterialInstance);
                     }
 
                     model.BoundingBox = BoundingBox.Empty;

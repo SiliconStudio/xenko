@@ -31,7 +31,6 @@
     <Compile Include="FbxAssetImporter.cs" />
     <Compile Include="IEntityComponentReference.cs" />
     <Compile Include="IEntityScriptReference.cs" />
-    <Compile Include="MaterialInstance.cs" />
     <Compile Include="ImportAssimpCommand.cs" />
     <Compile Include="ImportFbxCommand.cs" />
     <Compile Include="ImportModelCommand.cs" />

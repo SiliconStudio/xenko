@@ -100,7 +100,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
 
             if (Material != null)
             {
-                model.Materials.Add(Material);
+                model.Materials.Add(new MaterialInstance(Material));
             }
         }
 
