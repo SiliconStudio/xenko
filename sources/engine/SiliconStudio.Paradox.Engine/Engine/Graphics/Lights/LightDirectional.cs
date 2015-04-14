@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
         public override BoundingBox ComputeBounds(Vector3 position, Vector3 direction)
         {
-            throw new NotImplementedException();
+            return BoundingBox.Empty;
         }
 
         protected override float ComputeScreenCoverage(CameraComponent camera, Vector3 position, Vector3 direction, float width, float height)

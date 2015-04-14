@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         /// <summary>
         /// The various UP vectors to try.
         /// </summary>
-        private static readonly Vector3[] VectorUps = { Vector3.UnitZ, Vector3.UnitY, Vector3.UnitX };
+        private static readonly Vector3[] VectorUps = { Vector3.UnitY, Vector3.UnitX, Vector3.UnitZ };
 
         /// <summary>
         /// Base points for frustum corners.
@@ -114,7 +114,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             // TODO: User preference?
             foreach (var vectorUp in VectorUps)
             {
-                if (Vector3.Dot(direction, vectorUp) < (1.0 - 0.0001))
+                if (Math.Abs(Vector3.Dot(direction, vectorUp)) < (1.0 - 0.0001))
                 {
                     side = Vector3.Normalize(Vector3.Cross(vectorUp, direction));
                     upDirection = Vector3.Normalize(Vector3.Cross(direction, side));
@@ -143,14 +143,11 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             shaderData.DepthBias = shadow.BiasParameters.DepthBias;
             shaderData.OffsetScale = shadow.BiasParameters.NormalOffsetScale;
 
-            var cameraDepthRange = camera.FarClipPlane - camera.NearClipPlane;
-            var snapRadiusValue = 512; //(cascadeSplitRatios[cascadeCount-1] - minMaxDistance.X) * cameraDepthRange * (float)Math.Atan(MathUtil.DegreesToRadians(camera.VerticalFieldOfView / 2)) / 3.0f;
-
             // Push a new graphics state
             var graphicsDevice = context.GraphicsDevice;
             graphicsDevice.PushState();
 
-            float splitMaxRatio = minMaxDistance.X;
+            float splitMaxRatio = (minMaxDistance.X - camera.NearClipPlane) / (camera.FarClipPlane - camera.NearClipPlane);
             for (int cascadeLevel = 0; cascadeLevel < cascadeCount; ++cascadeLevel)
             {
                 // Calculate frustum corners for this cascade
@@ -196,8 +193,6 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                         // Snap camera to texel units (so that shadow doesn't jitter when light doesn't change direction but camera is moving)
                         // Technique from ShaderX7 - Practical Cascaded Shadows Maps -  p310-311 
                         var shadowMapHalfSize = lightShadowMap.Size * 0.5f;
-                        side = Vector3.Normalize(Vector3.Cross(Vector3.UnitY, direction));
-                        upDirection = Vector3.Normalize(Vector3.Cross(direction, side));
                         float x = (float)Math.Ceiling(Vector3.Dot(target, upDirection) * shadowMapHalfSize / radius) * radius / shadowMapHalfSize;
                         float y = (float)Math.Ceiling(Vector3.Dot(target, side) * shadowMapHalfSize / radius) * radius / shadowMapHalfSize;
                         float z = Vector3.Dot(target, direction);
@@ -211,7 +206,6 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                     var cascadeBoundWS = BoundingBox.FromPoints(cascadeFrustumCornersWS);
                     target = cascadeBoundWS.Center;
 
-                    upDirection = Vector3.UnitY;
                     // Computes the bouding box of the frustum cascade in light space
                     var lightViewMatrix = Matrix.LookAtLH(cascadeBoundWS.Center, cascadeBoundWS.Center + direction, upDirection);
                     cascadeMinBoundLS = new Vector3(float.MaxValue);
@@ -315,8 +309,12 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         {
             var shadow = (LightDirectionalShadowMap)lightShadowMap.Shadow;
 
-            var minDistance = 0.0f;
-            var maxDistance = 1.0f;
+            var cameraNear = shadowContext.Camera.NearClipPlane;
+            var cameraFar = shadowContext.Camera.FarClipPlane;
+            var cameraRange = cameraFar - cameraNear;
+
+            var minDistance = cameraNear + LightDirectionalShadowMap.DepthRangeParameters.DefaultMinDistance;
+            var maxDistance = cameraNear + LightDirectionalShadowMap.DepthRangeParameters.DefaultMaxDistance;
 
             if (shadow.DepthRange.IsAutomatic)
             {
@@ -324,32 +322,29 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 if (depthReadBack.IsResultAvailable)
                 {
                     var depthMinMax = depthReadBack.DepthMinMax;
-                    var nearClip = shadowContext.Camera.NearClipPlane;
-                    var farClip = shadowContext.Camera.FarClipPlane;
-                    var rangeClip = farClip - nearClip;
-                    var minDepthLinear = ToLinearDepth(depthMinMax.X, ref shadowContext.Camera.ProjectionMatrix);
-                    var maxDepthLinear = ToLinearDepth(depthMinMax.Y, ref shadowContext.Camera.ProjectionMatrix);
-                    minDistance = (minDepthLinear - nearClip) / rangeClip;
-                    maxDistance = (maxDepthLinear - nearClip) / rangeClip;
-                    // Debug.WriteLine("[{0}] MinMaxDepth: ({1}, {2})", context.Time.FrameCount, minDepthLinear, maxDepthLinear);
+                    
+                    minDistance = ToLinearDepth(depthMinMax.X, ref shadowContext.Camera.ProjectionMatrix);
+                    // Reserve 1/3 of the guard distance for the min distance
+                    minDistance = Math.Max(cameraNear, minDistance - shadow.DepthRange.GuardDistance / 3);
+
+                    // Reserve 2/3 of the guard distance for the max distance
+                    var guardMaxDistance = minDistance + shadow.DepthRange.GuardDistance * 2 / 3;
+                    maxDistance = ToLinearDepth(depthMinMax.Y, ref shadowContext.Camera.ProjectionMatrix);
+                    maxDistance = Math.Max(maxDistance, guardMaxDistance);
                 }
             }
             else
             {
-                minDistance = shadow.DepthRange.MinDistance;
-                maxDistance = shadow.DepthRange.MaxDistance;
+                minDistance = cameraNear + shadow.DepthRange.ManualMinDistance;
+                maxDistance = cameraNear + shadow.DepthRange.ManualMaxDistance;
             }
 
             var manualPartitionMode = shadow.PartitionMode as LightDirectionalShadowMap.PartitionManual;
             var logarithmicPartitionMode = shadow.PartitionMode as LightDirectionalShadowMap.PartitionLogarithmic;
             if (logarithmicPartitionMode != null)
             {
-                var nearClip = shadowContext.Camera.NearClipPlane;
-                var farClip = shadowContext.Camera.FarClipPlane;
-                var rangeClip = farClip - nearClip;
-
-                var minZ = nearClip + minDistance * rangeClip;
-                var maxZ = nearClip + maxDistance * rangeClip;
+                var minZ = minDistance;
+                var maxZ = maxDistance;
 
                 var range = maxZ - minZ;
                 var ratio = maxZ / minZ;
@@ -362,7 +357,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                     float logZ = (float)(minZ * Math.Pow(ratio, distrib));
                     float uniformZ = minZ + range * distrib;
                     float distance = MathUtil.Lerp(uniformZ, logZ, logRatio);
-                    cascadeSplitRatios[cascadeLevel] = (distance - nearClip) / rangeClip;  // Normalize cascade splits to [0,1]
+                    cascadeSplitRatios[cascadeLevel] = distance;
                 }
             }
             else if (manualPartitionMode != null)
@@ -383,6 +378,12 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                     cascadeSplitRatios[2] = minDistance + manualPartitionMode.SplitDistance2 * maxDistance;
                     cascadeSplitRatios[3] = minDistance + manualPartitionMode.SplitDistance3 * maxDistance;
                 }
+            }
+
+            // Convert distance splits to ratios cascade in the range [0, 1]
+            for (int i = 0; i < cascadeSplitRatios.Length; i++)
+            {
+                cascadeSplitRatios[i] = (cascadeSplitRatios[i] - cameraNear) / cameraRange;
             }
 
             return new Vector2(minDistance, maxDistance);

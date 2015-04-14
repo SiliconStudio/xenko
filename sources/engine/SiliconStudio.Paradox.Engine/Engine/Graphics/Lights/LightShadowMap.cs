@@ -91,7 +91,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             /// </summary>
             public ShadowMapBiasParameters()
             {
-                DepthBias = 0.001f;
+                DepthBias = 0.01f;
             }
 
             /// <summary>
@@ -99,7 +99,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             /// </summary>
             /// <value>The bias.</value>
             [DataMember(10)]
-            [DefaultValue(0.001f)]
+            [DefaultValue(0.01f)]
             public float DepthBias { get; set; }
 
             /// <summary>

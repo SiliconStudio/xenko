@@ -61,6 +61,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
         private LightParametersPermutationEntry currentModelShadersParameters;
 
+        private bool currentShadowReceiver;
+
         private readonly Dictionary<RenderModel, RenderModelLights> modelToLights;
 
         /// <summary>
@@ -182,6 +184,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
             currentModelLightShadersPermutationEntry = null;
             currentModelShadersParameters = null;
+            currentShadowReceiver = true;
 
             // Clear the cache of parameter entries
             lightParameterEntries.Clear();
@@ -456,16 +459,18 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 return;
             }
 
-            if (currentModelLightShadersPermutationEntry != renderModelLights.LightShadersPermutation || currentModelShadersParameters != renderModelLights.Parameters)
+            // TODO: copy shadow receiver info to mesh
+            var isShadowReceiver = renderMesh.RenderModel.ModelComponent.IsShadowReceiver;
+            if (renderMesh.MaterialInstance != null)
+                isShadowReceiver = isShadowReceiver && renderMesh.MaterialInstance.IsShadowReceiver;
+
+            if (currentModelLightShadersPermutationEntry != renderModelLights.LightShadersPermutation || currentModelShadersParameters != renderModelLights.Parameters || currentShadowReceiver != isShadowReceiver)
             {
                 currentModelLightShadersPermutationEntry = renderModelLights.LightShadersPermutation;
                 currentModelShadersParameters = renderModelLights.Parameters;
+                currentShadowReceiver = isShadowReceiver;
 
-                var isShadowReceiver = renderMesh.RenderModel.ModelComponent.IsShadowReceiver;
-                if (renderMesh.MaterialInstance != null)
-                    isShadowReceiver = isShadowReceiver && renderMesh.MaterialInstance.IsShadowReceiver;
-
-                if (isShadowReceiver)
+                if (currentShadowReceiver)
                 {
                     currentModelShadersParameters.Parameters.CopySharedTo(contextParameters);
                 }
