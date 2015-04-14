@@ -10,6 +10,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects.Materials;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Engine.Graphics.Materials
 {
@@ -21,6 +22,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Materials
     public class MaterialDiffuseMapFeature : IMaterialDiffuseFeature, IMaterialStreamProvider
     {
         public static readonly MaterialStreamDescriptor DiffuseStream = new MaterialStreamDescriptor("Diffuse", "matDiffuse", MaterialKeys.DiffuseValue.PropertyType);
+        public static readonly MaterialStreamDescriptor ColorBaseStream = new MaterialStreamDescriptor("Color Base", "matColorBase", MaterialKeys.DiffuseValue.PropertyType);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialDiffuseMapFeature"/> class.
@@ -51,11 +53,21 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Materials
 
         public void Visit(MaterialGeneratorContext context)
         {
-            context.SetStream(DiffuseStream.Stream, DiffuseMap, MaterialKeys.DiffuseMap, MaterialKeys.DiffuseValue, Color.White);
+            if (DiffuseMap != null)
+            {
+                var computeColorSource = DiffuseMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.DiffuseMap, MaterialKeys.DiffuseValue, Color.White));
+                var mixin = new ShaderMixinSource();
+                mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceDiffuse"));
+                mixin.AddComposition("diffuseMap", computeColorSource);
+                context.UseStream(MaterialShaderStage.Pixel, DiffuseStream.Stream);
+                context.UseStream(MaterialShaderStage.Pixel, ColorBaseStream.Stream);
+                context.AddSurfaceShader(MaterialShaderStage.Pixel, mixin);
+            }
         }
 
         public IEnumerable<MaterialStreamDescriptor> GetStreams()
         {
+            yield return ColorBaseStream;
             yield return DiffuseStream;
         }
     }

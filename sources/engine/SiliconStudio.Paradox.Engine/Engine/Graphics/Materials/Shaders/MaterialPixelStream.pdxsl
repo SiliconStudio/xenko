@@ -11,6 +11,9 @@ namespace SiliconStudio.Paradox.Effects.Materials
         // Surface attributes
         stage stream float3 matNormal;
 
+        // The color base attributes
+        stage stream float4 matColorBase;
+
         // Diffuse attributes
         stage stream float4 matDiffuse;
 
