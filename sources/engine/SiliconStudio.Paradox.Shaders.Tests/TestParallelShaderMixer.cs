@@ -85,7 +85,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             parameters.Set(CompilerParameters.GraphicsPlatformKey, GraphicsPlatform.Direct3D11);
             parameters.Set(CompilerParameters.GraphicsProfileKey, GraphicsProfile.Level_11_0);
 
-            var mixinTree = new ShaderMixinSourceTree() { Name = "TestParallelMix", Mixin = mixinSource, UsedParameters = parameters };
+            var mixinTree = new ShaderMixinSource() { Name = "TestParallelMix", UsedParameters = parameters };
 
             var result = effectCompiler.Compile(mixinTree, new CompilerParameters()).WaitForResult();
 

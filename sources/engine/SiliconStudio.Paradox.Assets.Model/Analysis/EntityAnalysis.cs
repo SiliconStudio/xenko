@@ -3,8 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Assets.Model.Analysis
@@ -69,6 +72,24 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
                             continue;
                     }
                 }
+                else if (entityLink.EntityScript != null)
+                {
+                    var containingEntity = entityLink.EntityScript.Entity;
+                    if (containingEntity == null)
+                    {
+                        throw new InvalidOperationException("Found a reference to a script which doesn't have any entity");
+                    }
+
+                    Entity realEntity;
+                    ScriptComponent scriptComponent;
+                    if (entityHierarchy.Entities.TryGetValue(containingEntity.Id, out realEntity)
+                        && realEntity.Components.TryGetValue(ScriptComponent.Key, out scriptComponent))
+                    {
+                        obj = scriptComponent.Scripts.FirstOrDefault(x => x.Id == entityLink.EntityScript.Id);
+                        if (obj == entityLink.EntityScript)
+                            continue;
+                    }
+                }
                 else
                 {
                     Entity realEntity;
@@ -122,6 +143,8 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
         {
             private int componentDepth;
 
+            private int scriptComponentDepth;
+
             public EntityReferenceAnalysis()
             {
                 var result = new Result();
@@ -134,6 +157,7 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
             public override void VisitObject(object obj, ObjectDescriptor descriptor, bool visitMembers)
             {
                 bool processObject = true;
+                ++scriptComponentDepth;
 
                 if (componentDepth >= 1)
                 {
@@ -151,15 +175,25 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
                         processObject = false;
                     }
                 }
+                if (scriptComponentDepth != 2 && obj is Script)
+                {
+                    Result.EntityReferences.Add(new EntityLink((Script)obj, CurrentPath.Clone()));
+                    processObject = false;
+                }
 
                 if (obj is EntityComponent)
                     componentDepth++;
+
+                if (obj is ScriptComponent)
+                    scriptComponentDepth = 0;
 
                 if (processObject)
                     base.VisitObject(obj, descriptor, visitMembers);
 
                 if (obj is EntityComponent)
                     componentDepth--;
+
+                --scriptComponentDepth;
             }
         }
 
@@ -167,11 +201,13 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
         {
             public readonly Entity Entity;
             public readonly EntityComponent EntityComponent;
+            public readonly Script EntityScript;
             public readonly MemberPath Path;
 
             public EntityLink(Entity entity, MemberPath path)
             {
                 Entity = entity;
+                EntityScript = null;
                 EntityComponent = null;
                 Path = path;
             }
@@ -179,7 +215,16 @@ namespace SiliconStudio.Paradox.Assets.Model.Analysis
             public EntityLink(EntityComponent entityComponent, MemberPath path)
             {
                 Entity = null;
+                EntityScript = null;
                 EntityComponent = entityComponent;
+                Path = path;
+            }
+
+            public EntityLink(Script script, MemberPath path)
+            {
+                Entity = null;
+                EntityScript = script;
+                EntityComponent = null;
                 Path = path;
             }
         }

@@ -1,52 +1,48 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.Effects
 {
     /// <summary>
-    /// Groups entity based on a flag.
+    /// An entity group.
     /// </summary>
-    [Flags]
     [DataContract]
     public enum EntityGroup : uint
     {
-        None = 0,
-
-        Default = Group1,
-        Group1 = 1 << 0,
-        Group2 = 1 << 1,
-        Group3 = 1 << 2,
-        Group4 = 1 << 3,
-        Group5 = 1 << 4,
-        Group6 = 1 << 5,
-        Group7 = 1 << 6,
-        Group8 = 1 << 7,
-        Group9 = 1 << 8,
-        Group10 = 1 << 9,
-        Group11 = 1 << 10,
-        Group12 = 1 << 11,
-        Group13 = 1 << 12,
-        Group14 = 1 << 13,
-        Group15 = 1 << 14,
-        Group16 = 1 << 15,
-        Group17 = 1 << 16,
-        Group18 = 1 << 17,
-        Group19 = 1 << 18,
-        Group20 = 1 << 19,
-        Group21 = 1 << 20,
-        Group22 = 1 << 21,
-        Group23 = 1 << 22,
-        Group24 = 1 << 23,
-        Group25 = 1 << 24,
-        Group26 = 1 << 25,
-        Group27 = 1 << 26,
-        Group28 = 1 << 27,
-        Group29 = 1 << 28,
-        Group30 = 1 << 29,
-        Group31 = 1 << 30,
-
-        All = 0xffffffff
+        // NOTE: DO NOT CHANGE VALUES HERE
+        Group0  = 0,
+        Group1  = 1,
+        Group2  = 2,
+        Group3  = 3,
+        Group4  = 4,
+        Group5  = 5,
+        Group6  = 6,
+        Group7  = 7,
+        Group8  = 8,
+        Group9  = 9,
+        Group10 = 10,
+        Group11 = 11,
+        Group12 = 12,
+        Group13 = 13,
+        Group14 = 14,
+        Group15 = 15,
+        Group16 = 16,
+        Group17 = 17,
+        Group18 = 18,
+        Group19 = 19,
+        Group20 = 20,
+        Group21 = 21,
+        Group22 = 22,
+        Group23 = 23,
+        Group24 = 24,
+        Group25 = 25,
+        Group26 = 26,
+        Group27 = 27,
+        Group28 = 28,
+        Group29 = 29,
+        Group30 = 30,
+        Group31 = 31,
     }
 }

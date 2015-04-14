@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
             streams.lightColor = LightColor[lightIndex];
             // TODO: Add support for disk based Directional light
-            streams.lightDirectionWS = -normalize(LightDirectionsWS[lightIndex]);
+            streams.lightDirectionWS = -LightDirectionsWS[lightIndex];
 
             // Base will compute shadow and Color with NdotL
             base.PrepareDirectLight(lightIndex);

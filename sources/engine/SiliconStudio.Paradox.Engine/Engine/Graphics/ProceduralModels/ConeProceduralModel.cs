@@ -21,8 +21,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
         /// </summary>
         public ConeProceduralModel()
         {
-            Height = 100.0f;
-            Radius = 100.0f;
+            Height = 1.0f;
+            Radius = 1.0f;
             Tessellation = 16;
         }
 
@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
         /// </summary>
         /// <value>The height.</value>
         [DataMember(10)]
-        [DefaultValue(100.0f)]
+        [DefaultValue(1.0f)]
         public float Height { get; set; }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
         /// </summary>
         /// <value>The diameter.</value>
         [DataMember(20)]
-        [DefaultValue(100.0f)]
+        [DefaultValue(1.0f)]
         public float Radius { get; set; }
 
         /// <summary>

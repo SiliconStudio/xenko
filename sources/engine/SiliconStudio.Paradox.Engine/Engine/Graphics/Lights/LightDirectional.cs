@@ -18,10 +18,22 @@ namespace SiliconStudio.Paradox.Effects.Lights
     {
         public LightDirectional()
         {
-            ShadowImportance = LightShadowImportance.High;
+            Shadow = new LightDirectionalShadowMap { Importance = LightShadowImportance.High };
         }
 
-        // TODO: Add support for disk based sun
+        public override bool HasBoundingBox
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public override BoundingBox ComputeBounds(Vector3 position, Vector3 direction)
+        {
+            return BoundingBox.Empty;
+        }
+
         protected override float ComputeScreenCoverage(CameraComponent camera, Vector3 position, Vector3 direction, float width, float height)
         {
             // As the directional light is covering the whole screen, we take the max of current width, height

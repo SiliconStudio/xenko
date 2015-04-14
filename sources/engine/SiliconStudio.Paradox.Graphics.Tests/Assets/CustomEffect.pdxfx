@@ -6,7 +6,6 @@ namespace SiliconStudio.Paradox.Graphics.Tests
     {
         using params CustomShaderKeys;
 
-        mixin clone;
 		if (CustomShaderKeys.SwitchEffectLevel < 10)
 		{
 			mixin CustomShader;

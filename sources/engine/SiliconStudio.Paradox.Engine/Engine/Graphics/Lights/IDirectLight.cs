@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Effects.Lights
 {
@@ -38,14 +39,21 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// Gets or sets the shadow.
         /// </summary>
         /// <value>The shadow.</value>
-        ILightShadow Shadow { get; set; }
+        LightShadowMap Shadow { get; }
 
         /// <summary>
-        /// Gets the importance of the shadow. See remarks.
+        /// Gets a value indicating whether this instance has a bounding box.
         /// </summary>
-        /// <returns>System.Single.</returns>
-        /// <remarks>The higher the importance is, the higher the cost of shadow computation is costly</remarks>
-        LightShadowImportance ShadowImportance { get; set; }
+        /// <value><c>true</c> if this instance has a bounding box; otherwise, <c>false</c>.</value>
+        bool HasBoundingBox { get; }
+
+        /// <summary>
+        /// Computes the bounds of this light..
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="direction">The direction.</param>
+        /// <returns>BoundingBox.</returns>
+        BoundingBox ComputeBounds(Vector3 position, Vector3 direction);
 
         /// <summary>
         /// Computes the screen coverage of this light in pixel.

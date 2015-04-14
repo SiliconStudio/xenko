@@ -1,19 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 
-using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 
 using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Games;
 
 namespace SiliconStudio.Paradox.Engine
 {
@@ -25,6 +19,7 @@ namespace SiliconStudio.Paradox.Engine
         public AnimationProcessor()
             : base(new PropertyKey[] { ModelComponent.Key, AnimationComponent.Key })
         {
+            Order = -500;
         }
 
         protected override AssociatedData GenerateAssociatedData(Entity entity)
@@ -39,7 +34,7 @@ namespace SiliconStudio.Paradox.Engine
             data.MeshAnimationUpdater = new MeshAnimationUpdater();
         }
 
-        protected override void OnEntityRemoved(Entity entity, AnimationProcessor.AssociatedData data)
+        protected override void OnEntityRemoved(Entity entity, AssociatedData data)
         {
             base.OnEntityRemoved(entity, data);
 
@@ -151,8 +146,7 @@ namespace SiliconStudio.Paradox.Engine
                     if (playingAnimation.RemainingTime > TimeSpan.Zero)
                     {
                         playingAnimation.Weight += (playingAnimation.WeightTarget - playingAnimation.Weight)*
-                                                   ((float)time.Elapsed.Ticks /
-                                                    (float)playingAnimation.RemainingTime.Ticks);
+                                                   ((float)time.Elapsed.Ticks / playingAnimation.RemainingTime.Ticks);
                         playingAnimation.RemainingTime -= time.Elapsed;
                         if (playingAnimation.RemainingTime <= TimeSpan.Zero)
                         {

@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Effects
     {
         internal partial class ParadoxEffectBase  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "ShaderBase");
                 context.Mixin(mixin, "ShadingBase");
@@ -32,23 +32,24 @@ namespace SiliconStudio.Paradox.Effects
                     context.Mixin(mixin, "MaterialSurfaceVertexStageCompositor");
 
                     {
-                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        var __mixinToCompose__ = context.GetParam(MaterialKeys.VertexStageSurfaceShaders);
+                        var __subMixin = new ShaderMixinSource();
                         context.PushComposition(mixin, "materialVertexStage", __subMixin);
-                        context.Mixin(__subMixin, context.GetParam(MaterialKeys.VertexStageSurfaceShaders));
+                        context.Mixin(__subMixin, __mixinToCompose__);
                         context.PopComposition();
                     }
 
                     {
-                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        var __mixinToCompose__ = context.GetParam(MaterialKeys.VertexStageStreamInitializer);
+                        var __subMixin = new ShaderMixinSource();
                         context.PushComposition(mixin, "streamInitializerVertexStage", __subMixin);
-                        context.Mixin(__subMixin, context.GetParam(MaterialKeys.VertexStageStreamInitializer));
+                        context.Mixin(__subMixin, __mixinToCompose__);
                         context.PopComposition();
                     }
                 }
                 context.Mixin(mixin, "TransformationBase");
                 context.Mixin(mixin, "NormalStream");
                 context.Mixin(mixin, "TransformationWAndVP");
-                context.Mixin(mixin, "PositionVertexTransform");
                 if (context.GetParam(MaterialKeys.HasNormalMap))
                 {
                     context.Mixin(mixin, "NormalFromNormalMapping");
@@ -63,7 +64,7 @@ namespace SiliconStudio.Paradox.Effects
                     {
                         context.SetParam(MaterialKeys.SkinningMaxBones, context.GetParam(MaterialKeys.SkinningBones));
                     }
-                    mixin.Mixin.AddMacro("SkinningMaxBones", context.GetParam(MaterialKeys.SkinningMaxBones));
+                    mixin.AddMacro("SkinningMaxBones", context.GetParam(MaterialKeys.SkinningMaxBones));
                     context.Mixin(mixin, "TransformationSkinning");
                     if (context.GetParam(MaterialKeys.HasSkinningNormal))
                     {
@@ -93,42 +94,45 @@ namespace SiliconStudio.Paradox.Effects
                         context.Mixin(mixin, "MaterialSurfaceDomainStageCompositor");
 
                         {
-                            var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                            var __mixinToCompose__ = context.GetParam(MaterialKeys.DomainStageSurfaceShaders);
+                            var __subMixin = new ShaderMixinSource();
                             context.PushComposition(mixin, "materialDomainStage", __subMixin);
-                            context.Mixin(__subMixin, context.GetParam(MaterialKeys.DomainStageSurfaceShaders));
+                            context.Mixin(__subMixin, __mixinToCompose__);
                             context.PopComposition();
                         }
 
                         {
-                            var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                            var __mixinToCompose__ = context.GetParam(MaterialKeys.DomainStageStreamInitializer);
+                            var __subMixin = new ShaderMixinSource();
                             context.PushComposition(mixin, "streamInitializerDomainStage", __subMixin);
-                            context.Mixin(__subMixin, context.GetParam(MaterialKeys.DomainStageStreamInitializer));
+                            context.Mixin(__subMixin, __mixinToCompose__);
                             context.PopComposition();
                         }
                     }
                 }
-
+                var extensionPostVertexStage = context.GetParam(ParadoxEffectBaseKeys.ExtensionPostVertexStageShader);
+                if (extensionPostVertexStage != null)
                 {
-                    var __subMixin = new ShaderMixinSourceTree() { Name = "ModelComponentPickingEffect" };
-                    context.BeginChild(__subMixin);
-                    context.Mixin(__subMixin, "ModelComponentPickingEffect");
-                    context.EndChild();
+                    context.Mixin(mixin, (extensionPostVertexStage));
+                    return;
                 }
                 if (context.GetParam(MaterialKeys.PixelStageSurfaceShaders) != null)
                 {
                     context.Mixin(mixin, "MaterialSurfacePixelStageCompositor");
 
                     {
-                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        var __mixinToCompose__ = context.GetParam(MaterialKeys.PixelStageSurfaceShaders);
+                        var __subMixin = new ShaderMixinSource();
                         context.PushComposition(mixin, "materialPixelStage", __subMixin);
-                        context.Mixin(__subMixin, context.GetParam(MaterialKeys.PixelStageSurfaceShaders));
+                        context.Mixin(__subMixin, __mixinToCompose__);
                         context.PopComposition();
                     }
 
                     {
-                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        var __mixinToCompose__ = context.GetParam(MaterialKeys.PixelStageStreamInitializer);
+                        var __subMixin = new ShaderMixinSource();
                         context.PushComposition(mixin, "streamInitializerPixelStage", __subMixin);
-                        context.Mixin(__subMixin, context.GetParam(MaterialKeys.PixelStageStreamInitializer));
+                        context.Mixin(__subMixin, __mixinToCompose__);
                         context.PopComposition();
                     }
                     if (context.GetParam(MaterialKeys.PixelStageSurfaceFilter) != null)
@@ -144,9 +148,10 @@ namespace SiliconStudio.Paradox.Effects
                     {
 
                         {
-                            var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                            var __mixinToCompose__ = (directLightGroup);
+                            var __subMixin = new ShaderMixinSource();
                             context.PushCompositionArray(mixin, "directLightGroups", __subMixin);
-                            context.Mixin(__subMixin, (directLightGroup));
+                            context.Mixin(__subMixin, __mixinToCompose__);
                             context.PopComposition();
                         }
                     }
@@ -159,21 +164,14 @@ namespace SiliconStudio.Paradox.Effects
                     {
 
                         {
-                            var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                            var __mixinToCompose__ = (environmentLight);
+                            var __subMixin = new ShaderMixinSource();
                             context.PushCompositionArray(mixin, "environmentLights", __subMixin);
-                            context.Mixin(__subMixin, (environmentLight));
+                            context.Mixin(__subMixin, __mixinToCompose__);
                             context.PopComposition();
                         }
                     }
                 }
-                if (context.GetParam(LightingKeys.CastShadows))
-
-                    {
-                        var __subMixin = new ShaderMixinSourceTree() { Name = "ShadowMapCaster" };
-                        context.BeginChild(__subMixin);
-                        context.Mixin(__subMixin, "ShadowMapCaster");
-                        context.EndChild();
-                    }
             }
 
             [ModuleInitializer]

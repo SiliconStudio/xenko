@@ -61,6 +61,7 @@
     <Compile Include="CategoryAttribute.cs" />
     <Compile Include="Collections\ITrackingCollectionChanged.cs" />
     <Compile Include="Collections\KeyedSortedList.cs" />
+    <Compile Include="Collections\PoolListStruct.cs" />
     <Compile Include="Collections\SafeList.cs" />
     <Compile Include="Annotations\DataMemberRangeAttribute.cs" />
     <Compile Include="Diagnostics\ForwardingLoggerResult.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="Reflection\IObjectFactory.cs" />
     <Compile Include="Reflection\ObjectFactory.cs" />
     <Compile Include="Reflection\ObjectFactoryAttribute.cs" />
+    <Compile Include="Storage\ObjectIdSimpleBuilder.cs" />
     <Compile Include="ThreadHelper.WindowsRuntime.cs" />
     <Compile Include="Collections\PriorityNodeQueue.cs" />
     <Compile Include="DataMemberCustomSerializerAttribute.cs" />

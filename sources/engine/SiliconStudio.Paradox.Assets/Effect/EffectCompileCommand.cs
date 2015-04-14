@@ -63,10 +63,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
             var compiler = GetOrCreateEffectCompiler(context);
 
             // Get main effect name (before the first dot)
-            string subEffect;
-            var mainEffectName = EffectCompilerBase.GetEffectName(effectName, out subEffect);
-
-            var isPdxfx = ShaderMixinManager.Contains(mainEffectName);
+            var isPdxfx = ShaderMixinManager.Contains(effectName);
             var source = isPdxfx ? new ShaderMixinGeneratorSource(effectName) : (ShaderSource)new ShaderClassSource(effectName);
 
             int permutationCount;
@@ -88,7 +85,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
             }
 
             // Register all dependencies
-            var allSources = new HashSet<string>(compilerResults.Bytecodes.SelectMany(bytecode => bytecode.Value.WaitForResult().Bytecode.HashSources).Select(keyPair => keyPair.Key));
+            var allSources = new HashSet<string>(compilerResults.Bytecode.WaitForResult().Bytecode.HashSources.Select(keyPair => keyPair.Key));
             foreach (var className in allSources)
             {
                 commandContext.RegisterInputDependency(new ObjectUrl(UrlType.Internal, EffectCompilerBase.GetStoragePathFromShaderType(className)));

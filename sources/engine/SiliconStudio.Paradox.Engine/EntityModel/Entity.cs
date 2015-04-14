@@ -83,7 +83,7 @@ namespace SiliconStudio.Paradox.EntityModel
             Transform = new TransformComponent();
             transform.Position = position;
 
-            Group = EntityGroup.Default;
+            Group = EntityGroup.Group1;
         }
 
         [DataMember(0)] // Name is serialized
@@ -120,7 +120,7 @@ namespace SiliconStudio.Paradox.EntityModel
         /// </summary>
         /// <value>The group.</value>
         [DataMember(10)]
-        [DefaultValue(EntityGroup.Default)]
+        [DefaultValue(EntityGroup.Group1)]
         public EntityGroup Group { get; set; }
 
         /// <summary>

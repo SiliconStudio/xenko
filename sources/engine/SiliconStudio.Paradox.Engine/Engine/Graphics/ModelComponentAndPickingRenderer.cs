@@ -2,19 +2,16 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Lights;
 
 namespace SiliconStudio.Paradox.Engine.Graphics
 {
     /// <summary>
-    /// The main renderer for <see cref="ModelComponent"/> and <see cref="LightComponent"/>.
+    /// The main renderer for <see cref="ModelComponent"/>.
     /// </summary>
-    public class ModelAndLightComponentRenderer : EntityComponentRendererBase
+    public class ModelComponentAndPickingRenderer : EntityComponentRendererBase
     {
-        private LightModelRendererForward lightModelRenderer;
         private ModelComponentRenderer modelRenderer;
-
-        private SceneCameraRenderer SceneCameraRenderer { get {  return (SceneCameraRenderer)SceneEntityRenderer; } }
+        private bool isPickingRendering;
 
         public override bool SupportPicking { get { return true; } }
 
@@ -24,19 +21,21 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
             var forwardMode = SceneCameraRenderer.Mode as CameraRendererModeForward;
             var effectName =  (forwardMode != null? forwardMode.ModelEffect: null) ?? "";
-            if (Context.IsPicking())
-                effectName += ".ModelComponentPickingEffect";
+            isPickingRendering = Context.IsPicking();
+            if (isPickingRendering)
+            {
+                effectName += ".Picking";
+                Context.Parameters.Set(ParadoxEffectBaseKeys.ExtensionPostVertexStageShader, "ModelComponentPickingEffect");
+            }
 
-            // TODO: Add support for mixin overrides
             modelRenderer = ToLoadAndUnload(new ModelComponentRenderer(effectName));
-            lightModelRenderer = new LightModelRendererForward(modelRenderer);
+
+            // Setup the ModelComponentRenderer as the main rendeer for the scene Camera Renderer
+            ModelComponentRenderer.Attach(SceneCameraRenderer, modelRenderer);
         }
 
         protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
-            // TODO: Add support for shadows
-            // TODO: We call it directly here but it might be plugged into 
-            lightModelRenderer.PrepareLights(context);
             modelRenderer.Prepare(context, opaqueList, transparentList);
         }
 

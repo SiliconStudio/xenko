@@ -94,7 +94,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
             camera = new TestCamera();
             CameraComponent = camera.Camera;
-            Script.AddScript(camera);
+            Script.Add(camera);
 
             LightingKeys.EnableFixedAmbientLight(GraphicsDevice.Parameters, true);
             GraphicsDevice.Parameters.Set(EnvironmentLightKeys.GetParameterKey(LightSimpleAmbientKeys.AmbientLight, 0), (Color3)Color.White);

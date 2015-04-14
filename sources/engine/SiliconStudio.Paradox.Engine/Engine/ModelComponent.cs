@@ -4,7 +4,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
+using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Lights;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Core;
@@ -16,7 +19,7 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("ModelComponent")]
     [Display(110, "Model")]
-    [DefaultEntityComponentRenderer(typeof(ModelAndLightComponentRenderer))]
+    [DefaultEntityComponentRenderer(typeof(ModelComponentAndPickingRenderer))]
     [DefaultEntityComponentProcessor(typeof(ModelProcessor))]
     public sealed class ModelComponent : EntityComponent, IModelInstance
     {
@@ -42,6 +45,8 @@ namespace SiliconStudio.Paradox.Engine
         {
             Parameters = new ParameterCollection();
             Model = model;
+            IsShadowCaster = true;
+            IsShadowReceiver = true;
         }
 
         /// <summary>
@@ -99,14 +104,47 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The draw order.
         /// </value>
-        [DataMember(15)]
+        [DataMember(30)]
         public float DrawOrder { get; set; }
+
+        /// <summary>
+        /// Gets or sets a boolean indicating if this model component is casting shadows.
+        /// </summary>
+        /// <value>A boolean indicating if this model component is casting shadows.</value>
+        [DataMember(40)]
+        [DefaultValue(true)]
+        [Display("Cast Shadows?")]
+        public bool IsShadowCaster { get; set; }
+
+        /// <summary>
+        /// Gets or sets a boolean indicating if this model component is receiving shadows.
+        /// </summary>
+        /// <value>A boolean indicating if this model component is receiving shadows.</value>
+        [DataMember(40)]
+        [DefaultValue(true)]
+        [Display("Receive Shadows?")]
+        public bool IsShadowReceiver { get; set; }
 
         /// <summary>
         /// Gets the parameters used to render this mesh.
         /// </summary>
         /// <value>The parameters.</value>
+        [DataMember(50)]
         public ParameterCollection Parameters { get; private set; }
+
+        /// <summary>
+        /// Gets the bounding box in world space.
+        /// </summary>
+        /// <value>The bounding box.</value>
+        [DataMemberIgnore]
+        public BoundingBox BoundingBox;
+
+        /// <summary>
+        /// Gets the bounding sphere in world space.
+        /// </summary>
+        /// <value>The bounding sphere.</value>
+        [DataMemberIgnore]
+        public BoundingSphere BoundingSphere;
 
         private void ModelUpdated()
         {
@@ -115,13 +153,54 @@ namespace SiliconStudio.Paradox.Engine
                 if (modelViewHierarchy != null)
                 {
                     // Reuse previous ModelViewHierarchy
-                    modelViewHierarchy.Initialize(model);
+                    modelViewHierarchy.Initialize(model.Hierarchy != null ? model.Hierarchy.Nodes : null);
                 }
                 else
                 {
                     modelViewHierarchy = new ModelViewHierarchyUpdater(model);
                 }
             }
+        }
+
+        internal void Update(ref Matrix worldMatrix)
+        {
+            // Update model view hierarchy node matrices
+            modelViewHierarchy.NodeTransformations[0].LocalMatrix = worldMatrix;
+            modelViewHierarchy.UpdateMatrices();
+
+            // Update the bounding sphere / bounding box in world space
+            var meshes = Model.Meshes;
+            var modelBoundingSphere = new BoundingSphere();
+            var modelBoundingBox = new BoundingBox();
+            bool hasBoundingBox = false;
+            Matrix world;
+            foreach (var mesh in meshes)
+            {
+                var meshBoundingSphere = mesh.BoundingSphere;
+
+                modelViewHierarchy.GetWorldMatrix(mesh.NodeIndex, out world);
+                Vector3.TransformCoordinate(ref meshBoundingSphere.Center, ref world, out meshBoundingSphere.Center);
+                BoundingSphere.Merge(ref modelBoundingSphere, ref meshBoundingSphere, out modelBoundingSphere);
+
+                var boxExt = new BoundingBoxExt(mesh.BoundingBox);
+                boxExt.Transform(world);
+                var meshBox = (BoundingBox)boxExt;
+
+                if (hasBoundingBox)
+                {
+                    BoundingBox.Merge(ref modelBoundingBox, ref meshBox, out modelBoundingBox);
+                }
+                else
+                {
+                    modelBoundingBox = meshBox;
+                }
+
+                hasBoundingBox = true;
+            }
+
+            // Update the bounds
+            BoundingBox = modelBoundingBox;
+            BoundingSphere = modelBoundingSphere;
         }
 
         public override PropertyKey GetDefaultKey()

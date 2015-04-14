@@ -26,7 +26,7 @@ namespace Test7
     {
         internal partial class DefaultSimpleParams  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "A");
                 context.Mixin(mixin, "B");
@@ -36,7 +36,7 @@ namespace Test7
                     mixin.Mixin.AddMacro("param2", context.GetParam(TestParameters.param2));
 
                     {
-                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        var __subMixin = new ShaderMixinSource() { Parent = mixin };
                         context.PushComposition(mixin, "x", __subMixin);
                         context.Mixin(__subMixin, "X");
                         context.PopComposition();
@@ -48,7 +48,7 @@ namespace Test7
                     mixin.Mixin.AddMacro("Test", context.GetParam(TestParameters.param3));
 
                     {
-                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        var __subMixin = new ShaderMixinSource() { Parent = mixin };
                         context.PushComposition(mixin, "y", __subMixin);
                         context.Mixin(__subMixin, "Y");
                         context.PopComposition();

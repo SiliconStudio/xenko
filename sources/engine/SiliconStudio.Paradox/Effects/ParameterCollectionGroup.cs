@@ -78,7 +78,7 @@ namespace SiliconStudio.Paradox.Effects
 
             // Optimization: List is already prepared (with previous SetKeyMapping() call)
             var collection = parameterCollections[0];
-            var keys = collection.keys;
+            var keys = collection.IndexedInternalValues;
             for (int i = 0; i < keys.Length; ++i)
             {
                 var internalValue = keys[i];
@@ -89,7 +89,7 @@ namespace SiliconStudio.Paradox.Effects
             // Iterate over parameter collections
             for (int levelIndex = 1; levelIndex < parameterCollections.Length; ++levelIndex)
             {
-                var level = parameterCollections[levelIndex].valueList;
+                var level = parameterCollections[levelIndex].InternalValues;
                 int index = 0;
                 var currentHash = sortedKeyHashes[index];
                 int internalValueCount = level.Count;

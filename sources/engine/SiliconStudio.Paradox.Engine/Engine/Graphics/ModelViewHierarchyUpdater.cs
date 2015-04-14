@@ -37,29 +37,27 @@ namespace SiliconStudio.Paradox.Effects
         /// <param name="model">The model.</param>
         public ModelViewHierarchyUpdater(Model model)
         {
-            Initialize(model);
+            if (model == null) throw new ArgumentNullException("model");
+            Initialize(model.Hierarchy != null ? model.Hierarchy.Nodes : null);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ModelViewHierarchyUpdater"/> class.
+        /// Initializes a new instance of the <see cref="ModelViewHierarchyUpdater" /> class.
         /// </summary>
-        /// <param name="nodes">The model view nodes.</param>
-        public ModelViewHierarchyUpdater(ModelNodeDefinition[] nodes)
+        /// <param name="newNodes">The new nodes.</param>
+        public ModelViewHierarchyUpdater(ModelNodeDefinition[] newNodes)
         {
-            Initialize(nodes);
+            Initialize(newNodes);
         }
 
-        public void Initialize(Model model)
+        public void Initialize(ModelNodeDefinition[] newNodes)
         {
-            Initialize(model.Hierarchy != null ? model.Hierarchy.Nodes : defaultModelNodeDefinition);
+            if (this.nodes == newNodes && this.nodes != null)
+            {
+                return;
+            }
 
-            // First node is directly uploaded as a matrix
-            nodeTransformations[0].Flags &= ~ModelNodeFlags.EnableTransform;
-        }
-
-        public void Initialize(ModelNodeDefinition[] nodes)
-        {
-            this.nodes = nodes;
+            this.nodes = newNodes ?? defaultModelNodeDefinition;
 
             if (nodeTransformations == null || nodeTransformations.Length < this.nodes.Length)
                 nodeTransformations = new ModelNodeTransformation[this.nodes.Length];
@@ -71,6 +69,8 @@ namespace SiliconStudio.Paradox.Effects
                 nodeTransformations[index].Flags = nodes[index].Flags;
                 nodeTransformations[index].RenderingEnabledRecursive = true;
             }
+            // First node is directly uploaded as a matrix
+            nodeTransformations[0].Flags &= ~ModelNodeFlags.EnableTransform;
         }
 
         /// <summary>
@@ -129,6 +129,19 @@ namespace SiliconStudio.Paradox.Effects
         public void GetWorldMatrix(int index, out Matrix matrix)
         {
             matrix = nodeTransformations[index].WorldMatrix;
+        }
+
+        /// <summary>
+        /// Transforms a position relative to a node to a world position.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="positionRelativeToNode">The position relative to node.</param>
+        /// <returns>The world position.</returns>
+        public Vector3 TransformCoordinateToWorld(int index, Vector3 positionRelativeToNode)
+        {
+            Vector3 positionTransformed;
+            Vector3.TransformCoordinate(ref positionRelativeToNode, ref nodeTransformations[index].WorldMatrix, out positionTransformed);
+            return positionTransformed;
         }
 
         public void GetLocalMatrix(int index, out Matrix matrix)

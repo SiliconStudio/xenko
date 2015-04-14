@@ -21,6 +21,17 @@ namespace SiliconStudio.Paradox.Engine
     [DefaultEntityComponentRenderer(typeof(CameraComponentRenderer), -1000)]
     public sealed class CameraComponent : EntityComponent
     {
+        public const float DefaultAspectRatio = 16.0f / 9.0f;
+
+        public const float DefaultOrthographicSize = 10.0f;
+
+        public const float DefaultVerticalFieldOfView = 45.0f;
+
+        public const float DefaultNearClipPlane = 0.1f;
+
+        public const float DefaultFarClipPlane = 1000.0f;
+
+
         /// <summary>
         /// The property key of this component.
         /// </summary>
@@ -30,7 +41,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Create a new <see cref="CameraComponent"/> instance.
         /// </summary>
         public CameraComponent()
-            : this(10f , 100000f)
+            : this(DefaultNearClipPlane, DefaultFarClipPlane)
         {
         }
 
@@ -42,11 +53,11 @@ namespace SiliconStudio.Paradox.Engine
         public CameraComponent(float nearClipPlane, float farClipPlane)
         {
             Projection = CameraProjectionMode.Perspective;
-            VerticalFieldOfView = 45.0f;
-            OrthographicSize = 10.0f;
+            VerticalFieldOfView = DefaultVerticalFieldOfView;
+            OrthographicSize = DefaultOrthographicSize;
 
             // TODO: Handle Aspect ratio differently
-            AspectRatio = 16f / 9f;
+            AspectRatio = DefaultAspectRatio;
             NearClipPlane = nearClipPlane;
             FarClipPlane = farClipPlane;
         }
@@ -66,7 +77,7 @@ namespace SiliconStudio.Paradox.Engine
         /// The vertical field of view.
         /// </value>
         [DataMember(5)]
-        [DefaultValue(45.0f)]
+        [DefaultValue(DefaultVerticalFieldOfView)]
         [Display("Field Of View")]
         [DataMemberRange(1.0, 179.0, 1.0, 10.0, 0)]
         public float VerticalFieldOfView { get; set; }
@@ -78,7 +89,7 @@ namespace SiliconStudio.Paradox.Engine
         /// The vertical field of view.
         /// </value>
         [DataMember(10)]
-        [DefaultValue(10.0f)]
+        [DefaultValue(DefaultOrthographicSize)]
         [Display("Orthographic Size")]
         public float OrthographicSize { get; set; }
 
@@ -89,7 +100,7 @@ namespace SiliconStudio.Paradox.Engine
         /// The near plane distance.
         /// </value>
         [DataMember(20)]
-        [DefaultValue(10f)]
+        [DefaultValue(DefaultNearClipPlane)]
         public float NearClipPlane { get; set; }
 
         /// <summary>
@@ -99,7 +110,7 @@ namespace SiliconStudio.Paradox.Engine
         /// The far plane distance.
         /// </value>
         [DataMember(30)]
-        [DefaultValue(100000f)]
+        [DefaultValue(DefaultFarClipPlane)]
         public float FarClipPlane { get; set; }
 
         /// <summary>
@@ -109,22 +120,8 @@ namespace SiliconStudio.Paradox.Engine
         /// The aspect ratio.
         /// </value>
         [DataMember(40)]
-        [DefaultValue(16f / 9f)]
+        [DefaultValue(DefaultAspectRatio)]
         public float AspectRatio { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether [auto focus].
-        /// </summary>
-        /// <value><c>true</c> if [auto focus]; otherwise, <c>false</c>.</value>
-        [DataMemberIgnore]
-        public bool AutoFocus { get; set; }
-
-        /// <summary>
-        /// Gets or sets the focus distance.
-        /// </summary>
-        /// <value>The focus distance.</value>
-        [DataMemberIgnore]
-        public float FocusDistance { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to use custom <see cref="ViewMatrix"/>. Default is <c>false</c>
@@ -167,6 +164,12 @@ namespace SiliconStudio.Paradox.Engine
         public Matrix ViewProjectionMatrix;
 
         /// <summary>
+        /// The frustum extracted from the view projection matrix calculated automatically after calling <see cref="Update"/> method.
+        /// </summary>
+        [DataMemberIgnore]
+        public BoundingFrustum Frustum;
+
+        /// <summary>
         /// Calculates the projection matrix and view matrix.
         /// </summary>
         public void Update()
@@ -189,6 +192,9 @@ namespace SiliconStudio.Paradox.Engine
 
             // Update ViewProjectionMatrix
             Matrix.Multiply(ref ViewMatrix, ref ProjectionMatrix, out ViewProjectionMatrix);
+
+            // Update the frustum.
+            Frustum = new BoundingFrustum(ref ViewProjectionMatrix);
         }
 
         public override PropertyKey GetDefaultKey()

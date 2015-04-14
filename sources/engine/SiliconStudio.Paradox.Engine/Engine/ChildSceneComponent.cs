@@ -9,28 +9,28 @@ namespace SiliconStudio.Paradox.Engine
     /// <summary>
     /// A link to a scene that is rendered by a parent <see cref="Scene"/>.
     /// </summary>
-    [DataContract("SceneChildComponent")]
-    [DefaultEntityComponentProcessor(typeof(SceneChildProcessor))]
-    public sealed class SceneChildComponent : EntityComponent
+    [DataContract("ChildSceneComponent")]
+    [DefaultEntityComponentProcessor(typeof(ChildSceneProcessor))]
+    public sealed class ChildSceneComponent : EntityComponent
     {
-        // Used by the SceneChildProcessor
+        // Used by the ChildSceneProcessor
         [DataMemberIgnore]
         internal SceneInstance SceneInstance;
         
-        public readonly static PropertyKey<SceneChildComponent> Key = new PropertyKey<SceneChildComponent>("Key", typeof(SceneChildComponent));
+        public readonly static PropertyKey<ChildSceneComponent> Key = new PropertyKey<ChildSceneComponent>("Key", typeof(ChildSceneComponent));
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SceneChildComponent"/> class.
+        /// Initializes a new instance of the <see cref="ChildSceneComponent"/> class.
         /// </summary>
-        public SceneChildComponent()
+        public ChildSceneComponent()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SceneChildComponent"/> class.
+        /// Initializes a new instance of the <see cref="ChildSceneComponent"/> class.
         /// </summary>
         /// <param name="scene">The scene.</param>
-        public SceneChildComponent(Scene scene)
+        public ChildSceneComponent(Scene scene)
         {
             Scene = scene;
         }

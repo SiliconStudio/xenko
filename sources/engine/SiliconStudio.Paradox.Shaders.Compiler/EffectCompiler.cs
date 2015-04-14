@@ -79,7 +79,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             }
         }
 
-        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters)
+        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, CompilerParameters compilerParameters)
         {
             var log = new LoggerResult();
 
@@ -91,8 +91,8 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 d3dCompilerLoaded = true;
             }
 
-            var shaderMixinSource = mixinTree.Mixin;
-            var fullEffectName = mixinTree.GetFullName();
+            var shaderMixinSource = mixinTree;
+            var fullEffectName = mixinTree.Name;
             var usedParameters = mixinTree.UsedParameters;
 
             // Make a copy of shaderMixinSource. Use deep clone since shaderMixinSource can be altered during compilation (e.g. macros)

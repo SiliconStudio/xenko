@@ -52,6 +52,7 @@ public ref class MeshConverter
 public:
 	property bool InverseNormals;
 	property bool AllowUnsignedBlendIndices;
+	property float ScaleImport;
 
 	property TagSymbol^ TextureTagSymbol;
 
@@ -209,6 +210,7 @@ public:
 					MeshBoneDefinition bone;
 					bone.NodeIndex = nodeMapping[(IntPtr)link];
 					bone.LinkToMeshMatrix = meshMatrix * Matrix::Invert(linkMatrix);
+
 					bones->Add(bone);
 
 					for (int j = 0 ; j < indexCount; j++)
@@ -586,8 +588,6 @@ public:
 			
 			if (hasSkinningPosition || hasSkinningNormal || totalClusterCount > 0)
 			{
-				meshData->Parameters = gcnew ParameterCollection();
-
 				if (hasSkinningPosition)
 					meshData->Parameters->Set(MaterialKeys::HasSkinningPosition, true);
 				if (hasSkinningNormal)
@@ -1903,6 +1903,10 @@ private:
 		//FbxAxisSystem ourAxisSystem(FbxAxisSystem::eYAxis, FbxAxisSystem::eParityOdd, FbxAxisSystem::eRightHanded);
 		//if (ourAxisSystem != scene->GetGlobalSettings().GetAxisSystem())
 		//	ourAxisSystem.ConvertScene(scene);
+
+		// Change scaling back to the import scaling
+		FbxSystemUnit SceneSystemUnit = scene->GetGlobalSettings().GetSystemUnit();
+		FbxSystemUnit(SceneSystemUnit.GetScaleFactor() / ScaleImport).ConvertScene(scene);
 
 		auto sceneAxisSystem = scene->GetGlobalSettings().GetAxisSystem();
 

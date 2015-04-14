@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
         /// </summary>
         public GeoSphereProceduralModel()
         {
-            Diameter = 100.0f;
+            Diameter = 1.0f;
             Tessellation = 3;
             UVScales = new Vector2(1);
         }
@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
         /// </summary>
         /// <value>The diameter.</value>
         [DataMember(10)]
-        [DefaultValue(100.0f)]
+        [DefaultValue(1.0f)]
         public float Diameter { get; set; }
 
         /// <summary>

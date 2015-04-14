@@ -39,10 +39,8 @@ namespace SiliconStudio.Paradox.Graphics
         private SharpDX.Direct3D11.DeviceCreationFlags creationFlags;
         private EffectInputSignature currentEffectInputSignature;
         private SharpDX.Direct3D11.InputLayout currentInputLayout;
-        private SharpDX.Direct3D11.RenderTargetView currentRenderTargetView;
         private VertexArrayLayout currentVertexArrayLayout;
-        private SharpDX.ViewportF[] currentNativeViewports = new SharpDX.ViewportF[16];
-        private Viewport[] currentViewports;
+        private readonly SharpDX.ViewportF[] currentNativeViewports = new SharpDX.ViewportF[SimultaneousRenderTargetCount];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphicsDevice" /> class using the default GraphicsAdapter
@@ -71,10 +69,6 @@ namespace SiliconStudio.Paradox.Graphics
             primitiveQuad = new PrimitiveQuad(this).DisposeBy(this);
 
             InitializeStages();
-        }
-
-        private void SetDefaultStates()
-        {
         }
 
         // Used by Texture.SetData
@@ -125,18 +119,6 @@ namespace SiliconStudio.Paradox.Graphics
                 }
 
                 return GraphicsDeviceStatus.Normal;
-            }
-        }
-
-        /// <summary>
-        ///     Gets the first viewport.
-        /// </summary>
-        /// <value>The first viewport.</value>
-        public Viewport Viewport
-        {
-            get
-            {
-                return currentViewports[0];
             }
         }
 
@@ -340,11 +322,9 @@ namespace SiliconStudio.Paradox.Graphics
             NativeDeviceContext.ClearUnorderedAccessView(texture.NativeUnorderedAccessView, *(SharpDX.Int4*)&value);
         }
 
-        public void ClearState()
+        private void ClearStateImpl()
         {
             NativeDeviceContext.ClearState();
-            for (int i = 0; i < currentViewports.Length; i++)
-                currentViewports[i] = new Viewport();
 
             for (int i = 0; i < samplerStates.Length; ++i)
                 samplerStates[i] = null;
@@ -359,8 +339,6 @@ namespace SiliconStudio.Paradox.Graphics
             currentVertexArrayLayout = null;
             currentInputLayout = null;
             CurrentEffect = null;
-
-            SetDepthAndRenderTarget(DepthStencilBuffer, BackBuffer);
         }
 
         public void Copy(GraphicsResource source, GraphicsResource destination)
@@ -609,29 +587,12 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// Unbinds all depth-stencil buffer and render targets from the output-merger stage.
         /// </summary>
-        public void ResetTargets()
+        private void ResetTargetsImpl()
         {
             for (int i = 0; i < currentRenderTargetViews.Length; i++)
                 currentRenderTargetViews[i] = null;
             actualRenderTargetViewCount = 0;
-            currentRenderTargetView = null;
             outputMerger.ResetTargets();
-        }
-
-        /// <summary>
-        /// Set the blend state of the output-merger stage with a white default blend color and sample mask set to 0xffffffff. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <param name="blendState">a blend-state</param>
-        public void SetBlendState(BlendState blendState)
-        {
-            if (blendState == null)
-            {
-                NativeDeviceContext.OutputMerger.SetBlendState(null, SharpDX.Color.White, -1);
-            }
-            else
-            {
-                NativeDeviceContext.OutputMerger.SetBlendState((SharpDX.Direct3D11.BlendState)blendState.NativeDeviceChild, ColorHelper.Convert(blendState.BlendFactor), blendState.MultiSampleMask);
-            }
         }
 
         /// <summary>
@@ -640,7 +601,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="blendState">a blend-state</param>
         /// <param name="blendFactor">Blend factors, one for each RGBA component. This requires a blend state object that specifies the <see cref="Blend.BlendFactor" /></param>
         /// <param name="multiSampleMask">32-bit sample coverage. The default value is 0xffffffff.</param>
-        public void SetBlendState(BlendState blendState, Color4 blendFactor, int multiSampleMask = -1)
+        private void SetBlendStateImpl(BlendState blendState, Color4 blendFactor, int multiSampleMask = -1)
         {
             if (blendState == null)
             {
@@ -653,22 +614,11 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
-        /// Set the blend state of the output-merger stage. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <param name="blendState">a blend-state</param>
-        /// <param name="blendFactor">Blend factors, one for each RGBA component. This requires a blend state object that specifies the <see cref="Blend.BlendFactor" /></param>
-        /// <param name="multiSampleMask">32-bit sample coverage. The default value is 0xffffffff.</param>
-        public void SetBlendState(BlendState blendState, Color4 blendFactor, uint multiSampleMask = 0xFFFFFFFF)
-        {
-            SetBlendState(blendState, blendFactor, unchecked((int)multiSampleMask));
-        }
-
-        /// <summary>
         /// Sets the depth-stencil state of the output-merger stage. See <see cref="Render+states"/> to learn how to use it.
         /// </summary>
         /// <param name="depthStencilState">a depth-stencil state</param>
         /// <param name="stencilReference">Reference value to perform against when doing a depth-stencil test.</param>
-        public void SetDepthStencilState(DepthStencilState depthStencilState, int stencilReference = 0)
+        private void SetDepthStencilStateImpl(DepthStencilState depthStencilState, int stencilReference = 0)
         {
             NativeDeviceContext.OutputMerger.SetDepthStencilState(depthStencilState != null ? (SharpDX.Direct3D11.DepthStencilState)depthStencilState.NativeDeviceChild : null, stencilReference);
         }
@@ -677,33 +627,22 @@ namespace SiliconStudio.Paradox.Graphics
         /// Set the <strong>rasterizer state</strong> for the rasterizer stage of the pipeline. See <see cref="Render+states"/> to learn how to use it.
         /// </summary>
         /// <param name="rasterizerState">The rasterizser state to set on this device.</param>
-        public void SetRasterizerState(RasterizerState rasterizerState)
+        private void SetRasterizerStateImpl(RasterizerState rasterizerState)
         {
             NativeDeviceContext.Rasterizer.State = rasterizerState != null ? (SharpDX.Direct3D11.RasterizerState)rasterizerState.NativeDeviceChild : null;
         }
 
         /// <summary>
-        /// Binds a depth-stencil buffer and a single render target to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.
-        /// </summary>
-        /// <param name="depthStencilView">A view of the depth-stencil buffer to bind.</param>
-        /// <param name="renderTargetView">A view of the render target to bind.</param>
-        public void SetDepthAndRenderTarget(Texture depthStencilView, Texture renderTargetView)
-        {
-            CommonSetRenderTargets(depthStencilView, renderTargetView);
-            outputMerger.SetTargets(depthStencilView != null ? depthStencilView.NativeDepthStencilView : null, currentRenderTargetView);
-        }
-
-        /// <summary>
         /// Binds a depth-stencil buffer and a set of render targets to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.
         /// </summary>
-        /// <param name="depthStencilView">A view of the depth-stencil buffer to bind.</param>
-        /// <param name="renderTargetViews">A set of render target views to bind.</param>
+        /// <param name="depthStencilBuffer">The depth stencil buffer.</param>
+        /// <param name="renderTargets">The render targets.</param>
         /// <exception cref="System.ArgumentNullException">renderTargetViews</exception>
-        public void SetDepthAndRenderTargets(Texture depthStencilView, params Texture[] renderTargetViews)
+        private void SetDepthAndRenderTargetsImpl(Texture depthStencilBuffer, Texture[] renderTargets)
         {
-            if (renderTargetViews == null) throw new ArgumentNullException("renderTargetViews");
-            CommonSetRenderTargets(depthStencilView, renderTargetViews);
-            outputMerger.SetTargets(depthStencilView != null ? depthStencilView.NativeDepthStencilView : null, actualRenderTargetViewCount, currentRenderTargetViews);
+            for (int i = 0; i < renderTargets.Length; i++)
+                currentRenderTargetViews[i] = renderTargets[i] != null ? renderTargets[i].NativeRenderTargetView : null;
+            outputMerger.SetTargets(depthStencilBuffer != null ? depthStencilBuffer.NativeDepthStencilView : null, currentRenderTargetViews.Length, currentRenderTargetViews);
         }
 
         /// <summary>
@@ -780,18 +719,8 @@ namespace SiliconStudio.Paradox.Graphics
         ///     Gets or sets the 1st viewport. See <see cref="Render+states"/> to learn how to use it.
         /// </summary>
         /// <value>The viewport.</value>
-        public void SetViewport(Viewport value)
+        private void SetViewportImpl(int index, Viewport value)
         {
-            SetViewport(0, value);
-        }
-
-        /// <summary>
-        ///     Gets or sets the 1st viewport. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <value>The viewport.</value>
-        public void SetViewport(int index, Viewport value)
-        {
-            currentViewports[index] = value;
             unsafe
             {
                 Utilities.ReadOut(new IntPtr(&value), out currentNativeViewports[index]);
@@ -908,44 +837,6 @@ namespace SiliconStudio.Paradox.Graphics
             NativeDeviceContext.UpdateSubresource(*(SharpDX.DataBox*)Interop.Cast(ref databox), resource.NativeResource, subResourceIndex, *(SharpDX.Direct3D11.ResourceRegion*)Interop.Cast(ref region));
         }
 
-        private void CommonSetRenderTargets(Texture depthStencilBuffer, Texture rtv)
-        {
-            currentRenderTargetView = rtv != null ? rtv.NativeRenderTargetView : null;
-            // Setup the viewport from the rendertarget view
-            if (rtv != null)
-            {
-                SetViewport(new Viewport(0, 0, rtv.ViewWidth, rtv.ViewHeight));
-            }
-            else if (depthStencilBuffer != null)
-            {
-                SetViewport(new Viewport(0, 0, depthStencilBuffer.Width, depthStencilBuffer.Height));
-            }
-        }
-
-        private void CommonSetRenderTargets(Texture depthStencilBuffer, Texture[] renderTargets)
-        {
-            if (renderTargets.Length > currentRenderTargetViews.Length)
-            {
-                throw new ArgumentOutOfRangeException(string.Format("RenderTargets count is exceeding maximum range [{0}]", renderTargets.Length), "renderTargets");
-            }
-
-            Texture rtv = renderTargets.Length > 0 ? renderTargets[0] : null;
-
-            for (int i = 0; i < renderTargets.Length; i++)
-                currentRenderTargetViews[i] = renderTargets[i] != null ? renderTargets[i].NativeRenderTargetView : null;
-            actualRenderTargetViewCount = renderTargets.Length;
-
-            // Setup the viewport from the rendertarget view
-            if (rtv != null)
-            {
-                SetViewport(new Viewport(0, 0, rtv.ViewWidth, rtv.ViewHeight));
-            }
-            else if (depthStencilBuffer != null)
-            {
-                SetViewport(new Viewport(0, 0, depthStencilBuffer.Width, depthStencilBuffer.Height));
-            }
-        }
-
         private void InitializeStages()
         {
             inputAssembler = nativeDeviceContext.InputAssembler;
@@ -960,18 +851,7 @@ namespace SiliconStudio.Paradox.Graphics
 
         private void InitializeFactories()
         {
-            switch (Features.Profile)
-            {
-                case GraphicsProfile.Level_9_1:
-                case GraphicsProfile.Level_9_2:
-                case GraphicsProfile.Level_9_3:
-                    currentViewports = new Viewport[1];
-                    break;
-                default:
-                    currentViewports = new Viewport[8];
-                    break;
-            }
-            currentNativeViewports = new SharpDX.ViewportF[currentViewports.Length];
+            
         }
 
         /// <summary>
@@ -1030,7 +910,6 @@ namespace SiliconStudio.Paradox.Graphics
 
             currentInputLayout = null;
             currentEffectInputSignature = null;
-            currentRenderTargetView = null;
             currentVertexArrayLayout = null;
             nativeDevice.Dispose();
         }

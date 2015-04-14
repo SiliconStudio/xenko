@@ -2,14 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace SiliconStudio.Presentation.Quantum
 {
     public abstract class VirtualObservableNode : SingleObservableNode
     {
-        private readonly Dictionary<string, object> associatedData = new Dictionary<string,object>();
         private readonly int? order;
         private readonly bool isPrimitive;
 
@@ -27,8 +25,6 @@ namespace SiliconStudio.Presentation.Quantum
             var node = (VirtualObservableNode)Activator.CreateInstance(typeof(VirtualObservableNode<>).MakeGenericType(contentType), ownerViewModel, name, order, isPrimitive, initialValue, index, valueChangedCommand);
             return node;
         }
-
-        public override Dictionary<string, object> AssociatedData { get { return associatedData; } }
 
         public override int? Order { get { return order; } }
         
@@ -57,11 +53,6 @@ namespace SiliconStudio.Presentation.Quantum
         public new void AddCommand(INodeCommandWrapper command)
         {
             base.AddCommand(command);
-        }
-
-        internal void AddAssociatedData(string key, object data)
-        {
-            associatedData.Add(key, data);
         }
     }
 

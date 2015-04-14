@@ -13,23 +13,18 @@ namespace SiliconStudio.Paradox.Effects.Shadows
     public static partial class ShadowMapKeys
     {
         /// <summary>
-        /// Depth sampling texture.
-        /// </summary>
-        public static readonly ParameterKey<Texture> DepthTexture = ParameterKeys.New<Texture>();
-
-        /// <summary>
         /// Final shadow map texture.
         /// </summary>
         public static readonly ParameterKey<Texture> Texture = ParameterKeys.New<Texture>();
 
         /// <summary>
-        /// Maximum distance used by a shadow map.
+        /// Final shadow map texture size
         /// </summary>
-        public static readonly ParameterKey<float> DistanceMax = ParameterKeys.New(0.0f);
+        public static readonly ParameterKey<Vector2> TextureSize = ParameterKeys.New<Vector2>();
 
         /// <summary>
-        /// Light Offset
+        /// Final shadow map texture texel size.
         /// </summary>
-        public static readonly ParameterKey<Vector3> LightOffset = ParameterKeys.New(Vector3.Zero);
+        public static readonly ParameterKey<Vector2> TextureTexelSize = ParameterKeys.New<Vector2>();
     }
 }

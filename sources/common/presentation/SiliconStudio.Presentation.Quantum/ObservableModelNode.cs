@@ -20,7 +20,6 @@ namespace SiliconStudio.Presentation.Quantum
         protected readonly IModelNode SourceNode;
         protected readonly ModelNodePath SourceNodePath;
         private IModelNode targetNode;
-        private Dictionary<string, object> associatedData = new Dictionary<string,object>();
         private bool isInitialized;
         private int? customOrder;
 
@@ -79,12 +78,7 @@ namespace SiliconStudio.Presentation.Quantum
             return node;
         }
 
-        internal void Initialize()
-        {
-            Initialize(false);
-        }
-
-        protected virtual void Initialize(bool isUpdating)
+        internal protected virtual void Initialize()
         {
             var targetNodePath = SourceNodePath.GetChildPath(SourceNode, targetNode);
             if (targetNodePath == null || !targetNodePath.IsValid)
@@ -104,28 +98,21 @@ namespace SiliconStudio.Presentation.Quantum
             }
 
             if (!isPrimitive)
-                GenerateChildren(targetNode, targetNodePath, isUpdating);
+                GenerateChildren(targetNode, targetNodePath);
 
             isInitialized = true;
 
             if (Owner.ObservableViewModelService != null)
             {
-                if (associatedData != null)
+                foreach (var key in AssociatedData.Keys.ToList())
                 {
-                    foreach (var key in associatedData.Keys.ToList())
-                    {
-                        OnPropertyChanging(key);
-                        associatedData.Remove(key);
-                        OnPropertyChanged(key);
-                    }
+                    RemoveAssociatedData(key);
                 }
 
-                var data = Owner.ObservableViewModelService.RequestAssociatedData(this, isUpdating);
-
-                data.ForEach(x => OnPropertyChanging(x.Key));
-                SetValue(ref associatedData, data, "AssociatedData");
-                data.Reverse().ForEach(x => OnPropertyChanged(x.Key));
+                Owner.ObservableViewModelService.RequestAssociatedData(this);
             }
+
+            FinalizeChildrenInitialization();
             
             CheckDynamicMemberConsistency();
         }
@@ -151,21 +138,10 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public sealed override bool HasDictionary { get { AssertInit(); return (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary); } }
 
-        /// <inheritdoc/>
-        public sealed override Dictionary<string, object> AssociatedData { get { return associatedData; } }
-
         internal Guid ModelGuid { get { return targetNode.Guid; } }
 
         private ObservableModelNode ModelNodeParent { get { for (var p = Parent; p != null; p = p.Parent) { var mp = p as ObservableModelNode; if (mp != null) return mp; } return null; } }
    
-        public void AddAssociatedData(string key, object value)
-        {
-            // TODO: make AssociatedData a read-only dictionary publicly and manage all add/remove this way!
-            OnPropertyChanging(key);
-            AssociatedData.Add(key, value);
-            OnPropertyChanged(key);
-        }
-
         /// <summary>
         /// Indicates whether this <see cref="ObservableModelNode"/> instance corresponds to the given <see cref="IModelNode"/>.
         /// </summary>
@@ -303,7 +279,7 @@ namespace SiliconStudio.Presentation.Quantum
             return result;
         }
 
-        private void GenerateChildren(IModelNode modelNode, ModelNodePath modelNodePath, bool isUpdating)
+        private void GenerateChildren(IModelNode modelNode, ModelNodePath modelNodePath)
         {
             if (modelNode.Content.IsReference && modelNode.Content.ShouldProcessReference)
             {
@@ -324,7 +300,7 @@ namespace SiliconStudio.Presentation.Quantum
                             var type = reference.TargetNode != null && reference.TargetNode.Content.IsPrimitive ? reference.TargetNode.Content.Type : reference.Type;
                             var observableNode = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, false, modelNode, modelNodePath, type, reference.Index);
                             AddChild(observableNode);
-                            observableNode.Initialize(isUpdating);
+                            observableNode.Initialize();
                         }
                     }
                 }
@@ -340,7 +316,7 @@ namespace SiliconStudio.Presentation.Quantum
                     {
                         var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, modelNode, modelNodePath, dictionary.ValueType, key);
                         AddChild(observableChild);
-                        observableChild.Initialize(isUpdating);
+                        observableChild.Initialize();
                     }
                 }
                 else if (list != null && modelNode.Content.Value != null)
@@ -350,7 +326,7 @@ namespace SiliconStudio.Presentation.Quantum
                     {
                         var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, modelNode, modelNodePath, list.ElementType, i);
                         AddChild(observableChild);
-                        observableChild.Initialize(isUpdating);
+                        observableChild.Initialize();
                     }
                 }
                 else
@@ -361,7 +337,7 @@ namespace SiliconStudio.Presentation.Quantum
                         var childPath = modelNodePath.GetChildPath(modelNode, child);
                         var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, child, childPath, child.Content.Type, null);
                         AddChild(observableChild);
-                        observableChild.Initialize(isUpdating);
+                        observableChild.Initialize();
                     }
                 }
             }
@@ -398,7 +374,7 @@ namespace SiliconStudio.Presentation.Quantum
             foreach (var child in Children.Cast<ObservableNode>().ToList())
                 RemoveChild(child);
 
-            Initialize(true);
+            Initialize();
 
             if (DisplayNameProvider != null)
             {
@@ -453,7 +429,6 @@ namespace SiliconStudio.Presentation.Quantum
         {
             get
             {
-                AssertInit();
                 return (T)GetModelContentValue();
             }
             set

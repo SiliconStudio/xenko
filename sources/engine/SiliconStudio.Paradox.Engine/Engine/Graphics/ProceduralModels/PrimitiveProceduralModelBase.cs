@@ -47,6 +47,13 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
             for (int i = 0; i < data.Vertices.Length; i++)
                 BoundingBox.Merge(ref boundingBox, ref data.Vertices[i].Position, out boundingBox);
 
+            BoundingSphere boundingSphere;
+            unsafe
+            {
+                fixed (void* verticesPtr = data.Vertices)
+                    BoundingSphere.FromPoints((IntPtr)verticesPtr, 0, data.Vertices.Length, VertexPositionNormalTexture.Size, out boundingSphere);
+            }
+
             var originalLayout = data.Vertices[0].GetLayout();
 
             // Generate Tangent/BiNormal vectors
@@ -85,10 +92,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
             meshDraw.DrawCount = indices.Length;
             meshDraw.PrimitiveType = PrimitiveType.TriangleList;
 
-            var mesh = new Mesh { Draw = meshDraw, BoundingBox = boundingBox };
-            mesh.Parameters.Set(RenderingParameters.EntityGroup, EntityGroup.All);
+            var mesh = new Mesh { Draw = meshDraw, BoundingBox = boundingBox, BoundingSphere = boundingSphere };
 
             model.BoundingBox = boundingBox;
+            model.BoundingSphere = boundingSphere;
             model.Add(mesh);
 
             if (Material != null)

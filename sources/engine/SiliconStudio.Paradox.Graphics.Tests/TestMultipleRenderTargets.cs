@@ -101,7 +101,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             // Add a custom script
             if (rotateModel)
-                Script.Add(GameScript1);
+                Script.AddTask(GameScript1);
         }
 
         private void CreatePipeline()

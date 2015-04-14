@@ -26,12 +26,12 @@ namespace SiliconStudio.Paradox.Effects
     public class ParameterCollection : IParameterCollectionInheritanceInternal, IDictionary<ParameterKey, object>
     {
         // Internal values
-        internal FastListStruct<KeyValuePair<ParameterKey, InternalValue>> valueList;
+        internal FastListStruct<KeyValuePair<ParameterKey, InternalValue>> InternalValues;
 
         // Value ordered according to this.keys
-        internal InternalValue[] keys;
+        internal InternalValue[] IndexedInternalValues;
 
-        // Updated every time valueList.Keys is changed
+        // Updated every time InternalValues.Keys is changed
         internal int KeyVersion = 1;
 
         // Either a ParameterCollection (inherits everything) or an InheritanceDefinition (inherits only specific key, ability to remap them as well)
@@ -43,7 +43,7 @@ namespace SiliconStudio.Paradox.Effects
         private List<ParameterDynamicValue> dynamicValues;
 
         // Match a specific ordering given by "keys" (especially useful for effects or components)
-        internal Dictionary<ParameterKey, int> keyMapping;
+        private Dictionary<ParameterKey, int> keyMapping;
 
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace SiliconStudio.Paradox.Effects
         {
             Name = name;
             sources = new List<IParameterCollectionInheritanceInternal>();
-            valueList = new FastListStruct<KeyValuePair<ParameterKey, InternalValue>>(4);
+            InternalValues = new FastListStruct<KeyValuePair<ParameterKey, InternalValue>>(4);
         }
 
         // Delegate definitions
@@ -69,7 +69,6 @@ namespace SiliconStudio.Paradox.Effects
         public delegate void ValueChangedDelegate(ParameterKey key, InternalValue internalValue, object oldValue);
         internal delegate void InternalValueChangedDelegate(InternalValue internalValue, object oldValue);
         internal event OnUpdateValueDelegate OnUpdateValue;
-        internal event OnUpdateValueDelegate OnInternalValueChange;
 
         [DataMemberIgnore]
         public string Name { get; set; }
@@ -118,12 +117,12 @@ namespace SiliconStudio.Paradox.Effects
         {
             // TODO: Proper clean that also propagate events to sources?
             sources.Clear();
-            valueList.Clear();
+            InternalValues.Clear();
             if (dynamicValues != null)
                 dynamicValues.Clear();
             if (valueChangedEvents != null)
                 valueChangedEvents.Clear();
-            keys = null;
+            IndexedInternalValues = null;
         }
 
         bool ICollection<KeyValuePair<ParameterKey, object>>.Contains(KeyValuePair<ParameterKey, object> item)
@@ -133,7 +132,7 @@ namespace SiliconStudio.Paradox.Effects
 
         void ICollection<KeyValuePair<ParameterKey, object>>.CopyTo(KeyValuePair<ParameterKey, object>[] array, int arrayIndex)
         {
-            var keyvalues = valueList.Items.Select(x => new KeyValuePair<ParameterKey, object>(x.Key, x.Value.Object)).ToList();
+            var keyvalues = InternalValues.Items.Select(x => new KeyValuePair<ParameterKey, object>(x.Key, x.Value.Object)).ToList();
             keyvalues.CopyTo(array, arrayIndex);
         }
 
@@ -147,7 +146,7 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         public int Count
         {
-            get { return valueList.Count; }
+            get { return InternalValues.Count; }
         }
 
         public bool IsReadOnly { get; private set; }
@@ -167,15 +166,7 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         internal int InternalCount
         {
-            get { return valueList.Count; }
-        }
-
-        /// <summary>
-        /// Gets the list of internal values.
-        /// </summary>
-        internal FastListStruct<KeyValuePair<ParameterKey, InternalValue>> InternalValues
-        {
-            get { return valueList; }
+            get { return InternalValues.Count; }
         }
 
         /// <summary>
@@ -203,7 +194,7 @@ namespace SiliconStudio.Paradox.Effects
             }
             else
             {
-                foreach (var internalValue in valueList)
+                foreach (var internalValue in InternalValues)
                 {
                     UpdateValueChanged(internalValue.Key, internalValue.Value, null);
                 }
@@ -227,7 +218,7 @@ namespace SiliconStudio.Paradox.Effects
                 }
                 else
                 {
-                    foreach (var internalValue in valueList)
+                    foreach (var internalValue in InternalValues)
                     {
                         UpdateValueChanged(internalValue.Key, null, internalValue.Value);
                     }
@@ -271,7 +262,7 @@ namespace SiliconStudio.Paradox.Effects
                 return false;
             }
 
-            var internalValue = valueList.Items[index].Value;
+            var internalValue = InternalValues.Items[index].Value;
 
             value = internalValue.Object;
             return true;
@@ -293,7 +284,7 @@ namespace SiliconStudio.Paradox.Effects
         {
             get
             {
-                return valueList.Items.Select(x => x.Key).ToList();
+                return InternalValues.Items.Select(x => x.Key).ToList();
             }
         }
 
@@ -397,7 +388,7 @@ namespace SiliconStudio.Paradox.Effects
         }
 
         /// <summary>
-        /// Gets the index of an InternalValue within internalValues given its key.
+        /// Gets the index of an InternalValue within IndexedInternalValues given its key.
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -408,11 +399,11 @@ namespace SiliconStudio.Paradox.Effects
         protected int InternalValueBinarySearch(ParameterKey key)
         {
             int start = 0;
-            int end = valueList.Count - 1;
+            int end = InternalValues.Count - 1;
             while (start <= end)
             {
                 int middle = start + ((end - start) >> 1);
-                var hash1 = valueList.Items[middle].Key.HashCode;
+                var hash1 = InternalValues.Items[middle].Key.HashCode;
                 var hash2 = key.HashCode;
                 
                 if (hash1 == hash2)
@@ -445,7 +436,7 @@ namespace SiliconStudio.Paradox.Effects
                 lock (sources)
                 {
                     index = ~index;
-                    valueList.Insert(index, new KeyValuePair<ParameterKey, InternalValue>(key, null));
+                    InternalValues.Insert(index, new KeyValuePair<ParameterKey, InternalValue>(key, null));
                     KeyVersion++;
                 }
             }
@@ -483,7 +474,7 @@ namespace SiliconStudio.Paradox.Effects
                 return;
             }
 
-            GetValue(valueList.Items[index].Value, out result);
+            GetValue(InternalValues.Items[index].Value, out result);
         }
 
         public object GetObject(ParameterKey key)
@@ -496,7 +487,7 @@ namespace SiliconStudio.Paradox.Effects
                 return key.DefaultValueMetadata.GetDefaultValue();
             }
 
-            var internalValue = valueList.Items[index].Value;
+            var internalValue = InternalValues.Items[index].Value;
 
             return internalValue.Object;
         }
@@ -537,7 +528,7 @@ namespace SiliconStudio.Paradox.Effects
                 return false;
             }
 
-            GetValue(valueList.Items[index].Value, out result);
+            GetValue(InternalValues.Items[index].Value, out result);
             return true;
         }
 
@@ -564,12 +555,12 @@ namespace SiliconStudio.Paradox.Effects
 
             bool newValue;
             var index = GetOrCreateKeyIndex(key);
-            if (valueList.Items[index].Value != null && !overrideIfInherited)
+            if (InternalValues.Items[index].Value != null && !overrideIfInherited)
                 return;
 
             GetOrCreateInternalValue(index, key, out newValue);
 
-            if (newValue && OnUpdateValue != null) OnUpdateValue(this, key, valueList.Items[GetKeyIndex(key)].Value);
+            if (newValue && OnUpdateValue != null) OnUpdateValue(this, key, InternalValues.Items[GetKeyIndex(key)].Value);
         }
 
         /// <summary>
@@ -584,7 +575,7 @@ namespace SiliconStudio.Paradox.Effects
 
             bool newValue;
             var index = GetOrCreateKeyIndex(key);
-            var internalValue = valueList.Items[index].Value;
+            var internalValue = InternalValues.Items[index].Value;
             object oldValue = (internalValue != null && internalValue.ValueChanged != null) ? internalValue.Object : null;
             internalValue = GetOrCreateInternalValue(index, key, out newValue);
 
@@ -622,7 +613,7 @@ namespace SiliconStudio.Paradox.Effects
 
             bool newValue;
             var index = GetOrCreateKeyIndex(key);
-            var internalValue = (InternalValueArray<T>)valueList.Items[index].Value;
+            var internalValue = (InternalValueArray<T>)InternalValues.Items[index].Value;
             object oldValue = (internalValue != null && internalValue.ValueChanged != null) ? internalValue.Object : null;
             internalValue = (InternalValueArray<T>)GetOrCreateInternalValue(index, key, out newValue);
 
@@ -659,7 +650,7 @@ namespace SiliconStudio.Paradox.Effects
 
             bool newValue;
             var index = GetOrCreateKeyIndex(key);
-            var internalValue = (InternalValueArray<T>)valueList.Items[index].Value;
+            var internalValue = (InternalValueArray<T>)InternalValues.Items[index].Value;
             object oldValue = (internalValue != null && internalValue.ValueChanged != null) ? internalValue.Object : null;
             internalValue = (InternalValueArray<T>)GetOrCreateInternalValue(index, key, out newValue);
 
@@ -687,7 +678,7 @@ namespace SiliconStudio.Paradox.Effects
 
             bool newValue;
             var index = GetOrCreateKeyIndex(key);
-            var internalValue = valueList.Items[index].Value;
+            var internalValue = InternalValues.Items[index].Value;
             object oldValue = (internalValue != null && internalValue.ValueChanged != null) ? internalValue.Object : null;
             internalValue = GetOrCreateInternalValue(index, key, out newValue);
 
@@ -711,13 +702,13 @@ namespace SiliconStudio.Paradox.Effects
             {
                 int index = GetKeyIndex(key); //mapKeyToIndex[key]);
                 if (index < 0) return;
-                var internalValue = valueList.Items[index].Value;
-                ReleaseValue(valueList.Items[index].Key, valueList.Items[index].Value);
-                valueList.Items[index] = new KeyValuePair<ParameterKey, InternalValue>(key, null);
+                var internalValue = InternalValues.Items[index].Value;
+                ReleaseValue(InternalValues.Items[index].Key, InternalValues.Items[index].Value);
+                InternalValues.Items[index] = new KeyValuePair<ParameterKey, InternalValue>(key, null);
                 //mapKeyToIndex.Remove(key);
-                valueList.RemoveAt(index);
+                InternalValues.RemoveAt(index);
                 KeyVersion++;
-                //internalValues = valueList.Items;
+                //IndexedInternalValues = InternalValues.Items;
                 OnKeyUpdate(key, null, internalValue);
 
                 // TODO: Should try to inherit this value from another collection (if present)
@@ -783,7 +774,7 @@ namespace SiliconStudio.Paradox.Effects
                 // Iterate on new hierarchy
                 for (int i = oldSources.Length; i < sources.Count; ++i)
                 {
-                    valueList.EnsureCapacity(sources[i].GetInternalValueCount());
+                    InternalValues.EnsureCapacity(sources[i].GetInternalValueCount());
 
                     // Iterate on each keys
                     foreach (var sourceInternalValue in sources[i].GetInternalValues())
@@ -794,13 +785,13 @@ namespace SiliconStudio.Paradox.Effects
 
                         if (localIndex != -1)
                         {
-                            if (FindOverrideGroupIndex(valueList.Items[localIndex]) >= FindOverrideGroupIndex(sourceInternalValue))
+                            if (FindOverrideGroupIndex(InternalValues.Items[localIndex]) >= FindOverrideGroupIndex(sourceInternalValue))
                                 continue;
                         }
 
                         InheritValue(sourceInternalValue.Value, key);
                         localIndex = GetKeyIndex(key);
-                        if (OnUpdateValue != null) OnUpdateValue(this, key, valueList.Items[localIndex].Value);
+                        if (OnUpdateValue != null) OnUpdateValue(this, key, InternalValues.Items[localIndex].Value);
                     }
                 }
                 KeyVersion++;
@@ -815,7 +806,7 @@ namespace SiliconStudio.Paradox.Effects
         {
             var oldSources = sources.ToArray();
 
-            var internalValueSources = valueList.Select(x =>
+            var internalValueSources = InternalValues.Select(x =>
                 {
                     var sourceIndex = FindOverrideGroupIndex(x);
                     return sourceIndex == sources.Count ? null : sources[sourceIndex];
@@ -833,13 +824,13 @@ namespace SiliconStudio.Paradox.Effects
             {
                 for (int index = 0, index2 = 0; index < this.InternalCount; ++index, ++index2)
                 {
-                    var internalValue = valueList[index];
+                    var internalValue = InternalValues[index];
                     var key = internalValue.Key;
                     var source = internalValueSources[index2];
                     if (source != null && removedSources.Contains(source))
                     {
                         // TODO: Inherit from another value (if any)
-                        valueList.RemoveAt(index--);
+                        InternalValues.RemoveAt(index--);
                         if (OnUpdateValue != null) OnUpdateValue(this, key, null);
                         OnKeyUpdate(key, null, internalValue.Value);
                     }
@@ -879,10 +870,21 @@ namespace SiliconStudio.Paradox.Effects
                 return;
             }
 
-            var internalValue = valueList.Items[index];
+            var internalValue = InternalValues.Items[index];
 
             var toIndex = toCollection.GetOrCreateKeyIndex(toKey);
-            toCollection.valueList.Items[toIndex] = new KeyValuePair<ParameterKey, InternalValue>(toKey, internalValue.Value); ;
+            if (UpdateInternalValue(ref toCollection.InternalValues.Items[toIndex], toKey, internalValue.Value))
+            {
+                // TODO: Temporarely: increase Keyversion so that ParameterCollectionGroup.Update is not exiting on needUpdate = false. Changing internal values in this case is like changing a key
+                toCollection.KeyVersion++;
+            }
+        }
+
+        private bool UpdateInternalValue(ref KeyValuePair<ParameterKey, InternalValue> keyValue, ParameterKey toKey, InternalValue newValue)
+        {
+            var previousValue = keyValue.Value;
+            keyValue = new KeyValuePair<ParameterKey, InternalValue>(toKey, newValue);
+            return !ReferenceEquals(previousValue, newValue);
         }
 
         /// <summary>
@@ -908,8 +910,8 @@ namespace SiliconStudio.Paradox.Effects
             }
 
             // Otherwise, simply remove it
-            var oldInternalValue = valueList.Items[index].Value;
-            valueList.RemoveAt(index);
+            var oldInternalValue = InternalValues.Items[index].Value;
+            InternalValues.RemoveAt(index);
             KeyVersion++;
 
             // Notify InternalValue change
@@ -948,7 +950,7 @@ namespace SiliconStudio.Paradox.Effects
 
             for (int i = 0; i < InternalCount; i++)
             {
-                ReleaseValue(valueList.Items[i].Key, valueList.Items[i].Value);
+                ReleaseValue(InternalValues.Items[i].Key, InternalValues.Items[i].Value);
             }
         }
 
@@ -970,7 +972,10 @@ namespace SiliconStudio.Paradox.Effects
         private void OnKeyUpdate(ParameterKey key, InternalValue internalValue, InternalValue oldValue)
         {
             UpdateValueChanged(key, internalValue, oldValue);
-            UpdateKeyMapping(key, internalValue);
+            if (keyMapping != null)
+            {
+                UpdateKeyMapping(key, internalValue);
+            }
         }
 
         /// <summary>
@@ -981,11 +986,11 @@ namespace SiliconStudio.Paradox.Effects
         private void InheritValue(InternalValue internalValue, ParameterKey key)
         {
             int index = GetKeyIndex(key);
-            var oldInternalValue = index != -1 ? valueList.Items[index].Value : null;
+            var oldInternalValue = index != -1 ? InternalValues.Items[index].Value : null;
 
             // Copy the InternalValue in this ParameterCollection
             index = GetOrCreateKeyIndex(key);
-            valueList.Items[index] = new KeyValuePair<ParameterKey, InternalValue>(key, internalValue);
+            InternalValues.Items[index] = new KeyValuePair<ParameterKey, InternalValue>(key, internalValue);
 
             // Notify InternalValue change
             OnKeyUpdate(key, internalValue, oldInternalValue);
@@ -1074,7 +1079,7 @@ namespace SiliconStudio.Paradox.Effects
                 if (currentIndex == -1)
                     return;
 
-                var currentSourceIndex = FindOverrideGroupIndex(valueList.Items[currentIndex]);
+                var currentSourceIndex = FindOverrideGroupIndex(InternalValues.Items[currentIndex]);
 
                 if (currentSourceIndex > sourceIndex && currentSourceIndex != -1)
                     return;
@@ -1103,7 +1108,7 @@ namespace SiliconStudio.Paradox.Effects
             if (index != -1)
             {
                 // We already have a value, check if this one is a better override
-                var currentValueSourceIndex = FindOverrideGroupIndex(valueList.Items[index]);
+                var currentValueSourceIndex = FindOverrideGroupIndex(InternalValues.Items[index]);
 
                 if (sourceIndex >= currentValueSourceIndex) // || currentValueSourceIndex == -1)
                 {
@@ -1163,12 +1168,12 @@ namespace SiliconStudio.Paradox.Effects
         /// <returns></returns>
         internal InternalValue GetUpdatedInternalValue(int index)
         {
-            return keys[index];
+            return IndexedInternalValues[index];
         }
 
         internal T GetResource<T>(int index)
         {
-            return (T)GetResource(keys[index]);
+            return (T)GetResource(IndexedInternalValues[index]);
         }
 
         /// <summary>
@@ -1180,11 +1185,9 @@ namespace SiliconStudio.Paradox.Effects
         {
             int index;
 
-            if (keyMapping != null && keyMapping.TryGetValue(key, out index))
+            if (keyMapping.TryGetValue(key, out index))
             {
-                keys[index] = internalValue;
-                if (OnInternalValueChange != null)
-                    OnInternalValueChange(this, key, internalValue);
+                IndexedInternalValues[index] = internalValue;
             }
         }
 
@@ -1192,12 +1195,14 @@ namespace SiliconStudio.Paradox.Effects
         /// Sets a specific key mapping, which can then be used when querying for InternalValue with GetUpdatedInternalValue(index).
         /// It allows for skipping key lookup when performance is required (i.e. in rendering code).
         /// </summary>
-        /// <param name="keyMapping"></param>
-        internal void SetKeyMapping(Dictionary<ParameterKey, int> keyMapping)
+        /// <param name="newKeyMapping">The key mapping.</param>
+        /// <exception cref="System.ArgumentNullException">newKeyMapping</exception>
+        internal void SetKeyMapping(Dictionary<ParameterKey, int> newKeyMapping)
         {
-            this.keyMapping = keyMapping;
-            this.keys = new InternalValue[keyMapping.Count];
-            foreach (var internalValue in valueList)
+            if (newKeyMapping == null) throw new ArgumentNullException("newKeyMapping");
+            this.keyMapping = newKeyMapping;
+            this.IndexedInternalValues = new InternalValue[newKeyMapping.Count];
+            foreach (var internalValue in InternalValues)
             {
                 UpdateKeyMapping(internalValue.Key, internalValue.Value);
             }
@@ -1232,7 +1237,7 @@ namespace SiliconStudio.Paradox.Effects
             if (index == -1)
                 return null;
 
-            return valueList.Items[index].Value;
+            return InternalValues.Items[index].Value;
         }
         
         /// <summary>
@@ -1244,7 +1249,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <returns></returns>
         private InternalValue GetOrCreateInternalValue(int index, ParameterKey key, out bool newValue)
         {
-            var oldInternalValue = valueList.Items[index];
+            var oldInternalValue = InternalValues.Items[index];
             var internalValue = oldInternalValue;
             newValue = false;
 
@@ -1255,7 +1260,7 @@ namespace SiliconStudio.Paradox.Effects
             if (internalValue.Value == null)
             {
                 newValue = true;
-                valueList.Items[index] = internalValue = new KeyValuePair<ParameterKey, InternalValue>(key, CreateInternalValue(key));
+                InternalValues.Items[index] = internalValue = new KeyValuePair<ParameterKey, InternalValue>(key, CreateInternalValue(key));
                 internalValue.Value.Owner = this;
 
                 OnKeyUpdate(key, internalValue.Value, oldInternalValue.Value);
@@ -1488,16 +1493,16 @@ namespace SiliconStudio.Paradox.Effects
 
             public Enumerator GetEnumerator()
             {
-                return new Enumerator(parameterCollection.valueList);
+                return new Enumerator(parameterCollection.InternalValues);
             }
 
             /// <inheritdoc/>
-            public int Count { get { return parameterCollection.valueList.Count; } }
+            public int Count { get { return parameterCollection.InternalValues.Count; } }
 
             /// <inheritdoc/>
             public ParameterKey this[int index]
             {
-                get { return parameterCollection.valueList[index].Key; }
+                get { return parameterCollection.InternalValues[index].Key; }
             }
 
             public struct Enumerator : IEnumerator<ParameterKey>

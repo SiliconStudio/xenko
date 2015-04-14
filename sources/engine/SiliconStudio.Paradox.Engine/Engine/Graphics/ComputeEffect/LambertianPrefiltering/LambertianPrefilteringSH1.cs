@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     {
         internal partial class LambertianPrefilteringSHEffectPass1  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "LambertianPrefilteringSHPass1", context.GetParam(LambertianPrefilteringSHParameters.BlockSize), context.GetParam(SphericalHarmonicsParameters.HarmonicsOrder));
             }
@@ -41,7 +41,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     {
         internal partial class LambertianPrefilteringSHEffectPass2  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "LambertianPrefilteringSHPass2", context.GetParam(LambertianPrefilteringSHParameters.BlockSize), context.GetParam(SphericalHarmonicsParameters.HarmonicsOrder));
             }

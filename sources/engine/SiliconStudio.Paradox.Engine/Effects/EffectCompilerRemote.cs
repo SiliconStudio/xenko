@@ -44,12 +44,12 @@ namespace SiliconStudio.Paradox.Effects
             return shaderSourceId;
         }
 
-        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters)
+        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, CompilerParameters compilerParameters)
         {
             return CompileAsync(mixinTree, compilerParameters);
         }
 
-        private async Task<EffectBytecodeCompilerResult> CompileAsync(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters)
+        private async Task<EffectBytecodeCompilerResult> CompileAsync(ShaderMixinSource mixinTree, CompilerParameters compilerParameters)
         {
             // Make sure we are connected
             // TODO: Handle reconnections, etc...
@@ -66,7 +66,7 @@ namespace SiliconStudio.Paradox.Effects
 
     public class ShaderCompilerRequest : SocketMessage
     {
-        public ShaderMixinSourceTree MixinTree { get; set; }
+        public ShaderMixinSource MixinTree { get; set; }
     }
 
     public class ShaderCompilerAnswer : SocketMessage
@@ -96,7 +96,7 @@ namespace SiliconStudio.Paradox.Effects
             return socketContextClientTCS.Task;
         }
 
-        public async Task<EffectBytecodeCompilerResult> Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters)
+        public async Task<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, CompilerParameters compilerParameters)
         {
             var socketContextClient = await socketContextClientTCS.Task;
 

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Extensions;
 using SiliconStudio.Presentation.Services;
@@ -61,6 +62,7 @@ namespace SiliconStudio.Presentation.Quantum
             this.dirtiables = dirtiables;
             this.dirtiables.ForEach(x => x.DirtinessUpdated += DirtinessUpdated);
             observableViewModelService = serviceProvider.Get<ObservableViewModelService>();
+            Logger = GlobalLogger.GetLogger(DefaultLoggerName);
         }
 
         /// <summary>
@@ -152,6 +154,11 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets the <see cref="ModelContainer"/> used to store Quantum objects.
         /// </summary>
         public ModelContainer ModelContainer { get { return modelContainer; } }
+
+        /// <summary>
+        /// Gets the <see cref="Logger"/> associated to this view model.
+        /// </summary>
+        public Logger Logger { get; private set; }
 
         public event EventHandler<NodeChangedArgs> NodeChanged;
 

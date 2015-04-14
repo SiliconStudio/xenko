@@ -67,32 +67,38 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 bool isNewRenderer = !ReferenceEquals(renderItem.Renderer, renderer);
                 bool isLastIndex = i == lastIndex;
 
-                // Make sure that states are clean before rendering
-                context.GraphicsDevice.ResetStates();
-
                 if (isLastIndex)
                 {
                     if (isNewRenderer)
                     {
-                        renderer.Draw(context, renderItems, fromIndex, i - 1);
+                        DrawRendererInternal(context, renderer, renderItems, fromIndex, i - 1);
 
                         context.GraphicsDevice.ResetStates();
-                        
-                        renderItem.Renderer.Draw(context, renderItems, lastIndex, lastIndex);
+
+                        DrawRendererInternal(context, renderItem.Renderer, renderItems, lastIndex, lastIndex);
                     }
                     else
                     {
-                        renderer.Draw(context, renderItems, fromIndex, lastIndex);
+                        DrawRendererInternal(context, renderer, renderItems, fromIndex, lastIndex);
                     }
                 } 
                 else if (isNewRenderer)
                 {
-                    renderer.Draw(context, renderItems, fromIndex, i - 1);
+                    DrawRendererInternal(context, renderer, renderItems, fromIndex, i - 1);
                     fromIndex = i;
                 }
 
+
                 renderer = renderItem.Renderer;
             }
+        }
+
+        private void DrawRendererInternal(RenderContext context, IEntityComponentRenderer renderer, RenderItemCollection renderItems, int fromIndex, int toIndex)
+        {
+            var graphicsDevice = context.GraphicsDevice;
+            graphicsDevice.PushState();
+            renderer.Draw(context, renderItems, fromIndex, toIndex);
+            graphicsDevice.PopState();
         }
 
         private class RenderItemFrontToBackSorter : IComparer<RenderItem>

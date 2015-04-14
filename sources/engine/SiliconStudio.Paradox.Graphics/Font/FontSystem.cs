@@ -21,26 +21,24 @@ namespace SiliconStudio.Paradox.Graphics.Font
         internal readonly HashSet<SpriteFont> AllocatedSpriteFonts = new HashSet<SpriteFont>();
 
         /// <summary>
-        /// Create a new instance of <see cref="FontSystem"/> base on the provided <see cref="GraphicsDevice"/>.
-        /// </summary>  
-        /// <param name="graphicsDevice">A valid instance of <see cref="GraphicsDevice"/></param>
-        /// <exception cref="ArgumentNullException"><paramref name="graphicsDevice"/> is null</exception>
-        public FontSystem(GraphicsDevice graphicsDevice)
+        /// Create a new instance of <see cref="FontSystem" /> base on the provided <see cref="GraphicsDevice" />.
+        /// </summary>
+        public FontSystem()
         {
-            if (graphicsDevice == null)
-                throw new ArgumentNullException("graphicsDevice");
-
-            GraphicsDevice = graphicsDevice;
-            FontManager = new FontManager();
-            FontCacheManager = new FontCacheManager(this);
         }
 
         /// <summary>
-        /// Load the fonts.
+        /// Load this system.
         /// </summary>
-        public void Load()
+        /// <param name="graphicsDevice">The graphics device.</param>
+        /// <exception cref="System.ArgumentNullException">graphicsDevice</exception>
+        public void Load(GraphicsDevice graphicsDevice)
         {
             // TODO possibly load cached character bitmaps from the disk
+            if (graphicsDevice == null) throw new ArgumentNullException("graphicsDevice");
+            GraphicsDevice = graphicsDevice;
+            FontManager = new FontManager();
+            FontCacheManager = new FontCacheManager(this);
         }
 
         public void Draw()

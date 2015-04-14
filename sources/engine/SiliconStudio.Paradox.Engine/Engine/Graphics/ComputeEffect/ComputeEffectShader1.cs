@@ -20,11 +20,11 @@ namespace SiliconStudio.Paradox.Effects.ComputeEffect
     {
         internal partial class ComputeEffectShader  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                mixin.Mixin.AddMacro("ThreadNumberX", context.GetParam(ComputeEffectShaderKeys.ThreadNumbers).X);
-                mixin.Mixin.AddMacro("ThreadNumberY", context.GetParam(ComputeEffectShaderKeys.ThreadNumbers).Y);
-                mixin.Mixin.AddMacro("ThreadNumberZ", context.GetParam(ComputeEffectShaderKeys.ThreadNumbers).Z);
+                mixin.AddMacro("ThreadNumberX", context.GetParam(ComputeEffectShaderKeys.ThreadNumbers).X);
+                mixin.AddMacro("ThreadNumberY", context.GetParam(ComputeEffectShaderKeys.ThreadNumbers).Y);
+                mixin.AddMacro("ThreadNumberZ", context.GetParam(ComputeEffectShaderKeys.ThreadNumbers).Z);
                 context.Mixin(mixin, "ComputeShaderBase");
                 context.Mixin(mixin, context.GetParam(ComputeEffectShaderKeys.ComputeShaderName));
             }

@@ -90,9 +90,9 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
             var mixin = GenerateMixin("DefaultSimpleClone", properties, out usedProperties);
             mixin.Mixin.CheckMixin("A", "B", "C");
-            Assert.That(mixin.Children.Count, Is.EqualTo(1), "Expecting one children mixin");
 
-            mixin.Children.Values.First().Mixin.CheckMixin("A", "B", "C", "C1", "C2");
+            var childMixin = GenerateMixin("DefaultSimpleClone.Test", properties, out usedProperties);
+            childMixin.Mixin.CheckMixin("A", "B", "C", "C1", "C2");
         }
 
 
@@ -146,8 +146,8 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
             var mixin = GenerateMixin("DefaultSimpleChildParams", properties, out usedProperties);
             mixin.Mixin.CheckMixin("A", "B", "C");
-            Assert.That(mixin.Children.Count, Is.EqualTo(1), "Expecting one children mixin");
-            var childMixin = mixin.Children.Values.First();
+
+            var childMixin = GenerateMixin("DefaultSimpleChildParams.ChildParamsMixin", properties, out usedProperties);
             childMixin.Mixin.CheckMixin("A", "B", "C1");
             Assert.IsTrue(childMixin.UsedParameters.ContainsKey(Test4.TestParameters.TestCount));
             Assert.AreEqual(0, childMixin.UsedParameters.Get(Test4.TestParameters.TestCount));

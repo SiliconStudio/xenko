@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
     {
         internal partial class ComputeShaderTestEffect  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "ComputeShaderTest", context.GetParam(ComputeShaderTestParams.NbOfIterations));
             }

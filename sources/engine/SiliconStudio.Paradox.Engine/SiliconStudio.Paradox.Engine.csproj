@@ -76,9 +76,62 @@
     <Compile Include="Effects\EffectCompilerRemote.cs" />
     <Compile Include="Engine\BackgroundComponent.cs" />
     <Compile Include="Engine\BackgroundComponentProcessor.cs" />
-    <Compile Include="Engine\Graphics\SceneEntityRenderer.cs" />
+    <Compile Include="Engine\Graphics\Images\DepthMinMax\DepthMinMax.cs" />
+    <Compile Include="Engine\Graphics\Images\DepthMinMax\DepthMinMaxShader.cs">
+      <DependentUpon>DepthMinMaxShader.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Engine\Graphics\Images\DepthMinMax\DepthMinMaxEffect.cs">
+      <DependentUpon>DepthMinMaxEffect.pdxfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Engine\Graphics\Lights\LightComponentCollectionGroup.cs" />
+    <Compile Include="Engine\Graphics\Lights\LightComponentRenderer.cs" />
+    <Compile Include="Engine\Graphics\Lights\LightComponentForwardRenderer.cs" />
+    <Compile Include="Engine\Graphics\Lights\LightSpotlGroupRenderer.cs" />
+    <Compile Include="Engine\Graphics\Lights\LightSpotGroup.cs">
+      <DependentUpon>LightSpotGroup.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Engine\Graphics\Lights\LightDirectionalShadowMap.cs" />
+    <Compile Include="Engine\Graphics\Lights\LightShadowMapStabilizationMode.cs" />
+    <Compile Include="Engine\Graphics\Lights\LightSkyboxEffect.cs">
+      <DependentUpon>LightSkyboxEffect.pdxfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Engine\Graphics\Lights\LightSkyboxShaderKeys.cs" />
+    <Compile Include="Engine\Graphics\Lights\LightStandardShadowMap.cs" />
+    <Compile Include="Engine\Graphics\MaterialInstance.cs" />
+    <Compile Include="Engine\Graphics\ParadoxEffectBaseKeys.cs" />
     <Compile Include="Engine\Graphics\CameraComponentRendererExtensions.cs" />
     <Compile Include="Engine\Graphics\DynamicEffectParameterUpdaterDefinition.cs" />
+    <Compile Include="Engine\Graphics\Shadows\ILightShadowMapRenderer.cs" />
+    <Compile Include="Engine\Graphics\Shadows\LightSpotShadowMapRenderer.cs" />
+    <Compile Include="Engine\Graphics\Shadows\LightDirectionalShadowMapRenderer.cs" />
+    <Compile Include="Engine\Graphics\Shadows\LightShadowMapRendererBase.cs" />
+    <Compile Include="Engine\Graphics\Shadows\LightShadowMapTexture.cs" />
+    <Compile Include="Engine\Graphics\Shadows\ShadowMapAtlasTexture.cs" />
+    <Compile Include="Engine\Graphics\Shadows\ShadowMapReceiverBase.cs">
+      <DependentUpon>ShadowMapReceiverBase.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Engine\Graphics\Shadows\ShadowMapReceiverSpot.cs">
+      <DependentUpon>ShadowMapReceiverSpot.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Engine\Graphics\Shadows\ShadowMapRenderer.cs" />
     <Compile Include="Engine\Graphics\VirtualResolutionMode.cs" />
     <Compile Include="Engine\Graphics\Lights\DirectLightGroupFixed.cs">
       <DependentUpon>DirectLightGroupFixed.pdxsl</DependentUpon>
@@ -117,6 +170,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ThresholdAlphaCoCFront.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Engine\RenderModelCollection.cs" />
     <Compile Include="Engine\ScriptCollection.cs" />
     <Compile Include="Engine\ScriptComponent.cs" />
     <Compile Include="Engine\CameraProcessor.cs" />
@@ -1379,7 +1433,6 @@
     <Compile Include="Engine\Graphics\Lights\LightGroupRendererBase.cs" />
     <Compile Include="Engine\Graphics\Lights\LightingKeys.cs" />
     <Compile Include="Engine\Graphics\Lights\LightModelRendererBase.cs" />
-    <Compile Include="Engine\Graphics\Lights\LightModelRendererForward.cs" />
     <Compile Include="Engine\Graphics\Lights\LightProcessor.cs" />
     <Compile Include="Engine\Graphics\Lights\LightShaderGroup.cs" />
     <Compile Include="Engine\Graphics\Lights\LightShadowMap.cs" />
@@ -1405,7 +1458,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Engine\Graphics\Shadows\ShadowMapParameters.cs" />
-    <Compile Include="Engine\Graphics\ModelAndLightComponentRenderer.cs" />
+    <Compile Include="Engine\Graphics\ModelComponentAndPickingRenderer.cs" />
     <Compile Include="Engine\Graphics\RendererBase.cs" />
     <Compile Include="Engine\Graphics\RenderFrame.cs" />
     <Compile Include="Engine\Graphics\Materials\Shaders\IMaterialSpecularMicrofacetFresnelFunction.cs">
@@ -1673,7 +1726,6 @@
     <Compile Include="Engine\Graphics\RenderFrameDescriptor.cs" />
     <Compile Include="Engine\Graphics\RenderFrameFormat.cs" />
     <Compile Include="Engine\Graphics\RenderFrameSizeMode.cs" />
-    <Compile Include="Engine\Graphics\RenderingParameters.cs" />
     <Compile Include="Engine\Graphics\Composers\SceneGraphicsLayer.cs" />
     <Compile Include="Engine\Graphics\Shadows\ShadowGroup.cs">
       <DependentUpon>ShadowGroup.pdxsl</DependentUpon>
@@ -1681,8 +1733,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\Shadows\ShadowMapCascade.cs">
-      <DependentUpon>ShadowMapCascade.pdxsl</DependentUpon>
+    <Compile Include="Engine\Graphics\Shadows\ShadowMapReceiverDirectional.cs">
+      <DependentUpon>ShadowMapReceiverDirectional.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -1986,9 +2038,9 @@
     <Compile Include="Engine\ISpriteProvider.cs" />
     <Compile Include="Engine\ModelProcessor.cs" />
     <Compile Include="Engine\Graphics\RenderModel.cs" />
-    <Compile Include="Engine\SceneChildComponent.cs" />
-    <Compile Include="Engine\SceneChildComponentChangedEventArgs.cs" />
-    <Compile Include="Engine\SceneChildProcessor.cs" />
+    <Compile Include="Engine\ChildSceneComponent.cs" />
+    <Compile Include="Engine\ChildSceneComponentChangedEventArgs.cs" />
+    <Compile Include="Engine\ChildSceneProcessor.cs" />
     <Compile Include="Engine\SceneComponent.cs" />
     <Compile Include="Engine\SceneEditorCameraSettings.cs" />
     <Compile Include="Engine\SceneEditorGraphicsModeHDRSettings.cs" />
@@ -2010,6 +2062,8 @@
     <Compile Include="Data\GeometricPrimitiveExtension.cs" />
     <Compile Include="EntityModel\DefaultEntityComponentRendererAttribute.cs" />
     <Compile Include="EntityModel\EntityComponentRendererType.cs" />
+    <Compile Include="EntityModel\EntityGroupMask.cs" />
+    <Compile Include="EntityModel\EntityGroupMaskExtensions.cs" />
     <Compile Include="EntityModel\GizmoBase.cs" />
     <Compile Include="EntityModel\GizmoContext.cs" />
     <Compile Include="EntityModel\GizmoEntityAttribute.cs" />
@@ -2064,7 +2118,7 @@
     <Compile Include="Engine\AudioListenerProcessor.cs" />
     <Compile Include="Engine\AudioEmitterProcessor.cs" />
     <Compile Include="Engine\AudioSystem.cs" />
-    <Compile Include="Data\BoundingBoxExtensions.cs" />
+    <Compile Include="Data\BoundingExtensions.cs" />
     <Compile Include="Data\HalfBufferExtensions.cs" />
     <Compile Include="Data\PolySortExtensions.cs" />
     <Compile Include="Engine\Graphics\IModelInstance.cs" />
@@ -2739,6 +2793,14 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ImageEffectShader1.cs</LastGenOutput>
     </None>
+    <None Include="Engine\Graphics\Images\DepthMinMax\DepthMinMaxShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>DepthMinMaxShader.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Images\DepthMinMax\DepthMinMaxEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>DepthMinMaxEffect.cs</LastGenOutput>
+    </None>
     <None Include="Engine\Graphics\Images\ImageScaler\ImageScalerEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ImageScalerEffect.cs</LastGenOutput>
@@ -2815,6 +2877,10 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>EnvironmentLightArray.cs</LastGenOutput>
     </None>
+    <None Include="Engine\Graphics\Lights\LightSpotGroup.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>LightSpotGroup.cs</LastGenOutput>
+    </None>
     <None Include="Engine\Graphics\Lights\LightDirectionalGroup.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LightDirectionalGroup.cs</LastGenOutput>
@@ -2830,6 +2896,10 @@
     <None Include="Engine\Graphics\Lights\LightStream.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LightStream.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Lights\LightSkyboxEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>LightSkyboxEffect.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Materials\IMaterialSurfaceDomain.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -3059,9 +3129,17 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowGroup.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\Shadows\ShadowMapCascade.pdxsl">
+    <None Include="Engine\Graphics\Shadows\ShadowMapReceiverBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ShadowMapCascade.cs</LastGenOutput>
+      <LastGenOutput>ShadowMapReceiverBase.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Shadows\ShadowMapReceiverSpot.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ShadowMapReceiverSpot.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Shadows\ShadowMapReceiverDirectional.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ShadowMapReceiverDirectional.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Shadows\ShadowMapCaster.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>

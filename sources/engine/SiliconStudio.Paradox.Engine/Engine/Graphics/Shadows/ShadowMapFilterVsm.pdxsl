@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
 
         float FilterShadow(float2 position, float shadowMapDistance)
         {
-            float2 moments = (float2)shadowMapTexture.SampleLevel(LinearBorderSampler, position, 0.0);
+            float2 moments = (float2)ShadowMapTexture.SampleLevel(LinearBorderSampler, position, 0.0);
             float variance = moments.y - moments.x * moments.x;
             // Clamp variance to min
             variance = max(variance, MinVariance);

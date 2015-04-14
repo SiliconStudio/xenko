@@ -15,6 +15,8 @@ namespace SiliconStudio.Paradox.Engine
 
         public ScriptProcessor() : base(new PropertyKey[] { ScriptComponent.Key })
         {
+            // Script processor always running before others
+            Order = -100000;
         }
 
         /// <inheritdoc/>
@@ -35,7 +37,7 @@ namespace SiliconStudio.Paradox.Engine
             foreach (var script in associatedData.Component.Scripts)
             {
                 if(script != null)
-                    scriptSystem.AddScript(script);
+                    scriptSystem.Add(script);
             }
 
             // Keep tracking changes to the collection
@@ -48,10 +50,10 @@ namespace SiliconStudio.Paradox.Engine
                 switch (args.Action)
                 {
                     case NotifyCollectionChangedAction.Add:
-                        scriptSystem.AddScript((Script)args.Item);
+                        scriptSystem.Add((Script)args.Item);
                         break;
                     case NotifyCollectionChangedAction.Remove:
-                        scriptSystem.RemoveScript((Script)args.Item);
+                        scriptSystem.Remove((Script)args.Item);
                         break;
                 }
             };
@@ -67,7 +69,7 @@ namespace SiliconStudio.Paradox.Engine
             // Remove scripts
             foreach (var script in associatedData.Component.Scripts)
             {
-                scriptSystem.RemoveScript(script);
+                scriptSystem.Remove(script);
             }
         }
 

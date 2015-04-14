@@ -28,6 +28,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestObjectIdBuilder.cs" />
     <Compile Include="TestPriorityLinkedQueue.cs" />
     <Compile Include="MemoryFileProvider.cs" />
     <Compile Include="Module.cs" />

@@ -12,6 +12,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
     /// <summary>
     /// Base implementation of <see cref="IDirectLight"/>.
     /// </summary>
+    [DataContract()]
     public abstract class DirectLightBase : ColorLightBase, IDirectLight
     {
         /// <summary>
@@ -25,18 +26,13 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// Gets or sets the shadow.
         /// </summary>
         /// <value>The shadow.</value>
+        [Category]
         [DataMember(200)]
-        [DefaultValue(null)]
-        public ILightShadow Shadow { get; set; }
+        public LightShadowMap Shadow { get; set; }
 
-        /// <summary>
-        /// Gets the importance of the shadow. See remarks.
-        /// </summary>
-        /// <value>The shadow importance.</value>
-        /// <returns>System.Single.</returns>
-        /// <remarks>The higher the importance is, the higher the cost of shadow computation is costly</remarks>
-        [DataMember(210)]
-        public LightShadowImportance ShadowImportance { get; set; }
+        public abstract bool HasBoundingBox { get; }
+
+        public abstract BoundingBox ComputeBounds(Vector3 position, Vector3 direction);
 
         public float ComputeScreenCoverage(RenderContext context, Vector3 position, Vector3 direction)
         {

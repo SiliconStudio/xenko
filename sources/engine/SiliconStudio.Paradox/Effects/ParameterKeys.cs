@@ -14,6 +14,8 @@ namespace SiliconStudio.Paradox.Effects
     {
         private static int keyCount;
         private static readonly List<ParameterKey> keys = new List<ParameterKey>();
+        private readonly static Dictionary<string, ParameterKey> keyByNames = new Dictionary<string, ParameterKey>();
+        private static readonly Dictionary<ParameterComposedKey, ParameterKey> composedKeys = new Dictionary<ParameterComposedKey, ParameterKey>();
 
         /// <summary>
         /// Returns property keys matching a given type
@@ -142,8 +144,6 @@ namespace SiliconStudio.Paradox.Effects
             return New<T>(default(T), keyName);
         }
 
-        private static Dictionary<string, ParameterKey> keyByNames = new Dictionary<string,ParameterKey>();
-
         public static ParameterKey Merge(ParameterKey key, Type ownerType, string name)
         {
             lock (keyByNames)
@@ -169,39 +169,78 @@ namespace SiliconStudio.Paradox.Effects
             return key;
         }
 
+        /// <summary>
+        /// Compose a key with a name (e.g  if key is `MyKey.MyKeyName` and name is `MyName`, the result key will be `MyKey.MyKeyName.MyName`)
+        /// </summary>
+        /// <typeparam name="T">Type of the key value</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="name">The name to append to the key.</param>
+        /// <returns>The composition of key and name</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// key
+        /// or
+        /// name
+        /// </exception>
         public static T ComposeWith<T>(this T key, string name) where T : ParameterKey
         {
+            if (key == null) throw new ArgumentNullException("key");
             if (name == null) throw new ArgumentNullException("name");
-
-            // TODO: cache this string builder to avoid allocation (using for example a thread local)
-            var builder = new StringBuilder(key.Name.Length + 1 + name.Length);
-            builder.Append(key.Name);
-            builder.Append('.');
-            builder.Append(name);
-
-            return ComposeWith(key, builder);
+            var composedKey = new ParameterComposedKey(key, name, -1);
+            return (T)GetOrCreateComposedKey(ref composedKey);
         }
 
+        /// <summary>
+        /// Compose a key with a name and index (e.g  if key is `MyKey.MyKeyName` and name is `MyName` and index is 5, the result key will be `MyKey.MyKeyName.MyName[5]`)
+        /// </summary>
+        /// <typeparam name="T">Type of the key value</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="name">The name to append to the key.</param>
+        /// <param name="index">The index.</param>
+        /// <returns>T.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// key
+        /// or
+        /// name
+        /// </exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;Must be >= 0</exception>
         public static T ComposeIndexer<T>(this T key, string name, int index) where T : ParameterKey
         {
+            if (key == null) throw new ArgumentNullException("key");
             if (name == null) throw new ArgumentNullException("name");
-
-            // TODO: cache this string builder to avoid allocation (using for example a thread local)
-            var builder = new StringBuilder(key.Name.Length + 10 + name.Length);
-            builder.Append(key.Name);
-            builder.Append('.');
-            builder.Append(name);
-            builder.Append('[');
-            builder.Append(index);
-            builder.Append(']');
-
-            return ComposeWith(key, builder);
+            var composedKey = new ParameterComposedKey(key, name, index);
+            return (T)GetOrCreateComposedKey(ref composedKey);
         }
 
-        private static T ComposeWith<T>(this T key, StringBuilder builder) where T : ParameterKey
+        private static ParameterKey GetOrCreateComposedKey(ref ParameterComposedKey composedKey)
         {
-            if (builder == null) throw new ArgumentNullException("builder");
-            var newKey = (T)FindByName(builder.ToString());
+            ParameterKey result;
+            lock (composedKeys)
+            {
+                if (!composedKeys.TryGetValue(composedKey, out result))
+                {
+                    var keyName = composedKey.Key.Name;
+
+                    var builder = new StringBuilder(keyName.Length + 10 + composedKey.Name.Length);
+                    builder.Append(keyName);
+                    builder.Append('.');
+                    builder.Append(composedKey.Name);
+                    if (composedKey.Indexer >= 0)
+                    {
+                        builder.Append('[');
+                        builder.Append(composedKey.Indexer);
+                        builder.Append(']');
+                    }
+
+                    result = ComposeWith(composedKey.Key, builder);
+                    composedKeys.Add(composedKey, result);
+                }
+            }
+            return result;
+        }
+
+        private static ParameterKey ComposeWith(ParameterKey key, StringBuilder builder)
+        {
+            var newKey = FindByName(builder.ToString());
             if (newKey == null)
             {
                 throw new ArgumentException("Key [{0}] must be a registered key".ToFormat(key));
@@ -280,6 +319,57 @@ namespace SiliconStudio.Paradox.Effects
                 }
 
                 return key;
+            }
+        }
+
+        struct ParameterComposedKey : IEquatable<ParameterComposedKey>
+        {
+            public readonly ParameterKey Key;
+
+            public readonly string Name;
+
+            public readonly int Indexer;
+
+            private readonly int hashCode;
+
+            public ParameterComposedKey(ParameterKey key, string name, int indexer)
+            {
+                Key = key;
+                Name = name;
+                Indexer = indexer;
+
+                unchecked
+                {
+                    hashCode = hashCode = Key.GetHashCode();
+                    hashCode = (hashCode * 397) ^ Name.GetHashCode();
+                    hashCode = (hashCode * 397) ^ Indexer;
+                }
+            }
+
+            public bool Equals(ParameterComposedKey other)
+            {
+                return Key.Equals(other.Key) && string.Equals(Name, other.Name) && Indexer == other.Indexer;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                return obj is ParameterComposedKey && Equals((ParameterComposedKey)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return hashCode;
+            }
+
+            public static bool operator ==(ParameterComposedKey left, ParameterComposedKey right)
+            {
+                return left.Equals(right);
+            }
+
+            public static bool operator !=(ParameterComposedKey left, ParameterComposedKey right)
+            {
+                return !left.Equals(right);
             }
         }
     }

@@ -76,7 +76,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             foreach (var uiRoot in uiProcessor.UIRoots)
             {
                 // Perform culling on group and accept
-                if ((uiRoot.UIComponent.Entity.Group & CurrentCullingMask) == 0)
+                if (!CurrentCullingMask.Contains(uiRoot.UIComponent.Entity.Group))
                     continue;
 
                 // skips empty UI elements
