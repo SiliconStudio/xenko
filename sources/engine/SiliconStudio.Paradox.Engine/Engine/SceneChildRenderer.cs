@@ -68,7 +68,7 @@ namespace SiliconStudio.Paradox.Engine
 
             currentSceneInstance = SceneInstance.GetCurrent(Context);
 
-            sceneChildProcessor = sceneChildProcessor ?? currentSceneInstance.GetProcessor<ChildSceneProcessor>();
+            childSceneProcessor = childSceneProcessor ?? currentSceneInstance.GetProcessor<ChildSceneProcessor>();
 
             if (childSceneProcessor == null)
             {

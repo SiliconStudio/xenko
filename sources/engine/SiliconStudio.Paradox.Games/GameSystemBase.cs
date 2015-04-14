@@ -103,8 +103,6 @@ namespace SiliconStudio.Paradox.Games
         {
             get
             {
-                // TODO: This is bad: Review how to order correctly the graphics device to avoid this
-                InitGraphicsDeviceService();
                 return graphicsDeviceService != null ? graphicsDeviceService.GraphicsDevice : null;
             }
         }
@@ -160,7 +158,6 @@ namespace SiliconStudio.Paradox.Games
 
         public virtual void Initialize()
         {
-            InitGraphicsDeviceService();
         }
 
         private void InitGraphicsDeviceService()
@@ -239,6 +236,8 @@ namespace SiliconStudio.Paradox.Games
 
         void IContentable.LoadContent()
         {
+            InitGraphicsDeviceService();
+
             LoadContent();
         }
 

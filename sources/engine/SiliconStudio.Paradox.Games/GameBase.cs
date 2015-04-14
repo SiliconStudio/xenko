@@ -358,9 +358,11 @@ namespace SiliconStudio.Paradox.Games
         {
             try
             {
-
                 using (var profile = Profiler.Begin(GameProfilingKeys.GameInitialize))
                 {
+                    // Initialize this instance and all game systems before trying to create the device.
+                    Initialize();
+
                     // Make sure that the device is already created
                     graphicsDeviceManager.CreateDevice();
 
@@ -377,11 +379,11 @@ namespace SiliconStudio.Paradox.Games
                         throw new InvalidOperationException("No GraphicsDevice found");
                     }
 
+                    // Setup the graphics device if it was not already setup.
+                    SetupGraphicsDeviceEvents();
+
                     // Bind Graphics Context enabling initialize to use GL API eg. SetData to texture ...etc
                     BeginDraw();
-
-                    // Initialize this instance and all game systems
-                    Initialize();
 
                     LoadContentInternal();
 
@@ -747,9 +749,6 @@ namespace SiliconStudio.Paradox.Games
         /// <summary>Called after the Game and GraphicsDevice are created, but before LoadContent.  Reference page contains code sample.</summary>
         protected virtual void Initialize()
         {
-            // Setup the graphics device if it was not already setup.
-            SetupGraphicsDeviceEvents();
-
             GameSystems.Initialize();
         }
 
