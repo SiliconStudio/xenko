@@ -13,7 +13,6 @@ namespace SiliconStudio.Presentation.Commands
     public abstract class CancellableCommand : CommandBase
     {
         private readonly IViewModelServiceProvider serviceProvider;
-        private readonly IEnumerable<IDirtiableViewModel> dirtiables;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CancellableCommand"/> class.
@@ -24,13 +23,15 @@ namespace SiliconStudio.Presentation.Commands
             : base(serviceProvider)
         {
             this.serviceProvider = serviceProvider;
-            this.dirtiables = dirtiables;
+            Dirtiables = dirtiables;
         }
 
         /// <summary>
         /// The name of this command.
         /// </summary>
         public abstract string Name { get; }
+
+        protected IEnumerable<IDirtiableViewModel> Dirtiables { get; private set; }
 
         private IActionStack ActionStack { get { return serviceProvider.Get<IActionStack>(); } }
 
@@ -71,7 +72,7 @@ namespace SiliconStudio.Presentation.Commands
             
             if (token.CanUndo && createActionItem)
             {
-                var actionItem = new CommandActionItem(this, parameter, token, dirtiables);
+                var actionItem = new CommandActionItem(this, parameter, token, Dirtiables);
                 ActionStack.Add(actionItem);
             }
             return token;

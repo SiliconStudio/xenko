@@ -62,7 +62,7 @@ namespace SiliconStudio.Paradox
                 var asyncScript = script as AsyncScript;
                 if (asyncScript != null)
                 {
-                    script.MicroThread = Add(asyncScript.Execute);
+                    script.MicroThread = AddTask(asyncScript.Execute);
                 }
             }
             scriptsToStart.Clear();
@@ -94,19 +94,9 @@ namespace SiliconStudio.Paradox
         /// </summary>
         /// <param name="microThreadFunction">The micro thread function.</param>
         /// <returns>MicroThread.</returns>
-        public MicroThread Add(Func<Task> microThreadFunction)
+        public MicroThread AddTask(Func<Task> microThreadFunction)
         {
             return Scheduler.Add(microThreadFunction);
-        }
-
-        /// <summary>
-        /// Adds the specified script.
-        /// </summary>
-        /// <param name="script">The script.</param>
-        /// <returns>MicroThread.</returns>
-        public MicroThread Add(AsyncScript script)
-        {
-            return Scheduler.Add(script.Execute);
         }
 
         /// <summary>
@@ -119,7 +109,11 @@ namespace SiliconStudio.Paradox
             await Scheduler.WhenAll(microThreads);
         }
 
-        public void AddScript(Script script)
+        /// <summary>
+        /// Add the provided script to the script system.
+        /// </summary>
+        /// <param name="script">The script to add</param>
+        public void Add(Script script)
         {
             script.Initialize(Services);
             registeredScripts.Add(script);
@@ -135,7 +129,11 @@ namespace SiliconStudio.Paradox
             }
         }
 
-        public void RemoveScript(Script script)
+        /// <summary>
+        /// Remove the provided script from the script system.
+        /// </summary>
+        /// <param name="script">The script to remove</param>
+        public void Remove(Script script)
         {
             // Make sure it's not registered in any pending list
             scriptsToStart.Remove(script);
@@ -168,18 +166,14 @@ namespace SiliconStudio.Paradox
 
                 // Transpose old properties/fields to new instance?
                 // TODO: Currently only handle simple case (properties of same type), this need to be improved! (reuse an existing system?)
-                foreach (var targetProperty in scriptType.GetProperties(BindingFlags.Instance | BindingFlags.Public))
+                foreach (var targetProperty in scriptType.GetTypeInfo().DeclaredProperties)
                 {
-                    if (!targetProperty.CanRead || !targetProperty.CanWrite)
+                    if (!CheckPropertyIsTransferable(targetProperty))
                         continue;
 
                     // Find a matching property (same name, type, readable & writeable)
-                    var sourceProperty = script.GetType().GetProperty(targetProperty.Name, BindingFlags.Instance | BindingFlags.Public);
-                    if (sourceProperty == null || !sourceProperty.CanRead || !sourceProperty.CanWrite || sourceProperty.PropertyType != targetProperty.PropertyType)
-                        continue;
-
-                    // Does it contain DataMemberIgnoreAttribute?
-                    if (targetProperty.GetCustomAttribute<DataMemberIgnoreAttribute>() != null)
+                    var sourceProperty = script.GetType().GetTypeInfo().GetDeclaredProperty(targetProperty.Name);
+                    if (sourceProperty == null || !CheckPropertyIsTransferable(sourceProperty) || sourceProperty.PropertyType != targetProperty.PropertyType)
                         continue;
 
                     // Copy value
@@ -197,9 +191,26 @@ namespace SiliconStudio.Paradox
                 }
                 else
                 {
-                    AddScript(script);
+                    Add(script);
                 }
             }
+        }
+
+        private static bool CheckPropertyIsTransferable(PropertyInfo targetProperty)
+        {
+            // Check that there is a getter and setter
+            if (!targetProperty.CanRead || !targetProperty.CanWrite)
+                return false;
+
+            // Only public non-static properties
+            if (!targetProperty.GetMethod.IsPublic || !targetProperty.SetMethod.IsPublic || !targetProperty.GetMethod.IsStatic)
+                return false;
+
+            // Does it contain DataMemberIgnoreAttribute?
+            if (targetProperty.GetCustomAttribute<DataMemberIgnoreAttribute>() != null)
+                return false;
+
+            return true;
         }
 
         public void ProcessAssemblyUnload(Assembly assembly)
@@ -207,7 +218,7 @@ namespace SiliconStudio.Paradox
             // Check list of running script if any should be "paused"
             foreach (var script in registeredScripts)
             {
-                if (script.GetType().Assembly != assembly)
+                if (script.GetType().GetTypeInfo().Assembly != assembly)
                     continue;
 
                 // Unregister it from launches (in case it wasn't done yet)

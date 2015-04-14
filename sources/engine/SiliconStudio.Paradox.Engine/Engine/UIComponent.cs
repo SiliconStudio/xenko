@@ -25,6 +25,7 @@ namespace SiliconStudio.Paradox.Engine
         public UIComponent()
         {
             SnapText = true;
+            IsBillboard = true;
             IsFullScreen = true;
             VirtualResolution = new Vector3(1280, 720, 1000);
             VirtualResolutionMode = VirtualResolutionMode.FixedWidthAdaptableHeight;
@@ -57,15 +58,6 @@ namespace SiliconStudio.Paradox.Engine
         public Vector3 VirtualResolution { get; set; }
 
         /// <summary>
-        /// Gets or sets the value indicating of the UI texts should be snapped to closest pixel.
-        /// </summary>
-        /// <userdoc>If checked, all the text of the UI is snapped to the closest pixel (pixel perfect).</userdoc>
-        [DataMember(40)]
-        [Display("Snap Text")]
-        [DefaultValue(true)]
-        public bool SnapText { get; set; }
-
-        /// <summary>
         /// Gets or sets the camera.
         /// </summary>
         /// <value>The camera.</value>
@@ -74,6 +66,24 @@ namespace SiliconStudio.Paradox.Engine
         [Display("Virtual Resolution Mode")]
         [DefaultValue(VirtualResolutionMode.FixedWidthAdaptableHeight)]
         public VirtualResolutionMode VirtualResolutionMode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value indicating whether the UI should be displayed as billboard.
+        /// </summary>
+        /// <userdoc>If checked, the UI is displayed as a billboard. That is, it is automatically rotated parallel to the screen.</userdoc>
+        [DataMember(50)]
+        [Display("Billboard")]
+        [DefaultValue(true)]
+        public bool IsBillboard { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value indicating of the UI texts should be snapped to closest pixel.
+        /// </summary>
+        /// <userdoc>If checked, all the text of the UI is snapped to the closest pixel (pixel perfect).</userdoc>
+        [DataMember(60)]
+        [Display("Snap Text")]
+        [DefaultValue(true)]
+        public bool SnapText { get; set; }
 
         public override PropertyKey GetDefaultKey()
         {

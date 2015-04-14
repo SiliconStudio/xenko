@@ -167,7 +167,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
             content.ExpectedArrangeValue = providedSizeWithoutPadding;
             arrangedSize = ArrangeOverride(providedSize);
             Assert.AreEqual(providedSize, arrangedSize);
-            var childOffsets = new Vector3(Padding.Left, Padding.Top, Padding.Back) - arrangedSize / 2;
+            var childOffsets = new Vector3(Padding.Left, Padding.Top, Padding.Front) - arrangedSize / 2;
             Assert.AreEqual(Matrix.Translation(childOffsets), VisualContent.DependencyProperties.Get(ContentArrangeMatrixPropertyKey));
         }
 

@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             set
             {
                 Camera.Add(value);
-
+                graphicsCompositor.Cameras[0] = value;
             }
         }
 

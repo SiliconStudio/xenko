@@ -35,23 +35,23 @@ namespace SiliconStudio.Paradox.UI
         }
 
         /// <summary>
-        /// Sets the relative size of the element with respect to its parent canvas.
+        /// Sets the relative position of the element with respect to its parent canvas.
         /// Set the value of any component to <value>float.NaN</value> to let the element measure itself in this axis.
         /// </summary>
         /// <remarks>Equivalent to set the <see cref="Canvas.RelativeSizePropertyKey"/> of the element</remarks>
         /// <param name="element">The element</param>
-        /// <param name="size">The relative size of the element</param>
+        /// <param name="size">The relative position of the element</param>
         public static void SetCanvasRelativeSize(this UIElement element, Vector3 size)
         {
             element.DependencyProperties.Set(Canvas.RelativeSizePropertyKey, size);
         }
 
         /// <summary>
-        /// Gets the relative size of the element with respect to its parent canvas. <value>float.NaN</value> when not specified.
+        /// Gets the relative position of the element with respect to its parent canvas. <value>float.NaN</value> when not specified.
         /// </summary>
         /// <remarks>Equivalent to get the <see cref="Canvas.RelativeSizePropertyKey"/> of the element</remarks>
         /// <param name="element">The element</param>
-        /// <returns>The relative size of the element to its parent canvas</returns>
+        /// <returns>The relative position of the element to its parent canvas</returns>
         public static Vector3 GetCanvasRelativeSize(this UIElement element)
         {
             return element.DependencyProperties.Get(Canvas.RelativeSizePropertyKey);
@@ -62,10 +62,10 @@ namespace SiliconStudio.Paradox.UI
         /// </summary>
         /// <remarks>Equivalent to set the <see cref="Canvas.RelativePositionPropertyKey"/> of the element</remarks>
         /// <param name="element">The element</param>
-        /// <param name="size">The relative position normalized between [0,1]</param>
-        public static void SetCanvasRelativePosition(this UIElement element, Vector3 size)
+        /// <param name="position">The relative position normalized between [0,1]</param>
+        public static void SetCanvasRelativePosition(this UIElement element, Vector3 position)
         {
-            element.DependencyProperties.Set(Canvas.RelativePositionPropertyKey, size);
+            element.DependencyProperties.Set(Canvas.RelativePositionPropertyKey, position);
         }
 
         /// <summary>
@@ -84,10 +84,10 @@ namespace SiliconStudio.Paradox.UI
         /// </summary>
         /// <remarks>Equivalent to set the <see cref="Canvas.AbsolutePositionPropertyKey"/> of the element</remarks>
         /// <param name="element">The element</param>
-        /// <param name="size">The absolute position in virtual pixels</param>
-        public static void SetCanvasAbsolutePosition(this UIElement element, Vector3 size)
+        /// <param name="position">The absolute position in virtual pixels</param>
+        public static void SetCanvasAbsolutePosition(this UIElement element, Vector3 position)
         {
-            element.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, size);
+            element.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, position);
         }
 
         /// <summary>
@@ -103,14 +103,14 @@ namespace SiliconStudio.Paradox.UI
 
         /// <summary>
         /// Sets the origin of the element used when pinning it into its parent canvas.
-        /// This value is normalized between [0,1]. (0,0,0) represents the left/top/back corner, (1,1,1) represents the left/top/back corner, etc...
+        /// This value is normalized between [0,1]. (0,0,0) represents the left/top/front corner, (1,1,1) represents the left/top/back corner, etc...
         /// </summary>
         /// <remarks>Equivalent to set the <see cref="Canvas.PinOriginPropertyKey"/> of the element</remarks>
         /// <param name="element">The element</param>
-        /// <param name="size">The pin origin value</param>
-        public static void SetCanvasPinOrigin(this UIElement element, Vector3 size)
+        /// <param name="origin">The pin origin value</param>
+        public static void SetCanvasPinOrigin(this UIElement element, Vector3 origin)
         {
-            element.DependencyProperties.Set(Canvas.PinOriginPropertyKey, size);
+            element.DependencyProperties.Set(Canvas.PinOriginPropertyKey, origin);
         }
 
         /// <summary>

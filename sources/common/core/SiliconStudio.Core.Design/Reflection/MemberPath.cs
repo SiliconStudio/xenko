@@ -261,6 +261,13 @@ namespace SiliconStudio.Core.Reflection
             return true;
         }
 
+        public object GetValue(object rootObject)
+        {
+            object result;
+            if (!TryGetValue(rootObject, out result))
+                throw new InvalidOperationException("Unable to retrieve the value of this member path on this root object.");
+            return result;
+        }
         /// <summary>
         /// Gets the value from the specified root object following this instance path.
         /// </summary>
@@ -466,6 +473,17 @@ namespace SiliconStudio.Core.Reflection
         }
 
         /// <summary>
+        /// Clones the inner part of the current path, skipping the given amount of nodes.
+        /// </summary>
+        ///<param name="containerNodeCount">The number of nodes to skip.</param>
+        /// <returns>A clone of this instance.</returns>
+        public MemberPath CloneNestedPath(int containerNodeCount)
+        {
+            if (containerNodeCount < 0 || containerNodeCount >= items.Count) throw new ArgumentOutOfRangeException("containerNodeCount");
+            return new MemberPath(items.Skip(containerNodeCount).ToList());
+        }
+
+        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
@@ -486,6 +504,11 @@ namespace SiliconStudio.Core.Reflection
             var previousItem = items.Count > 0 ? items[items.Count - 1] : null;
             items.Add(item);
             item.Parent = previousItem;
+        }
+
+        public interface IMemberPathItem
+        {
+            string Name { get; }
         }
 
         private abstract class MemberPathItem

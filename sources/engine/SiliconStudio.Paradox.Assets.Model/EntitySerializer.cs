@@ -4,9 +4,9 @@
 using System;
 using SharpYaml.Serialization;
 using SharpYaml.Serialization.Serializers;
-using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Assets.Model.Analysis;
+using SiliconStudio.Paradox.Assets.Serializers;
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using ITypeDescriptor = SharpYaml.Serialization.ITypeDescriptor;
 
@@ -17,6 +17,9 @@ namespace SiliconStudio.Paradox.Assets.Model
     {
         [ThreadStatic]
         private static int recursionLevel;
+
+        [ThreadStatic]
+        private static int levelSinceScriptComponent;
 
         private static int recursionMaxExpectedDepth;
 
@@ -35,22 +38,37 @@ namespace SiliconStudio.Paradox.Assets.Model
                 if (objectContext.SerializerContext.IsSerializing)
                 {
                     var entityComponent = objectContext.Instance as EntityComponent;
+                    var entityScript = objectContext.Instance as Script;
                     if (entityComponent != null)
+                    {
                         objectContext.Instance = new EntityComponentReference(entityComponent);
+                    }
+                    else if (entityScript != null && levelSinceScriptComponent != 1)
+                    {
+                        var script = new EntityScriptReference(entityScript);
+                        objectContext.Instance = script;
+                        objectContext.Tag = objectContext.Settings.TagTypeRegistry.TagFromType(entityScript.GetType());
+                    }
                     else if (objectContext.Instance is Entity)
+                    {
                         objectContext.Instance = new EntityReference { Id = ((Entity)objectContext.Instance).Id };
-                    else
-                        throw new InvalidOperationException();
+                    }
                 }
                 else
                 {
                     var type = objectContext.Descriptor.Type;
                     if (typeof(EntityComponent).IsAssignableFrom(type))
+                    {
                         objectContext.Instance = new EntityComponentReference();
+                    }
+                    else if (typeof(Script).IsAssignableFrom(type) && levelSinceScriptComponent != 1)
+                    {
+                        objectContext.Instance = new EntityScriptReference { ScriptType = objectContext.Descriptor.Type };
+                    }
                     else if (type == typeof(Entity))
+                    {
                         objectContext.Instance = new EntityReference();
-                    else
-                        throw new InvalidOperationException();
+                    }
                 }
             }
 
@@ -64,6 +82,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                 if (!objectContext.SerializerContext.IsSerializing)
                 {
                     var entityComponentReference = objectContext.Instance as EntityComponentReference;
+                    var entityScriptReference = objectContext.Instance as EntityScriptReference;
                     if (entityComponentReference != null)
                     {
                         var entityReference = new Entity { Id = entityComponentReference.Entity.Id };
@@ -72,10 +91,23 @@ namespace SiliconStudio.Paradox.Assets.Model
 
                         objectContext.Instance = entityComponent;
                     }
+                    else if (entityScriptReference != null)
+                    {
+                        var entityScript = (Script)Activator.CreateInstance(entityScriptReference.ScriptType);
+                        entityScript.Id = entityScriptReference.Id;
+                        var entityReference = new Entity { Id = entityScriptReference.Entity.Id };
+                        entityReference.Add(new ScriptComponent { Scripts = { entityScript } });
+
+                        objectContext.Instance = entityScript;
+                    }
                     else if (objectContext.Instance is EntityReference)
+                    {
                         objectContext.Instance = new Entity { Id = ((EntityReference)objectContext.Instance).Id };
+                    }
                     else
-                        throw new InvalidOperationException();
+                    {
+                        base.TransformObjectAfterRead(ref objectContext);
+                    }
                 }
             }
         }
@@ -85,6 +117,10 @@ namespace SiliconStudio.Paradox.Assets.Model
             if (recursionLevel++ == 0)
                 SetupMaxExpectedDepth(objectContext);
 
+            ++levelSinceScriptComponent;
+            if (objectContext.Descriptor.Type == typeof(ScriptComponent))
+                levelSinceScriptComponent = 0;
+
             try
             {
                 base.WriteYaml(ref objectContext);
@@ -92,6 +128,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             finally
             {
                 recursionLevel--;
+                levelSinceScriptComponent--;
             }
         }
 
@@ -99,6 +136,10 @@ namespace SiliconStudio.Paradox.Assets.Model
         {
             if (recursionLevel++ == 0)
                 SetupMaxExpectedDepth(objectContext);
+
+            ++levelSinceScriptComponent;
+            if (objectContext.Descriptor.Type == typeof(ScriptComponent))
+                levelSinceScriptComponent = 0;
 
             try
             {
@@ -115,12 +156,13 @@ namespace SiliconStudio.Paradox.Assets.Model
             finally
             {
                 recursionLevel--;
+                levelSinceScriptComponent--;
             }
         }
 
         public bool CanVisit(Type type)
         {
-            return type == typeof(EntityHierarchyData) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type);
+            return type == typeof(EntityHierarchyData) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type) || typeof(Script).IsAssignableFrom(type);
         }
 
         //public void Visit(ref VisitorContext context)

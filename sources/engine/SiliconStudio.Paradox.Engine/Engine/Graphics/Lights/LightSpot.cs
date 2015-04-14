@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// </summary>
         /// <value>The range.</value>
         [DataMember(10)]
-        [DefaultValue(100.0f)]
+        [DefaultValue(3.0f)]
         public float Range { get; set; }
 
         /// <summary>

@@ -91,6 +91,8 @@ namespace SiliconStudio.Paradox.Physics
 
         public override void Update(GameTime gameTime)
         {
+            if (Simulation.DisableSimulation) return;
+
             lock (this)
             {
                 //read skinned meshes bone positions

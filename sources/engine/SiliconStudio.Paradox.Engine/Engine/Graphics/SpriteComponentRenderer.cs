@@ -36,7 +36,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             base.InitializeCore();
 
             sprite3DBatch = new Sprite3DBatch(Context.GraphicsDevice);
-            selectedSpriteEffect = EffectSystem.LoadEffect("SelectedSprite").WaitForResult();
         }
 
         protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
@@ -108,7 +107,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
                 // Update the sprite batch
                 var blendState = isPicking ? device.BlendStates.Opaque : renderItems.HasTransparency ? (spriteComp.PremultipliedAlpha ? device.BlendStates.AlphaBlend : device.BlendStates.NonPremultiplied) : device.BlendStates.Opaque;
-                var currentEffect = (!isPicking && spriteComp.Tags.Get(IsEntitySelected)) ? selectedSpriteEffect : null; // TODO remove this code when material are available
+                var currentEffect = (!isPicking && spriteComp.Tags.Get(IsEntitySelected)) ? GetOrCreateSelectedSpriteEffect(): null; // TODO remove this code when material are available
                 if (previousEffect != currentEffect || blendState != previousBlendState)
                 {
                     if (hasBegin)
@@ -168,6 +167,14 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             }
 
             sprite3DBatch.End();
+        }
+
+        private Effect GetOrCreateSelectedSpriteEffect()
+        {
+            if(selectedSpriteEffect == null)
+                selectedSpriteEffect = EffectSystem.LoadEffect("SelectedSprite").WaitForResult();
+
+            return selectedSpriteEffect;
         }
 
         protected override void Unload()

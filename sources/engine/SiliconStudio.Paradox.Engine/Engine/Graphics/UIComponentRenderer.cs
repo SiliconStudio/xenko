@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Input;
@@ -95,6 +96,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 {
                     Vector4 projectedPosition;
                     var cameraComponent = context.Tags.Get(CameraComponentRenderer.Current);
+                    if (cameraComponent == null)
+                        continue;
+
                     Vector4.Transform(ref worldPosition, ref cameraComponent.ViewProjectionMatrix, out projectedPosition);
                     projectedZ = projectedPosition.Z / projectedPosition.W;
                 }
@@ -124,25 +128,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             var viewportSize = context.GraphicsDevice.Viewport.Size;
             viewportTargetRatio = new Vector2(viewportSize.X / renderingContext.RenderTarget.Width, viewportSize.Y / renderingContext.RenderTarget.Height);
 
-            // Analyze the input and trigger the UI element touch and key events
-            // Note: this is done before measuring/arranging/drawing the element in order to avoid one frame latency on clicks.
-            //       But by doing so the world matrices taken for hit test are the ones calculated during last frame.
-            if (input != null) // no input for thumbnails
-            {
-                CompactPointerEvents();
-                using (Profiler.Begin(UIProfilerKeys.TouchEventsUpdate))
-                {
-                    foreach (var uiState in uiElementStates)
-                    {
-                        if (uiState.UIComponent.RootElement == null)
-                            continue;
-
-                        UpdateMouseOver(uiState);
-                        UpdateTouchEvents(uiState, drawTime);
-                    }
-                }
-                ClearPointerEvents();
-            }
+            // compact all the pointer events that happened since last frame to avoid performing useless hit tests.
+            CompactPointerEvents();
 
             // allocate temporary graphics resources if needed
             Texture scopedDepthBuffer = null;
@@ -151,7 +138,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 if (uiElement.UIComponent.IsFullScreen)
                 {
                     var renderTarget = renderingContext.RenderTarget;
-                    var description = TextureDescription.New2D(renderTarget.Width, renderTarget.Height, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
+                    var description = TextureDescription.New2D(renderTarget.Width, renderTarget.Height, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil);
                     scopedDepthBuffer = PushScopedResource(context.Allocator.GetTemporaryTexture(description));
                     break;
                 }
@@ -182,14 +169,29 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 // Update the view parameters
                 if (uiComponent.IsFullScreen)
                 {
-                    viewParameters.Update(virtualResolution);
+                    viewParameters.Update(uiComponent.Entity, virtualResolution);
                 }
                 else
                 {
                     var cameraComponent = context.Tags.Get(CameraComponentRenderer.Current);
-                    viewParameters.Update(cameraComponent);
+                    viewParameters.Update(uiComponent.Entity, cameraComponent);
                 }
                 
+                // Analyze the input and trigger the UI element touch and key events
+                // Note: this is done before measuring/arranging/drawing the element in order to avoid one frame latency on clicks.
+                //       But by doing so the world matrices taken for hit test are the ones calculated during last frame.
+                using (Profiler.Begin(UIProfilerKeys.TouchEventsUpdate))
+                {
+                    foreach (var uiState in uiElementStates)
+                    {
+                        if (uiState.UIComponent.RootElement == null)
+                            continue;
+
+                        UpdateMouseOver(uiState);
+                        UpdateTouchEvents(uiState, drawTime);
+                    }
+                }
+
                 // update the rendering context values specific to this element
                 renderingContext.Resolution = virtualResolution;
                 renderingContext.ViewMatrix = viewParameters.ViewMatrix;
@@ -198,27 +200,21 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 renderingContext.DepthStencilBuffer = uiComponent.IsFullScreen ? scopedDepthBuffer : CurrentRenderFrame.DepthStencil;
                 renderingContext.ShouldSnapText = uiComponent.SnapText;
 
-                // build the world matrix of the UI
-                var worldTranslation = virtualResolution.XY() / 2;
-                var worldMatrix = uiElementState.TransformComponent.WorldMatrix;
-                worldMatrix.M42 = -worldMatrix.M42; // compensate for the projection matrix with inverted Y axis.
-                worldMatrix.M41 -= worldTranslation.X * worldMatrix.M11 + worldTranslation.Y * worldMatrix.M21;
-                worldMatrix.M42 -= worldTranslation.X * worldMatrix.M12 + worldTranslation.Y * worldMatrix.M22;
-                worldMatrix.M43 -= worldTranslation.X * worldMatrix.M13 + worldTranslation.Y * worldMatrix.M23;
-
                 // calculate an estimate of the UI real size by projecting the element virtual resolution on the screen
-                var virtualWidth = Vector4.One;
-                var virtualHeight = Vector4.One;
-                for (int i = 0; i < 3; i++)
+                var virtualOrigin = viewParameters.ViewProjectionMatrix.Row4;
+                var virtualWidth = new Vector4(virtualResolution.X/2, 0, 0, 1);
+                var virtualHeight = new Vector4(0, virtualResolution.Y / 2, 0, 1);
+                var transformedVirtualWidth = Vector4.Zero; 
+                var transformedVirtualHeight = Vector4.Zero;
+                for (int i = 0; i < 4; i++)
                 {
-                    virtualWidth[i] = virtualResolution.X * worldMatrix[0+i] + worldMatrix[8 + i] * worldMatrix.M43;
-                    virtualHeight[i] = virtualResolution.Y * worldMatrix[4+i] + worldMatrix[8 + i] * worldMatrix.M43;
+                    transformedVirtualWidth[i] = virtualWidth[0] * viewParameters.ViewProjectionMatrix[0 + i] + viewParameters.ViewProjectionMatrix[12 + i];
+                    transformedVirtualHeight[i] = virtualHeight[1] * viewParameters.ViewProjectionMatrix[4 + i] + viewParameters.ViewProjectionMatrix[12 + i];
                 }
-                Vector4.Transform(ref virtualWidth, ref viewParameters.ViewProjectionMatrix, out virtualWidth);
-                Vector4.Transform(ref virtualHeight, ref viewParameters.ViewProjectionMatrix, out virtualHeight);
-                var projectedVirtualWidth = viewportSize * virtualWidth.XY() / (2 * virtualWidth.W);
-                var projectedVirtualHeight= viewportSize * virtualHeight.XY() / (2 * virtualHeight.W);
-
+                var projectedOrigin = virtualOrigin.XY() / virtualOrigin.W;
+                var projectedVirtualWidth = viewportSize * (transformedVirtualWidth.XY() / transformedVirtualWidth.W - projectedOrigin);
+                var projectedVirtualHeight = viewportSize * (transformedVirtualHeight.XY() / transformedVirtualHeight.W - projectedOrigin);
+                
                 // update layouting context.
                 layoutingContext.VirtualResolution = virtualResolution;
                 layoutingContext.RealResolution = viewportSize;
@@ -233,9 +229,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 rootElement.Arrange(virtualResolution, false);
 
                 // update the UI element hierarchical properties
-                updatableRootElement.UpdateWorldMatrix(ref worldMatrix, worldMatrix != uiElementState.LastWorldMatrix);
+                var rootMatrix = Matrix.Translation(-virtualResolution / 2); // UI world is rotated of 180degrees along Ox
+                updatableRootElement.UpdateWorldMatrix(ref rootMatrix, rootMatrix != uiElementState.LastRootMatrix);
                 updatableRootElement.UpdateElementState(0);
-                uiElementState.LastWorldMatrix = worldMatrix;
+                uiElementState.LastRootMatrix = rootMatrix;
 
                 // clear and set the Depth buffer as required
                 if (uiComponent.IsFullScreen)
@@ -254,6 +251,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 // end the image draw session
                 batch.End();
             }
+
+            // clear the list of compacted pointer events of time frame
+            ClearPointerEvents();
 
             // revert the depth stencil buffer to the default value 
             context.GraphicsDevice.SetDepthAndRenderTargets(CurrentRenderFrame.DepthStencil, CurrentRenderFrame.RenderTargets);
@@ -312,6 +312,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         private void CompactPointerEvents()
         {
+            if (input == null) // no input for thumbnails
+                return;
+
             // compact all the move events of the frame together
             var aggregatedTranslation = Vector2.Zero;
             for (var index = 0; index < input.PointerEvents.Count; ++index)
@@ -444,7 +447,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         private void UpdateMouseOver(UIComponentProcessor.UIComponentState state)
         {
-            if (!input.HasMouse)
+            if (input == null || !input.HasMouse)
                 return;
 
             var intersectionPoint = Vector3.Zero;
@@ -544,7 +547,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             var positionForHitTest = Vector2.Demodulate(position, viewportTargetRatio) - new Vector2(0.5f);
 
             // calculate the ray corresponding to the click
-            var rayDirectionView = Vector3.Normalize(new Vector3(positionForHitTest.X * viewParameters.FrustumHeight * viewParameters.AspectRatio, positionForHitTest.Y * viewParameters.FrustumHeight, -1));
+            var rayDirectionView = Vector3.Normalize(new Vector3(positionForHitTest.X * viewParameters.FrustumHeight * viewParameters.AspectRatio, -positionForHitTest.Y * viewParameters.FrustumHeight, -1));
             var clickRay = new Ray(viewParameters.ViewMatrixInverse.TranslationVector, Vector3.TransformNormal(rayDirectionView, viewParameters.ViewMatrixInverse));
 
             // perform the hit test
@@ -614,25 +617,50 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             public Matrix ProjectionMatrix;
             public Matrix ViewProjectionMatrix;
 
-            public void Update(CameraComponent camera)
+            public void Update(Entity entity, CameraComponent camera)
             {
                 AspectRatio = camera.AspectRatio;
                 FrustumHeight = 2 * (float)Math.Tan(MathUtil.DegreesToRadians(camera.VerticalFieldOfView) / 2);
-                ViewMatrix = camera.ViewMatrix;
-                Matrix.Invert(ref ViewMatrix, out ViewMatrixInverse);
-                ProjectionMatrix = camera.ProjectionMatrix;
-                ViewProjectionMatrix = camera.ViewProjectionMatrix;
 
-                // Adapt the projection matrix to the UI coordinate system (Y axis inversed)
-                ProjectionMatrix.M22 = -ProjectionMatrix.M22;
-                ViewProjectionMatrix.Column2 = -ViewProjectionMatrix.Column2;
+                // extract the world matrix of the UI entity
+                var worldMatrix = entity.Get<TransformComponent>().WorldMatrix;
+
+                // rotate the UI element perpendicular to the camera view vector, if billboard is activated
+                var uiComponent = entity.Get<UIComponent>();
+                if (!uiComponent.IsFullScreen && uiComponent.IsBillboard)
+                {
+                    Matrix viewInverse;
+                    Matrix.Invert(ref camera.ViewMatrix, out viewInverse);
+
+                    // remove scale of the camera
+                    viewInverse.Row1 /= viewInverse.Row1.XYZ().Length();
+                    viewInverse.Row2 /= viewInverse.Row2.XYZ().Length();
+
+                    // set the scale of the object
+                    viewInverse.Row1 *= worldMatrix.Row1.XYZ().Length();
+                    viewInverse.Row2 *= worldMatrix.Row2.XYZ().Length();
+
+                    // set the adjusted world matrix
+                    worldMatrix.Row1 = viewInverse.Row1;
+                    worldMatrix.Row2 = viewInverse.Row2;
+                    worldMatrix.Row3 = viewInverse.Row3;
+                }
+
+                // Rotation of Pi along 0x to go from UI space to world space
+                worldMatrix.Row2 = -worldMatrix.Row2; 
+                worldMatrix.Row3 = -worldMatrix.Row3;
+
+                ProjectionMatrix = camera.ProjectionMatrix;
+                Matrix.Multiply(ref worldMatrix, ref camera.ViewMatrix, out ViewMatrix);
+                Matrix.Invert(ref ViewMatrix, out ViewMatrixInverse);
+                Matrix.Multiply(ref ViewMatrix, ref ProjectionMatrix, out ViewProjectionMatrix);
             }
 
-            public void Update(Vector3 virtualResolution)
+            public void Update(Entity entity, Vector3 virtualResolution)
             {
-                var nearPlane = 1f;
-                var farPlane = nearPlane + 2 * virtualResolution.Z;
-                var zOffset = virtualResolution.Z + 1f;
+                var nearPlane = virtualResolution.Z / 2;
+                var farPlane = nearPlane + virtualResolution.Z;
+                var zOffset = nearPlane + virtualResolution.Z / 2;
                 var aspectRatio = virtualResolution.X / virtualResolution.Y;
                 var verticalFov = (float)Math.Atan2(virtualResolution.Y / 2, zOffset) * 2;
 
@@ -643,9 +671,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                     ViewMatrix = Matrix.LookAtRH(new Vector3(0, 0, zOffset), Vector3.Zero, Vector3.UnitY),
                     ProjectionMatrix = Matrix.PerspectiveFovRH(verticalFov, aspectRatio, nearPlane, farPlane),
                 };
-                Matrix.Multiply(ref cameraComponent.ViewMatrix, ref cameraComponent.ProjectionMatrix, out cameraComponent.ViewProjectionMatrix);
 
-                Update(cameraComponent);
+                Update(entity, cameraComponent);
             }
         }
     }

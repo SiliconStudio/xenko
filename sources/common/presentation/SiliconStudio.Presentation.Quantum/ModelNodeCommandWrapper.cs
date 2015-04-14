@@ -61,7 +61,8 @@ namespace SiliconStudio.Presentation.Quantum
             if (modelNode == null)
                 throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
 
-            var newValue = NodeCommand.Invoke(modelNode.Content.Value, modelNode.Content.Descriptor, parameter, out token);
+            var currentValue = modelNode.GetValue(index);
+            var newValue = NodeCommand.Invoke(currentValue, parameter, out token);
             modelNode.SetValue(newValue, index);
             Refresh(modelNode, index);
 
@@ -81,7 +82,8 @@ namespace SiliconStudio.Presentation.Quantum
                 throw new InvalidOperationException("Unable to retrieve the node on which to apply the undo operation.");
 
             var modelNodeToken = (ModelNodeToken)token.TokenValue;
-            var newValue = NodeCommand.Undo(modelNode.Content.Value, modelNode.Content.Descriptor, modelNodeToken.Token);
+            var currentValue = modelNode.GetValue(index);
+            var newValue = NodeCommand.Undo(currentValue, modelNodeToken.Token);
             modelNode.SetValue(newValue, index);
             Refresh(modelNode, index);
 
@@ -112,17 +114,6 @@ namespace SiliconStudio.Presentation.Quantum
                 return;
 
             var newValue = modelNode.GetValue(index);
-
-            if (observableNode.IsPrimitive)
-            {
-                var collectionDescriptor = modelNode.Content.Descriptor as CollectionDescriptor;
-                if (collectionDescriptor != null)
-                    newValue = collectionDescriptor.GetValue(modelNode.Content.Value, observableNode.Index);
-
-                var dictionaryDescriptor = modelNode.Content.Descriptor as DictionaryDescriptor;
-                if (dictionaryDescriptor != null)
-                    newValue = dictionaryDescriptor.GetValue(newValue, observableNode.Index);
-            }
 
             observableNode.ForceSetValue(newValue);
             observableNode.Owner.NotifyNodeChanged(observableNode.Path);

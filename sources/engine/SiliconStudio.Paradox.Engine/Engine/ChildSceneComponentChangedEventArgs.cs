@@ -6,19 +6,19 @@ using SiliconStudio.Paradox.EntityModel;
 namespace SiliconStudio.Paradox.Engine
 {
     /// <summary>
-    /// An event occurring when the <see cref="SceneChildComponent.Scene"/> changed.
+    /// An event occurring when the <see cref="ChildSceneComponent.Scene"/> changed.
     /// </summary>
-    public struct SceneChildComponentChangedEventArgs
+    public struct ChildSceneComponentChangedEventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SceneChildComponentChangedEventArgs"/> struct.
+        /// Initializes a new instance of the <see cref="ChildSceneComponentChangedEventArgs"/> struct.
         /// </summary>
-        /// <param name="childComponent">The child component.</param>
+        /// <param name="component">The child component.</param>
         /// <param name="previousScene">The previous scene.</param>
         /// <param name="newScene">The new scene.</param>
-        public SceneChildComponentChangedEventArgs(SceneChildComponent childComponent, Scene previousScene, Scene newScene)
+        public ChildSceneComponentChangedEventArgs(ChildSceneComponent component, Scene previousScene, Scene newScene)
         {
-            ChildComponent = childComponent;
+            Component = component;
             PreviousScene = previousScene;
             NewScene = newScene;
         }
@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// The child component
         /// </summary>
-        public readonly SceneChildComponent ChildComponent;
+        public readonly ChildSceneComponent Component;
 
         /// <summary>
         /// The previous scene

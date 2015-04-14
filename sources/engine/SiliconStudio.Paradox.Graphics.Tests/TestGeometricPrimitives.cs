@@ -33,17 +33,20 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         private bool isPaused;
 
+        private int primitiveStartOffset;
+
         public TestGeometricPrimitives()
         {
-            CurrentVersion = 3;
+            CurrentVersion = 5;
         }
 
         protected override void RegisterTests()
         {
             base.RegisterTests();
 
-            FrameGameSystem.Draw(()=>SetTimeAndDrawPrimitives(0)).TakeScreenshot();
-            FrameGameSystem.Draw(()=>SetTimeAndDrawPrimitives(1.7f)).TakeScreenshot();
+            FrameGameSystem.Draw(() => SetTimeAndDrawPrimitives(0)).TakeScreenshot();
+            FrameGameSystem.Draw(() => SetTimeAndDrawPrimitives(1.7f)).TakeScreenshot();
+            FrameGameSystem.Draw(() => ChangePrimitiveStartOffset(1)).Draw(() => SetTimeAndDrawPrimitives(2.5f)).TakeScreenshot();
         }
 
         protected override async Task LoadContent()
@@ -69,7 +72,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                                  GeometricPrimitive.Cylinder.New(GraphicsDevice),
                                  GeometricPrimitive.Torus.New(GraphicsDevice),
                                  GeometricPrimitive.Teapot.New(GraphicsDevice),
-                                 GeometricPrimitive.Capsule.New(GraphicsDevice, 0.25f, 0.3f)
+                                 GeometricPrimitive.Capsule.New(GraphicsDevice, 0.25f, 0.3f),
+                                 GeometricPrimitive.Cone.New(GraphicsDevice)
                              };
 
 
@@ -88,10 +92,22 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             if (Input.IsKeyPressed(Keys.Space))
                 isPaused = !isPaused;
 
+            if (Input.IsKeyPressed(Keys.Left))
+                ChangePrimitiveStartOffset(-1);
+
+            if (Input.IsKeyPressed(Keys.Right))
+                ChangePrimitiveStartOffset(1);
+
             projection = Matrix.PerspectiveFovRH((float)Math.PI / 4.0f, (float)GraphicsDevice.BackBuffer.ViewWidth / GraphicsDevice.BackBuffer.ViewHeight, 0.1f, 100.0f);
 
             if (GraphicsDevice.BackBuffer.ViewWidth < GraphicsDevice.BackBuffer.ViewHeight) // the screen is standing up on Android{
                 view = Matrix.LookAtRH(new Vector3(0, 0, 10), new Vector3(0, 0, 0), Vector3.UnitX);
+        }
+
+        private void ChangePrimitiveStartOffset(int i)
+        {
+            var modulo = primitives.Count - 8 + 1;
+            primitiveStartOffset = (primitiveStartOffset + i + modulo) % modulo;
         }
 
         protected override void Draw(GameTime gameTime)
@@ -121,9 +137,9 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
 
             // Render each primitive
-            for (int i = 0; i < primitives.Count; i++)
+            for (int i = 0; i < Math.Min(primitives.Count, 8); i++)
             {
-                var primitive = primitives[i];
+                var primitive = primitives[i + primitiveStartOffset];
 
                 // Calculate the translation
                 float dx = (i % 4);
@@ -147,7 +163,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 primitive.Draw();
             }
         }
-
+        
         public static void Main()
         {
             using (var game = new TestGeometricPrimitives())

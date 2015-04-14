@@ -14,19 +14,29 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         // For FakeDepthStencilState.
-        public DepthStencilState(DepthStencilStateDescription description)
+        private DepthStencilState(DepthStencilStateDescription description)
         {
             Description = description;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IDepthStencilState"/> class.
+        /// Initializes a new instance of the <see cref="DepthStencilState"/> class.
         /// </summary>
         /// <param name="graphicsDevice">The graphics device.</param>
         /// <param name="description">The description.</param>
         public static DepthStencilState New(GraphicsDevice graphicsDevice, DepthStencilStateDescription description)
         {
             return new DepthStencilState(graphicsDevice, description);
+        }
+
+        /// <summary>
+        /// Create a new fake depth-stencil state for serialization.
+        /// </summary>
+        /// <param name="description">The description of the depth-stencil state</param>
+        /// <returns>The fake depth-stencil state</returns>
+        public static DepthStencilState NewFake(DepthStencilStateDescription description)
+        {
+            return new DepthStencilState(description);
         }
         
         /// <summary>

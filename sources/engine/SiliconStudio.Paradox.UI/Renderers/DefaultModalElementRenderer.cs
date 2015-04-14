@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
     {
         private Matrix identity = Matrix.Identity;
 
-        private DepthStencilState noStencilNoDepth;
+        private readonly DepthStencilState noStencilNoDepth;
 
         public DefaultModalElementRenderer(IServiceRegistry services)
             : base(services)

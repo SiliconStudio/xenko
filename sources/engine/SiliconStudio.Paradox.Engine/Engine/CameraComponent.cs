@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("CameraComponent")]
     [Display(130, "Camera")]
-    [GizmoEntityFactory(GizmoEntityFactoryNames.CameraGizmoEntityFactoryQualifiedName)]
+    [GizmoEntity(GizmoEntityNames.CameraGizmoEntityQualifiedName)]
     [DefaultEntityComponentRenderer(typeof(CameraComponentRenderer), -1000)]
     public sealed class CameraComponent : EntityComponent
     {
@@ -185,7 +185,9 @@ namespace SiliconStudio.Paradox.Engine
             // TODO: Should we throw an error if Projection is not set?
             if (!UseCustomProjectionMatrix)
             {
-                ProjectionMatrix = Projection == CameraProjectionMode.Perspective ? Matrix.PerspectiveFovRH(MathUtil.DegreesToRadians(VerticalFieldOfView), AspectRatio, NearClipPlane, FarClipPlane) : Matrix.OrthoRH(OrthographicSize, OrthographicSize, NearClipPlane, FarClipPlane);
+                ProjectionMatrix = Projection == CameraProjectionMode.Perspective ? 
+                    Matrix.PerspectiveFovRH(MathUtil.DegreesToRadians(VerticalFieldOfView), AspectRatio, NearClipPlane, FarClipPlane) :
+                    Matrix.OrthoRH(AspectRatio * OrthographicSize, OrthographicSize, NearClipPlane, FarClipPlane);
             }
 
             // Update ViewProjectionMatrix

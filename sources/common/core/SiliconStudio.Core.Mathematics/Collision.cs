@@ -721,8 +721,8 @@ namespace SiliconStudio.Core.Mathematics
                 rectangleWorldMatrix.M21 == 0 && rectangleWorldMatrix.M23 == 0 &&
                 rectangleWorldMatrix.M31 == 0 && rectangleWorldMatrix.M32 == 0)
             {
-                var halfSize1 = rectangleWorldMatrix[(testAxis1 << 2) + testAxis1] * rectangleSize[testAxis1] / 2f;
-                var halfSize2 = rectangleWorldMatrix[(testAxis2 << 2) + testAxis2] * rectangleSize[testAxis2] / 2f;
+                var halfSize1 = Math.Abs(rectangleWorldMatrix[(testAxis1 << 2) + testAxis1] * rectangleSize[testAxis1] / 2f);
+                var halfSize2 = Math.Abs(rectangleWorldMatrix[(testAxis2 << 2) + testAxis2] * rectangleSize[testAxis2] / 2f);
 
                 intersects = -halfSize1 <= intersectionInRectangle[testAxis1] && intersectionInRectangle[testAxis1] <= halfSize1 &&
                              -halfSize2 <= intersectionInRectangle[testAxis2] && intersectionInRectangle[testAxis2] <= halfSize2;

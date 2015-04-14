@@ -31,7 +31,6 @@ namespace SiliconStudio.Quantum.Commands
         /// <inheritdoc/>
         public override CombineMode CombineMode { get { return CombineMode.AlwaysCombine; } }
 
-
         /// <inheritdoc/>
         public override bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor)
         {
@@ -55,8 +54,9 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public override object Invoke(object currentValue, ITypeDescriptor descriptor, object parameter, out UndoToken undoToken)
+        public override object Invoke(object currentValue, object parameter, out UndoToken undoToken)
         {
+            var descriptor = TypeDescriptorFactory.Default.Find(currentValue.GetType());
             var collectionDescriptor = descriptor as CollectionDescriptor;
             var dictionaryDescriptor = descriptor as DictionaryDescriptor;
             if (collectionDescriptor != null)
@@ -79,8 +79,9 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public override object Undo(object currentValue, ITypeDescriptor descriptor, UndoToken undoToken)
+        public override object Undo(object currentValue, UndoToken undoToken)
         {
+            var descriptor = TypeDescriptorFactory.Default.Find(currentValue.GetType());
             var collectionDescriptor = descriptor as CollectionDescriptor;
             var dictionaryDescriptor = descriptor as DictionaryDescriptor;
             var undoData = (UndoTokenData)undoToken.TokenValue;

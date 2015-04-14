@@ -65,6 +65,7 @@ namespace SiliconStudio.Quantum
         }
 
         /// <inheritdoc/>
+        // TODO: Remove the type argument here
         public IModelNode Build(IModelNode referencer, object obj, Type type, Guid guid)
         {
             Reset();

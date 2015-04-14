@@ -283,7 +283,7 @@ namespace SiliconStudio.Paradox
         internal override void LoadContentInternal()
         {
             base.LoadContentInternal();
-            Script.Add(LoadContent);
+            Script.AddTask(LoadContent);
         }
         protected virtual LogListener GetLogListener()
         {

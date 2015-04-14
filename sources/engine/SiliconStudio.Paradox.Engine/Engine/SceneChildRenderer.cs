@@ -9,14 +9,14 @@ using SiliconStudio.Paradox.Engine.Graphics.Composers;
 namespace SiliconStudio.Paradox.Engine
 {
     /// <summary>
-    /// A renderer for a child scene defined by a <see cref="SceneChildComponent"/>.
+    /// A renderer for a child scene defined by a <see cref="ChildSceneComponent"/>.
     /// </summary>
     [DataContract("SceneChildRenderer")]
     [Display("Render Child Scene")]
     public sealed class SceneChildRenderer : SceneRendererBase
     {
         private SceneInstance currentSceneInstance;
-        private SceneChildProcessor sceneChildProcessor;
+        private ChildSceneProcessor childSceneProcessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneChildRenderer"/> class.
@@ -28,10 +28,10 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneChildRenderer"/> class.
         /// </summary>
-        /// <param name="sceneChild">The scene child.</param>
-        public SceneChildRenderer(SceneChildComponent sceneChild)
+        /// <param name="childScene">The scene child.</param>
+        public SceneChildRenderer(ChildSceneComponent childScene)
         {
-            SceneChild = sceneChild;
+            ChildScene = childScene;
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         /// <value>The scene.</value>
         [DataMember(10)]
-        public SceneChildComponent SceneChild { get; set; }
+        public ChildSceneComponent ChildScene { get; set; }
 
         /// <summary>
         /// Gets or sets the graphics compositor override, allowing to override the composition of the scene.
@@ -61,21 +61,21 @@ namespace SiliconStudio.Paradox.Engine
 
         protected override void DrawCore(RenderContext context, RenderFrame output)
         {
-            if (SceneChild == null || !SceneChild.Enabled)
+            if (ChildScene == null || !ChildScene.Enabled)
             {
                 return;
             }
 
             currentSceneInstance = SceneInstance.GetCurrent(Context);
 
-            sceneChildProcessor = sceneChildProcessor ?? currentSceneInstance.GetProcessor<SceneChildProcessor>();
+            sceneChildProcessor = sceneChildProcessor ?? currentSceneInstance.GetProcessor<ChildSceneProcessor>();
 
-            if (sceneChildProcessor == null)
+            if (childSceneProcessor == null)
             {
                 return;
             }
 
-            SceneInstance sceneInstance = sceneChildProcessor.GetSceneInstance(SceneChild);
+            SceneInstance sceneInstance = childSceneProcessor.GetSceneInstance(ChildScene);
             if (sceneInstance != null)
             {
                 sceneInstance.Draw(context, output, GraphicsCompositorOverride);

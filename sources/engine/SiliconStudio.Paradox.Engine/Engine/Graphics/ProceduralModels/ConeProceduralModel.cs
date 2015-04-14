@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
         {
             Height = 1.0f;
             Radius = 1.0f;
-            Tessellation = 32;
+            Tessellation = 16;
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
         /// </summary>
         /// <value>The tessellation.</value>
         [DataMember(30)]
-        [DefaultValue(32)]
+        [DefaultValue(16)]
         public int Tessellation { get; set; }
 
         protected override GeometricMeshData<VertexPositionNormalTexture> CreatePrimitiveMeshData()

@@ -339,7 +339,10 @@ namespace SiliconStudio.Paradox.EntityModel
                     processors.Add(newProcessor);
                 }
                 // Make sure they are always sorted
-                processors.Sort(EntityProcessorComparer.Default);
+                if (newProcessors.Count > 0)
+                {
+                    processors.Sort(EntityProcessorComparer.Default);
+                }
 
                 // Notify
                 foreach (var newProcessor in newProcessors)

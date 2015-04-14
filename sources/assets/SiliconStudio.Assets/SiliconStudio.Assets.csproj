@@ -113,6 +113,7 @@
     <Compile Include="Compiler\FailedCommand.cs" />
     <Compile Include="Compiler\ThumbnailCommandParameters.cs" />
     <Compile Include="Diff\MergeResult.cs" />
+    <Compile Include="IAssetCompileTimeDependencies.cs" />
     <Compile Include="IAssetUpgrader.cs" />
     <Compile Include="IDirtyable.cs" />
     <Compile Include="IFileSynchronizable.cs" />
@@ -156,6 +157,7 @@
     <Compile Include="PackageSessionProfilingKeys.cs" />
     <Compile Include="PackageSessionResult.cs" />
     <Compile Include="Serializers\AssetItemSerializer.cs" />
+    <Compile Include="Serializers\InvariantObjectCloneSerializer.cs" />
     <Compile Include="SolutionPlatformCollection.cs" />
     <Compile Include="TemplateFolder.cs" />
     <Compile Include="Templates\TemplateSampleDescription.cs" />

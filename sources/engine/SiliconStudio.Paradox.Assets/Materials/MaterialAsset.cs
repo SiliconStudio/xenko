@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     [AssetCompiler(typeof(MaterialAssetCompiler))]
     [ObjectFactory(typeof(MaterialFactory))]
     [Display("Material", "A material")]
-    public sealed class MaterialAsset : Asset, IMaterialDescriptor
+    public sealed class MaterialAsset : Asset, IMaterialDescriptor, IAssetCompileTimeDependencies
     {
         /// <summary>
         /// The default file extension used by the <see cref="MaterialAsset"/>.
@@ -108,6 +108,15 @@ namespace SiliconStudio.Paradox.Assets.Materials
             if (Layers != null)
             {
                 Layers.Visit(context);
+            }
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<IContentReference> EnumerateCompileTimeDependencies()
+        {
+            foreach (var materialReference in FindMaterialReferences())
+            {
+                yield return materialReference;
             }
         }
     }

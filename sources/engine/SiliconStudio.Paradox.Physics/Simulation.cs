@@ -1056,8 +1056,6 @@ namespace SiliconStudio.Paradox.Physics
 
         internal void Simulate(float deltaTime)
         {
-            if (DisableSimulation) return;
-
             if (collisionWorld == null) return;
 
             var args = new SimulationArgs

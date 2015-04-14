@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Paradox.EntityModel;
 
-namespace SiliconStudio.Paradox.EntityModel
+namespace SiliconStudio.Paradox.Assets.Model
 {
     /// <summary>
     /// Represents a reference to an <see cref="Entity"/>, using its Id (and Name for easier matching and readability).
@@ -41,8 +42,6 @@ namespace SiliconStudio.Paradox.EntityModel
             return string.Format("{0}:{1}", Id, Value);
         }
 
-        public static readonly PropertyKey<EntityAnalysisResult> EntityAnalysisResultKey = new PropertyKey<EntityAnalysisResult>("EntityAnalysisResult", typeof(EntityReference));
-
         internal class Serializer : DataSerializer<EntityReference>
         {
             public override void Serialize(ref EntityReference obj, ArchiveMode mode, SerializationStream stream)
@@ -50,23 +49,8 @@ namespace SiliconStudio.Paradox.EntityModel
                 if (obj == null)
                     obj = new EntityReference();
 
-                if (mode == ArchiveMode.Deserialize)
-                {
-                    var entityReferenceContext = stream.Context.Get(EntityAnalysisResultKey);
-                    if (entityReferenceContext != null)
-                    {
-                        entityReferenceContext.EntityReferences.Add(obj);
-                    }
-                }
-
                 stream.Serialize(ref obj.id, mode);
             }
-        }
-
-        public class EntityAnalysisResult
-        {
-            public List<IEntityComponentReference> EntityComponentReferences = new List<IEntityComponentReference>();
-            public List<EntityReference> EntityReferences = new List<EntityReference>();
         }
     }
 }

@@ -9,9 +9,9 @@ Hierarchy:
         -   Name: cube
             Components:
                 ModelComponent.Key:
+                    Model: fdd84cdb-1e11-4cb8-a5eb-8bba7f2fe729:Cube/cube Model
                     DrawOrder: 0
                     Materials: []
-                    Model: fdd84cdb-1e11-4cb8-a5eb-8bba7f2fe729:Cube/cube Model
                     Parameters: {}
                 TransformComponent.Key:
                     Position: {X: 0, Y: 0, Z: 0}
@@ -31,9 +31,9 @@ Hierarchy:
                 -   Name: Entity
                     Components:
                         ModelComponent.Key:
+                            Model: ab23ed01-165f-4b9a-ab4b-203f08804955:cube Model
                             DrawOrder: 0
                             Materials: []
-                            Model: ab23ed01-165f-4b9a-ab4b-203f08804955:cube Model
                             Parameters: {}
                         TransformComponent.Key:
                             Position: {X: 0, Y: 0, Z: 0}

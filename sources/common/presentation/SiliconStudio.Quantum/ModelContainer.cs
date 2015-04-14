@@ -114,6 +114,7 @@ namespace SiliconStudio.Quantum
         /// <param name="updateReferencesIfExists">Update references contained in the result node, if it already exists.</param>
         /// <param name="referencer">The referencer (optional, just here to help having some context when building nodes).</param>
         /// <returns>The <see cref="IModelNode"/> associated to the given object.</returns>
+        // TODO: Remove the type argument here
         public IModelNode GetOrCreateModelNode(object rootObject, Type type, bool updateReferencesIfExists = true, IModelNode referencer = null)
         {
             lock (lockObject)
