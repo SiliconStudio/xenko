@@ -105,7 +105,6 @@ namespace SiliconStudio.Presentation.Quantum
                 RemoveAssociatedData(key);
             }
 
-            Owner.ObservableViewModelService.RequestAssociatedData(this);
             // TODO: we add associatedData added to SingleObservableNode this way, but it's a bit dangerous. Maybe we should check that all combined nodes have this data entry, and all with the same value.
             foreach (var singleData in CombinedNodes.SelectMany(x => x.AssociatedData).Where(x => !AssociatedData.ContainsKey(x.Key)))
             {
