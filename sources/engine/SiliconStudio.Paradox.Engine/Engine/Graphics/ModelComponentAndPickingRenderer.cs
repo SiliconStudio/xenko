@@ -30,7 +30,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
             modelRenderer = ToLoadAndUnload(new ModelComponentRenderer(effectName));
 
-            // Setup the ModelComponentRenderer as the main rendeer for the scene Camera Renderer
+            // Setup the ModelComponentRenderer as the main renderer for the scene Camera Renderer
+            // This is used by the LightComponentForwardRenderer
+            // TODO: Check if we could discover declared renderers in a better way than just hacking the tags of a component
             ModelComponentRenderer.Attach(SceneCameraRenderer, modelRenderer);
         }
 

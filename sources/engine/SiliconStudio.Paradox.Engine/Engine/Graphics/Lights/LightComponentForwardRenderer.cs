@@ -157,6 +157,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             // Setup the callback on the ModelRenderer and shadow map LightGroupRenderer
             if (!isModelComponentRendererSetup)
             {
+                // TODO: Check if we could discover declared renderers in a better way than just hacking the tags of a component
                 var modelRenderer = ModelComponentRenderer.GetAttached(sceneCameraRenderer);
                 if (modelRenderer == null)
                 {
