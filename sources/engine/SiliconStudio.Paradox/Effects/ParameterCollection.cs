@@ -323,12 +323,12 @@ namespace SiliconStudio.Paradox.Effects
                     builder.Append("    ");
 
                 if (usedParam.Key == null)
-                    builder.Append("NullKey");
+                    builder.Append("null");
                 else
                     builder.Append(usedParam.Key);
                 builder.Append(": ");
                 if (usedParam.Value == null)
-                    builder.AppendLine("NullValue");
+                    builder.AppendLine("null");
                 else
                 {
                     if (usedParam.Value is ParameterCollection)
