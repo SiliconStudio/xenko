@@ -22,14 +22,11 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// <summary>
         /// Compute the light color/direction for the specified index within this group
         /// </summary>
-        override void PrepareDirectLight(int lightIndex)
+        override void PrepareDirectLightCore(int lightIndex)
         {
             streams.lightColor = LightColor[lightIndex];
             // TODO: Add support for disk based Directional light
             streams.lightDirectionWS = -LightDirectionsWS[lightIndex];
-
-            // Base will compute shadow and Color with NdotL
-            base.PrepareDirectLight(lightIndex);
         }
     };
 }

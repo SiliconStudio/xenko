@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// <summary>
         /// Compute the light color/direction for the specified index within this group
         /// </summary>
-        override void PrepareDirectLight(int lightIndex)
+        override void PrepareDirectLightCore(int lightIndex)
         {
             float3 lightVector = LightPositionWS[lightIndex] - streams.PositionWS;
             float lightVectorLength = length(lightVector);
@@ -36,9 +36,6 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
             streams.lightColor = LightColor[lightIndex] * attenuation;
             streams.lightDirectionWS = lightVectorNorm;
-
-            // Base will compute shadow and Color with NdotL
-            base.PrepareDirectLight(lightIndex);
         }
     };
 }

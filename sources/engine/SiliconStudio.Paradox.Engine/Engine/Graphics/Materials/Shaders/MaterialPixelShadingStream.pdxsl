@@ -10,9 +10,6 @@ namespace SiliconStudio.Paradox.Effects.Materials
         // Half vector (sum of normalWS + lightDirectionWS)
         stage stream float3 H;
 
-        // normal dot light
-        stage stream float NdotL;
-
         // normal dot half vector
         stage stream float NdotH;
 
@@ -26,12 +23,9 @@ namespace SiliconStudio.Paradox.Effects.Materials
         stage void PrepareMaterialPerDirectLight()
         {
             // TODO: This is not plug-n-play
-
             // Used by microfacet
             streams.H = normalize(streams.viewWS + streams.lightDirectionWS);
             // Make sure that NdotL and NdotV != 0 as they are used as denominator in BRDF and causing NANs if not correctly clamped
-            streams.NdotL = max(dot(streams.normalWS, streams.lightDirectionWS), 0.0001f);
-            streams.NdotV = max(dot(streams.normalWS, streams.viewWS), 0.0001f);
             streams.NdotH = max(dot(streams.normalWS, streams.H), 0.0001f);
             streams.LdotH = max(dot(streams.lightDirectionWS, streams.H), 0.0001f);
             streams.VdotH = streams.LdotH;
