@@ -342,7 +342,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
             {
                 var mesh = meshes[i];
                 // If there is no caster
-                if (!mesh.MaterialInstance.IsShadowCaster || !mesh.RenderModel.ModelComponent.IsShadowCaster)
+                if (!mesh.IsShadowCaster)
                 {
                     meshes.SwapRemoveAt(i--);
                 }
