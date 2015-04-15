@@ -146,6 +146,8 @@ public:
 				logger->Error("Multiple mesh deformers are not supported yet. Mesh '{0}' will not be properly deformed.", gcnew String(meshNames[pMesh].c_str()));
 			}
 
+			auto invScaleImport = 1.0f / ScaleImport;
+
 			FbxDeformer* deformer = pMesh->GetDeformer(0);
 			FbxDeformer::EDeformerType deformerType = deformer->GetDeformerType();
 			if (deformerType == FbxDeformer::eSkin)
@@ -172,20 +174,19 @@ public:
 					int *indices = cluster->GetControlPointIndices();
 					double *weights = cluster->GetControlPointWeights();
 
-					FbxAMatrix lReferenceGlobalInitPosition;
-					FbxAMatrix lClusterGlobalInitPosition;
-					FbxAMatrix lClusterRelativeInitPosition;
+					FbxAMatrix transformMatrix;
+					FbxAMatrix transformLinkMatrix;
 
-					cluster->GetTransformLinkMatrix(lClusterGlobalInitPosition);
-					cluster->GetTransformMatrix(lReferenceGlobalInitPosition);
-					//lReferenceGlobalInitPosition *= GetGeometry(pMesh->GetNode());
+					const FbxVector4 lT = link->GetGeometricTranslation(FbxNode::eSourcePivot);
+					const FbxVector4 lR = link->GetGeometricRotation(FbxNode::eSourcePivot);
+					const FbxVector4 lS = link->GetGeometricScaling(FbxNode::eSourcePivot);
+					auto geometryTransform = FbxAMatrix(lT, lR, lS);
 
-					bool test = cluster->IsTransformParentSet();
+					cluster->GetTransformMatrix(transformMatrix);
+					cluster->GetTransformLinkMatrix(transformLinkMatrix);
+					auto globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * geometryTransform;
 
-					auto linkMatrix = FBXMatrixToMatrix(lClusterGlobalInitPosition);
-					auto meshMatrix = FBXMatrixToMatrix(lReferenceGlobalInitPosition);
-
-					if (swapHandedness)
+     				if (swapHandedness)
 					{
 						logger->Warning("Bones transformation from left handed to right handed need to be checked.", nullptr, CallerInfo::Get(__FILEW__, __FUNCTIONW__, __LINE__));
 
@@ -209,7 +210,7 @@ public:
 
 					MeshBoneDefinition bone;
 					bone.NodeIndex = nodeMapping[(IntPtr)link];
-					bone.LinkToMeshMatrix = meshMatrix * Matrix::Invert(linkMatrix);
+					bone.LinkToMeshMatrix = FBXMatrixToMatrix(globalBindposeInverseMatrix);
 
 					bones->Add(bone);
 
@@ -1895,7 +1896,17 @@ private:
 		auto appliWhichExported = gcnew String(std::string(documentInfo->Original_ApplicationName.Get()).c_str());
 		if(appliWhichExported == "Maya")
 			exportedFromMaya = true;
-			
+
+
+		// TODO: CHECK http://forums.autodesk.com/t5/fbx-sdk/broken-fbxnode-transformation-after-fbxsystemunit-convertscene/td-p/5463960
+		// AND https://github.com/galek/ozz-animation/blob/master/src/animation/offline/fbx/fbx_base.cc
+		// It seems that ConvertScene is not working on bones, animations...etc. So we would have to do it ourselves.
+
+		// Change scaling back to the import scaling
+		FbxSystemUnit SceneSystemUnit = scene->GetGlobalSettings().GetSystemUnit();
+		auto scaleFactor = SceneSystemUnit.GetScaleFactor();
+		FbxSystemUnit(scaleFactor / ScaleImport).ConvertScene(scene);
+
 		const float framerate = static_cast<float>(FbxTime::GetFrameRate(scene->GetGlobalSettings().GetTimeMode()));
 		scene->GetRootNode()->ResetPivotSetAndConvertAnimation(framerate, false, false);
 
@@ -1903,10 +1914,6 @@ private:
 		//FbxAxisSystem ourAxisSystem(FbxAxisSystem::eYAxis, FbxAxisSystem::eParityOdd, FbxAxisSystem::eRightHanded);
 		//if (ourAxisSystem != scene->GetGlobalSettings().GetAxisSystem())
 		//	ourAxisSystem.ConvertScene(scene);
-
-		// Change scaling back to the import scaling
-		FbxSystemUnit SceneSystemUnit = scene->GetGlobalSettings().GetSystemUnit();
-		FbxSystemUnit(SceneSystemUnit.GetScaleFactor() / ScaleImport).ConvertScene(scene);
 
 		auto sceneAxisSystem = scene->GetGlobalSettings().GetAxisSystem();
 
