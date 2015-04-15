@@ -66,6 +66,11 @@ namespace SiliconStudio.Paradox.Assets.Model
             }
         }
 
+        /// <summary>
+        /// The method to override containing the actual command code. It is called by the <see cref="DoCommand" /> function
+        /// </summary>
+        /// <param name="commandContext">The command context.</param>
+        /// <returns>Task{ResultStatus}.</returns>
         protected override async Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
         {
             var assetManager = new AssetManager();
@@ -279,7 +284,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                         model.Meshes = finalMeshes;
                         model.Hierarchy.Nodes = newNodes.ToArray();
 
-                        hierarchyUpdater = new ModelViewHierarchyUpdater(model);
+                        hierarchyUpdater = new ModelViewHierarchyUpdater(model.Hierarchy.Nodes);
                         hierarchyUpdater.UpdateMatrices();
                     }
 
