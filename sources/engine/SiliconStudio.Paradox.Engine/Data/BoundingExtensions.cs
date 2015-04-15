@@ -26,10 +26,10 @@ namespace SiliconStudio.Paradox.Extensions
             fixed (byte* bufferStart = &vertexBufferBinding.Buffer.GetSerializationData().Content[vertexBufferBinding.Offset])
             {
                 // Calculates bounding box and bounding sphere center
-                byte* buffer = bufferStart;
+                byte* buffer = bufferStart + positionOffset;
                 for (int i = 0; i < vertexBufferBinding.Count; ++i)
                 {
-                    var position = (Vector3*)(buffer + positionOffset);
+                    var position = (Vector3*)buffer;
                     Vector3 transformedPosition;
 
                     Vector3.TransformCoordinate(ref *position, ref matrix, out transformedPosition);
@@ -46,10 +46,10 @@ namespace SiliconStudio.Paradox.Extensions
                 boundingSphere.Center /= (float)vertexBufferBinding.Count;
 
                 // Calculates bounding sphere center
-                buffer = bufferStart;
+                buffer = bufferStart + positionOffset;
                 for (int i = 0; i < vertexBufferBinding.Count; ++i)
                 {
-                    var position = (Vector3*)(buffer + positionOffset);
+                    var position = (Vector3*)buffer;
                     Vector3 transformedPosition;
 
                     Vector3.TransformCoordinate(ref *position, ref matrix, out transformedPosition);
