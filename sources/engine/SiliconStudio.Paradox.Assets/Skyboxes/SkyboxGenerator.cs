@@ -15,6 +15,7 @@ using SiliconStudio.Paradox.Effects.ComputeEffect.LambertianPrefiltering;
 using SiliconStudio.Paradox.Effects.Images;
 using SiliconStudio.Paradox.Effects.Skyboxes;
 using SiliconStudio.Paradox.Engine.Graphics.Skyboxes;
+using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.Data;
 using SiliconStudio.Paradox.Shaders;
@@ -32,6 +33,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
             GraphicsDeviceService = new GraphicsDeviceServiceLocal(Services, GraphicsDevice);
             EffectSystem = new EffectSystem(Services);
             EffectSystem.Initialize();
+            ((IContentable)EffectSystem).LoadContent();
             ((EffectCompilerCache)EffectSystem.Compiler).CompileEffectAsynchronously = false;
             DrawEffectContext = RenderContext.GetShared(Services);
         }
