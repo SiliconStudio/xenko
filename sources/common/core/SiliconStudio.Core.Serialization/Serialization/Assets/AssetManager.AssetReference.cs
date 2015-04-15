@@ -1,11 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Core.Serialization.Assets
 {
@@ -14,8 +10,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <summary>
         /// Internal object that represents a loaded asset, with its url and reference counts.
         /// </summary>
-        // TODO: Check how to expose this publicly in a nice way
-        public class AssetReference
+        internal class AssetReference
         {
             /// <summary>
             /// The next item in the linked list.
