@@ -224,6 +224,18 @@ namespace SiliconStudio.Core.Serialization.Assets
             return Get(typeof(object), url);
         }
 
+        /// <summary>
+        /// Gets or sets whether an asset with the given URL is currently loaded.
+        /// </summary>
+        /// <param name="url">The URL to check.</param>
+        /// <param name="loadedManuallyOnly">If <c>true</c>, this method will return true only if an asset with the given URL has been manually loaded via <see cref="Load"/>, and not if the asset has been only loaded indirectly from another asset.</param>
+        /// <returns><c>True</c> if an asset with the given URL is currently loaded, <c>false</c> otherwise.</returns>
+        public bool IsLoaded(string url, bool loadedManuallyOnly = false)
+        {
+            AssetReference assetReference;
+            return loadedAssetsByUrl.TryGetValue(url, out assetReference) && (!loadedManuallyOnly || assetReference.PublicReferenceCount > 0);
+        }
+
         public bool TryGetAssetUrl(object obj, out string url)
         {
             if (obj == null) throw new ArgumentNullException("obj");
