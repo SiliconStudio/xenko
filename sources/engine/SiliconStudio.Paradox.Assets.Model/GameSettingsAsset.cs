@@ -47,7 +47,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         public static void SetDefaultScene(Package package, AssetReference<SceneAsset> defaultScene)
         {
             package.Profiles.FindSharedProfile().Properties.Set(DefaultScene, defaultScene);
-            package.IsDirty = true;
+            markPackageDirty(package);
         }
 
         public static int GetBackBufferWidth(Package package)
@@ -60,7 +60,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         public static void SetBackBufferWidth(Package package, int value)
         {
             package.Profiles.FindSharedProfile().Properties.Set(BackBufferWidth, value);
-            package.IsDirty = true;
+            markPackageDirty(package);
         }
 
         public static int GetBackBufferHeight(Package package)
@@ -73,13 +73,13 @@ namespace SiliconStudio.Paradox.Assets.Model
         public static void SetBackBufferHeight(Package package, int value)
         {
             package.Profiles.FindSharedProfile().Properties.Set(BackBufferHeight, value);
-            package.IsDirty = true;
+            markPackageDirty(package);
         }
 
         public static void SetGraphicsProfile(Package package, GraphicsProfile value)
         {
             package.Profiles.FindSharedProfile().Properties.Set(DefaultGraphicsProfile, value);
-            package.IsDirty = true;
+            markPackageDirty(package);
         }
 
         public static GraphicsProfile GetGraphicsProfile(Package package)
@@ -89,6 +89,15 @@ namespace SiliconStudio.Paradox.Assets.Model
             return packageSharedProfile.Properties.Get(DefaultGraphicsProfile);
         }
 
+        public static void markPackageDirty(Package package)
+        {
+            package.IsDirty = true;
+            // TODO Temporary hack to force the save of the asset
+            foreach (var asset in package.Assets)
+            {
+                asset.IsDirty = true;
+            }
+        }
 
         // Build a full GameSettingsAsset from a package
         public static GameSettingsAsset CreateFromPackage(Package package)
