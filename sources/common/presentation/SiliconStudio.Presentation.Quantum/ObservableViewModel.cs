@@ -160,7 +160,10 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         public Logger Logger { get; private set; }
 
-        public event EventHandler<NodeChangedArgs> NodeChanged;
+        /// <summary>
+        /// Raised when the dirtiness of the related <see cref="Dirtiables"/> is updated after a property change.
+        /// </summary>
+        public event EventHandler<ObservableViewModelDirtinessUpdatedArgs> ViewModelDirtinessUpdated;
 
         [Pure]
         public IObservableNode ResolveObservableNode(string path)
@@ -214,12 +217,12 @@ namespace SiliconStudio.Presentation.Quantum
 
         private void DirtinessUpdated(object sender, DirtinessUpdatedEventArgs e)
         {
-            var handler = NodeChanged;
+            var handler = ViewModelDirtinessUpdated;
             if (handler != null && nodeChangeList.Count > 0)
             {
                 foreach (var nodeChange in nodeChangeList)
                 {
-                    handler(this, new NodeChangedArgs(this, nodeChange));
+                    handler(this, new ObservableViewModelDirtinessUpdatedArgs(this, nodeChange));
                 }
             }
             nodeChangeList.Clear();
