@@ -1,18 +1,15 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-
-using SharpYaml;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Assets.ProceduralModels;
 using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Assets.Model
@@ -23,7 +20,7 @@ namespace SiliconStudio.Paradox.Assets.Model
     [ThumbnailCompiler(PreviewerCompilerNames.ModelThumbnailCompilerQualifiedName, true, Priority = 10000)]
     [Display("Model", "A 3D model")]
     [AssetFormatVersion(AssetFormatVersion, null)]
-    public sealed class ModelAsset : AssetImportTracked
+    public sealed class ModelAsset : AssetImportTracked, IModelAsset
     {
         public const int AssetFormatVersion = 1;
 
@@ -103,6 +100,10 @@ namespace SiliconStudio.Paradox.Assets.Model
             }
         }
 
+        /// <inheritdoc/>
+        [DataMemberIgnore]
+        public IEnumerable<KeyValuePair<string, MaterialInstance>> MaterialInstances { get { return Materials.Select(x => new KeyValuePair<string, MaterialInstance>(x.Name, x.MaterialInstance)); } }
+        
         /// <summary>
         /// Preserve the nodes.
         /// </summary>

@@ -1,10 +1,14 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections.Generic;
+using System.Linq;
+
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine.Graphics.ProceduralModels;
 
 namespace SiliconStudio.Paradox.Assets.ProceduralModels
@@ -17,7 +21,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
     [ThumbnailCompiler(PreviewerCompilerNames.ProceduralModelThumbnailCompilerQualifiedName, true)] 
     [AssetCompiler(typeof(ProceduralModelAssetCompiler))]
     [Display("Procedural Model", "A procedural model")]
-    public sealed class ProceduralModelAsset : Asset
+    public sealed class ProceduralModelAsset : Asset, IModelAsset
     {
         /// <summary>
         /// The default file extension used by the <see cref="ProceduralModelAsset"/>.
@@ -40,5 +44,9 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
         [NotNull]
         [Display("Type", AlwaysExpand = true)]
         public IProceduralModel Type { get; set; }
+
+        /// <inheritdoc/>
+        [DataMemberIgnore]
+        public IEnumerable<KeyValuePair<string, MaterialInstance>> MaterialInstances { get { return Type != null ? Type.MaterialInstances : Enumerable.Empty<KeyValuePair<string, MaterialInstance>>(); } }
     }
 }
