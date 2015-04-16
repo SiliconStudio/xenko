@@ -14,6 +14,7 @@
     <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions) --generate-user-doc</SiliconStudioAssemblyProcessorOptions>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="SharpYaml, Version=1.0.2.26673, Culture=neutral, PublicKeyToken=1ced8108e942bc02, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\deps\SharpYaml\SharpYaml.dll</HintPath>
