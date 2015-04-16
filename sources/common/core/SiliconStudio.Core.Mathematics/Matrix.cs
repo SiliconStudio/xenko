@@ -659,6 +659,39 @@ namespace SiliconStudio.Core.Mathematics
         /// Decomposes a matrix into a scale, rotation, and translation.
         /// </summary>
         /// <param name="scale">When the method completes, contains the scaling component of the decomposed matrix.</param>
+        /// <param name="translation">When the method completes, contains the translation component of the decomposed matrix.</param>
+        /// <returns><c>true</c> if a rotation exist for this matrix, <c>false</c> otherwise.</returns>
+        /// <remarks>This method is designed to decompose an SRT transformation matrix only.</remarks>
+        public bool Decompose(out Vector3 scale, out Vector3 translation)
+        {
+            //Source: Unknown
+            //References: http://www.gamedev.net/community/forums/topic.asp?topic_id=441695
+
+            //Get the translation.
+            translation.X = this.M41;
+            translation.Y = this.M42;
+            translation.Z = this.M43;
+
+            //Scaling is the length of the rows.
+            scale.X = (float)Math.Sqrt((M11 * M11) + (M12 * M12) + (M13 * M13));
+            scale.Y = (float)Math.Sqrt((M21 * M21) + (M22 * M22) + (M23 * M23));
+            scale.Z = (float)Math.Sqrt((M31 * M31) + (M32 * M32) + (M33 * M33));
+
+            //If any of the scaling factors are zero, than the rotation matrix can not exist.
+            if (Math.Abs(scale.X) < MathUtil.ZeroTolerance ||
+                Math.Abs(scale.Y) < MathUtil.ZeroTolerance ||
+                Math.Abs(scale.Z) < MathUtil.ZeroTolerance)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Decomposes a matrix into a scale, rotation, and translation.
+        /// </summary>
+        /// <param name="scale">When the method completes, contains the scaling component of the decomposed matrix.</param>
         /// <param name="rotation">When the method completes, contains the rtoation component of the decomposed matrix.</param>
         /// <param name="translation">When the method completes, contains the translation component of the decomposed matrix.</param>
         /// <remarks>
