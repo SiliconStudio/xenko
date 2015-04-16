@@ -13,6 +13,7 @@ namespace SiliconStudio.Core.Serialization
     {
         public override void Serialize(ref T obj, ArchiveMode mode, SerializationStream stream)
         {
+            var referenceSerialization = stream.Context.Get(ContentSerializerContext.SerializeAttachedReferenceProperty);
             var contentSerializerContext = stream.Context.Get(ContentSerializerContext.ContentSerializerContextProperty);
             if (contentSerializerContext != null)
             {
@@ -46,6 +47,36 @@ namespace SiliconStudio.Core.Serialization
                         contentSerializerContext.AssetManager.RegisterDeserializedObject(contentReference.Location, obj);
                         contentReference.Value = obj;
                     }
+                }
+            }
+            else if (referenceSerialization == ContentSerializerContext.AttachedReferenceSerialization.AsNull)
+            {
+                if (mode == ArchiveMode.Deserialize)
+                {
+                    obj = default(T);
+                }
+            }
+            else if (referenceSerialization == ContentSerializerContext.AttachedReferenceSerialization.AsSerializableVersion)
+            {
+                if (mode == ArchiveMode.Serialize)
+                {
+                    // This case will happen when serializing build engine command hashes: we still want Location to still be written
+                    var attachedReference = AttachedReferenceManager.GetAttachedReference(obj);
+                    if (attachedReference == null || attachedReference.Url == null)
+                        throw new InvalidOperationException("Error when serializing reference.");
+
+                    // TODO: Do not use string
+                    stream.Write(obj.GetType().AssemblyQualifiedName);
+                    stream.Write(attachedReference.Id);
+                    stream.Write(attachedReference.Url);
+                }
+                else
+                {
+                    var type = Type.GetType(stream.ReadString());
+                    var id = stream.Read<Guid>();
+                    var url = stream.ReadString();
+
+                    obj = (T)AttachedReferenceManager.CreateSerializableVersion(type, id, url);
                 }
             }
             else

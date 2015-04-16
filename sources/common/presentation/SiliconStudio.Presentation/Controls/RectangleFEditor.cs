@@ -74,7 +74,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <inheritdoc/>
         protected override RectangleF UpateValueFromFloat(float value)
         {
-            return new RectangleF(value, value, value, value);
+            return new RectangleF(0.0f, 0.0f, value, value);
         }
     }
 }

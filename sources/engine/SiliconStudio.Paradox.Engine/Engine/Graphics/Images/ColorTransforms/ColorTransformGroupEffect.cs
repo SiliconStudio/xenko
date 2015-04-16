@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     {
         internal partial class ColorTransformCompose  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 if (context.GetParam(ColorTransformKeys.Enabled))
                 {
@@ -44,7 +44,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     {
         internal partial class ColorTransformGroupEffect  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "ColorTransformGroupShader");
                 foreach(var colorTransform in context.GetParam(ColorTransformGroupKeys.Transforms))
@@ -52,7 +52,7 @@ namespace SiliconStudio.Paradox.Effects.Images
                 {
 
                     {
-                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        var __subMixin = new ShaderMixinSource() { Parent = mixin };
                         context.PushCompositionArray(mixin, "Transforms", __subMixin);
                         context.Mixin(__subMixin, "ColorTransformCompose");
                         context.PopComposition();

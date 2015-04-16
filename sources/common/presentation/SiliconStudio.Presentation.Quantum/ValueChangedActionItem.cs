@@ -11,14 +11,12 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public class ValueChangedActionItem : ViewModelActionItem
     {
+        protected ModelNodePath NodePath;
+        protected object Index;
+        protected object PreviousValue;
+        private readonly ObservableViewModelIdentifier identifier;
         private ObservableViewModelService service;
 
-        private ModelNodePath nodePath;
-        private string observableNodePath;
-        private readonly ObservableViewModelIdentifier identifier;
-
-        private object index;
-        private object previousValue;
 
         public ValueChangedActionItem(string name, ObservableViewModelService service, ModelNodePath nodePath, string observableNodePath, ObservableViewModelIdentifier identifier, object index, IEnumerable<IDirtiableViewModel> dirtiables, object previousValue)
             : base(name, dirtiables)
@@ -26,53 +24,51 @@ namespace SiliconStudio.Presentation.Quantum
             if (service == null) throw new ArgumentNullException("service");
             if (!nodePath.IsValid) throw new InvalidOperationException("Unable to retrieve the path of the modified node.");
             this.service = service;
-            this.nodePath = nodePath;
-            this.index = index;
-            this.observableNodePath = observableNodePath;
             this.identifier = identifier;
-            this.previousValue = previousValue;
+            this.PreviousValue = previousValue;
+            NodePath = nodePath;
+            Index = index;
+            ObservableNodePath = observableNodePath;
         }
 
-        public string ObservableNodePath { get { return observableNodePath; } }
+        public string ObservableNodePath { get; private set; }
 
         protected override void FreezeMembers()
         {
             service = null;
-            nodePath = null;
-            observableNodePath = null;
-            index = null;
+            NodePath = null;
+            ObservableNodePath = null;
+            Index = null;
         }
 
         /// <inheritdoc/>
         protected override void UndoAction()
         {
-            var node = nodePath.GetSourceNode(out index);
+            object pathIndex;
+            var node = NodePath.GetSourceNode(out pathIndex);
             if (node == null)
                 throw new InvalidOperationException("Unable to retrieve the node to modify in this undo process.");
 
-            var currentValue = node.GetValue(index);
+            var currentValue = node.GetValue(Index);
             bool setByObservableNode = false;
 
             var observableViewModel = service.ViewModelProvider != null ? service.ViewModelProvider(identifier) : null;
-            if (observableViewModel != null && !observableViewModel.MatchRootNode(nodePath.RootNode))
-                observableViewModel = null;
-
             if (observableViewModel != null)
             {
-                SingleObservableNode observableNode = observableViewModel.ResolveObservableModelNode(observableNodePath, nodePath.RootNode);
+                var observableNode = (SingleObservableNode)observableViewModel.ResolveObservableNode(ObservableNodePath);
                 if (observableNode != null)
                 {
-                    observableNode.Value = previousValue;
+                    observableNode.Value = PreviousValue;
                     setByObservableNode = true;
                 }
             }
 
             if (!setByObservableNode)
             {
-                node.SetValue(previousValue, index);
+                node.SetValue(PreviousValue, Index);
             }
             
-            previousValue = currentValue;        
+            PreviousValue = currentValue;        
         }
 
         /// <inheritdoc/>

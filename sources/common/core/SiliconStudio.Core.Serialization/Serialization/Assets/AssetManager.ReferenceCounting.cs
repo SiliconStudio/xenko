@@ -104,11 +104,11 @@ namespace SiliconStudio.Core.Serialization.Assets
             if (oldPrev == null)
             {
                 if (oldNext == null)
-                    loadedAssetsByUrl.Remove(assetReference.Url);
+                    LoadedAssetUrls.Remove(assetReference.Url);
                 else
-                    loadedAssetsByUrl[assetReference.Url] = oldNext;
+                    LoadedAssetUrls[assetReference.Url] = oldNext;
             }
-            loadedAssetsUrl.Remove(assetReference.Object);
+            LoadedAssetReferences.Remove(assetReference.Object);
 
             assetReference.Object = null;
         }
@@ -117,7 +117,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         {
             // Push everything on the stack
             var currentCollectIndex = nextCollectIndex++;
-            foreach (var asset in loadedAssetsByUrl)
+            foreach (var asset in LoadedAssetUrls)
             {
                 var currentAsset = asset.Value;
                 do
@@ -150,7 +150,7 @@ namespace SiliconStudio.Core.Serialization.Assets
             // Collect objects that are not referenceable.
             // Reuse stack
             // TODO: Use collections where you can iterate and remove at the same time?
-            foreach (var asset in loadedAssetsByUrl)
+            foreach (var asset in LoadedAssetUrls)
             {
                 var currentAsset = asset.Value;
                 do

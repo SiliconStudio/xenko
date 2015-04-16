@@ -22,8 +22,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     {
         private readonly HashSet<T> tempRenderers;
 
-        private readonly List<T> previousRenderers;
-
         private readonly List<T> currentRenderers;
 
         /// <summary>
@@ -32,7 +30,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         protected GraphicsRendererCollectionBase()
         {
             tempRenderers = new HashSet<T>(ReferenceEqualityComparer<T>.Default);
-            previousRenderers = new List<T>();
             currentRenderers = new List<T>();
             Profiling = false; // We don't generate a begin/end for a collection but let the collection be embedded in the parent
         }
@@ -159,28 +156,22 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         protected override void DrawCore(RenderContext context)
         {
-            // Collect previous renderers
-            tempRenderers.Clear();
-            foreach (var renderer in previousRenderers)
-            {
-                tempRenderers.Add(renderer);
-            }
-            previousRenderers.Clear();
-
-            // Iterate on new renderers
+            // Initialize all renderer first
             foreach (var renderer in currentRenderers)
             {
-                // If renderer is new, then load it
-                if (!tempRenderers.Contains(renderer))
-                {
+                // initialize the renderer if needed.
+                if(!renderer.Initialized)
                     renderer.Initialize(context);
+            }
+
+            // Draw all renderers
+            foreach (var renderer in currentRenderers)
+            {
+                if (renderer.Enabled)
+                {
+                    // Draw the renderer
+                    DrawRenderer(context, renderer);
                 }
-
-                // Draw the renderer
-                DrawRenderer(context, renderer);
-
-                // Add it to the list of previous renderers
-                previousRenderers.Add(renderer);
             }
         }
 

@@ -16,9 +16,22 @@ namespace SiliconStudio.Paradox.Engine
     [Display("Texture")]
     public class SpriteFromTexture : ISpriteProvider
     {
-        private Texture previousTexture;
+        private Vector2 center;
         private Texture texture;
-        private Sprite sprite;
+        private bool isTransparent;
+        private bool centerFromMiddle;
+
+        private bool isSpriteDirty = true;
+        private readonly Sprite sprite = new Sprite();
+        
+        /// <summary>
+        /// Creates a new instance of <see cref="SpriteFromTexture"/>.
+        /// </summary>
+        public SpriteFromTexture()
+        {
+            CenterFromMiddle = true;
+            IsTransparent = true;
+        }
 
         /// <summary>
         /// The position of the center of the image in pixels.
@@ -28,7 +41,15 @@ namespace SiliconStudio.Paradox.Engine
         /// Depending on the value of 'CenterFromMiddle', it is the offset from the top/left corner or the middle of the image.
         /// </userdoc>
         [DataMember(10)]
-        public Vector2 Center;
+        public Vector2 Center
+        {
+            get { return center; }
+            set
+            {
+                center = value;
+                isSpriteDirty = true;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the value indicating position provided to <see cref="Center"/> is from the middle of the sprite region or from the left/top corner.
@@ -38,8 +59,16 @@ namespace SiliconStudio.Paradox.Engine
         /// </userdoc>
         [DataMember(15)]
         [DefaultValue(true)]
-        public bool CenterFromMiddle { get; set; }
-        
+        public bool CenterFromMiddle
+        {
+            get { return centerFromMiddle; }
+            set
+            {
+                centerFromMiddle = value;
+                isSpriteDirty = true;
+            }
+        }
+
         /// <summary>
         /// Gets or sets the transparency value of the sprite.
         /// </summary>
@@ -48,15 +77,14 @@ namespace SiliconStudio.Paradox.Engine
         /// </userdoc>
         [DataMember(20)]
         [DefaultValue(true)]
-        public bool IsTransparent { get; set; }
-
-        /// <summary>
-        /// Creates a new instance of <see cref="SpriteFromTexture"/>.
-        /// </summary>
-        public SpriteFromTexture()
+        public bool IsTransparent
         {
-            CenterFromMiddle = true;
-            IsTransparent = true;
+            get { return isTransparent; }
+            set
+            {
+                isTransparent = value;
+                isSpriteDirty = true;
+            }
         }
 
         /// <summary>
@@ -68,34 +96,32 @@ namespace SiliconStudio.Paradox.Engine
             get { return texture; }
             set
             {
-                previousTexture = texture;
                 texture = value;
+                isSpriteDirty = true;
             }
         }
 
         public Sprite GetSprite(int index)
         {
-            // regenerate the sprite if the texture changed.
-            if (previousTexture != texture)
-            {
-                sprite = null;
-                if (texture != null)
-                {
-                    sprite = new Sprite
-                    {
-                        Texture = Texture,
-                        Center = Center + (CenterFromMiddle ? new Vector2(texture.Width, texture.Height) : Vector2.Zero),
-                        Region = new RectangleF(0, 0, texture.Width, texture.Height),
-                        IsTransparent = IsTransparent
-                    };
-                }
-            }
-
-            previousTexture = texture;
+            if(isSpriteDirty)
+                UpdateSprite();
 
             return sprite;
         }
 
-        public int SpritesCount { get { return sprite == null? 0: 1; } }
+        public int SpritesCount { get { return sprite == null ? 0 : 1; } }
+
+        private void UpdateSprite()
+        {
+            sprite.Texture = texture;
+            sprite.IsTransparent = isTransparent;
+            if (texture != null)
+            {
+                sprite.Center = center + (centerFromMiddle ? new Vector2(texture.Width, texture.Height) : Vector2.Zero);
+                sprite.Region = new RectangleF(0, 0, texture.Width, texture.Height);
+            }
+
+            isSpriteDirty = false;
+        }
     }
 }

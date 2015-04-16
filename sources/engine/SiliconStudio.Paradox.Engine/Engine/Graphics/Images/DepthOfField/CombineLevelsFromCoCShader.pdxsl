@@ -85,7 +85,7 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
 
             // Gets the CoC of the current pixel
-            float CoC = Texture0.Sample(LinearSampler, streams.TexCoord).x;
+            float CoC = abs(Texture0.Sample(LinearSampler, streams.TexCoord).x);
 
             // If the pixel is not in focus, use a blur version of the CoC to avoid sharp transitions
             float blurredCoC = Texture1.Sample(LinearSampler, streams.TexCoord).x;

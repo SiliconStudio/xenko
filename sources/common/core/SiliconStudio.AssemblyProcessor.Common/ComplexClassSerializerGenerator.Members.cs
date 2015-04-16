@@ -218,7 +218,11 @@ namespace SiliconStudio.AssemblyProcessor
 
                 // Only take virtual properties (override ones will be handled by parent serializers)
                 if (property.GetMethod.IsVirtual && !property.GetMethod.IsNewSlot)
-                    continue;
+                {
+                    // Exception: if this one has a DataMember, let's assume parent one was Ignore and we explicitly want to serialize this one
+                    if (!property.CustomAttributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Core.DataMemberAttribute"))
+                        continue;
+                }
 
                 properties.Add(property);
             }

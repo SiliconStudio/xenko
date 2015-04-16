@@ -2,11 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Linq;
 using System.Reflection;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Engine.Graphics.Composers;
@@ -94,6 +94,16 @@ namespace SiliconStudio.Paradox.Engine
         }
 
         /// <summary>
+        /// Gets the current scene valid only from a rendering context. May be null.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <returns>SiliconStudio.Paradox.Engine.SceneInstance.</returns>
+        public static SceneInstance GetCurrent(RenderContext context)
+        {
+            return context.Tags.GetSafe(Current);
+        }
+
+        /// <summary>
         /// Draws this scene instance with the specified context and <see cref="RenderFrame"/>.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -133,14 +143,14 @@ namespace SiliconStudio.Paradox.Engine
                 graphicsDevice.ClearState();
 
                 // Draw the main scene using the current compositor (or the provided override)
-                var graphicsCompositor = compositorOverride ?? this.Scene.Settings.GraphicsCompositor;
+                var graphicsCompositor = compositorOverride ?? Scene.Settings.GraphicsCompositor;
                 if (graphicsCompositor != null)
                 {
                     // Push context (pop after using)
-                    using (var t1 = context.PushTagAndRestore(RenderFrame.Current, toFrame))
-                    using (var t2 = context.PushTagAndRestore(SceneGraphicsLayer.Master, toFrame))
-                    using (var t3 = context.PushTagAndRestore(Current, this))
-                    using (var t4 = context.PushTagAndRestore(CameraRendererMode.RendererTypesKey, this.RendererTypes))
+                    using (context.PushTagAndRestore(RenderFrame.Current, toFrame))
+                    using (context.PushTagAndRestore(SceneGraphicsLayer.Master, toFrame))
+                    using (context.PushTagAndRestore(Current, this))
+                    using (context.PushTagAndRestore(CameraRendererMode.RendererTypesKey, RendererTypes))
                     {
                         graphicsCompositor.Draw(context);
                     }
@@ -177,7 +187,7 @@ namespace SiliconStudio.Paradox.Engine
 
         private void UpdateFromChild()
         {
-            // If this scene instance is coming from a SceneChildComponent, check that the Scene hasn't changed
+            // If this scene instance is coming from a ChildSceneComponent, check that the Scene hasn't changed
             // If the scene has changed, we need to recreate a new SceneInstance with the new scene
             if (previousScene != Scene)
             {
@@ -200,11 +210,11 @@ namespace SiliconStudio.Paradox.Engine
 
             // Initialize processors
             if (enableScripting)
-                Processors.Add(new ScriptProcessor());
-            Processors.Add(new SceneProcessor(this));
-            Processors.Add(new HierarchicalProcessor()); // Important to pre-register this processor
-            Processors.Add(new TransformProcessor());
-            Processors.Add(new CameraProcessor()); // By default, as a scene without a camera is not really possible
+                AddProcessor(new ScriptProcessor());   // Order: -100000
+            AddProcessor(new SceneProcessor(this));    // Order: -10000
+            AddProcessor(new HierarchicalProcessor()); // Order: -1000  - Important to pre-register this processor
+            AddProcessor(new TransformProcessor());    // Order: -100
+            AddProcessor(new CameraProcessor());       // Order: -10    - By default, as a scene without a camera is not really possible
             Add(Scene);
 
             // TODO: RendererTypes could be done outside this instance.
@@ -232,7 +242,7 @@ namespace SiliconStudio.Paradox.Engine
                 return;
             }
             var renderType = Type.GetType(rendererTypeAttribute.TypeName);
-            if (renderType != null && typeof(IEntityComponentRenderer).GetTypeInfo().IsAssignableFrom(renderType.GetTypeInfo()) && renderType.GetTypeInfo().GetConstructor(Type.EmptyTypes) != null)
+            if (renderType != null && typeof(IEntityComponentRenderer).GetTypeInfo().IsAssignableFrom(renderType.GetTypeInfo()) && renderType.GetTypeInfo().DeclaredConstructors.Any(x => !x.IsStatic && x.GetParameters().Length == 0))
             {
                 var entityComponentRendererType = new EntityComponentRendererType(type, renderType, rendererTypeAttribute.Order);
                 RendererTypes.Add(entityComponentRendererType);

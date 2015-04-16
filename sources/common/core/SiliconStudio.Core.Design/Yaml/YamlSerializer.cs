@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using SharpYaml;
+using SharpYaml.Events;
 using SharpYaml.Serialization;
 using SiliconStudio.Core.Reflection;
 using AttributeRegistry = SharpYaml.Serialization.AttributeRegistry;
@@ -31,6 +32,28 @@ namespace SiliconStudio.Core.Yaml
         {
             var serializer = GetYamlSerializer(false);
             return serializer.Deserialize(stream);
+        }
+
+        /// <summary>
+        /// Deserializes an object from the specified stream (expecting a YAML string).
+        /// </summary>
+        /// <param name="stream">A YAML string from a stream .</param>
+        /// <returns>An instance of the YAML data.</returns>
+        public static IEnumerable<T> DeserializeMultiple<T>(Stream stream)
+        {
+            var serializer = GetYamlSerializer(false);
+
+            var input = new StreamReader(stream);
+            var reader = new EventReader(new Parser(input));
+            reader.Expect<StreamStart>();
+
+            while (reader.Accept<DocumentStart>())
+            {
+                // Deserialize the document
+                var doc = serializer.Deserialize<T>(reader);
+
+                yield return doc;
+            }
         }
 
         /// <summary>
@@ -71,6 +94,7 @@ namespace SiliconStudio.Core.Yaml
                         LimitPrimitiveFlowSequence = 0,
                         Attributes = new AtributeRegistryFilter(),
                         PreferredIndent = 4,
+                        EmitShortTypeName = true,
                     };
 
                 foreach (var registeredAssembly in RegisteredAssemblies)

@@ -16,6 +16,7 @@ namespace SiliconStudio.Paradox.UI.Controls
     public partial class EditText
     {
         private static MyAndroidEditText staticEditText;
+
         private static EditText activeEditText;
 
         private MyAndroidEditText editText;
@@ -55,11 +56,10 @@ namespace SiliconStudio.Paradox.UI.Controls
         {
         }
 
-        protected override void OnUISystemChanged(UISystem system)
+        // Delay creation of static edit text to last moment when we are sure to be in Android UI thread.
+        // -> some Android phones crashes when native edit text is created from another thread than OS UI thread.
+        private void EnsureStaticEditText()
         {
-            base.OnUISystemChanged(system);
-
-            // create the Android OS edit text only when element is inserted into hierarchy.
             if (staticEditText == null)
             {
                 // create and add the edit text
@@ -143,6 +143,8 @@ namespace SiliconStudio.Paradox.UI.Controls
         {
             if(activeEditText != null)
                 throw new Exception("Internal error: Can not activate edit text, another edit text is already active");
+
+            EnsureStaticEditText();
 
             activeEditText = this;
             editText = staticEditText;

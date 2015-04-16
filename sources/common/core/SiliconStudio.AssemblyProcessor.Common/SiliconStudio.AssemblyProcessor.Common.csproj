@@ -21,6 +21,7 @@
     <RootNamespace>SiliconStudio.AssemblyProcessor</RootNamespace>
     <AssemblyName>SiliconStudio.AssemblyProcessor.Common</AssemblyName>
     <ParadoxBuildTags>*</ParadoxBuildTags>
+	<DefineConstants>$(DefineConstants);ASSEMBLY_PROCESSOR</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ILRepack">

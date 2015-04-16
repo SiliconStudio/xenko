@@ -70,16 +70,24 @@ namespace SiliconStudio.Paradox.Audio
             if(engine == null)
                 throw new ArgumentNullException("engine");
 
-            if (stream == null) 
+            var newSdEff = new SoundEffect(engine);
+            newSdEff.Load(stream);
+
+            return newSdEff;
+        }
+
+        internal void Load(Stream stream)
+        {
+            if (stream == null)
                 throw new ArgumentNullException("stream");
 
-            if(engine.IsDisposed)
+            if (AudioEngine.IsDisposed)
                 throw new ObjectDisposedException("Audio Engine");
 
             // create a native memory stream to extract the lz4 audio stream.
-            var newSdEff = new SoundEffect(engine) { nativeDataBuffer = Utilities.AllocateMemory((int)stream.Length) };
+            nativeDataBuffer = Utilities.AllocateMemory((int)stream.Length);
 
-            var nativeStream = new NativeMemoryStream(newSdEff.nativeDataBuffer, stream.Length);
+            var nativeStream = new NativeMemoryStream(nativeDataBuffer, stream.Length);
             stream.CopyTo(nativeStream);
             nativeStream.Position = 0;
 
@@ -92,19 +100,17 @@ namespace SiliconStudio.Paradox.Audio
             if (waveFormat.Encoding != WaveFormatEncoding.Pcm || waveFormat.BitsPerSample != 16)
                 throw new NotSupportedException("The wave file audio format is not supported. Only 16bits PCM encoded formats are currently supported.");
 
-            newSdEff.WaveFormat = waveFormat;
-            newSdEff.WaveDataPtr = newSdEff.nativeDataBuffer + (int)nativeStream.Position;
-            newSdEff.WaveDataSize = (int)waveStreamReader.Length;
-            newSdEff.Name = "Sound Effect " + soundEffectCreationCount;
+            WaveFormat = waveFormat;
+            WaveDataPtr = nativeDataBuffer + (int)nativeStream.Position;
+            WaveDataSize = (int)waveStreamReader.Length;
+            Name = "Sound Effect " + soundEffectCreationCount;
 
-            newSdEff.AdaptAudioDataImpl();
+            AdaptAudioDataImpl();
 
             // register the sound to the AudioEngine so that it will be properly freed if AudioEngine is disposed before this.
-            engine.RegisterSound(newSdEff);
+            AudioEngine.RegisterSound(this);
 
             Interlocked.Increment(ref soundEffectCreationCount);
-
-            return newSdEff;
         }
 
         /// <summary>
@@ -183,14 +189,15 @@ namespace SiliconStudio.Paradox.Audio
                 throw new AudioSystemInternalException("Tried to unregister soundEffectInstance while not contained in the instance list.");
         }
 
-        // Create an underlying Instance to avoid rewritting Interface functions.
+        // Create an underlying Instance to avoid re-writing Interface functions.
         private SoundEffectInstance DefaultInstance
         {
             get { return defaultInstance ?? (defaultInstance = CreateInstance()); }
         }
         private SoundEffectInstance defaultInstance;
 
-        private SoundEffect(AudioEngine engine)
+        // for serialization
+        internal SoundEffect(AudioEngine engine)
             :base(engine)
         {
         }

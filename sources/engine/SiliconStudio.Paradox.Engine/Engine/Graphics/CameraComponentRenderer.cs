@@ -19,13 +19,13 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// Property key to access the current collection of <see cref="CameraComponent"/> from <see cref="RenderContext.Tags"/>.
         /// </summary>
-        public static readonly PropertyKey<CameraComponentState> Current = new PropertyKey<CameraComponentState>("CameraComponentRenderer.CurrentCamera", typeof(CameraComponentState));
+        public static readonly PropertyKey<CameraComponent> Current = new PropertyKey<CameraComponent>("CameraComponentRenderer.CurrentCamera", typeof(CameraComponent));
 
         public override bool SupportPicking { get { return true; } }
 
         protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
-            var cameraState = context.Tags.Get(Current);
+            var cameraState = context.GetCurrentCamera();
 
             if (cameraState == null)
                 return;
@@ -38,38 +38,21 @@ namespace SiliconStudio.Paradox.Effects
             // Nothing to draw for this camera
         }
 
-        public static void UpdateParameters(RenderContext context, CameraComponentState cameraState)
+        public static void UpdateParameters(RenderContext context, CameraComponent camera)
         {
-            if (cameraState == null) throw new ArgumentNullException("cameraState");
-
-            ParameterCollection viewParameters = context.Parameters;
-
-            if (cameraState.CameraComponent.Entity == null)
-                return;
-
-            var camera = cameraState.CameraComponent;
+            if (camera == null) throw new ArgumentNullException("camera");
 
             // Store the current view/projection matrix in the context
-            context.ProjectionMatrix = cameraState.Projection;
-            context.ViewMatrix = cameraState.View;
-            Matrix.Multiply(ref context.ViewMatrix, ref context.ProjectionMatrix, out context.ViewProjectionMatrix);
-
-            viewParameters.Set(TransformationKeys.View, context.ViewMatrix);
-            viewParameters.Set(TransformationKeys.Projection, context.ProjectionMatrix);
-            viewParameters.Set(TransformationKeys.ViewProjection, context.ViewProjectionMatrix);
-
-            viewParameters.Set(CameraKeys.NearClipPlane, camera.NearPlane);
-            viewParameters.Set(CameraKeys.FarClipPlane, camera.FarPlane);
-            if (camera.Projection == CameraProjectionMode.Perspective)
-            {
-                viewParameters.Set(CameraKeys.FieldOfView, camera.VerticalFieldOfView);
-            }
-            else
-            {
-                viewParameters.Set(CameraKeys.OrthoSize, camera.OrthographicSize);
-            }
-            viewParameters.Set(CameraKeys.Aspect, camera.AspectRatio);
-            viewParameters.Set(CameraKeys.FocusDistance, camera.FocusDistance);
+            var viewParameters = context.Parameters;
+            viewParameters.Set(TransformationKeys.View, camera.ViewMatrix);
+            viewParameters.Set(TransformationKeys.Projection, camera.ProjectionMatrix);
+            viewParameters.Set(TransformationKeys.ViewProjection, camera.ViewProjectionMatrix);
+            viewParameters.Set(CameraKeys.NearClipPlane, camera.NearClipPlane);
+            viewParameters.Set(CameraKeys.FarClipPlane, camera.FarClipPlane);
+            viewParameters.Set(CameraKeys.VerticalFieldOfView, camera.VerticalFieldOfView);
+            viewParameters.Set(CameraKeys.OrthoSize, camera.OrthographicSize);
+            viewParameters.Set(CameraKeys.AspectRatio, camera.AspectRatio);
+            //viewParameters.Set(CameraKeys.FocusDistance, camera.FocusDistance);
         }
     }
 }

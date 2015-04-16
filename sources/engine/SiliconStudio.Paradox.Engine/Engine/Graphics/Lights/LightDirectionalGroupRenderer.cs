@@ -4,56 +4,105 @@
 using System;
 using System.Collections.Generic;
 
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Effects.Shadows;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Effects.Lights
 {
     public class LightDirectionalGroupRenderer : LightGroupRendererBase
     {
-        private const int LightMax = 8;
+        private const int StaticLightMaxCount = 8;
 
-        private readonly LightShaderGroup lightShaderGroup;
-        private readonly List<LightShaderGroup> lightShaderGroups;
-        private readonly ShaderSource[] defaultShaderSource;
-        private readonly Vector3[] lightDirections;
-        private readonly Color3[] lightColors;
+        private static readonly ShaderClassSource DynamicDirectionalGroupShaderSource = new ShaderClassSource("LightDirectionalGroup", StaticLightMaxCount);
 
         public LightDirectionalGroupRenderer()
         {
-            // TODO: Handle unroll
-            lightShaderGroup  = new LightShaderGroup(new ShaderClassSource("LightDirectionalGroup", LightMax));
-            lightShaderGroups = new List<LightShaderGroup>() { lightShaderGroup };
-            lightDirections = new Vector3[LightMax];
-            lightColors = new Color3[LightMax];
+            LightMaxCount = StaticLightMaxCount;
+            CanHaveShadows = true;
         }
 
-        public override bool IsDirectLight
+        public override void Initialize(RenderContext context)
         {
-            get
+            var isLowProfile = context.GraphicsDevice.Features.Profile < GraphicsProfile.Level_10_0;
+            LightMaxCount = isLowProfile ? 2 : StaticLightMaxCount;
+            AllocateLightMaxCount = !isLowProfile;
+        }
+
+        public override LightShaderGroup CreateLightShaderGroup(string compositionName, int lightMaxCount, ILightShadowMapShaderGroupData shadowGroup)
+        {
+            var mixin = new ShaderMixinSource();
+            if (AllocateLightMaxCount)
             {
-                return true;
+                mixin.Mixins.Add(DynamicDirectionalGroupShaderSource);
+            }
+            else
+            {
+                mixin.Mixins.Add(new ShaderClassSource("LightDirectionalGroup", lightMaxCount));
+                mixin.Mixins.Add(new ShaderClassSource("DirectLightGroupFixed", lightMaxCount));
+            }
+
+            if (shadowGroup != null)
+            {
+                shadowGroup.ApplyShader(mixin);
+            }
+
+            return new DirectionalLightShaderGroup(mixin, compositionName, shadowGroup);
+        }
+
+        class DirectionalLightShaderGroup : LightShaderGroupAndDataPool<DirectionalLightShaderGroupData>
+        {
+            internal readonly ParameterKey<int> CountKey;
+            internal readonly ParameterKey<Vector3[]> DirectionsKey;
+            internal readonly ParameterKey<Color3[]> ColorsKey;
+
+            public DirectionalLightShaderGroup(ShaderMixinSource mixin, string compositionName, ILightShadowMapShaderGroupData shadowGroupData)
+                : base(mixin, compositionName, shadowGroupData)
+            {
+                CountKey = DirectLightGroupKeys.LightCount.ComposeWith(compositionName);
+                DirectionsKey = LightDirectionalGroupKeys.LightDirectionsWS.ComposeWith(compositionName);
+                ColorsKey = LightDirectionalGroupKeys.LightColor.ComposeWith(compositionName);
+            }
+
+            protected override DirectionalLightShaderGroupData CreateData()
+            {
+                return new DirectionalLightShaderGroupData(this, ShadowGroup);
             }
         }
 
-        public override List<LightShaderGroup> PrepareLights(RenderContext context, LightComponentCollection lights)
+        class DirectionalLightShaderGroupData : LightShaderGroupData
         {
-            var count = Math.Min(lights.Count, LightMax);
-            for (int i = 0; i < count; i++)
-            {
-                var lightComponent = lights[i];
-                var light = (LightDirectional)lightComponent.Type;
-                var lightDir = LightComponent.DefaultDirection;
+            private readonly ParameterKey<int> countKey;
+            private readonly ParameterKey<Vector3[]> directionsKey;
+            private readonly ParameterKey<Color3[]> colorsKey;
+            private readonly Vector3[] lightDirections;
+            private readonly Color3[] lightColors;
 
-                Vector3.TransformNormal(ref lightDir, ref lightComponent.Entity.Transform.WorldMatrix, out lightDirections[i]);
-                lightColors[i] = light.ComputeColor(lightComponent.Intensity);
+            public DirectionalLightShaderGroupData(DirectionalLightShaderGroup group, ILightShadowMapShaderGroupData shadowGroupData)
+                : base(shadowGroupData)
+            {
+                countKey = group.CountKey;
+                directionsKey = group.DirectionsKey;
+                colorsKey = group.ColorsKey;
+
+                lightDirections = new Vector3[StaticLightMaxCount];
+                lightColors = new Color3[StaticLightMaxCount];
             }
 
-            lightShaderGroup.Parameters.Set(DirectLightGroupKeys.LightCount, count);
-            lightShaderGroup.Parameters.Set(LightDirectionalGroupKeys.LightDirectionsWS, lightDirections);
-            lightShaderGroup.Parameters.Set(LightDirectionalGroupKeys.LightColor, lightColors);
+            protected override void AddLightInternal(LightComponent light)
+            {
+                lightDirections[Count] = light.Direction;
+                lightColors[Count] = light.Color;
+            }
 
-            return lightShaderGroups;
+            protected override void ApplyParametersInternal(ParameterCollection parameters)
+            {
+                parameters.Set(countKey, Count);
+                parameters.Set(directionsKey, lightDirections);
+                parameters.Set(colorsKey, lightColors);
+            }
         }
     }
 }

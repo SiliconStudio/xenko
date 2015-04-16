@@ -47,7 +47,7 @@ namespace SiliconStudio.Paradox.Effects
         public static void CopySharedTo<T>(this T parameters, ParameterCollection parametersTo) where T : ParameterCollection
         {
             if (parametersTo == null) throw new ArgumentNullException("parametersTo");
-            foreach (var parameter in parameters.valueList)
+            foreach (var parameter in parameters.InternalValues)
             {
                 parameters.CopySharedTo(parameter.Key, null, parametersTo);
             }

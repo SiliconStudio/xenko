@@ -4,81 +4,111 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Effects.Shadows;
 
 namespace SiliconStudio.Paradox.Effects.Lights
 {
     /// <summary>
-    /// A shadow map.
+    /// Base class for a shadow map.
     /// </summary>
     [DataContract("LightShadowMap")]
-    public class LightShadowMap : ILightShadow
+    [Display("ShadowMap")]
+    public abstract class LightShadowMap : ILightShadow
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LightShadowMap"/> class.
         /// </summary>
-        public LightShadowMap()
+        protected LightShadowMap()
         {
             Enabled = false;
-            FilterType = LightShadowMapFilterType.Nearest;
-            MaxSize = 512;
-            MinSize = 512;
-            CascadeCount = 1;
-            NearDistance = 1.0f;
-            FarDistance = 100000.0f;
-            BleedingFactor = 0.0f;
-            MinVariance = 0.0f;
+            Size = LightShadowMapSize.Medium;
+            BiasParameters = new ShadowMapBiasParameters();
         }
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="LightShadowMap"/> is enabled.
         /// </summary>
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
+        [DataMember(10)]
+        [DefaultValue(false)]
         public bool Enabled { get; set; }
 
         /// <summary>
         /// Gets or sets the shadow map filtering.
         /// </summary>
         /// <value>The filter type.</value>
-        [DefaultValue(LightShadowMapFilterType.Nearest)]
-        public LightShadowMapFilterType FilterType { get; set; }
-
-        /// <summary>Gets or Sets the maximium size (in pixel) of one cascade of the shadow map.</summary>
-        /// <value>The maximum size of the shadow map.</value>
-        [DefaultValue(512)]
-        public int MaxSize { get; set; }
-
-        /// <summary>Gets or Sets the minimum size (in pixel) of one cascade of the shadow map.</summary>
-        /// <value>The minimum size of the shadow map.</value>
-        [DefaultValue(512)]
-        public int MinSize { get; set; }
-
-        /// <summary>Gets or Sets the number of cascades for this shadow.</summary>
-        /// <value>The number of cascades for this shadow.</value>
-        [DefaultValue(1)]
-        public int CascadeCount { get; set; }
-
-        /// <summary>Gets or Sets the near plane distance of the shadow.</summary>
-        /// <value>The near plane distance of the shadow.</value>
-        [DefaultValue(1.0f)]
-        public float NearDistance { get; set; }
-
-        /// <summary>Gets or Sets the far plane distance of the shadow.</summary>
-        /// <value>The far plane distance of the shadow.</value>
-        [DefaultValue(100000.0f)]
-        public float FarDistance { get; set; }
+        [DataMember(20)]
+        [DefaultValue(null)]
+        public ILightShadowMapFilterType Filter { get; set; }
 
         /// <summary>
-        /// Gets or sets the bleeding factor of the variance shadow map.
+        /// Gets or sets the size of the shadowmap.
         /// </summary>
-        /// <value>The bleeding factor.</value>
-        [DefaultValue(0.0f)]
-        public float BleedingFactor { get; set; }
+        /// <value>The size.</value>
+        [DataMember(30)]
+        [DefaultValue(LightShadowMapSize.Medium)]
+        public LightShadowMapSize Size { get; set; }
 
         /// <summary>
-        /// Gets or sets the minimal value of the variance of the variance shadow map.
+        /// Gets the importance of the shadow. See remarks.
         /// </summary>
-        /// <value>The minimal variance.</value>
-        [DefaultValue(0.0f)]
-        public float MinVariance { get; set; }
+        /// <value>The shadow importance.</value>
+        /// <returns>System.Single.</returns>
+        /// <remarks>The higher the importance is, the higher the cost of shadow computation is costly</remarks>
+        [DataMember(40)]
+        public LightShadowImportance Importance { get; set; }
+
+
+        /// <summary>
+        /// Gets the bias parameters.
+        /// </summary>
+        /// <value>The bias parameters.</value>
+        [DataMember(100)]
+        [Display("Bias Parameters", AlwaysExpand = true)]
+        public ShadowMapBiasParameters BiasParameters { get; private set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="LightShadowMap"/> is debug.
+        /// </summary>
+        /// <value><c>true</c> if debug; otherwise, <c>false</c>.</value>
+        [DataMember(200)]
+        [DefaultValue(false)]
+        public bool Debug { get; set; }
+
+        public virtual int GetCascadeCount()
+        {
+            return 1;
+        }
+
+        /// <summary>
+        /// Bias parameters used for shadow map.
+        /// </summary>
+        [DataContract("LightShadowMap.ShadowMapBiasParameters")]
+        public sealed class ShadowMapBiasParameters
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ShadowMapBiasParameters"/> class.
+            /// </summary>
+            public ShadowMapBiasParameters()
+            {
+                DepthBias = 0.01f;
+            }
+
+            /// <summary>
+            /// Gets or sets the depth bias used for shadow map comparison.
+            /// </summary>
+            /// <value>The bias.</value>
+            [DataMember(10)]
+            [DefaultValue(0.01f)]
+            public float DepthBias { get; set; }
+
+            /// <summary>
+            /// Gets or sets the offset scale in world space unit along the surface normal.
+            /// </summary>
+            /// <value>The offset scale.</value>
+            [DataMember(20)]
+            [DefaultValue(0.0f)]
+            public float NormalOffsetScale { get; set; }
+        }
     }
 }

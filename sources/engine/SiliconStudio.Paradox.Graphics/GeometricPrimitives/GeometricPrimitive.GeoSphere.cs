@@ -79,7 +79,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
 {
     public partial class GeometricPrimitive
     {
@@ -122,10 +122,12 @@ namespace SiliconStudio.Paradox.Graphics
             /// <param name="diameter">The diameter.</param>
             /// <param name="tessellation">The tessellation.</param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
+            /// <param name="uScale">The scale to apply on the u component of the texture coordinates</param>
+            /// <param name="vScale">The scale to apply on the v component of the texture coordinates</param>
             /// <returns>A Geodesic sphere.</returns>
             public static GeometricPrimitive New(GraphicsDevice graphicsDevice, float diameter = 1.0f, int tessellation = 3, bool toLeftHanded = false)
             {
-                return new GeometricPrimitive(graphicsDevice, New(diameter, tessellation, toLeftHanded));
+                return new GeometricPrimitive(graphicsDevice, New(diameter, tessellation,  toLeftHanded));
             }
 
             /// <summary>
@@ -134,6 +136,8 @@ namespace SiliconStudio.Paradox.Graphics
             /// <param name="diameter">The diameter.</param>
             /// <param name="tessellation">The tessellation.</param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
+            /// <param name="uScale">The scale to apply on the u component of the texture coordinates</param>
+            /// <param name="vScale">The scale to apply on the v component of the texture coordinates</param>
             /// <returns>A Geodesic sphere.</returns>
             public static GeometricMeshData<VertexPositionNormalTexture> New(float diameter = 1.0f, int tessellation = 3, bool toLeftHanded = false)
             {
@@ -161,6 +165,8 @@ namespace SiliconStudio.Paradox.Graphics
                 /// </summary>
                 /// <param name="diameter">The diameter.</param>
                 /// <param name="tessellation">The tessellation.</param>
+                /// <param name="uScale">The scale to apply on the u component of the texture coordinates</param>
+                /// <param name="vScale">The scale to apply on the v component of the texture coordinates</param>
                 /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
                 /// <returns>A Geodesic sphere.</returns>
                 public unsafe GeometricMeshData<VertexPositionNormalTexture> Create(float diameter = 1.0f, int tessellation = 3, bool toLeftHanded = false)
@@ -320,10 +326,12 @@ namespace SiliconStudio.Paradox.Graphics
                                     else if (*triIndex1 == i)
                                     {
                                         Utilities.Swap(ref *triIndex0, ref *triIndex1);
+                                        Utilities.Swap(ref *triIndex1, ref *triIndex2);
                                     }
                                     else if (*triIndex2 == i)
                                     {
                                         Utilities.Swap(ref *triIndex0, ref *triIndex2);
+                                        Utilities.Swap(ref *triIndex2, ref *triIndex1);
                                     }
                                     else
                                     {
@@ -349,7 +357,7 @@ namespace SiliconStudio.Paradox.Graphics
                         indices = (int*)0;
                     }
 
-                    return new GeometricMeshData<VertexPositionNormalTexture>(vertices.ToArray(), indexList.ToArray(), toLeftHanded) { Name = "GeoSphere" };
+                    return new GeometricMeshData<VertexPositionNormalTexture>(vertices.ToArray(), indicesArray, toLeftHanded) { Name = "GeoSphere" };
                 }
 
                 private unsafe void FixPole(int poleIndex)

@@ -23,28 +23,35 @@ namespace SiliconStudio.Paradox.Graphics.Data
         {
             if (mode == ArchiveMode.Deserialize)
             {
-                var services = stream.Context.Tags.Get(ServiceRegistry.ServiceRegistryKey);
-                var graphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
-
-                buffer.AttachToGraphicsDevice(graphicsDeviceService.GraphicsDevice);
-
                 var bufferData = stream.Read<BufferData>();
-                buffer.InitializeFrom(bufferData.Content, bufferData.StructureByteStride, bufferData.BufferFlags, PixelFormat.None, bufferData.Usage);
 
-                // Setup reload callback (reload from asset manager)
-                var contentSerializerContext = stream.Context.Get(ContentSerializerContext.ContentSerializerContextProperty);
-                if (contentSerializerContext != null)
+                var services = stream.Context.Tags.Get(ServiceRegistry.ServiceRegistryKey);
+                if (services == null)
                 {
-                    var assetManager = contentSerializerContext.AssetManager;
-                    var url = contentSerializerContext.Url;
+                    buffer.SetSerializationData(bufferData);
+                }
+                else
+                {
+                    var graphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
 
-                    buffer.Reload = (graphicsResource) =>
+                    buffer.AttachToGraphicsDevice(graphicsDeviceService.GraphicsDevice);
+                    buffer.InitializeFrom(bufferData.Content, bufferData.StructureByteStride, bufferData.BufferFlags, PixelFormat.None, bufferData.Usage);
+
+                    // Setup reload callback (reload from asset manager)
+                    var contentSerializerContext = stream.Context.Get(ContentSerializerContext.ContentSerializerContextProperty);
+                    if (contentSerializerContext != null)
                     {
-                        // TODO: Avoid loading/unloading the same data
-                        var loadedBufferData = assetManager.Load<BufferData>(url);
-                        ((Buffer)graphicsResource).Recreate(loadedBufferData.Content);
-                        assetManager.Unload(loadedBufferData);
-                    };
+                        var assetManager = contentSerializerContext.AssetManager;
+                        var url = contentSerializerContext.Url;
+
+                        buffer.Reload = (graphicsResource) =>
+                        {
+                            // TODO: Avoid loading/unloading the same data
+                            var loadedBufferData = assetManager.Load<BufferData>(url);
+                            ((Buffer)graphicsResource).Recreate(loadedBufferData.Content);
+                            assetManager.Unload(loadedBufferData);
+                        };
+                    }
                 }
             }
             else

@@ -723,9 +723,11 @@ namespace SiliconStudio.Paradox.Input
                             if (!IsKeyDown(key)) // prevent from several inconsistent pressed key due to OS repeat key  
                             {
                                 activeKeys[key] = true;
-                                pressedKeysSet.Add(key);
-
-                                KeyEvents.Add(new KeyEvent(key, KeyEventType.Pressed));
+                                if (!keyboardInputEvent.OutOfFocus)
+                                {
+                                    pressedKeysSet.Add(key);
+                                    KeyEvents.Add(new KeyEvent(key, KeyEventType.Pressed));
+                                }
                                 downKeysList.Add(key);
                             }
                             break;
@@ -828,7 +830,10 @@ namespace SiliconStudio.Paradox.Input
 
             public InputEventType Type;
 
+            public bool OutOfFocus;
+
             #endregion
+
         }
 
         internal struct MouseInputEvent

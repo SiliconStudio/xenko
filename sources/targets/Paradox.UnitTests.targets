@@ -17,16 +17,23 @@
          However, that means that Tests dependencies must be compiled properly on Windows (should be the case usually).
     -->
     <SiliconStudioParadoxCompileAssetOptions>--compile-property:SolutionDir=$([System.IO.Path]::GetFullPath('$(SiliconStudioParadoxDir)'))\build\;SolutionName=Paradox;BuildProjectReferences=false</SiliconStudioParadoxCompileAssetOptions>
+
+    <SiliconStudioOpenSourceSign Condition="'$(SiliconStudioOpenSourceSign)' == '' And '$(SiliconStudioSign)' != 'true'">true</SiliconStudioOpenSourceSign>
   </PropertyGroup>
   
   <!-- On Windows, let's sign the assemblies with fake strong signing (OpenSource Signing, OSS),
        so that people can compile Paradox themself and still use the editor which expect strongly signed assemblies.
     -->
-  <PropertyGroup Condition="'$(SiliconStudioOpenSourceSign)' != 'false'">
+  <!-- Signing -->
+  <PropertyGroup Condition=" '$(SiliconStudioOpenSourceSign)' == 'true'">
+    <SiliconStudioSign>true</SiliconStudioSign>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(SiliconStudioAssemblySign)' == 'true' And '$(SiliconStudioSign)' == 'true'">
+    <DefineConstants>$(DefineConstants);SILICONSTUDIO_SIGNED</DefineConstants>
     <SignAssembly>true</SignAssembly>
-    <DelaySign Condition="'$(SiliconStudioSign)' != 'true'">true</DelaySign>
-    <AssemblyOriginatorKeyFile Condition="'$(SiliconStudioSign)' == 'true'">$(SolutionDir)paradox.snk</AssemblyOriginatorKeyFile>
-    <AssemblyOriginatorKeyFile Condition="'$(SiliconStudioSign)' != 'true'">$(SolutionDir)paradox.public.snk</AssemblyOriginatorKeyFile>
+    <DelaySign Condition="'$(SiliconStudioOpenSourceSign)' == 'true'">true</DelaySign>
+    <AssemblyOriginatorKeyFile Condition="'$(SiliconStudioOpenSourceSign)' != 'true'">$(SolutionDir)paradox.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile Condition="'$(SiliconStudioOpenSourceSign)' == 'true'">$(SolutionDir)paradox.public.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   
   <Import Project="$(MSBuildThisFileDirectory)\..\..\Targets\SiliconStudio.Common.targets"/>

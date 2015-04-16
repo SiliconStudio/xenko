@@ -20,6 +20,9 @@ using System.Runtime.InteropServices;
 
 namespace SiliconStudio.Core.Storage
 {
+    /// <summary>
+    /// A builder for <see cref="ObjectId"/> using Murmurshash3 128 bits
+    /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public unsafe struct ObjectIdBuilder
     {
@@ -35,7 +38,7 @@ namespace SiliconStudio.Core.Storage
 
             // initialize hash values to seed values
             H1 = H2 = H3 = H4 = seed;
-            Length = 0;
+            currentLength = 0;
 
             currentBlock1 = 0;
             currentBlock2 = 0;
@@ -45,11 +48,19 @@ namespace SiliconStudio.Core.Storage
 
         public uint Seed { get { return seed; } }
 
+        public int Length
+        {
+            get
+            {
+                return currentLength;
+            }
+        }
+
         private uint H1;
         private uint H2;
         private uint H3;
         private uint H4;
-        private int Length;
+        private int currentLength;
 
         private uint currentBlock1;
         private uint currentBlock2;
@@ -60,7 +71,7 @@ namespace SiliconStudio.Core.Storage
         {
             // initialize hash values to seed values
             H1 = H2 = H3 = H4 = Seed;
-            Length = 0;
+            currentLength = 0;
         }
 
         /// <summary>
@@ -70,10 +81,22 @@ namespace SiliconStudio.Core.Storage
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObjectId ComputeHash()
         {
+            ObjectId result;
+            ComputeHash(out result);
+            return result;
+        }
+
+        /// <summary>
+        /// Gets the current calculated hash.
+        /// </summary>
+        /// <value>The current hash.</value>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ComputeHash(out ObjectId result)
+        {
             // create our keys and initialize to 0
             uint k1 = 0, k2 = 0, k3 = 0, k4 = 0;
 
-            var remainder = Length % 16;
+            var remainder = currentLength % 16;
 
             fixed (uint* currentBlockStart = &currentBlock1)
             {
@@ -105,7 +128,7 @@ namespace SiliconStudio.Core.Storage
             var h2 = H2 ^ RotateLeft((k2 * C2), 16) * C3;
             var h1 = H1 ^ RotateLeft((k1 * C1), 15) * C2;
 
-            uint len = (uint)Length;
+            uint len = (uint)currentLength;
             // pipelining friendly algorithm
             h1 ^= len; h2 ^= len; h3 ^= len; h4 ^= len;
 
@@ -120,15 +143,14 @@ namespace SiliconStudio.Core.Storage
             h1 += (h2 + h3 + h4);
             h2 += h1; h3 += h1; h4 += h1;
 
-            ObjectId result;
-
-            var h = (uint*)&result;
-            *h++ = h1;
-            *h++ = h2;
-            *h++ = h3;
-            *h = h4;
-
-            return result;
+            fixed (void* ptr = &result)
+            {
+                var h = (uint*)ptr;
+                *h++ = h1;
+                *h++ = h2;
+                *h++ = h3;
+                *h = h4;
+            }
         }
 
         /// <summary>
@@ -141,7 +163,7 @@ namespace SiliconStudio.Core.Storage
             {
                 var currentBlock = (byte*)currentBlockStart;
 
-                var position = Length++ % 16;
+                var position = currentLength++ % 16;
 
                 currentBlock[position] = value;
 
@@ -152,6 +174,20 @@ namespace SiliconStudio.Core.Storage
             }
         }
 
+
+        /// <summary>
+        /// Writes a buffer of byte to this builder.
+        /// </summary>
+        /// <param name="buffer">The buffer.</param>
+        /// <exception cref="System.ArgumentNullException">buffer</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">buffer</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Write(byte[] buffer)
+        {
+            if (buffer == null) throw new ArgumentNullException("buffer");
+            Write(buffer, 0, buffer.Length);
+        }
+
         /// <summary>
         /// Writes a buffer of byte to this builder.
         /// </summary>
@@ -160,6 +196,7 @@ namespace SiliconStudio.Core.Storage
         /// <param name="count">The count.</param>
         /// <exception cref="System.ArgumentNullException">buffer</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">count;Offset + Count is out of range</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(byte[] buffer, int offset, int count)
         {
             fixed (byte* bufferStart = buffer)
@@ -167,6 +204,45 @@ namespace SiliconStudio.Core.Storage
                 Write(bufferStart + offset, count);
             }
         }
+
+#if !ASSEMBLY_PROCESSOR
+        /// <summary>
+        /// Writes the specified buffer to this instance.
+        /// </summary>
+        /// <typeparam name="T">Type must be a struct</typeparam>
+        /// <param name="data">The data.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Write<T>(T data) where T : struct
+        {
+            Write(ref data);
+        }
+
+        /// <summary>
+        /// Writes the specified buffer to this instance.
+        /// </summary>
+        /// <typeparam name="T">Type must be a struct</typeparam>
+        /// <param name="buffer">The buffer.</param>
+        /// <param name="offset">The offset.</param>
+        /// <param name="count">The count.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Write<T>(T[] buffer, int offset, int count) where T : struct
+        {
+            var ptr = (byte*)Interop.Fixed(buffer) + offset * Interop.SizeOf<T>();
+            Write(ptr, count * Interop.SizeOf<T>());
+        }
+        
+        /// <summary>
+        /// Writes the specified buffer to this instance.
+        /// </summary>
+        /// <typeparam name="T">Type must be a struct</typeparam>
+        /// <param name="data">The data.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Write<T>(ref T data) where T : struct
+        {
+            var ptr = (byte*)Interop.Fixed(ref data);
+            Write(ptr, Interop.SizeOf<T>());
+        }
+#endif
 
         /// <summary>
         /// Writes a buffer of byte to this builder.
@@ -177,15 +253,12 @@ namespace SiliconStudio.Core.Storage
         /// <exception cref="System.ArgumentOutOfRangeException">count;Offset + Count is out of range</exception>
         public void Write(byte* buffer, int length)
         {
-            if (buffer == null) throw new ArgumentNullException("buffer");
-
             fixed (uint* currentBlockStart = &currentBlock1)
             {
                 var currentBlock = (byte*)currentBlockStart;
+                var position = currentLength % 16;
 
-                var position = Length % 16;
-
-                Length += length;
+                currentLength += length;
 
                 // Partial block to continue?
                 if (position != 0)
@@ -196,9 +269,14 @@ namespace SiliconStudio.Core.Storage
                     if (partialLength > remainder)
                         partialLength = remainder;
 
-                    Utilities.CopyMemory((IntPtr)currentBlock + position, (IntPtr)buffer, partialLength);
-                    buffer += partialLength;
+                    var dest = currentBlock + position;
+                    for (var copyLength = partialLength; copyLength > 0; --copyLength)
+                        *dest++ = *buffer++;
                     length -= partialLength;
+
+                    //Utilities.CopyMemory((IntPtr)currentBlock + position, (IntPtr)buffer, partialLength);
+                    //buffer += partialLength;
+                    //length -= partialLength;
 
                     if (partialLength == remainder)
                     {
@@ -219,10 +297,12 @@ namespace SiliconStudio.Core.Storage
                     }
 
                     // Start partial block
-                    if (length > 0)
-                    {
-                        Utilities.CopyMemory((IntPtr)currentBlock, (IntPtr)buffer, length);
-                    }
+                    for (; length > 0; --length)
+                        *currentBlock++ = *buffer++;
+                    //if (length > 0)
+                    //{
+                    //    Utilities.CopyMemory((IntPtr)currentBlock, (IntPtr)buffer, length);
+                    //}
                 }
             }
         }

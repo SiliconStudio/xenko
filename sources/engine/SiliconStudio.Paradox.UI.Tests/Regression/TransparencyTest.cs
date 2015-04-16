@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public TransparencyTest()
         {
-            CurrentVersion = 5;
+            CurrentVersion = 7;
         }
 
         protected override async Task LoadContent()
@@ -44,7 +44,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             element1.DependencyProperties.Set(Panel.ZIndexPropertyKey, 1);
 
             element2 = new Button { Name = "2", Width = 600, Height = 300 };
-            element2.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(200, 100, 50));
+            element2.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(200, 100, -50));
             element2.DependencyProperties.Set(Panel.ZIndexPropertyKey, 0);
             element2.PressedImage = new UIImage(Asset.Load<Texture>("ImageButtonPressed"));
             element2.NotPressedImage = new UIImage(Asset.Load<Texture>("ImageButtonNotPressed"));
@@ -53,7 +53,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             canvas.Children.Add(element1);
             canvas.Children.Add(element2);
 
-            UI.RootElement = canvas;
+            UIComponent.RootElement = canvas;
         }
 
         protected override void Update(GameTime gameTime)
@@ -96,7 +96,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.5f, 0.75f)));
             UI.Update(new GameTime());
 
-            element1.LocalMatrix = Matrix.Translation(0, 0, 100);
+            element1.LocalMatrix = Matrix.Translation(0, 0, -100);
         }
 
         public void Draw3()

@@ -85,6 +85,20 @@
     <Compile Include="Reflection\VisitorContext.cs" />
     <Compile Include="StringSpan.cs" />
     <Compile Include="StringSpanExtensions.cs" />
+    <Compile Include="TypeConverters\BaseConverter.cs" />
+    <Compile Include="TypeConverters\Color4Converter.cs" />
+    <Compile Include="TypeConverters\ColorConverter.cs" />
+    <Compile Include="TypeConverters\FieldPropertyDescriptor.cs" />
+    <Compile Include="TypeConverters\Half2Converter.cs" />
+    <Compile Include="TypeConverters\Half3Converter.cs" />
+    <Compile Include="TypeConverters\Half4Converter.cs" />
+    <Compile Include="TypeConverters\HalfConverter.cs" />
+    <Compile Include="TypeConverters\MatrixConverter.cs" />
+    <Compile Include="TypeConverters\NamespaceDoc.cs" />
+    <Compile Include="TypeConverters\QuaternionConverter.cs" />
+    <Compile Include="TypeConverters\Vector2Converter.cs" />
+    <Compile Include="TypeConverters\Vector3Converter.cs" />
+    <Compile Include="TypeConverters\Vector4Converter.cs" />
     <Compile Include="VisualStudio\KeyedCollectionExtensions.cs" />
     <Compile Include="VisualStudio\KnownProjectTypeGuid.cs" />
     <Compile Include="VisualStudio\Project.cs" />
@@ -113,6 +127,10 @@
     <Compile Include="Yaml\YamlSerializerFactoryAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
       <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
       <Name>SiliconStudio.Core.Serialization</Name>

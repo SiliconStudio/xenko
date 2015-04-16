@@ -74,21 +74,6 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>The parameters.</value>
         public ParameterCollection Parameters { get; private set; }
 
-        /// <summary>
-        /// The view matri (read-only).
-        /// </summary>
-        public Matrix ViewMatrix;
-
-        /// <summary>
-        /// The projection matrix (read-only).
-        /// </summary> 
-        public Matrix ProjectionMatrix;
-
-        /// <summary>
-        /// The view projection matrix (read-only).
-        /// </summary>
-        public Matrix ViewProjectionMatrix;
-
         public void PushParameters(ParameterCollection parameters)
         {
             if (parameters == null) throw new ArgumentNullException("parameters");

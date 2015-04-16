@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Collections.Generic;
-
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Effects.Shadows;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Effects.Lights
@@ -12,38 +12,56 @@ namespace SiliconStudio.Paradox.Effects.Lights
     /// </summary>
     public class LightAmbientRenderer : LightGroupRendererBase
     {
-        private readonly List<LightShaderGroup> currentLightGroups = new List<LightShaderGroup>();
-
-        private readonly LightShaderGroup lightShaderGroup;
+        private readonly ShaderMixinSource mixin;
 
         public LightAmbientRenderer()
         {
-            lightShaderGroup = new LightShaderGroup(new ShaderClassSource("LightSimpleAmbient"));
+            mixin = new ShaderMixinSource();
+            mixin.Mixins.Add(new ShaderClassSource("LightSimpleAmbient"));
+            LightMaxCount = 4;
+            IsEnvironmentLight = true;
         }
 
-        public override bool IsDirectLight
+        public override LightShaderGroup CreateLightShaderGroup(string compositionName, int lightMaxCount, ILightShadowMapShaderGroupData shadowGroup)
         {
-            get
+            return new LightAmbientShaderGroup(mixin, compositionName);
+        }
+
+        private class LightAmbientShaderGroup : LightShaderGroupAndDataPool<LightAmbientShaderGroupData>
+        {
+            internal readonly ParameterKey<Color3> AmbientLightKey;
+            public LightAmbientShaderGroup(ShaderMixinSource mixin, string compositionName)
+                : base(mixin, compositionName, null)
             {
-                return false;
+                AmbientLightKey = LightSimpleAmbientKeys.AmbientLight.ComposeWith(compositionName);
+            }
+
+            protected override LightAmbientShaderGroupData CreateData()
+            {
+                return new LightAmbientShaderGroupData(this);
             }
         }
 
-        public override List<LightShaderGroup> PrepareLights(RenderContext context, LightComponentCollection lights)
+        private class LightAmbientShaderGroupData : LightShaderGroupData
         {
-            var count = lights.Count;
-            currentLightGroups.Clear();
-            for (int i = 0; i < count; i++)
+            private readonly ParameterKey<Color3> ambientLightKey;
+            private Color3 color;
+
+            public LightAmbientShaderGroupData(LightAmbientShaderGroup group)
+                : base(null)
             {
-                var lightComponent = lights[i];
-                var light = (LightAmbient)lightComponent.Type;
-
-                var color = light.ComputeColor(lightComponent.Intensity);
-
-                lightShaderGroup.Parameters.Set(LightSimpleAmbientKeys.AmbientLight, color);
-                currentLightGroups.Add(lightShaderGroup);
+                ambientLightKey = group.AmbientLightKey;
             }
-            return currentLightGroups;
+
+            protected override void AddLightInternal(LightComponent light)
+            {
+                color = light.Color;
+            }
+
+            protected override void ApplyParametersInternal(ParameterCollection parameters)
+            {
+                parameters.Set(ambientLightKey, color);
+            }
         }
     }
 }

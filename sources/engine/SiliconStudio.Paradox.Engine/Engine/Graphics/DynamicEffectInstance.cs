@@ -13,14 +13,13 @@ namespace SiliconStudio.Paradox.Effects
     /// </summary>
     public abstract class DynamicEffectInstance
     {
-        internal EffectParameterUpdaterDefinition UpdaterDefinition;
-        internal EffectParameterUpdater Updater;
+        internal DynamicEffectParameterUpdaterDefinition UpdaterDefinition;
+        internal DynamicEffectParameterCollectionGroup ParameterCollectionGroup;
         internal Task<Effect> CurrentlyCompilingEffect;
         internal ParameterCollection CurrentlyCompilingUsedParameters;
 
         protected DynamicEffectInstance()
         {
-            Updater = new EffectParameterUpdater();
         }
 
         /// <summary>

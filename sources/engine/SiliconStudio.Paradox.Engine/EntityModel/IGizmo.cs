@@ -39,7 +39,8 @@ namespace SiliconStudio.Paradox.EntityModel
         /// Initialize the gizmo.
         /// </summary>
         /// <param name="sceneInstance">The instance of the gizmo scene</param>
-        void Initialize(SceneInstance sceneInstance);
+        /// <param name="sceneEntity">The entity of the scene associated to the gizmo</param>
+        void Initialize(SceneInstance sceneInstance, Entity sceneEntity);
 
         /// <summary>
         /// Update the gizmo state.

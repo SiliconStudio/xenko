@@ -44,14 +44,6 @@ namespace SiliconStudio.Paradox.UI.Controls
         private bool synchronousCharacterGeneration;
 
         /// <summary>
-        /// Create a new instance of <see cref="TextBlock"/>.
-        /// </summary>
-        public TextBlock()
-        {
-            SnapText = true;
-        }
-
-        /// <summary>
         /// Method triggered when the <see cref="Text"/> changes.
         /// Can be overridden in inherited class to changed the default behavior.
         /// </summary>
@@ -166,9 +158,11 @@ namespace SiliconStudio.Paradox.UI.Controls
         public TextAlignment TextAlignment { get; set; }
 
         /// <summary>
-        /// Gets or sets the value indicating if the <see cref="Text"/> of the <see cref="TextBlock"/> must be aligned to the closest screen pixel.
+        /// Gets or sets the value indicating if the snapping of the <see cref="Text"/> of the <see cref="TextBlock"/> to the closest screen pixel should be skipped.
         /// </summary>
-        public bool SnapText { get; set; }
+        /// <remarks>When <value>true</value>, the element's text is never snapped. 
+        /// When <value>false</value>, it is snapped only if the font is dynamic and the element is rendered by a SceneUIRenderer.</remarks>
+        public bool DoNotSnapText { get; set; }
 
         /// <summary>
         /// Calculate and returns the size of the <see cref="Text"/> in virtual pixels size.
@@ -202,8 +196,8 @@ namespace SiliconStudio.Paradox.UI.Controls
             if (Font == null)
                 return Vector2.Zero;
 
-            var sizeRatio = RealSizeVirtualResolutionRatio;
-            var measureFontSize = TextSize * sizeRatio;
+            var sizeRatio = LayoutingContext.RealVirtualResolutionRatio;
+            var measureFontSize = new Vector2(sizeRatio.Y * TextSize); // we don't want letters non-uniform ratio
             var realSize = Font.MeasureString(ref textToMeasure, ref measureFontSize);
 
             // force pre-generation if synchronous generation is required

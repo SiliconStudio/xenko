@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Shaders;
@@ -14,15 +15,11 @@ namespace SiliconStudio.Paradox.Effects
     [DataContract]
     public partial class LightingKeys : ShaderMixinParameters
     {
-        public static readonly ParameterKey<ShaderSource[]> DirectLightGroups = ParameterKeys.New((ShaderSource[])null);
+        public static readonly ParameterKey<List<ShaderSource>> DirectLightGroups = ParameterKeys.New((List<ShaderSource>)null);
 
-        public static readonly ParameterKey<ShaderSource[]> EnvironmentLights = ParameterKeys.New((ShaderSource[])null);
-
-        public static readonly ParameterKey<bool> ReceiveShadows = ParameterKeys.New(true);
-
-        public static readonly ParameterKey<bool> CastShadows = ParameterKeys.New(true);
-
-        private static readonly ShaderSource[] DefaultAmbientLighting = new ShaderSource[] { new ShaderClassSource("LightSimpleAmbient"), };
+        public static readonly ParameterKey<List<ShaderSource>> EnvironmentLights = ParameterKeys.New((List<ShaderSource>)null);
+       
+        private static readonly List<ShaderSource> DefaultAmbientLighting = new List<ShaderSource>() { new ShaderClassSource("LightSimpleAmbient"), };
 
         public static void EnableFixedAmbientLight(ParameterCollection parameters, bool enable)
         {

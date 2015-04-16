@@ -58,6 +58,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         [DataMemberIgnore]
         protected RenderContext Context { get; private set; }
 
+        public bool Initialized { get; private set; }
+
         public void Initialize(RenderContext context)
         {
             if (context == null) throw new ArgumentNullException("context");
@@ -72,6 +74,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             subRenderersToUnload.Clear();
 
             InitializeCore();
+
+            Initialized = true;
 
             // Notify that a particular renderer has been initialized.
             context.OnRendererInitialized(this);

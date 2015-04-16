@@ -22,12 +22,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Shadows
     {
         internal partial class ShadowMapCaster  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                context.CloneParentMixinToCurrent();
                 context.Mixin(mixin, "ShadowMapCasterBase");
-                if (context.GetParam(ShadowMapParameters.FilterType) == LightShadowMapFilterType.Variance)
-                    context.Mixin(mixin, "ShadowMapCasterVsm");
             }
 
             [ModuleInitializer]

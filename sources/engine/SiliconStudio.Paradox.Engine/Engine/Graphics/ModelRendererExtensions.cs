@@ -16,16 +16,18 @@ namespace SiliconStudio.Paradox.Effects
     /// </summary>
     public static class ModelRendererExtensions
     {
+        // TODO: Find a way to replug this
+
         /// <summary>
         /// Adds a default frustum culling for rendering only meshes that are only inside the frustum/
         /// </summary>
         /// <param name="modelRenderer">The model renderer.</param>
         /// <returns>ModelRenderer.</returns>
-        public static ModelComponentRenderer AddDefaultFrustumCulling(this ModelComponentRenderer modelRenderer)
-        {
-            modelRenderer.UpdateMeshes = FrustumCulling;
-            return modelRenderer;
-        }
+        //public static ModelComponentRenderer AddDefaultFrustumCulling(this ModelComponentRenderer modelRenderer)
+        //{
+        //    modelRenderer.UpdateMeshes = FrustumCulling;
+        //    return modelRenderer;
+        //}
 
         private static void FrustumCulling(RenderContext context, FastList<RenderMesh> meshes)
         {
@@ -47,27 +49,11 @@ namespace SiliconStudio.Paradox.Effects
                 renderMesh.Mesh.Parameters.Get(TransformationKeys.World, out mat1);
 
                 // Compute transformed AABB (by world)
-                var boundingBox = renderMesh.Mesh.BoundingBox;
-                var center = boundingBox.Center;
-                var extent = boundingBox.Extent;
-
-                Vector3.TransformCoordinate(ref center, ref mat1, out center);
-
-                // Update world matrix into absolute form
-                unsafe
-                {
-                    float* matrixData = &mat1.M11;
-                    for (int j = 0; j < 16; ++j)
-                    {
-                        *matrixData = Math.Abs(*matrixData);
-                        ++matrixData;
-                    }
-                }
-
-                Vector3.TransformNormal(ref extent, ref mat1, out extent);
+                var boundingBoxExt = new BoundingBoxExt(renderMesh.Mesh.BoundingBox);
+                boundingBoxExt.Transform(mat1);
 
                 // Perform frustum culling
-                if (!Collision.FrustumContainsBox(ref frustum, ref center, ref extent))
+                if (!frustum.Contains(ref boundingBoxExt))
                 {
                     meshes.SwapRemoveAt(i--);
                 }

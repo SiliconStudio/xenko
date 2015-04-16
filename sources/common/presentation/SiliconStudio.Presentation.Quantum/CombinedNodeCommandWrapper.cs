@@ -45,12 +45,12 @@ namespace SiliconStudio.Presentation.Quantum
             var displayName = "Executing " + Name;
 
             var observableViewModel = service.ViewModelProvider(identifier);
-            if (observableViewModel != null && !commands.Any(x => observableViewModel.MatchCombinedRootNode(x.GetCommandRootNode())))
-                observableViewModel = null;
+            if (observableViewModel == null)
+                throw new InvalidOperationException("Executing a combined command without corresponding view model");
 
-            var node = observableViewModel != null ? observableViewModel.ResolveObservableNode(ObservableNodePath) as CombinedObservableNode : null;
+            var node = (CombinedObservableNode)observableViewModel.ResolveObservableNode(ObservableNodePath);
             // TODO: this need to be verified but I suppose node is never null
-            ActionStack.EndTransaction(displayName, x => new CombinedValueChangedActionItem(displayName, service, node != null ? node.Path : null, identifier, x));
+            ActionStack.EndTransaction(displayName, x => new CombinedValueChangedActionItem(displayName, service, node.Path, identifier, x));
         }
 
         protected override UndoToken Redo(object parameter, bool creatingActionItem)
@@ -86,10 +86,7 @@ namespace SiliconStudio.Presentation.Quantum
         private void Refresh()
         {
             var observableViewModel = service.ViewModelProvider(identifier);
-            if (observableViewModel != null && !commands.Any(x => observableViewModel.MatchCombinedRootNode(x.GetCommandRootNode())))
-                observableViewModel = null;
-
-            var observableNode = observableViewModel != null ? observableViewModel.ResolveObservableNode(ObservableNodePath) as CombinedObservableNode : null;
+            var observableNode = observableViewModel != null ? (CombinedObservableNode)observableViewModel.ResolveObservableNode(ObservableNodePath) : null;
 
             // Recreate observable nodes to apply changes
             if (observableNode != null)

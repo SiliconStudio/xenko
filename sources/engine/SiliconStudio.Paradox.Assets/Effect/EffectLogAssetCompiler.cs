@@ -22,6 +22,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, EffectLogAsset asset, AssetCompilerResult result)
         {
             var originalSourcePath = asset.AbsoluteSourceLocation;
+            result.ShouldWaitForPreviousBuilds = true;
             result.BuildSteps = new AssetBuildStep(AssetItem) { new EffectLogBuildStep(context, originalSourcePath) };
         }
 
@@ -43,7 +44,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
                 Steps = steps;
 
                 var fileStream = new FileStream(originalSourcePath.ToWindowsPath(), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
-                var recordedEffectCompile = new DictionaryStore<EffectCompileRequest, bool>(fileStream);
+                var recordedEffectCompile = new EffectLogStore(fileStream);
                 recordedEffectCompile.LoadNewValues();
 
                 foreach (var entry in recordedEffectCompile.GetValues())

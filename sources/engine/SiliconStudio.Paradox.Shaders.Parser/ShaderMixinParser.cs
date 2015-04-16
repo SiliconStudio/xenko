@@ -60,7 +60,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderMixinParser"/> class.
         /// </summary>
-        public ShaderMixinParser(DatabaseFileProvider fileProvider)
+        public ShaderMixinParser(IVirtualFileProvider fileProvider)
         {
             SourceManager = new ShaderSourceManager(fileProvider);
             var shaderLoader = new ShaderLoader(SourceManager);
@@ -242,6 +242,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                     return parsingResult;
 
                 var finalShader = mixer.GetMixedShader();
+
+                // Simplifies the shader by removing dead code
+                var simplifier = new ExpressionSimplifierVisitor();
+                simplifier.Run(finalShader);
 
                 parsingResult.Reflection = new EffectReflection();
                 var pdxShaderLinker = new ShaderLinker(parsingResult);

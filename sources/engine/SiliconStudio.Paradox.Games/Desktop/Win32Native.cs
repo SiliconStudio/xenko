@@ -20,47 +20,18 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+
 using System;
 using System.Runtime.InteropServices;
-using System.Security;
-
-using SharpDX;
-using SharpDX.Win32;
 
 namespace SiliconStudio.Paradox.Games
 {
     /// <summary>
     /// Internal class to interact with Native Message
     /// </summary>
-    internal class Win32Native
+    internal partial class Win32Native
     {
-
-        [DllImport("user32.dll", EntryPoint = "PeekMessage")]
-        [SuppressUnmanagedCodeSecurity]
-        public static extern int PeekMessage(
-            out NativeMessage lpMsg,
-            IntPtr hWnd,
-            int wMsgFilterMin,
-            int wMsgFilterMax,
-            int wRemoveMsg);
-
-        [DllImport("user32.dll", EntryPoint = "GetMessage")]
-        [SuppressUnmanagedCodeSecurity]
-        public static extern int GetMessage(
-            out NativeMessage lpMsg,
-            IntPtr hWnd,
-            int wMsgFilterMin,
-            int wMsgFilterMax);
-
-        [DllImport("user32.dll", EntryPoint = "TranslateMessage")]
-        [SuppressUnmanagedCodeSecurity]
-        public static extern int TranslateMessage(ref NativeMessage lpMsg);
-
-        [DllImport("user32.dll", EntryPoint = "DispatchMessage")]
-        [SuppressUnmanagedCodeSecurity]
-        public static extern int DispatchMessage(ref NativeMessage lpMsg);
-
         public enum WindowLongType : int
         {
             WndProc = (-4),
@@ -107,6 +78,8 @@ namespace SiliconStudio.Paradox.Games
         [DllImport("user32.dll", EntryPoint = "SetWindowLong", CharSet = CharSet.Unicode)]
         private static extern IntPtr SetWindowLong32(HandleRef hwnd, WindowLongType index, IntPtr wndProc);
 
+        [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
+        public static extern short GetKeyState(int keyCode);
 
         public static bool ShowWindow(HandleRef hWnd, bool windowVisible)
         {
@@ -122,12 +95,9 @@ namespace SiliconStudio.Paradox.Games
         [DllImport("user32.dll", EntryPoint = "CallWindowProc", CharSet = CharSet.Unicode)]
         public static extern IntPtr CallWindowProc(IntPtr wndProc, IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam);
 
-        [DllImport("user32.dll", EntryPoint = "GetClientRect")]
-        public static extern bool GetClientRect(IntPtr hWnd, out Rectangle lpRect);
-
         [DllImport("kernel32.dll", EntryPoint = "GetModuleHandle", CharSet = CharSet.Unicode)]
         public static extern IntPtr GetModuleHandle(string lpModuleName);
-
+        
         public const int WM_SIZE = 0x0005;
 
         public const int WM_ACTIVATEAPP = 0x001C;

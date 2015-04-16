@@ -18,7 +18,7 @@ namespace SiliconStudio.BuildEngine
         private BuildTransaction buildTransaction;
         private static readonly IDictionary<ObjectUrl, OutputObject> CommonOutputObjects = new Dictionary<ObjectUrl, OutputObject>();
         private static readonly MicroThreadLocal<DatabaseFileProvider> MicroThreadLocalDatabaseFileProvider;
-        internal static ObjectDatabase ObjectDatabase;
+        public static ObjectDatabase ObjectDatabase;
 
         static IndexFileCommand()
         {
@@ -127,7 +127,7 @@ namespace SiliconStudio.BuildEngine
 
         private static BuildTransaction CreateTransaction(IEnumerable<IDictionary<ObjectUrl, OutputObject>> transactionOutputObjectsGroups)
         {
-            return new BuildTransaction(GetOutputObjectsGroups(transactionOutputObjectsGroups));
+            return new BuildTransaction(ObjectDatabase.AssetIndexMap, GetOutputObjectsGroups(transactionOutputObjectsGroups));
         }
 
         private static DatabaseFileProvider CreateDatabase(BuildTransaction transaction)

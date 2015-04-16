@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             get { return compiler; }
         }
 
-        public override DatabaseFileProvider FileProvider
+        public override IVirtualFileProvider FileProvider
         {
             get { return compiler.FileProvider; }
             set { compiler.FileProvider = value; }
@@ -43,7 +43,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             compiler.ResetCache(modifiedShaders);
         }
 
-        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters)
+        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, CompilerParameters compilerParameters)
         {
             return compiler.Compile(mixinTree, compilerParameters);
         }

@@ -62,8 +62,8 @@ namespace SiliconStudio.Paradox.EntityModel
             if (MainRenderFrame == null)
             {
                 MainRenderFrame = RenderFrame.FromTexture(GraphicsDevice.BackBuffer, GraphicsDevice.DepthStencilBuffer);
-                previousWidth = MainRenderFrame.RenderTarget.Width;
-                previousHeight = MainRenderFrame.RenderTarget.Height;
+                previousWidth = MainRenderFrame.Width;
+                previousHeight = MainRenderFrame.Height;
             }
 
             // Create the drawing context
@@ -87,23 +87,20 @@ namespace SiliconStudio.Paradox.EntityModel
 
             // If the width or height changed, we have to recycle all temporary allocated resources.
             // NOTE: We assume that they are mostly resolution dependent.
-            if (previousWidth != MainRenderFrame.RenderTarget.Width || previousHeight != MainRenderFrame.RenderTarget.Height)
+            if (previousWidth != MainRenderFrame.Width || previousHeight != MainRenderFrame.Height)
             {
                 // Force a recycle of all allocated temporary textures
                 renderContext.Allocator.Recycle(link => true);
             }
 
-            previousWidth = MainRenderFrame.RenderTarget.Width;
-            previousHeight = MainRenderFrame.RenderTarget.Height;
-
-            // TODO: Clear camera states. This is not highly customizable
-            renderContext.ClearCameraStates();
+            previousWidth = MainRenderFrame.Width;
+            previousHeight = MainRenderFrame.Height;
 
             // Update the entities at draw time.
+            renderContext.Time = gameTime;
             SceneInstance.Draw(renderContext);
 
             // Renders the scene
-            renderContext.Time = gameTime;
             SceneInstance.Draw(renderContext, MainRenderFrame);
         }
     }

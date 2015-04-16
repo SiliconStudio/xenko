@@ -35,6 +35,7 @@ namespace SiliconStudio.Paradox.Engine
         public TransformProcessor()
             : base(new PropertyKey[] { TransformComponent.Key })
         {
+            Order = -100;            
         }
 
         /// <inheritdoc/>

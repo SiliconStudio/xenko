@@ -11,11 +11,11 @@ class Camera
         // Remarks: ZInViewSpace = ZProjection.y / (depth - ZProjection.x)
         stage float2 ZProjection;
         // Camera aspect ratio.
-        stage float Aspect;
+        stage float AspectRatio;
         // Camera View size
         stage float2 ViewSize;
         // Camera field of view for a perspective camera.
-        stage float FieldOfView;
+        stage float VerticalFieldOfView;
         // Camera size for an orthographics camera
         stage float OrthoSize;
     };

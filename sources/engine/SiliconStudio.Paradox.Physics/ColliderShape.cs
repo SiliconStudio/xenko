@@ -3,7 +3,9 @@
 
 using System;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -92,8 +94,15 @@ namespace SiliconStudio.Paradox.Physics
             }
             set
             {
-                DebugPrimitiveScaling *= Matrix.Scaling(value);
-                InternalShape.LocalScaling = value;
+                var newScaling = value;
+                
+                if (Is2D) newScaling.Z = 1.0f;
+
+                DebugPrimitiveMatrix *= Matrix.Scaling(newScaling);
+
+                if (Is2D) newScaling.Z = 0.0f;
+
+                InternalShape.LocalScaling = newScaling;
             }
         }
 
@@ -111,9 +120,14 @@ namespace SiliconStudio.Paradox.Physics
 
         internal CompoundColliderShape Parent;
 
-        internal GeometricPrimitive DebugPrimitive;
+        public virtual GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
+        {
+            return null;
+        }
 
-        internal Matrix DebugPrimitiveScaling;
+        public Model DebugModel;
+
+        public Matrix DebugPrimitiveMatrix;
 
         internal bool NeedsCustomCollisionCallback;
     }

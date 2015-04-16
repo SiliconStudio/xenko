@@ -21,7 +21,15 @@ namespace SiliconStudio.Core.Serialization.Contents
         private readonly HashSet<object> generatedUrlObjects = new HashSet<object>();
         private string generatedUrlPrefix;
 
+        public enum AttachedReferenceSerialization
+        {
+            Unset,
+            AsSerializableVersion,
+            AsNull,
+        }
+
         public static PropertyKey<ContentSerializerContext> ContentSerializerContextProperty = new PropertyKey<ContentSerializerContext>("ContentSerializerContext", typeof(ContentSerializerContext));
+        public static PropertyKey<AttachedReferenceSerialization> SerializeAttachedReferenceProperty = new PropertyKey<AttachedReferenceSerialization>("SerializeAttachedReference", typeof(ContentSerializerContext));
 
         public AssetManager AssetManager { get; private set; }
         public string Url { get; protected set; }

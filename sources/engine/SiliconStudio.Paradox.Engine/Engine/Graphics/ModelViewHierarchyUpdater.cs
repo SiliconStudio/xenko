@@ -15,9 +15,6 @@ namespace SiliconStudio.Paradox.Effects
     /// </summary>
     public class ModelViewHierarchyUpdater
     {
-        private static ModelNodeDefinition[] defaultModelNodeDefinition
-            = { new ModelNodeDefinition { Name = "Root", ParentIndex = -1, Transform = { Scaling = Vector3.One }, Flags = ModelNodeFlags.Default } };
-
         private ModelNodeDefinition[] nodes;
         private ModelNodeTransformation[] nodeTransformations;
 
@@ -31,35 +28,44 @@ namespace SiliconStudio.Paradox.Effects
             get { return nodeTransformations; }
         }
 
+        private static ModelNodeDefinition[] GetDefaultNodeDefinisions()
+        {
+            return new[] { new ModelNodeDefinition { Name = "Root", ParentIndex = -1, Transform = { Scaling = Vector3.One }, Flags = ModelNodeFlags.Default } };
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelViewHierarchyUpdater"/> class.
         /// </summary>
         /// <param name="model">The model.</param>
         public ModelViewHierarchyUpdater(Model model)
         {
+            if (model == null) throw new ArgumentNullException("model");
             Initialize(model);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ModelViewHierarchyUpdater"/> class.
+        /// Initializes a new instance of the <see cref="ModelViewHierarchyUpdater" /> class.
         /// </summary>
-        /// <param name="nodes">The model view nodes.</param>
-        public ModelViewHierarchyUpdater(ModelNodeDefinition[] nodes)
+        /// <param name="newNodes">The new nodes.</param>
+        public ModelViewHierarchyUpdater(ModelNodeDefinition[] newNodes)
         {
-            Initialize(nodes);
+            Initialize(newNodes);
         }
 
         public void Initialize(Model model)
         {
-            Initialize(model.Hierarchy != null ? model.Hierarchy.Nodes : defaultModelNodeDefinition);
-
-            // First node is directly uploaded as a matrix
+            Initialize(model.Hierarchy != null ? model.Hierarchy.Nodes : null);
             nodeTransformations[0].Flags &= ~ModelNodeFlags.EnableTransform;
         }
 
-        public void Initialize(ModelNodeDefinition[] nodes)
+        public void Initialize(ModelNodeDefinition[] newNodes)
         {
-            this.nodes = nodes;
+            if (this.nodes == newNodes && this.nodes != null)
+            {
+                return;
+            }
+
+            this.nodes = newNodes ?? GetDefaultNodeDefinisions();
 
             if (nodeTransformations == null || nodeTransformations.Length < this.nodes.Length)
                 nodeTransformations = new ModelNodeTransformation[this.nodes.Length];

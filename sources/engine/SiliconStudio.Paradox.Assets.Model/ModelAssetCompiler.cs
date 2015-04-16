@@ -43,8 +43,8 @@ namespace SiliconStudio.Paradox.Assets.Model
                                 Compact = asset.Compact,
                                 PreservedNodes = asset.PreservedNodes,
                                 Materials = asset.Materials,
+                                ScaleImport = asset.ScaleImport,
                             },
-                        new WaitBuildStep(),
                     };
             }
             else if (ImportAssimpCommand.IsSupportingExtensions(extension))
@@ -60,8 +60,8 @@ namespace SiliconStudio.Paradox.Assets.Model
                                 Compact = asset.Compact,
                                 PreservedNodes = asset.PreservedNodes,
                                 Materials = asset.Materials,
+                                ScaleImport = asset.ScaleImport,
                             },
-                        new WaitBuildStep(),
                     };
             }
             else

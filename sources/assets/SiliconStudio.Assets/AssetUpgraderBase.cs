@@ -25,5 +25,12 @@ namespace SiliconStudio.Assets
         }
 
         protected abstract void UpgradeAsset(ILogger log, dynamic asset);
+
+        protected void SetSerializableVersion(dynamic asset, int value)
+        {
+            asset.SerializedVersion = value;
+            // Ensure that it is stored right after the asset Id
+            asset.MoveChild("SerializedVersion", asset.IndexOf("Id") + 1);
+        }
     }
 }

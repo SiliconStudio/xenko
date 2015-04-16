@@ -7,6 +7,10 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Engine.Graphics;
+using SiliconStudio.Paradox.Engine.Graphics.Composers;
+using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.Regression;
@@ -24,7 +28,25 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         
         private Vector2 lastTouchPosition;
 
-        protected UIComponentRenderer UiComponentRenderer;
+        protected readonly CameraRendererModeForward SceneCameraRenderer = new CameraRendererModeForward { Name = "Camera Renderers" };
+
+        protected Scene Scene;
+        protected Entity Camera = new Entity("Scene camera") { new CameraComponent() };
+        protected Entity UIRoot = new Entity("Root entity of camera UI") { new UIComponent()  };
+
+        private readonly SceneGraphicsCompositorLayers graphicsCompositor;
+
+        protected UIComponent UIComponent { get {  return UIRoot.Get<UIComponent>(); } }
+
+        protected CameraComponent CameraComponent
+        {
+            get { return Camera.Get<CameraComponent>(); }
+            set
+            {
+                Camera.Add(value);
+                graphicsCompositor.Cameras[0] = value;
+            }
+        }
 
         /// <summary>
         /// Create an instance of the game test
@@ -34,14 +56,42 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             StopOnFrameCount = -1;
 
             GraphicsDeviceManager.PreferredGraphicsProfile = new [] { GraphicsProfile.Level_11_0 };
+
+            graphicsCompositor = new SceneGraphicsCompositorLayers
+            {
+                Cameras = { Camera.Get<CameraComponent>() },
+                Master =
+                {
+                    Renderers =
+                    {
+                        new ClearRenderFrameRenderer { Color = Color.Green, Name = "Clear frame" },
+
+                        new SceneDelegateRenderer(SpecificDrawBeforeUI) { Name = "Delegate before main UI" },
+
+                        new SceneCameraRenderer { Mode = SceneCameraRenderer },
+                    }
+                }
+            };
+            Scene = new Scene { Settings = { GraphicsCompositor = graphicsCompositor } };
+
+            Scene.AddChild(UIRoot);
+            Scene.AddChild(Camera);
+
+            Camera.Transform.Position = new Vector3(0, 0, 1000);
+
+            UIComponent.IsFullScreen = true;
+            UIComponent.VirtualResolution = new Vector3(1000, 500, 500);
+            UIComponent.VirtualResolutionMode = VirtualResolutionMode.FixedWidthFixedHeight;
         }
 
-        protected virtual void SpecificDrawBeforeUI(RenderContext context)
+        protected virtual void SpecificDrawBeforeUI(RenderContext context, RenderFrame renderFrame)
         {
         }
 
-        protected override Task LoadContent()
+        protected override async Task LoadContent()
         {
+            await base.LoadContent();
+
             // Set dependency properties test values.
             TextBlock.TextColorPropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(Color.LightGray);
             EditText.TextColorPropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(Color.LightGray);
@@ -67,20 +117,8 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             ToggleButton.IndeterminateImagePropertyKey.DefaultValueMetadata = DefaultValueMetadata.Static(new UIImage("Test toggle button indeterminate design", toggleButtonIndeterminate) { Borders = 8 * Vector4.One });
 
             Window.IsMouseVisible = true;
-            UI.VirtualResolution = new Vector3(1000, 500, 500);
 
-            CreatePipeline();
-
-            return base.LoadContent();
-        }
-
-        protected virtual void CreatePipeline()
-        {
-            // create the render pipeline
-            UiComponentRenderer = new UIComponentRenderer(Services);
-            RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.Green, EnableClearStencil = true });
-            RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = SpecificDrawBeforeUI });
-            RenderSystem.Pipeline.Renderers.Add(UiComponentRenderer);
+            SceneSystem.SceneInstance = new SceneInstance(Services, Scene);
         }
 
         protected override void Update(GameTime gameTime)

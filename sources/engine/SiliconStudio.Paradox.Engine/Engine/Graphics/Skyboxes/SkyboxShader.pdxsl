@@ -32,8 +32,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Skyboxes
         override stage float4 Shading()
         {
             var samplingDir = normalize(streams.skyboxViewDirection);
-            var color = Intensity * skyboxColor.Compute(float3(samplingDir.x, samplingDir.y, -samplingDir.z));
-            return color;
+            var color = skyboxColor.Compute(float3(samplingDir.x, samplingDir.y, -samplingDir.z)).rgb;
+            return float4(color * Intensity, 1.0);
         }
     };
 }

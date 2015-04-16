@@ -114,34 +114,23 @@ namespace SiliconStudio.Paradox.Physics
         /// </userdoc>
         public float StepHeight { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="PhysicsElement"/> is representing a sprite.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if sprite; otherwise, <c>false</c>.
-        /// </value>
-        /// <userdoc>
-        /// If this element is associated with a Sprite Component's sprite. This is necessary because Sprites use an inverted Y axis and the physics engine must be aware of that.
-        /// </userdoc>
-        public bool Sprite { get; set; }
-
         #region Ignore or Private/Internal
 
-        private Collider mCollider;
+        internal Collider InternalCollider;
 
         [DataMemberIgnore]
         public Collider Collider
         {
             get
             {
-                if (mCollider == null)
+                if (InternalCollider == null)
                 {
                     throw new Exception("Collider is null, please make sure that you are trying to access this object after it is added to the game entities ( Entities.Add(entity) ).");
                 }
 
-                return mCollider;
+                return InternalCollider;
             }
-            internal set { mCollider = value; }
+            internal set { InternalCollider = value; }
         }
 
         [DataMemberIgnore]
@@ -162,6 +151,9 @@ namespace SiliconStudio.Paradox.Physics
         internal int BoneIndex;
 
         internal PhysicsProcessor.AssociatedData Data;
+
+        [DataMemberIgnore]
+        public Entity DebugEntity;
 
         #endregion Ignore or Private/Internal
 
@@ -188,12 +180,6 @@ namespace SiliconStudio.Paradox.Physics
             {
                 rotation = entity.Transform.Rotation;
                 translation = entity.Transform.Position;
-            }
-
-            //Invert up axis in the case of a Sprite
-            if (Sprite)
-            {
-                translation.Y = -translation.Y;
             }
 
             derivedTransformation = Matrix.RotationQuaternion(rotation) * Matrix.Translation(translation);
@@ -238,12 +224,6 @@ namespace SiliconStudio.Paradox.Physics
 
             var rotation = Quaternion.RotationMatrix(physicsTransform);
             var translation = physicsTransform.TranslationVector;
-
-            //Invert up axis in the case of a Sprite
-            if (Sprite)
-            {
-                translation.Y = -translation.Y;
-            }
 
             if (entity.Transform.UseTRS)
             {

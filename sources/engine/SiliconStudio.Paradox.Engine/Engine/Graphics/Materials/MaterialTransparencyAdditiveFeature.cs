@@ -66,7 +66,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
             var blendDesc = new BlendStateDescription(Blend.One, Blend.BlendFactor);
             context.Material.HasTransparency = true;
-            context.Parameters.Set(Effect.BlendStateKey, new BlendState(blendDesc));
+            context.Parameters.Set(Effect.BlendStateKey, BlendState.NewFake(blendDesc));
 
             var alphaColor = alpha.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.AlphaBlendMap, MaterialKeys.AlphaBlendValue, Color.White));
 

@@ -10,7 +10,9 @@ using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders.Parser.Ast;
+using SiliconStudio.Paradox.Shaders.Parser.Mixins;
 using SiliconStudio.Shaders.Ast;
+using SiliconStudio.Shaders.Utility;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -21,6 +23,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         public static void PrepareNode<T>(this ComputeShaderClassBase<T> _this, ConcurrentDictionary<string, string> projectShaders) where T : class, IComputeNode
         {
+            // TODO: merge common keys between the previous dictionaries and the new one
+            _this.Generics.Clear();
+            _this.CompositionNodes.Clear();
+            
             if (string.IsNullOrEmpty(_this.MixinReference))
             {
                 return;
@@ -31,16 +37,26 @@ namespace SiliconStudio.Paradox.Assets.Materials
             var newMembers = new Dictionary<ParameterKey, object>();
 
             var localMixinName = _this.MixinReference;
-            ShaderClassType shader;
+            ShaderClassType shader = null;
 
             string source;
             if (projectShaders.TryGetValue(localMixinName, out source))
             {
-                shader = MaterialNodeClassLoader.GetLoader().ParseShader(source);
-            }
-            else
-            {
-                shader = MaterialNodeClassLoader.GetLoader().GetShader(localMixinName);
+                var logger = new LoggerResult();
+                try
+                {
+                    shader = ShaderLoader.ParseSource(source, logger);
+                    if (logger.HasErrors)
+                    {
+                        logger.Messages.Clear();
+                        return;
+                    }
+                }
+                catch
+                {
+                    // TODO: output messages
+                    return;
+                }
             }
 
             if (shader == null)

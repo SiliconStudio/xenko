@@ -29,6 +29,14 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
+        /// Gets the build order, currently per type (replaces BuildOrder). Later, we want per asset dependencies to improve parallelism
+        /// </summary>
+        internal protected virtual int InternalBuildOrder 
+        {
+            get { return 0; }
+        }
+
+        /// <summary>
         /// Gets or sets the unique identifier of this asset.
         /// </summary>
         /// <value>The identifier.</value>
@@ -74,6 +82,7 @@ namespace SiliconStudio.Assets
         [DataMember(-980)]
         [DefaultValue(0)]
         [Browsable(false)]
+        [Obsolete]
         public int BuildOrder { get; set; }
 
         /// <summary>

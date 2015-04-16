@@ -18,6 +18,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         // TODO: Where should we put this key?
         public static readonly PropertyKey<EntityComponentRendererTypeCollection> RendererTypesKey = new PropertyKey<EntityComponentRendererTypeCollection>("CameraRendererMode.RendererTypesKey", typeof(CameraRendererMode));
 
+        private readonly Dictionary<Type, IEntityComponentRenderer> componentTypeToRenderer = new Dictionary<Type, IEntityComponentRenderer>();
         private readonly List<EntityComponentRendererType> sortedRendererTypes;
         private readonly EntityComponentRendererBatch batchRenderer;
 
@@ -26,7 +27,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             sortedRendererTypes = new List<EntityComponentRendererType>();
             batchRenderer = new EntityComponentRendererBatch();
             RendererOverrides = new Dictionary<Type, IEntityComponentRenderer>();
-            FilterComponentTypes = new HashSet<Type>();
+            RenderComponentTypes = new HashSet<Type>();
+            SkipComponentTypes = new HashSet<Type>();
         }
 
         /// <summary>
@@ -37,17 +39,27 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         public Dictionary<Type, IEntityComponentRenderer> RendererOverrides { get; private set; }
 
         /// <summary>
-        /// Gets or sets the effect to use to render the models in the scene.
-        /// </summary>
-        /// <value>The main model effect.</value>
-        public abstract string ModelEffect { get; set; } // TODO: This is not a good extensibility point. Check how to improve this
-
-        /// <summary>
-        /// Gets the filter renderer types.
+        /// Gets the filter on the types to render.
         /// </summary>
         /// <value>The filter renderer types.</value>
         [DataMemberIgnore]
-        public HashSet<Type> FilterComponentTypes { get; private set; }
+        public HashSet<Type> RenderComponentTypes { get; private set; }
+
+        /// <summary>
+        /// Gets the filter on the types to skip.
+        /// </summary>
+        /// <value>The filter renderer types.</value>
+        [DataMemberIgnore]
+        public HashSet<Type> SkipComponentTypes { get; private set; }
+
+        [DataMemberIgnore]
+        public EntityComponentRendererBatch Renderers
+        {
+            get
+            {
+                return batchRenderer;
+            }
+        }
 
         /// <summary>
         /// Draws entities from a specified <see cref="SceneCameraRenderer" />.
@@ -63,48 +75,56 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             sortedRendererTypes.Clear();
             sortedRendererTypes.AddRange(rendererTypes);
             sortedRendererTypes.Sort();
+            
+            // clear current renderer batching
+            batchRenderer.Clear();
 
-            int index = 0;
+            // rebuild the renderer batch
             for (int i = 0; i < sortedRendererTypes.Count; i++)
             {
                 var componentType = sortedRendererTypes[i].ComponentType;
 
                 // If a Filter on a component types is set, skip 
-                if (FilterComponentTypes.Count > 0 && !FilterComponentTypes.Contains(componentType))
+                if (RenderComponentTypes.Count > 0 && !RenderComponentTypes.Contains(componentType))
+                {
+                    continue;
+                }
+                if (SkipComponentTypes.Contains(componentType))
                 {
                     continue;
                 }
 
-                // Check an existing overrides
+                // check in existing overrides
                 IEntityComponentRenderer renderer;
                 RendererOverrides.TryGetValue(componentType, out renderer);
 
-                var rendererType = renderer != null ? renderer.GetType() : sortedRendererTypes[i].RendererType;
-                var currentType = i < batchRenderer.Count ? batchRenderer[i].GetType() : null;
-
-
-                if (currentType != rendererType)
+                // check in existing default renderer
+                if (renderer == null)
+                    componentTypeToRenderer.TryGetValue(componentType, out renderer);
+                
+                // create the default renderer if not existing
+                if (renderer == null)
                 {
-                    if (renderer == null)
-                    {
-                        renderer = CreateRenderer(sortedRendererTypes[i]);
-                    }
-
-                    if (index == batchRenderer.Count)
-                    {
-                        batchRenderer.Add(renderer);
-                    }
-                    else
-                    {
-                        batchRenderer.Insert(index, renderer);
-                    }
+                    renderer = CreateRenderer(sortedRendererTypes[i]);
+                    componentTypeToRenderer[componentType] = renderer;
                 }
 
-                index++;
+                batchRenderer.Add(renderer);
             }
 
             // Call the batch renderer
             batchRenderer.Draw(context);
+        }
+
+        protected override void Destroy()
+        {
+            base.Destroy();
+
+            foreach (var renderer in componentTypeToRenderer.Values)
+            {
+                renderer.Dispose();
+            }
+            componentTypeToRenderer.Clear();
         }
 
         protected virtual IEntityComponentRenderer CreateRenderer(EntityComponentRendererType rendererType)

@@ -16,14 +16,14 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     {
         public ImageTest()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 2;
         }
 
         protected override async Task LoadContent()
         {
             await base.LoadContent();
 
-            UI.RootElement = new ImageElement { Source = new UIImage(Asset.Load<Texture>("uv"))};
+            UIComponent.RootElement = new ImageElement { Source = new UIImage(Asset.Load<Texture>("uv"))};
         }
 
         protected override void RegisterTests()

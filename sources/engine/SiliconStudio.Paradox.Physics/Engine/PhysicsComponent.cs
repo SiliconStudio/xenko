@@ -10,6 +10,7 @@ namespace SiliconStudio.Paradox.Physics
 {
     [DataContract("PhysicsComponent")]
     [Display(30, "Physics")]
+    [GizmoEntity(GizmoEntityNames.PhysicsGizmoEntityQualifiedName)]
     [DefaultEntityComponentProcessor(typeof(PhysicsProcessor))]
     public sealed class PhysicsComponent : EntityComponent
     {
@@ -26,13 +27,14 @@ namespace SiliconStudio.Paradox.Physics
         /// </summary>
         public List<PhysicsElement> Elements { get; private set; }
 
-        public string Simulation = "default";
-
         [DataMemberIgnore]
         public PhysicsElement this[int i]
         {
             get { return Elements[i]; }
         }
+
+        [DataMemberIgnore]
+        public Simulation Simulation { get; internal set; }
 
         public override PropertyKey GetDefaultKey()
         {

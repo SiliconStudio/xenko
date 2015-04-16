@@ -18,6 +18,9 @@ namespace SiliconStudio.Paradox.Graphics
             : base(registry)
         {
             Visible = true;
+            FontSystem = new FontSystem();
+            Services.AddService(typeof(FontSystem), FontSystem);
+            Services.AddService(typeof(IFontFactory), FontSystem);
         }
 
         public override void Draw(GameTime gameTime)
@@ -27,21 +30,11 @@ namespace SiliconStudio.Paradox.Graphics
             FontSystem.Draw();
         }
 
-        public override void Initialize()
-        {
-            base.Initialize();
-
-            FontSystem = new FontSystem(GraphicsDevice);
-
-            Services.AddService(typeof(FontSystem), FontSystem);
-            Services.AddService(typeof(IFontFactory), FontSystem);
-        }
-
         protected override void LoadContent()
         {
             base.LoadContent();
 
-            FontSystem.Load();
+            FontSystem.Load(GraphicsDevice);
         }
 
         protected override void UnloadContent()

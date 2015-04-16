@@ -20,6 +20,13 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
         {
             Assert.IsTrue((reference - value).Length() < 0.001f);
         }
+
+        public static void AssertAreNearlyEqual(Matrix reference, Matrix value)
+        {
+            var diffMat = reference - value;
+            for (int i = 0; i < 16; i++)
+                Assert.IsTrue(Math.Abs(diffMat[i]) < 0.001);
+        }
         // ReSharper restore UnusedParameter.Local 
 
         public static void AreExactlyEqual(Vector3 left, Vector3 right)

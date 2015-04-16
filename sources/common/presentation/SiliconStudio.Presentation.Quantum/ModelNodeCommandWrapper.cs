@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Presentation.Commands;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Commands;
@@ -13,14 +14,22 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public class ModelNodeCommandWrapper : NodeCommandWrapperBase
     {
+        private class ModelNodeToken
+        {
+            public readonly UndoToken Token;
+            public readonly UndoToken AdditionalToken;
+
+            public ModelNodeToken(UndoToken token, UndoToken additionalToken)
+            {
+                Token = token;
+                AdditionalToken = additionalToken;
+            }
+        }
+
         public readonly ModelNodePath NodePath;
         protected readonly ModelContainer ModelContainer;
         protected readonly ObservableViewModelService Service;
         protected readonly ObservableViewModelIdentifier Identifier;
-
-        public override string Name { get { return NodeCommand.Name; } }
-
-        public override CombineMode CombineMode { get { return NodeCommand.CombineMode; } }
 
         public ModelNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, string observableNodePath, ObservableViewModel owner, ModelNodePath nodePath, IEnumerable<IDirtiableViewModel> dirtiables)
             : base(serviceProvider, dirtiables)
@@ -36,12 +45,13 @@ namespace SiliconStudio.Presentation.Quantum
             ObservableNodePath = observableNodePath;
         }
 
-        public INodeCommand NodeCommand { get; private set; }
+        public override string Name { get { return NodeCommand.Name; } }
 
-        internal IModelNode GetCommandRootNode()
-        {
-            return NodePath.RootNode;
-        }
+        public override CombineMode CombineMode { get { return NodeCommand.CombineMode; } }
+
+        public virtual CancellableCommand AdditionalCommand { get; set; }
+        
+        public INodeCommand NodeCommand { get; private set; }
 
         protected override UndoToken Redo(object parameter, bool creatingActionItem)
         {
@@ -51,10 +61,17 @@ namespace SiliconStudio.Presentation.Quantum
             if (modelNode == null)
                 throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
 
-            var newValue = NodeCommand.Invoke(modelNode.Content.Value, modelNode.Content.Descriptor, parameter, out token);
+            var currentValue = modelNode.GetValue(index);
+            var newValue = NodeCommand.Invoke(currentValue, parameter, out token);
             modelNode.SetValue(newValue, index);
             Refresh(modelNode, index);
-            return token;
+
+            var additionalToken = new UndoToken();
+            if (AdditionalCommand != null)
+            {
+                additionalToken = AdditionalCommand.ExecuteCommand(null, false);
+            }
+            return new UndoToken(token.CanUndo, new ModelNodeToken(token, additionalToken));
         }
 
         protected override void Undo(object parameter, UndoToken token)
@@ -64,9 +81,16 @@ namespace SiliconStudio.Presentation.Quantum
             if (modelNode == null)
                 throw new InvalidOperationException("Unable to retrieve the node on which to apply the undo operation.");
 
-            var newValue = NodeCommand.Undo(modelNode.Content.Value, modelNode.Content.Descriptor, token);
+            var modelNodeToken = (ModelNodeToken)token.TokenValue;
+            var currentValue = modelNode.GetValue(index);
+            var newValue = NodeCommand.Undo(currentValue, modelNodeToken.Token);
             modelNode.SetValue(newValue, index);
             Refresh(modelNode, index);
+
+            if (AdditionalCommand != null)
+            {
+                AdditionalCommand.UndoCommand(null, modelNodeToken.AdditionalToken);
+            }
         }
 
         /// <summary>
@@ -84,23 +108,12 @@ namespace SiliconStudio.Presentation.Quantum
             if (observableViewModel == null)
                 return;
 
-            var observableNode = observableViewModel.ResolveObservableModelNode(ObservableNodePath, NodePath.RootNode);
+            var observableNode = (ObservableModelNode)observableViewModel.ResolveObservableNode(ObservableNodePath);
             // No node matches this model node
             if (observableNode == null)
                 return;
 
             var newValue = modelNode.GetValue(index);
-
-            if (observableNode.IsPrimitive)
-            {
-                var collectionDescriptor = modelNode.Content.Descriptor as CollectionDescriptor;
-                if (collectionDescriptor != null)
-                    newValue = collectionDescriptor.GetValue(modelNode.Content.Value, observableNode.Index);
-
-                var dictionaryDescriptor = modelNode.Content.Descriptor as DictionaryDescriptor;
-                if (dictionaryDescriptor != null)
-                    newValue = dictionaryDescriptor.GetValue(newValue, observableNode.Index);
-            }
 
             observableNode.ForceSetValue(newValue);
             observableNode.Owner.NotifyNodeChanged(observableNode.Path);

@@ -2,11 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public class CreateNewInstanceCommand : ModifyValueCommand
+    public class CreateNewInstanceCommand : ChangeValueCommand
     {
         private static readonly object SetToNullObject = new object();
 
@@ -24,16 +25,17 @@ namespace SiliconStudio.Quantum.Commands
         /// <inheritdoc/>
         public override bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor)
         {
-            var isNullableStruct = typeDescriptor.Type.IsNullable() && Nullable.GetUnderlyingType(typeDescriptor.Type).IsStruct();
-            var isAbstractOrClass = typeDescriptor.Type.IsAbstract || typeDescriptor.Type.IsClass;
-            var isCollection = (typeDescriptor is CollectionDescriptor) || (typeDescriptor is DictionaryDescriptor);
+            var type = typeDescriptor.GetInnerCollectionType();
+            var isNullableStruct = type.IsNullable() && Nullable.GetUnderlyingType(type).IsStruct();
+            var isAbstractOrClass = type.IsAbstract || type.IsClass;
+            //var isCollection = (typeDescriptor is CollectionDescriptor) || (typeDescriptor is DictionaryDescriptor);
 
-            var result = isNullableStruct || (isAbstractOrClass && !isCollection);
+            //var result = isNullableStruct || (isAbstractOrClass && !isCollection);
+            var result = isNullableStruct || isAbstractOrClass;
             return result;
         }
 
-        /// <inheritdoc/>
-        protected override object ModifyValue(object currentValue, ITypeDescriptor descriptor, object parameter, bool isRedo)
+        protected override object ChangeValue(object currentValue, object parameter, bool isRedo)
         {
             if (parameter == SetToNull)
                 return null;

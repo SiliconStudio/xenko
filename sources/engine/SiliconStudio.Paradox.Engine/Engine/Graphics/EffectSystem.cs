@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Effects
     {
         private readonly static Logger Log = GlobalLogger.GetLogger("EffectSystem");
 
-        private readonly IGraphicsDeviceService graphicsDeviceService;
+        private IGraphicsDeviceService graphicsDeviceService;
         private EffectCompilerBase compiler;
         private readonly Dictionary<string, List<CompilerResults>> earlyCompilerCache = new Dictionary<string, List<CompilerResults>>();
         private Dictionary<EffectBytecode, Effect> cachedEffects = new Dictionary<EffectBytecode, Effect>();
@@ -32,6 +32,7 @@ namespace SiliconStudio.Paradox.Effects
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         // Ideally it should be a "HashStore", but we don't have it yet...
         private DictionaryStore<EffectCompileRequest, bool> recordedEffectCompile;
+        private object effectCompileRecordLock = new object();
 #endif
 
         private readonly HashSet<string> recentlyModifiedShaders = new HashSet<string>();
@@ -45,7 +46,7 @@ namespace SiliconStudio.Paradox.Effects
         /// <value>
         /// The database file provider.
         /// </value>
-        public DatabaseFileProvider FileProvider
+        public IVirtualFileProvider FileProvider
         {
             get { return compiler.FileProvider ?? AssetManager.FileProvider; }
         }
@@ -58,14 +59,14 @@ namespace SiliconStudio.Paradox.Effects
             : base(services)
         {
             Services.AddService(typeof(EffectSystem), this);
-
-            // Get graphics device service
-            graphicsDeviceService = Services.GetSafeServiceAs<IGraphicsDeviceService>();
         }
 
         public override void Initialize()
         {
             base.Initialize();
+
+            // Get graphics device service
+            graphicsDeviceService = Services.GetSafeServiceAs<IGraphicsDeviceService>();
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             Enabled = true;
@@ -82,7 +83,7 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         /// <param name="filePath">The file path.</param>
         /// <param name="reset">if set to <c>true</c> erase the previous file, otherwise append.</param>
-        public void RecordEffectCompile(string filePath, bool reset)
+        public void StartRecordEffectCompile(string filePath, bool reset)
         {
             try
             {
@@ -96,13 +97,41 @@ namespace SiliconStudio.Paradox.Effects
             }
 
             var fileStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
-            recordedEffectCompile = new DictionaryStore<EffectCompileRequest, bool>(fileStream);
+            var effectCompileLog = new DictionaryStore<EffectCompileRequest, bool>(fileStream);
             if (!reset)
-                recordedEffectCompile.LoadNewValues();
+                effectCompileLog.LoadNewValues();
+
+            StartRecordEffectCompile(effectCompileLog);
+        }
+
+        public void StartRecordEffectCompile(DictionaryStore<EffectCompileRequest, bool> requestStore)
+        {
+            lock (effectCompileRecordLock)
+            {
+                if (this.recordedEffectCompile != null)
+                    throw new InvalidOperationException("Effect compile requests were already being recorded.");
+
+                this.recordedEffectCompile = requestStore;
+            }
+        }
+
+        public void StopRecordEffectCompile()
+        {
+            DictionaryStore<EffectCompileRequest, bool> effectCompileLog;
+            lock (effectCompileRecordLock)
+            {
+                if (recordedEffectCompile == null)
+                    throw new InvalidOperationException("Effect compile requests were not being recorded.");
+
+                effectCompileLog = recordedEffectCompile;
+                recordedEffectCompile = null;
+            }
+
+            effectCompileLog.Dispose();
         }
 #endif
 
-        public static IEffectCompiler CreateEffectCompiler(TaskScheduler taskScheduler = null)
+        public static IEffectCompiler CreateEffectCompiler(TaskSchedulerSelector taskSchedulerSelector = null)
         {
             // Create compiler
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
@@ -111,7 +140,7 @@ namespace SiliconStudio.Paradox.Effects
 #else
             var effectCompiler = new NullEffectCompiler();
 #endif
-            return new EffectCompilerCache(effectCompiler, taskScheduler);
+            return new EffectCompilerCache(effectCompiler, taskSchedulerSelector);
         }
 
         public override void Update(GameTime gameTime)
@@ -155,55 +184,23 @@ namespace SiliconStudio.Paradox.Effects
             if (effectName == null) throw new ArgumentNullException("effectName");
             if (compilerParameters == null) throw new ArgumentNullException("compilerParameters");
 
-            string subEffect;
             // Get the compiled result
-            var compilerResult = GetCompilerResults(effectName, compilerParameters, out subEffect);
+            var compilerResult = GetCompilerResults(effectName, compilerParameters);
             CheckResult(compilerResult);
 
-            if (!compilerResult.Bytecodes.ContainsKey(subEffect))
-            {
-                throw new InvalidOperationException(string.Format("Unable to find sub effect [{0}] from effect [{1}]", subEffect, effectName));
-            }
-
             // Only take the sub-effect
-            var bytecode = compilerResult.Bytecodes[subEffect];
-            usedParameters = compilerResult.UsedParameters[subEffect];
+            var bytecode = compilerResult.Bytecode;
+            usedParameters = compilerResult.UsedParameters;
 
             if (bytecode.Task != null && !bytecode.Task.IsCompleted)
             {
                 // Result was async, keep it async
-                return bytecode.Task.ContinueWith(x => CreateEffect(effectName, x.Result, compilerResult.UsedParameters[subEffect]));
+                return bytecode.Task.ContinueWith(x => CreateEffect(effectName, x.Result, compilerResult.UsedParameters));
             }
             else
             {
-                return CreateEffect(effectName, bytecode.WaitForResult(), compilerResult.UsedParameters[subEffect]);
+                return CreateEffect(effectName, bytecode.WaitForResult(), compilerResult.UsedParameters);
             }
-        }
-
-        /// <summary>
-        /// Loads the effect and its children.
-        /// </summary>
-        /// <param name="effectName">Name of the effect.</param>
-        /// <param name="compilerParameters">The compiler parameters.</param>
-        /// <returns>A new instance of an effect.</returns>
-        /// <exception cref="System.InvalidOperationException">Could not compile shader. Need fallback.</exception>
-        public Dictionary<string, Effect> LoadEffects(string effectName, CompilerParameters compilerParameters)
-        {
-            if (effectName == null) throw new ArgumentNullException("effectName");
-            if (compilerParameters == null) throw new ArgumentNullException("compilerParameters");
-
-            string subEffect;
-            var compilerResult = GetCompilerResults(effectName, compilerParameters, out subEffect);
-            CheckResult(compilerResult);
-
-            var result = new Dictionary<string, Effect>();
-
-            foreach (var byteCodePair in compilerResult.Bytecodes)
-            {
-                var bytecode = byteCodePair.Value;
-                result.Add(byteCodePair.Key, CreateEffect(effectName, bytecode.WaitForResult(), compilerResult.UsedParameters[byteCodePair.Key]));
-            }
-            return result;
         }
 
         // TODO: THIS IS JUST A WORKAROUND, REMOVE THIS
@@ -217,7 +214,7 @@ namespace SiliconStudio.Paradox.Effects
             }
         }
 
-        private Effect CreateEffect(string effectName, EffectBytecodeCompilerResult effectBytecodeCompilerResult, ShaderMixinParameters usedParameters)
+        private Effect CreateEffect(string effectName, EffectBytecodeCompilerResult effectBytecodeCompilerResult, ParameterCollection usedParameters)
         {
             Effect effect;
             lock (cachedEffects)
@@ -250,7 +247,7 @@ namespace SiliconStudio.Paradox.Effects
             return effect;
         }
 
-        private CompilerResults GetCompilerResults(string effectName, CompilerParameters compilerParameters, out string subEffect)
+        private CompilerResults GetCompilerResults(string effectName, CompilerParameters compilerParameters)
         {
             compilerParameters.Profile = GraphicsDevice.ShaderProfile.HasValue ? GraphicsDevice.ShaderProfile.Value : GraphicsDevice.Features.Profile;
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLCORE
@@ -260,12 +257,8 @@ namespace SiliconStudio.Paradox.Effects
             compilerParameters.Platform = GraphicsPlatform.OpenGLES;
 #endif
 
-            // Get main effect name (before the first dot)
-            var mainEffectName = EffectCompilerBase.GetEffectName(effectName, out subEffect);
-
             // Compile shader
-            var isPdxfx = ShaderMixinManager.Contains(mainEffectName);
-            var source = isPdxfx ? new ShaderMixinGeneratorSource(effectName) : (ShaderSource)new ShaderClassSource(mainEffectName);
+            var isPdxfx = ShaderMixinManager.Contains(effectName);
 
             // getting the effect from the used parameters only makes sense when the source files are the same
             // TODO: improve this by updating earlyCompilerCache - cache can still be relevant
@@ -275,11 +268,12 @@ namespace SiliconStudio.Paradox.Effects
             if (isPdxfx)
             {
                 // perform an early test only based on the parameters
-                compilerResult = GetShaderFromParameters(mainEffectName, subEffect, compilerParameters);
+                compilerResult = GetShaderFromParameters(effectName, compilerParameters);
             }
 
             if (compilerResult == null)
             {
+                var source = isPdxfx ? new ShaderMixinGeneratorSource(effectName) : (ShaderSource)new ShaderClassSource(effectName);
                 compilerResult = compiler.Compile(source, compilerParameters);
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
@@ -287,15 +281,15 @@ namespace SiliconStudio.Paradox.Effects
                 // TODO: For now we save usedParameters, but ideally we probably want to have a list of everything that might be use by a given
                 //       pdxfx and filter against this, so that branches not taken on a specific situation/platform can still be reproduced on another.
                 // Alternatively, we could save full compilerParameters, but we would have to ignore certain things that are not serializable, such as Texture. 
-                if (recordedEffectCompile != null)
+                lock (effectCompileRecordLock)
                 {
-                    ShaderMixinParameters usedParameters;
-                    compilerResult.UsedParameters.TryGetValue(subEffect, out usedParameters);
-
-                    var effectCompileRequest = new EffectCompileRequest(effectName, usedParameters);
-                    if (!recordedEffectCompile.Contains(effectCompileRequest))
+                    if (recordedEffectCompile != null)
                     {
-                        recordedEffectCompile[effectCompileRequest] = true;
+                        var effectCompileRequest = new EffectCompileRequest(effectName, compilerResult.UsedParameters);
+                        if (!recordedEffectCompile.Contains(effectCompileRequest))
+                        {
+                            recordedEffectCompile[effectCompileRequest] = true;
+                        }
                     }
                 }
 #endif
@@ -305,10 +299,10 @@ namespace SiliconStudio.Paradox.Effects
                     lock (earlyCompilerCache)
                     {
                         List<CompilerResults> effectCompilerResults;
-                        if (!earlyCompilerCache.TryGetValue(mainEffectName, out effectCompilerResults))
+                        if (!earlyCompilerCache.TryGetValue(effectName, out effectCompilerResults))
                         {
                             effectCompilerResults = new List<CompilerResults>();
-                            earlyCompilerCache.Add(mainEffectName, effectCompilerResults);
+                            earlyCompilerCache.Add(effectName, effectCompilerResults);
                         }
 
                         // Register bytecode used parameters so that they are checked when another effect is instanced
@@ -368,11 +362,10 @@ namespace SiliconStudio.Paradox.Effects
                     {
                         foreach (var bytecode in bytecodeRemoved)
                         {
-                            effectCompilerResults.RemoveAll(results => results.Bytecodes.Values.Any(x => x.GetCurrentResult().Bytecode == bytecode));
+                            effectCompilerResults.RemoveAll(results => results.Bytecode.GetCurrentResult().Bytecode == bytecode);
                         }
                     }
                 }
-
 
                 recentlyModifiedShaders.Clear();
             }
@@ -392,24 +385,22 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// Get the shader from the database based on the parameters used for its compilation.
         /// </summary>
-        /// <param name="rootEffectName">Name of the effect.</param>
-        /// <param name="subEffectName">Name of the sub effect.</param>
+        /// <param name="effectName">Name of the effect.</param>
         /// <param name="parameters">The parameters.</param>
         /// <returns>The EffectBytecode if found.</returns>
-        protected CompilerResults GetShaderFromParameters(string rootEffectName, string subEffectName, CompilerParameters parameters)
+        protected CompilerResults GetShaderFromParameters(string effectName, CompilerParameters parameters)
         {
             lock (earlyCompilerCache)
             {
                 List<CompilerResults> compilerResultsList;
-                if (!earlyCompilerCache.TryGetValue(rootEffectName, out compilerResultsList))
+                if (!earlyCompilerCache.TryGetValue(effectName, out compilerResultsList))
                     return null;
 
                 // TODO: Optimize it so that search is not linear?
                 // Probably not trivial for subset testing
                 foreach (var compiledResults in compilerResultsList)
                 {
-                    ShaderMixinParameters usedParameters;
-                    if (compiledResults.UsedParameters.TryGetValue(subEffectName, out usedParameters) && parameters.Contains(usedParameters))
+                    if (parameters.Contains(compiledResults.UsedParameters))
                     {
                         return compiledResults;
                     }

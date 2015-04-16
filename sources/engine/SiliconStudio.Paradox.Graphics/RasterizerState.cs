@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         // For FakeRasterizerState.
-        public RasterizerState(RasterizerStateDescription description)
+        private RasterizerState(RasterizerStateDescription description)
         {
             Description = description;
         }
@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Graphics
         public readonly RasterizerStateDescription Description;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IRasterizerState"/> class.
+        /// Initializes a new instance of the <see cref="RasterizerState"/> class.
         /// </summary>
         /// <param name="graphicsDevice">The graphics device.</param>
         /// <param name="rasterizerStateDescription">The rasterizer state description.</param>
@@ -44,6 +44,16 @@ namespace SiliconStudio.Paradox.Graphics
                 }
             }
             return rasterizerState;
+        }
+
+        /// <summary>
+        /// Create a new fake rasterizer state for serialization.
+        /// </summary>
+        /// <param name="description">The description of the rasterizer state</param>
+        /// <returns>The fake rasterizer state</returns>
+        public static RasterizerState NewFake(RasterizerStateDescription description)
+        {
+            return new RasterizerState(description);
         }
 
         protected override void Destroy()

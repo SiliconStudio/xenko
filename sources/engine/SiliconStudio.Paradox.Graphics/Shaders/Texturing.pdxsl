@@ -56,6 +56,15 @@ class Texturing
         AddressV = Border;
     };
 
+    stage SamplerComparisonState LinearClampCompareLessEqualSampler
+    {
+        Filter = COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+        AddressU = Clamp;
+        AddressV = Clamp;
+        ComparisonFunc = LessEqual;
+
+    };
+
     stage SamplerState AnisotropicSampler
     {
         Filter = ANISOTROPIC;

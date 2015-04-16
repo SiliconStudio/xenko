@@ -12,10 +12,12 @@ namespace SiliconStudio.BuildEngine
     internal class BuildTransaction
     {
         private readonly Dictionary<ObjectUrl, ObjectId> transactionOutputObjects = new Dictionary<ObjectUrl, ObjectId>();
+        private readonly IAssetIndexMap assetIndexMap;
         private readonly IEnumerable<IDictionary<ObjectUrl, OutputObject>> outputObjectsGroups;
 
-        public BuildTransaction(IEnumerable<IDictionary<ObjectUrl, OutputObject>> outputObjectsGroups)
+        public BuildTransaction(IAssetIndexMap assetIndexMap, IEnumerable<IDictionary<ObjectUrl, OutputObject>> outputObjectsGroups)
         {
+            this.assetIndexMap = assetIndexMap;
             this.outputObjectsGroups = outputObjectsGroups;
         }
 
@@ -54,6 +56,13 @@ namespace SiliconStudio.BuildEngine
                             return true;
                         }
                     }
+                }
+
+                // Check asset index map (if set)
+                if (assetIndexMap != null)
+                {
+                    if (assetIndexMap.TryGetValue(url, out objectId))
+                        return true;
                 }
             }
 

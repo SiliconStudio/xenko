@@ -23,8 +23,11 @@ namespace SiliconStudio.Paradox.Assets.Physics
         public ColliderShapeAsset()
         {
             ColliderShapes = new List<IColliderShapeDesc>();
+        }
 
-            BuildOrder = 600; //make sure we build after Models
+        protected override int InternalBuildOrder
+        {
+            get { return 600; } //make sure we build after Models
         }
 
         /// <userdoc>

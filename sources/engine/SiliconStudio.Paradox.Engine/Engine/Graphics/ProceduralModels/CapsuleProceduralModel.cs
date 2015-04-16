@@ -5,8 +5,9 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
 
-namespace SiliconStudio.Paradox.Effects.ProceduralModels
+namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
 {
     /// <summary>
     /// A Capsule descriptor
@@ -51,7 +52,7 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
 
         protected override GeometricMeshData<VertexPositionNormalTexture> CreatePrimitiveMeshData()
         {
-            return GeometricPrimitive.Capsule.New(Radius, Height, Tessellation);
+            return GeometricPrimitive.Capsule.New(Height, Radius, Tessellation);
         }
     }
 }

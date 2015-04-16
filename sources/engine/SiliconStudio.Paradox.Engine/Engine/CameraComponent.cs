@@ -17,11 +17,20 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("CameraComponent")]
     [Display(130, "Camera")]
-    [GizmoEntityFactory(GizmoEntityFactoryNames.CameraGizmoEntityFactoryQualifiedName)]
+    [GizmoEntity(GizmoEntityNames.CameraGizmoEntityQualifiedName)]
     [DefaultEntityComponentRenderer(typeof(CameraComponentRenderer), -1000)]
     public sealed class CameraComponent : EntityComponent
     {
-        private float focusDistance;
+        public const float DefaultAspectRatio = 16.0f / 9.0f;
+
+        public const float DefaultOrthographicSize = 10.0f;
+
+        public const float DefaultVerticalFieldOfView = 45.0f;
+
+        public const float DefaultNearClipPlane = 0.1f;
+
+        public const float DefaultFarClipPlane = 1000.0f;
+
 
         /// <summary>
         /// The property key of this component.
@@ -32,28 +41,25 @@ namespace SiliconStudio.Paradox.Engine
         /// Create a new <see cref="CameraComponent"/> instance.
         /// </summary>
         public CameraComponent()
-            : this(null, 0.1f , 1000.0f)
+            : this(DefaultNearClipPlane, DefaultFarClipPlane)
         {
         }
 
         /// <summary>
-        /// Create a new <see cref="CameraComponent"/> instance with the provided target, near plane and far plane. 
+        /// Create a new <see cref="CameraComponent" /> instance with the provided target, near plane and far plane.
         /// </summary>
-        /// <param name="target">The entity to use as target.</param>
-        /// <param name="nearPlane">The near plane value</param>
-        /// <param name="farPlane">The far plane value</param>
-        public CameraComponent(Entity target, float nearPlane, float farPlane)
+        /// <param name="nearClipPlane">The near plane value</param>
+        /// <param name="farClipPlane">The far plane value</param>
+        public CameraComponent(float nearClipPlane, float farClipPlane)
         {
             Projection = CameraProjectionMode.Perspective;
-            VerticalFieldOfView = 45.0f;
-            OrthographicSize = 10.0f;
+            VerticalFieldOfView = DefaultVerticalFieldOfView;
+            OrthographicSize = DefaultOrthographicSize;
 
             // TODO: Handle Aspect ratio differently
-            AspectRatio = 16f / 9f;
-            Target = target;
-            TargetUp = Vector3.UnitY;
-            NearPlane = nearPlane;
-            FarPlane = farPlane;
+            AspectRatio = DefaultAspectRatio;
+            NearClipPlane = nearClipPlane;
+            FarClipPlane = farClipPlane;
         }
 
         /// <summary>
@@ -71,7 +77,7 @@ namespace SiliconStudio.Paradox.Engine
         /// The vertical field of view.
         /// </value>
         [DataMember(5)]
-        [DefaultValue(45.0f)]
+        [DefaultValue(DefaultVerticalFieldOfView)]
         [Display("Field Of View")]
         [DataMemberRange(1.0, 179.0, 1.0, 10.0, 0)]
         public float VerticalFieldOfView { get; set; }
@@ -83,7 +89,7 @@ namespace SiliconStudio.Paradox.Engine
         /// The vertical field of view.
         /// </value>
         [DataMember(10)]
-        [DefaultValue(10.0f)]
+        [DefaultValue(DefaultOrthographicSize)]
         [Display("Orthographic Size")]
         public float OrthographicSize { get; set; }
 
@@ -94,8 +100,8 @@ namespace SiliconStudio.Paradox.Engine
         /// The near plane distance.
         /// </value>
         [DataMember(20)]
-        [DefaultValue(0.1f)]
-        public float NearPlane { get; set; }
+        [DefaultValue(DefaultNearClipPlane)]
+        public float NearClipPlane { get; set; }
 
         /// <summary>
         /// Gets or sets the far plane distance.
@@ -104,8 +110,8 @@ namespace SiliconStudio.Paradox.Engine
         /// The far plane distance.
         /// </value>
         [DataMember(30)]
-        [DefaultValue(1000.0f)]
-        public float FarPlane { get; set; }
+        [DefaultValue(DefaultFarClipPlane)]
+        public float FarClipPlane { get; set; }
 
         /// <summary>
         /// Gets or sets the aspect ratio.
@@ -113,138 +119,82 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The aspect ratio.
         /// </value>
-        [DataMemberIgnore]
+        [DataMember(40)]
+        [DefaultValue(DefaultAspectRatio)]
         public float AspectRatio { get; set; }
-
-        /// <summary>
-        /// Gets or sets the target this camera is pointing to. May be null.
-        /// </summary>
-        /// <value>The target.</value>
-        [DataMemberIgnore]
-        public Entity Target { get; set; }
-
-        /// <summary>
-        /// Gets or sets the up direction when using a target (for LookAt).
-        /// </summary>
-        /// <value>
-        /// The up direction when using a target (for LookAt).
-        /// </value>
-        [DataMemberIgnore]
-        public Vector3 TargetUp { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether [auto focus].
-        /// </summary>
-        /// <value><c>true</c> if [auto focus]; otherwise, <c>false</c>.</value>
-        [DataMemberIgnore]
-        public bool AutoFocus { get; set; }
-
-        /// <summary>
-        /// Gets or sets the focus distance.
-        /// </summary>
-        /// <value>The focus distance.</value>
-        [DataMemberIgnore]
-        public float FocusDistance
-        {
-            get
-            {
-                if (AutoFocus)
-                    return 0.0f;
-
-                if (Entity != null && Target != null)
-                {
-                    var eye = Entity.Transform.WorldMatrix.TranslationVector;
-                    var target = Target.Transform.WorldMatrix.TranslationVector;
-                    return Vector3.Distance(eye, target);
-                }
-
-                return focusDistance;
-            }
-
-            set
-            {
-                if (AutoFocus)
-                {
-                    return;
-                }
-
-                if (Entity == null || Target == null)
-                {
-                    focusDistance = value;
-                }
-            }
-        }
 
         /// <summary>
         /// Gets or sets a value indicating whether to use custom <see cref="ViewMatrix"/>. Default is <c>false</c>
         /// </summary>
         /// <value><c>true</c> if use custom <see cref="ViewMatrix"/>; otherwise, <c>false</c>.</value>
         [DataMemberIgnore]
-        public bool UseViewMatrix { get; set; }
+        public bool UseCustomViewMatrix { get; set; }
 
         /// <summary>
-        /// Gets or sets the local view matrix, only used when <see cref="UseViewMatrix"/> is <c>true</c>.
+        /// Gets or sets the local view matrix. See remarks.
         /// </summary>
         /// <value>The local view matrix.</value>
+        /// <remarks>
+        /// This value is updated when calling <see cref="Update"/> or is directly used when <see cref="UseCustomViewMatrix"/> is <c>true</c>.
+        /// </remarks>
         [DataMemberIgnore]
-        public Matrix ViewMatrix { get; set; }
+        public Matrix ViewMatrix;
 
         /// <summary>
         /// Gets or sets a value indicating whether to use custom <see cref="ProjectionMatrix"/>. Default is <c>false</c>
         /// </summary>
         /// <value><c>true</c> if use custom <see cref="ProjectionMatrix"/>; otherwise, <c>false</c>.</value>
         [DataMemberIgnore]
-        public bool UseProjectionMatrix { get; set; }
+        public bool UseCustomProjectionMatrix { get; set; }
 
         /// <summary>
-        /// Gets or sets the local projection matrix, only used when <see cref="UseProjectionMatrix"/> is <c>true</c>.
+        /// Gets or sets the local projection matrix. See remarks.
         /// </summary>
         /// <value>The local projection matrix.</value>
+        /// <remarks>
+        /// This value is updated when calling <see cref="Update"/> or is directly used when <see cref="UseCustomViewMatrix"/> is <c>true</c>.
+        /// </remarks>
         [DataMemberIgnore]
-        public Matrix ProjectionMatrix { get; set; }
+        public Matrix ProjectionMatrix;
+
+        /// <summary>
+        /// The view projection matrix calculated automatically after calling <see cref="Update"/> method.
+        /// </summary>
+        [DataMemberIgnore]
+        public Matrix ViewProjectionMatrix;
+
+        /// <summary>
+        /// The frustum extracted from the view projection matrix calculated automatically after calling <see cref="Update"/> method.
+        /// </summary>
+        [DataMemberIgnore]
+        public BoundingFrustum Frustum;
 
         /// <summary>
         /// Calculates the projection matrix and view matrix.
         /// </summary>
-        /// <param name="projection">The projection matrix.</param>
-        /// <param name="viewMatrix">The view matrix.</param>
-        public void Calculate(out Matrix projection, out Matrix viewMatrix)
+        public void Update()
         {
             // Calculates the View
-            if (UseViewMatrix)
+            if (!UseCustomViewMatrix)
             {
-                // We are using a ViewMatrix Matrix that is overriding Entity/Target matrices
-                viewMatrix = ViewMatrix;
-            }
-            else
-            {
-                if (Target != null)
-                {
-                    // Build a view matrix from the Entity position and Target
-                    // Currently use Y in camera local space as Up axis (need separate TargetUp that we multiply with WorldMatrix?)
-                    var transformation = EnsureEntity.Transform;
-                    var targetUp = TargetUp;
-                    Vector3.TransformNormal(ref targetUp, ref transformation.WorldMatrix, out targetUp);
-                    viewMatrix = Matrix.LookAtRH(transformation.WorldMatrix.TranslationVector, Target.Transform.WorldMatrix.TranslationVector, targetUp);
-                }
-                else
-                {
-                    // TODO: determine which axis of the camera to look from
-                    var worldMatrix = EnsureEntity.Transform.WorldMatrix;
-                    Matrix.Invert(ref worldMatrix, out viewMatrix);
-                }
+                var worldMatrix = EnsureEntity.Transform.WorldMatrix;
+                Matrix.Invert(ref worldMatrix, out ViewMatrix);
             }
             
             // Calculates the projection
             // TODO: Should we throw an error if Projection is not set?
-            if (UseProjectionMatrix)
+            if (!UseCustomProjectionMatrix)
             {
-                projection = ProjectionMatrix;
+                ProjectionMatrix = Projection == CameraProjectionMode.Perspective ? 
+                    Matrix.PerspectiveFovRH(MathUtil.DegreesToRadians(VerticalFieldOfView), AspectRatio, NearClipPlane, FarClipPlane) :
+                    Matrix.OrthoRH(AspectRatio * OrthographicSize, OrthographicSize, NearClipPlane, FarClipPlane);
             }
-            else
-            {
-                projection = Projection == CameraProjectionMode.Perspective ? Matrix.PerspectiveFovRH(MathUtil.DegreesToRadians(VerticalFieldOfView), AspectRatio, NearPlane, FarPlane) : Matrix.OrthoRH(OrthographicSize, OrthographicSize, NearPlane, FarPlane);
-            }
+
+            // Update ViewProjectionMatrix
+            Matrix.Multiply(ref ViewMatrix, ref ProjectionMatrix, out ViewProjectionMatrix);
+
+            // Update the frustum.
+            Frustum = new BoundingFrustum(ref ViewProjectionMatrix);
         }
 
         public override PropertyKey GetDefaultKey()

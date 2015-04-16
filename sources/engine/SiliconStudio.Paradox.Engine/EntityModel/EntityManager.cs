@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
@@ -30,7 +31,7 @@ namespace SiliconStudio.Paradox.EntityModel
         // Enabled entities
         private readonly TrackingHashSet<Entity> enabledEntities;
 
-        private readonly TrackingCollection<EntityProcessor> processors;
+        private readonly FastCollection<EntityProcessor> processors;
 
         private readonly List<EntityProcessor> newProcessors;
 
@@ -70,8 +71,7 @@ namespace SiliconStudio.Paradox.EntityModel
             entities = new TrackingDictionary<Entity, List<EntityProcessor>>();
             enabledEntities = new TrackingHashSet<Entity>();
 
-            processors = new TrackingCollection<EntityProcessor>();
-            processors.CollectionChanged += new EventHandler<TrackingCollectionChangedEventArgs>(systems_CollectionChanged);
+            processors = new FastCollection<EntityProcessor>();
             newProcessors = new List<EntityProcessor>();
 
             componentTypes = new HashSet<Type>();
@@ -87,7 +87,7 @@ namespace SiliconStudio.Paradox.EntityModel
         /// <summary>
         /// Gets the entity Processors.
         /// </summary>
-        public FastCollection<EntityProcessor> Processors
+        public IReadOnlyCollection<EntityProcessor> Processors
         {
             get { return processors; }
         }
@@ -101,6 +101,37 @@ namespace SiliconStudio.Paradox.EntityModel
             get
             {
                 return componentTypes;
+            }
+        }
+
+        /// <summary>
+        /// Adds a processor to this instance.
+        /// </summary>
+        /// <param name="processor">The processor.</param>
+        /// <exception cref="System.ArgumentNullException">processor</exception>
+        public void AddProcessor(EntityProcessor processor)
+        {
+            if (processor == null) throw new ArgumentNullException("processor");
+            if (!processors.Contains(processor))
+            {
+                processors.Add(processor);
+                processors.Sort(EntityProcessorComparer.Default);
+                OnProcessorAdded(processor);
+            }
+        }
+
+        /// <summary>
+        /// Removes a processor from this instance.
+        /// </summary>
+        /// <param name="processor">The processor.</param>
+        /// <exception cref="System.ArgumentNullException">processor</exception>
+        public void RemoveProcessor(EntityProcessor processor)
+        {
+            if (processor == null) throw new ArgumentNullException("processor");
+            if (processors.Contains(processor))
+            {
+                processors.Remove(processor);
+                OnProcessorRemoved(processor);
             }
         }
 
@@ -230,10 +261,10 @@ namespace SiliconStudio.Paradox.EntityModel
             {
                 InternalRemoveEntity(entity, true);
             }
-            var previousProcessors = Processors.ToArray();
+            var previousProcessors = processors.ToArray();
             foreach (var processor in previousProcessors)
             {
-                Processors.Remove(processor);
+                RemoveProcessor(processor);
             }
 
             processorTypes.Clear();
@@ -302,9 +333,21 @@ namespace SiliconStudio.Paradox.EntityModel
             // Auto-register all new processors
             if (addEntityLevel == 0)
             {
+                // Add all new processors
                 foreach (var newProcessor in newProcessors)
                 {
                     processors.Add(newProcessor);
+                }
+                // Make sure they are always sorted
+                if (newProcessors.Count > 0)
+                {
+                    processors.Sort(EntityProcessorComparer.Default);
+                }
+
+                // Notify
+                foreach (var newProcessor in newProcessors)
+                {
+                    OnProcessorAdded(newProcessor);
                 }
                 newProcessors.Clear();
             }
@@ -409,7 +452,7 @@ namespace SiliconStudio.Paradox.EntityModel
             }            
         }
 
-        private void AddSystem(EntityProcessor processor)
+        private void OnProcessorAdded(EntityProcessor processor)
         {
             processorTypes.Add(processor.GetType());
 
@@ -423,7 +466,7 @@ namespace SiliconStudio.Paradox.EntityModel
             }
         }
 
-        private void RemoveSystem(EntityProcessor processor)
+        private void OnProcessorRemoved(EntityProcessor processor)
         {
             processor.OnSystemRemove();
             processor.Services = null;
@@ -479,10 +522,10 @@ namespace SiliconStudio.Paradox.EntityModel
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    AddSystem((EntityProcessor)e.Item);
+                    OnProcessorAdded((EntityProcessor)e.Item);
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    RemoveSystem((EntityProcessor)e.Item);
+                    OnProcessorRemoved((EntityProcessor)e.Item);
                     break;
             }
         }
@@ -537,6 +580,16 @@ namespace SiliconStudio.Paradox.EntityModel
         {
             var handler = ComponentChanged;
             if (handler != null) handler(this, e);
+        }
+
+        private class EntityProcessorComparer : Comparer<EntityProcessor>
+        {
+            public new static readonly EntityProcessorComparer Default = new EntityProcessorComparer();
+
+            public override int Compare(EntityProcessor x, EntityProcessor y)
+            {
+                return x.Order.CompareTo(y.Order);
+            }
         }
     }
 }

@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,36 +47,9 @@ namespace SiliconStudio.Paradox.Physics
         }
 
         /// <summary>
-        /// The debug effect, populate this field in the case of debug rendering
-        /// </summary>
-        public static PhysicsDebugEffect DebugEffect = null;
-
-        /// <summary>
-        /// Set to true if you want the engine to create the debug primitives
-        /// </summary>
-        public static bool CreateDebugPrimitives = false;
-
-        /// <summary>
-        ///  Set to true if you want the engine to render the debug primitives
-        /// </summary>
-        public static bool RenderDebugPrimitives = false;
-
-        /// <summary>
         /// Totally disable the simulation if set to true
         /// </summary>
         public static bool DisableSimulation = false;
-
-        internal static GraphicsDevice DebugGraphicsDevice;
-
-        private static Game game;
-
-        internal static void Initialize(Game currentGame)
-        {
-            game = currentGame;
-
-            // Preload proper libbulletc native library (depending on CPU type)
-            Core.NativeLibrary.PreloadLibrary("libbulletc.dll");
-        }
 
         /// <summary>
         /// Initializes the Physics engine using the specified flags.
@@ -1084,8 +1056,6 @@ namespace SiliconStudio.Paradox.Physics
 
         internal void Simulate(float deltaTime)
         {
-            if (DisableSimulation) return;
-
             if (collisionWorld == null) return;
 
             var args = new SimulationArgs

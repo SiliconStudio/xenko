@@ -40,11 +40,6 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
             public override System.Collections.Generic.IEnumerable<ObjectUrl> GetInputFiles()
             {
-                foreach (var materialReference in asset.FindMaterialReferences())
-                {
-                    yield return new ObjectUrl(UrlType.Internal, materialReference.Location);
-                }
-
                 // TODO: Add textures when we will bake them
 
                 //var materialTextureVisitor = new MaterialTextureVisitor(asset.Material);
@@ -58,6 +53,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
             {
                 base.ComputeParameterHash(writer);
                 writer.Serialize(ref assetUrl, ArchiveMode.Serialize);
+
+                // We also want to serialize recursively the compile-time dependent assets
+                // (since they are not added as reference but actually embedded as part of the current asset)
+                // TODO: Ideally we would want to put that automatically in AssetCommand<>, but we would need access to package
+                ComputeCompileTimeDependenciesHash(package.Session, writer, asset);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)

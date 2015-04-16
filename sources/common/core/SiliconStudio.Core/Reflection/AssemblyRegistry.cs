@@ -24,6 +24,11 @@ namespace SiliconStudio.Core.Reflection
         public static event EventHandler<AssemblyRegisteredEventArgs> AssemblyRegistered;
 
         /// <summary>
+        /// Occurs when an assembly is registered.
+        /// </summary>
+        public static event EventHandler<AssemblyRegisteredEventArgs> AssemblyUnregistered;
+
+        /// <summary>
         /// Finds all registered assemblies.
         /// </summary>
         /// <returns>A set of all assembly registered.</returns>
@@ -172,9 +177,49 @@ namespace SiliconStudio.Core.Reflection
             Register(assembly, (IEnumerable<string>)categories);
         }
 
+        /// <summary>
+        /// Unregisters the specified assembly.
+        /// </summary>
+        /// <param name="assembly">The assembly.</param>
+        public static void Unregister(Assembly assembly)
+        {
+            // TODO: Reference counting? Waiting for "plugin" branch to be merged first anyway...
+            HashSet<string> categoriesFound;
+
+            lock (Lock)
+            {
+                if (MapAssemblyToCategories.TryGetValue(assembly, out categoriesFound))
+                {
+                    // Remove assembly=>categories entry
+                    MapAssemblyToCategories.Remove(assembly);
+
+                    // Remove reverse category=>assemblies entries
+                    foreach (var category in categoriesFound)
+                    {
+                        HashSet<Assembly> assembliesFound;
+                        if (MapCategoryToAssemblies.TryGetValue(category, out assembliesFound))
+                        {
+                            assembliesFound.Remove(assembly);
+                        }
+                    }
+                }
+            }
+
+            if (categoriesFound != null)
+            {
+                OnAssemblyUnregistered(assembly, categoriesFound);
+            }
+        }
+
         private static void OnAssemblyRegistered(Assembly assembly, HashSet<string> categories)
         {
             EventHandler<AssemblyRegisteredEventArgs> handler = AssemblyRegistered;
+            if (handler != null) handler(null, new AssemblyRegisteredEventArgs(assembly, categories));
+        }
+
+        private static void OnAssemblyUnregistered(Assembly assembly, HashSet<string> categories)
+        {
+            EventHandler<AssemblyRegisteredEventArgs> handler = AssemblyUnregistered;
             if (handler != null) handler(null, new AssemblyRegisteredEventArgs(assembly, categories));
         }
     }

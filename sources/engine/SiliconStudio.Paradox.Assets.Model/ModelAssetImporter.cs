@@ -13,6 +13,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.Assets.Model.Analysis;
 using SiliconStudio.Paradox.Assets.Textures;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Importer.Common;
@@ -21,7 +22,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 {
     public abstract class ModelAssetImporter : AssetImporterBase
     {
-        private static readonly Type[] supportedTypes = { typeof(EntityAsset), typeof(ModelAsset), typeof(TextureAsset), typeof(MaterialAsset), typeof(AnimationAsset) };
+        private static readonly Type[] supportedTypes = { typeof(ModelAsset), typeof(TextureAsset), typeof(MaterialAsset), typeof(AnimationAsset) };
 
         public override AssetImporterParameters GetDefaultParameters(bool isForReImport)
         {
@@ -48,10 +49,9 @@ namespace SiliconStudio.Paradox.Assets.Model
 
             var entityInfo = GetEntityInfo(localPath, importParameters.Logger);
 
-            var isImportingEntity = importParameters.IsTypeSelectedForOutput<EntityAsset>();
+            //var isImportingEntity = importParameters.IsTypeSelectedForOutput<EntityAsset>();
 
-            var isImportingModel = importParameters.IsTypeSelectedForOutput<ModelAsset>() ||
-                                   isImportingEntity;
+            var isImportingModel = importParameters.IsTypeSelectedForOutput<ModelAsset>();
 
             var isImportingMaterial = importParameters.IsTypeSelectedForOutput<MaterialAsset>() ||
                                       isImportingModel;
@@ -80,16 +80,16 @@ namespace SiliconStudio.Paradox.Assets.Model
             // 4. Model
             if (isImportingModel)
             {
-                var modelItem = ImportModel(rawAssetReferences, localPath, localPath, entityInfo, isImportingEntity);
+                var modelItem = ImportModel(rawAssetReferences, localPath, localPath, entityInfo, false);
 
-                // 4. Entity
-                if (isImportingEntity)
-                {
-                    var entityAssetItem = ImportEntity(rawAssetReferences, localPath, modelItem);
-
-                    // Apply EntityAnalysis 
-                    EntityAnalysis.UpdateEntityReferences(((EntityAsset)entityAssetItem.Asset).Hierarchy);
-                }
+                // 5. Entity (currently disabled)
+                //if (isImportingEntity)
+                //{
+                //    var entityAssetItem = ImportEntity(rawAssetReferences, localPath, modelItem);
+                //
+                //    // Apply EntityAnalysis 
+                //    EntityAnalysis.UpdateEntityReferences(((EntityAsset)entityAssetItem.Asset).Hierarchy);
+                //}
             }
 
             return rawAssetReferences;
@@ -167,7 +167,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                 {
                     var foundMaterial = loadedMaterials.FirstOrDefault(x => x.Location == new UFile(material.Key, null));
                     if (foundMaterial != null)
-                        asset.Materials.Add(new ModelMaterial { Name = material.Key, Material = new AssetReference<MaterialAsset>(foundMaterial.Id, foundMaterial.Location) });
+                        asset.Materials.Add(new ModelMaterial { Name = material.Key, MaterialInstance = new MaterialInstance() { Material = AttachedReferenceManager.CreateSerializableVersion<Material>(foundMaterial.Id, foundMaterial.Location) } });
                 }
             }
 

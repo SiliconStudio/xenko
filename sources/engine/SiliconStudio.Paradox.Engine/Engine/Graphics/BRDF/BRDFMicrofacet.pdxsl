@@ -47,7 +47,7 @@ namespace SiliconStudio.Paradox.Effects.BRDF
         float NormalDistributionGGX(float alphaR, float nDotH) 
         {
             var alphaR2 =  alphaR * alphaR;
-            return alphaR2 / (PI * pow(nDotH * nDotH * (alphaR2 - 1) + 1, 2.0f));
+            return alphaR2 / (PI * pow(max(nDotH * nDotH * (alphaR2 - 1) + 1, 0.0001), 2.0f));
         }
 
         // -------------------------------------------------

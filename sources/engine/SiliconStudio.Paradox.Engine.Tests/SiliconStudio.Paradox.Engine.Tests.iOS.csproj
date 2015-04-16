@@ -21,6 +21,7 @@
     <SiliconStudioParadoxDir>$(MSBuildThisFileDirectory)..\..\..</SiliconStudioParadoxDir>
     <!-- Force msbuild to check to rebuild this assembly instead of letting VS IDE guess -->
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+	<SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
@@ -207,6 +208,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Compile Include="Build\TestBuilder.cs" />
+    <Compile Include="EngineTestBase.cs" />
     <Compile Include="SpriteTestGame.cs" />
     <Compile Include="TestCamera.cs" />
     <Compile Include="TestSpriteAnimation.cs" />
@@ -218,7 +220,6 @@
     <Compile Include="TestAnimationChannel.cs" />
     <Compile Include="TestEntitySerializer.cs" />
     <Compile Include="TestParameterPath.cs" />
-    <Compile Include="TestShaderMerging.cs" />
     <Compile Include="TestParameters.cs" />
     <None Include="effects_test.xml">
       <SubType>Designer</SubType>

@@ -19,13 +19,10 @@ namespace SiliconStudio.Presentation.Quantum
         private readonly int? order;
 
         protected static readonly HashSet<CombinedObservableNode> ChangedNodes = new HashSet<CombinedObservableNode>();
-
         protected static bool ChangeInProgress;
 
-        private IDictionary<string, object> associatedData;
-
-        protected CombinedObservableNode(ObservableViewModel ownerViewModel, string name, CombinedObservableNode parentNode, IEnumerable<SingleObservableNode> combinedNodes, object index)
-            : base(ownerViewModel, parentNode, index)
+        protected CombinedObservableNode(ObservableViewModel ownerViewModel, string name, IEnumerable<SingleObservableNode> combinedNodes, object index)
+            : base(ownerViewModel, index)
         {
             this.combinedNodes = new List<SingleObservableNode>(combinedNodes);
             Name = name;
@@ -62,13 +59,7 @@ namespace SiliconStudio.Presentation.Quantum
             ResetInitialValues = new AnonymousCommand(ServiceProvider, () => { Owner.BeginCombinedAction(); CombinedNodes.Zip(combinedNodeInitialValues).ForEach(x => x.Item1.Value = x.Item2); Refresh(); Owner.EndCombinedAction(Owner.FormatCombinedUpdateMessage(this, null), Path, null); });
         }
 
-
         internal void Initialize()
-        {
-            Initialize(false);
-        }
-
-        private void Initialize(bool isUpdating)
         {
             var commandGroups = new Dictionary<string, List<ModelNodeCommandWrapper>>();
             foreach (var node in combinedNodes)
@@ -98,7 +89,7 @@ namespace SiliconStudio.Presentation.Quantum
             if (!HasList || HasDictionary)
             {
                 var commonChildren = GetCommonChildren();
-                GenerateChildren(commonChildren, isUpdating);
+                GenerateChildren(commonChildren);
             }
             else
             {
@@ -106,35 +97,22 @@ namespace SiliconStudio.Presentation.Quantum
                 if (allChildren != null)
                 {
                     // TODO: Disable list children for now - they need to be improved a lot (resulting combinaison is very random, especially for list of ints
-                    //GenerateListChildren(allChildren, isUpdating);
+                    //GenerateListChildren(allChildren);
                 }
             }
-
-            if (Owner.ObservableViewModelService != null)
+            foreach (var key in AssociatedData.Keys.ToList())
             {
-                if (associatedData != null)
-                {
-                    foreach (var key in associatedData.Keys.ToList())
-                    {
-                        OnPropertyChanging(key);
-                        associatedData.Remove(key);
-                        OnPropertyChanged(key);
-                    }
-                }
-
-                var data = Owner.ObservableViewModelService.RequestAssociatedData(this, isUpdating);
-                data.ForEach(x => OnPropertyChanging(x.Key));
-                SetValue(ref associatedData, data, "AssociatedData");
-                data.Reverse().ForEach(x => OnPropertyChanged(x.Key));
-
-                // TODO: we add associatedData added to SingleObservableNode this way, but it's a bit dangerous. Maybe we should check that all combined nodes have this data entry, and all with the same value.
-                foreach (var singleData in CombinedNodes.SelectMany(x => x.AssociatedData).Where(x => !associatedData.ContainsKey(x.Key)))
-                {
-                    OnPropertyChanging(singleData.Key);
-                    associatedData.Add(singleData.Key, singleData.Value);
-                    OnPropertyChanged(singleData.Key);
-                }
+                RemoveAssociatedData(key);
             }
+
+            // TODO: we add associatedData added to SingleObservableNode this way, but it's a bit dangerous. Maybe we should check that all combined nodes have this data entry, and all with the same value.
+            foreach (var singleData in CombinedNodes.SelectMany(x => x.AssociatedData).Where(x => !AssociatedData.ContainsKey(x.Key)))
+            {
+                AddAssociatedData(singleData.Key, singleData.Value);
+            }
+
+            FinalizeChildrenInitialization();
+
             CheckDynamicMemberConsistency();
         }
 
@@ -148,7 +126,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         internal static CombinedObservableNode Create(ObservableViewModel ownerViewModel, string name, CombinedObservableNode parent, Type contentType, IEnumerable<SingleObservableNode> combinedNodes, object index)
         {
-            var node = (CombinedObservableNode)Activator.CreateInstance(typeof(CombinedObservableNode<>).MakeGenericType(contentType), ownerViewModel, name, parent, combinedNodes, index);
+            var node = (CombinedObservableNode)Activator.CreateInstance(typeof(CombinedObservableNode<>).MakeGenericType(contentType), ownerViewModel, name, combinedNodes, index);
             return node;
         }
 
@@ -173,10 +151,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override sealed bool HasDictionary { get { return CombinedNodes.First().HasDictionary; } }
 
-        // TODO: we shall find a better way to handle combined associated data...
-        /// <inheritdoc/>
-        public override IDictionary<string, object> AssociatedData { get { return associatedData; } }
-
         public void Refresh()
         {
             if (Parent == null) throw new InvalidOperationException("The node to refresh can be a root node.");
@@ -191,13 +165,13 @@ namespace SiliconStudio.Presentation.Quantum
                 {
                     ClearCommands();
 
-                    foreach (var child in Children.ToList())
+                    foreach (var child in Children.Cast<ObservableNode>().ToList())
                         RemoveChild(child);
 
                     foreach (var modelNode in CombinedNodes.OfType<ObservableModelNode>())
                         modelNode.ForceSetValue(modelNode.Value);
 
-                    Initialize(true);
+                    Initialize();
                 }
 
                 NotifyNodeUpdated();
@@ -238,19 +212,19 @@ namespace SiliconStudio.Presentation.Quantum
 
         protected abstract void NotifyNodeUpdated();
 
-        private void GenerateChildren(IEnumerable<KeyValuePair<string, List<SingleObservableNode>>> commonChildren, bool isUpdating)
+        private void GenerateChildren(IEnumerable<KeyValuePair<string, List<SingleObservableNode>>> commonChildren)
         {
             foreach (var children in commonChildren)
             {
                 var contentType = children.Value.First().Type;
                 var index = children.Value.First().Index;
                 CombinedObservableNode child = Create(Owner, children.Key, this, contentType, children.Value, index);
-                child.Initialize(isUpdating);
                 AddChild(child);
+                child.Initialize();
             }
         }
 
-        private void GenerateListChildren(IEnumerable<KeyValuePair<object, List<SingleObservableNode>>> allChildren, bool isUpdating)
+        private void GenerateListChildren(IEnumerable<KeyValuePair<object, List<SingleObservableNode>>> allChildren)
         {
             int currentIndex = 0;
             foreach (var children in allChildren)
@@ -261,10 +235,10 @@ namespace SiliconStudio.Presentation.Quantum
                 var contentType = children.Value.First().Type;
                 var name = string.Format("Item {0}", currentIndex);
                 CombinedObservableNode child = Create(Owner, name, this, contentType, children.Value, currentIndex);
-                child.Initialize(isUpdating);
+                AddChild(child);
+                child.Initialize();
                 child.DisplayName = name;
                 ++currentIndex;
-                AddChild(child);
             }
         }
 
@@ -390,8 +364,8 @@ namespace SiliconStudio.Presentation.Quantum
 
     public class CombinedObservableNode<T> : CombinedObservableNode
     {
-        public CombinedObservableNode(ObservableViewModel ownerViewModel, string name, CombinedObservableNode parentNode, IEnumerable<SingleObservableNode> combinedNodes, object index)
-            : base(ownerViewModel, name, parentNode, combinedNodes, index)
+        public CombinedObservableNode(ObservableViewModel ownerViewModel, string name, IEnumerable<SingleObservableNode> combinedNodes, object index)
+            : base(ownerViewModel, name, combinedNodes, index)
         {
             DependentProperties.Add("TypedValue", new[] { "Value" });
         }
@@ -431,6 +405,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override sealed object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
 
+        // TODO: use DependentProperties property
         protected override void NotifyNodeUpdating()
         {
             OnPropertyChanging("TypedValue", "HasMultipleValues", "IsPrimitive", "HasList", "HasDictionary");
@@ -439,6 +414,7 @@ namespace SiliconStudio.Presentation.Quantum
         protected override void NotifyNodeUpdated()
         {
             OnPropertyChanged("TypedValue", "HasMultipleValues", "IsPrimitive", "HasList", "HasDictionary");
+            OnValueChanged();
         }
     }
 }

@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     {
         public CanvasGridTest()
         {
-            CurrentVersion = 2;
+            CurrentVersion = 4;
         }
 
         protected override void RegisterTests()
@@ -102,7 +102,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             baseGrid.Children.Add(grid);
             baseGrid.Children.Add(canvas);
 
-            UI.RootElement = baseGrid;
+            UIComponent.RootElement = baseGrid;
         }
 
         private void CreateAndInsertButton(UniformGrid grid, int c, int r)

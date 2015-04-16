@@ -24,8 +24,12 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             ModelEffect = ForwardEffect;
         }
 
+        /// <summary>
+        /// Gets or sets the effect to use to render the models in the scene.
+        /// </summary>
+        /// <value>The main model effect.</value>
         [DataMember(100)]
         [DefaultValue(ForwardEffect)]
-        public override string ModelEffect { get; set; }
+        public string ModelEffect { get; set; }// TODO: This is not a good extensibility point. Check how to improve this
     }
 }

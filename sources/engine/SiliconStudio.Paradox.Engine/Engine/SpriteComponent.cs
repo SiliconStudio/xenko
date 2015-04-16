@@ -31,6 +31,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// The group of sprites associated to the component.
         /// </summary>
+        /// <userdoc>The source of the sprite data.</userdoc>
         [DataMember(5)]
         [Display("Source")]
         [NotNull]

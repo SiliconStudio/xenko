@@ -10,6 +10,7 @@ using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Skyboxes;
 using SiliconStudio.Paradox.Engine.Graphics.Skyboxes;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets
 {
@@ -25,6 +26,7 @@ namespace SiliconStudio.Paradox.Assets
             AssemblyRegistry.Register(typeof(ParameterKeys).Assembly, AssemblyCommonCategories.Assets);
             AssemblyRegistry.Register(typeof(SkyboxComponent).Assembly, AssemblyCommonCategories.Assets);
             AssemblyRegistry.Register(typeof(Texture).Assembly, AssemblyCommonCategories.Assets);
+            AssemblyRegistry.Register(typeof(ShaderClassSource).Assembly, AssemblyCommonCategories.Assets);
         }
     }
 }

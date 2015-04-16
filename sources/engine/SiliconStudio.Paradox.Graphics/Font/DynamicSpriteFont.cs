@@ -99,6 +99,10 @@ namespace SiliconStudio.Paradox.Graphics.Font
 
         protected override Glyph GetGlyph(char character, ref Vector2 fontSize, bool uploadGpuResources)
         {
+            // Add a safe guard to prevent the system to generate characters too big for the dynamic font cache texture
+            fontSize.X = Math.Min(fontSize.X, 1024);
+            fontSize.Y = Math.Min(fontSize.Y, 1024);
+
             // get the character data associated to the provided character and size
             var characterData = GetOrCreateCharacterData(fontSize, character);
             

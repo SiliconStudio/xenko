@@ -82,7 +82,12 @@ namespace SiliconStudio.Quantum
             lock (lockObject)
             {
                 IModelNode result;
-                return modelsByGuid.TryGetValue(guid, out result) ? result : null;
+                if (modelsByGuid.TryGetValue(guid, out result))
+                {
+                    if (result != null)
+                        UpdateReferences(result);
+                }
+                return result;
             }
         }
 
@@ -109,6 +114,7 @@ namespace SiliconStudio.Quantum
         /// <param name="updateReferencesIfExists">Update references contained in the result node, if it already exists.</param>
         /// <param name="referencer">The referencer (optional, just here to help having some context when building nodes).</param>
         /// <returns>The <see cref="IModelNode"/> associated to the given object.</returns>
+        // TODO: Remove the type argument here
         public IModelNode GetOrCreateModelNode(object rootObject, Type type, bool updateReferencesIfExists = true, IModelNode referencer = null)
         {
             lock (lockObject)
@@ -117,8 +123,6 @@ namespace SiliconStudio.Quantum
                 if (guidContainer != null && (rootObject == null || !rootObject.GetType().IsValueType))
                 {
                     result = GetModelNode(rootObject);
-                    if (result != null)
-                        UpdateReferences(result);
                 }
 
                 return result ?? CreateModelNode(rootObject, type, referencer);

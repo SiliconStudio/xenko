@@ -27,14 +27,14 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public EditTextTest()
         {
-            CurrentVersion = 4;
+            CurrentVersion = 7;
         }
 
         protected override async Task LoadContent()
         {
             await base.LoadContent();
 
-            var middleOfScreen = new Vector3(UI.VirtualResolution.X, UI.VirtualResolution.Y, 0) / 2;
+            var middleOfScreen = new Vector3(UIComponent.VirtualResolution.X, UIComponent.VirtualResolution.Y, 0) / 2;
 
             edit1 = new EditText(Services)
             {
@@ -96,7 +96,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             canvas.Children.Add(edit3);
             canvas.Children.Add(edit4);
 
-            UI.RootElement = canvas;
+            UIComponent.RootElement = canvas;
         }
 
         private bool IsLetter(char c)
@@ -157,18 +157,18 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             FrameGameSystem.Draw(DrawTest10).TakeScreenshot();
             if (Platform.IsWindowsDesktop)
             {
-                FrameGameSystem.Draw(SelectionTest1);
-                FrameGameSystem.Draw(SelectionTest2);
-                FrameGameSystem.Draw(SelectionTest3);
-                FrameGameSystem.Draw(SelectionTest4);
-                FrameGameSystem.Draw(SelectionTest5);
-                FrameGameSystem.Draw(SelectionTest6);
-                FrameGameSystem.Draw(SelectionTest7);
-                FrameGameSystem.Draw(SelectionTest8);
-                FrameGameSystem.Draw(SelectionTest9);
-                FrameGameSystem.Draw(SelectionGraphicTest1).TakeScreenshot();
-                FrameGameSystem.Draw(SelectionGraphicTest2).TakeScreenshot();
-                FrameGameSystem.Draw(SelectionGraphicTest3).TakeScreenshot();
+                FrameGameSystem.Draw(12, SelectionTest1);
+                FrameGameSystem.Draw(13, SelectionTest2);
+                FrameGameSystem.Draw(14, SelectionTest3);
+                FrameGameSystem.Draw(15, SelectionTest4);
+                FrameGameSystem.Draw(16, SelectionTest5);
+                FrameGameSystem.Draw(17, SelectionTest6);
+                FrameGameSystem.Draw(18, SelectionTest7);
+                FrameGameSystem.Draw(19, SelectionTest8);
+                FrameGameSystem.Draw(21, SelectionTest9);
+                FrameGameSystem.Draw(22, SelectionGraphicTest1).TakeScreenshot(22);
+                FrameGameSystem.Draw(23, SelectionGraphicTest2).TakeScreenshot(23);
+                FrameGameSystem.Draw(24, SelectionGraphicTest3).TakeScreenshot(24);
             }
         }
 
@@ -246,131 +246,109 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.49625f, 0.8f)));
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.49625f, 0.8f)));
-
-            UI.Update(new GameTime());
-
-            Assert.AreEqual(5, edit4.SelectionStart);
-            Assert.AreEqual(0, edit4.SelectionLength);
-            Assert.AreEqual(5, edit4.CaretPosition);
         }
 
         public void SelectionTest2()
         {
+            Assert.AreEqual(5, edit4.SelectionStart);
+            Assert.AreEqual(0, edit4.SelectionLength);
+            Assert.AreEqual(5, edit4.CaretPosition);
+
             edit4.TextAlignment = TextAlignment.Center;
             edit4.IsSelectionActive = false;
 
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.5f, 0.8f)));
-
-            UI.Update(new GameTime());
-
-            Assert.AreEqual(6, edit4.SelectionStart);
-            Assert.AreEqual(0, edit4.SelectionLength);
-            Assert.AreEqual(6, edit4.CaretPosition);
         }
 
         public void SelectionTest3()
         {
+            Assert.AreEqual(6, edit4.SelectionStart);
+            Assert.AreEqual(0, edit4.SelectionLength);
+            Assert.AreEqual(6, edit4.CaretPosition);
+
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.525f, 0.8f)));
-
-            UI.Update(new GameTime());
-
-            Assert.AreEqual(6, edit4.SelectionStart);
-            Assert.AreEqual(3, edit4.SelectionLength);
-            Assert.AreEqual(9, edit4.CaretPosition);
         }
 
         public void SelectionTest4()
         {
+            Assert.AreEqual(6, edit4.SelectionStart);
+            Assert.AreEqual(3, edit4.SelectionLength);
+            Assert.AreEqual(9, edit4.CaretPosition);
+
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.57f, 0.8f)));
-
-            UI.Update(new GameTime());
-
-            Assert.AreEqual(6, edit4.SelectionStart);
-            Assert.AreEqual(6, edit4.SelectionLength);
-            Assert.AreEqual(12, edit4.CaretPosition);
         }
 
         public void SelectionTest5()
         {
+            Assert.AreEqual(6, edit4.SelectionStart);
+            Assert.AreEqual(6, edit4.SelectionLength);
+            Assert.AreEqual(12, edit4.CaretPosition);
+
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.55f, 0.8f)));
-
-            UI.Update(new GameTime());
-
-            Assert.AreEqual(6, edit4.SelectionStart);
-            Assert.AreEqual(5, edit4.SelectionLength);
-            Assert.AreEqual(11, edit4.CaretPosition);
         }
 
         public void SelectionTest6()
         {
+            Assert.AreEqual(6, edit4.SelectionStart);
+            Assert.AreEqual(5, edit4.SelectionLength);
+            Assert.AreEqual(11, edit4.CaretPosition);
+
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.49f, 0.8f)));
-
-            UI.Update(new GameTime());
-
-            Assert.AreEqual(5, edit4.SelectionStart);
-            Assert.AreEqual(1, edit4.SelectionLength);
-            Assert.AreEqual(5, edit4.CaretPosition);
         }
 
         public void SelectionTest7()
         {
+            Assert.AreEqual(5, edit4.SelectionStart);
+            Assert.AreEqual(1, edit4.SelectionLength);
+            Assert.AreEqual(5, edit4.CaretPosition);
+
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.42f, 0.8f)));
-
-            UI.Update(new GameTime());
-
-            Assert.AreEqual(0, edit4.SelectionStart);
-            Assert.AreEqual(6, edit4.SelectionLength);
-            Assert.AreEqual(0, edit4.CaretPosition);
         }
 
         public void SelectionTest8()
         {
+            Assert.AreEqual(0, edit4.SelectionStart);
+            Assert.AreEqual(6, edit4.SelectionLength);
+            Assert.AreEqual(0, edit4.CaretPosition);
+
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.47f, 0.8f)));
-
-            UI.Update(new GameTime());
-
-            Assert.AreEqual(3, edit4.SelectionStart);
-            Assert.AreEqual(3, edit4.SelectionLength);
-            Assert.AreEqual(3, edit4.CaretPosition);
         }
 
         public void SelectionTest9()
         {
+            Assert.AreEqual(3, edit4.SelectionStart);
+            Assert.AreEqual(3, edit4.SelectionLength);
+            Assert.AreEqual(3, edit4.CaretPosition);
+
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.50f, 0.8f)));
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.50f, 0.8f)));
-
-            UI.Update(new GameTime());
-
-            Assert.AreEqual(6, edit4.SelectionStart);
-            Assert.AreEqual(0, edit4.SelectionLength);
-            Assert.AreEqual(6, edit4.CaretPosition);
         }
 
         public void SelectionGraphicTest1()
         {
+            Assert.AreEqual(6, edit4.SelectionStart);
+            Assert.AreEqual(0, edit4.SelectionLength);
+            Assert.AreEqual(6, edit4.CaretPosition);
+
             edit4.TextAlignment = TextAlignment.Center;
             edit4.IsSelectionActive = false;
 
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.5f, 0.8f)));
-
-            UI.Update(new GameTime());
         }
 
         public void SelectionGraphicTest2()
         {
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.57f, 0.8f)));
-
-            UI.Update(new GameTime());
         }
 
         public void SelectionGraphicTest3()
@@ -378,8 +356,6 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.42f, 0.8f)));
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.42f, 0.8f)));
-
-            UI.Update(new GameTime());
         }
 
         [Test]

@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Graphics
                 stream.Serialize(ref samplerStateDescription, mode);
                 samplerState = graphicsDeviceService != null
                     ? SamplerState.New(graphicsDeviceService.GraphicsDevice, samplerStateDescription)
-                    : new SamplerState(samplerStateDescription);
+                    : SamplerState.NewFake(samplerStateDescription);
             }
         }
     }

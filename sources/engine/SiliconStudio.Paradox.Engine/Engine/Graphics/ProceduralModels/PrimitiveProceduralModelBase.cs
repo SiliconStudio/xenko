@@ -2,15 +2,17 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
 
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-namespace SiliconStudio.Paradox.Effects.ProceduralModels
+namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
 {
     /// <summary>
     /// Base class for primitive procedural model.
@@ -18,14 +20,22 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
     [DataContract]
     public abstract class PrimitiveProceduralModelBase : IProceduralModel
     {
+        protected PrimitiveProceduralModelBase()
+        {
+            MaterialInstance = new MaterialInstance();
+        }
         /// <summary>
-        /// Gets or sets the material.
+        /// Gets the material instance.
         /// </summary>
-        /// <value>The material.</value>
+        /// <value>The material instance.</value>
         [DataMember(500)]
         [NotNull]
         [Display("Material")]
-        public Material Material { get; set; }
+        public MaterialInstance MaterialInstance { get; private set; }
+
+        /// <inheritdoc/>
+        [DataMemberIgnore]
+        public IEnumerable<KeyValuePair<string, MaterialInstance>> MaterialInstances { get { yield return new KeyValuePair<string, MaterialInstance>("Material", MaterialInstance); } }
 
         public void Generate(IServiceRegistry services, Model model)
         {
@@ -44,6 +54,13 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
             var boundingBox = new BoundingBox();
             for (int i = 0; i < data.Vertices.Length; i++)
                 BoundingBox.Merge(ref boundingBox, ref data.Vertices[i].Position, out boundingBox);
+
+            BoundingSphere boundingSphere;
+            unsafe
+            {
+                fixed (void* verticesPtr = data.Vertices)
+                    BoundingSphere.FromPoints((IntPtr)verticesPtr, 0, data.Vertices.Length, VertexPositionNormalTexture.Size, out boundingSphere);
+            }
 
             var originalLayout = data.Vertices[0].GetLayout();
 
@@ -83,15 +100,15 @@ namespace SiliconStudio.Paradox.Effects.ProceduralModels
             meshDraw.DrawCount = indices.Length;
             meshDraw.PrimitiveType = PrimitiveType.TriangleList;
 
-            var mesh = new Mesh { Draw = meshDraw, BoundingBox = boundingBox };
-            mesh.Parameters.Set(RenderingParameters.EntityGroup, EntityGroup.All);
+            var mesh = new Mesh { Draw = meshDraw, BoundingBox = boundingBox, BoundingSphere = boundingSphere };
 
             model.BoundingBox = boundingBox;
+            model.BoundingSphere = boundingSphere;
             model.Add(mesh);
 
-            if (Material != null)
+            if (MaterialInstance != null)
             {
-                model.Materials.Add(Material);
+                model.Materials.Add(MaterialInstance);
             }
         }
 

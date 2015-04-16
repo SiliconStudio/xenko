@@ -251,7 +251,7 @@ namespace SiliconStudio.Paradox.Graphics
                 drawCommand.FontScale = Vector2.One;
             }
 
-            var fontSize = drawCommand.FontSize * drawCommand.FontScale;
+            var fontSize = new Vector2(drawCommand.FontSize * drawCommand.FontScale.Y); // we don't want to have letters with non uniform ratio
             var scaledSize = new Vector2(drawCommand.Size.X * drawCommand.FontScale.X, drawCommand.Size.Y * drawCommand.FontScale.Y);
             ForEachGlyph(ref text, ref fontSize, InternalUIDrawGlyph, ref drawCommand, drawCommand.Alignment, true, scaledSize);
         }

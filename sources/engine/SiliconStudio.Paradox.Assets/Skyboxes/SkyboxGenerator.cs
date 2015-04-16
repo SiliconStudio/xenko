@@ -15,6 +15,7 @@ using SiliconStudio.Paradox.Effects.ComputeEffect.LambertianPrefiltering;
 using SiliconStudio.Paradox.Effects.Images;
 using SiliconStudio.Paradox.Effects.Skyboxes;
 using SiliconStudio.Paradox.Engine.Graphics.Skyboxes;
+using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.Data;
 using SiliconStudio.Paradox.Shaders;
@@ -32,6 +33,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
             GraphicsDeviceService = new GraphicsDeviceServiceLocal(Services, GraphicsDevice);
             EffectSystem = new EffectSystem(Services);
             EffectSystem.Initialize();
+            ((IContentable)EffectSystem).LoadContent();
             ((EffectCompilerCache)EffectSystem.Compiler).CompileEffectAsynchronously = false;
             DrawEffectContext = RenderContext.GetShared(Services);
         }
@@ -72,6 +74,12 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
 
             if (asset.Model != null)
             {
+                var cubemap = ((SkyboxCubeMapModel)asset.Model).CubeMap;
+                if (cubemap == null)
+                {
+                    return result;
+                }
+
                 var shaderSource = asset.Model.Generate(context);
                 parameters.Set(SkyboxKeys.Shader, shaderSource);
 
@@ -80,7 +88,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
                 // -------------------------------------------------------------------
                 var lamberFiltering = new LambertianPrefilteringSH(context.DrawEffectContext);
 
-                var reference = AttachedReferenceManager.GetAttachedReference(((SkyboxCubeMapModel)asset.Model).CubeMap);
+                var reference = AttachedReferenceManager.GetAttachedReference(cubemap);
                 var skyboxTexture = context.Assets.Load<Texture>(reference.Url);
 
                 lamberFiltering.HarmonicOrder = (int)asset.DiffuseSHOrder;

@@ -43,9 +43,9 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public override object Invoke(object currentValue, ITypeDescriptor descriptor, object parameter, out UndoToken undoToken)
+        public override object Invoke(object currentValue, object parameter, out UndoToken undoToken)
         {
-            var collectionDescriptor = (CollectionDescriptor)descriptor;
+            var collectionDescriptor = (CollectionDescriptor)TypeDescriptorFactory.Default.Find(currentValue.GetType());
             // TODO: Find a better solution for ContentSerializerAttribute that doesn't require to reference Core.Serialization (and unreference this assembly)
             if (collectionDescriptor.ElementType.IsAbstract || collectionDescriptor.ElementType.IsNullable() || collectionDescriptor.ElementType.GetCustomAttributes(typeof(ContentSerializerAttribute), true).Any())
             {
@@ -71,10 +71,10 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public override object Undo(object currentValue, ITypeDescriptor descriptor, UndoToken undoToken)
+        public override object Undo(object currentValue, UndoToken undoToken)
         {
             var index = (int)undoToken.TokenValue;
-            var collectionDescriptor = (CollectionDescriptor)descriptor;
+            var collectionDescriptor = (CollectionDescriptor)TypeDescriptorFactory.Default.Find(currentValue.GetType());
             collectionDescriptor.RemoveAt(currentValue, index);
             return currentValue;
         }

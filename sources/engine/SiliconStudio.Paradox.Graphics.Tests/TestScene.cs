@@ -13,6 +13,7 @@ using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Engine.Graphics.Composers;
 using SiliconStudio.Paradox.Engine.Graphics.Materials;
+using SiliconStudio.Paradox.Engine.Graphics.ProceduralModels;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 

@@ -65,7 +65,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         protected virtual void ActivateOutputCore(RenderContext context, RenderFrame output, bool disableDepth)
         {
             // Setup the render target
-            context.GraphicsDevice.SetDepthAndRenderTarget(disableDepth ? null : output.DepthStencil, output.RenderTarget);
+            context.GraphicsDevice.SetDepthAndRenderTargets(disableDepth ? null : output.DepthStencil, output.RenderTargets);
         }
 
         protected override void DrawCore(RenderContext context)

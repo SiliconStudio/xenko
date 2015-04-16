@@ -36,7 +36,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             base.InitializeCore();
 
             sprite3DBatch = new Sprite3DBatch(Context.GraphicsDevice);
-            selectedSpriteEffect = EffectSystem.LoadEffect("SelectedSprite").WaitForResult();
         }
 
         protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
@@ -47,6 +46,14 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 return;
             }
 
+            // If no camera, early exit
+            var camera = context.GetCurrentCamera();
+            if (camera == null)
+            {
+                return;
+            }
+            var viewProjectionMatrix = camera.ViewProjectionMatrix;
+
             foreach (var spriteState in spriteProcessor.Sprites)
             {
                 var sprite = spriteState.SpriteComponent.CurrentSprite;
@@ -54,7 +61,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                     continue;
 
                 // Perform culling on group and accept
-                if ((spriteState.SpriteComponent.Entity.Group & CurrentCullingMask) == 0)
+                if (!CurrentCullingMask.Contains(spriteState.SpriteComponent.Entity.Group))
                     continue;
 
                 // Project the position
@@ -62,7 +69,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 var worldPosition = new Vector4(spriteState.TransformComponent.WorldMatrix.TranslationVector, 1.0f);
 
                 Vector4 projectedPosition;
-                Vector4.Transform(ref worldPosition, ref context.ViewProjectionMatrix, out projectedPosition);
+                Vector4.Transform(ref worldPosition, ref viewProjectionMatrix, out projectedPosition);
                 var projectedZ = projectedPosition.Z / projectedPosition.W;
 
                 var list = sprite.IsTransparent ? transparentList : opaqueList;
@@ -100,7 +107,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
                 // Update the sprite batch
                 var blendState = isPicking ? device.BlendStates.Opaque : renderItems.HasTransparency ? (spriteComp.PremultipliedAlpha ? device.BlendStates.AlphaBlend : device.BlendStates.NonPremultiplied) : device.BlendStates.Opaque;
-                var currentEffect = (!isPicking && spriteComp.Tags.Get(IsEntitySelected)) ? selectedSpriteEffect : null; // TODO remove this code when material are available
+                var currentEffect = (!isPicking && spriteComp.Tags.Get(IsEntitySelected)) ? GetOrCreateSelectedSpriteEffect(): null; // TODO remove this code when material are available
                 if (previousEffect != currentEffect || blendState != previousBlendState)
                 {
                     if (hasBegin)
@@ -121,6 +128,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                     texture = device.GetSharedWhiteTexture();
                     color = (Color)new Color4(spriteComp.Id);
                 }
+
+                // skip the sprite if no texture is set.
+                if (texture == null)
+                    continue;
 
                 // determine the size of the element depending on the extrusion method.
                 var elementSize = Vector2.One;
@@ -156,6 +167,14 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             }
 
             sprite3DBatch.End();
+        }
+
+        private Effect GetOrCreateSelectedSpriteEffect()
+        {
+            if(selectedSpriteEffect == null)
+                selectedSpriteEffect = EffectSystem.LoadEffect("SelectedSprite").WaitForResult();
+
+            return selectedSpriteEffect;
         }
 
         protected override void Unload()

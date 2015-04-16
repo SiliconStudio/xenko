@@ -31,9 +31,13 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
         public SkyboxAsset()
         {
             Model = new SkyboxCubeMapModel();
-            BuildOrder = 500;
             DiffuseSHOrder = SkyboxPreFilteringDiffuseOrder.Order3;
             SpecularCubeMapSize = 256;
+        }
+
+        protected override int InternalBuildOrder
+        {
+            get { return 500; }
         }
 
         /// <summary>
@@ -42,7 +46,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
         /// <value>The type of skybox.</value>
         [DataMember(10)]
         [NotNull]
-        [Display("Type")]
+        [Display("Type", AlwaysExpand = true)]
         public ISkyboxModel Model { get; set; }
 
         /// <summary>

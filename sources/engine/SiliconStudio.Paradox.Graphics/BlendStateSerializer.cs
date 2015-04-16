@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.Graphics
                 stream.Serialize(ref blendStateDescription, mode);
                 blendState = graphicsDeviceService != null
                     ? BlendState.New(graphicsDeviceService.GraphicsDevice, blendStateDescription)
-                    : new BlendState(blendStateDescription);
+                    : BlendState.NewFake(blendStateDescription);
             }
         }
     }

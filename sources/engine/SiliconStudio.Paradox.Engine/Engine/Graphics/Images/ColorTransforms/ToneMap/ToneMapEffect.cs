@@ -20,12 +20,12 @@ namespace SiliconStudio.Paradox.Effects.Images
     {
         internal partial class ToneMapEffect  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "ToneMapShader");
 
                 {
-                    var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    var __subMixin = new ShaderMixinSource() { Parent = mixin };
                     context.PushComposition(mixin, "ToneMapOperator", __subMixin);
                     context.Mixin(__subMixin, context.GetParam(ColorTransformKeys.Shader));
                     context.PopComposition();

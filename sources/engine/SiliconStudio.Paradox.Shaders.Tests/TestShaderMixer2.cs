@@ -52,7 +52,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             mixinSource.Mixins.Add(new ShaderClassSource("AlbedoFlatShading"));
             mixinSource.AddComposition("albedoDiffuse", compMixin);
 
-            var mixinSourceTree = new ShaderMixinSourceTree { Name = "testRenaming", Mixin = mixinSource, UsedParameters = MixinParameters };
+            var mixinSourceTree = new ShaderMixinSource { Name = "testRenaming", Mixin = mixinSource, UsedParameters = MixinParameters };
             var byteCode = Compiler.Compile(mixinSourceTree, new CompilerParameters());
             Assert.IsNotNull(byteCode);
         }
@@ -75,7 +75,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             mixinSource.Mixins.Add(new ShaderClassSource("AlbedoFlatShading"));
             mixinSource.AddComposition("albedoDiffuse", compMixin);
 
-            var mixinSourceTree = new ShaderMixinSourceTree { Name = "TestRenaming2", Mixin = mixinSource, UsedParameters = MixinParameters };
+            var mixinSourceTree = new ShaderMixinSource { Name = "TestRenaming2", Mixin = mixinSource, UsedParameters = MixinParameters };
             var byteCode = Compiler.Compile(mixinSourceTree, new CompilerParameters());
             Assert.IsNotNull(byteCode);
         }

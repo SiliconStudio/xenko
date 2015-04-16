@@ -1,21 +1,21 @@
 !MaterialAsset
-Id: 584be6db-dd3a-4463-9251-d4e56a278a75
+Id: 32a944cf-8bb5-413b-9998-36a85b12dcc5
 Tags: []
 Attributes:
     Surface: !MaterialNormalMapFeature
         NormalMap: !ComputeTextureColor
-            TextureReference: f06f112c-0f06-4d6d-808b-3a153426efe9:knight_c100_weapon_nm
+            Texture: a8a31df9-250d-4b60-bfe3-f35042efc094:c100_weapon_nm
             Scale: {X: 1, Y: 1}
             Offset: {X: 0, Y: 0}
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
-            TextureReference: 281ad76e-8dc2-4c89-b0e5-fa35ce3e1e5b:knight_c100_weapon_cm
+            Texture: 4d7c768f-511c-46f7-9c80-676a15f54a4a:c100_weapon_cm
             Scale: {X: 1, Y: 1}
             Offset: {X: 0, Y: 0}
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Specular: !MaterialSpecularMapFeature
         SpecularMap: !ComputeTextureColor
-            TextureReference: 952031e6-e4bd-4337-bc0b-c8e14a415641:knight_c100_weapon_sp
+            Texture: 9340a3e9-14b4-4367-8c24-a7a3f9f04610:c100_weapon_sp
             Scale: {X: 1, Y: 1}
             Offset: {X: 0, Y: 0}
         Intensity: !ComputeFloat
@@ -24,6 +24,8 @@ Attributes:
         Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
         Visibility: !MaterialSpecularMicrofacetVisibilityImplicit {}
         NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionBlinnPhong {}
+    Overrides:
+        UVScale: {X: 1, Y: 1}
 Layers: []
 Parameters: {}
 ~Base:
@@ -34,18 +36,18 @@ Parameters: {}
         Attributes:
             Surface: !MaterialNormalMapFeature
                 NormalMap: !ComputeTextureColor
-                    TextureReference: c4810ba3-3974-4c5a-9419-d78bbb4ce092:c100_weapon_nm
+                    Texture: a8a31df9-250d-4b60-bfe3-f35042efc094:c100_weapon_nm
                     Scale: {X: 1, Y: 1}
                     Offset: {X: 0, Y: 0}
             Diffuse: !MaterialDiffuseMapFeature
                 DiffuseMap: !ComputeTextureColor
-                    TextureReference: 89e88efe-64bb-42d1-a17e-9da4a35b0989:c100_weapon_cm
+                    Texture: 4d7c768f-511c-46f7-9c80-676a15f54a4a:c100_weapon_cm
                     Scale: {X: 1, Y: 1}
                     Offset: {X: 0, Y: 0}
             DiffuseModel: !MaterialDiffuseLambertModelFeature {}
             Specular: !MaterialSpecularMapFeature
                 SpecularMap: !ComputeTextureColor
-                    TextureReference: bca79bf5-2568-4fd5-9a51-7c4c90d11ee6:c100_weapon_sp
+                    Texture: 9340a3e9-14b4-4367-8c24-a7a3f9f04610:c100_weapon_sp
                     Scale: {X: 1, Y: 1}
                     Offset: {X: 0, Y: 0}
                 Intensity: !ComputeFloat
@@ -54,5 +56,7 @@ Parameters: {}
                 Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
                 Visibility: !MaterialSpecularMicrofacetVisibilityImplicit {}
                 NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionBlinnPhong {}
+            Overrides:
+                UVScale: {X: 1, Y: 1}
         Layers: []
         Parameters: {}

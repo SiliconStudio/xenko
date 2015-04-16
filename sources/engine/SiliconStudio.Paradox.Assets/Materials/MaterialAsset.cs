@@ -21,11 +21,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// </summary>
     [DataContract("MaterialAsset")]
     [AssetFileExtension(FileExtension)]
-    [ThumbnailCompiler(PreviewerCompilerNames.MaterialThumbnailCompilerQualifiedName, true)]
+    [ThumbnailCompiler(PreviewerCompilerNames.MaterialThumbnailCompilerQualifiedName, true, Priority = -5000)]
     [AssetCompiler(typeof(MaterialAssetCompiler))]
     [ObjectFactory(typeof(MaterialFactory))]
     [Display("Material", "A material")]
-    public sealed class MaterialAsset : Asset, IMaterialDescriptor
+    public sealed class MaterialAsset : Asset, IMaterialDescriptor, IAssetCompileTimeDependencies
     {
         /// <summary>
         /// The default file extension used by the <see cref="MaterialAsset"/>.
@@ -40,6 +40,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
             Attributes = new MaterialAttributes();
             Layers = new MaterialBlendLayers();
             Parameters = new ParameterCollection();
+        }
+
+        protected override int InternalBuildOrder
+        {
+            get { return 100; }
         }
 
         /// <summary>
@@ -103,6 +108,15 @@ namespace SiliconStudio.Paradox.Assets.Materials
             if (Layers != null)
             {
                 Layers.Visit(context);
+            }
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<IContentReference> EnumerateCompileTimeDependencies()
+        {
+            foreach (var materialReference in FindMaterialReferences())
+            {
+                yield return materialReference;
             }
         }
     }

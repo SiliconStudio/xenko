@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Shaders;
@@ -11,6 +13,7 @@ using SiliconStudio.Shaders.Utility;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
+    [Obsolete]
     internal class MaterialNodeClassLoader
     {
         /// <summary>
@@ -84,7 +87,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         {
             try
             {
-                var shader = loader.ParseSource(shaderSource, logger);
+                var shader = ShaderLoader.ParseSource(shaderSource, logger);
                 if (logger.HasErrors)
                 {
                     // TODO: output messages

@@ -40,6 +40,15 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         }
 
         /// <summary>
+        /// Gets or sets the priority (in case this compile is scheduled in a custom async pool)
+        /// </summary>
+        /// <value>
+        /// The priority.
+        /// </value>
+        [DataMemberIgnore]
+        public int TaskPriority { get; set; }
+
+        /// <summary>
         /// The shader target type
         /// </summary>
         [DataMemberIgnore]

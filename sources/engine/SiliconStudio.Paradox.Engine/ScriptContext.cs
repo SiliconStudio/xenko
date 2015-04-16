@@ -1,9 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using System.Threading.Tasks;
 
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
@@ -12,15 +9,12 @@ using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Input;
-using SiliconStudio.Paradox.UI;
 
 namespace SiliconStudio.Paradox
 {
-    public interface IScriptContext : IVirtualResolution
+    public interface IScriptContext
     {
         IServiceRegistry Services { get; }
-
-        object Parameter { get; set; }
 
         IGame Game { get; }
 
@@ -38,20 +32,13 @@ namespace SiliconStudio.Paradox
 
         AudioSystem Audio { get; }
 
-        UISystem UI { get; }
-    }
-
-    public interface IScript : IScriptContext
-    {
-        Task Execute();
+        SpriteAnimationSystem SpriteAnimation { get; }
     }
 
     [DataContract("ScriptContext")]
     public abstract class ScriptContext : ComponentBase, IScriptContext
     {
         private IGraphicsDeviceService graphicsDeviceService;
-
-        private IVirtualResolution virtualResolutionProvider;
 
         protected ScriptContext()
         {
@@ -69,23 +56,23 @@ namespace SiliconStudio.Paradox
             graphicsDeviceService = Services.GetSafeServiceAs<IGraphicsDeviceService>();
 
             Game = Services.GetSafeServiceAs<IGame>();
-            virtualResolutionProvider = Services.GetSafeServiceAs<IVirtualResolution>();
             Asset = (AssetManager)Services.GetSafeServiceAs<IAssetManager>();
             Input = Services.GetSafeServiceAs<InputManager>();
             Script = Services.GetSafeServiceAs<ScriptSystem>();
             SceneSystem = Services.GetSafeServiceAs<SceneSystem>();
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
             Audio = Services.GetSafeServiceAs<AudioSystem>();
-            UI = Services.GetSafeServiceAs<UISystem>();
+            SpriteAnimation = Services.GetSafeServiceAs<SpriteAnimationSystem>();
         }
 
         [DataMemberIgnore]
         public AudioSystem Audio { get; private set; }
 
         [DataMemberIgnore]
-        public IServiceRegistry Services { get; private set; }
+        public SpriteAnimationSystem SpriteAnimation { get; private set; }
 
-        public object Parameter { get; set; }
+        [DataMemberIgnore]
+        public IServiceRegistry Services { get; private set; }
 
         [DataMemberIgnore]
         public IGame Game { get; private set; }
@@ -103,9 +90,6 @@ namespace SiliconStudio.Paradox
         }
 
         [DataMemberIgnore]
-        public UISystem UI { get; private set; }
-
-        [DataMemberIgnore]
         public InputManager Input { get; private set; }
 
         [DataMemberIgnore]
@@ -119,19 +103,6 @@ namespace SiliconStudio.Paradox
 
         protected override void Destroy()
         {
-        }
-
-        [DataMemberIgnore]
-        public Vector3 VirtualResolution 
-        { 
-            get { return virtualResolutionProvider.VirtualResolution; }
-            set { virtualResolutionProvider.VirtualResolution = value; }
-        }
-
-        public event EventHandler<EventArgs> VirtualResolutionChanged
-        {
-            add { virtualResolutionProvider.VirtualResolutionChanged += value;}
-            remove { virtualResolutionProvider.VirtualResolutionChanged -= value; }
         }
     }
 }

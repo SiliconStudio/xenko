@@ -36,7 +36,8 @@
     <IntermediateOutputPath>obj\Windows\Debug\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -49,7 +50,7 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Paradox.Assets.Tests.TestTextureAlphaSplitter</StartupObject>
+    <StartupObject>SiliconStudio.Paradox.Assets.Tests.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\assets\SiliconStudio.Assets\SiliconStudio.Assets.csproj">
@@ -129,21 +130,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
-    <Compile Include="GameAssets\testEffect.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>testEffect.pdxfx</DependentUpon>
-    </Compile>
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestAssetImport.cs" />
     <Compile Include="TestCommon.cs" />
     <Compile Include="TestDependencyResolver.cs" />
     <Compile Include="TestEntity.cs" />
-    <Compile Include="TestMaterialTree.cs" />
     <Compile Include="TestModelAsset.cs" />
-    <Compile Include="TestTreeFlattener.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\data\tests\factory\factory.fbx">
@@ -183,17 +176,12 @@
     <None Include="GameAssets\factory_TX-Factory_ALL.pdxtex" />
     <None Include="GameAssets\factory_TX-Factory_Ground.pdxtex" />
     <None Include="GameAssets\starMask.pdxtex" />
-    <None Include="GameAssets\testEffect.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>testEffect.cs</LastGenOutput>
-    </None>
     <None Include="materials\testConstantValueKey.pdxmat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="materials\testEffect.pdxmat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="GameAssets\testEffectLib.pdxfxlib" />
     <None Include="materials\testMaterial.pdxmat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

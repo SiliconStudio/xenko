@@ -8,7 +8,6 @@ using System.Globalization;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Materials;
@@ -123,7 +122,7 @@ namespace SiliconStudio.Paradox.Assets
                 declaredSamplerStates.Add(samplerStateDesc, key);
             }
 
-            var samplerState = new SamplerState(samplerStateDesc);
+            var samplerState = SamplerState.NewFake(samplerStateDesc);
             Parameters.Set(key, samplerState);
             return key;
         }

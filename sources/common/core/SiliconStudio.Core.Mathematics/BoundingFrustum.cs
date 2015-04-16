@@ -1,5 +1,13 @@
-﻿namespace SiliconStudio.Core.Mathematics
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.Runtime.CompilerServices;
+
+namespace SiliconStudio.Core.Mathematics
 {
+    /// <summary>
+    /// A bounding frustum.
+    /// </summary>
     public struct BoundingFrustum
     {
         public Plane Plane1;
@@ -9,6 +17,10 @@
         public Plane Plane5;
         public Plane Plane6;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BoundingFrustum"/> struct from a matrix view-projection.
+        /// </summary>
+        /// <param name="matrix">The matrix view projection.</param>
         public BoundingFrustum(ref Matrix matrix)
         {
             // Left
@@ -52,6 +64,12 @@
                 matrix.M24 - matrix.M23,
                 matrix.M34 - matrix.M33,
                 matrix.M44 - matrix.M43));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Contains(ref BoundingBoxExt boundingBoxExt)
+        {
+            return Collision.FrustumContainsBox(ref this, ref boundingBoxExt);
         }
     }
 }

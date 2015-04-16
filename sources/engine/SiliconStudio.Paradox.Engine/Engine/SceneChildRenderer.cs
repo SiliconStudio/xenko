@@ -5,19 +5,18 @@ using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Engine.Graphics.Composers;
-using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Engine
 {
     /// <summary>
-    /// A renderer for a child scene defined by a <see cref="SceneChildComponent"/>.
+    /// A renderer for a child scene defined by a <see cref="ChildSceneComponent"/>.
     /// </summary>
     [DataContract("SceneChildRenderer")]
     [Display("Render Child Scene")]
     public sealed class SceneChildRenderer : SceneRendererBase
     {
-        private EntityManager currentEntityManager;
-        private SceneChildProcessor sceneChildProcessor;
+        private SceneInstance currentSceneInstance;
+        private ChildSceneProcessor childSceneProcessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneChildRenderer"/> class.
@@ -29,10 +28,10 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneChildRenderer"/> class.
         /// </summary>
-        /// <param name="sceneChild">The scene child.</param>
-        public SceneChildRenderer(SceneChildComponent sceneChild)
+        /// <param name="childScene">The scene child.</param>
+        public SceneChildRenderer(ChildSceneComponent childScene)
         {
-            SceneChild = sceneChild;
+            ChildScene = childScene;
         }
 
         /// <summary>
@@ -40,7 +39,7 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         /// <value>The scene.</value>
         [DataMember(10)]
-        public SceneChildComponent SceneChild { get; set; }
+        public ChildSceneComponent ChildScene { get; set; }
 
         /// <summary>
         /// Gets or sets the graphics compositor override, allowing to override the composition of the scene.
@@ -48,12 +47,6 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>The graphics compositor override.</value>
         [DataMemberIgnore]
         public ISceneGraphicsCompositor GraphicsCompositorOverride { get; set; } // Overrides are accessible only at runtime
-
-        protected override void InitializeCore()
-        {
-            base.InitializeCore();
-            currentEntityManager = Context.Tags.Get(SceneInstance.Current);
-        }
 
         protected override void Destroy()
         {
@@ -68,20 +61,22 @@ namespace SiliconStudio.Paradox.Engine
 
         protected override void DrawCore(RenderContext context, RenderFrame output)
         {
-            if (SceneChild == null || !SceneChild.Enabled)
+            if (ChildScene == null || !ChildScene.Enabled)
             {
                 return;
             }
 
-            sceneChildProcessor = sceneChildProcessor  ?? currentEntityManager.GetProcessor<SceneChildProcessor>();
+            currentSceneInstance = SceneInstance.GetCurrent(Context);
 
-            if (sceneChildProcessor == null)
+            childSceneProcessor = childSceneProcessor ?? currentSceneInstance.GetProcessor<ChildSceneProcessor>();
+
+            if (childSceneProcessor == null)
             {
                 return;
             }
 
-            SceneInstance sceneInstance;
-            if (sceneChildProcessor.Scenes.TryGetValue(SceneChild, out sceneInstance))
+            SceneInstance sceneInstance = childSceneProcessor.GetSceneInstance(ChildScene);
+            if (sceneInstance != null)
             {
                 sceneInstance.Draw(context, output, GraphicsCompositorOverride);
             }

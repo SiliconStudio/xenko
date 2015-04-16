@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Effects.Images
     {
         internal partial class CombineLevelsFromCoCEffect  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "CombineLevelsFromCoCShader", context.GetParam(CombineLevelsFromCoCKeys.LevelCount));
             }

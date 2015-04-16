@@ -3,6 +3,7 @@
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -19,9 +20,12 @@ namespace SiliconStudio.Paradox.Physics
 
             InternalShape = new BulletSharp.BoxShape(halfExtents);
 
-            if (!Simulation.CreateDebugPrimitives) return;
-            DebugPrimitive = GeometricPrimitive.Cube.New(Simulation.DebugGraphicsDevice);
-            DebugPrimitiveScaling = Matrix.Scaling((halfExtents * 2.0f) * 1.01f);
+            DebugPrimitiveMatrix = Matrix.Scaling((halfExtents * 2.0f) * 1.01f);
+        }
+
+        public override GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
+        {
+            return GeometricPrimitive.Cube.New(device);
         }
     }
 }

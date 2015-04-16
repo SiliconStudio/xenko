@@ -5,6 +5,8 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 using System;
 
+using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
+
 namespace SiliconStudio.Paradox.Physics
 {
     public class CapsuleColliderShape : ColliderShape
@@ -56,9 +58,12 @@ namespace SiliconStudio.Paradox.Physics
                 InternalShape = shape;
             }
 
-            if (!Simulation.CreateDebugPrimitives) return;
-            DebugPrimitive = GeometricPrimitive.Capsule.New(Simulation.DebugGraphicsDevice);
-            DebugPrimitiveScaling = Matrix.Scaling(new Vector3(radius * 2, h / 2, radius * 2) * 1.01f) * rotation;
+            DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(radius * 2, h / 2, Is2D ? 1.0f : radius * 2) * 1.01f) * rotation;
+        }
+
+        public override GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
+        {
+            return GeometricPrimitive.Capsule.New(device);
         }
     }
 }

@@ -14,9 +14,9 @@ namespace SiliconStudio.Paradox.Effects.Images
 
         stage override float4 Shading()
         {
-            float3 minimum =  min( Texture0.Sample(Sampler, streams.TexCoord).rgb,
-                                   Texture1.Sample(Sampler, streams.TexCoord).rgb );
-            return float4(minimum, 1.0);
+            float4 minimum =  min( Texture0.Sample(Sampler, streams.TexCoord),
+                                   Texture1.Sample(Sampler, streams.TexCoord) );
+            return minimum;
         }
     };
 }

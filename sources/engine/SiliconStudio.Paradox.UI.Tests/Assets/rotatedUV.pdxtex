@@ -1,12 +1,12 @@
 !Texture
-Id: 854498f4-e3df-494f-84ba-bec8286a756b
+Id: b31d00ed-5719-4ef1-be8e-c3d958a0a32b
 Tags: []
 Source: ../../../data/tests/rotatedUV.dds
-ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 ~Base:
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000
         Tags: []
+        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
         ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

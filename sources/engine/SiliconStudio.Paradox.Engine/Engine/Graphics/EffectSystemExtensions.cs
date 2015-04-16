@@ -23,17 +23,5 @@ namespace SiliconStudio.Paradox.Effects
             var compilerParameters = new CompilerParameters();
             return effectSystem.LoadEffect(effectName, compilerParameters);
         }
-
-        /// <summary>
-        /// Creates an effect and its children.
-        /// </summary>
-        /// <param name="effectSystem">The effect system.</param>
-        /// <param name="effectName">Name of the effect.</param>
-        /// <returns>All the effects by name.</returns>
-        public static Dictionary<string, Effect> LoadEffects(this EffectSystem effectSystem, string effectName)
-        {
-            var compilerParameters = new CompilerParameters();
-            return effectSystem.LoadEffects(effectName, compilerParameters);
-        }
     }
 }

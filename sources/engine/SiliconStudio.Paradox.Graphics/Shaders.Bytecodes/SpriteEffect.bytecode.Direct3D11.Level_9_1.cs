@@ -12,7 +12,7 @@
 
 namespace SiliconStudio.Paradox.Graphics 
 {
-    internal partial class SpriteEffect
+    public partial class SpriteEffect
     {
         private static readonly byte[] binaryBytecode = new byte[] {
 1, 192, 254, 239, 0, 4, 0, 0, 0, 12, 83, 112, 114, 105, 116, 101, 69, 102, 102, 101, 99, 116, 1, 222, 153, 38, 3, 131, 35, 62, 45, 66, 224, 140, 73, 50, 243, 118, 208, 10, 83, 112, 114, 105, 116, 101, 66, 97, 115, 101, 1, 29, 34, 58, 164, 137, 37, 104, 112, 102, 62, 171, 91, 222, 240, 

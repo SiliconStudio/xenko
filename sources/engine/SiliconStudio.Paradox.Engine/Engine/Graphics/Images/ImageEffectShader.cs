@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Graphics.Internals;
 
 namespace SiliconStudio.Paradox.Effects.Images
 {
@@ -23,6 +24,8 @@ namespace SiliconStudio.Paradox.Effects.Images
         private List<ParameterCollection> parameterCollections;
 
         private List<ParameterCollection> appliedParameterCollections;
+
+        private EffectParameterCollectionGroup effectParameterCollections;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffectShader" /> class.
@@ -47,7 +50,7 @@ namespace SiliconStudio.Paradox.Effects.Images
 
             // Setup the effect compiler
             EffectInstance = new DefaultEffectInstance(parameterCollections);
-            effectCompiler = new DynamicEffectCompiler(Context.Services, EffectName);
+            effectCompiler = new DynamicEffectCompiler(Context.Services, EffectName, -1); // Image effects are compiled with higher priority
 
             SetDefaultParameters();
         }
@@ -127,20 +130,25 @@ namespace SiliconStudio.Paradox.Effects.Images
         {
             UpdateEffect();
 
-            // Update parameters
-            appliedParameterCollections.Clear();
-            if (context != null)
+            if (effectParameterCollections == null || EffectInstance.Effect != effectParameterCollections.Effect)
             {
-                appliedParameterCollections.Add(context.Parameters);
-            }
+                // Update parameters
+                appliedParameterCollections.Clear();
+                if (context != null)
+                {
+                    appliedParameterCollections.Add(context.Parameters);
+                }
 
-            foreach (var parameterCollection in parameterCollections)
-            {
-                appliedParameterCollections.Add(parameterCollection);
+                foreach (var parameterCollection in parameterCollections)
+                {
+                    appliedParameterCollections.Add(parameterCollection);
+                }
+
+                effectParameterCollections = new EffectParameterCollectionGroup(GraphicsDevice, EffectInstance.Effect, appliedParameterCollections);
             }
 
             // Draw a full screen quad
-            GraphicsDevice.DrawQuad(EffectInstance.Effect, appliedParameterCollections);
+            GraphicsDevice.DrawQuad(EffectInstance.Effect, effectParameterCollections);
         }
     }
 }

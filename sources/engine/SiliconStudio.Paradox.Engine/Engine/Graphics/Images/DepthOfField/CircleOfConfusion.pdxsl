@@ -24,7 +24,12 @@ namespace SiliconStudio.Paradox.Effects.Images
             float farLength = max(depthAreas.w - depthAreas.z, 0.01f);
             float farCoC = saturate( (linearDepth - depthAreas.z) / farLength);
 
-            return saturate(nearCoC + farCoC);
+            float result = saturate(nearCoC + farCoC);
+
+            // We need to be able to distinguish the out-of-focus near area from the far area. 
+            if (linearDepth < depthAreas.y) result = -result;
+
+            return result;
         }
     };
 }

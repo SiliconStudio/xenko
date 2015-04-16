@@ -758,6 +758,8 @@ namespace SiliconStudio.Paradox.UI.Panels
 
             var child = Children[childIndex];
 
+            child.LayoutingContext = LayoutingContext;
+
             if (child.IsCollapsed)
                 return 0f;
 

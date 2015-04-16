@@ -178,5 +178,10 @@ namespace SiliconStudio.Paradox.Graphics
                 return 0f;
             }
         }
+
+        /// <summary>
+        /// Gets the size of the viewport (Width, Height).
+        /// </summary>
+        public Vector2 Size { get {  return new Vector2(Width, Height); } }
     }
 }

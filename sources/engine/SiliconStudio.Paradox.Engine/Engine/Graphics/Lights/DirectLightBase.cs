@@ -4,12 +4,15 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Effects.Lights
 {
     /// <summary>
     /// Base implementation of <see cref="IDirectLight"/>.
     /// </summary>
+    [DataContract()]
     public abstract class DirectLightBase : ColorLightBase, IDirectLight
     {
         /// <summary>
@@ -23,8 +26,25 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// Gets or sets the shadow.
         /// </summary>
         /// <value>The shadow.</value>
+        [Category]
         [DataMember(200)]
-        [DefaultValue(null)]
-        public ILightShadow Shadow { get; set; }
+        public LightShadowMap Shadow { get; set; }
+
+        public abstract bool HasBoundingBox { get; }
+
+        public abstract BoundingBox ComputeBounds(Vector3 position, Vector3 direction);
+
+        public float ComputeScreenCoverage(RenderContext context, Vector3 position, Vector3 direction)
+        {
+            var viewport = context.GraphicsDevice.Viewport;
+            var camera = context.GetCurrentCamera();
+            if (camera == null)
+            {
+                return 0.0f;
+            }
+            return ComputeScreenCoverage(camera, position, direction, viewport.Width, viewport.Height);
+        }
+
+        protected abstract float ComputeScreenCoverage(CameraComponent camera, Vector3 position, Vector3 direction, float width, float height);
     }
 }

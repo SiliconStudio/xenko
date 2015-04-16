@@ -83,7 +83,7 @@ namespace SiliconStudio.Paradox.EntityModel
             Transform = new TransformComponent();
             transform.Position = position;
 
-            Group = EntityGroup.Default;
+            Group = EntityGroup.Group1;
         }
 
         [DataMember(0)] // Name is serialized
@@ -120,7 +120,7 @@ namespace SiliconStudio.Paradox.EntityModel
         /// </summary>
         /// <value>The group.</value>
         [DataMember(10)]
-        [DefaultValue(EntityGroup.Default)]
+        [DefaultValue(EntityGroup.Group1)]
         public EntityGroup Group { get; set; }
 
         /// <summary>
@@ -221,6 +221,17 @@ namespace SiliconStudio.Paradox.EntityModel
             Components.SetObject(key, value);
         }
 
+        /// <summary>
+        /// Removes a component with the specified key.
+        /// </summary>
+        /// <typeparam name="T">Type of the component</typeparam>
+        /// <param name="key">The key.</param>
+        /// <returns><c>True</c> if the component was removed, <c>False</c> otherwise.</returns>
+        public bool Remove<T>(PropertyKey<T> key)
+        {
+            return Components.Remove(key);
+        }
+        
         private void EntityPropertyUpdated(ref PropertyContainer propertyContainer, PropertyKey propertyKey, object newValue, object oldValue)
         {
             // Remove entity owner from previous EntityComponent.

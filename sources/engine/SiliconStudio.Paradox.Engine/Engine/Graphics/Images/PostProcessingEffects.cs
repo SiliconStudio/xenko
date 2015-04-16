@@ -195,11 +195,11 @@ namespace SiliconStudio.Paradox.Effects.Images
             }
 
             // Gets the current camera state 
-            var cameraState = context.GetCameraState(Camera);
-            if (cameraState != null)
+            var camera = context.GetCameraFromSlot(Camera);
+            if (camera != null)
             {
                 // Update the parameters for this post effect
-                CameraComponentRenderer.UpdateParameters(context, cameraState);
+                CameraComponentRenderer.UpdateParameters(context, camera);
             }
 
             // If input == output, than copy the input to a temporary texture

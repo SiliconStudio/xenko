@@ -6,9 +6,6 @@ namespace SiliconStudio.Paradox.Assets.Tests
     {
          public static void Main()
          {
-             var test = new TestTextureAlphaSplitter();
-             test.InitializeTest();
-             test.TestSplitTexture();
          }
     }
 }

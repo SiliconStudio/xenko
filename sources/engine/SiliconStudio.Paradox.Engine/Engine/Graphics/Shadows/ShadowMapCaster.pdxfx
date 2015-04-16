@@ -10,11 +10,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics.Shadows
     {
         using params ShadowMapParameters;
 
-        // Clone the current state of mixins into this shader
-        mixin clone;
         mixin ShadowMapCasterBase;
 
-        if (ShadowMapParameters.FilterType == LightShadowMapFilterType.Variance)
-            mixin ShadowMapCasterVsm;
+        //if (ShadowMapParameters.FilterType == LightShadowMapFilterType.Variance)
+        //    mixin ShadowMapCasterVsm;
     };
 }

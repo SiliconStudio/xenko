@@ -115,18 +115,18 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
             Margin = new Thickness(1,2,3,4,5,6);
             Arrange(new Vector3(15,27,39), false);
             UpdateWorldMatrix(ref identity, true);
-            Assert.AreEqual(Matrix.Translation(1+5,2+10,3+15), WorldMatrix);
+            Assert.AreEqual(Matrix.Translation(1+5,2+10,6+15), WorldMatrix);
 
             // check that the result of the composition between margin and parent world matrix is correct
             matrix = Matrix.Scaling(0.5f, 0.5f, 0.5f);
             UpdateWorldMatrix(ref matrix, true);
-            Assert.AreEqual(new Matrix(0.5f, 0, 0, 0, 0, 0.5f, 0, 0, 0, 0, 0.5f, 0, 3f, 6f, 9f, 1), WorldMatrix);
+            Assert.AreEqual(new Matrix(0.5f, 0, 0, 0, 0, 0.5f, 0, 0, 0, 0, 0.5f, 0, 3f, 6f, 10.5f, 1), WorldMatrix);
 
             // check that the composition of the margins, local matrix and parent matrix is correct.
             LocalMatrix = new Matrix(0,-1,0,0, 1,0,0,0, 0,0,1,0, 0,0,0,1);
             matrix = Matrix.Scaling(0.1f, 0.2f, 0.4f);
             UpdateWorldMatrix(ref matrix, true);
-            Assert.AreEqual(new Matrix(0,-0.2f,0,0, 0.1f,0,0,0, 0,0,0.4f,0, 0.6f,2.4f,7.2f,1), WorldMatrix);
+            Assert.AreEqual(new Matrix(0,-0.2f,0,0, 0.1f,0,0,0, 0,0,0.4f,0, 0.6f,2.4f,8.4f,1), WorldMatrix);
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
             Assert.AreEqual(float.PositiveInfinity, newElement.MaximumDepth);
             Assert.AreEqual(HorizontalAlignment.Stretch, newElement.HorizontalAlignment);
             Assert.AreEqual(VerticalAlignment.Stretch, newElement.VerticalAlignment);
-            Assert.AreEqual(DepthAlignment.Back, newElement.DepthAlignment);
+            Assert.AreEqual(DepthAlignment.Center, newElement.DepthAlignment);
             Assert.AreEqual(null, newElement.DependencyProperties.Get(NamePropertyKey));
             Assert.AreEqual(Thickness.UniformCuboid(0), newElement.Margin);
             Assert.AreEqual(Matrix.Identity, newElement.LocalMatrix);
@@ -225,24 +225,24 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
             // testing that a null thickness return a good value
             var size = 1000 * rand.NextVector3();
             var emptyThickness = Thickness.UniformCuboid(0f);
-            Assert.AreEqual(size, CalculateSizeWithoutThickness(ref size, ref emptyThickness));
+            AssertAreNearlySame(size, CalculateSizeWithoutThickness(ref size, ref emptyThickness));
 
             // testing with a positive thickness
             size = 1000 * Vector3.One;
             var thickness = rand.NextThickness(100, 200, 300, 400, 500, 600);
             var expectedSize = new Vector3(size.X - thickness.Left - thickness.Right, size.Y - thickness.Top - thickness.Bottom, size.Z - thickness.Back - thickness.Front);
-            Assert.AreEqual(expectedSize, CalculateSizeWithoutThickness(ref size, ref thickness));
+            AssertAreNearlySame(expectedSize, CalculateSizeWithoutThickness(ref size, ref thickness));
 
             // testing with a negative thickness 
             size = 1000 * Vector3.One;
             thickness = -rand.NextThickness(100, 200, 300, 400, 500, 600);
             expectedSize = new Vector3(size.X - thickness.Left - thickness.Right, size.Y - thickness.Top - thickness.Bottom, size.Z - thickness.Back - thickness.Front);
-            Assert.AreEqual(expectedSize, CalculateSizeWithoutThickness(ref size, ref thickness));
+            AssertAreNearlySame(expectedSize, CalculateSizeWithoutThickness(ref size, ref thickness));
 
             // test with a over constrained thickness
             size = 100 * rand.NextVector3();
             thickness = new Thickness(100, 200, 300, 400, 500, 600);
-            Assert.AreEqual(Vector3.Zero, CalculateSizeWithoutThickness(ref size, ref thickness));
+            AssertAreNearlySame(Vector3.Zero, CalculateSizeWithoutThickness(ref size, ref thickness));
         }
 
         /// <summary>
@@ -258,7 +258,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
             VerticalAlignment = VerticalAlignment.Stretch;
             DepthAlignment = DepthAlignment.Stretch;
             Margin = rand.NextThickness(10, 20, 30, 40, 50, 60);
-            var expectedOffsets = new Vector3(Margin.Left, Margin.Top, Margin.Back);
+            var expectedOffsets = new Vector3(Margin.Left, Margin.Top, Margin.Front);
             var randV1 = rand.NextVector3();
             var randV2 = rand.NextVector3();
             AssertAreNearlySame(expectedOffsets, CalculateAdjustmentOffsets(ref MarginInternal, ref randV1, ref randV2));
@@ -266,9 +266,9 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
             // test that  left, top, back value are returned if aligned to beginning
             HorizontalAlignment = HorizontalAlignment.Left;
             VerticalAlignment = VerticalAlignment.Top;
-            DepthAlignment = DepthAlignment.Back;
+            DepthAlignment = DepthAlignment.Front;
             Margin = rand.NextThickness(10, 20, 30, 40, 50, 60);
-            expectedOffsets = new Vector3(Margin.Left, Margin.Top, Margin.Back);
+            expectedOffsets = new Vector3(Margin.Left, Margin.Top, Margin.Front);
             randV1 = rand.NextVector3();
             randV2 = rand.NextVector3();
             AssertAreNearlySame(expectedOffsets, CalculateAdjustmentOffsets(ref MarginInternal, ref randV1, ref randV2));
@@ -281,18 +281,18 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
             var givenSpace = 100 * rand.NextVector3();
             var usedSpace = 100 * rand.NextVector3();
             var usedSpaceWithMargins = CalculateSizeWithThickness(ref usedSpace, ref MarginInternal);
-            expectedOffsets = new Vector3(Margin.Left, Margin.Top, Margin.Back) + (givenSpace - usedSpaceWithMargins) / 2;
+            expectedOffsets = new Vector3(Margin.Left, Margin.Top, Margin.Front) + (givenSpace - usedSpaceWithMargins) / 2;
             AssertAreNearlySame(expectedOffsets, CalculateAdjustmentOffsets(ref MarginInternal, ref givenSpace, ref usedSpace));
 
             // test that the element is correctly right aligned
             HorizontalAlignment = HorizontalAlignment.Right;
             VerticalAlignment = VerticalAlignment.Bottom;
-            DepthAlignment = DepthAlignment.Front;
+            DepthAlignment = DepthAlignment.Back;
             Margin = rand.NextThickness(10, 20, 30, 40, 50, 60);
             givenSpace = 100 * rand.NextVector3();
             usedSpace = 100 * rand.NextVector3();
             usedSpaceWithMargins = CalculateSizeWithThickness(ref usedSpace, ref MarginInternal);
-            expectedOffsets = new Vector3(Margin.Left, Margin.Top, Margin.Back) + givenSpace - usedSpaceWithMargins;
+            expectedOffsets = new Vector3(Margin.Left, Margin.Top, Margin.Front) + givenSpace - usedSpaceWithMargins;
             AssertAreNearlySame(expectedOffsets, CalculateAdjustmentOffsets(ref MarginInternal, ref givenSpace, ref usedSpace));
         }
 

@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Linq;
 
 using SiliconStudio.Core;
@@ -24,11 +26,9 @@ namespace SiliconStudio.Paradox.Effects
         /// <param name="mesh">The mesh.</param>
         public Mesh(Mesh mesh)
         {
+            if (mesh == null) throw new ArgumentNullException("mesh");
             Draw = mesh.Draw;
-            
-            // TODO: share parameter collection or copy parameters in a new one?
-            Parameters = mesh.Parameters;
-            
+            Parameters = mesh.Parameters.Clone();
             MaterialIndex = mesh.MaterialIndex;
             NodeIndex = mesh.NodeIndex;
             Name = mesh.Name;
@@ -36,11 +36,25 @@ namespace SiliconStudio.Paradox.Effects
             Skinning = mesh.Skinning;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Mesh" /> class.
+        /// </summary>
+        /// <param name="meshDraw">The mesh draw.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <exception cref="System.ArgumentNullException">parameters</exception>
+        public Mesh(MeshDraw meshDraw, ParameterCollection parameters)
+        {
+            if (meshDraw == null) throw new ArgumentNullException("meshDraw");
+            if (parameters == null) throw new ArgumentNullException("parameters");
+            Draw = meshDraw;
+            Parameters = parameters;
+        }
+
         public MeshDraw Draw { get; set; }
 
         public int MaterialIndex { get; set; }
         
-        public ParameterCollection Parameters { get; set; }
+        public ParameterCollection Parameters { get; private set; }
         
         /// <summary>
         /// Index of the transformation node in <see cref="Model"/>.
@@ -52,7 +66,12 @@ namespace SiliconStudio.Paradox.Effects
         /// <summary>
         /// Gets or sets the bounding box encompassing this <see cref="Mesh"/>.
         /// </summary>
-        public BoundingBox BoundingBox;
+        public BoundingBox BoundingBox { get; set; }
+
+        /// <summary>
+        /// Gets the bounding sphere
+        /// </summary>
+        public BoundingSphere BoundingSphere;
 
         // TODO: Skinning could be shared between multiple Mesh inside a ModelView (multimaterial, etc...)
         public MeshSkinningDefinition Skinning;

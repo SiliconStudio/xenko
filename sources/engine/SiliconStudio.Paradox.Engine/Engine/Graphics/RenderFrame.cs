@@ -17,9 +17,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     [DataSerializerGlobal(typeof(ReferenceSerializer<RenderFrame>), Profile = "Asset")]
     [ContentSerializer(typeof(DataContentSerializer<RenderFrame>))]
     [DataSerializer(typeof(RenderFrameSerializer))]
-    public class RenderFrame
+    public class RenderFrame : IDisposable
     {
-        // TODO: Add dispose
+        private bool isOwner;
+        private Texture ReferenceTexture;
 
         /// <summary>
         /// Property key to access the Current <see cref="RenderFrame"/> from <see cref="RenderContext.Tags"/>.
@@ -27,24 +28,12 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         public static readonly PropertyKey<RenderFrame> Current = new PropertyKey<RenderFrame>("RenderFrame.Current", typeof(RenderFrame));
 
         /// <summary>
-        /// Property key to access a render frame attached to a texture created from a <see cref="RenderFrameDescriptor"/>
+        /// Creates a new render for serialization
         /// </summary>
-        private static readonly PropertyKey<RenderFrame> RenderFrameKey = new PropertyKey<RenderFrame>("RenderFrameKey", typeof(RenderFrame));
-
-        // TODO: Should we move this to Graphics instead?
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RenderFrame"/> class.
-        /// </summary>
-        /// <param name="descriptor">The descriptor.</param>
-        /// <param name="renderTarget">The render target.</param>
-        /// <param name="depthStencil">The depth stencil.</param>
-        private RenderFrame(RenderFrameDescriptor descriptor, Texture renderTarget, Texture depthStencil)
+        public RenderFrame()
         {
-            Descriptor = descriptor;
-            RenderTarget = renderTarget;
-            DepthStencil = depthStencil;
         }
-
+        
         /// <summary>
         /// Gets the descriptor of this render frame.
         /// </summary>
@@ -55,13 +44,52 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// Gets or sets the render target.
         /// </summary>
         /// <value>The render target.</value>
-        public Texture RenderTarget { get; private set; }
+        public Texture[] RenderTargets { get; private set; }
 
         /// <summary>
         /// Gets or sets the depth stencil.
         /// </summary>
         /// <value>The depth stencil.</value>
         public Texture DepthStencil { get; private set; }
+
+        public int Width
+        {
+            get
+            {
+                return ReferenceTexture.Width;
+
+            }
+        }
+
+        public int Height
+        {
+            get
+            {
+                return ReferenceTexture.Height;
+            }
+        }
+
+        public void Dispose()
+        {
+            if (isOwner)
+            {
+                if (RenderTargets != null)
+                {
+                    foreach (var renderTarget in RenderTargets)
+                    {
+                        if (renderTarget != null)
+                        {
+                            renderTarget.Dispose();
+                        }
+                    }
+                }
+
+                if (Descriptor.DepthFormat != RenderFrameDepthFormat.Shared && DepthStencil != null)
+                {
+                    DepthStencil.Dispose();
+                }
+            }
+        }
 
         /// <summary>
         /// Checks if resizing this instance is required.
@@ -72,10 +100,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         {
             if (Descriptor.Mode == RenderFrameSizeMode.Relative && referenceFrame != null)
             {
-                var targetWidth = (int)((double)Descriptor.Width * referenceFrame.RenderTarget.Width / 100);
-                var targetHeight = (int)((double)Descriptor.Height * referenceFrame.RenderTarget.Height / 100);
+                var targetWidth = (int)((double)Descriptor.Width * referenceFrame.Width / 100);
+                var targetHeight = (int)((double)Descriptor.Height * referenceFrame.Height / 100);
 
-                return RenderTarget.Width != targetWidth || RenderTarget.Height != targetHeight;
+                return Width != targetWidth || Height != targetHeight;
             }
             return false;
         }
@@ -92,7 +120,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             // TODO: Handle support for shared depth stencil buffer
 
             // Sets the depth and render target
-            renderContext.GraphicsDevice.SetDepthAndRenderTarget(DepthStencil, RenderTarget);
+            renderContext.GraphicsDevice.SetDepthAndRenderTargets(DepthStencil, RenderTargets);
         }
 
         /// <summary>
@@ -102,7 +130,90 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// <returns>The result of the conversion.</returns>
         public static implicit operator Texture(RenderFrame from)
         {
-            return from != null ? from.RenderTarget : null;
+            return from != null && from.RenderTargets != null && from.RenderTargets.Length > 0 ? from.RenderTargets[0] : null;
+        }
+
+        /// <summary>
+        /// Recover a <see cref="RenderFrame" /> from a texture that has been created for a render frame.
+        /// </summary>
+        /// <param name="renderTextures">The texture.</param>
+        /// <param name="depthStencilTexture">The depth stencil texture.</param>
+        /// <returns>The instance of RenderFrame or null if no render frame was used to create this texture.</returns>
+        /// <exception cref="System.InvalidOperationException">The texture must be a render target</exception>
+        public static RenderFrame FromTexture(Texture[] renderTextures, Texture depthStencilTexture = null)
+        {
+            Texture referenceTexture = null;
+
+            if (renderTextures != null)
+            {
+                foreach (var renderTexture in renderTextures)
+                {
+                    if (renderTexture != null && !renderTexture.IsRenderTarget)
+                    {
+                        throw new ArgumentException("The texture must be a render target", "renderTextures");
+                    }
+
+                    if (referenceTexture == null && renderTexture != null)
+                    {
+                        referenceTexture = renderTexture;
+                    }
+                    else if (renderTexture != null)
+                    {
+                        if (referenceTexture.Width != renderTexture.Width || referenceTexture.Height != renderTexture.Height)
+                        {
+                            throw new ArgumentException("Invalid textures. The textures must have the same width/height", "renderTextures");
+                        }
+                    }
+                }
+            }
+
+            if (depthStencilTexture != null && !depthStencilTexture.IsDepthStencil)
+            {
+                throw new ArgumentException("The texture must be a depth stencil texture", "depthStencilTexture");
+            }
+
+            if (referenceTexture == null && depthStencilTexture != null)
+            {
+                referenceTexture = depthStencilTexture;
+            }
+            else if (depthStencilTexture != null)
+            {
+                if (referenceTexture.Width != depthStencilTexture.Width || referenceTexture.Height != depthStencilTexture.Height)
+                {
+                    throw new ArgumentException("Invalid textures/depthstencil. The textures must have the same width/height", "depthStencilTexture");
+                }
+            }
+
+            // If no relevant textures, than return null
+            if (referenceTexture == null)
+            {
+                return null;
+            }
+
+            var descriptor = RenderFrameDescriptor.Default();
+
+            // TODO: Check for formats?
+            var renderFrameFormat = RenderFrameFormat.LDR;
+            if (referenceTexture.Format == PixelFormat.R16G16B16A16_Float)
+            {
+                renderFrameFormat = RenderFrameFormat.HDR;
+            }
+
+            var depthFrameFormat = RenderFrameDepthFormat.None;
+            if (depthStencilTexture != null)
+            {
+                depthFrameFormat = depthStencilTexture.HasStencil ? RenderFrameDepthFormat.DepthAndStencil : RenderFrameDepthFormat.Depth;
+            }
+
+            descriptor.Format = renderFrameFormat;
+            descriptor.DepthFormat = depthFrameFormat;
+            descriptor.Mode = RenderFrameSizeMode.Fixed;
+            descriptor.Width = referenceTexture.Width;
+            descriptor.Height = referenceTexture.Height;
+
+            var renderFrame = new RenderFrame();
+            renderFrame.InitializeFrom(descriptor, renderTextures, depthStencilTexture, false);
+            return renderFrame;
         }
 
         /// <summary>
@@ -114,58 +225,24 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// <exception cref="System.InvalidOperationException">The texture must be a render target</exception>
         public static RenderFrame FromTexture(Texture texture, Texture depthStencilTexture = null)
         {
-            if (texture == null)
+            if (texture == null && depthStencilTexture == null)
             {
                 return null;
             }
 
-            if (!texture.IsRenderTarget)
-            {
-                throw new ArgumentException("The texture must be a render target", "texture");
-            }
-
-            if (depthStencilTexture != null && !depthStencilTexture.IsDepthStencil)
-            {
-                throw new ArgumentException("The texture must be a depth stencil texture", "depthStencilTexture");
-            }
-
-            // Retrieve the render frame from the texture if any
-            var renderFrame = texture.Tags.Get(RenderFrameKey);
-
-            // OR create a render frame from the specified texture
-            if (renderFrame == null)
-            {
-                var descriptor = RenderFrameDescriptor.Default();
-
-                // TODO: Check for formats?
-                var renderFrameFormat = RenderFrameFormat.LDR;
-                if (texture.Format == PixelFormat.R16G16B16A16_Float)
-                {
-                    renderFrameFormat = RenderFrameFormat.HDR;
-                }
-
-                var depthFrameFormat = RenderFrameDepthFormat.None;
-                if (depthStencilTexture != null)
-                {
-                    depthFrameFormat = depthStencilTexture.HasStencil ? RenderFrameDepthFormat.DepthAndStencil : RenderFrameDepthFormat.Depth;
-                }
-
-                descriptor.Format = renderFrameFormat;
-                descriptor.DepthFormat = depthFrameFormat;
-                descriptor.Mode = RenderFrameSizeMode.Fixed;
-                descriptor.Width = texture.Width;
-                descriptor.Height = texture.Height;
-
-                renderFrame = new RenderFrame(descriptor, texture, depthStencilTexture);
-                texture.Tags.Set(RenderFrameKey, renderFrame);
-                if (depthStencilTexture != null)
-                {
-                    depthStencilTexture.Tags.Set(RenderFrameKey, renderFrame);
-                }
-            }
-            return renderFrame;
+            return FromTexture(new [] { texture }, depthStencilTexture);
         }
 
+        /// <summary>
+        /// Creates a fake instance of <see cref="RenderFrame"/> for serialization.
+        /// </summary>
+        /// <param name="frameDescriptor">The frame descriptor.</param>
+        /// <returns>A new instance of <see cref="RenderFrame"/>.</returns>
+        public static RenderFrame NewFake(RenderFrameDescriptor frameDescriptor)
+        {
+            return new RenderFrame { Descriptor = frameDescriptor};
+        }
+        
         /// <summary>
         /// Creates a new instance of <see cref="RenderFrame"/> from the specified parameters.
         /// </summary>
@@ -180,29 +257,45 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// </exception>
         public static RenderFrame New(GraphicsDevice graphicsDevice, RenderFrameDescriptor frameDescriptor, RenderFrame referenceFrame = null)
         {
-            if (graphicsDevice == null) throw new ArgumentNullException("graphicsDevice");
+            // Just return null if no render frame is defined
+            if (frameDescriptor.DepthFormat == RenderFrameDepthFormat.None && frameDescriptor.Format == RenderFrameFormat.None)
+                return null;
 
-            var referenceTexture = graphicsDevice.BackBuffer;
-            if (referenceFrame != null && referenceFrame.RenderTarget != null)
-                referenceTexture = referenceFrame.RenderTarget;
+            var renderFrame = new RenderFrame();
+            renderFrame.InitializeFrom(graphicsDevice, frameDescriptor, referenceFrame);
+            return renderFrame;
+        }
 
-            int width = frameDescriptor.Width;
-            int height = frameDescriptor.Height;
+        internal void InitializeFrom(GraphicsDevice device, RenderFrameDescriptor description, RenderFrame referenceFrame = null)
+        {
+            if (device == null) throw new ArgumentNullException("device");
 
-            if (frameDescriptor.Mode == RenderFrameSizeMode.Relative)
+            if (description.DepthFormat == RenderFrameDepthFormat.None && description.Format == RenderFrameFormat.None)
+                return;
+
+            var referenceTexture = referenceFrame != null ? referenceFrame.ReferenceTexture : device.BackBuffer;
+
+            int width = description.Width;
+            int height = description.Height;
+
+            if (description.Mode == RenderFrameSizeMode.Relative)
             {
                 width = (width * referenceTexture.Width) / 100;
                 height = (height * referenceTexture.Height) / 100;
             }
 
-            var pixelFormat = PixelFormat.R8G8B8A8_UNorm;
-            if (frameDescriptor.Format == RenderFrameFormat.HDR)
+            var pixelFormat = PixelFormat.None;
+            if (description.Format == RenderFrameFormat.LDR)
+            {
+                pixelFormat = PixelFormat.R8G8B8A8_UNorm;
+            }
+            else if (description.Format == RenderFrameFormat.HDR)
             {
                 pixelFormat = PixelFormat.R16G16B16A16_Float;
             }
 
             var depthFormat = PixelFormat.None;
-            switch (frameDescriptor.DepthFormat)
+            switch (description.DepthFormat)
             {
                 case RenderFrameDepthFormat.Depth:
                     depthFormat = PixelFormat.D32_Float;
@@ -213,43 +306,63 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             }
 
             // Create the render target
-            var renderTarget = Texture.New2D(graphicsDevice, width, height, 1, pixelFormat, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
+            Texture renderTarget = null;
+            if (pixelFormat != PixelFormat.None)
+            {
+                renderTarget = Texture.New2D(device, width, height, 1, pixelFormat, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
+            }
 
             // Create the depth stencil buffer
             Texture depthStencil = null;
 
             // TODO: Better handle the case where shared cannot be used. Should we throw an exception?
-            if (frameDescriptor.DepthFormat == RenderFrameDepthFormat.Shared && referenceFrame != null && referenceFrame.DepthStencil != null &&
+            if (description.DepthFormat == RenderFrameDepthFormat.Shared && referenceFrame != null && referenceFrame.DepthStencil != null &&
                 referenceFrame.DepthStencil.Width == width && referenceFrame.DepthStencil.Height == height)
             {
                 depthStencil = referenceFrame.DepthStencil;
             }
-            else if (frameDescriptor.DepthFormat == RenderFrameDepthFormat.Depth || frameDescriptor.DepthFormat == RenderFrameDepthFormat.DepthAndStencil)
+            else if (description.DepthFormat == RenderFrameDepthFormat.Depth || description.DepthFormat == RenderFrameDepthFormat.DepthAndStencil)
             {
-                depthStencil = Texture.New2D(graphicsDevice, width, height, 1, depthFormat, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
+                var depthStencilExtraFlag = device.Features.Profile >= GraphicsProfile.Level_10_0 ? TextureFlags.ShaderResource : TextureFlags.None;
+                depthStencil = Texture.New2D(device, width, height, 1, depthFormat, TextureFlags.DepthStencil | depthStencilExtraFlag);
             }
 
-            // Create a render frame.
-            var frame = new RenderFrame(frameDescriptor, renderTarget, depthStencil);
-
-            // Attach the render frame to the RenderTarget and DepthStencil
-            // in order to be able to recover from it
-            frame.RenderTarget.Tags.Set(RenderFrameKey, frame);
-            if (frame.DepthStencil != null)
+            InitializeFrom(description, renderTarget != null ? new[] { renderTarget } : null, depthStencil, true);
+        }
+        
+        // TODO: Should we move this to Graphics instead?
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RenderFrame" /> class.
+        /// </summary>
+        /// <param name="descriptor">The descriptor.</param>
+        /// <param name="renderTargets">The render target.</param>
+        /// <param name="depthStencil">The depth stencil.</param>
+        /// <param name="ownsResources">if set to <c>true</c> this instance is owning the rendertargets and depth stencil buffer.</param>
+        private void InitializeFrom(RenderFrameDescriptor descriptor, Texture[] renderTargets, Texture depthStencil, bool ownsResources)
+        {
+            Descriptor = descriptor;
+            RenderTargets = renderTargets;
+            DepthStencil = depthStencil;
+            isOwner = ownsResources;
+            if (renderTargets != null)
             {
-                frame.DepthStencil.Tags.Set(RenderFrameKey, frame);
+                foreach (var renderTarget in renderTargets)
+                {
+                    if (renderTarget != null)
+                    {
+                        ReferenceTexture = renderTarget;
+                        break;
+                    }
+                }
             }
-
-            return frame;
+            if (ReferenceTexture == null && depthStencil != null)
+            {
+                ReferenceTexture = depthStencil;
+            }
         }
 
         internal class RenderFrameSerializer : DataSerializer<RenderFrame>
         {
-            public override void PreSerialize(ref RenderFrame renderFrame, ArchiveMode mode, SerializationStream stream)
-            {
-                // Do not create object during preserialize (OK because not recursive)
-            }
-
             public override void Serialize(ref RenderFrame renderFrame, ArchiveMode mode, SerializationStream stream)
             {
                 if (mode == ArchiveMode.Deserialize)
@@ -258,7 +371,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                     var graphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
 
                     var descriptor = stream.Read<RenderFrameDescriptor>();
-                    renderFrame = New(graphicsDeviceService.GraphicsDevice, descriptor);
+                    renderFrame.InitializeFrom(graphicsDeviceService.GraphicsDevice, descriptor);
                 }
                 else
                 {

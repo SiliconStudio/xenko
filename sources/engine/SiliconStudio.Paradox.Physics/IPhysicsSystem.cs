@@ -7,7 +7,7 @@ namespace SiliconStudio.Paradox.Physics
 {
     public interface IPhysicsSystem : IGameSystemBase
     {
-        Simulation Create(string spaceNameTag = "default", PhysicsEngineFlags flags = PhysicsEngineFlags.None);
-        void Release(string spaceNameTag = "default");
+        Simulation Create(PhysicsProcessor processor, PhysicsEngineFlags flags = PhysicsEngineFlags.None);
+        void Release(PhysicsProcessor processor);
     }
 }

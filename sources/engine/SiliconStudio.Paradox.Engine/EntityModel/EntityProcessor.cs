@@ -20,6 +20,11 @@ namespace SiliconStudio.Paradox.EntityModel
         internal ProfilingKey DrawProfilingKey;
         private readonly PropertyKey[] requiredKeys;
 
+        /// <summary>
+        /// Tags associated to this entity processor
+        /// </summary>
+        public PropertyContainer Tags;
+
         public bool Enabled
         {
             get { return enabled; }
@@ -43,6 +48,12 @@ namespace SiliconStudio.Paradox.EntityModel
         {
             get { return requiredKeys; }
         }
+
+        /// <summary>
+        /// Gets or sets the order of this processor.
+        /// </summary>
+        /// <value>The order.</value>
+        public int Order { get; protected set; }
 
         /// <summary>
         /// Performs work related to this processor.
@@ -197,6 +208,16 @@ namespace SiliconStudio.Paradox.EntityModel
                 // Remove from enabled and matching entities
                 enabledEntities.Remove(entity);
                 matchingEntities.Remove(entity);
+            }
+            else if (entityMatch) // && entityMatch
+            {
+                // one of the components of the entity changed we need to regenerate the AssociatedData
+                OnEntityRemoved(entity, entityData);
+                entityData = GenerateAssociatedData(entity);
+                OnEntityAdding(entity, entityData);
+                matchingEntities[entity] = entityData;
+                if (EntityManager.IsEnabled(entity))
+                    enabledEntities[entity] = entityData;
             }
         }
 

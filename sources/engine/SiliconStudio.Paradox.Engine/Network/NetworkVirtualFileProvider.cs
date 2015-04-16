@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Engine.Network
     {
         private SocketContext socketContext;
 
-        public NetworkVirtualFileProvider(SocketContext socketContext, string rootPath, string remoteUrl) : base(rootPath)
+        public NetworkVirtualFileProvider(SocketContext socketContext, string remoteUrl) : base(null)
         {
             this.socketContext = socketContext;
             RemoteUrl = remoteUrl;

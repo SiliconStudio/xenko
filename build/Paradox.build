@@ -83,10 +83,14 @@ Build file used to build Paradox and package it from the command line
     <Exec Command="RMDIR /Q /S $(ParadoxRoot)\Bin"/>
   </Target>
   
-  <Target Name="Build" DependsOnTargets="Clean;BuildWindows;BuildAndroid;BuildiOS;BuildWindowsStore;BuildWindowsPhone"/>
+  <Target Name="Build" DependsOnTargets="Clean;BuildWindows;BuildEditorShaders;BuildAndroid;BuildiOS;BuildWindowsStore;BuildWindowsPhone"/>
   
   <Target Name="CopyParadoxKey">
     <Copy Condition="'$(SiliconStudioSign)' == 'true' And Exists('$(LOCALAPPDATA)\SiliconStudio\ParadoxBuildKey\paradox.snk')" SourceFiles="$(LOCALAPPDATA)\SiliconStudio\ParadoxBuildKey\paradox.snk" DestinationFolder="$(MSBuildThisFileDirectory)"/>
+  </Target>
+
+  <Target Name="BuildEditorShaders">
+    <Exec Command="$(ParadoxRoot)sources\editor\SiliconStudio.Paradox.Assets.Presentation\EditorPackage\generate-editor-package.bat" WorkingDirectory="$(ParadoxRoot)sources\editor\SiliconStudio.Paradox.Assets.Presentation\EditorPackage"/>
   </Target>
 
   <Target Name="BuildWindows" DependsOnTargets="CopyParadoxKey">

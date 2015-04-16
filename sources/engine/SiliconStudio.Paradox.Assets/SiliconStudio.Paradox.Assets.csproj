@@ -14,6 +14,7 @@
     <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions) --generate-user-doc</SiliconStudioAssemblyProcessorOptions>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="SharpYaml, Version=1.0.2.26673, Culture=neutral, PublicKeyToken=1ced8108e942bc02, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\deps\SharpYaml\SharpYaml.dll</HintPath>
@@ -134,12 +135,14 @@
     <Compile Include="Effect\EffectCompositorAsset.cs" />
     <Compile Include="Effect\EffectLogAsset.cs" />
     <Compile Include="Effect\EffectLogAssetCompiler.cs" />
+    <Compile Include="Effect\EffectLogStore.cs" />
     <Compile Include="Effect\EffectShaderAssetCompiler.cs" />
     <Compile Include="Effect\EffectShaderAsset.cs" />
     <Compile Include="Materials\ComputeShaderBaseExtensions.cs" />
     <Compile Include="Materials\MaterialNodeClassLoader.cs" />
     <Compile Include="Materials\MaterialStreamFactory.cs" />
     <Compile Include="Materials\ShaderGeneratorContextExtensions.cs" />
+    <Compile Include="IModelAsset.cs" />
     <Compile Include="ProceduralModels\ProceduralModelAsset.cs" />
     <Compile Include="ProceduralModels\ProceduralModelAssetCompiler.cs" />
     <Compile Include="ImageGroupAsset.cs" />
@@ -153,7 +156,11 @@
     <Compile Include="ParadoxConfig.cs" />
     <Compile Include="Physics\ColliderShapeAsset.cs" />
     <Compile Include="Physics\ColliderShapeAssetCompiler.cs" />
+    <Compile Include="RenderFrames\RenderFrameAsset.cs" />
+    <Compile Include="RenderFrames\RenderFrameAssetCompiler.cs" />
     <Compile Include="Serializers\ParameterKeyDictionarySerializer.cs" />
+    <Compile Include="Serializers\ScriptCollectionSerializer.cs" />
+    <Compile Include="Serializers\UnloadableScript.cs" />
     <Compile Include="Skyboxes\ISkyboxModel.cs" />
     <Compile Include="Skyboxes\SkyboxAssetCompiler.cs" />
     <Compile Include="Skyboxes\SkyboxAsset.cs" />

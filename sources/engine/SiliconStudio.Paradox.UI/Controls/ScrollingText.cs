@@ -60,7 +60,6 @@ namespace SiliconStudio.Paradox.UI.Controls
         public ScrollingText()
         {
             ResetDisplayingText();
-            SnapText = false;
             DrawLayerNumber += 3; // (1: clipping border, 2: Text, 3: clipping border undraw)
         }
 

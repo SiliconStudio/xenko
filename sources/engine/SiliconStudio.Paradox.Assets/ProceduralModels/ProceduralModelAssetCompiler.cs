@@ -17,7 +17,6 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, ProceduralModelAsset asset, AssetCompilerResult result)
         {
-            result.ShouldWaitForPreviousBuilds = true;
             result.BuildSteps = new ListBuildStep { new GeometricPrimitiveCompileCommand(urlInStorage, asset, context.Package) };
         }
 

@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
@@ -13,11 +13,9 @@ using SiliconStudio.Paradox.Games;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Paradox.Audio;
 using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Data;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Graphics.DataOld;
 using SiliconStudio.Paradox.Graphics.Font;
 using SiliconStudio.Paradox.Input;
 using SiliconStudio.Paradox.UI;
@@ -73,7 +71,7 @@ namespace SiliconStudio.Paradox
         /// Gets the UI system.
         /// </summary>
         /// <value>The UI.</value>
-        public UISystem UI { get; private set; }
+        protected UISystem UI { get; private set; }
 
         /// <summary>
         /// Gets the sprite animation system.
@@ -227,11 +225,6 @@ namespace SiliconStudio.Paradox
             Asset.Serializer.RegisterSerializer(new SoundEffectSerializer(Audio.AudioEngine));
             Asset.Serializer.RegisterSerializer(new SoundMusicSerializer(Audio.AudioEngine));
 
-            // determine the virtual resolution so that ratio is maintained
-            const int screenDesiredHeight = 1080;
-            var screenRatio = GraphicsDevice.BackBuffer.ViewWidth / (float)GraphicsDevice.BackBuffer.ViewHeight;
-            VirtualResolution = new Vector3((int)(screenRatio * screenDesiredHeight), screenDesiredHeight, screenDesiredHeight);
-
             // enable multi-touch by default
             Input.MultiTouchEnabled = true;
         }
@@ -290,7 +283,7 @@ namespace SiliconStudio.Paradox
         internal override void LoadContentInternal()
         {
             base.LoadContentInternal();
-            Script.Add(LoadContent);
+            Script.AddTask(LoadContent);
         }
         protected virtual LogListener GetLogListener()
         {

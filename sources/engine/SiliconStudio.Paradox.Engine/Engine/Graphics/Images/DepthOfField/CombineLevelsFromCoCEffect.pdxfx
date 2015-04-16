@@ -3,7 +3,7 @@
 namespace SiliconStudio.Paradox.Effects.Images
 {
     /// <summary>
-    /// Combines the different blur levels depending on the pixel's CoC.
+    /// Combines the different blur levels depending on the pixel's CoC. (Back area only.)
     /// </summary>
     shader CombineLevelsFromCoCEffect
     {

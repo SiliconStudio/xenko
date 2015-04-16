@@ -77,7 +77,7 @@ using System;
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
 {
     public partial class GeometricPrimitive
     {
@@ -133,7 +133,6 @@ namespace SiliconStudio.Paradox.Graphics
                     var dxz = (float)Math.Cos(latitude);
 
                     var deltaY = latitude <= 0.0f ? -height : height;
-                    dy += deltaY;
 
                     // Create a single ring of vertices at this latitude.
                     for (int j = 0; j <= horizontalSegments; j++)
@@ -149,8 +148,9 @@ namespace SiliconStudio.Paradox.Graphics
 
                         var normal = new Vector3(dx, dy, dz);
                         var textureCoordinate = new Vector2(u, v);
+                        var position = radius * normal + new Vector3(0, deltaY, 0);
 
-                        vertices[vertexCount++] = new VertexPositionNormalTexture(normal * radius, normal, textureCoordinate);
+                        vertices[vertexCount++] = new VertexPositionNormalTexture(position, normal, textureCoordinate);
                     }
                 }
 

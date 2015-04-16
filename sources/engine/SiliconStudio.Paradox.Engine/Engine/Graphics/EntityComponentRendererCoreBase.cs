@@ -12,14 +12,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     public abstract class EntityComponentRendererCoreBase : RendererCoreBase, IEntityComponentRendererCore
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="EntityComponentRendererCoreBase" /> class.
-        /// </summary>
-        /// <exception cref="System.ArgumentNullException">services</exception>
-        protected EntityComponentRendererCoreBase()
-        {
-        }
-
-        /// <summary>
         /// Gets the services.
         /// </summary>
         /// <value>The services.</value>
@@ -47,7 +39,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// Gets the current culling mask.
         /// </summary>
         /// <value>The current culling mask.</value>
-        public EntityGroup CurrentCullingMask { get; private set; }
+        public EntityGroupMask CurrentCullingMask { get; set; }
 
         /// <summary>
         /// Gets the current render frame. Only valid from <see cref="RendererBase.DrawCore"/> method.
@@ -60,7 +52,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             base.InitializeCore();
             Services = Context.Services;
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
-            SceneInstance = Context.Tags.GetSafe(SceneInstance.Current);
+            SceneInstance = SceneInstance.GetCurrent(Context);
             SceneCameraRenderer = Context.Tags.GetSafe(SceneCameraRenderer.Current);
             CurrentCullingMask = SceneCameraRenderer.CullingMask;
         }

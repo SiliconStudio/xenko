@@ -8,6 +8,6 @@ class NormalMeshSkinning : TransformationSkinning, NormalStream
     override void PreTransformPosition()
     {
         base.PreTransformPosition();
-        streams.meshNormal = normalize(mul(streams.meshNormal, streams.skinningBlendMatrix));
+        streams.meshNormal = normalize(mul(streams.meshNormal, (float3x3)streams.skinningBlendMatrix));
     }
 };

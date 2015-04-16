@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 
+using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
@@ -12,11 +13,31 @@ using SiliconStudio.Paradox.Engine.Graphics;
 
 namespace SiliconStudio.Paradox.Effects
 {
+
+    public class ModelComponentRendererCallback
+    {
+        public delegate void UpdateMeshesDelegate(RenderContext context, FastList<RenderMesh> meshes);
+
+        public delegate void PreRenderMeshDelegate(RenderContext context, RenderMesh renderMesh);
+
+        public delegate void PostEffectUpdateDelegate(RenderContext context, RenderMesh renderMesh);
+
+        public delegate void PreRenderModelDelegate(RenderContext context, RenderModel renderModel);
+
+        public PreRenderModelDelegate PreRenderModel;
+
+        public UpdateMeshesDelegate UpdateMeshes;
+
+        public PreRenderMeshDelegate PreRenderMesh;
+    }
+
     /// <summary>
     /// This <see cref="EntityComponentRendererBase"/> is responsible to prepare and render meshes for a specific pass.
     /// </summary>
     public class ModelComponentRenderer : EntityComponentRendererBase
     {
+        private readonly static PropertyKey<ModelComponentRenderer> Current = new PropertyKey<ModelComponentRenderer>("ModelComponentRenderer.Current", typeof(ModelComponentRenderer));
+
         private int modelRenderSlot;
 
         private ModelProcessor modelProcessor;
@@ -27,16 +48,6 @@ namespace SiliconStudio.Paradox.Effects
         private readonly string effectName;
         
         public override bool SupportPicking { get { return true; } }
-
-        public delegate void UpdateMeshesDelegate(RenderContext context, FastList<RenderMesh> meshes);
-
-        public delegate void PreRenderDelegate(RenderContext context);
-
-        public delegate void PostRenderDelegate(RenderContext context);
-
-        public delegate void PreEffectUpdateDelegate(RenderContext context, RenderMesh renderMesh);
-
-        public delegate void PostEffectUpdateDelegate(RenderContext context, RenderMesh renderMesh);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelComponentRenderer" /> class.
@@ -53,6 +64,8 @@ namespace SiliconStudio.Paradox.Effects
             meshesToRender = new FastList<RenderMesh>();
 
             modelRenderSlot = -1;
+
+            Callbacks = new ModelComponentRendererCallback();
         }
 
         public string EffectName
@@ -63,6 +76,12 @@ namespace SiliconStudio.Paradox.Effects
             }
         }
 
+        /// <summary>
+        /// Gets or sets the callbacks.
+        /// </summary>
+        /// <value>The callbacks.</value>
+        public ModelComponentRendererCallback Callbacks { get; private set; }
+
         public DynamicEffectCompiler DynamicEffectCompiler
         {
             get
@@ -70,16 +89,6 @@ namespace SiliconStudio.Paradox.Effects
                 return dynamicEffectCompiler;
             }
         }
-
-        public UpdateMeshesDelegate UpdateMeshes { get; set; }
-
-        public PreRenderDelegate PreRender { get; set; }
-
-        public PostRenderDelegate PostRender { get; set; }
-
-        public PreEffectUpdateDelegate PreEffectUpdate { get; set; }
-
-        public PostEffectUpdateDelegate PostEffectUpdate { get; set; }
 
         protected override void InitializeCore()
         {
@@ -92,6 +101,13 @@ namespace SiliconStudio.Paradox.Effects
         {
             modelProcessor = SceneInstance.GetProcessor<ModelProcessor>();
 
+            // If no camera, early exit
+            var camera = context.GetCurrentCamera();
+            if (camera == null)
+            {
+                return;
+            }
+
             // If we don't have yet a render slot, create a new one
             if (modelRenderSlot < 0)
             {
@@ -103,37 +119,49 @@ namespace SiliconStudio.Paradox.Effects
                 modelRenderSlot = pipelineModelState.AllocateModelSlot(EffectName);
             }
 
-            // Get all meshes from render models
-            foreach (var renderModel in modelProcessor.Models)
-            {
-                // Always prepare the slot for the render meshes even if they are not used.
-                EnsureRenderMeshes(renderModel);
+            var viewProjectionMatrix = camera.ViewProjectionMatrix;
 
+            var preRenderModel = Callbacks.PreRenderModel;
+
+            // Get all meshes from render models
+            foreach (var renderModelGroup in modelProcessor.ModelGroups)
+            {
                 // Perform culling on group and accept
-                if ((renderModel.Group & CurrentCullingMask) == 0)
+                if (!CurrentCullingMask.Contains(renderModelGroup.Group))
                 {
                     continue;
                 }
 
-                var meshes = PrepareModelForRendering(context, renderModel);
-
-                foreach (var renderMesh in meshes)
+                foreach (var renderModel in renderModelGroup)
                 {
-                    if (!renderMesh.Enabled)
+                    if (preRenderModel != null)
                     {
-                        continue;
+                        preRenderModel(context, renderModel);
                     }
 
-                    // Project the position
-                    // TODO: This could be done in a SIMD batch, but we need to figure-out how to plugin in with RenderMesh object
-                    var worldPosition = new Vector4(renderMesh.Parameters.Get(TransformationKeys.World).TranslationVector, 1.0f);
-                    Vector4 projectedPosition;
-                    Vector4.Transform(ref worldPosition, ref context.ViewProjectionMatrix, out projectedPosition);
-                    var projectedZ = projectedPosition.Z / projectedPosition.W;
+                    // Always prepare the slot for the render meshes even if they are not used.
+                    EnsureRenderMeshes(renderModel);
 
-                    renderMesh.UpdateMaterial();
-                    var list = renderMesh.HasTransparency ? transparentList : opaqueList;
-                    list.Add(new RenderItem(this, renderMesh, projectedZ));
+                    var meshes = PrepareModelForRendering(context, renderModel);
+
+                    foreach (var renderMesh in meshes)
+                    {
+                        if (!renderMesh.Enabled)
+                        {
+                            continue;
+                        }
+
+                        // Project the position
+                        // TODO: This could be done in a SIMD batch, but we need to figure-out how to plugin in with RenderMesh object
+                        var worldPosition = new Vector4(renderMesh.Parameters.Get(TransformationKeys.World).TranslationVector, 1.0f);
+                        Vector4 projectedPosition;
+                        Vector4.Transform(ref worldPosition, ref viewProjectionMatrix, out projectedPosition);
+                        var projectedZ = projectedPosition.Z / projectedPosition.W;
+
+                        renderMesh.UpdateMaterial();
+                        var list = renderMesh.HasTransparency ? transparentList : opaqueList;
+                        list.Add(new RenderItem(this, renderMesh, projectedZ));
+                    }
                 }
             }
         }
@@ -147,18 +175,27 @@ namespace SiliconStudio.Paradox.Effects
                 meshesToRender.Add((RenderMesh)renderItemList[i].DrawContext);
             }
 
-            // Update meshes
-            if (UpdateMeshes != null)
+            // Slow path there is a callback
+            if (Callbacks.UpdateMeshes != null)
             {
-                UpdateMeshes(context, meshesToRender);
+                Callbacks.UpdateMeshes(context, meshesToRender);
             }
 
-            // TODO: separate update effect and render to tightly batch render calls vs 1 cache-friendly loop on meshToRender
+            // Fetch callback on PreRenderGroup
+            var preRenderMesh = Callbacks.PreRenderMesh;
+
             foreach (var mesh in meshesToRender)
             {
+                // If the EntityGroup is changing, call the callback to allow to plug specific parameters for this group
+                if (preRenderMesh != null)
+                {
+                    preRenderMesh(context, mesh);
+                }
+
                 // Update Effect and mesh
                 UpdateEffect(context, mesh, context.Parameters);
 
+                // Draw the mesh
                 mesh.Draw(context);
             }
         }
@@ -176,6 +213,30 @@ namespace SiliconStudio.Paradox.Effects
             }
 
             base.Unload();
+        }
+
+        /// <summary>
+        /// Gets the attached <see cref="ModelComponentRenderer"/> from the specified component.
+        /// </summary>
+        /// <param name="component">The component.</param>
+        /// <returns>ModelComponentRenderer.</returns>
+        /// <exception cref="System.ArgumentNullException">component</exception>
+        public static ModelComponentRenderer GetAttached(ComponentBase component)
+        {
+            if (component == null) throw new ArgumentNullException("component");
+            return component.Tags.Get(Current);
+        }
+
+        /// <summary>
+        /// Attaches a <see cref="ModelComponentRenderer"/> to the specified component.
+        /// </summary>
+        /// <param name="component">The component.</param>
+        /// <param name="renderer">The renderer.</param>
+        /// <exception cref="System.ArgumentNullException">component</exception>
+        public static void Attach(ComponentBase component, ModelComponentRenderer renderer)
+        {
+            if (component == null) throw new ArgumentNullException("component");
+            component.Tags.Set(Current, renderer);
         }
 
         private void EnsureRenderMeshes(RenderModel renderModel)
@@ -213,7 +274,7 @@ namespace SiliconStudio.Paradox.Effects
                 foreach (var mesh in modelMeshes)
                 {
                     var renderMesh = new RenderMesh(renderModel, mesh);
-                    UpdateEffect(context, renderMesh, null);
+                    //UpdateEffect(context, renderMesh, null);
 
                     // Register mesh for rendering
                     renderMeshes.Add(renderMesh);

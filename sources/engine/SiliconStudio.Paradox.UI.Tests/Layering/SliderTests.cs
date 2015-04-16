@@ -43,7 +43,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
             Assert.AreEqual(Orientation.Horizontal, slider.Orientation);
             Assert.AreEqual(HorizontalAlignment.Center, slider.HorizontalAlignment);
             Assert.AreEqual(VerticalAlignment.Center, slider.VerticalAlignment);
-            Assert.AreEqual(DepthAlignment.Back, slider.DepthAlignment);
+            Assert.AreEqual(DepthAlignment.Center, slider.DepthAlignment);
         }
 
         /// <summary>

@@ -1,11 +1,10 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Paradox.Shaders.Compiler;
 
 namespace SiliconStudio.Paradox.Effects
@@ -19,6 +18,7 @@ namespace SiliconStudio.Paradox.Effects
 
         private readonly string effectName;
         private bool asyncEffectCompiler;
+        private int taskPriority;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DynamicEffectCompiler" /> class.
@@ -29,13 +29,14 @@ namespace SiliconStudio.Paradox.Effects
         /// <exception cref="System.ArgumentNullException">services
         /// or
         /// effectName</exception>
-        public DynamicEffectCompiler(IServiceRegistry services, string effectName)
+        public DynamicEffectCompiler(IServiceRegistry services, string effectName, int taskPriority = 0)
         {
             if (services == null) throw new ArgumentNullException("services");
             if (effectName == null) throw new ArgumentNullException("effectName");
 
             Services = services;
             this.effectName = effectName;
+            this.taskPriority = taskPriority;
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
             GraphicsDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
             parameterCollections = new FastList<ParameterCollection>();
@@ -44,7 +45,12 @@ namespace SiliconStudio.Paradox.Effects
             ComputeFallbackEffect = (dynamicEffectCompiler, name, parameters) =>
             {
                 ParameterCollection usedParameters;
-                var effect = dynamicEffectCompiler.EffectSystem.LoadEffect(effectName, new CompilerParameters(), out usedParameters).WaitForResult();
+                var compilerParameters = new CompilerParameters();
+
+                // We want high priority
+                compilerParameters.TaskPriority = -1;
+
+                var effect = dynamicEffectCompiler.EffectSystem.LoadEffect(effectName, compilerParameters, out usedParameters).WaitForResult();
                 return new ComputeFallbackEffectResult(effect, usedParameters);
             };
         }
@@ -104,7 +110,7 @@ namespace SiliconStudio.Paradox.Effects
             {
                 if (currentlyCompilingEffect.IsCompleted)
                 {
-                    UpdateEffect(effectInstance, currentlyCompilingEffect.Result, effectInstance.CurrentlyCompilingUsedParameters);
+                    UpdateEffect(effectInstance, currentlyCompilingEffect.Result, effectInstance.CurrentlyCompilingUsedParameters, passParameters);
                     effectChanged = true;
 
                     // Effect has been updated
@@ -124,7 +130,7 @@ namespace SiliconStudio.Paradox.Effects
         private bool HasCollectionChanged(DynamicEffectInstance effectInstance, ParameterCollection passParameters)
         {
             PrepareUpdater(effectInstance, passParameters);
-            return effectInstance.Updater.HasChanged(effectInstance.UpdaterDefinition);
+            return effectInstance.ParameterCollectionGroup.HasChanged(effectInstance.UpdaterDefinition);
         }
 
         private void CreateEffect(DynamicEffectInstance effectInstance, ParameterCollection passParameters)
@@ -148,6 +154,8 @@ namespace SiliconStudio.Paradox.Effects
                 }
             }
 
+            compilerParameters.TaskPriority = taskPriority;
+
             foreach (var parameter in GraphicsDevice.Parameters.InternalValues)
             {
                 compilerParameters.SetObject(parameter.Key, parameter.Value.Object);
@@ -166,25 +174,26 @@ namespace SiliconStudio.Paradox.Effects
                 // Fallback to default effect
                 
                 var fallbackEffect = ComputeFallbackEffect(this, EffectName, compilerParameters);
-                UpdateEffect(effectInstance, fallbackEffect.Effect, fallbackEffect.UsedParameters);
+                UpdateEffect(effectInstance, fallbackEffect.Effect, fallbackEffect.UsedParameters, passParameters);
                 return;
             }
 
             var compiledEffect = effect.WaitForResult();
 
-            UpdateEffect(effectInstance, compiledEffect, usedParameters);
+            UpdateEffect(effectInstance, compiledEffect, usedParameters, passParameters);
 
             // Effect has been updated
             effectInstance.CurrentlyCompilingEffect = null;
             effectInstance.CurrentlyCompilingUsedParameters = null;
         }
 
-        private void UpdateEffect(DynamicEffectInstance effectInstance, Effect compiledEffect, ParameterCollection usedParameters)
+        private void UpdateEffect(DynamicEffectInstance effectInstance, Effect compiledEffect, ParameterCollection usedParameters, ParameterCollection passParameters)
         {
             if (!ReferenceEquals(compiledEffect, effectInstance.Effect))
             {
                 effectInstance.Effect = compiledEffect;
-                effectInstance.UpdaterDefinition = new EffectParameterUpdaterDefinition(compiledEffect, usedParameters);
+                effectInstance.UpdaterDefinition = new DynamicEffectParameterUpdaterDefinition(compiledEffect, usedParameters);
+                effectInstance.ParameterCollectionGroup = null; // When Effect changes, first collection changes too
             }
             else
             {
@@ -193,14 +202,14 @@ namespace SiliconStudio.Paradox.Effects
                 effectInstance.UpdaterDefinition.UpdateCounter(usedParameters);
             }
 
-            UpdateLevels(effectInstance, null);
-            effectInstance.Updater.UpdateCounters(effectInstance.UpdaterDefinition);
+            UpdateLevels(effectInstance, passParameters);
+            effectInstance.ParameterCollectionGroup.UpdateCounters(effectInstance.UpdaterDefinition);
         }
 
         private void UpdateLevels(DynamicEffectInstance effectInstance, ParameterCollection passParameters)
         {
             PrepareUpdater(effectInstance, passParameters);
-            effectInstance.Updater.ComputeLevels(effectInstance.UpdaterDefinition);
+            effectInstance.ParameterCollectionGroup.ComputeLevels(effectInstance.UpdaterDefinition);
         }
 
         /// <summary>
@@ -219,7 +228,23 @@ namespace SiliconStudio.Paradox.Effects
             effectInstance.FillParameterCollections(parameterCollections);
             parameterCollections.Add(GraphicsDevice.Parameters);
 
-            effectInstance.Updater.Update(effectInstance.UpdaterDefinition, parameterCollections.Items, parameterCollections.Count);
+            // Collections are mostly stable, but sometimes not (i.e. material change)
+            // TODO: We can improve performance by redesigning FillParameterCollections to avoid ArrayExtensions.ArraysReferenceEqual (or directly check the appropriate parameter collections)
+            // This also happens in another place: RenderMesh (we probably want to factorize it when doing additional optimizations)
+            if (effectInstance.ParameterCollectionGroup == null || !ArrayExtensions.ArraysReferenceEqual(effectInstance.ParameterCollectionGroup.ParameterCollections, parameterCollections))
+            {
+                effectInstance.ParameterCollectionGroup = new DynamicEffectParameterCollectionGroup(parameterCollections.ToArray());
+
+                // Reset counters, to force comparison of values again (in DynamicEffectParameterCollectionGroup.HasChanged).
+                // (ideally, we should only reset counters of collections that changed to avoid unecessary comparisons)
+                var sortedCounters = effectInstance.UpdaterDefinition.SortedCounters;
+                for (int i = 0; i < sortedCounters.Length; ++i)
+                {
+                    sortedCounters[i] = 0;
+                }
+            }
+
+            effectInstance.ParameterCollectionGroup.Update(effectInstance.UpdaterDefinition);
         }
 
         public struct ComputeFallbackEffectResult

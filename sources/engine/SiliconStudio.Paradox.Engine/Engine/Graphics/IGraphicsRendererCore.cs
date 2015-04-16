@@ -19,6 +19,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         bool Enabled { get; set; }
 
         /// <summary>
+        /// Gets a value indicating whether this renderer is initialized.
+        /// </summary>
+        bool Initialized { get; }
+
+        /// <summary>
         /// Loads this renderer. See remarks.
         /// </summary>
         /// <param name="context">The context.</param>

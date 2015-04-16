@@ -5,6 +5,7 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Engine.Graphics.Composers;
@@ -24,16 +25,15 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// </summary>
         public static readonly PropertyKey<SceneCameraRenderer> Current = new PropertyKey<SceneCameraRenderer>("SceneCameraRenderer.Current", typeof(SceneCameraRenderer));
 
-        // TODO: Add option for Occlusion culling
-        // TODO: Add support for fixed aspect ratio and auto-centered-viewport
-
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneCameraRenderer"/> class.
         /// </summary>
         public SceneCameraRenderer()
         {
             Mode = new CameraRendererModeForward();
-            CullingMask = EntityGroup.All;
+            PreRenderers = new SafeList<IGraphicsRenderer>();
+            PostRenderers = new SafeList<IGraphicsRenderer>();
+            CullingMask = EntityGroupMask.All;
         }
 
         /// <summary>
@@ -56,8 +56,14 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// </summary>
         /// <value>The culling mask.</value>
         [DataMember(30)]
-        [DefaultValue(EntityGroup.All)]
-        public EntityGroup CullingMask { get; set; }
+        [DefaultValue(EntityGroupMask.All)]
+        public EntityGroupMask CullingMask { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value indicating the current rendering is for picking or not.
+        /// </summary>
+        [DataMemberIgnore]
+        public bool IsPickingMode { get; set; }
 
         /// <summary>
         /// Gets or sets the material filter used to render this scene camera.
@@ -67,10 +73,18 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         public ShaderSource MaterialFilter { get; set; }
 
         /// <summary>
-        /// Gets or sets the value indicating the current rendering is for picking or not.
+        /// Gets the pre-renderers attached to this instance that are called before rendering this camera.
         /// </summary>
+        /// <value>The pre renderers.</value>
         [DataMemberIgnore]
-        public bool IsPickingMode { get; set; }
+        public SafeList<IGraphicsRenderer> PreRenderers { get; private set; }
+
+        /// <summary>
+        /// Gets the post-renderers attached to this instance that are called after rendering this camera.
+        /// </summary>
+        /// <value>The post renderers.</value>
+        [DataMemberIgnore]
+        public SafeList<IGraphicsRenderer> PostRenderers { get; private set; }
 
         protected override void DrawCore(RenderContext context, RenderFrame output)
         {
@@ -81,23 +95,33 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             }
 
             // Gets the current camera state from the slot
-            var cameraState = context.GetCameraState(Camera);
-            if (cameraState == null)
-            {
-                return;
-            }
+            var camera = context.GetCameraFromSlot(Camera);
 
             // Draw this camera.
-            using (var t1 = context.PushTagAndRestore(Current, this))
-            using (var t2 = context.PushTagAndRestore(CameraComponentRenderer.Current, cameraState))
+            using (context.PushTagAndRestore(Current, this))
+            using (context.PushTagAndRestore(CameraComponentRenderer.Current, camera))
             {
+                // Run all pre-renderers
+                foreach (var renderer in PreRenderers)
+                {
+                    renderer.Draw(context);
+                }
+
+                // TODO: Find a better extensibility point for PixelStageSurfaceFilter
                 var currentFilter = context.Parameters.Get(MaterialKeys.PixelStageSurfaceFilter);
                 if (!ReferenceEquals(currentFilter, MaterialFilter))
                 {
                     context.Parameters.Set(MaterialKeys.PixelStageSurfaceFilter, MaterialFilter);
                 }
 
+                // Draw the scene based on its drawing mode (e.g. implementation forward or deferred... etc.)
                 Mode.Draw(context);
+
+                // Run all post-renderers
+                foreach (var renderer in PostRenderers)
+                {
+                    renderer.Draw(context);
+                }
             }
         }
     }

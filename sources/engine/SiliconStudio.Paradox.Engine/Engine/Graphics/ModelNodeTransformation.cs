@@ -11,6 +11,7 @@ namespace SiliconStudio.Paradox.Effects
         public TransformTRS Transform;
 
         public Matrix LocalMatrix;
+
         public Matrix WorldMatrix;
 
         /// <summary>

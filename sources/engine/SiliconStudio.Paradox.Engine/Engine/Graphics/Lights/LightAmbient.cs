@@ -12,5 +12,9 @@ namespace SiliconStudio.Paradox.Effects.Lights
     [Display("Ambient")]
     public class LightAmbient : ColorLightBase
     {
+        public override bool Update(LightComponent lightComponent)
+        {
+            return true;
+        }
     }
 }

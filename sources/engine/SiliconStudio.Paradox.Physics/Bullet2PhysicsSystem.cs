@@ -1,27 +1,36 @@
 ﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Collections.Concurrent;
+using SiliconStudio.Paradox.Games;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.Physics
 {
     public class Bullet2PhysicsSystem : GameSystemBase, IPhysicsSystem
     {
-        internal readonly ConcurrentDictionary<string, Simulation> PhysicsEngines = new ConcurrentDictionary<string, Simulation>();
+        private class PhysicsScene
+        {
+            public PhysicsProcessor Processor;
+            public Simulation Simulation;
+        }
 
-        private readonly PhysicsProcessor processor;
+        private readonly List<PhysicsScene> scenes = new List<PhysicsScene>();
 
-        public Bullet2PhysicsSystem(Game game)
-            : base(game.Services)
+        static Bullet2PhysicsSystem()
+        {
+            // Preload proper libbulletc native library (depending on CPU type)
+            NativeLibrary.PreloadLibrary("libbulletc.dll");
+        }
+
+        public Bullet2PhysicsSystem(IServiceRegistry registry)
+            : base(registry)
         {
             UpdateOrder = -1000; //make sure physics runs before everything
-            game.Services.AddService(typeof(IPhysicsSystem), this);
-            game.GameSystems.Add(this);
+            registry.AddService(typeof(IPhysicsSystem), this);
 
-            Simulation.Initialize(game);
             Enabled = true; //enabled by default
         }
 
@@ -29,59 +38,78 @@ namespace SiliconStudio.Paradox.Physics
         {
             base.Destroy();
 
-            foreach (var physicsEngine in PhysicsEngines)
+            lock (this)
             {
-                physicsEngine.Value.Dispose();
+                foreach (var scene in scenes)
+                {
+                    scene.Simulation.Dispose();
+                }
             }
         }
 
-        public Simulation Create(string spaceNameTag = "default", PhysicsEngineFlags flags = PhysicsEngineFlags.None)
+        public Simulation Create(PhysicsProcessor sceneProcessor, PhysicsEngineFlags flags = PhysicsEngineFlags.None)
         {
-            var newEngine = new Simulation(flags);
-            PhysicsEngines.TryAdd(spaceNameTag, newEngine);
-            Simulation.CacheContacts = PhysicsEngines.Count > 1;
-            return PhysicsEngines[spaceNameTag];
+            var scene = new PhysicsScene { Processor = sceneProcessor, Simulation = new Simulation(flags) };
+            lock (this)
+            {
+                scenes.Add(scene);
+                Simulation.CacheContacts = scenes.Count > 1;
+            }
+            return scene.Simulation;
         }
 
-        public void Release(string spaceNameTag = "default")
+        public void Release(PhysicsProcessor processor)
         {
-            Simulation engine;
-            if (PhysicsEngines.TryRemove(spaceNameTag, out engine)) engine.Dispose();
-            Simulation.CacheContacts = PhysicsEngines.Count > 1;
+            lock (this)
+            {
+                var scene = scenes.SingleOrDefault(x => x.Processor == processor);
+                if (scene == null) return;
+                scenes.Remove(scene);
+                scene.Simulation.Dispose();
+                Simulation.CacheContacts = scenes.Count > 1;
+            }
         }
 
         private void Simulate(float deltaTime)
         {
-            var engines = PhysicsEngines.Values;
-
-            if (engines.Count == 1)
+            if (scenes.Count == 1)
             {
-                var engine = engines.First();
-                engine.Simulate(deltaTime);
+                scenes[0].Simulation.Simulate(deltaTime);
             }
-            else if (engines.Count > 1)
+            else if (scenes.Count > 1)
             {
-                var simulationTasks = engines.Select(simulation1 => Task.Run(() => simulation1.Simulate(deltaTime))).ToArray();
+                var simulationTasks = scenes.Select(simulation1 => Task.Run(() => simulation1.Simulation.Simulate(deltaTime))).ToArray();
                 Task.WaitAll(simulationTasks);
 
                 //in this case contacts are cached so we proccess after simulations are done
-                foreach (var simulation in engines)
+                foreach (var simulation in scenes)
                 {
-                    simulation.ProcessContacts();
+                    simulation.Simulation.ProcessContacts();
                 }
             }
         }
 
         public override void Update(GameTime gameTime)
         {
-            //read skinned meshes bone positions
-            processor.UpdateBones();
+            if (Simulation.DisableSimulation) return;
 
-            //simulate, can might spawn tasks for multiple simulations
-            Simulate((float)gameTime.Elapsed.TotalSeconds);
-            
-            //update character bound entity's transforms
-            processor.UpdateCharacters();
+            lock (this)
+            {
+                //read skinned meshes bone positions
+                foreach (var physicsScene in scenes)
+                {
+                    physicsScene.Processor.UpdateBones();
+                }
+
+                //simulate, might spawn tasks for multiple simulations
+                Simulate((float)gameTime.Elapsed.TotalSeconds);
+
+                //update character bound entity's transforms
+                foreach (var physicsScene in scenes)
+                {
+                    physicsScene.Processor.UpdateCharacters();
+                }
+            }
         }
     }
 }

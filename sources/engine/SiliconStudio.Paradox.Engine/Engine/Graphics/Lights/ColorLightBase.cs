@@ -10,6 +10,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
     /// <summary>
     /// Base implementation of <see cref="IColorLight"/>
     /// </summary>
+    [DataContract(Inherited = true)]
     public abstract class ColorLightBase : IColorLight
     {
         protected ColorLightBase()
@@ -21,7 +22,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         /// Gets or sets the light color.
         /// </summary>
         /// <value>The color.</value>
-        [DataMember(10)]
+        [DataMember(-10)]
         [NotNull]
         public ILightColor Color { get; set; }
 
@@ -33,5 +34,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
         {
             return (Color != null ? Color.ComputeColor() : new Color3(1.0f)).ToLinear() * intensity;
         }
+
+        public abstract bool Update(LightComponent lightComponent);
     }
 }

@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public ImageRegionTest()
         {
-            CurrentVersion = 3;
+            CurrentVersion = 5;
         }
 
         protected override async Task LoadContent()
@@ -69,7 +69,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             stackPanel.Children.Add(image4);
             stackPanel.Children.Add(image5);
 
-            UI.RootElement = new ScrollViewer { Content = stackPanel };
+            UIComponent.RootElement = new ScrollViewer { Content = stackPanel };
         }
 
         protected override void RegisterTests()
