@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 
-using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects;
 
-namespace SiliconStudio.Paradox.Assets.ProceduralModels
+namespace SiliconStudio.Paradox.Assets
 {
     /// <summary>
     /// This interface represents an asset containing a model.

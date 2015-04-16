@@ -142,7 +142,7 @@
     <Compile Include="Materials\MaterialNodeClassLoader.cs" />
     <Compile Include="Materials\MaterialStreamFactory.cs" />
     <Compile Include="Materials\ShaderGeneratorContextExtensions.cs" />
-    <Compile Include="ProceduralModels\IModelAsset.cs" />
+    <Compile Include="IModelAsset.cs" />
     <Compile Include="ProceduralModels\ProceduralModelAsset.cs" />
     <Compile Include="ProceduralModels\ProceduralModelAssetCompiler.cs" />
     <Compile Include="ImageGroupAsset.cs" />
