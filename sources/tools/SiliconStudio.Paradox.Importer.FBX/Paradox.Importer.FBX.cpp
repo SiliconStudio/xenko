@@ -1171,33 +1171,21 @@ public:
 		auto resultNode = nodeMapping[(IntPtr)pNode];
 		auto node = &modelData->Hierarchy->Nodes[resultNode];
 
-		//auto localTransform = parentNode < 0 ? pNode->EvaluateGlobalTransform()
-		//	: pNode->EvaluateLocalTransform();
+		// Extract the local transform
+		auto localTransform = ConvertMatrix(pNode->EvaluateLocalTransform());
 
-		auto localTransform = pNode->EvaluateLocalTransform();
-
-		auto localTransform2 = ConvertMatrix(localTransform);
-
-		//auto translation = FbxDouble4ToVector4(localTransform.GetT());
-		//auto rotation = FbxDouble3ToVector3(localTransform.GetR());
-		//auto scaling = FbxDouble3ToVector3(localTransform.GetS());
-
+		// Extract the translation and scaling
 		Vector3 translation;
-		Quaternion rotation;
 		Vector3 scaling;
+		localTransform.Decompose(scaling, translation);
 
-		localTransform2.Decompose(scaling, rotation, translation);
+		// Extract euler rotation in X,Y,Z
+		Vector3 rotationVector;
+		localTransform.DecomposeXYZ(rotationVector);
 
-		Quaternion quatX, quatY, quatZ;
-
-		Quaternion::RotationX(rotation.X, quatX);
-		Quaternion::RotationY(rotation.Y, quatY);
-		Quaternion::RotationZ(rotation.Z, quatZ);
-
-		auto rotationQuaternion = quatX * quatY * quatZ;
-
+		// Setup the transform for this node
 		node->Transform.Translation = (Vector3)translation;
-		node->Transform.Rotation = rotationQuaternion;
+		node->Transform.Rotation = Quaternion::RotationX(rotationVector.X) * Quaternion::RotationY(rotationVector.Y) * Quaternion::RotationZ(rotationVector.Z);
 		node->Transform.Scaling = (Vector3)scaling;
 
 		const char* nodeName = pNode->GetName();
@@ -1598,8 +1586,13 @@ public:
 		auto animationClip = gcnew AnimationClip();
 
 		int animStackCount = scene->GetMemberCount<FbxAnimStack>();
+		// We support only anim stack count.
+		if (animStackCount > 1)
+		{
+			// TODO: Add a log
+			animStackCount = 1;
+		}
 
-		// TODO: We probably don't support more than one anim stack count.
 		for (int i = 0; i < animStackCount; ++i)
 		{
 			FbxAnimStack* animStack = scene->GetMember<FbxAnimStack>(i);
