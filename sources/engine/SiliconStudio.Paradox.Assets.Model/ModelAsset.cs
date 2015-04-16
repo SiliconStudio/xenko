@@ -4,11 +4,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-
+using SharpYaml.Serialization;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Assets.ProceduralModels;
 using SiliconStudio.Paradox.Effects;
 
@@ -19,10 +21,10 @@ namespace SiliconStudio.Paradox.Assets.Model
     [AssetCompiler(typeof(ModelAssetCompiler))]
     [ThumbnailCompiler(PreviewerCompilerNames.ModelThumbnailCompilerQualifiedName, true, Priority = 10000)]
     [Display("Model", "A 3D model")]
-    [AssetFormatVersion(AssetFormatVersion, null)]
+    [AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
     public sealed class ModelAsset : AssetImportTracked, IModelAsset
     {
-        public const int AssetFormatVersion = 1;
+        public const int AssetFormatVersion = 2;
 
         /// <summary>
         /// The default file extension used by the <see cref="ModelAsset"/>.
@@ -153,40 +155,20 @@ namespace SiliconStudio.Paradox.Assets.Model
                 Nodes.Clear();
         }
 
-        //class Upgrader : AssetUpgraderBase
-        //{
-        //    protected override void UpgradeAsset(ILogger log, dynamic asset)
-        //    {
-        //        foreach (var keyValue in asset.MeshParameters)
-        //        {
-        //            var parameters = asset.MeshParameters[keyValue.Key].Parameters["~Items"];
-        //            parameters.Node.Style = YamlStyle.Block;
 
-        //            MoveToParameters(asset, parameters, keyValue.Key, "CastShadows", LightingKeys.CastShadows);
-        //            MoveToParameters(asset, parameters, keyValue.Key, "ReceiveShadows", LightingKeys.ReceiveShadows);
-        //            MoveToParameters(asset, parameters, keyValue.Key, "Layer", RenderingParameters.EntityGroup);
-        //        }
-
-        //        // Get the Model, and generate an Id if the previous one wasn't the empty one
-        //        var emptyGuid = Guid.Empty.ToString().ToLowerInvariant();
-        //        var id = asset.Id;
-        //        if (id != null && id.Node.Value != emptyGuid)
-        //            asset.Id = Guid.NewGuid().ToString().ToLowerInvariant();
-
-        //        // Bump asset version -- make sure it is stored right after Id
-        //        asset.SerializedVersion = AssetFormatVersion;
-        //        asset.MoveChild("SerializedVersion", asset.IndexOf("Id") + 1);
-        //    }
-
-        //    public void MoveToParameters(dynamic asset, dynamic parameters, object key, string paramName, ParameterKey pk)
-        //    {
-        //        var paramValue = asset.MeshParameters[key][paramName];
-        //        if (paramValue != null)
-        //        {
-        //            parameters[pk.Name] = paramValue;
-        //            asset.MeshParameters[key].RemoveChild(paramName);
-        //        }
-        //    }
-        //}
+        class Upgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(ILogger log, dynamic asset)
+            {
+                foreach (var modelMaterial in asset.Materials)
+                {
+                    var material = modelMaterial.Material;
+                    modelMaterial.MaterialInstance = new YamlMappingNode();
+                    modelMaterial.MaterialInstance.Material = material;
+                    modelMaterial.Material = DynamicYamlEmpty.Default;
+                }
+                SetSerializableVersion(asset, AssetFormatVersion);
+            }
+        }
     }
 }
