@@ -50,7 +50,6 @@ public:
 public ref class MeshConverter
 {
 public:
-	property bool InverseNormals;
 	property bool AllowUnsignedBlendIndices;
 	property float ScaleImport;
 
@@ -62,8 +61,6 @@ internal:
 	FbxManager* lSdkManager;
 	FbxImporter* lImporter;
 	FbxScene* scene;
-	bool polygonSwap;
-	bool swapHandedness;
 	bool exportedFromMaya;
 
 	String^ inputFilename;
@@ -83,7 +80,6 @@ public:
 		if(logger == nullptr)
 			logger = Core::Diagnostics::GlobalLogger::GetLogger("Importer FBX");
 
-		polygonSwap = false;
 		exportedFromMaya = false;
 		logger = Logger;
 		lSdkManager = NULL;
@@ -118,6 +114,12 @@ public:
 
 	void ProcessMesh(FbxMesh* pMesh, std::map<FbxMesh*, std::string> meshNames, std::map<FbxSurfaceMaterial*, int> materials)
 	{
+		// Checks normals availability.
+		bool has_normals = pMesh->GetElementNormalCount() > 0 && pMesh->GetElementNormal(0)->GetMappingMode() != FbxLayerElement::eNone;
+
+		// Regenerate normals if they're not available or not in the right format.
+		//pMesh->GenerateNormals(!has_normals, false, false);
+
 		FbxVector4* controlPoints = pMesh->GetControlPoints();
 		FbxGeometryElementNormal* normalElement = pMesh->GetElementNormal();
 		FbxGeometryElementSmoothing* smoothingElement = pMesh->GetElementSmoothing();
@@ -146,8 +148,6 @@ public:
 				logger->Error("Multiple mesh deformers are not supported yet. Mesh '{0}' will not be properly deformed.", gcnew String(meshNames[pMesh].c_str()));
 			}
 
-			auto invScaleImport = 1.0f / ScaleImport;
-
 			FbxDeformer* deformer = pMesh->GetDeformer(0);
 			FbxDeformer::EDeformerType deformerType = deformer->GetDeformerType();
 			if (deformerType == FbxDeformer::eSkin)
@@ -161,6 +161,12 @@ public:
 				controlPointWeights.resize(pMesh->GetControlPointsCount());
 
 				bones = gcnew List<MeshBoneDefinition>();
+
+				// Computes geometry matrix.
+				FbxAMatrix geometry_matrix(
+					pMesh->GetNode()->GetGeometricTranslation(FbxNode::eSourcePivot),
+					pMesh->GetNode()->GetGeometricRotation(FbxNode::eSourcePivot),
+					pMesh->GetNode()->GetGeometricScaling(FbxNode::eSourcePivot));
 
 				totalClusterCount = skin->GetClusterCount();
 				for (int clusterIndex = 0 ; clusterIndex < totalClusterCount; ++clusterIndex)
@@ -177,40 +183,14 @@ public:
 					FbxAMatrix transformMatrix;
 					FbxAMatrix transformLinkMatrix;
 
-					const FbxVector4 lT = link->GetGeometricTranslation(FbxNode::eSourcePivot);
-					const FbxVector4 lR = link->GetGeometricRotation(FbxNode::eSourcePivot);
-					const FbxVector4 lS = link->GetGeometricScaling(FbxNode::eSourcePivot);
-					auto geometryTransform = FbxAMatrix(lT, lR, lS);
-
 					cluster->GetTransformMatrix(transformMatrix);
 					cluster->GetTransformLinkMatrix(transformLinkMatrix);
-					auto globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * geometryTransform;
-
-     				if (swapHandedness)
-					{
-						logger->Warning("Bones transformation from left handed to right handed need to be checked.", nullptr, CallerInfo::Get(__FILEW__, __FUNCTIONW__, __LINE__));
-
-						// TODO: Check if still necessary?
-						//linkMatrix.M13 = -linkMatrix.M13;
-						//linkMatrix.M23 = -linkMatrix.M23;
-						//linkMatrix.M43 = -linkMatrix.M43;
-						//linkMatrix.M31 = -linkMatrix.M31;
-						//linkMatrix.M32 = -linkMatrix.M32;
-						//linkMatrix.M34 = -linkMatrix.M34;
-						//
-						//meshMatrix.M13 = -meshMatrix.M13;
-						//meshMatrix.M23 = -meshMatrix.M23;
-						//meshMatrix.M43 = -meshMatrix.M43;
-						//meshMatrix.M31 = -meshMatrix.M31;
-						//meshMatrix.M32 = -meshMatrix.M32;
-						//meshMatrix.M34 = -meshMatrix.M34;
-					}
+					auto globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * geometry_matrix;
 
 					auto nodeIndex = nodeMapping[(IntPtr)link];
-
 					MeshBoneDefinition bone;
-					bone.NodeIndex = nodeMapping[(IntPtr)link];
-					bone.LinkToMeshMatrix = FBXMatrixToMatrix(globalBindposeInverseMatrix);
+					bone.NodeIndex = nodeIndex;
+					bone.LinkToMeshMatrix = ConvertMatrix(globalBindposeInverseMatrix);
 
 					bones->Add(bone);
 
@@ -387,13 +367,13 @@ public:
 				pin_ptr<Byte> vbPointer = &buffer[buildMesh->bufferOffset];
 				buildMesh->bufferOffset += vertexStride * 3;
 
-				int vertexInPolygon[3] = { 0, polygonFanIndex - 1, polygonFanIndex };
-				if (polygonSwap)
-				{
-					int temp = vertexInPolygon[1];
-					vertexInPolygon[1] = vertexInPolygon[2];
-					vertexInPolygon[2] = temp;
-				}
+				int vertexInPolygon[3] = { 0, polygonFanIndex, polygonFanIndex - 1};
+				//if (polygonSwap)
+				//{
+				//	int temp = vertexInPolygon[1];
+				//	vertexInPolygon[1] = vertexInPolygon[2];
+				//	vertexInPolygon[2] = temp;
+				//}
 				int controlPointIndices[3] = { pMesh->GetPolygonVertex(i, vertexInPolygon[0]), pMesh->GetPolygonVertex(i, vertexInPolygon[1]), pMesh->GetPolygonVertex(i, vertexInPolygon[2]) };
 
 				for (int polygonFanVertex = 0; polygonFanVertex < 3; ++polygonFanVertex)
@@ -402,41 +382,19 @@ public:
 					int vertexIndex = polygonVertexStartIndex + j;
 					int controlPointIndex = controlPointIndices[polygonFanVertex];
 
-					FbxVector4 controlPoint = controlPoints[controlPointIndex];
+					// Get vertex position
+					auto controlPoint = ConvertPoint(controlPoints[controlPointIndex]);
+					*(Vector3*)(vbPointer + positionOffset) = controlPoint;
 
-					if (swapHandedness)
-						controlPoint[2] = -controlPoint[2];
-
-					((float*)(vbPointer + positionOffset))[0] = (float)controlPoint[0];
-					((float*)(vbPointer + positionOffset))[1] = (float)controlPoint[1];
-					((float*)(vbPointer + positionOffset))[2] = (float)controlPoint[2];
-
+					// Get normal
 					if (normalElement != NULL)
 					{
-						FbxVector4 normal;
-						if (normalElement->GetMappingMode() == FbxLayerElement::eByControlPoint)
-						{
-							int normalIndex = (normalElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
-								? normalElement->GetIndexArray().GetAt(controlPointIndex)
-								: controlPointIndex;
-							normal = normalElement->GetDirectArray().GetAt(normalIndex);
-						}
-						else if (normalElement->GetMappingMode() == FbxLayerElement::eByPolygonVertex)
-						{
-							int normalIndex = (normalElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
-								? normalElement->GetIndexArray().GetAt(vertexIndex)
-								: vertexIndex;
-							normal = normalElement->GetDirectArray().GetAt(normalIndex);
-						}
+						FbxVector4 src_normal(0.f, 1.f, 0.f, 0.f);
+						pMesh->GetPolygonVertexNormal(i, polygonFanVertex, src_normal);
+						Vector3 normal = ConvertNormal(src_normal);
+						normal.Normalize();
 
-						if (swapHandedness)
-							normal[2] = -normal[2];
-						if(InverseNormals)
-							normal = - normal;
-
-						((float*)(vbPointer + normalOffset))[0] = (float)normal[0];
-						((float*)(vbPointer + normalOffset))[1] = (float)normal[1];
-						((float*)(vbPointer + normalOffset))[2] = (float)normal[2];
+						*(Vector3*)(vbPointer + normalOffset) = normal;
 					}
 
 					for (int uvGroupIndex = 0; uvGroupIndex < (int)uvElements.size(); ++uvGroupIndex)
@@ -1208,23 +1166,27 @@ public:
 		}
 	}
 
-	void ProcessNode(FbxNode* pNode, std::map<FbxMesh*, std::string> meshNames, std::map<FbxSurfaceMaterial*, int> materials)
+	void ProcessNode(FbxNode* pNode, std::map<FbxMesh*, std::string> meshNames, std::map<FbxSurfaceMaterial*, int> materials, int parentNode)
 	{
 		auto resultNode = nodeMapping[(IntPtr)pNode];
 		auto node = &modelData->Hierarchy->Nodes[resultNode];
 
+		//auto localTransform = parentNode < 0 ? pNode->EvaluateGlobalTransform()
+		//	: pNode->EvaluateLocalTransform();
+
 		auto localTransform = pNode->EvaluateLocalTransform();
 
-		auto translation = FbxDouble4ToVector4(localTransform.GetT());
-		auto rotation = FbxDouble3ToVector3(localTransform.GetR()) * (float)Math::PI / 180.0f;
-		auto scaling = FbxDouble3ToVector3(localTransform.GetS());
+		auto localTransform2 = ConvertMatrix(localTransform);
 
-		if (swapHandedness)
-		{
-			translation.Z = -translation.Z;
-			rotation.Y = -rotation.Y;
-			rotation.X = -rotation.X;
-		}
+		//auto translation = FbxDouble4ToVector4(localTransform.GetT());
+		//auto rotation = FbxDouble3ToVector3(localTransform.GetR());
+		//auto scaling = FbxDouble3ToVector3(localTransform.GetS());
+
+		Vector3 translation;
+		Quaternion rotation;
+		Vector3 scaling;
+
+		localTransform2.Decompose(scaling, rotation, translation);
 
 		Quaternion quatX, quatY, quatZ;
 
@@ -1247,7 +1209,7 @@ public:
 		// Recursively process the children nodes.
 		for(int j = 0; j < pNode->GetChildCount(); j++)
 		{
-			ProcessNode(pNode->GetChild(j), meshNames, materials);
+			ProcessNode(pNode->GetChild(j), meshNames, materials, resultNode);
 		}
 	}
 
@@ -1325,12 +1287,6 @@ public:
 		for (int i = 0; i < keyFrames->Count; ++i)
 		{
 			auto keyFrame = keyFrames[i];
-			if (swapHandedness)
-			{
-				keyFrame.Value.X = -keyFrame.Value.X;
-				keyFrame.Value.Y = -keyFrame.Value.Y;
-			}
-		
 			Quaternion quatX, quatY, quatZ;
 
 			Quaternion::RotationX(keyFrame.Value.X, quatX);
@@ -1592,12 +1548,6 @@ public:
 		curves[2] = node->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
 		auto scaling = ProcessAnimationCurveVector<Vector3>(animationClip, nodeData, String::Format("Transform.Scale[{0}]", nodeName), 3, curves, 0.005f);
 
-		if (swapHandedness)
-		{
-			if (translation != nullptr)
-				ReverseChannelZ(translation);
-		}
-
 		// Change Y scaling for "root" nodes, if necessary
 		/*if (node == scene->GetRootNode() && scalingY != nullptr && swapHandedness == true)
 		{
@@ -1852,8 +1802,6 @@ private:
 		this->vfsOutputFilename = vfsOutputFilename;
 		this->inputPath = Path::GetDirectoryName(inputFilename);
 
-		polygonSwap = false;
-
 		// Initialize the sdk manager. This object handles all our memory management.
 		lSdkManager = FbxManager::Create();
 
@@ -1901,45 +1849,160 @@ private:
 		// TODO: CHECK http://forums.autodesk.com/t5/fbx-sdk/broken-fbxnode-transformation-after-fbxsystemunit-convertscene/td-p/5463960
 		// AND https://github.com/galek/ozz-animation/blob/master/src/animation/offline/fbx/fbx_base.cc
 		// It seems that ConvertScene is not working on bones, animations...etc. So we would have to do it ourselves.
+		// TODO: double check also with http://users.saintsrowmods.com/rhess/SaintsRow_FBX_Converter.py
 
-		// Change scaling back to the import scaling
+		// Setup the convertion
+		FbxGlobalSettings& settings = scene->GetGlobalSettings();
+		InitializeConvertion(settings.GetAxisSystem(), settings.GetSystemUnit());
+
+		/*
+		// Convert Axis System to what is used in this example, if needed
+		FbxAxisSystem SceneAxisSystem = scene->GetGlobalSettings().GetAxisSystem();
+		FbxAxisSystem OurAxisSystem(FbxAxisSystem::eYAxis, FbxAxisSystem::eParityOdd, FbxAxisSystem::eRightHanded);
+		if (SceneAxisSystem != OurAxisSystem)
+		{
+			OurAxisSystem.ConvertScene(scene);
+		}
+
+		// Convert Unit System to what is used in this example, if needed
 		FbxSystemUnit SceneSystemUnit = scene->GetGlobalSettings().GetSystemUnit();
-		auto scaleFactor = SceneSystemUnit.GetScaleFactor();
-		FbxSystemUnit(scaleFactor / ScaleImport).ConvertScene(scene);
 
-		const float framerate = static_cast<float>(FbxTime::GetFrameRate(scene->GetGlobalSettings().GetTimeMode()));
-		scene->GetRootNode()->ResetPivotSetAndConvertAnimation(framerate, false, false);
+		//The unit in this example is centimeter.
+		FbxSystemUnit customUnit(1.0 / ScaleImport);
+		customUnit.ConvertScene(scene);
+		*/
 
-		// For some reason ConvertScene doesn't seem to work well in some cases with no animation
-		//FbxAxisSystem ourAxisSystem(FbxAxisSystem::eYAxis, FbxAxisSystem::eParityOdd, FbxAxisSystem::eRightHanded);
-		//if (ourAxisSystem != scene->GetGlobalSettings().GetAxisSystem())
-		//	ourAxisSystem.ConvertScene(scene);
-
-		auto sceneAxisSystem = scene->GetGlobalSettings().GetAxisSystem();
-
-		swapHandedness = sceneAxisSystem.GetCoorSystem() == FbxAxisSystem::eLeftHanded;
-		polygonSwap = !swapHandedness;
-
-		// Not sure if handedness is really what requires it to be rotated by 180?
-		// Maybe we should swap Y instead of swapping Z?
-		auto rotationAngle = swapHandedness ? 180 : 0;
-
-		// Y axis is up, swap some stuff! -- ConvertScene doesn't seem to take care of it, maybe only because it was a case with no animation?
-		// TODO: Maybe it would be better to do it on inner nodes instead of root node?
-		//int upVectorSign;
-		//if (sceneAxisSystem.GetUpVector(upVectorSign) == FbxAxisSystem::eYAxis)
-		//	rotationAngle += 90;
-
-		auto sceneRootNode = scene->GetRootNode();
-
-		// Add the root rotation
-		sceneRootNode->SetRotationActive(true);
-		sceneRootNode->SetPreRotation(FbxNode::eSourcePivot, FbxVector4(rotationAngle, 0, 0));
+		//const float framerate = static_cast<float>(FbxTime::GetFrameRate(scene->GetGlobalSettings().GetTimeMode()));
+		//scene->GetRootNode()->ResetPivotSetAndConvertAnimation(framerate, false, false);
 
 		std::map<FbxNode*, std::string> nodeNames;
 		GenerateNodesName(nodeNames);
 
 		RegisterNode(scene->GetRootNode(), -1, nodeNames);
+	}
+
+	Matrix BuildAxisSystemMatrix(const FbxAxisSystem& _system) {
+
+		int sign;
+		Vector3 up = Vector3::UnitY;
+		Vector3 at = Vector3::UnitZ;
+
+		// The EUpVector specifies which axis has the up and down direction in the
+		// system (typically this is the Y or Z axis). The sign of the EUpVector is
+		// applied to represent the direction (1 is up and -1 is down relative to the
+		// observer).
+		const FbxAxisSystem::EUpVector eup = _system.GetUpVector(sign);
+		switch (eup) 
+		{
+			case FbxAxisSystem::eXAxis: 
+			{
+				up = Vector3(1.0 * sign, 0.0, 0.0);
+				// If the up axis is X, the remain two axes will be Y And Z, so the
+				// ParityEven is Y, and the ParityOdd is Z
+				if (_system.GetFrontVector(sign) == FbxAxisSystem::eParityEven) 
+				{
+					at = Vector3(0.0, 1.0 * sign, 0.0);
+				}
+				else 
+				{
+					at = Vector3(0.0, 0.0, 1.0 * sign);
+				}
+				break;
+			}
+
+			case FbxAxisSystem::eYAxis: 
+			{
+				up = Vector3(0.0, 1.0 * sign, 0.0);
+				// If the up axis is Y, the remain two axes will X And Z, so the
+				// ParityEven is X, and the ParityOdd is Z
+				if (_system.GetFrontVector(sign) == FbxAxisSystem::eParityEven) 
+				{
+					at = Vector3(1.0 * sign, 0.0, 0.0);
+				}
+				else 
+				{
+					at = Vector3(0.0, 0.0, 1.0 * sign);
+				}
+				break;
+			}
+
+			case FbxAxisSystem::eZAxis: 
+			{
+				up = Vector3(0.0, 0.0, 1.0 * sign);
+				// If the up axis is Z, the remain two axes will X And Y, so the
+				// ParityEven is X, and the ParityOdd is Y
+				if (_system.GetFrontVector(sign) == FbxAxisSystem::eParityEven) 
+				{
+					at = Vector3(1.0 * sign, 0.0, 0.0);
+				}
+				else 
+				{
+					at = Vector3(0.0, 1.0 * sign, 0.0);
+				}
+				break;
+			}
+		}
+
+		// If the front axis and the up axis are determined, the third axis will be
+		// automatically determined as the left one. The ECoordSystem enum is a
+		// parameter to determine the direction of the third axis just as the
+		// EUpVector sign. It determines if the axis system is right-handed or
+		// left-handed just as the enum values.
+		Vector3 right;
+		if (_system.GetCoorSystem() == FbxAxisSystem::eRightHanded) 
+		{
+			right = Vector3::Cross(up, at);
+		}
+		else 
+		{
+			right = Vector3::Cross(at, up);
+		}
+
+		auto matrix = Matrix::Identity;
+		matrix.Right = right;
+		matrix.Up = up;
+		matrix.Backward = at;
+
+		return matrix;
+	}
+
+	Matrix convertMatrix;
+	Matrix inverseConvertMatrix;
+	Matrix inverseTransposeConvertMatrix;
+
+	void InitializeConvertion(const FbxAxisSystem& axisSystem,const FbxSystemUnit& unitSystem)
+	{
+		auto fromMatrix = BuildAxisSystemMatrix(axisSystem);
+		fromMatrix.Invert();
+
+		// Finds unit conversion ratio to ScaleImport (usually 0.01 so 1 meter). GetScaleFactor() is in cm.
+		auto scaleToMeters = (float)unitSystem.GetScaleFactor() * ScaleImport;
+
+		// Builds conversion matrices.
+		convertMatrix = Matrix::Scaling(scaleToMeters) * fromMatrix;
+		inverseConvertMatrix = Matrix::Invert(convertMatrix);
+		inverseTransposeConvertMatrix = Matrix::Transpose(inverseConvertMatrix);
+	}
+
+	Matrix ConvertMatrix(FbxAMatrix& _m) {
+		//return FBXMatrixToMatrix(_m);
+		Matrix m = FBXMatrixToMatrix(_m);
+		return inverseConvertMatrix * m * convertMatrix;
+	}
+
+	Vector3 ConvertPoint(const FbxVector4& _p)
+	{
+		//return (Vector3)FbxDouble4ToVector4(_p);
+		auto p_in = FbxDouble4ToVector4(_p);
+		p_in.W = 1.0f;
+		return (Vector3)Vector4::Transform(p_in, convertMatrix);
+	}
+
+	Vector3 ConvertNormal(const FbxVector4& _p) 
+	{
+		//return (Vector3)FbxDouble4ToVector4(_p);
+		auto p_in = (Vector3)FbxDouble4ToVector4(_p);
+		return Vector3::TransformNormal(p_in, inverseTransposeConvertMatrix);
 	}
 
 	bool CheckAnimationData(FbxAnimLayer* animLayer, FbxNode* node)
@@ -2565,7 +2628,7 @@ public:
 			}
 
 			// Process and add root entity
-			ProcessNode(scene->GetRootNode(), meshNames, materials);
+			ProcessNode(scene->GetRootNode(), meshNames, materials, -1);
 
 			// Process animation
 			//sceneData->Animation = ProcessAnimation(scene);

@@ -19,8 +19,6 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <inheritdoc/>
         public override string Title { get { string title = "Import FBX "; try { title += Path.GetFileName(SourcePath) ?? "[File]"; } catch { title += "[INVALID PATH]"; } return title; } }
 
-        public bool InverseNormals { get; set; }
-        
         public static bool IsSupportingExtensions(string ext)
         {
             return !String.IsNullOrEmpty(ext) && ext.ToLower().Equals(".fbx");
@@ -45,7 +43,6 @@ namespace SiliconStudio.Paradox.Assets.Model
         {
             return new Paradox.Importer.FBX.MeshConverter(commandContext.Logger)
                 {
-                    InverseNormals = this.InverseNormals,
                     TextureTagSymbol = this.TextureTagSymbol,
                     AllowUnsignedBlendIndices = this.AllowUnsignedBlendIndices,
                     ScaleImport = this.ScaleImport

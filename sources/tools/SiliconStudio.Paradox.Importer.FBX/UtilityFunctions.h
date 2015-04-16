@@ -15,6 +15,7 @@ Vector4 FbxDouble3ToVector4(FbxDouble3 vector, float wValue = 0.0f);
 Vector4 FbxDouble4ToVector4(FbxDouble4 vector);
 
 Matrix FBXMatrixToMatrix(FbxAMatrix& matrix);
+FbxAMatrix MatrixToFBXMatrix(Matrix& matrix);
 
 CompressedTimeSpan FBXTimeToTimeSpane(const FbxTime& time);
 
