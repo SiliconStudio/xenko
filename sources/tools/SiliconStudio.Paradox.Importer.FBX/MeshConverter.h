@@ -3,9 +3,8 @@
 #include "stdafx.h"
 #include "../SiliconStudio.Paradox.Importer.Common/ImporterUtils.h"
 
-#include <algorithm>
-#include <string>
-#include <map>
+#include "SceneMapping.h"
+#include "AnimationConverter.h"
 
 using namespace System;
 using namespace System::IO;
@@ -47,6 +46,7 @@ public:
 	String^ MaterialName;
 };
 
+
 public ref class MeshConverter
 {
 public:
@@ -61,7 +61,6 @@ internal:
 	FbxManager* lSdkManager;
 	FbxImporter* lImporter;
 	FbxScene* scene;
-	bool exportedFromMaya;
 
 	String^ inputFilename;
 	String^ vfsOutputFilename;
@@ -69,8 +68,7 @@ internal:
 
 	Model^ modelData;
 
-	Dictionary<IntPtr, int> nodeMapping;
-	List<ModelNodeDefinition> nodes;
+	SceneMapping^ sceneMapping;
 	
 	static array<Byte>^ currentBuffer;
 
@@ -80,7 +78,6 @@ public:
 		if(logger == nullptr)
 			logger = Core::Diagnostics::GlobalLogger::GetLogger("Importer FBX");
 
-		exportedFromMaya = false;
 		logger = Logger;
 		lSdkManager = NULL;
 		lImporter = NULL;
@@ -187,10 +184,9 @@ public:
 					cluster->GetTransformLinkMatrix(transformLinkMatrix);
 					auto globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * geometry_matrix;
 
-					auto nodeIndex = nodeMapping[(IntPtr)link];
 					MeshBoneDefinition bone;
-					bone.NodeIndex = nodeIndex;
-					bone.LinkToMeshMatrix = ConvertMatrix(globalBindposeInverseMatrix);
+					bone.NodeIndex = sceneMapping->FindNodeIndex(link);
+					bone.LinkToMeshMatrix = sceneMapping->ConvertMatrix(globalBindposeInverseMatrix);
 
 					bones->Add(bone);
 
@@ -383,7 +379,7 @@ public:
 					int controlPointIndex = controlPointIndices[polygonFanVertex];
 
 					// Get vertex position
-					auto controlPoint = ConvertPoint(controlPoints[controlPointIndex]);
+					auto controlPoint = sceneMapping->ConvertPoint(controlPoints[controlPointIndex]);
 					*(Vector3*)(vbPointer + positionOffset) = controlPoint;
 
 					// Get normal
@@ -391,7 +387,7 @@ public:
 					{
 						FbxVector4 src_normal(0.f, 1.f, 0.f, 0.f);
 						pMesh->GetPolygonVertexNormal(i, polygonFanVertex, src_normal);
-						Vector3 normal = ConvertNormal(src_normal);
+						Vector3 normal = sceneMapping->ConvertNormal(src_normal);
 						normal.Normalize();
 
 						*(Vector3*)(vbPointer + normalOffset) = normal;
@@ -529,7 +525,7 @@ public:
 				TNBExtensions::GenerateTangentBinormal(drawData);
 
 			auto meshData = gcnew Mesh();
-			meshData->NodeIndex = nodeMapping[(IntPtr)pMesh->GetNode()];
+			meshData->NodeIndex = sceneMapping->FindNodeIndex(pMesh->GetNode());
 			meshData->Draw = drawData;
 			if (!controlPointWeights.empty())
 			{
@@ -1142,37 +1138,14 @@ public:
 		}
 	}
 
-	void RegisterNode(FbxNode* pNode, int parentIndex, std::map<FbxNode*, std::string>& nodeNames)
+	void ProcessNode(FbxNode* pNode, std::map<FbxMesh*, std::string> meshNames, std::map<FbxSurfaceMaterial*, int> materials)
 	{
-		auto resultNode = gcnew Entity();
-		resultNode->GetOrCreate(TransformComponent::Key);
-
-		int currentIndex = nodes.Count;
-
-		nodeMapping[(IntPtr)pNode] = currentIndex;
-
-		// Create node
-		ModelNodeDefinition modelNodeDefinition;
-		modelNodeDefinition.ParentIndex = parentIndex;
-		modelNodeDefinition.Transform.Scaling = Vector3::One;
-		modelNodeDefinition.Name = gcnew String(nodeNames[pNode].c_str());
-		modelNodeDefinition.Flags = ModelNodeFlags::Default;
-		nodes.Add(modelNodeDefinition);
-
-		// Recursively process the children nodes.
-		for(int j = 0; j < pNode->GetChildCount(); j++)
-		{
-			RegisterNode(pNode->GetChild(j), currentIndex, nodeNames);
-		}
-	}
-
-	void ProcessNode(FbxNode* pNode, std::map<FbxMesh*, std::string> meshNames, std::map<FbxSurfaceMaterial*, int> materials, int parentNode)
-	{
-		auto resultNode = nodeMapping[(IntPtr)pNode];
-		auto node = &modelData->Hierarchy->Nodes[resultNode];
+		auto nodeIndex = sceneMapping->FindNodeIndex(pNode);
+		auto nodes = sceneMapping->Nodes;
+		auto node = &nodes[nodeIndex];
 
 		// Extract the local transform
-		auto localTransform = ConvertMatrix(pNode->EvaluateLocalTransform());
+		auto localTransform = sceneMapping->ConvertMatrix(pNode->EvaluateLocalTransform());
 
 		// Extract the translation and scaling
 		Vector3 translation;
@@ -1188,8 +1161,6 @@ public:
 		node->Transform.Rotation = Quaternion::RotationX(rotationVector.X) * Quaternion::RotationY(rotationVector.Y) * Quaternion::RotationZ(rotationVector.Z);
 		node->Transform.Scaling = (Vector3)scaling;
 
-		const char* nodeName = pNode->GetName();
-
 		// Process the node's attributes.
 		for(int i = 0; i < pNode->GetNodeAttributeCount(); i++)
 			ProcessAttribute(pNode, pNode->GetNodeAttributeByIndex(i), meshNames, materials);
@@ -1197,422 +1168,8 @@ public:
 		// Recursively process the children nodes.
 		for(int j = 0; j < pNode->GetChildCount(); j++)
 		{
-			ProcessNode(pNode->GetChild(j), meshNames, materials, resultNode);
+			ProcessNode(pNode->GetChild(j), meshNames, materials);
 		}
-	}
-
-	ref class CurveEvaluator
-	{
-		FbxAnimCurve* curve;
-		int index;
-
-	public:
-		CurveEvaluator(FbxAnimCurve* curve)
-			: curve(curve), index(0)
-		{
-		}
-
-		float Evaluate(CompressedTimeSpan time)
-		{
-			auto fbxTime = FbxTime((long long)time.Ticks * FBXSDK_TIME_ONE_SECOND.Get() / (long long)CompressedTimeSpan::TicksPerSecond);
-			int currentIndex = index;
-			auto result = curve->Evaluate(fbxTime, &currentIndex);
-			index = currentIndex;
-
-			return result;
-		}
-	};
-	
-	template <class T>
-	AnimationCurve<T>^ ProcessAnimationCurveVector(AnimationClip^ animationClip, int nodeData, String^ name, int numCurves, FbxAnimCurve** curves, float maxErrorThreshold)
-	{
-		auto keyFrames = ProcessAnimationCurveFloatsHelper<T>(curves, numCurves);
-		if (keyFrames == nullptr)
-			return nullptr;
-
-		// Add curve
-		auto animationCurve = gcnew AnimationCurve<T>();
-
-		// Switch to cubic implicit interpolation mode for Vector3
-		animationCurve->InterpolationType = AnimationCurveInterpolationType::Cubic;
-
-		// Create keys
-		for (int i = 0; i < keyFrames->Count; ++i)
-		{
-			animationCurve->KeyFrames->Add(keyFrames[i]);
-		}
-
-		animationClip->AddCurve(name, animationCurve);
-		
-		if (keyFrames->Count > 0)
-		{
-			auto curveDuration = keyFrames[keyFrames->Count - 1].Time;
-			if (animationClip->Duration < curveDuration)
-				animationClip->Duration = curveDuration;
-		}
-
-		return animationCurve;
-	}
-
-	void ProcessAnimationCurveRotation(AnimationClip^ animationClip, int nodeData, String^ name, FbxAnimCurve** curves, float maxErrorThreshold)
-	{
-		auto keyFrames = ProcessAnimationCurveFloatsHelper<Vector3>(curves, 3);
-		if (keyFrames == nullptr)
-			return;
-
-		// Convert euler angles to radians
-		for (int i = 0; i < keyFrames->Count; ++i)
-		{
-			auto keyFrame = keyFrames[i];
-			keyFrame.Value *= (float)Math::PI / 180.0f;
-			keyFrames[i] = keyFrame;
-		}
-
-		// Add curve
-		auto animationCurve = gcnew AnimationCurve<Quaternion>();
-		
-		// Create keys
-		for (int i = 0; i < keyFrames->Count; ++i)
-		{
-			auto keyFrame = keyFrames[i];
-			Quaternion quatX, quatY, quatZ;
-
-			Quaternion::RotationX(keyFrame.Value.X, quatX);
-			Quaternion::RotationY(keyFrame.Value.Y, quatY);
-			Quaternion::RotationZ(keyFrame.Value.Z, quatZ);
-
-			auto rotationQuaternion = quatX * quatY * quatZ;
-
-			KeyFrameData<Quaternion> newKeyFrame;
-			newKeyFrame.Time = keyFrame.Time;
-			newKeyFrame.Value = rotationQuaternion;
-			animationCurve->KeyFrames->Add(newKeyFrame);
-		}
-
-		animationClip->AddCurve(name, animationCurve);
-
-		if (keyFrames->Count > 0)
-		{
-			auto curveDuration = keyFrames[keyFrames->Count - 1].Time;
-			if (animationClip->Duration < curveDuration)
-				animationClip->Duration = curveDuration;
-		}
-	}
-
-	template <typename T>
-	List<KeyFrameData<T>>^ ProcessAnimationCurveFloatsHelper(FbxAnimCurve** curves, int numCurves)
-	{
-		FbxTime startTime = FBXSDK_TIME_INFINITE;
-		FbxTime endTime = FBXSDK_TIME_MINUS_INFINITE;
-		for (int i = 0; i < numCurves; ++i)
-		{
-			auto curve = curves[i];
-
-			// If one of the expected channel is null, the group is skipped.
-			// Ideally, we would still want to use default values
-			// (i.e. in the unlikely situation where X and Y have animation channels but not Z, it should still be processed with default Z values).
-			if (curve == NULL)
-				return nullptr;
-
-			FbxTimeSpan timeSpan;
-			curve->GetTimeInterval(timeSpan);
-
-			if (curve != NULL && curve->KeyGetCount() > 0)
-			{
-				auto firstKeyTime = curve->KeyGetTime(0);
-				auto lastKeyTime = curve->KeyGetTime(curve->KeyGetCount() - 1);
-				if (startTime > firstKeyTime)
-					startTime = firstKeyTime;
-				if (endTime < lastKeyTime)
-					endTime = lastKeyTime;
-			}
-		}
-
-		if (startTime == FBXSDK_TIME_INFINITE
-			|| endTime == FBXSDK_TIME_MINUS_INFINITE)
-		{
-			// No animation
-			return nullptr;
-		}
-
-		auto keyFrames = gcnew List<KeyFrameData<T>>();
-
-		const float framerate = static_cast<float>(FbxTime::GetFrameRate(scene->GetGlobalSettings().GetTimeMode()));
-		auto oneFrame = FbxTime::GetOneFrameValue(scene->GetGlobalSettings().GetTimeMode());
-
-		// Step1: Pregenerate curve with discontinuities
-		int index = 0;
-		bool discontinuity = false;
-
-		int currentKeyIndices[4];
-		int currentEvaluationIndices[4];
-		bool isConstant[4];
-		bool hasDiscontinuity[4];
-
-		for (int i = 0; i < numCurves; ++i)
-		{
-			auto curve = curves[i];
-			currentKeyIndices[i] = 0;
-			currentEvaluationIndices[i] = 0;
-			isConstant[i] = false;
-			hasDiscontinuity[i] = false;
-		}
-
-		//float values[4];
-		auto key = KeyFrameData<T>();
-		float* values = (float*)&key.Value;
-
-		FbxTime time;
-		bool lastFrame = false;
-		for (time = startTime; time < endTime || !lastFrame; time += oneFrame)
-		{
-			// Last frame with time = endTime
-			if (time >= endTime)
-			{
-				lastFrame = true;
-				time = endTime;
-			}
-
-			key.Time = FBXTimeToTimeSpane(time);
-
-			bool hasDiscontinuity = false;
-			bool needUpdate = false;
-
-			for (int i = 0; i < numCurves; ++i)
-			{
-				auto curve = curves[i];
-				int currentIndex = currentKeyIndices[i];
-
-				FbxAnimCurveKey curveKey;
-
-				// Advance to appropriate key that should be active during this frame
-				while (curve->KeyGetTime(currentIndex) <= time && currentIndex + 1 < curve->KeyGetCount())
-				{
-					++currentIndex;
-
-					// If new key over constant, there is a discontinuity
-					bool wasConstant = isConstant[i];
-					hasDiscontinuity |= wasConstant;
-
-					auto interpolation = curve->KeyGetInterpolation(currentIndex);
-					isConstant[i] = interpolation == FbxAnimCurveDef::eInterpolationConstant;
-				}
-
-				currentKeyIndices[i] = currentIndex;
-
-				// Update non-constant values
-				if (!isConstant[i])
-				{
-					values[i] = curve->Evaluate(time, &currentEvaluationIndices[i]);
-					needUpdate = true;
-				}
-			}
-
-			// No need to update values, they are same as previous frame
-			//if (!needUpdate && !hasDiscontinuity)
-			//	continue;
-
-			// If discontinuity, we need to add previous values twice (with updated time), and new values twice (with updated time) to ignore any implicit tangents
-			if (hasDiscontinuity)
-			{
-				keyFrames->Add(key);
-				keyFrames->Add(key);
-			}
-
-			// Update constant values
-			for (int i = 0; i < numCurves; ++i)
-			{
-				auto curve = curves[i];
-				if (isConstant[i])
-					values[i] = curve->Evaluate(time, &currentEvaluationIndices[i]);
-			}
-
-			keyFrames->Add(key);
-			if (hasDiscontinuity)
-				keyFrames->Add(key);
-		}
-
-		return keyFrames;
-	}
-
-	void ConvertDegreeToRadians(AnimationCurve<float>^ channel)
-	{
-		for (int i = 0; i < channel->KeyFrames->Count; ++i)
-		{
-			auto keyFrame = channel->KeyFrames[i];
-			keyFrame.Value *= (float)Math::PI / 180.0f;
-			channel->KeyFrames[i] = keyFrame;
-		}
-	}
-
-	void ReverseChannelZ(AnimationCurve<Vector3>^ channel)
-	{
-		// Used for handedness conversion
-		for (int i = 0; i < channel->KeyFrames->Count; ++i)
-		{
-			auto keyFrame = channel->KeyFrames[i];
-			keyFrame.Value.Z = -keyFrame.Value.Z;
-			channel->KeyFrames[i] = keyFrame;
-		}
-	}
-
-	void ComputeFovFromFL(AnimationCurve<float>^ channel, FbxCamera* pCamera)
-	{
-		// Used for handedness conversion
-		for (int i = 0; i < channel->KeyFrames->Count; ++i)
-		{
-			auto keyFrame = channel->KeyFrames[i];
-			keyFrame.Value = (float)FocalLengthToVerticalFov(pCamera->FilmHeight.Get(), keyFrame.Value);
-			channel->KeyFrames[i] = keyFrame;
-		}
-	}
-
-	void MultiplyChannel(AnimationCurve<float>^ channel, double factor)
-	{
-		// Used for handedness conversion
-		for (int i = 0; i < channel->KeyFrames->Count; ++i)
-		{
-			auto keyFrame = channel->KeyFrames[i];
-			keyFrame.Value = (float)(factor * keyFrame.Value);
-			channel->KeyFrames[i] = keyFrame;
-		}
-	}
-
-	void ProcessAnimation(AnimationClip^ animationClip, FbxAnimLayer* animLayer, FbxNode* node)
-	{
-		auto nodeData = nodeMapping[(IntPtr)node];
-
-		// Directly interpolate matrix frame per frame (test)
-		/*auto animationChannel = gcnew array<AnimationChannel^>(16);
-		for (int i = 0; i < 16; ++i)
-		{
-			animationChannel[i] = gcnew AnimationChannel();
-			animationChannel[i]->TargetNode = nodeData;
-			animationChannel[i]->TargetProperty = i.ToString();
-			animationData->AnimationChannels->Add(animationChannel[i]);
-		}
-		for (int i = 0; i < 200; ++i)
-		{
-			FbxTime evalTime;
-			evalTime.SetMilliSeconds(10 * i);
-			FbxXMatrix matrix = node->EvaluateLocalTransform(evalTime);
-			for (int i = 0; i < 16; ++i)
-			{
-				auto key2 = KeyFrameData<float>();
-				key2.Value = ((double*)matrix)[i];
-				double time = (double)evalTime.Get();
-				time *= (double)TimeSpan::TicksPerSecond / (double)FBXSDK_TIME_ONE_SECOND.Get();
-				key2.Time = TimeSpan((long long)time);
-
-				animationChannel[i]->Add(key2);
-			}
-		}
-		FbxXMatrix localMatrix = node->EvaluateLocalTransform(FbxTime(0));
-
-		FbxVector4 t = localMatrix.GetT();
-		FbxVector4 r = localMatrix.GetR();*/
-
-		auto rotationOffset = node->RotationOffset.Get();
-		auto rotationPivot = node->RotationPivot.Get();
-		auto quatInterpolate = node->QuaternionInterpolate.Get();
-		auto rotationOrder = node->RotationOrder.Get();
-
-		FbxAnimCurve* curves[3];
-
-		auto nodeName = nodes[nodeData].Name;
-
-		curves[0] = node->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
-		curves[1] = node->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
-		curves[2] = node->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
-		auto translation = ProcessAnimationCurveVector<Vector3>(animationClip, nodeData, String::Format("Transform.Position[{0}]", nodeName), 3, curves, 0.005f);
-
-		curves[0] = node->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
-		curves[1] = node->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
-		curves[2] = node->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
-		ProcessAnimationCurveRotation(animationClip, nodeData, String::Format("Transform.Rotation[{0}]", nodeName), curves, 0.01f);
-
-		curves[0] = node->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
-		curves[1] = node->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
-		curves[2] = node->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
-		auto scaling = ProcessAnimationCurveVector<Vector3>(animationClip, nodeData, String::Format("Transform.Scale[{0}]", nodeName), 3, curves, 0.005f);
-
-		// Change Y scaling for "root" nodes, if necessary
-		/*if (node == scene->GetRootNode() && scalingY != nullptr && swapHandedness == true)
-		{
-			ReverseChannelY(scaling);
-		}*/
-
-		FbxCamera* camera = node->GetCamera();
-		if (camera != NULL)
-		{
-			if(camera->FieldOfViewY.GetCurve(animLayer))
-			{
-				curves[0] = camera->FieldOfViewY.GetCurve(animLayer);
-				auto FovAnimChannel = ProcessAnimationCurveVector<float>(animationClip, nodeData, "Camera.FieldOfViewVertical", 1, curves, 0.01f);
-				ConvertDegreeToRadians(FovAnimChannel);
-
-				if(!exportedFromMaya)
-					MultiplyChannel(FovAnimChannel, 0.6); // Random factor to match what we see in 3dsmax, need to check why!
-			}
-
-			
-			if(camera->FocalLength.GetCurve(animLayer))
-			{
-				curves[0] = camera->FocalLength.GetCurve(animLayer);
-				auto flAnimChannel = ProcessAnimationCurveVector<float>(animationClip, nodeData, "Camera.FieldOfViewVertical", 1, curves, 0.01f);
-				ComputeFovFromFL(flAnimChannel, camera);
-			}
-		}
-
-		for(int i = 0; i < node->GetChildCount(); ++i)
-		{
-			ProcessAnimation(animationClip, animLayer, node->GetChild(i));
-		}
-	}
-
-	void SetPivotStateRecursive(FbxNode* node)
-	{
-		node->SetPivotState(FbxNode::eSourcePivot, FbxNode::ePivotActive);
-		node->SetPivotState(FbxNode::eDestinationPivot, FbxNode::ePivotActive);
-
-		for(int i = 0; i < node->GetChildCount(); ++i)
-		{
-			SetPivotStateRecursive(node->GetChild(i));
-		}
-	}
-
-	AnimationClip^ ProcessAnimation(FbxScene* scene)
-	{
-		auto animationClip = gcnew AnimationClip();
-
-		int animStackCount = scene->GetMemberCount<FbxAnimStack>();
-		// We support only anim stack count.
-		if (animStackCount > 1)
-		{
-			// TODO: Add a log
-			animStackCount = 1;
-		}
-
-		for (int i = 0; i < animStackCount; ++i)
-		{
-			FbxAnimStack* animStack = scene->GetMember<FbxAnimStack>(i);
-			int animLayerCount = animStack->GetMemberCount<FbxAnimLayer>();
-			FbxAnimLayer* animLayer = animStack->GetMember<FbxAnimLayer>(0);
-
-			// From http://www.the-area.com/forum/autodesk-fbx/fbx-sdk/resetpivotsetandconvertanimation-issue/page-1/
-			scene->GetRootNode()->ResetPivotSet(FbxNode::eDestinationPivot);
-			SetPivotStateRecursive(scene->GetRootNode());
-			scene->GetRootNode()->ConvertPivotAnimationRecursive(animStack, FbxNode::eDestinationPivot, 30.0f);
-
-			ProcessAnimation(animationClip, animLayer, scene->GetRootNode());
-
-			scene->GetRootNode()->ResetPivotSet(FbxNode::eSourcePivot);
-		}
-
-		if (animationClip->Curves->Count == 0)
-			animationClip = nullptr;
-
-		return animationClip;
 	}
 
 	ref class BuildMesh
@@ -1833,280 +1390,21 @@ private:
 		// Import the contents of the file into the scene.
 		lImporter->Import(scene);
 
-		auto documentInfo = scene->GetDocumentInfo();
-		auto appliWhichExported = gcnew String(std::string(documentInfo->Original_ApplicationName.Get()).c_str());
-		if(appliWhichExported == "Maya")
-			exportedFromMaya = true;
-
-
-		// TODO: CHECK http://forums.autodesk.com/t5/fbx-sdk/broken-fbxnode-transformation-after-fbxsystemunit-convertscene/td-p/5463960
-		// AND https://github.com/galek/ozz-animation/blob/master/src/animation/offline/fbx/fbx_base.cc
-		// It seems that ConvertScene is not working on bones, animations...etc. So we would have to do it ourselves.
-		// TODO: double check also with http://users.saintsrowmods.com/rhess/SaintsRow_FBX_Converter.py
-
-		// Setup the convertion
-		FbxGlobalSettings& settings = scene->GetGlobalSettings();
-		InitializeConvertion(settings.GetAxisSystem(), settings.GetSystemUnit());
-
-		/*
-		// Convert Axis System to what is used in this example, if needed
-		FbxAxisSystem SceneAxisSystem = scene->GetGlobalSettings().GetAxisSystem();
-		FbxAxisSystem OurAxisSystem(FbxAxisSystem::eYAxis, FbxAxisSystem::eParityOdd, FbxAxisSystem::eRightHanded);
-		if (SceneAxisSystem != OurAxisSystem)
-		{
-			OurAxisSystem.ConvertScene(scene);
-		}
-
-		// Convert Unit System to what is used in this example, if needed
-		FbxSystemUnit SceneSystemUnit = scene->GetGlobalSettings().GetSystemUnit();
-
-		//The unit in this example is centimeter.
-		FbxSystemUnit customUnit(1.0 / ScaleImport);
-		customUnit.ConvertScene(scene);
-		*/
-
-		//const float framerate = static_cast<float>(FbxTime::GetFrameRate(scene->GetGlobalSettings().GetTimeMode()));
-		//scene->GetRootNode()->ResetPivotSetAndConvertAnimation(framerate, false, false);
-
-		std::map<FbxNode*, std::string> nodeNames;
-		GenerateNodesName(nodeNames);
-
-		RegisterNode(scene->GetRootNode(), -1, nodeNames);
+		// Initialize the node mapping
+		sceneMapping = gcnew SceneMapping(scene, ScaleImport);
 	}
-
-	Matrix BuildAxisSystemMatrix(const FbxAxisSystem& _system) {
-
-		int sign;
-		Vector3 up = Vector3::UnitY;
-		Vector3 at = Vector3::UnitZ;
-
-		// The EUpVector specifies which axis has the up and down direction in the
-		// system (typically this is the Y or Z axis). The sign of the EUpVector is
-		// applied to represent the direction (1 is up and -1 is down relative to the
-		// observer).
-		const FbxAxisSystem::EUpVector eup = _system.GetUpVector(sign);
-		switch (eup) 
-		{
-			case FbxAxisSystem::eXAxis: 
-			{
-				up = Vector3(1.0 * sign, 0.0, 0.0);
-				// If the up axis is X, the remain two axes will be Y And Z, so the
-				// ParityEven is Y, and the ParityOdd is Z
-				if (_system.GetFrontVector(sign) == FbxAxisSystem::eParityEven) 
-				{
-					at = Vector3(0.0, 1.0 * sign, 0.0);
-				}
-				else 
-				{
-					at = Vector3(0.0, 0.0, 1.0 * sign);
-				}
-				break;
-			}
-
-			case FbxAxisSystem::eYAxis: 
-			{
-				up = Vector3(0.0, 1.0 * sign, 0.0);
-				// If the up axis is Y, the remain two axes will X And Z, so the
-				// ParityEven is X, and the ParityOdd is Z
-				if (_system.GetFrontVector(sign) == FbxAxisSystem::eParityEven) 
-				{
-					at = Vector3(1.0 * sign, 0.0, 0.0);
-				}
-				else 
-				{
-					at = Vector3(0.0, 0.0, 1.0 * sign);
-				}
-				break;
-			}
-
-			case FbxAxisSystem::eZAxis: 
-			{
-				up = Vector3(0.0, 0.0, 1.0 * sign);
-				// If the up axis is Z, the remain two axes will X And Y, so the
-				// ParityEven is X, and the ParityOdd is Y
-				if (_system.GetFrontVector(sign) == FbxAxisSystem::eParityEven) 
-				{
-					at = Vector3(1.0 * sign, 0.0, 0.0);
-				}
-				else 
-				{
-					at = Vector3(0.0, 1.0 * sign, 0.0);
-				}
-				break;
-			}
-		}
-
-		// If the front axis and the up axis are determined, the third axis will be
-		// automatically determined as the left one. The ECoordSystem enum is a
-		// parameter to determine the direction of the third axis just as the
-		// EUpVector sign. It determines if the axis system is right-handed or
-		// left-handed just as the enum values.
-		Vector3 right;
-		if (_system.GetCoorSystem() == FbxAxisSystem::eRightHanded) 
-		{
-			right = Vector3::Cross(up, at);
-		}
-		else 
-		{
-			right = Vector3::Cross(at, up);
-		}
-
-		auto matrix = Matrix::Identity;
-		matrix.Right = right;
-		matrix.Up = up;
-		matrix.Backward = at;
-
-		return matrix;
-	}
-
-	Matrix convertMatrix;
-	Matrix inverseConvertMatrix;
-	Matrix inverseTransposeConvertMatrix;
-
-	void InitializeConvertion(const FbxAxisSystem& axisSystem,const FbxSystemUnit& unitSystem)
-	{
-		auto fromMatrix = BuildAxisSystemMatrix(axisSystem);
-		fromMatrix.Invert();
-
-		// Finds unit conversion ratio to ScaleImport (usually 0.01 so 1 meter). GetScaleFactor() is in cm.
-		auto scaleToMeters = (float)unitSystem.GetScaleFactor() * ScaleImport;
-
-		// Builds conversion matrices.
-		convertMatrix = Matrix::Scaling(scaleToMeters) * fromMatrix;
-		inverseConvertMatrix = Matrix::Invert(convertMatrix);
-		inverseTransposeConvertMatrix = Matrix::Transpose(inverseConvertMatrix);
-	}
-
-	Matrix ConvertMatrix(FbxAMatrix& _m) {
-		//return FBXMatrixToMatrix(_m);
-		Matrix m = FBXMatrixToMatrix(_m);
-		return inverseConvertMatrix * m * convertMatrix;
-	}
-
-	Vector3 ConvertPoint(const FbxVector4& _p)
-	{
-		//return (Vector3)FbxDouble4ToVector4(_p);
-		auto p_in = FbxDouble4ToVector4(_p);
-		p_in.W = 1.0f;
-		return (Vector3)Vector4::Transform(p_in, convertMatrix);
-	}
-
-	Vector3 ConvertNormal(const FbxVector4& _p) 
-	{
-		//return (Vector3)FbxDouble4ToVector4(_p);
-		auto p_in = (Vector3)FbxDouble4ToVector4(_p);
-		return Vector3::TransformNormal(p_in, inverseTransposeConvertMatrix);
-	}
-
-	bool CheckAnimationData(FbxAnimLayer* animLayer, FbxNode* node)
-	{
-		if ((node->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X) != NULL
-			&& node->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y) != NULL
-			&& node->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z) != NULL)
-			||
-			(node->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X) != NULL
-			&& node->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y) != NULL
-			&& node->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z) != NULL)
-			||
-			(node->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X) != NULL
-			&& node->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y) != NULL
-			&& node->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z) != NULL))
-			return true;
-
-		FbxCamera* camera = node->GetCamera();
-		if (camera != NULL)
-		{
-			if(camera->FieldOfViewY.GetCurve(animLayer))
-				return true;
-			
-			if(camera->FocalLength.GetCurve(animLayer))
-				return true;
-		}
-
-		for(int i = 0; i < node->GetChildCount(); ++i)
-		{
-			if (CheckAnimationData(animLayer, node->GetChild(i)))
-				return true;
-		}
-
-		return false;
-	}
-
+	
 	bool HasAnimationData(String^ inputFile)
 	{
 		try
 		{
 			Initialize(inputFile, nullptr, ImportConfiguration::ImportAnimationsOnly());
-
-			int animStackCount = scene->GetMemberCount<FbxAnimStack>();
-
-			if (animStackCount > 0)
-			{
-				bool check = true;
-				for (int i = 0; i < animStackCount && check; ++i)
-				{
-					FbxAnimStack* animStack = scene->GetMember<FbxAnimStack>(i);
-					int animLayerCount = animStack->GetMemberCount<FbxAnimLayer>();
-					FbxAnimLayer* animLayer = animStack->GetMember<FbxAnimLayer>(0);
-
-					check = check && CheckAnimationData(animLayer, scene->GetRootNode());
-				}
-
-				return check;
-			}
-				
-			return false;
+			auto animConverter = gcnew AnimationConverter(sceneMapping);
+			return animConverter->HasAnimationData();
 		}
 		finally
 		{
 			Destroy();
-		}
-	}
-
-	void GetAnimationNodes(FbxAnimLayer* animLayer, FbxNode* node, List<String^>^ animationNodes)
-	{
-		auto nodeData = nodeMapping[(IntPtr)node];
-		auto nodeName = nodes[nodeData].Name;
-
-		bool checkTranslation = true;
-		checkTranslation = checkTranslation && node->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X) != NULL;
-		checkTranslation = checkTranslation && node->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y) != NULL;
-		checkTranslation = checkTranslation && node->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z) != NULL;
-		
-		bool checkRotation = true;
-		checkRotation = checkRotation && node->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X) != NULL;
-		checkRotation = checkRotation && node->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y) != NULL;
-		checkRotation = checkRotation && node->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z) != NULL;
-		
-		bool checkScale = true;
-		checkScale = checkScale && node->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X) != NULL;
-		checkScale = checkScale && node->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y) != NULL;
-		checkScale = checkScale && node->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z) != NULL;
-
-		if (checkTranslation || checkRotation || checkScale)
-		{
-			animationNodes->Add(nodeName);
-		}
-		else
-		{
-			bool checkCamera = true;
-			FbxCamera* camera = node->GetCamera();
-			if (camera != NULL)
-			{
-				if(camera->FieldOfViewY.GetCurve(animLayer))
-					checkCamera = checkCamera && camera->FieldOfViewY.GetCurve(animLayer) != NULL;
-			
-				if(camera->FocalLength.GetCurve(animLayer))
-					checkCamera = checkCamera && camera->FocalLength.GetCurve(animLayer) != NULL;
-
-				if (checkCamera)
-					animationNodes->Add(nodeName);
-			}
-		}
-
-		for(int i = 0; i < node->GetChildCount(); ++i)
-		{
-			GetAnimationNodes(animLayer, node->GetChild(i), animationNodes);
 		}
 	}
 	
@@ -2232,57 +1530,6 @@ private:
 		}
 	}
 
-	void GetNodes(FbxNode* pNode, std::vector<FbxNode*>& nodes)
-	{
-		nodes.push_back(pNode);
-		
-		// Recursively process the children nodes.
-		for(int j = 0; j < pNode->GetChildCount(); j++)
-			GetNodes(pNode->GetChild(j), nodes);
-	}
-
-	void GenerateNodesName(std::map<FbxNode*, std::string>& nodeNames)
-	{
-		std::vector<FbxNode*> nodes;
-		GetNodes(scene->GetRootNode(), nodes);
-
-		std::map<std::string, int> nodeNameTotalCount;
-		std::map<std::string, int> nodeNameCurrentCount;
-		std::map<FbxNode*, std::string> tempNames;
-
-		for (auto iter = nodes.begin(); iter != nodes.end(); ++iter)
-		{
-			auto pNode = *iter;
-			auto nodeName = std::string(pNode->GetName());
-			auto subBegin = nodeName.find_last_of(':');
-			if (subBegin != std::string::npos)
-				nodeName = nodeName.substr(subBegin + 1);
-			tempNames[pNode] = nodeName;
-
-			if (nodeNameTotalCount.count(nodeName) == 0)
-				nodeNameTotalCount[nodeName] = 1;
-			else
-				nodeNameTotalCount[nodeName] = nodeNameTotalCount[nodeName] + 1;
-		}
-
-		for (auto iter = nodes.begin(); iter != nodes.end(); ++iter)
-		{
-			auto pNode = *iter;
-			auto nodeName = tempNames[pNode];
-			int currentCount = 0;
-
-			if (nodeNameCurrentCount.count(nodeName) == 0)
-				nodeNameCurrentCount[nodeName] = 1;
-			else
-				nodeNameCurrentCount[nodeName] = nodeNameCurrentCount[nodeName] + 1;
-
-			if(nodeNameTotalCount[nodeName] > 1)
-				nodeName = nodeName + "_" + std::to_string(nodeNameCurrentCount[nodeName]);
-
-			nodeNames[pNode] = nodeName;
-		}
-	}
-
 	MaterialInstantiation^ GetOrCreateMaterial(FbxSurfaceMaterial* lMaterial, List<String^>^ uvNames, List<MaterialInstantiation^>^ instances, std::map<std::string, int>& uvElements, std::map<FbxSurfaceMaterial*, std::string>& materialNames)
 	{
 		for (int i = 0; i < instances->Count; ++i)
@@ -2303,7 +1550,7 @@ private:
 		return newMaterialInstantiation;
 	}
 
-	void SearchMeshInAttribute(FbxNode* pNode, FbxNodeAttribute* pAttribute, std::map<FbxSurfaceMaterial*, std::string> materialNames, std::map<FbxMesh*, std::string> meshNames, std::map<FbxNode*, std::string>& nodeNames, List<MeshParameters^>^ models, List<MaterialInstantiation^>^ materialInstantiations)
+	void SearchMeshInAttribute(FbxNode* pNode, FbxNodeAttribute* pAttribute, std::map<FbxSurfaceMaterial*, std::string> materialNames, std::map<FbxMesh*, std::string> meshNames, List<MeshParameters^>^ models, List<MaterialInstantiation^>^ materialInstantiations)
 	{
 		if(!pAttribute) return;
  
@@ -2352,7 +1599,7 @@ private:
 				if (buildMeshes->Count > 1)
 					meshName = meshName + "_" + std::to_string(i + 1);
 				meshParams->MeshName = gcnew String(meshName.c_str());
-				meshParams->NodeName = gcnew String(nodeNames[pNode].c_str());
+				meshParams->NodeName = sceneMapping->FindNode(pNode).Name;
 
 				FbxGeometryElementMaterial* lMaterialElement = pMesh->GetElementMaterial();
 				if (lMaterialElement != NULL)
@@ -2379,16 +1626,16 @@ private:
 		}
 	}
 
-	void SearchMesh(FbxNode* pNode, std::map<FbxSurfaceMaterial*, std::string> materialNames, std::map<FbxMesh*, std::string> meshNames, std::map<FbxNode*, std::string>& nodeNames, List<MeshParameters^>^ models, List<MaterialInstantiation^>^ materialInstantiations)
+	void SearchMesh(FbxNode* pNode, std::map<FbxSurfaceMaterial*, std::string> materialNames, std::map<FbxMesh*, std::string> meshNames, List<MeshParameters^>^ models, List<MaterialInstantiation^>^ materialInstantiations)
 	{
 		// Process the node's attributes.
 		for(int i = 0; i < pNode->GetNodeAttributeCount(); i++)
-			SearchMeshInAttribute(pNode, pNode->GetNodeAttributeByIndex(i), materialNames, meshNames, nodeNames, models, materialInstantiations);
+			SearchMeshInAttribute(pNode, pNode->GetNodeAttributeByIndex(i), materialNames, meshNames, models, materialInstantiations);
 
 		// Recursively process the children nodes.
 		for(int j = 0; j < pNode->GetChildCount(); j++)
 		{
-			SearchMesh(pNode->GetChild(j), materialNames, meshNames, nodeNames, models, materialInstantiations);
+			SearchMesh(pNode->GetChild(j), materialNames, meshNames, models, materialInstantiations);
 		}
 	}
 
@@ -2408,7 +1655,7 @@ private:
 		return materials;
 	}
 
-	MeshMaterials^ ExtractModelNoInit(std::map<FbxNode*, std::string>& nodeNames)
+	MeshMaterials^ ExtractModelNoInit()
 	{
 		std::map<FbxSurfaceMaterial*, std::string> materialNames;
 		GenerateMaterialNames(materialNames);
@@ -2419,7 +1666,7 @@ private:
 		std::map<std::string, FbxSurfaceMaterial*> materialPerMesh;
 		auto models = gcnew List<MeshParameters^>();
 		auto materialInstantiations = gcnew List<MaterialInstantiation^>();
-		SearchMesh(scene->GetRootNode(), materialNames, meshNames, nodeNames, models, materialInstantiations);
+		SearchMesh(scene->GetRootNode(), materialNames, meshNames, models, materialInstantiations);
 
 		auto ret = gcnew MeshMaterials();
 		ret->Models = models;
@@ -2459,40 +1706,6 @@ private:
 		return textureNames;
 	}
 
-	List<String^>^ ExtractAnimationNodesNoInit()
-	{
-		int animStackCount = scene->GetMemberCount<FbxAnimStack>();
-		List<String^>^ animationNodes = nullptr;
-
-		if (animStackCount > 0)
-		{
-			animationNodes = gcnew List<String^>();
-			for (int i = 0; i < animStackCount; ++i)
-			{
-				FbxAnimStack* animStack = scene->GetMember<FbxAnimStack>(i);
-				int animLayerCount = animStack->GetMemberCount<FbxAnimLayer>();
-				FbxAnimLayer* animLayer = animStack->GetMember<FbxAnimLayer>(0);
-				GetAnimationNodes(animLayer, scene->GetRootNode(), animationNodes);
-			}
-		}
-
-		return animationNodes;
-	}
-
-	List<String^>^ GetAllAnimationNodes(String^ inputFile)
-	{
-		try
-		{
-			Initialize(inputFile, nullptr, ImportConfiguration::ImportAnimationsOnly());
-			return ExtractAnimationNodesNoInit();
-		}
-		finally
-		{
-			Destroy();
-		}
-		return nullptr;
-	}
-
 	List<String^>^ ExtractTextureDependencies(String^ inputFile)
 	{
 		try
@@ -2521,22 +1734,22 @@ private:
 		return nullptr;
 	}
 
-	void GetNodes(FbxNode* node, int depth, std::map<FbxNode*, std::string>& nodeNames, List<NodeInfo^>^ allNodes)
+	void GetNodes(FbxNode* node, int depth, List<NodeInfo^>^ allNodes)
 	{
 		auto newNodeInfo = gcnew NodeInfo();
-		newNodeInfo->Name = gcnew String(nodeNames[node].c_str());
+		newNodeInfo->Name = sceneMapping->FindNode(node).Name;
 		newNodeInfo->Depth = depth;
 		newNodeInfo->Preserve = false;
 		
 		allNodes->Add(newNodeInfo);
 		for (int i = 0; i < node->GetChildCount(); ++i)
-			GetNodes(node->GetChild(i), depth + 1, nodeNames, allNodes);
+			GetNodes(node->GetChild(i), depth + 1, allNodes);
 	}
 
-	List<NodeInfo^>^ ExtractNodeHierarchy(std::map<FbxNode*, std::string>& nodeNames)
+	List<NodeInfo^>^ ExtractNodeHierarchy()
 	{
 		auto allNodes = gcnew List<NodeInfo^>();
-		GetNodes(scene->GetRootNode(), 0, nodeNames, allNodes);
+		GetNodes(scene->GetRootNode(), 0, allNodes);
 		return allNodes;
 	}
 
@@ -2547,26 +1760,15 @@ public:
 		{
 			Initialize(inputFileName, nullptr, ImportConfiguration::ImportEntityConfig());
 			
-			//int sign;
-			//auto upAxis = scene->GetGlobalSettings().GetAxisSystem().GetUpVector(sign);
-			//if (upAxis != FbxAxisSystem::eYAxis)
-			//	logger->Warning("Model references material '{0}', but it was not defined in the ModelAsset.", materialName);
-			//auto originalUpAxis = Vector3::Zero;
-			//if (index < 0 || index > 2) // Default up vector is Z
-			//	originalUpAxis[1] = 1;
-			//else
-			//	originalUpAxis[index] = 1;
+			auto animationConverter = gcnew AnimationConverter(sceneMapping);
 			
-			std::map<FbxNode*, std::string> nodeNames;
-			GenerateNodesName(nodeNames);
-
 			auto entityInfo = gcnew EntityInfo();
 			entityInfo->TextureDependencies = ExtractTextureDependenciesNoInit();
-			entityInfo->AnimationNodes = ExtractAnimationNodesNoInit();
-			auto models = ExtractModelNoInit(nodeNames);
+			entityInfo->AnimationNodes = animationConverter->ExtractAnimationNodesNoInit();
+			auto models = ExtractModelNoInit();
 			entityInfo->Models = models->Models;
 			entityInfo->Materials = models->Materials;
-			entityInfo->Nodes = ExtractNodeHierarchy(nodeNames);
+			entityInfo->Nodes = ExtractNodeHierarchy();
 
 			return entityInfo;
 		}
@@ -2586,7 +1788,7 @@ public:
 			// Create default ModelViewData
 			modelData = gcnew Model();
 			modelData->Hierarchy = gcnew ModelViewHierarchyDefinition();
-			modelData->Hierarchy->Nodes = nodes.ToArray();
+			modelData->Hierarchy->Nodes = sceneMapping->Nodes;
 
 			//auto sceneName = scene->GetName();
 			//if (sceneName != NULL && strlen(sceneName) > 0)
@@ -2621,10 +1823,7 @@ public:
 			}
 
 			// Process and add root entity
-			ProcessNode(scene->GetRootNode(), meshNames, materials, -1);
-
-			// Process animation
-			//sceneData->Animation = ProcessAnimation(scene);
+			ProcessNode(scene->GetRootNode(), meshNames, materials);
 
 			return modelData;
 		}
@@ -2642,10 +1841,8 @@ public:
 		{
 			Initialize(inputFilename, vfsOutputFilename, ImportConfiguration::ImportAnimationsOnly());
 
-			// Process animation
-			auto animationClip = ProcessAnimation(scene);
-
-			return animationClip;
+			auto animationConverter = gcnew AnimationConverter(sceneMapping);
+			return animationConverter->ProcessAnimation();
 		}
 		finally
 		{
