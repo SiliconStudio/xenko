@@ -163,9 +163,12 @@ namespace SiliconStudio.Paradox.Assets.Model
                 foreach (var modelMaterial in asset.Materials)
                 {
                     var material = modelMaterial.Material;
-                    modelMaterial.MaterialInstance = new YamlMappingNode();
-                    modelMaterial.MaterialInstance.Material = material;
-                    modelMaterial.Material = DynamicYamlEmpty.Default;
+                    if (material != null)
+                    {
+                        modelMaterial.MaterialInstance = new YamlMappingNode();
+                        modelMaterial.MaterialInstance.Material = material;
+                        modelMaterial.Material = DynamicYamlEmpty.Default;
+                    }
                 }
                 SetSerializableVersion(asset, AssetFormatVersion);
             }
