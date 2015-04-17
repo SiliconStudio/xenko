@@ -199,10 +199,10 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Returns an array of asset types that have a description.
+        /// Returns an array of asset types that are non-abstract and public.
         /// </summary>
         /// <returns>An array of <see cref="Type"/> elements.</returns>
-        public static Type[] GetDescribedTypes()
+        public static Type[] GetPublicTypes()
         {
             return AssetTypes.ToArray();
         }
@@ -406,7 +406,7 @@ namespace SiliconStudio.Assets
                 }
 
                 // Store in a list all asset types loaded
-                if (assetType.IsPublic)
+                if (assetType.IsPublic && !assetType.IsAbstract)
                 {
                     AssetTypes.Add(assetType);
                 }
