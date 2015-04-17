@@ -30,7 +30,7 @@ namespace SiliconStudio {
 
 					Matrix convertMatrix;
 					Matrix inverseConvertMatrix;
-					Matrix inverseTransposeConvertMatrix;
+					Matrix normalConvertMatrix;
 				public:
 					/// <summary>
 					/// Initializes a new instance of the <see cref="NodeMapping"/> class.
@@ -140,7 +140,7 @@ namespace SiliconStudio {
 					Vector3 ConvertNormalFromFbx(const FbxVector4& _p)
 					{
 						auto normal = (Vector3)FbxDouble4ToVector4(_p);
-						return Vector3::TransformNormal(normal, inverseTransposeConvertMatrix);
+						return Vector3::TransformNormal(normal, normalConvertMatrix);
 					}
 				private:
 					static void GetNodes(FbxNode* pNode, std::vector<FbxNode*>& nodes)
@@ -232,7 +232,7 @@ namespace SiliconStudio {
 						// Builds conversion matrices.
 						convertMatrix = Matrix::Scaling(scaleToMeters) * fromMatrix;
 						inverseConvertMatrix = Matrix::Invert(convertMatrix);
-						inverseTransposeConvertMatrix = Matrix::Transpose(inverseConvertMatrix);
+						normalConvertMatrix = Matrix::Transpose(Matrix::Invert(fromMatrix));
 					}
 
 					static Matrix BuildAxisSystemMatrix(const FbxAxisSystem& axisSystem) {

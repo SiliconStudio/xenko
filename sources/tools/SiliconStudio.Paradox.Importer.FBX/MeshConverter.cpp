@@ -385,10 +385,22 @@ public:
 					// Get normal
 					if (normalElement != NULL)
 					{
-						FbxVector4 src_normal(0.f, 1.f, 0.f, 0.f);
-						pMesh->GetPolygonVertexNormal(i, polygonFanVertex, src_normal);
+						FbxVector4 src_normal;
+						if (normalElement->GetMappingMode() == FbxLayerElement::eByControlPoint)
+						{
+							int normalIndex = (normalElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
+								? normalElement->GetIndexArray().GetAt(controlPointIndex)
+								: controlPointIndex;
+							src_normal = normalElement->GetDirectArray().GetAt(normalIndex);
+						}
+						else if (normalElement->GetMappingMode() == FbxLayerElement::eByPolygonVertex)
+						{
+							int normalIndex = (normalElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
+								? normalElement->GetIndexArray().GetAt(vertexIndex)
+								: vertexIndex;
+							src_normal = normalElement->GetDirectArray().GetAt(normalIndex);
+						}
 						Vector3 normal = sceneMapping->ConvertNormalFromFbx(src_normal);
-						normal.Normalize();
 
 						*(Vector3*)(vbPointer + normalOffset) = normal;
 					}
