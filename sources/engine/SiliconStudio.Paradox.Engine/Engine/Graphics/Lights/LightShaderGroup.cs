@@ -2,8 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Windows.Documents;
-
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Paradox.Effects.Shadows;
 using SiliconStudio.Paradox.Shaders;
@@ -61,8 +59,6 @@ namespace SiliconStudio.Paradox.Effects.Lights
         }
     }
 
-
-
     public abstract class LightShaderGroupData
     {
         protected LightShaderGroupData(ILightShadowMapShaderGroupData shadowGroup)
@@ -102,7 +98,4 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
         protected abstract void ApplyParametersInternal(ParameterCollection parameters);
     }
-
-
-
 }
