@@ -12,7 +12,7 @@ using SiliconStudio.Paradox.DataModel;
 namespace SiliconStudio.Paradox.Assets.Model
 {
     [DataContract("Animation")]
-    [AssetFileExtension(FileExtension)]
+    [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(AnimationAssetCompiler))]
     [ObjectFactory(typeof(AnimationFactory))]
     [ThumbnailCompiler(PreviewerCompilerNames.AnimationThumbnailCompilerQualifiedName)]

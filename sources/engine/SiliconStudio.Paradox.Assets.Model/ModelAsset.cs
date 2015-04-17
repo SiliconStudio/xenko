@@ -17,7 +17,7 @@ using SiliconStudio.Paradox.Effects;
 namespace SiliconStudio.Paradox.Assets.Model
 {
     [DataContract("Model")]
-    [AssetFileExtension(FileExtension)]
+    [AssetDescription(FileExtension, false)]
     [AssetCompiler(typeof(ModelAssetCompiler))]
     [ThumbnailCompiler(PreviewerCompilerNames.ModelThumbnailCompilerQualifiedName, true, Priority = 10000)]
     [Display("Model", "A 3D model")]

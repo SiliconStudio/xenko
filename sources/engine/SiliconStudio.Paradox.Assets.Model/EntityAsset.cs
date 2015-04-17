@@ -24,10 +24,9 @@ using IObjectFactory = SiliconStudio.Core.Reflection.IObjectFactory;
 namespace SiliconStudio.Paradox.Assets.Model
 {
     [DataContract("EntityAsset")]
-    [AssetFileExtension(FileExtension)]
+    [AssetDescription(FileExtension, false)]
     [AssetCompiler(typeof(EntityAssetCompiler))]
     [ThumbnailCompiler(PreviewerCompilerNames.EntityThumbnailCompilerQualifiedName, true)]
-    [ObjectFactory(typeof(EntityFactory))]
     [Display("Entity", "An entity")]
     //[AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
     public class EntityAsset : AssetImportTracked, IDiffResolver, IAssetComposer

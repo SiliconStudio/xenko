@@ -11,7 +11,7 @@ using SiliconStudio.Core.Reflection;
 namespace SiliconStudio.Paradox.Assets.Audio
 {
     [DataContract("SoundMusic")]
-    [AssetFileExtension(FileExtension)]
+    [AssetDescription(FileExtension)]
     [ObjectFactory(typeof(SoundMusicFactory))]
     [AssetCompiler(typeof(SoundAssetCompiler))]
     [ThumbnailCompiler(PreviewerCompilerNames.SoundThumbnailCompilerQualifiedName)]

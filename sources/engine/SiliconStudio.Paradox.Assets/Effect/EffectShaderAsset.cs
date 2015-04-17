@@ -10,7 +10,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
     /// Describes a shader effect asset (pdxsl).
     /// </summary>
     [DataContract("EffectShader")]
-    [AssetFileExtension(FileExtension)]
+    [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(EffectShaderAssetCompiler))]
     [Display("Effect Shader", "An effect shader")]
     public sealed class EffectShaderAsset : SourceCodeAsset

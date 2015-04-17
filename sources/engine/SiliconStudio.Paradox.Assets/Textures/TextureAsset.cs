@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
     /// Describes a texture asset.
     /// </summary>
     [DataContract("Texture")]
-    [AssetFileExtension(FileExtension)]
+    [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(TextureAssetCompiler))]
     [ThumbnailCompiler(PreviewerCompilerNames.TextureThumbnailCompilerQualifiedName, true, Priority = -10000)]
     [Display("Texture", "A texture")]

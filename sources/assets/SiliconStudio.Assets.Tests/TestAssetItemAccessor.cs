@@ -47,7 +47,7 @@ namespace SiliconStudio.Assets.Tests
         }
         
         [DataContract("TestAssetItemAccessor-LocalAsset")]
-        [AssetFileExtension(".pdxlocalasset")]
+        [AssetDescription(".pdxlocalasset")]
         public class LocalAsset : Asset
         {
             public static readonly PropertyKey<string> StringKey = new PropertyKey<string>("StringKey", typeof(LocalAsset));

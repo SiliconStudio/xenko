@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
     /// Description of a font.
     /// </summary>
     [DataContract("SpriteFont")]
-    [AssetFileExtension(FileExtension)]
+    [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(SpriteFontAssetCompiler))]
     [ThumbnailCompiler(PreviewerCompilerNames.FontThumbnailCompilerQualifiedName, true)]
     [ObjectFactory(typeof(SpriteFontFactory))]

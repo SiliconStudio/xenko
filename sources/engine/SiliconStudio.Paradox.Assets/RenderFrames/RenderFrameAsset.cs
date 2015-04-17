@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Assets.RenderFrames
     /// Describes a texture asset.
     /// </summary>
     [DataContract("RenderFrame")]
-    [AssetFileExtension(FileExtension)]
+    [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(RenderFrameAssetCompiler))]
     [Display("Render Frame", "A render frame")]
     public class RenderFrameAsset : Asset

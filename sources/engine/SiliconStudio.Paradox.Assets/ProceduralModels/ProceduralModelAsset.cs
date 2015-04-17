@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
     /// The geometric primitive asset.
     /// </summary>
     [DataContract("ProceduralModelAsset")]
-    [AssetFileExtension(FileExtension)]
+    [AssetDescription(FileExtension)]
     [ThumbnailCompiler(PreviewerCompilerNames.ProceduralModelThumbnailCompilerQualifiedName, true)]
     [AssetCompiler(typeof(ProceduralModelAssetCompiler))]
     [Display("Procedural Model", "A procedural model")]

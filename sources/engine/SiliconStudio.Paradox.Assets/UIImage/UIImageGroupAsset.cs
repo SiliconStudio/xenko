@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Assets.UIImage
     /// Describes a sprite group asset.
     /// </summary>
     [DataContract("UIImageGroup")]
-    [AssetFileExtension(FileExtension)]
+    [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(UIImageGroupCompiler))]
     [ObjectFactory(typeof(UIImageGroupFactory))]
     [ThumbnailCompiler(PreviewerCompilerNames.UIImageGroupThumbnailCompilerQualifiedName, true)]

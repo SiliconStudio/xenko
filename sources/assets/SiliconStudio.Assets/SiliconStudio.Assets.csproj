@@ -193,7 +193,7 @@
     <Compile Include="Templates\TemplateManager.cs" />
     <Compile Include="Visitors\AssetVisitorBase.cs" />
     <Compile Include="AssetException.cs" />
-    <Compile Include="AssetFileExtensionAttribute.cs" />
+    <Compile Include="AssetDescriptionAttribute.cs" />
     <Compile Include="Asset.cs" />
     <Compile Include="PackageAssetCollection.cs" />
     <Compile Include="AssetSerializer.cs" />
