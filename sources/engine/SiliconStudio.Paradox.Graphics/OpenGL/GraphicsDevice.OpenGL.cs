@@ -235,22 +235,6 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-        /// <summary>
-        /// Gets the first viewport.
-        /// </summary>
-        /// <value>The first viewport.</value>
-        public Viewport Viewport
-        {
-            get
-            {
-#if DEBUG
-                EnsureContextActive();
-#endif
-
-                return _currentViewports[0];
-            }
-        }
-
         public void Use()
         {
             if (_graphicsDevicesInUse == null)
@@ -488,7 +472,7 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
         }
 
-        public void ClearState()
+        private void ClearStateImpl()
         {
 #if DEBUG
             EnsureContextActive();
@@ -1426,11 +1410,14 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
         }
 
-        public void SetBlendState(BlendState blendState)
+        private void SetBlendStateImpl(BlendState blendState, Color4 blendFactor, int multiSampleMask = -1)
         {
 #if DEBUG
             EnsureContextActive();
 #endif
+
+            if (multiSampleMask != -1)
+                throw new NotImplementedException();
 
             if (blendState == null)
                 blendState = BlendStates.Default;
@@ -1440,28 +1427,8 @@ namespace SiliconStudio.Paradox.Graphics
                 blendState.Apply(boundBlendState ?? BlendStates.Default);
                 boundBlendState = blendState;
             }
-        }
 
-        public void SetBlendState(BlendState blendState, Color blendFactor, int multiSampleMask = -1)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-            if (multiSampleMask != -1)
-                throw new NotImplementedException();
-
-            SetBlendState(blendState);
             GL.BlendColor(blendFactor.R, blendFactor.G, blendFactor.B, blendFactor.A);
-        }
-
-        public void SetBlendState(BlendState blendState, Color blendFactor, uint multiSampleMask = 0xFFFFFFFF)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-            SetBlendState(blendState, blendFactor, unchecked((int)multiSampleMask));
         }
 
         /// <summary>
@@ -1492,7 +1459,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-        public void SetDepthStencilState(DepthStencilState depthStencilState, int stencilReference = 0)
+        private void SetDepthStencilStateImpl(DepthStencilState depthStencilState, int stencilReference = 0)
         {
 #if DEBUG
             EnsureContextActive();
@@ -1510,7 +1477,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-        public void SetRasterizerState(RasterizerState rasterizerState)
+        private void SetRasterizerStateImpl(RasterizerState rasterizerState)
         {
 #if DEBUG
             EnsureContextActive();
@@ -1526,17 +1493,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-        /// <summary>
-        /// Sets a new depth stencil buffer and render target to this GraphicsDevice.
-        /// </summary>
-        /// <param name="depthStencilBuffer">The depth stencil buffer.</param>
-        /// <param name="renderTarget">The render target.</param>
-        public void SetDepthAndRenderTarget(Texture depthStencilBuffer, Texture renderTarget)
-        {
-            SetDepthAndRenderTargets(depthStencilBuffer, (renderTarget == null) ? null : new[] { renderTarget });
-        }
-
-        public void SetDepthAndRenderTargets(Texture depthStencilBuffer, params Texture[] renderTargets)
+        private void SetDepthAndRenderTargetsImpl(Texture depthStencilBuffer, params Texture[] renderTargets)
         {
             var renderTargetsLength = 0;
             if (renderTargets != null && renderTargets.Length > 0)
@@ -1609,10 +1566,7 @@ namespace SiliconStudio.Paradox.Graphics
             return true;
         }
 
-        /// <summary>
-        /// Unbinds all depth-stencil buffer and render targets from the output-merger stage.
-        /// </summary>
-        public void ResetTargets()
+        private void ResetTargetsImpl()
         {
             for (int i = 0; i < boundRenderTargets.Length; ++i)
                 boundRenderTargets[i] = null;
@@ -1826,29 +1780,18 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-
-        /// <summary>
-        ///     Gets or sets the 1st viewport.
-        /// </summary>
-        /// <value>The viewport.</value>
-        public void SetViewport(Viewport value)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-            _currentViewports[0] = value;
-            UpdateViewport(value);
-        }
-
-        public void SetViewport(int index, Viewport value)
+        private void SetViewportImpl(int index, Viewport value)
         {
 #if DEBUG
             EnsureContextActive();
 #endif
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-            throw new NotImplementedException();
+            if (index != 0)
+                throw new NotImplementedException("MRT on OpenGL ES");
+
+            _currentViewports[0] = value;
+            UpdateViewport(value);
 #else
             if (index >= _currentViewports.Length)
                 throw new IndexOutOfRangeException("The viewport index is higher than the number of available viewports.");
