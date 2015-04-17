@@ -32,8 +32,6 @@ namespace SiliconStudio.Paradox
 
         private readonly LogListener logListener;
 
-        private readonly String settingsAssetURL = "__GameSettings__";
-
         /// <summary>
         /// Gets the graphics device manager.
         /// </summary>
@@ -213,6 +211,8 @@ namespace SiliconStudio.Paradox
 
         protected override void Initialize()
         {
+            base.Initialize(); 
+
             // Init assets
             if (Context.InitializeDatabase)
             {
@@ -221,17 +221,6 @@ namespace SiliconStudio.Paradox
 
             // Read and set game settings
             SceneSystem.AutoLoadDefaultScene = AutoLoadDefaultSettings;
-            if (AutoLoadDefaultSettings && Asset.Exists(settingsAssetURL))
-            {
-                var settings = Asset.Load<GameSettings>(settingsAssetURL);
-                var deviceManager = (GraphicsDeviceManager)Services.GetSafeServiceAs<IGraphicsDeviceManager>();
-                if (settings.DefaultGraphicsProfileUsed > 0) deviceManager.PreferredGraphicsProfile = new[] { settings.DefaultGraphicsProfileUsed };
-                if (settings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = settings.DefaultBackBufferWidth;
-                if (settings.DefaultBackBufferHeight > 0) deviceManager.PreferredBackBufferHeight = settings.DefaultBackBufferHeight;
-                SceneSystem.InitialSceneUrl = settings.DefaultSceneUrl;
-            }
-
-            base.Initialize(); 
 
             EffectSystem = new EffectSystem(Services);
             GameSystems.Add(EffectSystem);

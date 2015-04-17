@@ -59,11 +59,26 @@ namespace SiliconStudio.Paradox.EntityModel
         /// </summary>
         public string InitialSceneUrl { get; set; }
 
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            // Load several default settings
+            if (AutoLoadDefaultScene && Asset.Exists(GameSettings.AssetUrl))
+            {
+                var settings = Asset.Load<GameSettings>(GameSettings.AssetUrl);
+                var deviceManager = (GraphicsDeviceManager)Services.GetSafeServiceAs<IGraphicsDeviceManager>();
+                if (settings.DefaultGraphicsProfileUsed > 0) deviceManager.PreferredGraphicsProfile = new[] { settings.DefaultGraphicsProfileUsed };
+                if (settings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = settings.DefaultBackBufferWidth;
+                if (settings.DefaultBackBufferHeight > 0) deviceManager.PreferredBackBufferHeight = settings.DefaultBackBufferHeight;
+                InitialSceneUrl = settings.DefaultSceneUrl;
+            }
+        }
+
         protected override void LoadContent()
         {
             var assetManager = Services.GetSafeServiceAs<AssetManager>();
 
-            // TODO: Temp work around for PreviewGame init
             // Preload the scene if it exists
             if (AutoLoadDefaultScene && InitialSceneUrl != null && assetManager.Exists(InitialSceneUrl))
             {

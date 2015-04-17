@@ -85,7 +85,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                 // Save the default settings
                 if (IsDefaultScene())
                 {
-                    assetManager.Save(GameSettingsAsset.AssetUrl, GameSettingsAsset.CreateFromPackage(package));
+                    assetManager.Save(GameSettings.AssetUrl, GameSettingsAsset.CreateFromPackage(package));
                 }
 
                 return Task.FromResult(ResultStatus.Successful);
@@ -95,7 +95,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             {
                 base.ComputeParameterHash(writer);
                 var gameSettings = GameSettingsAsset.CreateFromPackage(package);
-                writer.Write(gameSettings);
+                if (IsDefaultScene()) writer.Write(gameSettings);
             }
 
             private bool IsDefaultScene()

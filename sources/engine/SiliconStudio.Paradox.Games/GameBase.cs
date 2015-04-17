@@ -363,6 +363,8 @@ namespace SiliconStudio.Paradox.Games
                     // Initialize this instance and all game systems before trying to create the device.
                     Initialize();
 
+                    // Make sure that the device is already created
+                    graphicsDeviceManager.CreateDevice();
 
                     // Gets the graphics device service
                     graphicsDeviceService = Services.GetService(typeof(IGraphicsDeviceService)) as IGraphicsDeviceService;
@@ -747,8 +749,6 @@ namespace SiliconStudio.Paradox.Games
         /// <summary>Called after the Game and GraphicsDevice are created, but before LoadContent.  Reference page contains code sample.</summary>
         protected virtual void Initialize()
         {
-            // Make sure that the device is already created
-            graphicsDeviceManager.CreateDevice();
             GameSystems.Initialize();
         }
 

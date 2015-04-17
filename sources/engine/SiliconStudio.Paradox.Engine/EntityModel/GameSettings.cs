@@ -9,13 +9,13 @@ using SiliconStudio.Paradox.Graphics;
 namespace SiliconStudio.Paradox.EntityModel
 {
     /// <summary>
-    /// 
+    /// Stores some default parameters for the game.
     /// </summary>
     [DataContract("GameSettings")]
     [ContentSerializer(typeof(DataContentSerializer<GameSettings>))]
     public sealed class GameSettings
     {
-        // TODO This is duplicated from GameSettingsAsset
+        public const string AssetUrl = "__GameSettings__";
 
         public string DefaultSceneUrl { get; set; }
 

@@ -5,6 +5,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Assets.Model
@@ -16,7 +17,6 @@ namespace SiliconStudio.Paradox.Assets.Model
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
     public class GameSettingsAsset
     {
-        public const string AssetUrl = "__GameSettings__";
 
         public static readonly PropertyKey<AssetReference<SceneAsset>> DefaultScene = new PropertyKey<AssetReference<SceneAsset>>("DefaultScene", typeof(GameSettingsAsset));
 
@@ -25,14 +25,6 @@ namespace SiliconStudio.Paradox.Assets.Model
         public static readonly PropertyKey<int> BackBufferHeight = new PropertyKey<int>("BackBufferHeight", typeof(GameSettingsAsset));
 
         public static readonly PropertyKey<GraphicsProfile> DefaultGraphicsProfile = new PropertyKey<GraphicsProfile>("DefaultGraphicsProfile", typeof(GameSettingsAsset));
-
-        public string DefaultSceneUrl { get; set; }
-
-        public int DefaultBackBufferWidth { get; set; }
-
-        public int DefaultBackBufferHeight { get; set; }
-
-        public GraphicsProfile DefaultGraphicsProfileUsed { get; set; }
 
 
         // Gets the default scene from a package properties
@@ -47,7 +39,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         public static void SetDefaultScene(Package package, AssetReference<SceneAsset> defaultScene)
         {
             package.Profiles.FindSharedProfile().Properties.Set(DefaultScene, defaultScene);
-            markPackageDirty(package);
+            MarkPackageDirty(package);
         }
 
         public static int GetBackBufferWidth(Package package)
@@ -60,7 +52,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         public static void SetBackBufferWidth(Package package, int value)
         {
             package.Profiles.FindSharedProfile().Properties.Set(BackBufferWidth, value);
-            markPackageDirty(package);
+            MarkPackageDirty(package);
         }
 
         public static int GetBackBufferHeight(Package package)
@@ -73,13 +65,13 @@ namespace SiliconStudio.Paradox.Assets.Model
         public static void SetBackBufferHeight(Package package, int value)
         {
             package.Profiles.FindSharedProfile().Properties.Set(BackBufferHeight, value);
-            markPackageDirty(package);
+            MarkPackageDirty(package);
         }
 
         public static void SetGraphicsProfile(Package package, GraphicsProfile value)
         {
             package.Profiles.FindSharedProfile().Properties.Set(DefaultGraphicsProfile, value);
-            markPackageDirty(package);
+            MarkPackageDirty(package);
         }
 
         public static GraphicsProfile GetGraphicsProfile(Package package)
@@ -89,20 +81,15 @@ namespace SiliconStudio.Paradox.Assets.Model
             return packageSharedProfile.Properties.Get(DefaultGraphicsProfile);
         }
 
-        public static void markPackageDirty(Package package)
+        public static void MarkPackageDirty(Package package)
         {
             package.IsDirty = true;
-            // TODO Temporary hack to force the save of the asset
-            foreach (var asset in package.Assets)
-            {
-                asset.IsDirty = true;
-            }
         }
 
-        // Build a full GameSettingsAsset from a package
-        public static GameSettingsAsset CreateFromPackage(Package package)
+        // Build a full GameSettings from a package
+        public static GameSettings CreateFromPackage(Package package)
         {
-            var result = new GameSettingsAsset();
+            var result = new GameSettings();
 
             // Default scene
             var sharedProfile = package.Profiles.FindSharedProfile();
