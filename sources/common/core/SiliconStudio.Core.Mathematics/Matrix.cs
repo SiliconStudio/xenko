@@ -699,6 +699,23 @@ namespace SiliconStudio.Core.Mathematics
         /// </remarks>
         public bool Decompose(out Vector3 scale, out Quaternion rotation, out Vector3 translation)
         {
+            Matrix rotationMatrix;
+            Decompose(out scale, out rotationMatrix, out translation);
+            Quaternion.RotationMatrix(ref rotationMatrix, out rotation);
+            return true;
+        }
+
+        /// <summary>
+        /// Decomposes a matrix into a scale, rotation, and translation.
+        /// </summary>
+        /// <param name="scale">When the method completes, contains the scaling component of the decomposed matrix.</param>
+        /// <param name="rotation">When the method completes, contains the rtoation component of the decomposed matrix.</param>
+        /// <param name="translation">When the method completes, contains the translation component of the decomposed matrix.</param>
+        /// <remarks>
+        /// This method is designed to decompose an SRT transformation matrix only.
+        /// </remarks>
+        public bool Decompose(out Vector3 scale, out Matrix rotation, out Vector3 translation)
+        {
             //Source: Unknown
             //References: http://www.gamedev.net/community/forums/topic.asp?topic_id=441695
 
@@ -717,27 +734,17 @@ namespace SiliconStudio.Core.Mathematics
                 Math.Abs(scale.Y) < MathUtil.ZeroTolerance ||
                 Math.Abs(scale.Z) < MathUtil.ZeroTolerance)
             {
-                rotation = Quaternion.Identity;
+                rotation = Matrix.Identity;
                 return false;
             }
 
             //The rotation is the left over matrix after dividing out the scaling.
-            Matrix rotationmatrix = new Matrix();
-            rotationmatrix.M11 = M11 / scale.X;
-            rotationmatrix.M12 = M12 / scale.X;
-            rotationmatrix.M13 = M13 / scale.X;
+            rotation = new Matrix(
+                M11 / scale.X, M12 / scale.X, M13 / scale.X, 0,
+                M21 / scale.Y, M22 / scale.Y, M23 / scale.Y, 0,
+                M31 / scale.Z, M32 / scale.Z, M33 / scale.Z, 0,
+                0,                         0,             0, 1);
 
-            rotationmatrix.M21 = M21 / scale.Y;
-            rotationmatrix.M22 = M22 / scale.Y;
-            rotationmatrix.M23 = M23 / scale.Y;
-
-            rotationmatrix.M31 = M31 / scale.Z;
-            rotationmatrix.M32 = M32 / scale.Z;
-            rotationmatrix.M33 = M33 / scale.Z;
-
-            rotationmatrix.M44 = 1f;
-
-            Quaternion.RotationMatrix(ref rotationmatrix, out rotation);
             return true;
         }
 
