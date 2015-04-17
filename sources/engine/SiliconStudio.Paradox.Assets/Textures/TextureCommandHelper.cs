@@ -149,7 +149,11 @@ namespace SiliconStudio.Paradox.Assets.Textures
                     switch (parameters.Platform)
                     {
                         case PlatformType.Android:
-                            if (textureAsset.SRgb)
+                            if (inputImageFormat.IsHDR())
+                            {
+                                outputFormat = inputImageFormat;
+                            }
+                            else if (textureAsset.SRgb)
                             {
                                 outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
                             }
@@ -271,7 +275,11 @@ namespace SiliconStudio.Paradox.Assets.Textures
                                     }
                                     break;
                                 case GraphicsPlatform.OpenGLES: // OpenGLES on Windows
-                                    if (textureAsset.SRgb)
+                                    if (inputImageFormat.IsHDR())
+                                    {
+                                        outputFormat = inputImageFormat;
+                                    }
+                                    else if (textureAsset.SRgb)
                                     {
                                         outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
                                     }

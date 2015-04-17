@@ -33,6 +33,7 @@ namespace SiliconStudio.Assets
 
         private static readonly Dictionary<Guid, IAssetImporter> RegisteredImportersInternal = new Dictionary<Guid, IAssetImporter>();
         private static readonly Dictionary<Type, int> RegisteredFormatVersions = new Dictionary<Type, int>();
+        private static readonly HashSet<Type> RegisteredInternalAssetTypes = new HashSet<Type>();
         private static readonly Dictionary<Type, Type[]> RegisteredFormatVersionUpdaterTypes = new Dictionary<Type, Type[]>();
         private static readonly Dictionary<string, List<IAssetImporter>> RegisterImportExtensions = new Dictionary<string, List<IAssetImporter>>(StringComparer.InvariantCultureIgnoreCase);
         private static readonly HashSet<string> RegisteredAssetFileExtensions = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
@@ -181,7 +182,7 @@ namespace SiliconStudio.Assets
         /// <returns>An array of <see cref="Type"/> elements.</returns>
         public static Type[] GetInstantiableTypes()
         {
-            return ObjectFactory.FindRegisteredFactories().Where(type => typeof(Asset).IsAssignableFrom(type) && type.IsPublic).ToArray();
+            return ObjectFactory.FindRegisteredFactories().Where(type => typeof(Asset).IsAssignableFrom(type) && type.IsPublic && !RegisteredInternalAssetTypes.Contains(type)).ToArray();
         }
 
         /// <summary>
@@ -413,20 +414,27 @@ namespace SiliconStudio.Assets
                 var isSourceCodeAsset = typeof(SourceCodeAsset).IsAssignableFrom(assetType);
 
                 // Asset FileExtensions
-                var assetFileExtensionAttribute = assetType.GetCustomAttribute<AssetFileExtensionAttribute>();
-                if (assetFileExtensionAttribute != null && assetFileExtensionAttribute.FileExtensions != null)
+                var assetDescriptionAttribute = assetType.GetCustomAttribute<AssetDescriptionAttribute>();
+                if (assetDescriptionAttribute != null)
                 {
-                    var extensions = FileUtility.GetFileExtensions(assetFileExtensionAttribute.FileExtensions);
-                    RegisteredDefaultAssetExtension[assetType] = extensions.FirstOrDefault();
-                    foreach (var extension in extensions)
+                    if (assetDescriptionAttribute.FileExtensions != null)
                     {
-                        RegisteredAssetFileExtensions.Add(extension);
-
-                        // If the asset is a pure sourcecode asset, then register the serializer
-                        if (isSourceCodeAsset)
+                        var extensions = FileUtility.GetFileExtensions(assetDescriptionAttribute.FileExtensions);
+                        RegisteredDefaultAssetExtension[assetType] = extensions.FirstOrDefault();
+                        foreach (var extension in extensions)
                         {
-                            SourceCodeAssetSerializer.RegisterExtension(assetType, extension);
+                            RegisteredAssetFileExtensions.Add(extension);
+
+                            // If the asset is a pure sourcecode asset, then register the serializer
+                            if (isSourceCodeAsset)
+                            {
+                                SourceCodeAssetSerializer.RegisterExtension(assetType, extension);
+                            }
                         }
+                    }
+                    if (!assetDescriptionAttribute.AllowUserCreation)
+                    {
+                        RegisteredInternalAssetTypes.Add(assetType);
                     }
                 }
 

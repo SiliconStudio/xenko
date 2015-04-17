@@ -12,7 +12,7 @@ using SiliconStudio.Core.Serialization;
 namespace SiliconStudio.Assets.Tests
 {
     [DataContract("!AssetObjectTest")]
-    [AssetFileExtension(FileExtension)]
+    [AssetDescription(FileExtension)]
     public class AssetObjectTest : Asset, IEquatable<AssetObjectTest>, IAssetComposer
     {
         public const string FileExtension = ".pdxtest";
@@ -71,7 +71,7 @@ namespace SiliconStudio.Assets.Tests
     }
 
     [DataContract("!AssetImportObjectTest")]
-    [AssetFileExtension(".pdximptest")]
+    [AssetDescription(".pdximptest")]
     public class AssetImportObjectTest : AssetImport
     {
         public AssetImportObjectTest()
@@ -86,13 +86,13 @@ namespace SiliconStudio.Assets.Tests
     }
 
     [DataContract("!AssetObjectTestRaw")]
-    [AssetFileExtension(".pdxraw")]
+    [AssetDescription(".pdxraw")]
     public class AssetObjectTestRaw : SourceCodeAsset
     {
     }
 
     [DataContract("!AssetObjectTestSub")]
-    [AssetFileExtension(".pdxtestsub")]
+    [AssetDescription(".pdxtestsub")]
     public class AssetObjectTestSub : Asset
     {
         public int Value { get; set; }

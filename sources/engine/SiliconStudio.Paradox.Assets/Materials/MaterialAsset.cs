@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     /// The material asset.
     /// </summary>
     [DataContract("MaterialAsset")]
-    [AssetFileExtension(FileExtension)]
+    [AssetDescription(FileExtension)]
     [ThumbnailCompiler(PreviewerCompilerNames.MaterialThumbnailCompilerQualifiedName, true, Priority = -5000)]
     [AssetCompiler(typeof(MaterialAssetCompiler))]
     [ObjectFactory(typeof(MaterialFactory))]

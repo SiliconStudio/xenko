@@ -1,5 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+#pragma once
 #include "stdafx.h"
 
 using namespace System;
@@ -15,6 +16,7 @@ Vector4 FbxDouble3ToVector4(FbxDouble3 vector, float wValue = 0.0f);
 Vector4 FbxDouble4ToVector4(FbxDouble4 vector);
 
 Matrix FBXMatrixToMatrix(FbxAMatrix& matrix);
+FbxAMatrix MatrixToFBXMatrix(Matrix& matrix);
 
 CompressedTimeSpan FBXTimeToTimeSpane(const FbxTime& time);
 

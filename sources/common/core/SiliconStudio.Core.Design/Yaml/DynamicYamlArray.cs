@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using SharpYaml.Serialization;
 
 namespace SiliconStudio.Core.Yaml
@@ -7,7 +10,7 @@ namespace SiliconStudio.Core.Yaml
     /// <summary>
     /// Dynamic version of <see cref="YamlSequenceNode"/>.
     /// </summary>
-    public class DynamicYamlArray : DynamicYamlObject
+    public class DynamicYamlArray : DynamicYamlObject, IEnumerable
     {
         internal YamlSequenceNode node;
 
@@ -22,6 +25,11 @@ namespace SiliconStudio.Core.Yaml
         public DynamicYamlArray(YamlSequenceNode node)
         {
             this.node = node;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return node.Children.Select(ConvertToDynamic).ToArray().GetEnumerator();
         }
 
         public override bool TryConvert(ConvertBinder binder, out object result)

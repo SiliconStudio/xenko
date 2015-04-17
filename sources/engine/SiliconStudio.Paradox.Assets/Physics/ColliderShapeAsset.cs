@@ -12,7 +12,7 @@ using System;
 namespace SiliconStudio.Paradox.Assets.Physics
 {
     [DataContract("ColliderShapeAsset")]
-    [AssetFileExtension(FileExtension)]
+    [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(ColliderShapeAssetCompiler))]
     [ObjectFactory(typeof(ColliderShapeFactory))]
     [Display("Collider Shape", "A physics collider shape")]

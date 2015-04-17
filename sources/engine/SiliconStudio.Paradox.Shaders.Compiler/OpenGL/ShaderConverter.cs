@@ -139,6 +139,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
                     UseSemanticForVariable = true,
                     IsPointSpriteShader = false,
                     ViewFrustumRemap = true,
+                    FlipRenderTargetFlag = "ParadoxFlipRendertarget",
                     KeepNonUniformArrayInitializers = !isOpenGLES,
                     IsOpenGLES2 = isOpenGLES && !isOpenGLES3
                 };

@@ -185,11 +185,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 throw new ArgumentNullException("context");
             }
 
-            if (!Enabled)
-            {
-                return;
-            }
-
             if (Context == null)
             {
                 Initialize(context);
@@ -197,6 +192,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             else if (Context != context)
             {
                 throw new InvalidOperationException("Cannot use a different context between Load and Draw");
+            }
+
+            if (!Enabled)
+            {
+                return;
             }
 
             if (Name != null && Profiling)

@@ -41,6 +41,17 @@ Matrix FBXMatrixToMatrix(FbxAMatrix& matrix)
 	return result;
 }
 
+FbxAMatrix MatrixToFBXMatrix(Matrix& matrix)
+{
+	FbxAMatrix result;
+
+	for (int i = 0; i < 4; ++i)
+		for (int j = 0; j < 4; ++j)
+			((double*)&result)[i * 4 + j] = (double)((float*)&matrix)[j * 4 + i];
+
+	return result;
+}
+
 double FocalLengthToVerticalFov(double filmHeight, double focalLength)
 {
 	return 2.0 * Math::Atan(filmHeight * 0.5 * 10.0 * 2.54 / focalLength);
