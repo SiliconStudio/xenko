@@ -3,7 +3,7 @@
 #pragma once
 
 #include "stdafx.h"
-#include "SceneMapping.h"
+#include "SceneMapping.cpp"
 
 using namespace System;
 using namespace System::IO;
@@ -166,11 +166,11 @@ namespace SiliconStudio {
 						return animationCurve;
 					}
 
-					void ProcessAnimationCurveRotation(AnimationClip^ animationClip, String^ name, FbxAnimCurve** curves, float maxErrorThreshold)
+					AnimationCurve<Quaternion>^ ProcessAnimationCurveRotation(AnimationClip^ animationClip, String^ name, FbxAnimCurve** curves, float maxErrorThreshold)
 					{
 						auto keyFrames = ProcessAnimationCurveFloatsHelper<Vector3>(curves, 3);
 						if (keyFrames == nullptr)
-							return;
+							return nullptr;
 
 						// Convert euler angles to radians
 						for (int i = 0; i < keyFrames->Count; ++i)
@@ -189,9 +189,16 @@ namespace SiliconStudio {
 							auto keyFrame = keyFrames[i];
 							Quaternion quatX, quatY, quatZ;
 
-							Quaternion::RotationX(keyFrame.Value.X, quatX);
-							Quaternion::RotationY(keyFrame.Value.Y, quatY);
-							Quaternion::RotationZ(keyFrame.Value.Z, quatZ);
+							Vector3 rotation = keyFrame.Value;
+							auto rotationMatrix = Matrix::RotationX(rotation.X) * Matrix::RotationY(rotation.Y) * Matrix::RotationZ(rotation.Z);
+
+							Vector3 rotationFrom = rotation;
+							rotationMatrix = sceneMapping->ConvertMatrix(rotationMatrix);
+							rotationMatrix.DecomposeXYZ(rotationFrom);
+
+							Quaternion::RotationX(rotationFrom.X, quatX);
+							Quaternion::RotationY(rotationFrom.Y, quatY);
+							Quaternion::RotationZ(rotationFrom.Z, quatZ);
 
 							auto rotationQuaternion = quatX * quatY * quatZ;
 
@@ -209,6 +216,8 @@ namespace SiliconStudio {
 							if (animationClip->Duration < curveDuration)
 								animationClip->Duration = curveDuration;
 						}
+
+						return animationCurve;
 					}
 
 					template <typename T>
@@ -393,42 +402,6 @@ namespace SiliconStudio {
 					void ProcessAnimation(AnimationClip^ animationClip, FbxAnimLayer* animLayer, FbxNode* pNode)
 					{
 						auto nodeData = sceneMapping->FindNode(pNode);
-
-						// Directly interpolate matrix frame per frame (test)
-						/*auto animationChannel = gcnew array<AnimationChannel^>(16);
-						for (int i = 0; i < 16; ++i)
-						{
-						animationChannel[i] = gcnew AnimationChannel();
-						animationChannel[i]->TargetNode = nodeData;
-						animationChannel[i]->TargetProperty = i.ToString();
-						animationData->AnimationChannels->Add(animationChannel[i]);
-						}
-						for (int i = 0; i < 200; ++i)
-						{
-						FbxTime evalTime;
-						evalTime.SetMilliSeconds(10 * i);
-						FbxXMatrix matrix = pNode->EvaluateLocalTransform(evalTime);
-						for (int i = 0; i < 16; ++i)
-						{
-						auto key2 = KeyFrameData<float>();
-						key2.Value = ((double*)matrix)[i];
-						double time = (double)evalTime.Get();
-						time *= (double)TimeSpan::TicksPerSecond / (double)FBXSDK_TIME_ONE_SECOND.Get();
-						key2.Time = TimeSpan((long long)time);
-
-						animationChannel[i]->Add(key2);
-						}
-						}
-						FbxXMatrix localMatrix = pNode->EvaluateLocalTransform(FbxTime(0));
-
-						FbxVector4 t = localMatrix.GetT();
-						FbxVector4 r = localMatrix.GetR();*/
-
-						auto rotationOffset = pNode->RotationOffset.Get();
-						auto rotationPivot = pNode->RotationPivot.Get();
-						auto quatInterpolate = pNode->QuaternionInterpolate.Get();
-						auto rotationOrder = pNode->RotationOrder.Get();
-
 						FbxAnimCurve* curves[3];
 
 						auto nodeName = nodeData.Name;
@@ -436,7 +409,7 @@ namespace SiliconStudio {
 						curves[0] = pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
 						curves[1] = pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
 						curves[2] = pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
-						auto translation = ProcessAnimationCurveVector<Vector3>(animationClip, String::Format("Transform.Position[{0}]", nodeName), 3, curves, 0.005f);
+						auto translationCurve = ProcessAnimationCurveVector<Vector3>(animationClip, String::Format("Transform.Position[{0}]", nodeName), 3, curves, 0.005f);
 
 						curves[0] = pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
 						curves[1] = pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
@@ -446,13 +419,30 @@ namespace SiliconStudio {
 						curves[0] = pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
 						curves[1] = pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
 						curves[2] = pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
-						auto scaling = ProcessAnimationCurveVector<Vector3>(animationClip, String::Format("Transform.Scale[{0}]", nodeName), 3, curves, 0.005f);
+						auto scalingCurve = ProcessAnimationCurveVector<Vector3>(animationClip, String::Format("Transform.Scale[{0}]", nodeName), 3, curves, 0.005f);
 
-						// Change Y scaling for "root" nodes, if necessary
-						/*if (pNode == scene->GetRootNode() && scalingY != nullptr && swapHandedness == true)
+						if (translationCurve != nullptr)
 						{
-						ReverseChannelY(scaling);
-						}*/
+							auto matrixModifier = sceneMapping->MatrixModifier;
+							for (int i = 0; i < translationCurve->KeyFrames->Count; i++)
+							{
+								translationCurve->KeyFrames[i].Value = (Vector3)Vector4::Transform(Vector4(translationCurve->KeyFrames[i].Value, 1.0f), matrixModifier);
+							}
+						}
+
+						//// TOOD: remove this code, just for debug
+						//if (scalingCurve != nullptr)
+						//{
+						//	Vector3 scaling;
+						//	Matrix rotation;
+						//	Vector3 translation;
+						//	auto matrixModifier = sceneMapping->MatrixModifier;
+						//	matrixModifier.Decompose(scaling, translation);
+						//	for (int i = 0; i < scalingCurve->KeyFrames->Count; i++)
+						//	{
+						//		scalingCurve->KeyFrames[i].Value = Vector3::Modulate(scalingCurve->KeyFrames[i].Value, scaling);
+						//	}
+						//}
 
 						FbxCamera* camera = pNode->GetCamera();
 						if (camera != NULL)

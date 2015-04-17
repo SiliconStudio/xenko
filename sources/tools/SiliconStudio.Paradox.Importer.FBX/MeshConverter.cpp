@@ -3,8 +3,8 @@
 #include "stdafx.h"
 #include "../SiliconStudio.Paradox.Importer.Common/ImporterUtils.h"
 
-#include "SceneMapping.h"
-#include "AnimationConverter.h"
+#include "SceneMapping.cpp"
+#include "AnimationConverter.cpp"
 
 using namespace System;
 using namespace System::IO;
@@ -186,7 +186,7 @@ public:
 
 					MeshBoneDefinition bone;
 					bone.NodeIndex = sceneMapping->FindNodeIndex(link);
-					bone.LinkToMeshMatrix = sceneMapping->ConvertMatrix(globalBindposeInverseMatrix);
+					bone.LinkToMeshMatrix = sceneMapping->ConvertMatrixFromFbx(globalBindposeInverseMatrix);
 
 					bones->Add(bone);
 
@@ -379,7 +379,7 @@ public:
 					int controlPointIndex = controlPointIndices[polygonFanVertex];
 
 					// Get vertex position
-					auto controlPoint = sceneMapping->ConvertPoint(controlPoints[controlPointIndex]);
+					auto controlPoint = sceneMapping->ConvertPointFromFbx(controlPoints[controlPointIndex]);
 					*(Vector3*)(vbPointer + positionOffset) = controlPoint;
 
 					// Get normal
@@ -387,7 +387,7 @@ public:
 					{
 						FbxVector4 src_normal(0.f, 1.f, 0.f, 0.f);
 						pMesh->GetPolygonVertexNormal(i, polygonFanVertex, src_normal);
-						Vector3 normal = sceneMapping->ConvertNormal(src_normal);
+						Vector3 normal = sceneMapping->ConvertNormalFromFbx(src_normal);
 						normal.Normalize();
 
 						*(Vector3*)(vbPointer + normalOffset) = normal;
@@ -1145,16 +1145,17 @@ public:
 		auto node = &nodes[nodeIndex];
 
 		// Extract the local transform
-		auto localTransform = sceneMapping->ConvertMatrix(pNode->EvaluateLocalTransform());
+		auto localTransform = sceneMapping->ConvertMatrixFromFbx(pNode->EvaluateLocalTransform());
 
 		// Extract the translation and scaling
 		Vector3 translation;
+		Matrix rotation;
 		Vector3 scaling;
-		localTransform.Decompose(scaling, translation);
+		localTransform.Decompose(scaling, rotation, translation);
 
 		// Extract euler rotation in X,Y,Z
 		Vector3 rotationVector;
-		localTransform.DecomposeXYZ(rotationVector);
+		rotation.DecomposeXYZ(rotationVector);
 
 		// Setup the transform for this node
 		node->Transform.Translation = (Vector3)translation;
@@ -1225,7 +1226,7 @@ public:
 
 			config->ImportTemplates = false;
 			config->ImportPivots = false;
-			config->ImportGlobalSettings = false;
+			config->ImportGlobalSettings = true;
 			config->ImportCharacters = false;
 			config->ImportConstraints = false;
 			config->ImportGobos = false;
@@ -1246,7 +1247,7 @@ public:
 
 			config->ImportTemplates = false;
 			config->ImportPivots = false;
-			config->ImportGlobalSettings = false;
+			config->ImportGlobalSettings = true;
 			config->ImportCharacters = false;
 			config->ImportConstraints = false;
 			config->ImportGobos = false;
@@ -1267,7 +1268,7 @@ public:
 
 			config->ImportTemplates = false;
 			config->ImportPivots = false;
-			config->ImportGlobalSettings = false;
+			config->ImportGlobalSettings = true;
 			config->ImportCharacters = false;
 			config->ImportConstraints = false;
 			config->ImportGobos = false;
@@ -1309,7 +1310,7 @@ public:
 
 			config->ImportTemplates = false;
 			config->ImportPivots = false;
-			config->ImportGlobalSettings = false;
+			config->ImportGlobalSettings = true;
 			config->ImportCharacters = false;
 			config->ImportConstraints = false;
 			config->ImportGobos = false;

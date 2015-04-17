@@ -3,10 +3,10 @@
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="UtilityFunctions.cpp" />
-    <ClCompile Include="AnimationConverter.h" />
     <ClCompile Include="AssemblyInfo.h" />
-    <ClCompile Include="MeshConverter.h" />
-    <ClCompile Include="SceneMapping.h" />
+    <ClCompile Include="AnimationConverter.cpp" />
+    <ClCompile Include="MeshConverter.cpp" />
+    <ClCompile Include="SceneMapping.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />

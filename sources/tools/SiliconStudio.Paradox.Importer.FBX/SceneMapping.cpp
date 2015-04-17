@@ -80,6 +80,14 @@ namespace SiliconStudio {
 						}
 					}
 
+					property Matrix MatrixModifier
+					{
+						Matrix get()
+						{
+							return convertMatrix;
+						}
+					}
+
 					/// <summary>
 					/// Finds the index of the FBX node in the <see cref="ModelNodeDefinition"/> from a FBX node.
 					/// </summary>
@@ -113,24 +121,27 @@ namespace SiliconStudio {
 						return nodes[nodeIndex];
 					}
 
-					Matrix ConvertMatrix(FbxAMatrix& _m) {
+					Matrix ConvertMatrixFromFbx(FbxAMatrix& _m) {
 						auto m = FBXMatrixToMatrix(_m);
+						return ConvertMatrix(m);
+					}
+
+					Matrix ConvertMatrix(Matrix& m) {
 						return inverseConvertMatrix * m * convertMatrix;
 					}
 
-					Vector3 ConvertPoint(const FbxVector4& _p)
+					Vector3 ConvertPointFromFbx(const FbxVector4& _p)
 					{
 						auto position = FbxDouble4ToVector4(_p);
 						position.W = 1.0f;
 						return (Vector3)Vector4::Transform(position, convertMatrix);
 					}
 
-					Vector3 ConvertNormal(const FbxVector4& _p)
+					Vector3 ConvertNormalFromFbx(const FbxVector4& _p)
 					{
 						auto normal = (Vector3)FbxDouble4ToVector4(_p);
 						return Vector3::TransformNormal(normal, inverseTransposeConvertMatrix);
 					}
-
 				private:
 					static void GetNodes(FbxNode* pNode, std::vector<FbxNode*>& nodes)
 					{
@@ -209,8 +220,14 @@ namespace SiliconStudio {
 						auto fromMatrix = BuildAxisSystemMatrix(axisSystem);
 						fromMatrix.Invert();
 
+						// We make sure scaleImport is never zero
+						if (scaleImport == 0.0f)
+						{
+							scaleImport = 1.0f;
+						}
+
 						// Finds unit conversion ratio to ScaleImport (usually 0.01 so 1 meter). GetScaleFactor() is in cm.
-						auto scaleToMeters = (float)unitSystem.GetScaleFactor() * scaleImport;
+						auto scaleToMeters = (float)unitSystem.GetScaleFactor() * scaleImport * 0.01f;
 
 						// Builds conversion matrices.
 						convertMatrix = Matrix::Scaling(scaleToMeters) * fromMatrix;

@@ -56,6 +56,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             TextureTag = "fbx-texture";
             TextureTagSymbol = RegisterTag("Texture", () => TextureTag);
             AnimationRepeatMode = AnimationRepeatMode.LoopInfinite;
+            ScaleImport = 1.0f;
         }
 
         private string ContextAsString

@@ -37,7 +37,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         public ModelAsset()
         {
             SerializedVersion = AssetFormatVersion;
-            ScaleImport = 0.01f;
+            ScaleImport = 1.0f;
             Materials = new List<ModelMaterial>();
             Nodes = new List<NodeInformation>();
             SetDefaults();
@@ -49,7 +49,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <value>The scale import.</value>
         /// <userdoc>The scale applied when importing a model.</userdoc>
         [DataMember(10)]
-        [DefaultValue(0.01f)]
+        [DefaultValue(1.0f)]
         public float ScaleImport { get; set; }
 
         /// <summary>
