@@ -2,6 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
+using System.ComponentModel;
+
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
@@ -34,6 +36,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
         /// The collection of shapes in this asset, a collection shapes will automatically generate a compound shape.
         /// </userdoc>
         [DataMember(10)]
+        [Category]
         public List<IColliderShapeDesc> ColliderShapes { get; set; }
 
         private class ColliderShapeFactory : IObjectFactory

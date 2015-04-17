@@ -64,6 +64,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DefaultValue(null)]
         [DataMember(20)]
         [NotNull]
+        [Category]
         public MaterialBlendLayers Layers { get; set; }
 
         /// <summary>
