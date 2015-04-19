@@ -3,8 +3,8 @@
 #include "stdafx.h"
 #include "../SiliconStudio.Paradox.Importer.Common/ImporterUtils.h"
 
-#include "SceneMapping.cpp"
-#include "AnimationConverter.cpp"
+#include "SceneMapping.h"
+#include "AnimationConverter.h"
 
 using namespace System;
 using namespace System::IO;
@@ -1156,23 +1156,32 @@ public:
 		auto nodes = sceneMapping->Nodes;
 		auto node = &nodes[nodeIndex];
 
-		// Extract the local transform
-		auto localTransform = sceneMapping->ConvertMatrixFromFbx(pNode->EvaluateLocalTransform());
+
+		// Use GlobalTransform instead of LocalTransform
+		auto fbxMatrix = pNode->EvaluateGlobalTransform();
+		if (node->ParentIndex >= 0)
+		{
+			auto parentNode = pNode->GetParent();
+			auto parentMatrixInverse = parentNode->EvaluateGlobalTransform();
+			fbxMatrix = fbxMatrix * parentMatrixInverse;
+		}
+		auto matrix = sceneMapping->ConvertMatrixFromFbx(fbxMatrix);
 
 		// Extract the translation and scaling
 		Vector3 translation;
-		Matrix rotation;
+		Quaternion rotation;
 		Vector3 scaling;
-		localTransform.Decompose(scaling, rotation, translation);
+		matrix.Decompose(scaling, rotation, translation);
 
-		// Extract euler rotation in X,Y,Z
-		Vector3 rotationVector;
-		rotation.DecomposeXYZ(rotationVector);
+		//// Extract euler rotation in X,Y,Z
+		// Vector3 rotationVector;
+		// rotation.DecomposeXYZ(rotationVector);
 
 		// Setup the transform for this node
-		node->Transform.Translation = (Vector3)translation;
-		node->Transform.Rotation = Quaternion::RotationX(rotationVector.X) * Quaternion::RotationY(rotationVector.Y) * Quaternion::RotationZ(rotationVector.Z);
-		node->Transform.Scaling = (Vector3)scaling;
+		node->Transform.Translation = translation;
+		//node->Transform.Rotation = Quaternion::RotationX(rotationVector.X) * Quaternion::RotationY(rotationVector.Y) * Quaternion::RotationZ(rotationVector.Z);
+		node->Transform.Rotation = rotation;
+		node->Transform.Scaling = scaling;
 
 		// Process the node's attributes.
 		for(int i = 0; i < pNode->GetNodeAttributeCount(); i++)

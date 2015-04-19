@@ -3,12 +3,13 @@
 #pragma once
 
 #include "stdafx.h"
-#include "SceneMapping.cpp"
+#include "SceneMapping.h"
 
 using namespace System;
 using namespace System::IO;
 using namespace System::Collections::Generic;
 using namespace System::Runtime::InteropServices;
+using namespace SiliconStudio::Core::Mathematics;
 
 namespace SiliconStudio {
 	namespace Paradox {
@@ -75,14 +76,16 @@ namespace SiliconStudio {
 							int animLayerCount = animStack->GetMemberCount<FbxAnimLayer>();
 							FbxAnimLayer* animLayer = animStack->GetMember<FbxAnimLayer>(0);
 
-							// From http://www.the-area.com/forum/autodesk-fbx/fbx-sdk/resetpivotsetandconvertanimation-issue/page-1/
-							scene->GetRootNode()->ResetPivotSet(FbxNode::eDestinationPivot);
-							SetPivotStateRecursive(scene->GetRootNode());
-							scene->GetRootNode()->ConvertPivotAnimationRecursive(animStack, FbxNode::eDestinationPivot, 30.0f);
+							//// From http://www.the-area.com/forum/autodesk-fbx/fbx-sdk/resetpivotsetandconvertanimation-issue/page-1/
+							//scene->GetRootNode()->ResetPivotSet(FbxNode::eDestinationPivot);
+							//SetPivotStateRecursive(scene->GetRootNode());
+							//scene->GetRootNode()->ConvertPivotAnimationRecursive(animStack, FbxNode::eDestinationPivot, 30.0f);
 
-							ProcessAnimation(animationClip, animLayer, scene->GetRootNode());
+							scene->SetCurrentAnimationStack(animStack);
 
-							scene->GetRootNode()->ResetPivotSet(FbxNode::eSourcePivot);
+							ProcessAnimation(animationClip, animStack, scene->GetRootNode());
+
+							//scene->GetRootNode()->ResetPivotSet(FbxNode::eSourcePivot);
 						}
 
 						if (animationClip->Curves->Count == 0)
@@ -166,6 +169,35 @@ namespace SiliconStudio {
 						return animationCurve;
 					}
 
+					template <class T> AnimationCurve<T>^ CreateCurve(AnimationClip^ animationClip, String^ name, List<KeyFrameData<T>>^ keyFrames)
+					{
+						// Add curve
+						auto animationCurve = gcnew AnimationCurve<T>();
+
+						if (T::typeid == Vector3::typeid)
+						{
+							// Switch to cubic implicit interpolation mode for Vector3
+							animationCurve->InterpolationType = AnimationCurveInterpolationType::Cubic;
+						}
+
+						// Create keys
+						for (int i = 0; i < keyFrames->Count; ++i)
+						{
+							animationCurve->KeyFrames->Add(keyFrames[i]);
+						}
+
+						animationClip->AddCurve(name, animationCurve);
+
+						if (keyFrames->Count > 0)
+						{
+							auto curveDuration = keyFrames[keyFrames->Count - 1].Time;
+							if (animationClip->Duration < curveDuration)
+								animationClip->Duration = curveDuration;
+						}
+
+						return animationCurve;
+					}
+
 					AnimationCurve<Quaternion>^ ProcessAnimationCurveRotation(AnimationClip^ animationClip, String^ name, FbxAnimCurve** curves, float maxErrorThreshold)
 					{
 						auto keyFrames = ProcessAnimationCurveFloatsHelper<Vector3>(curves, 3);
@@ -190,15 +222,9 @@ namespace SiliconStudio {
 							Quaternion quatX, quatY, quatZ;
 
 							Vector3 rotation = keyFrame.Value;
-							auto rotationMatrix = Matrix::RotationX(rotation.X) * Matrix::RotationY(rotation.Y) * Matrix::RotationZ(rotation.Z);
-
-							Vector3 rotationFrom = rotation;
-							rotationMatrix = sceneMapping->ConvertMatrix(rotationMatrix);
-							rotationMatrix.DecomposeXYZ(rotationFrom);
-
-							Quaternion::RotationX(rotationFrom.X, quatX);
-							Quaternion::RotationY(rotationFrom.Y, quatY);
-							Quaternion::RotationZ(rotationFrom.Z, quatZ);
+							Quaternion::RotationX(rotation.X, quatX);
+							Quaternion::RotationY(rotation.Y, quatY);
+							Quaternion::RotationZ(rotation.Z, quatZ);
 
 							auto rotationQuaternion = quatX * quatY * quatZ;
 
@@ -399,76 +425,89 @@ namespace SiliconStudio {
 						}
 					}
 
-					void ProcessAnimation(AnimationClip^ animationClip, FbxAnimLayer* animLayer, FbxNode* pNode)
+					void ProcessAnimation(AnimationClip^ animationClip, FbxAnimStack* animStack, FbxNode* pNode)
 					{
-						auto nodeData = sceneMapping->FindNode(pNode);
-						FbxAnimCurve* curves[3];
+						auto layer0 = animStack->GetMember<FbxAnimLayer>(0);
 
-						auto nodeName = nodeData.Name;
-
-						curves[0] = pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
-						curves[1] = pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
-						curves[2] = pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
-						auto translationCurve = ProcessAnimationCurveVector<Vector3>(animationClip, String::Format("Transform.Position[{0}]", nodeName), 3, curves, 0.005f);
-
-						curves[0] = pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
-						curves[1] = pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
-						curves[2] = pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
-						ProcessAnimationCurveRotation(animationClip, String::Format("Transform.Rotation[{0}]", nodeName), curves, 0.01f);
-
-						curves[0] = pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
-						curves[1] = pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
-						curves[2] = pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
-						auto scalingCurve = ProcessAnimationCurveVector<Vector3>(animationClip, String::Format("Transform.Scale[{0}]", nodeName), 3, curves, 0.005f);
-
-						if (translationCurve != nullptr)
+						if (HasAnimation(layer0, pNode))
 						{
-							auto matrixModifier = sceneMapping->MatrixModifier;
-							for (int i = 0; i < translationCurve->KeyFrames->Count; i++)
+							float start, end;
+							const FbxTakeInfo* take_info = scene->GetTakeInfo(animStack->GetName());
+							if (take_info)
 							{
-								translationCurve->KeyFrames[i].Value = (Vector3)Vector4::Transform(Vector4(translationCurve->KeyFrames[i].Value, 1.0f), matrixModifier);
+								start = (float)take_info->mLocalTimeSpan.GetStart().GetSecondDouble();
+								end = (float)take_info->mLocalTimeSpan.GetStop().GetSecondDouble();
 							}
-						}
-
-						//// TOOD: remove this code, just for debug
-						//if (scalingCurve != nullptr)
-						//{
-						//	Vector3 scaling;
-						//	Matrix rotation;
-						//	Vector3 translation;
-						//	auto matrixModifier = sceneMapping->MatrixModifier;
-						//	matrixModifier.Decompose(scaling, translation);
-						//	for (int i = 0; i < scalingCurve->KeyFrames->Count; i++)
-						//	{
-						//		scalingCurve->KeyFrames[i].Value = Vector3::Modulate(scalingCurve->KeyFrames[i].Value, scaling);
-						//	}
-						//}
-
-						FbxCamera* camera = pNode->GetCamera();
-						if (camera != NULL)
-						{
-							if (camera->FieldOfViewY.GetCurve(animLayer))
+							else
 							{
-								curves[0] = camera->FieldOfViewY.GetCurve(animLayer);
-								auto FovAnimChannel = ProcessAnimationCurveVector<float>(animationClip, "Camera.FieldOfViewVertical", 1, curves, 0.01f);
-								ConvertDegreeToRadians(FovAnimChannel);
-
-								if (!exportedFromMaya)
-									MultiplyChannel(FovAnimChannel, 0.6); // Random factor to match what we see in 3dsmax, need to check why!
+								// Take the time line value.
+								FbxTimeSpan lTimeLineTimeSpan;
+								scene->GetGlobalSettings().GetTimelineDefaultTimeSpan(lTimeLineTimeSpan);
+								start = (float)lTimeLineTimeSpan.GetStart().GetSecondDouble();
+								end = (float)lTimeLineTimeSpan.GetStop().GetSecondDouble();
 							}
 
+							auto evaluator = scene->GetAnimationEvaluator();
 
-							if (camera->FocalLength.GetCurve(animLayer))
+							auto animationName = animStack->GetName();
+
+							// Create curves
+							auto scalingFrames = gcnew List<KeyFrameData<Vector3>>();
+							auto rotationFrames = gcnew List<KeyFrameData<Quaternion>>();
+							auto translationFrames = gcnew List<KeyFrameData<Vector3>>();
+
+							auto nodeData = sceneMapping->FindNode(pNode);
+
+							auto parentNode = pNode->GetParent();
+							auto nodeName = nodeData.Name;
+							String^ parentNodeName = nullptr;
+							if (parentNode != nullptr)
 							{
-								curves[0] = camera->FocalLength.GetCurve(animLayer);
-								auto flAnimChannel = ProcessAnimationCurveVector<float>(animationClip, "Camera.FieldOfViewVertical", 1, curves, 0.01f);
-								ComputeFovFromFL(flAnimChannel, camera);
+								parentNodeName = sceneMapping->FindNode(parentNode).Name;
 							}
+
+							const float sampling_period = 1.f / 60.0f;
+							bool loop_again = true;
+							for (float t = start; loop_again; t += sampling_period) {
+								if (t >= end) {
+									t = end;
+									loop_again = false;
+								}
+
+								auto fbxTime = FbxTimeSeconds(t);
+
+								// Use GlobalTransform instead of LocalTransform
+								auto fbxMatrix = evaluator->GetNodeGlobalTransform(pNode, fbxTime);
+								if (parentNode != nullptr)
+								{
+									auto parentMatrixInverse = evaluator->GetNodeGlobalTransform(parentNode, fbxTime).Inverse();
+									fbxMatrix = fbxMatrix * parentMatrixInverse;
+								}
+								auto matrix = sceneMapping->ConvertMatrixFromFbx(fbxMatrix);
+
+								Vector3 scaling;
+								Vector3 translation;
+								Quaternion rotation;
+								matrix.Decompose(scaling, rotation, translation);
+
+								auto time = FBXTimeToTimeSpane(fbxTime);
+
+								scalingFrames->Add(KeyFrameData<Vector3>(time, scaling));
+								translationFrames->Add(KeyFrameData<Vector3>(time, translation));
+								rotationFrames->Add(KeyFrameData<Quaternion>(time, rotation));
+								//System::Diagnostics::Debug::WriteLine("[{0}] Parent:{1} Transform.Position[{2}] = {3}", t, parentNodeName, nodeName, translation);
+								//System::Diagnostics::Debug::WriteLine("[{0}] Parent:{1} Transform.Rotation[{2}] = {3}", t, parentNodeName, nodeName, rotation);
+								//System::Diagnostics::Debug::WriteLine("[{0}] Parent:{1} Transform.Scale[{2}] = {3}", t, parentNodeName, nodeName, scaling);
+							}
+
+							CreateCurve(animationClip, String::Format("Transform.Position[{0}]", nodeName), translationFrames);
+							CreateCurve(animationClip, String::Format("Transform.Rotation[{0}]", nodeName), rotationFrames);
+							CreateCurve(animationClip, String::Format("Transform.Scale[{0}]", nodeName), scalingFrames);
 						}
 
 						for (int i = 0; i < pNode->GetChildCount(); ++i)
 						{
-							ProcessAnimation(animationClip, animLayer, pNode->GetChild(i));
+							ProcessAnimation(animationClip, animStack, pNode->GetChild(i));
 						}
 					}
 
@@ -517,25 +556,35 @@ namespace SiliconStudio {
 						return false;
 					}
 
+					bool HasAnimation(FbxAnimLayer* animLayer, FbxNode* pNode)
+					{
+						return (pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X) != NULL
+							|| pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y) != NULL
+							|| pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z) != NULL
+							|| pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X) != NULL
+							|| pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y) != NULL
+							|| pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z) != NULL
+							|| pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X) != NULL
+							|| pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y) != NULL
+							|| pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z) != NULL);
+					}
+
 					void GetAnimationNodes(FbxAnimLayer* animLayer, FbxNode* pNode, List<String^>^ animationNodes)
 					{
 						auto nodeData = sceneMapping->FindNode(pNode);;
 						auto nodeName = nodeData.Name;
 
-						bool checkTranslation = true;
-						checkTranslation = checkTranslation && pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X) != NULL;
-						checkTranslation = checkTranslation && pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y) != NULL;
-						checkTranslation = checkTranslation && pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z) != NULL;
+						bool checkTranslation = pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X) != NULL;
+						checkTranslation = checkTranslation || pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y) != NULL;
+						checkTranslation = checkTranslation || pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z) != NULL;
 
-						bool checkRotation = true;
-						checkRotation = checkRotation && pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X) != NULL;
-						checkRotation = checkRotation && pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y) != NULL;
-						checkRotation = checkRotation && pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z) != NULL;
+						bool checkRotation = pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X) != NULL;
+						checkRotation = checkRotation || pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y) != NULL;
+						checkRotation = checkRotation || pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z) != NULL;
 
-						bool checkScale = true;
-						checkScale = checkScale && pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X) != NULL;
-						checkScale = checkScale && pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y) != NULL;
-						checkScale = checkScale && pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z) != NULL;
+						bool checkScale = pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X) != NULL;
+						checkScale = checkScale || pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y) != NULL;
+						checkScale = checkScale || pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z) != NULL;
 
 						if (checkTranslation || checkRotation || checkScale)
 						{

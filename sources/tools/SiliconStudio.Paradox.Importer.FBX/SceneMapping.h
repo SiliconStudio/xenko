@@ -121,12 +121,14 @@ namespace SiliconStudio {
 						return nodes[nodeIndex];
 					}
 
-					Matrix ConvertMatrixFromFbx(FbxAMatrix& _m) {
+					Matrix ConvertMatrixFromFbx(FbxAMatrix& _m) 
+					{
 						auto m = FBXMatrixToMatrix(_m);
 						return ConvertMatrix(m);
 					}
 
-					Matrix ConvertMatrix(Matrix& m) {
+					Matrix ConvertMatrix(Matrix& m) 
+					{
 						return inverseConvertMatrix * m * convertMatrix;
 					}
 

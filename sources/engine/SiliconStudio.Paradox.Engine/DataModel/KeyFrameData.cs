@@ -14,6 +14,12 @@ namespace SiliconStudio.Paradox.DataModel
     [StructLayout(LayoutKind.Sequential)]
     public struct KeyFrameData<T>
     {
+        public KeyFrameData(CompressedTimeSpan time, T value)
+        {
+            Time = time;
+            Value = value;
+        }
+
         public CompressedTimeSpan Time;
         public T Value;
     }

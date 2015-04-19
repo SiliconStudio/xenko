@@ -46,6 +46,7 @@ namespace SiliconStudio.Paradox.DataModel
         /// </value>
         public abstract int ElementSize { get; }
 
+        [DataMemberIgnore]
         public abstract IReadOnlyList<CompressedTimeSpan> Keys { get; }
 
         /// <summary>
@@ -66,6 +67,7 @@ namespace SiliconStudio.Paradox.DataModel
     /// Typed class for animation curves.
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    [DataContract]
     public class AnimationCurve<T> : AnimationCurve
     {
         /// <summary>
@@ -77,18 +79,21 @@ namespace SiliconStudio.Paradox.DataModel
         public FastList<KeyFrameData<T>> KeyFrames { get; set; }
 
         /// <inheritdoc/>
+        [DataMemberIgnore]
         public override Type ElementType
         {
             get { return typeof(T); }
         }
 
         /// <inheritdoc/>
+        [DataMemberIgnore]
         public override int ElementSize
         {
             get { return Utilities.UnsafeSizeOf<T>(); }
         }
 
         /// <inheritdoc/>
+        [DataMemberIgnore]
         public override IReadOnlyList<CompressedTimeSpan> Keys
         {
             get { return new LambdaReadOnlyCollection<KeyFrameData<T>, CompressedTimeSpan>(KeyFrames, x => x.Time); }

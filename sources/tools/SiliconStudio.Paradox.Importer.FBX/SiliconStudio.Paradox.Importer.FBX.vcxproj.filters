@@ -4,9 +4,9 @@
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="UtilityFunctions.cpp" />
     <ClCompile Include="AssemblyInfo.h" />
-    <ClCompile Include="AnimationConverter.cpp" />
+    <ClCompile Include="AnimationConverter.h" />
+    <ClCompile Include="SceneMapping.h" />
     <ClCompile Include="MeshConverter.cpp" />
-    <ClCompile Include="SceneMapping.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />

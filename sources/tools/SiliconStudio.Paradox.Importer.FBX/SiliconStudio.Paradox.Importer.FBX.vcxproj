@@ -188,9 +188,9 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AnimationConverter.cpp" />
+    <ClCompile Include="AnimationConverter.h" />
     <ClCompile Include="AssemblyInfo.h" />
-    <ClCompile Include="SceneMapping.cpp" />
+    <ClCompile Include="SceneMapping.h" />
     <ClCompile Include="MeshConverter.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

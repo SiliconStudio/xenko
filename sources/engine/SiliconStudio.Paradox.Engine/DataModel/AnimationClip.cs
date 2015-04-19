@@ -125,4 +125,14 @@ namespace SiliconStudio.Paradox.DataModel
             public int ElementSize;
         }
     }
+
+
+    [DataContract]
+    [ContentSerializer(typeof(DataContentSerializer<AnimationClip>))]
+    public class TestAnimationClip
+    {
+        public AnimationCurve<Vector3> Test1;
+        public AnimationCurve<Quaternion> Test2;
+    }
+
 }

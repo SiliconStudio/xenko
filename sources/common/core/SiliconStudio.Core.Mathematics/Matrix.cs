@@ -738,12 +738,20 @@ namespace SiliconStudio.Core.Mathematics
                 return false;
             }
 
-            //The rotation is the left over matrix after dividing out the scaling.
-            rotation = new Matrix(
-                M11 / scale.X, M12 / scale.X, M13 / scale.X, 0,
-                M21 / scale.Y, M22 / scale.Y, M23 / scale.Y, 0,
-                M31 / scale.Z, M32 / scale.Z, M33 / scale.Z, 0,
-                0,                         0,             0, 1);
+            // Calculate an perfect orthonormal matrix (no reflections)
+            var at = new Vector3(M31 / scale.Z, M32 / scale.Z, M33 / scale.Z);
+            var up = Vector3.Cross(at, new Vector3(M11 / scale.X, M12 / scale.X, M13 / scale.X));
+            var right = Vector3.Cross(up, at);
+
+            rotation = Identity;
+            rotation.Right = right;
+            rotation.Up = up;
+            rotation.Backward = at;
+
+            // In case of reflexions
+            scale.X = Vector3.Dot(right, Right) > 0.0f ? scale.X : -scale.X;
+            scale.Y = Vector3.Dot(up, Up) > 0.0f ? scale.Y : -scale.Y;
+            scale.Z = Vector3.Dot(at, Backward) > 0.0f ? scale.Z : -scale.Z;
 
             return true;
         }
