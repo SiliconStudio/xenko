@@ -218,11 +218,11 @@ namespace SiliconStudio.Paradox.Effects
             if (bytecode.Task != null && !bytecode.Task.IsCompleted)
             {
                 // Result was async, keep it async
-                return bytecode.Task.ContinueWith(x => CreateEffect(effectName, x.Result, compilerResult.UsedParameters));
+                return bytecode.Task.ContinueWith(x => CreateEffect(effectName, x.Result, compilerResult));
             }
             else
             {
-                return CreateEffect(effectName, bytecode.WaitForResult(), compilerResult.UsedParameters);
+                return CreateEffect(effectName, bytecode.WaitForResult(), compilerResult);
             }
         }
 
@@ -237,13 +237,25 @@ namespace SiliconStudio.Paradox.Effects
             }
         }
 
-        private Effect CreateEffect(string effectName, EffectBytecodeCompilerResult effectBytecodeCompilerResult, ParameterCollection usedParameters)
+        private Effect CreateEffect(string effectName, EffectBytecodeCompilerResult effectBytecodeCompilerResult, CompilerResults compilerResult)
         {
             Effect effect;
             lock (cachedEffects)
             {
                 if (!isInitialized)
                     throw new InvalidOperationException("EffectSystem has been disposed. This Effect compilation has been cancelled.");
+
+                var usedParameters = compilerResult.UsedParameters;
+
+                if (effectBytecodeCompilerResult.CompilationLog.HasErrors)
+                {
+                    // Unregister result (or should we keep it so that failure never change?)
+                    List<CompilerResults> effectCompilerResults;
+                    if (earlyCompilerCache.TryGetValue(effectName, out effectCompilerResults))
+                    {
+                        effectCompilerResults.Remove(compilerResult);
+                    }
+                }
 
                 CheckResult(effectBytecodeCompilerResult.CompilationLog);
 

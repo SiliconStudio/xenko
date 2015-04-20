@@ -14,6 +14,9 @@ namespace SiliconStudio.Paradox.Effects
     /// </summary>
     public class DynamicEffectCompiler
     {
+        // How long to wait before trying to recompile an effect that failed compilation (only on Windows Desktop)
+        private static readonly TimeSpan ErrorCheckTimeSpan = new TimeSpan(TimeSpan.TicksPerSecond);
+
         private readonly FastList<ParameterCollection> parameterCollections;
 
         private readonly string effectName;
@@ -42,7 +45,7 @@ namespace SiliconStudio.Paradox.Effects
             parameterCollections = new FastList<ParameterCollection>();
 
             // Default behavior for fallback effect: load effect with same name but empty compiler parameters
-            ComputeFallbackEffect = (dynamicEffectCompiler, name, parameters) =>
+            ComputeFallbackEffect = (dynamicEffectCompiler, type, name, parameters) =>
             {
                 ParameterCollection usedParameters;
                 var compilerParameters = new CompilerParameters();
@@ -61,7 +64,7 @@ namespace SiliconStudio.Paradox.Effects
             set { asyncEffectCompiler = value; }
         }
 
-        public delegate ComputeFallbackEffectResult ComputeFallbackEffectDelegate(DynamicEffectCompiler dynamicEffectCompiler, string effectName, CompilerParameters compilerParameters);
+        public delegate ComputeFallbackEffectResult ComputeFallbackEffectDelegate(DynamicEffectCompiler dynamicEffectCompiler, FallbackEffectType fallbackEffectType, string effectName, CompilerParameters compilerParameters);
 
         public ComputeFallbackEffectDelegate ComputeFallbackEffect { get; set; }
 
@@ -110,7 +113,23 @@ namespace SiliconStudio.Paradox.Effects
             {
                 if (currentlyCompilingEffect.IsCompleted)
                 {
-                    UpdateEffect(effectInstance, currentlyCompilingEffect.Result, effectInstance.CurrentlyCompilingUsedParameters, passParameters);
+                    if (currentlyCompilingEffect.IsFaulted)
+                    {
+                        var compilerParameters = new CompilerParameters();
+                        effectInstance.CurrentlyCompilingUsedParameters.CopyTo(compilerParameters);
+
+                        effectInstance.HasErrors = true;
+
+                        // Fallback for errors
+                        var fallbackEffect = ComputeFallbackEffect(this, FallbackEffectType.Error, EffectName, compilerParameters);
+                        UpdateEffect(effectInstance, fallbackEffect.Effect, fallbackEffect.UsedParameters, passParameters);
+                    }
+                    else
+                    {
+                        effectInstance.HasErrors = false;
+                        UpdateEffect(effectInstance, currentlyCompilingEffect.Result, effectInstance.CurrentlyCompilingUsedParameters, passParameters);
+                    }
+
                     effectChanged = true;
 
                     // Effect has been updated
@@ -118,8 +137,26 @@ namespace SiliconStudio.Paradox.Effects
                     effectInstance.CurrentlyCompilingUsedParameters = null;
                 }
             }
-            else if (effectInstance.Effect == null || !EffectSystem.IsValid(effectInstance.Effect) || HasCollectionChanged(effectInstance, passParameters))
+            else if (effectInstance.Effect == null || !EffectSystem.IsValid(effectInstance.Effect) || HasCollectionChanged(effectInstance, passParameters) || effectInstance.HasErrors)
             {
+                if (effectInstance.HasErrors)
+                {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+                    var currentTime = DateTime.Now;
+                    if (currentTime < effectInstance.LastErrorCheck + ErrorCheckTimeSpan)
+                    {
+                        // Wait a regular interval before retrying to compile effect (i.e. every second)
+                        return false;
+                    }
+
+                    // Update last check time
+                    effectInstance.LastErrorCheck = currentTime;
+#else
+                    // Other platforms: never try to recompile failed effects for now
+                    return false;
+#endif
+                }
+
                 CreateEffect(effectInstance, passParameters);
                 effectChanged = true;
             }
@@ -163,18 +200,35 @@ namespace SiliconStudio.Paradox.Effects
 
             // Compile shader
             // possible exception in LoadEffect
+            TaskOrResult<Effect> effect;
             ParameterCollection usedParameters;
-            var effect = EffectSystem.LoadEffect(EffectName, compilerParameters, out usedParameters);
+            try
+            {
+                effect = EffectSystem.LoadEffect(EffectName, compilerParameters, out usedParameters);
+            }
+            catch (Exception)
+            {
+                effectInstance.HasErrors = true;
+
+                // Fallback to error effect
+                var fallbackEffect = ComputeFallbackEffect(this, FallbackEffectType.Error, EffectName, compilerParameters);
+                UpdateEffect(effectInstance, fallbackEffect.Effect, fallbackEffect.UsedParameters, passParameters);
+
+                return;
+            }
 
             // Do we have an async compilation?
             if (asyncEffectCompiler && effect.Task != null)
             {
                 effectInstance.CurrentlyCompilingEffect = effect.Task;
                 effectInstance.CurrentlyCompilingUsedParameters = usedParameters;
-                // Fallback to default effect
-                
-                var fallbackEffect = ComputeFallbackEffect(this, EffectName, compilerParameters);
-                UpdateEffect(effectInstance, fallbackEffect.Effect, fallbackEffect.UsedParameters, passParameters);
+
+                if (!effectInstance.HasErrors) // If there was an error, stay in that state (we don't want to switch between reloading and error states)
+                {
+                    // Fallback to default effect
+                    var fallbackEffect = ComputeFallbackEffect(this, FallbackEffectType.Compiling, EffectName, compilerParameters);
+                    UpdateEffect(effectInstance, fallbackEffect.Effect, fallbackEffect.UsedParameters, passParameters);
+                }
                 return;
             }
 

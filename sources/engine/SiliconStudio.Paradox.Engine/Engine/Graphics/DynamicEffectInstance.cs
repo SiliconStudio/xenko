@@ -1,7 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Paradox.Graphics;
@@ -15,8 +15,14 @@ namespace SiliconStudio.Paradox.Effects
     {
         internal DynamicEffectParameterUpdaterDefinition UpdaterDefinition;
         internal DynamicEffectParameterCollectionGroup ParameterCollectionGroup;
+
+        // There is 2 states: compiling when CurrentlyCompilingEffect != null (will be glowing green, except if previously an error) or not
         internal Task<Effect> CurrentlyCompilingEffect;
         internal ParameterCollection CurrentlyCompilingUsedParameters;
+
+        // There is 2 states: errors (will be glowing red) or not
+        internal bool HasErrors;
+        internal DateTime LastErrorCheck = DateTime.MinValue;
 
         protected DynamicEffectInstance()
         {

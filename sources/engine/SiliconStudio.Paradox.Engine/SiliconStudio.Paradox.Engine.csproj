@@ -76,6 +76,7 @@
     <Compile Include="Effects\EffectCompilerRemote.cs" />
     <Compile Include="Engine\BackgroundComponent.cs" />
     <Compile Include="Engine\BackgroundComponentProcessor.cs" />
+    <Compile Include="Engine\Graphics\FallbackEffectType.cs" />
     <Compile Include="Engine\Graphics\CameraRendererModeWireFrame.cs" />
     <Compile Include="Engine\Graphics\EntityComponentRendererEventArgs.cs" />
     <Compile Include="Engine\Graphics\Images\DepthMinMax\DepthMinMax.cs" />
