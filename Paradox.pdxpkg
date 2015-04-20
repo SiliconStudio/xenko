@@ -34,7 +34,6 @@ TemplateFolders:
         - samples\Games\JumpyJet\JumpyJet.pdxtpl
         - samples\Games\SpaceEscape\SpaceEscape.pdxtpl
         - samples\Graphics\AnimatedModel\AnimatedModel.pdxtpl
-        - samples\Graphics\CubemapReflection\CubemapReflection.pdxtpl
         - samples\Graphics\CustomEffect\CustomEffect.pdxtpl
         - samples\Graphics\DeferredLighting\DeferredLighting.pdxtpl
         - samples\Graphics\ForwardLighting\ForwardLighting.pdxtpl
