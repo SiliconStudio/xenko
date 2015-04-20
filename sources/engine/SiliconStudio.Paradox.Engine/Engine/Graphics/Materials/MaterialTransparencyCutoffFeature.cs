@@ -44,6 +44,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
             if (!context.Tags.Get(HasFinalCallback))
             {
+                context.Tags.Set(HasFinalCallback, true);
                 context.AddFinalCallback(MaterialShaderStage.Pixel, AddDiscardFromLuminance);
             }
         }

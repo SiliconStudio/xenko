@@ -17,6 +17,8 @@ namespace SiliconStudio.Paradox.Assets.Materials
     [DataContract("MaterialTesselationFeature")]
     public abstract class MaterialTessellationBaseFeature : IMaterialTessellationFeature
     {
+        private static readonly PropertyKey<bool> HasFinalCallback = new PropertyKey<bool>("MaterialTessellationBaseFeature.HasFinalCallback", typeof(MaterialTessellationBaseFeature));
+
         protected MaterialTessellationBaseFeature()
         {
             TriangleSize = 12f;
@@ -64,8 +66,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
             context.Parameters.Set(TessellationKeys.DesiredTriangleSize, TriangleSize);
 
             // set the tessellation method and callback to add Displacement/Normal average shaders.
-            if (AdjacentEdgeAverage)
+            if (AdjacentEdgeAverage && !context.Tags.Get(HasFinalCallback))
             {
+                context.Tags.Set(HasFinalCallback, true);
                 context.Material.TessellationMethod = ParadoxTessellationMethod.AdjacentEdgeAverage;
                 context.AddFinalCallback(MaterialShaderStage.Domain, AddAdjacentEdgeAverageMacros);
                 context.AddFinalCallback(MaterialShaderStage.Domain, AddAdjacentEdgeAverageShaders);
