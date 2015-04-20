@@ -114,8 +114,11 @@ public:
 		// Checks normals availability.
 		bool has_normals = pMesh->GetElementNormalCount() > 0 && pMesh->GetElementNormal(0)->GetMappingMode() != FbxLayerElement::eNone;
 
-		// Regenerate normals if they're not available or not in the right format.
-		//pMesh->GenerateNormals(!has_normals, false, false);
+		// Regenerate normals if necessary
+		if (!has_normals)
+		{
+			pMesh->GenerateNormals(true, false, false);
+		}
 
 		FbxVector4* controlPoints = pMesh->GetControlPoints();
 		FbxGeometryElementNormal* normalElement = pMesh->GetElementNormal();
