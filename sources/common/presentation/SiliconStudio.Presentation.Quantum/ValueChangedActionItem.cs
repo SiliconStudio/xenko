@@ -39,6 +39,7 @@ namespace SiliconStudio.Presentation.Quantum
             NodePath = null;
             ObservableNodePath = null;
             Index = null;
+            PreviousValue = null;
         }
 
         /// <inheritdoc/>
@@ -52,24 +53,20 @@ namespace SiliconStudio.Presentation.Quantum
             var currentValue = node.GetValue(Index);
             bool setByObservableNode = false;
 
-            var observableViewModel = service.ViewModelProvider != null ? service.ViewModelProvider(identifier) : null;
-            if (observableViewModel != null)
+            var observableNode = service.ResolveObservableNode(identifier, ObservableNodePath) as SingleObservableNode;
+            if (observableNode != null)
             {
-                var observableNode = (SingleObservableNode)observableViewModel.ResolveObservableNode(ObservableNodePath);
-                if (observableNode != null)
-                {
-                    observableNode.Value = PreviousValue;
-                    setByObservableNode = true;
-                }
+                observableNode.Value = PreviousValue;
+                setByObservableNode = true;
             }
 
             if (!setByObservableNode)
             {
                 node.SetValue(PreviousValue, Index);
             }
-            
-            PreviousValue = currentValue;        
-        }
+
+            PreviousValue = currentValue;
+        }        
 
         /// <inheritdoc/>
         protected override void RedoAction()

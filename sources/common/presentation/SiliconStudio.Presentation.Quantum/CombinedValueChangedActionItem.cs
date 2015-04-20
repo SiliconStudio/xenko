@@ -39,15 +39,11 @@ namespace SiliconStudio.Presentation.Quantum
 
         private void Refresh()
         {
-            var observableViewModel = serviceProvider.ViewModelProvider != null ? serviceProvider.ViewModelProvider(identifier) : null;
-            if (observableViewModel != null)
+            var combinedNode = serviceProvider.ResolveObservableNode(identifier, ObservableNodePath) as CombinedObservableNode;
+            if (combinedNode != null)
             {
-                var combinedNode = observableViewModel.ResolveObservableNode(observableNodePath) as CombinedObservableNode;
-                if (combinedNode != null)
-                {
-                    combinedNode.Refresh();
-                    combinedNode.Owner.NotifyNodeChanged(combinedNode.Path);
-                }
+                combinedNode.Refresh();
+                combinedNode.Owner.NotifyNodeChanged(combinedNode.Path);
             }
         }
     }

@@ -50,6 +50,19 @@ namespace SiliconStudio.Presentation.Quantum
         public event EventHandler<NodeInitializedEventArgs> NodeInitialized;
 
         /// <summary>
+        /// Attempts to resolve the given path on the observable view model corresponding to the given identifier. Returns <c>null</c>
+        /// if it fails. This method does not throw exceptions.
+        /// </summary>
+        /// <param name="identifier">The identifier of the observable view model to resolve.</param>
+        /// <param name="observableNodePath">The path of the node to resolve.</param>
+        /// <returns>A reference to the <see cref="ObservableNode"/> corresponding to the given path of the given view model if available, <c>nulll</c> otherwise.</returns>
+        public ObservableNode ResolveObservableNode(ObservableViewModelIdentifier identifier, string observableNodePath)
+        {
+            var observableViewModel = ViewModelProvider != null ? ViewModelProvider(identifier) : null;
+            return observableViewModel != null ? observableViewModel.ResolveObservableNode(observableNodePath) as ObservableNode : null;
+        }
+
+        /// <summary>
         /// Raise the <see cref="NodeInitialized"/> event.
         /// </summary>
         /// <param name="node">The node that has been modified.</param>

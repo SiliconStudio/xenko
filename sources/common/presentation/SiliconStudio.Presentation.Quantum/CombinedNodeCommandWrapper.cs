@@ -44,11 +44,7 @@ namespace SiliconStudio.Presentation.Quantum
             Redo(parameter, true);
             var displayName = "Executing " + Name;
 
-            var observableViewModel = service.ViewModelProvider(identifier);
-            if (observableViewModel == null)
-                throw new InvalidOperationException("Executing a combined command without corresponding view model");
-
-            var node = (CombinedObservableNode)observableViewModel.ResolveObservableNode(ObservableNodePath);
+            var node = (CombinedObservableNode)service.ResolveObservableNode(identifier, ObservableNodePath);
             // TODO: this need to be verified but I suppose node is never null
             ActionStack.EndTransaction(displayName, x => new CombinedValueChangedActionItem(displayName, service, node.Path, identifier, x));
         }
@@ -85,8 +81,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         private void Refresh()
         {
-            var observableViewModel = service.ViewModelProvider(identifier);
-            var observableNode = observableViewModel != null ? (CombinedObservableNode)observableViewModel.ResolveObservableNode(ObservableNodePath) : null;
+            var observableNode = service.ResolveObservableNode(identifier, ObservableNodePath) as CombinedObservableNode;
 
             // Recreate observable nodes to apply changes
             if (observableNode != null)

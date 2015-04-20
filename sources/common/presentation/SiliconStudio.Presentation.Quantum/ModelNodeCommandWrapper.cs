@@ -102,13 +102,8 @@ namespace SiliconStudio.Presentation.Quantum
         protected virtual void Refresh(IModelNode modelNode, object index)
         {
             if (modelNode == null) throw new ArgumentNullException("modelNode");
-            var observableViewModel = Service.ViewModelProvider(Identifier);
 
-            // No view model to refresh
-            if (observableViewModel == null)
-                return;
-
-            var observableNode = (ObservableModelNode)observableViewModel.ResolveObservableNode(ObservableNodePath);
+            var observableNode = Service.ResolveObservableNode(Identifier, ObservableNodePath) as ObservableModelNode;
             // No node matches this model node
             if (observableNode == null)
                 return;
