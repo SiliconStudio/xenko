@@ -7,6 +7,9 @@ namespace SiliconStudio.Paradox.Effects.Materials
         // Output of shading a material surface
         stage stream float3 shadingColor;
 
+        // Output of the shading color alpha
+        stage stream float  shadingColorAlpha;
+
         // Half vector (sum of normalWS + lightDirectionWS)
         stage stream float3 H;
 
@@ -18,6 +21,12 @@ namespace SiliconStudio.Paradox.Effects.Materials
 
         // view dot half vector
         stage stream float VdotH;
+
+        override void ResetStream()
+        {
+            base.ResetStream();
+            streams.shadingColorAlpha = 1.0f;
+        }
 
         // Computes material attributes per light
         stage void PrepareMaterialPerDirectLight()

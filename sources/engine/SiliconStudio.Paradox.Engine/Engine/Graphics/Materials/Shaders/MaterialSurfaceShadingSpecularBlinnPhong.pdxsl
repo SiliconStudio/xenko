@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
 
             // TODO: integrate AO/Cavity...etc.
             // TODO: Check if we need to divide by PI
-            return specularColor * k * streams.lightColorNdotL * streams.matAlphaBlend.y;
+            return specularColor * k * streams.lightColorNdotL * streams.matDiffuseSpecularAlphaBlend.y;
         }
     };
 }

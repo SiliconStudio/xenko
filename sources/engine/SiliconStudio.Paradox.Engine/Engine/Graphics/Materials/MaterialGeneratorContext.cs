@@ -467,7 +467,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
                 // the streams specific to a stage
                 if(stage == MaterialShaderStage.Pixel)
-                    mixin.Mixins.Add("MaterialPixelStream");
+                    mixin.Mixins.Add("MaterialPixelShadingStream");
 
                 return mixin;
             }

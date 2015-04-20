@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
             materialPixelStage.Compute();
 
             // Return the actual shading color
-            return float4(streams.shadingColor, streams.matDiffuse.a); // TODO: The way alpha is coming hardcoded from diffuse is not great
+            return float4(streams.shadingColor, streams.shadingColorAlpha); // TODO: The way alpha is coming hardcoded from diffuse is not great
         }
     };
 }

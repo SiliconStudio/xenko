@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
 
             var reflected = fresnel * geometricShadowing * normalDistribution / 4;
 
-            return reflected * streams.lightColorNdotL * streams.matAlphaBlend.y;
+            return reflected * streams.lightColorNdotL * streams.matDiffuseSpecularAlphaBlend.y;
         }
 
         override float3 ComputeEnvironmentLightContribution()

@@ -129,6 +129,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceDiffuseSpecularAlphaBlendColor.cs">
+      <DependentUpon>MaterialSurfaceDiffuseSpecularAlphaBlendColor.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Engine\Graphics\ParadoxEffectBaseKeys.cs" />
     <Compile Include="Engine\Graphics\CameraComponentRendererExtensions.cs" />
     <Compile Include="Engine\Graphics\DynamicEffectParameterUpdaterDefinition.cs" />
@@ -3072,6 +3078,10 @@
     <None Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceDiffuse.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceDiffuse.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceDiffuseSpecularAlphaBlendColor.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSurfaceDiffuseSpecularAlphaBlendColor.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceTransparentAlphaDiscard.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

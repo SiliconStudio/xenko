@@ -20,16 +20,18 @@ namespace SiliconStudio.Paradox.Assets.Materials
     [Display("Additive")]
     public class MaterialTransparencyAdditiveFeature : IMaterialTransparencyFeature
     {
-        private static readonly MaterialStreamDescriptor AlphaBlendStream = new MaterialStreamDescriptor("Alpha", "matAlphaBlend", MaterialKeys.AlphaBlendValue.PropertyType);
+        private static readonly MaterialStreamDescriptor AlphaBlendStream = new MaterialStreamDescriptor("DiffuseSpecularAlphaBlend", "matDiffuseSpecularAlphaBlend", MaterialKeys.DiffuseSpecularAlphaBlendValue.PropertyType);
 
-        private static readonly MaterialStreamDescriptor AlphaBlendColorStream = new MaterialStreamDescriptor("Alpha - Color", "matAlphaBlendColor", MaterialKeys.AlphaBlendColorValue.PropertyType);
+        private static readonly MaterialStreamDescriptor AlphaBlendColorStream = new MaterialStreamDescriptor("DiffuseSpecularAlphaBlend - Color", "matAlphaBlendColor", MaterialKeys.AlphaBlendColorValue.PropertyType);
+
+        private static readonly PropertyKey<bool> HasFinalCallback = new PropertyKey<bool>("MaterialTransparencyAdditiveFeature.HasFinalCallback", typeof(MaterialTransparencyAdditiveFeature));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialTransparencyAdditiveFeature"/> class.
         /// </summary>
         public MaterialTransparencyAdditiveFeature()
         {
-            Alpha = new ComputeFloat(1.0f);
+            Alpha = new ComputeFloat(0.5f);
             Tint = new ComputeColor(Color.White);
         }
 
@@ -51,31 +53,35 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DataMember(20)]
         public IComputeColor Tint { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether [apply to diffuse].
-        /// </summary>
-        /// <value><c>true</c> if [apply to diffuse]; otherwise, <c>false</c>.</value>
-        [DataMember(30)]
-        [DefaultValue(false)]
-        public bool ApplyToDiffuse { get; set; }
-
         public void Visit(MaterialGeneratorContext context)
         {
-            var alpha = Alpha ?? new ComputeFloat(1.0f);
+            var alpha = Alpha ?? new ComputeFloat(0.5f);
             var tint = Tint ?? new ComputeColor(Color.White);
 
-            var blendDesc = new BlendStateDescription(Blend.One, Blend.BlendFactor);
+            // Use pre-multiplied alpha to support both additive and alpha blending
+            var blendDesc = new BlendStateDescription(Blend.One, Blend.InverseSourceAlpha);
             context.Material.HasTransparency = true;
             context.Parameters.Set(Effect.BlendStateKey, BlendState.NewFake(blendDesc));
 
-            var alphaColor = alpha.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.AlphaBlendMap, MaterialKeys.AlphaBlendValue, Color.White));
+            var alphaColor = alpha.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.DiffuseSpecularAlphaBlendMap, MaterialKeys.DiffuseSpecularAlphaBlendValue, Color.White));
 
             var mixin = new ShaderMixinSource();
-            mixin.Mixins.Add(new ShaderClassSource("ComputeColorMaterialAlphaBlend", ApplyToDiffuse));
+            mixin.Mixins.Add(new ShaderClassSource("ComputeColorMaterialAlphaBlend"));
             mixin.AddComposition("color", alphaColor);
 
             context.SetStream(MaterialShaderStage.Pixel, AlphaBlendStream.Stream, MaterialStreamType.Float2, mixin);
             context.SetStream(AlphaBlendColorStream.Stream, tint, MaterialKeys.AlphaBlendColorMap, MaterialKeys.AlphaBlendColorValue, Color.White);
+
+            if (!context.Tags.Get(HasFinalCallback))
+            {
+                context.Tags.Set(HasFinalCallback, true);
+                context.AddFinalCallback(MaterialShaderStage.Pixel, AddDiffuseSpecularAlphaBlendColor);
+            }
+        }
+
+        private void AddDiffuseSpecularAlphaBlendColor(MaterialShaderStage stage, MaterialGeneratorContext context)
+        {
+            context.AddSurfaceShader(MaterialShaderStage.Pixel, new ShaderClassSource("MaterialSurfaceDiffuseSpecularAlphaBlendColor"));
         }
     }
 }

@@ -7,7 +7,7 @@ namespace SiliconStudio.Paradox.Effects.Materials
         override void Compute()
         {
             // Discard a pixel if the alpha from the material diffuse is less than the alpha discard limit
-            if (streams.matDiffuse.a < streams.matAlphaDiscard)
+            if (streams.shadingColorAlpha < streams.matAlphaDiscard)
             {
                 discard;
             }
