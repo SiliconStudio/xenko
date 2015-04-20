@@ -138,22 +138,12 @@ public:
 		List<MeshBoneDefinition>^ bones = nullptr;
 
 		// Dump skinning information
-		if (pMesh->GetDeformerCount() > 0)
+		int skinDeformerCount = pMesh->GetDeformerCount(FbxDeformer::eSkin);
+		if (skinDeformerCount > 0)
 		{
-			if (pMesh->GetDeformerCount() != 1)
+			for (int deformerIndex = 0; deformerIndex < skinDeformerCount; deformerIndex++)
 			{
-				logger->Error("Multiple mesh deformers are not supported yet. Mesh '{0}' will not be properly deformed.", gcnew String(meshNames[pMesh].c_str()));
-			}
-
-			FbxDeformer* deformer = pMesh->GetDeformer(0);
-			FbxDeformer::EDeformerType deformerType = deformer->GetDeformerType();
-			if (deformerType == FbxDeformer::eSkin)
-			{
-				auto lPose = scene->GetPose(0);
-
-				FbxSkin* skin = FbxCast<FbxSkin>(deformer);
-
-				FbxSkin::EType lSkinningType = skin->GetSkinningType();
+				FbxSkin* skin = FbxCast<FbxSkin>(pMesh->GetDeformer(deformerIndex, FbxDeformer::eSkin));
 
 				controlPointWeights.resize(pMesh->GetControlPointsCount());
 
@@ -165,15 +155,20 @@ public:
 					pMesh->GetNode()->GetGeometricRotation(FbxNode::eSourcePivot),
 					pMesh->GetNode()->GetGeometricScaling(FbxNode::eSourcePivot));
 
+
 				totalClusterCount = skin->GetClusterCount();
 				for (int clusterIndex = 0 ; clusterIndex < totalClusterCount; ++clusterIndex)
 				{
 					FbxCluster* cluster = skin->GetCluster(clusterIndex);
+					int indexCount = cluster->GetControlPointIndicesCount();
+					if (indexCount == 0)
+					{
+						continue;
+					}
+
 					FbxNode* link = cluster->GetLink();
 					FbxCluster::ELinkMode lClusterMode = cluster->GetLinkMode();
 					const char* boneName = link->GetName();
-
-					int indexCount = cluster->GetControlPointIndicesCount();
 					int *indices = cluster->GetControlPointIndices();
 					double *weights = cluster->GetControlPointWeights();
 
@@ -188,8 +183,23 @@ public:
 					bone.NodeIndex = sceneMapping->FindNodeIndex(link);
 					bone.LinkToMeshMatrix = sceneMapping->ConvertMatrixFromFbx(globalBindposeInverseMatrix);
 
-					bones->Add(bone);
+					// Check if the bone was not already there, else update it
+					bool isBoneAlreadyFound = false;
+					for (int i = 0; i < bones->Count; i++)
+					{
+						if (bones[i].NodeIndex == bone.NodeIndex)
+						{
+							bones[i] = bone;
+							isBoneAlreadyFound = true;
+							break;
+						}
+					}
+					if (!isBoneAlreadyFound)
+					{
+						bones->Add(bone);
+					}
 
+					// Gather skin indices and weights
 					for (int j = 0 ; j < indexCount; j++)
 					{
 						int controlPointIndex = indices[j];
@@ -1156,15 +1166,8 @@ public:
 		auto nodes = sceneMapping->Nodes;
 		auto node = &nodes[nodeIndex];
 
-
 		// Use GlobalTransform instead of LocalTransform
-		auto fbxMatrix = pNode->EvaluateGlobalTransform();
-		if (node->ParentIndex >= 0)
-		{
-			auto parentNode = pNode->GetParent();
-			auto parentMatrixInverse = parentNode->EvaluateGlobalTransform();
-			fbxMatrix = fbxMatrix * parentMatrixInverse;
-		}
+		auto fbxMatrix = pNode->EvaluateLocalTransform();
 		auto matrix = sceneMapping->ConvertMatrixFromFbx(fbxMatrix);
 
 		// Extract the translation and scaling
@@ -1173,13 +1176,8 @@ public:
 		Vector3 scaling;
 		matrix.Decompose(scaling, rotation, translation);
 
-		//// Extract euler rotation in X,Y,Z
-		// Vector3 rotationVector;
-		// rotation.DecomposeXYZ(rotationVector);
-
 		// Setup the transform for this node
 		node->Transform.Translation = translation;
-		//node->Transform.Rotation = Quaternion::RotationX(rotationVector.X) * Quaternion::RotationY(rotationVector.Y) * Quaternion::RotationZ(rotationVector.Z);
 		node->Transform.Rotation = rotation;
 		node->Transform.Scaling = scaling;
 

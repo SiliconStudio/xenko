@@ -481,7 +481,7 @@ namespace SiliconStudio {
 								if (parentNode != nullptr)
 								{
 									auto parentMatrixInverse = evaluator->GetNodeGlobalTransform(parentNode, fbxTime).Inverse();
-									fbxMatrix = fbxMatrix * parentMatrixInverse;
+									fbxMatrix = parentMatrixInverse * fbxMatrix;
 								}
 								auto matrix = sceneMapping->ConvertMatrixFromFbx(fbxMatrix);
 
