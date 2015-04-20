@@ -1175,18 +1175,14 @@ public:
 
 		// Extract the translation and scaling
 		Vector3 translation;
-		Matrix rotationMatrix;
+		Quaternion rotation;
 		Vector3 scaling;
-		matrix.Decompose(scaling, rotationMatrix, translation);
+		matrix.Decompose(scaling, rotation, translation);
 
 		// Setup the transform for this node
 		node->Transform.Translation = translation;
-		node->Transform.Rotation = Quaternion::RotationMatrix(rotationMatrix);
+		node->Transform.Rotation = rotation;
 		node->Transform.Scaling = scaling;
-
-		//Vector3 rotationVector;
-		//rotationMatrix.DecomposeXYZ(rotationVector);
-		//System::Diagnostics::Debug::WriteLine("[{0}] Translation: {1} Rotation: {2} Scaling: {3}", node->Name, translation, rotationVector, scaling);
 
 		// Process the node's attributes.
 		for(int i = 0; i < pNode->GetNodeAttributeCount(); i++)

@@ -76,16 +76,17 @@ namespace SiliconStudio {
 							int animLayerCount = animStack->GetMemberCount<FbxAnimLayer>();
 							FbxAnimLayer* animLayer = animStack->GetMember<FbxAnimLayer>(0);
 
-							//// From http://www.the-area.com/forum/autodesk-fbx/fbx-sdk/resetpivotsetandconvertanimation-issue/page-1/
-							//scene->GetRootNode()->ResetPivotSet(FbxNode::eDestinationPivot);
-							//SetPivotStateRecursive(scene->GetRootNode());
-							//scene->GetRootNode()->ConvertPivotAnimationRecursive(animStack, FbxNode::eDestinationPivot, 30.0f);
+							// Optimized code
+							// From http://www.the-area.com/forum/autodesk-fbx/fbx-sdk/resetpivotsetandconvertanimation-issue/page-1/
+							scene->GetRootNode()->ResetPivotSet(FbxNode::eDestinationPivot);
+							SetPivotStateRecursive(scene->GetRootNode());
+							scene->GetRootNode()->ConvertPivotAnimationRecursive(animStack, FbxNode::eDestinationPivot, 30.0f);
+							ProcessAnimationByCurve(animationClip, animLayer, scene->GetRootNode());
+							scene->GetRootNode()->ResetPivotSet(FbxNode::eSourcePivot);
 
-							scene->SetCurrentAnimationStack(animStack);
-
-							ProcessAnimation(animationClip, animStack, scene->GetRootNode());
-
-							//scene->GetRootNode()->ResetPivotSet(FbxNode::eSourcePivot);
+							// Reference code (Uncomment Optimized code to use this part)
+							//scene->SetCurrentAnimationStack(animStack);
+							//ProcessAnimation(animationClip, animStack, scene->GetRootNode());
 						}
 
 						if (animationClip->Curves->Count == 0)
@@ -198,7 +199,7 @@ namespace SiliconStudio {
 						return animationCurve;
 					}
 
-					AnimationCurve<Quaternion>^ ProcessAnimationCurveRotation(AnimationClip^ animationClip, String^ name, FbxAnimCurve** curves, float maxErrorThreshold)
+					AnimationCurve<Quaternion>^ ProcessAnimationCurveRotation(AnimationClip^ animationClip, String^ name, FbxAnimCurve** curves, float maxErrorThreshold, Matrix rotationAdjust)
 					{
 						auto keyFrames = ProcessAnimationCurveFloatsHelper<Vector3>(curves, 3);
 						if (keyFrames == nullptr)
@@ -219,18 +220,17 @@ namespace SiliconStudio {
 						for (int i = 0; i < keyFrames->Count; ++i)
 						{
 							auto keyFrame = keyFrames[i];
-							Quaternion quatX, quatY, quatZ;
-
 							Vector3 rotation = keyFrame.Value;
-							Quaternion::RotationX(rotation.X, quatX);
-							Quaternion::RotationY(rotation.Y, quatY);
-							Quaternion::RotationZ(rotation.Z, quatZ);
 
-							auto rotationQuaternion = quatX * quatY * quatZ;
+							auto finalMatrix = Matrix::RotationX(rotation.X) * Matrix::RotationY(rotation.Y) * Matrix::RotationZ(rotation.Z) * rotationAdjust;
+							Vector3 scaling;
+							Quaternion rotationQuat;
+							Vector3 translation;
+							finalMatrix.Decompose(scaling, rotationQuat, translation);
 
 							KeyFrameData<Quaternion> newKeyFrame;
 							newKeyFrame.Time = keyFrame.Time;
-							newKeyFrame.Value = rotationQuaternion;
+							newKeyFrame.Value = rotationQuat;
 							animationCurve->KeyFrames->Add(newKeyFrame);
 						}
 
@@ -425,6 +425,86 @@ namespace SiliconStudio {
 						}
 					}
 
+					void ProcessAnimationByCurve(AnimationClip^ animationClip, FbxAnimLayer* animLayer, FbxNode* pNode)
+					{
+						auto nodeData = sceneMapping->FindNode(pNode);
+						FbxAnimCurve* curves[3];
+
+						auto nodeName = nodeData.Name;
+
+						auto matrixModifier = sceneMapping->MatrixModifier;
+
+						Vector3 translation;
+						Matrix rotation;
+						Vector3 scaling;
+						matrixModifier.Decompose(scaling, rotation, translation);
+
+						curves[0] = pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
+						curves[1] = pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
+						curves[2] = pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
+						auto translationCurve = ProcessAnimationCurveVector<Vector3>(animationClip, String::Format("Transform.Position[{0}]", nodeName), 3, curves, 0.005f);
+
+						curves[0] = pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
+						curves[1] = pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
+						curves[2] = pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
+						ProcessAnimationCurveRotation(animationClip, String::Format("Transform.Rotation[{0}]", nodeName), curves, 0.01f, rotation);
+
+						curves[0] = pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
+						curves[1] = pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
+						curves[2] = pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
+						auto scalingCurve = ProcessAnimationCurveVector<Vector3>(animationClip, String::Format("Transform.Scale[{0}]", nodeName), 3, curves, 0.005f);
+
+						if (translationCurve != nullptr)
+						{
+							auto keyFrames = translationCurve->KeyFrames;
+							for (int i = 0; i < keyFrames->Count; i++)
+							{
+								auto keyFrame = keyFrames[i];
+								keyFrame.Value = (Vector3)Vector4::Transform(Vector4(keyFrame.Value, 1.0f), matrixModifier);
+								keyFrames[i] = keyFrame;
+							}
+						}
+
+						if (scalingCurve != nullptr)
+						{
+							auto keyFrames = scalingCurve->KeyFrames;
+							for (int i = 0; i < keyFrames->Count; i++)
+							{
+								auto keyFrame = keyFrames[i];
+								keyFrame.Value = Vector3::TransformNormal(keyFrame.Value, rotation);
+								keyFrames[i] = keyFrame;
+							}
+						}
+
+						FbxCamera* camera = pNode->GetCamera();
+						if (camera != NULL)
+						{
+							if (camera->FieldOfViewY.GetCurve(animLayer))
+							{
+								curves[0] = camera->FieldOfViewY.GetCurve(animLayer);
+								auto FovAnimChannel = ProcessAnimationCurveVector<float>(animationClip, "Camera.FieldOfViewVertical", 1, curves, 0.01f);
+								ConvertDegreeToRadians(FovAnimChannel);
+
+								if (!exportedFromMaya)
+									MultiplyChannel(FovAnimChannel, 0.6); // Random factor to match what we see in 3dsmax, need to check why!
+							}
+
+
+							if (camera->FocalLength.GetCurve(animLayer))
+							{
+								curves[0] = camera->FocalLength.GetCurve(animLayer);
+								auto flAnimChannel = ProcessAnimationCurveVector<float>(animationClip, "Camera.FieldOfViewVertical", 1, curves, 0.01f);
+								ComputeFovFromFL(flAnimChannel, camera);
+							}
+						}
+
+						for (int i = 0; i < pNode->GetChildCount(); ++i)
+						{
+							ProcessAnimationByCurve(animationClip, animLayer, pNode->GetChild(i));
+						}
+					}
+
+					// This code is not used but is a reference code for code animation but less optimized than ProcessAnimationByCurve. 
 					void ProcessAnimation(AnimationClip^ animationClip, FbxAnimStack* animStack, FbxNode* pNode)
 					{
 						auto layer0 = animStack->GetMember<FbxAnimLayer>(0);
