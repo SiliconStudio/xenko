@@ -141,20 +141,17 @@ public:
 		int skinDeformerCount = pMesh->GetDeformerCount(FbxDeformer::eSkin);
 		if (skinDeformerCount > 0)
 		{
+			bones = gcnew List<MeshBoneDefinition>();
 			for (int deformerIndex = 0; deformerIndex < skinDeformerCount; deformerIndex++)
 			{
 				FbxSkin* skin = FbxCast<FbxSkin>(pMesh->GetDeformer(deformerIndex, FbxDeformer::eSkin));
-
 				controlPointWeights.resize(pMesh->GetControlPointsCount());
-
-				bones = gcnew List<MeshBoneDefinition>();
 
 				// Computes geometry matrix.
 				FbxAMatrix geometry_matrix(
 					pMesh->GetNode()->GetGeometricTranslation(FbxNode::eSourcePivot),
 					pMesh->GetNode()->GetGeometricRotation(FbxNode::eSourcePivot),
 					pMesh->GetNode()->GetGeometricScaling(FbxNode::eSourcePivot));
-
 
 				totalClusterCount = skin->GetClusterCount();
 				for (int clusterIndex = 0 ; clusterIndex < totalClusterCount; ++clusterIndex)
@@ -167,7 +164,6 @@ public:
 					}
 
 					FbxNode* link = cluster->GetLink();
-					FbxCluster::ELinkMode lClusterMode = cluster->GetLinkMode();
 					const char* boneName = link->GetName();
 					int *indices = cluster->GetControlPointIndices();
 					double *weights = cluster->GetControlPointWeights();
@@ -180,30 +176,36 @@ public:
 					auto globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * geometry_matrix;
 
 					MeshBoneDefinition bone;
+					int boneIndex = bones->Count;
 					bone.NodeIndex = sceneMapping->FindNodeIndex(link);
 					bone.LinkToMeshMatrix = sceneMapping->ConvertMatrixFromFbx(globalBindposeInverseMatrix);
 
 					// Check if the bone was not already there, else update it
+					// TODO: this is not the correct way to handle multiple deformers (additive...etc.)
 					bool isBoneAlreadyFound = false;
 					for (int i = 0; i < bones->Count; i++)
 					{
 						if (bones[i].NodeIndex == bone.NodeIndex)
 						{
 							bones[i] = bone;
+							boneIndex = i;
 							isBoneAlreadyFound = true;
 							break;
 						}
-					}
-					if (!isBoneAlreadyFound)
-					{
-						bones->Add(bone);
 					}
 
 					// Gather skin indices and weights
 					for (int j = 0 ; j < indexCount; j++)
 					{
 						int controlPointIndex = indices[j];
-						controlPointWeights[controlPointIndex].push_back(std::pair<short, float>((short)clusterIndex, (float)weights[j]));
+						controlPointWeights[controlPointIndex].push_back(std::pair<short, float>((short)boneIndex, (float)weights[j]));
+					}
+
+					// Find an existing bone and update it
+					// TODO: this is probably not correct to do this (we should handle cluster additive...etc. more correctly here)
+					if (!isBoneAlreadyFound)
+					{
+						bones->Add(bone);
 					}
 				}
 
@@ -1167,19 +1169,24 @@ public:
 		auto node = &nodes[nodeIndex];
 
 		// Use GlobalTransform instead of LocalTransform
+
 		auto fbxMatrix = pNode->EvaluateLocalTransform();
 		auto matrix = sceneMapping->ConvertMatrixFromFbx(fbxMatrix);
 
 		// Extract the translation and scaling
 		Vector3 translation;
-		Quaternion rotation;
+		Matrix rotationMatrix;
 		Vector3 scaling;
-		matrix.Decompose(scaling, rotation, translation);
+		matrix.Decompose(scaling, rotationMatrix, translation);
 
 		// Setup the transform for this node
 		node->Transform.Translation = translation;
-		node->Transform.Rotation = rotation;
+		node->Transform.Rotation = Quaternion::RotationMatrix(rotationMatrix);
 		node->Transform.Scaling = scaling;
+
+		//Vector3 rotationVector;
+		//rotationMatrix.DecomposeXYZ(rotationVector);
+		//System::Diagnostics::Debug::WriteLine("[{0}] Translation: {1} Rotation: {2} Scaling: {3}", node->Name, translation, rotationVector, scaling);
 
 		// Process the node's attributes.
 		for(int i = 0; i < pNode->GetNodeAttributeCount(); i++)
