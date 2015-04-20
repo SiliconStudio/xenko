@@ -109,7 +109,7 @@ namespace SiliconStudio.Presentation.Quantum
                     RemoveAssociatedData(key);
                 }
 
-                Owner.ObservableViewModelService.RequestAssociatedData(this);
+                Owner.ObservableViewModelService.NotifyNodeInitialized(this);
             }
 
             FinalizeChildrenInitialization();

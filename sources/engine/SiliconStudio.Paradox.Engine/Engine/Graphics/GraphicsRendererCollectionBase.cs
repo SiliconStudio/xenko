@@ -156,13 +156,17 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         protected override void DrawCore(RenderContext context)
         {
-            // Iterate on new renderers
+            // Initialize all renderer first
             foreach (var renderer in currentRenderers)
             {
                 // initialize the renderer if needed.
                 if(!renderer.Initialized)
                     renderer.Initialize(context);
+            }
 
+            // Draw all renderers
+            foreach (var renderer in currentRenderers)
+            {
                 if (renderer.Enabled)
                 {
                     // Draw the renderer

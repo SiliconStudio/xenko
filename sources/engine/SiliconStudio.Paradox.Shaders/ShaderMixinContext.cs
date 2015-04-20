@@ -274,7 +274,7 @@ namespace SiliconStudio.Paradox.Shaders
         public void PopComposition()
         {
             var compositionIndex = compositionIndices.Pop();
-            compositionStringBuilder.Length = compositionIndex;
+            compositionStringBuilder.Remove(0, compositionStringBuilder.Length - compositionIndex);
             compositionString = compositionIndex == 0 ? null : compositionStringBuilder.ToString();
         }
 

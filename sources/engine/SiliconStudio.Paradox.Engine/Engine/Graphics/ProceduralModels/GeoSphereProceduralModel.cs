@@ -24,7 +24,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
         {
             Diameter = 1.0f;
             Tessellation = 3;
-            UVScales = new Vector2(1);
         }
 
         /// <summary>
@@ -43,19 +42,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
         [DefaultValue(3)]
         public int Tessellation { get; set; }
 
-        /// <summary>
-        /// Gets or sets the UV scales.
-        /// </summary>
-        /// <value>The UV scales</value>
-        /// <userdoc>The scales to apply to the UV coordinates of the plane.</userdoc>
-        [DataMember(30)]
-        [DefaultValue(1.0f)]
-        [Display("UV Scales")]
-        public Vector2 UVScales { get; set; }
-
         protected override GeometricMeshData<VertexPositionNormalTexture> CreatePrimitiveMeshData()
         {
-            return GeometricPrimitive.GeoSphere.New(Diameter, Tessellation, UVScales.X, UVScales.Y);
+            return GeometricPrimitive.GeoSphere.New(Diameter, Tessellation);
         }
     }
 }

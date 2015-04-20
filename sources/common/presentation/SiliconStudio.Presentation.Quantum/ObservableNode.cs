@@ -167,12 +167,12 @@ namespace SiliconStudio.Presentation.Quantum
 
         public void AddAssociatedData(string key, object value)
         {
-            if (initializingChildren != null)
+            if (initializingChildren == null)
             {
                 OnPropertyChanging(key);
             }
             associatedData.Add(key, value);
-            if (initializingChildren != null)
+            if (initializingChildren == null)
             {
                 OnPropertyChanged(key);
             }
@@ -180,12 +180,12 @@ namespace SiliconStudio.Presentation.Quantum
 
         public void AddOrUpdateAssociatedData(string key, object value)
         {
-            if (initializingChildren != null)
+            if (initializingChildren == null)
             {
                 OnPropertyChanging(key);
             }
             associatedData[key] = value;
-            if (initializingChildren != null)
+            if (initializingChildren == null)
             {
                 OnPropertyChanged(key);
             }
@@ -193,12 +193,12 @@ namespace SiliconStudio.Presentation.Quantum
 
         public bool RemoveAssociatedData(string key)
         {
-            if (initializingChildren != null)
+            if (initializingChildren == null)
             {
                 OnPropertyChanging(key);
             }
             var result = associatedData.Remove(key);
-            if (initializingChildren != null)
+            if (initializingChildren == null)
             {
                 OnPropertyChanged(key);
             }

@@ -35,7 +35,7 @@ namespace SiliconStudio.Paradox.Effects
 
         public Material Material;
 
-        public MaterialInstance MaterialInstance;
+        public bool IsShadowCaster;
 
         public bool HasTransparency { get; private set; }
 
@@ -186,10 +186,16 @@ namespace SiliconStudio.Paradox.Effects
         {
             var materialIndex = Mesh.MaterialIndex;
             Material = RenderModel.GetMaterial(materialIndex);
-            MaterialInstance = RenderModel.GetMaterialInstance(materialIndex);
+            var materialInstance = RenderModel.GetMaterialInstance(materialIndex);
             if (Material != null)
             {
                 HasTransparency = Material.HasTransparency;
+            }
+
+            IsShadowCaster = RenderModel.ModelComponent.IsShadowCaster;
+            if (materialInstance != null)
+            {
+                IsShadowCaster = IsShadowCaster && materialInstance.IsShadowCaster;
             }
         }
 

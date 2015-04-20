@@ -21,7 +21,7 @@ namespace SiliconStudio.Assets.Tests
     public class TestAssetUpgrade : TestBase
     {
         [DataContract("MyUpgradedAsset")]
-        [AssetFileExtension(".pdxobj")]
+        [AssetDescription(".pdxobj")]
         [AssetFormatVersion(AssetFormatVersion, typeof(AssetUpgrader))]
         public class MyUpgradedAsset : Asset
         {

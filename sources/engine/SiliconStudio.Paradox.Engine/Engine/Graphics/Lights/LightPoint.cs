@@ -33,12 +33,22 @@ namespace SiliconStudio.Paradox.Effects.Lights
         [DefaultValue(1.0f)]
         public float Radius{ get; set; }
 
+        [DataMemberIgnore]
+        internal float InvSquareRadius;
+
         public override bool HasBoundingBox
         {
             get
             {
                 return true;
             }
+        }
+
+        public override bool Update(LightComponent lightComponent)
+        {
+            var range = Math.Max(0.001f, Radius);
+            InvSquareRadius = 1.0f / (range * range);
+            return true;
         }
 
         public override BoundingBox ComputeBounds(Vector3 positionWS, Vector3 directionWS)

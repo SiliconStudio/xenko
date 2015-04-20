@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
     /// Describes an effect asset. 
     /// </summary>
     [DataContract("EffectLibrary")]
-    [AssetFileExtension(FileExtension)]
+    [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(EffectLogAssetCompiler))]
     [Display("Effect Library", "An effect library")]
     public sealed class EffectLogAsset : SourceCodeAsset

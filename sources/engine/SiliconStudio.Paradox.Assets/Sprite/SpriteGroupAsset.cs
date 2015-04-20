@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
     /// Describes a sprite group asset.
     /// </summary>
     [DataContract("SpriteGroup")]
-    [AssetFileExtension(FileExtension)]
+    [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(SpriteGroupCompiler))]
     [ObjectFactory(typeof(SpriteGroupFactory))]
     [ThumbnailCompiler(PreviewerCompilerNames.SpriteGroupThumbnailCompilerQualifiedName, true)]

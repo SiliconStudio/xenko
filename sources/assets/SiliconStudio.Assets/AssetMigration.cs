@@ -34,7 +34,7 @@ namespace SiliconStudio.Assets
 
             // We've got a Yaml asset, let's get expected and serialized versions
             var serializedVersion = 0;
-            var expectedVersion = 0;
+            int expectedVersion;
             Type assetType;
 
             // Read from Yaml file the asset version and its type (to get expected version)
@@ -80,7 +80,7 @@ namespace SiliconStudio.Assets
             if (serializedVersion < expectedVersion)
             {
                 // Perform asset upgrade
-                log.Info("{0} needs update, from version {0} to version {1}", Path.GetFullPath(assetFullPath), serializedVersion, expectedVersion);
+                log.Verbose("{0} needs update, from version {1} to version {2}", Path.GetFullPath(assetFullPath), serializedVersion, expectedVersion);
 
                 // Load the asset as a YamlNode object
                 var input = new StringReader(File.ReadAllText(assetFullPath));
@@ -110,16 +110,18 @@ namespace SiliconStudio.Assets
 
                 // Make sure asset is updated to latest version
                 YamlNode serializedVersionNode;
-                serializedVersion = 0;
+                var newSerializedVersion = 0;
                 if (yamlRootNode.Children.TryGetValue(new YamlScalarNode("SerializedVersion"), out serializedVersionNode))
                 {
-                    serializedVersion = Convert.ToInt32(((YamlScalarNode)serializedVersionNode).Value);
+                    newSerializedVersion = Convert.ToInt32(((YamlScalarNode)serializedVersionNode).Value);
                 }
 
-                if (serializedVersion != expectedVersion)
+                if (newSerializedVersion != expectedVersion)
                 {
-                    throw new InvalidOperationException(string.Format("Asset of type {0} was migrated, but still its new version {1} doesn't match expected version {2}.", assetType, serializedVersion, expectedVersion));
+                    throw new InvalidOperationException(string.Format("Asset of type {0} was migrated, but still its new version {1} doesn't match expected version {2}.", assetType, newSerializedVersion, expectedVersion));
                 }
+
+                log.Info("{0} updated from version {1} to version {2}", Path.GetFullPath(assetFullPath), serializedVersion, expectedVersion);
 
                 var preferredIndent = YamlSerializer.GetSerializerSettings().PreferredIndent;
 

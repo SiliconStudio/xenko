@@ -37,12 +37,15 @@ namespace SiliconStudio.Core.Serialization.Assets
 
         public AssetSerializer Serializer { get; private set; }
 
-        // If multiple object shares the same Url, they will be stored as a linked list (AssetReference.Next).
-        // TODO: Check how to expose this publicly in a nice way
-        public readonly Dictionary<string, AssetReference> loadedAssetsByUrl = new Dictionary<string, AssetReference>();
+        /// <summary>
+        /// A dictionary mapping, for each loaded object, its url to the corresponding instance of <see cref="AssetReference"/>.
+        /// </summary>
+        internal readonly Dictionary<string, AssetReference> LoadedAssetUrls = new Dictionary<string, AssetReference>();
 
-        // TODO: Check how to expose this publicly in a nice way
-        public readonly Dictionary<object, AssetReference> loadedAssetsUrl = new Dictionary<object, AssetReference>();
+        /// <summary>
+        /// A dictionary mapping, for each loaded object, the corresponding instance of <see cref="AssetReference"/>.
+        /// </summary>
+        internal readonly Dictionary<object, AssetReference> LoadedAssetReferences = new Dictionary<object, AssetReference>();
 
         public AssetManager() : this(null)
         {
@@ -74,7 +77,7 @@ namespace SiliconStudio.Core.Serialization.Assets
             if (url == null) throw new ArgumentNullException("url");
             if (asset == null) throw new ArgumentNullException("asset");
 
-            lock (loadedAssetsByUrl)
+            lock (LoadedAssetUrls)
             {
                 using (var profile = Profiler.Begin(AssetProfilingKeys.AssetSave))
                 {
@@ -128,7 +131,7 @@ namespace SiliconStudio.Core.Serialization.Assets
 
             if (url == null) throw new ArgumentNullException("url");
 
-            lock (loadedAssetsByUrl)
+            lock (LoadedAssetUrls)
             {
                 using (var profile = Profiler.Begin(AssetProfilingKeys.AssetLoad, url))
                 {
@@ -149,10 +152,10 @@ namespace SiliconStudio.Core.Serialization.Assets
             if (settings == null)
                 settings = AssetManagerLoaderSettings.Default;
 
-            lock (loadedAssetsByUrl)
+            lock (LoadedAssetUrls)
             {
                 AssetReference assetReference;
-                if (!loadedAssetsUrl.TryGetValue(obj, out assetReference))
+                if (!LoadedAssetReferences.TryGetValue(obj, out assetReference))
                     return false;
 
                 var url = assetReference.Url;
@@ -214,22 +217,24 @@ namespace SiliconStudio.Core.Serialization.Assets
         }
 
         /// <summary>
-        /// Gets a previously loaded asset from its URL.
+        /// Gets or sets whether an asset with the given URL is currently loaded.
         /// </summary>
-        /// <param name="url">The URL.</param>
-        /// <returns></returns>
-        public object Get(string url)
+        /// <param name="url">The URL to check.</param>
+        /// <param name="loadedManuallyOnly">If <c>true</c>, this method will return true only if an asset with the given URL has been manually loaded via <see cref="Load"/>, and not if the asset has been only loaded indirectly from another asset.</param>
+        /// <returns><c>True</c> if an asset with the given URL is currently loaded, <c>false</c> otherwise.</returns>
+        public bool IsLoaded(string url, bool loadedManuallyOnly = false)
         {
-            return Get(typeof(object), url);
+            AssetReference assetReference;
+            return LoadedAssetUrls.TryGetValue(url, out assetReference) && (!loadedManuallyOnly || assetReference.PublicReferenceCount > 0);
         }
 
         public bool TryGetAssetUrl(object obj, out string url)
         {
             if (obj == null) throw new ArgumentNullException("obj");
-            lock (loadedAssetsByUrl)
+            lock (LoadedAssetUrls)
             {
                 AssetReference assetReference;
-                if (!loadedAssetsUrl.TryGetValue(obj, out assetReference))
+                if (!LoadedAssetReferences.TryGetValue(obj, out assetReference))
                 {
                     url = null;
                     return false;
@@ -247,10 +252,10 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <exception cref="System.InvalidOperationException">Asset not loaded through this AssetManager.</exception>
         public void Unload(object obj)
         {
-            lock (loadedAssetsByUrl)
+            lock (LoadedAssetUrls)
             {
                 AssetReference assetReference;
-                if (!loadedAssetsUrl.TryGetValue(obj, out assetReference))
+                if (!LoadedAssetReferences.TryGetValue(obj, out assetReference))
                     throw new InvalidOperationException("Asset not loaded through this AssetManager.");
 
                 // Release reference
@@ -265,16 +270,25 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <exception cref="System.InvalidOperationException">Asset not loaded through this AssetManager.</exception>
         public void Unload(string url)
         {
-            lock (loadedAssetsByUrl)
+            lock (LoadedAssetUrls)
             {
                 // Try to find already loaded object
                 AssetReference assetReference;
-                if (!loadedAssetsByUrl.TryGetValue(url, out assetReference))
+                if (!LoadedAssetUrls.TryGetValue(url, out assetReference))
                     throw new InvalidOperationException("Asset not loaded through this AssetManager.");
                 
                 // Release reference
                 DecrementReference(assetReference, true);
             }
+        }
+
+        /// <summary>
+        /// Computes statistics about the assets that are currently loaded. This method is intended to be used for debug purpose only.
+        /// </summary>
+        /// <returns></returns>
+        public AssetManagerStats GetStats()
+        {
+            return new AssetManagerStats(LoadedAssetUrls.Values);
         }
 
         private void PrepareSerializerContext(ContentSerializerContext contentSerializerContext, SerializerContext context)
@@ -360,7 +374,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         {
             // Try to find already loaded object
             AssetReference assetReference;
-            if (loadedAssetsByUrl.TryGetValue(url, out assetReference))
+            if (LoadedAssetUrls.TryGetValue(url, out assetReference))
             {
                 while (assetReference != null && !objType.GetTypeInfo().IsAssignableFrom(assetReference.Object.GetType().GetTypeInfo()))
                 {
@@ -526,7 +540,7 @@ namespace SiliconStudio.Core.Serialization.Assets
 
             // Already saved?
             // TODO: Ref counting? Should we change it on save? Probably depends if we cache or not.
-            if (loadedAssetsUrl.ContainsKey(obj))
+            if (LoadedAssetReferences.ContainsKey(obj))
                 return;
 
             var serializer = Serializer.GetSerializer(null, obj.GetType());
@@ -606,11 +620,11 @@ namespace SiliconStudio.Core.Serialization.Assets
             var url = assetReference.Url;
             assetReference.Object = obj;
 
-            lock (loadedAssetsByUrl)
+            lock (LoadedAssetUrls)
             {
                 AssetReference previousAssetReference;
 
-                if (loadedAssetsByUrl.TryGetValue(url, out previousAssetReference))
+                if (LoadedAssetUrls.TryGetValue(url, out previousAssetReference))
                 {
                     assetReference.Next = previousAssetReference.Next;
                     assetReference.Prev = previousAssetReference;
@@ -621,10 +635,10 @@ namespace SiliconStudio.Core.Serialization.Assets
                 }
                 else
                 {
-                    loadedAssetsByUrl[url] = assetReference;
+                    LoadedAssetUrls[url] = assetReference;
                 }
 
-                loadedAssetsUrl[obj] = assetReference;
+                LoadedAssetReferences[obj] = assetReference;
 
                 // TODO: Currently here so that ContentReference.ObjectValue later keeps its Url.
                 // Need some reorganization?

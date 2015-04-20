@@ -188,6 +188,18 @@ namespace SiliconStudio.Core.Reflection
         }
 
         /// <summary>
+        /// Gets the display name of the given type. The display name is the name of the type, or, if the <see cref="DisplayAttribute"/> is
+        /// applied on the type, value of the <see cref="DisplayAttribute.Name"/> property.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static string GetDisplayName(this Type type)
+        {
+            var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(type);
+            return displayAttribute != null && !string.IsNullOrEmpty(displayAttribute.Name) ? displayAttribute.Name : type.Name;
+        }
+
+        /// <summary>
         /// Gets the maximum value for the given numeric type.
         /// </summary>
         /// <param name="type">The type for which to get the maximum value.</param>

@@ -2,12 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.ProceduralModels;
 using SiliconStudio.Paradox.Graphics;
 
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
@@ -20,14 +20,22 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
     [DataContract]
     public abstract class PrimitiveProceduralModelBase : IProceduralModel
     {
+        protected PrimitiveProceduralModelBase()
+        {
+            MaterialInstance = new MaterialInstance();
+        }
         /// <summary>
-        /// Gets or sets the material.
+        /// Gets the material instance.
         /// </summary>
-        /// <value>The material.</value>
+        /// <value>The material instance.</value>
         [DataMember(500)]
         [NotNull]
         [Display("Material")]
-        public Material Material { get; set; }
+        public MaterialInstance MaterialInstance { get; private set; }
+
+        /// <inheritdoc/>
+        [DataMemberIgnore]
+        public IEnumerable<KeyValuePair<string, MaterialInstance>> MaterialInstances { get { yield return new KeyValuePair<string, MaterialInstance>("Material", MaterialInstance); } }
 
         public void Generate(IServiceRegistry services, Model model)
         {
@@ -98,9 +106,9 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
             model.BoundingSphere = boundingSphere;
             model.Add(mesh);
 
-            if (Material != null)
+            if (MaterialInstance != null)
             {
-                model.Materials.Add(Material);
+                model.Materials.Add(MaterialInstance);
             }
         }
 

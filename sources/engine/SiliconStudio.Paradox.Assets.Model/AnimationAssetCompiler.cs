@@ -39,13 +39,13 @@ namespace SiliconStudio.Paradox.Assets.Model
                 // Import base and main animation
                 if (ImportFbxCommand.IsSupportingExtensions(extension))
                 {
-                    buildStep.Add(new ImportFbxCommand { SourcePath = assetSource, Location = sourceUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode });
-                    buildStep.Add(new ImportFbxCommand { SourcePath = baseAssetSource, Location = baseUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode });
+                    buildStep.Add(new ImportFbxCommand { SourcePath = assetSource, Location = sourceUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport});
+                    buildStep.Add(new ImportFbxCommand { SourcePath = baseAssetSource, Location = baseUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport });
                 }
                 else if (ImportAssimpCommand.IsSupportingExtensions(extension))
                 {
-                    buildStep.Add(new ImportAssimpCommand { SourcePath = assetSource, Location = sourceUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode });
-                    buildStep.Add(new ImportAssimpCommand { SourcePath = baseAssetSource, Location = baseUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode });
+                    buildStep.Add(new ImportAssimpCommand { SourcePath = assetSource, Location = sourceUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport });
+                    buildStep.Add(new ImportAssimpCommand { SourcePath = baseAssetSource, Location = baseUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport });
                 }
                 // Wait for both import fbx commands to be completed
                 buildStep.Add(new WaitBuildStep());
@@ -57,9 +57,9 @@ namespace SiliconStudio.Paradox.Assets.Model
             {
                 // Import the main animation
                 if (ImportFbxCommand.IsSupportingExtensions(extension))
-                    buildStep.Add(new ImportFbxCommand { SourcePath = assetSource, Location = urlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode });
+                    buildStep.Add(new ImportFbxCommand { SourcePath = assetSource, Location = urlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport });
                 else if (ImportAssimpCommand.IsSupportingExtensions(extension))
-                    buildStep.Add(new ImportAssimpCommand { SourcePath = assetSource, Location = urlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode });
+                    buildStep.Add(new ImportAssimpCommand { SourcePath = assetSource, Location = urlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport });
             }
 
             result.BuildSteps = buildStep;

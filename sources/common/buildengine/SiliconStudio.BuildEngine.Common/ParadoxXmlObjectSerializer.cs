@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Xml;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.BuildEngine
 {
@@ -50,6 +51,8 @@ namespace SiliconStudio.BuildEngine
         {
             var memoryStream = new MemoryStream();
             var writer = new BinarySerializationWriter(memoryStream);
+            writer.Context.SerializerSelector = SerializerSelector.AssetWithReuse;
+            writer.Context.Set(ContentSerializerContext.SerializeAttachedReferenceProperty, ContentSerializerContext.AttachedReferenceSerialization.AsSerializableVersion);
             writer.SerializeExtended(ref obj, ArchiveMode.Serialize);
 
             return memoryStream.ToArray();
@@ -58,6 +61,8 @@ namespace SiliconStudio.BuildEngine
         private static object DecodeObject(byte[] serializedObject)
         {
             var reader = new BinarySerializationReader(new MemoryStream(serializedObject));
+            reader.Context.SerializerSelector = SerializerSelector.AssetWithReuse;
+            reader.Context.Set(ContentSerializerContext.SerializeAttachedReferenceProperty, ContentSerializerContext.AttachedReferenceSerialization.AsSerializableVersion);
             object command = null;
             reader.SerializeExtended(ref command, ArchiveMode.Deserialize, null);
             return command;

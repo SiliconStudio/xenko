@@ -1,12 +1,14 @@
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Paradox.Assets.Materials;
+using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Assets.Model
 {
     /// <summary>
-    /// Represents a <see cref="Material"/> in a 
+    /// Represents a <see cref="MaterialInstance"/> in a 
     /// </summary>
     [DataContract]
     public class ModelMaterial : IDiffKey
@@ -27,7 +29,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// The material.
         /// </value>
         [DataMember(20)]
-        public AssetReference<MaterialAsset> Material { get; set; }
+        public MaterialInstance MaterialInstance { get; set; }
 
         /// <summary>
         /// Gets the difference key.

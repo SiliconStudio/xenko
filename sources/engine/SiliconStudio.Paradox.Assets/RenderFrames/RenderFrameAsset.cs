@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.ComponentModel;
+
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
@@ -12,7 +14,7 @@ namespace SiliconStudio.Paradox.Assets.RenderFrames
     /// Describes a texture asset.
     /// </summary>
     [DataContract("RenderFrame")]
-    [AssetFileExtension(FileExtension)]
+    [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(RenderFrameAssetCompiler))]
     [Display("Render Frame", "A render frame")]
     public class RenderFrameAsset : Asset
@@ -29,6 +31,7 @@ namespace SiliconStudio.Paradox.Assets.RenderFrames
         /// <userdoc>The description of the render frame</userdoc>
         [DataMember(10)]
         [Display("Description")]
+        [Category]
         public RenderFrameDescriptor Descriptor;
 
         public RenderFrameAsset()

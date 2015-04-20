@@ -10,6 +10,7 @@ namespace SiliconStudio.Paradox.Engine
     /// A link to a scene that is rendered by a parent <see cref="Scene"/>.
     /// </summary>
     [DataContract("ChildSceneComponent")]
+    [Display(120, "Child scene")]
     [DefaultEntityComponentProcessor(typeof(ChildSceneProcessor))]
     public sealed class ChildSceneComponent : EntityComponent
     {

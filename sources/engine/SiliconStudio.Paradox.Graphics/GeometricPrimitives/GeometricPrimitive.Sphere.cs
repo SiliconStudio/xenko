@@ -92,12 +92,14 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// <param name="device">The device.</param>
             /// <param name="diameter">The diameter.</param>
             /// <param name="tessellation">The tessellation.</param>
+            /// <param name="uScale">The u scale.</param>
+            /// <param name="vScale">The v scale.</param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
             /// <returns>A sphere primitive.</returns>
-            /// <exception cref="System.ArgumentOutOfRangeException">tessellation;Must be >= 3</exception>
-            public static GeometricPrimitive New(GraphicsDevice device, float diameter = 1.0f, int tessellation = 16, bool toLeftHanded = false)
+            /// <exception cref="System.ArgumentOutOfRangeException">tessellation;Must be &gt;= 3</exception>
+            public static GeometricPrimitive New(GraphicsDevice device, float diameter = 1.0f, int tessellation = 16, float uScale = 1.0f, float vScale = 1.0f, bool toLeftHanded = false)
             {
-                return new GeometricPrimitive(device, New(diameter, tessellation, toLeftHanded));
+                return new GeometricPrimitive(device, New(diameter, tessellation, uScale, vScale, toLeftHanded));
             }
 
             /// <summary>
@@ -105,10 +107,12 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// </summary>
             /// <param name="diameter">The diameter.</param>
             /// <param name="tessellation">The tessellation.</param>
+            /// <param name="uScale">The u scale.</param>
+            /// <param name="vScale">The v scale.</param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
             /// <returns>A sphere primitive.</returns>
-            /// <exception cref="System.ArgumentOutOfRangeException">tessellation;Must be >= 3</exception>
-            public static GeometricMeshData<VertexPositionNormalTexture> New(float diameter = 1.0f, int tessellation = 16, bool toLeftHanded = false)
+            /// <exception cref="System.ArgumentOutOfRangeException">tessellation;Must be &gt;= 3</exception>
+            public static GeometricMeshData<VertexPositionNormalTexture> New(float diameter = 1.0f, int tessellation = 16, float uScale = 1.0f, float vScale = 1.0f, bool toLeftHanded = false)
             {
                 if (tessellation < 3) tessellation = 3;
 
@@ -126,14 +130,14 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
                 for (int j = 0; j <= horizontalSegments; j++)
                 {
                     var normal = new Vector3(0, -1, 0);
-                    var textureCoordinate = new Vector2(j / (float)horizontalSegments, 1f);
+                    var textureCoordinate = new Vector2(uScale * j / (float)horizontalSegments, vScale);
                     vertices[vertexCount++] = new VertexPositionNormalTexture(normal * radius, normal, textureCoordinate);
                 }
 
                 // Create rings of vertices at progressively higher latitudes.
                 for (int i = 1; i < verticalSegments; i++)
                 {
-                    float v = 1.0f - (float)i / verticalSegments;
+                    float v = vScale * (1.0f - (float)i / verticalSegments);
 
                     var latitude = (float)((i * Math.PI / verticalSegments) - Math.PI / 2.0);
                     var dy = (float)Math.Sin(latitude);
@@ -147,7 +151,7 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
                     // Create a single ring of vertices at this latitude.
                     for (int j = 1; j < horizontalSegments; j++)
                     {
-                        float u = (float)j / horizontalSegments;
+                        float u = (uScale * j) / horizontalSegments;
 
                         var longitude = (float)(j * 2.0 * Math.PI / horizontalSegments);
                         var dx = (float)Math.Sin(longitude);
@@ -163,15 +167,15 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
                     }
 
                     // the last point equal to the first point
-                    var lastHorizontalVertex = new VertexPositionNormalTexture(firstNormal * radius, firstNormal, new Vector2(1, v));
-                    vertices[vertexCount++] = lastHorizontalVertex;
+                    firstHorizontalVertex.TextureCoordinate = new Vector2(uScale, v);
+                    vertices[vertexCount++] = firstHorizontalVertex;
                 }
 
                 // generate the end extremity points
                 for (int j = 0; j <= horizontalSegments; j++)
                 {
                     var normal = new Vector3(0, 1, 0);
-                    var textureCoordinate = new Vector2(j / (float)horizontalSegments, 0f);
+                    var textureCoordinate = new Vector2(uScale * j / (float)horizontalSegments, 0f);
                     vertices[vertexCount++] = new VertexPositionNormalTexture(normal * radius, normal, textureCoordinate);
                 }
 

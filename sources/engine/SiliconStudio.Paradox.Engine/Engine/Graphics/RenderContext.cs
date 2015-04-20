@@ -115,7 +115,7 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         /// <typeparam name="T">Type of the shared effect (mush have a constructor taking a <see cref="RenderContext"/></typeparam>
         /// <returns>A singleton instance of <typeparamref name="T"/></returns>
-        public T GetSharedEffect<T>() where T : DrawEffect
+        public T GetSharedEffect<T>() where T : DrawEffect, new()
         {
             // TODO: Add a way to support custom constructor
             lock (sharedEffects)
@@ -123,7 +123,7 @@ namespace SiliconStudio.Paradox.Effects
                 DrawEffect effect;
                 if (!sharedEffects.TryGetValue(typeof(T), out effect))
                 {
-                    effect = (ImageEffect)Activator.CreateInstance(typeof(T), this);
+                    effect = new T();
                     sharedEffects.Add(typeof(T), effect);
                     effect.Initialize(this);
                 }

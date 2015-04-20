@@ -92,7 +92,7 @@ namespace SiliconStudio.Paradox.EffectCompilerServer
             var precompiledEffectShaderPass = await effectCompiler.Compile(shaderCompilerRequest.MixinTree, null).AwaitResult();
 
             // Record compilation to asset file (only if parent)
-            recordedEffectCompile[new EffectCompileRequest(shaderCompilerRequest.MixinTree.GetFullName(), shaderCompilerRequest.MixinTree.UsedParameters)] = true;
+            recordedEffectCompile[new EffectCompileRequest(shaderCompilerRequest.MixinTree.Name, shaderCompilerRequest.MixinTree.UsedParameters)] = true;
             
             // Send compiled shader
             clientSocketContext.Send(new ShaderCompilerAnswer { StreamId = shaderCompilerRequest.StreamId, EffectBytecode = precompiledEffectShaderPass.Bytecode });

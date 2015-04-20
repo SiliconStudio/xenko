@@ -1,17 +1,20 @@
 !Model
 Id: 53b953af-1d02-459e-a96f-b40805964d59
-SerializedVersion: 1
+SerializedVersion: 2
 BuildOrder: 500
 Tags: []
 Source: ../../../data/tests/knight/scenes/knight.fbx
 SourceHash: b0dc28bd79ba6cd2fed575b8855b52fc
 Materials:
     -   Name: c100_chr_ch00_Knight_KINGHT_iron
-        Material: 6bacdf7e-6538-4cfa-a035-0807aee89e2c:c100_chr_ch00_Knight_KINGHT_iron
+        MaterialInstance:
+            Material: 6bacdf7e-6538-4cfa-a035-0807aee89e2c:c100_chr_ch00_Knight_KINGHT_iron
     -   Name: c100_chr_ch00_Knight_KINGHT
-        Material: c88b7d39-bb04-407f-92e4-69f2dcfef378:c100_chr_ch00_Knight_KINGHT
+        MaterialInstance:
+            Material: c88b7d39-bb04-407f-92e4-69f2dcfef378:c100_chr_ch00_Knight_KINGHT
     -   Name: c100_chr_ch00_Knight_SWORD1
-        Material: 32a944cf-8bb5-413b-9998-36a85b12dcc5:c100_chr_ch00_Knight_SWORD1
+        MaterialInstance:
+            Material: 32a944cf-8bb5-413b-9998-36a85b12dcc5:c100_chr_ch00_Knight_SWORD1
 Nodes:
     - {Name: RootNode, Depth: 0, Preserve: false}
     - {Name: root, Depth: 1, Preserve: false}
@@ -89,17 +92,20 @@ Nodes:
     Location: --import--
     Asset: !Model
         Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: 1
+        SerializedVersion: 2
         BuildOrder: 500
         Tags: []
         ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
         Materials:
             -   Name: c100_chr_ch00_Knight_KINGHT_iron
-                Material: 6bacdf7e-6538-4cfa-a035-0807aee89e2c:c100_chr_ch00_Knight_KINGHT_iron
+                MaterialInstance:
+                    Material: 6bacdf7e-6538-4cfa-a035-0807aee89e2c:c100_chr_ch00_Knight_KINGHT_iron
             -   Name: c100_chr_ch00_Knight_KINGHT
-                Material: c88b7d39-bb04-407f-92e4-69f2dcfef378:c100_chr_ch00_Knight_KINGHT
+                MaterialInstance:
+                    Material: c88b7d39-bb04-407f-92e4-69f2dcfef378:c100_chr_ch00_Knight_KINGHT
             -   Name: c100_chr_ch00_Knight_SWORD1
-                Material: 32a944cf-8bb5-413b-9998-36a85b12dcc5:c100_chr_ch00_Knight_SWORD1
+                MaterialInstance:
+                    Material: 32a944cf-8bb5-413b-9998-36a85b12dcc5:c100_chr_ch00_Knight_SWORD1
         Nodes:
             - {Name: RootNode, Depth: 0, Preserve: false}
             - {Name: root, Depth: 1, Preserve: false}

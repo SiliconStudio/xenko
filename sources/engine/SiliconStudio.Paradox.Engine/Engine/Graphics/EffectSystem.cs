@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Effects
     {
         private readonly static Logger Log = GlobalLogger.GetLogger("EffectSystem");
 
-        private readonly IGraphicsDeviceService graphicsDeviceService;
+        private IGraphicsDeviceService graphicsDeviceService;
         private EffectCompilerBase compiler;
         private readonly Dictionary<string, List<CompilerResults>> earlyCompilerCache = new Dictionary<string, List<CompilerResults>>();
         private Dictionary<EffectBytecode, Effect> cachedEffects = new Dictionary<EffectBytecode, Effect>();
@@ -59,14 +59,14 @@ namespace SiliconStudio.Paradox.Effects
             : base(services)
         {
             Services.AddService(typeof(EffectSystem), this);
-
-            // Get graphics device service
-            graphicsDeviceService = Services.GetSafeServiceAs<IGraphicsDeviceService>();
         }
 
         public override void Initialize()
         {
             base.Initialize();
+
+            // Get graphics device service
+            graphicsDeviceService = Services.GetSafeServiceAs<IGraphicsDeviceService>();
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             Enabled = true;

@@ -122,6 +122,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             // TODO: Make this pluggable
             RegisterLightGroupRenderer(typeof(LightDirectional), new LightDirectionalGroupRenderer());
             RegisterLightGroupRenderer(typeof(LightSpot), new LightSpotGroupRenderer());
+            RegisterLightGroupRenderer(typeof(LightPoint), new LightPointGroupRenderer());
             RegisterLightGroupRenderer(typeof(LightAmbient), new LightAmbientRenderer());
             RegisterLightGroupRenderer(typeof(LightSkybox), new LightSkyboxRenderer());
         }
@@ -156,6 +157,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             // Setup the callback on the ModelRenderer and shadow map LightGroupRenderer
             if (!isModelComponentRendererSetup)
             {
+                // TODO: Check if we could discover declared renderers in a better way than just hacking the tags of a component
                 var modelRenderer = ModelComponentRenderer.GetAttached(sceneCameraRenderer);
                 if (modelRenderer == null)
                 {
@@ -460,10 +462,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             }
 
             // TODO: copy shadow receiver info to mesh
-            var isShadowReceiver = renderMesh.RenderModel.ModelComponent.IsShadowReceiver;
-            if (renderMesh.MaterialInstance != null)
-                isShadowReceiver = isShadowReceiver && renderMesh.MaterialInstance.IsShadowReceiver;
-
+            var isShadowReceiver = renderMesh.IsShadowCaster;
             if (currentModelLightShadersPermutationEntry != renderModelLights.LightShadersPermutation || currentModelShadersParameters != renderModelLights.Parameters || currentShadowReceiver != isShadowReceiver)
             {
                 currentModelLightShadersPermutationEntry = renderModelLights.LightShadersPermutation;

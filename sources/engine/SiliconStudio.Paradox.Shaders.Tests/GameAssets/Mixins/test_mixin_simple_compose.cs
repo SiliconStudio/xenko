@@ -27,9 +27,10 @@ namespace Test6
                 context.Mixin(mixin, "C");
 
                 {
-                    var __subMixin = new ShaderMixinSource() { Parent = mixin };
+                    var __mixinToCompose__ = "X";
+                    var __subMixin = new ShaderMixinSource();
                     context.PushComposition(mixin, "x", __subMixin);
-                    context.Mixin(__subMixin, "X");
+                    context.Mixin(__subMixin, __mixinToCompose__);
                     context.PopComposition();
                 }
             }

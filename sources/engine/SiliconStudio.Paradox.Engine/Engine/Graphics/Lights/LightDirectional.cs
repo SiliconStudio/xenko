@@ -39,5 +39,10 @@ namespace SiliconStudio.Paradox.Effects.Lights
             // As the directional light is covering the whole screen, we take the max of current width, height
             return Math.Max(width, height);
         }
+
+        public override bool Update(LightComponent lightComponent)
+        {
+            return true;
+        }
     }
 }

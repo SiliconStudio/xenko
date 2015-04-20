@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.ComponentModel;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
@@ -12,7 +13,7 @@ using SiliconStudio.Paradox.DataModel;
 namespace SiliconStudio.Paradox.Assets.Model
 {
     [DataContract("Animation")]
-    [AssetFileExtension(FileExtension)]
+    [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(AnimationAssetCompiler))]
     [ObjectFactory(typeof(AnimationFactory))]
     [ThumbnailCompiler(PreviewerCompilerNames.AnimationThumbnailCompilerQualifiedName)]
@@ -23,6 +24,14 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// The default file extension used by the <see cref="AnimationAsset"/>.
         /// </summary>
         public const string FileExtension = ".pdxanim";
+
+        /// <summary>
+        /// Gets or sets the scale import.
+        /// </summary>
+        /// <value>The scale import.</value>
+        [DataMember(10)]
+        [DefaultValue(1.0f)]
+        public float ScaleImport { get; set; }
 
         /// <summary>
         /// Gets or sets the animation repeat mode.
@@ -37,6 +46,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         public AnimationAsset()
         {
             RepeatMode = AnimationRepeatMode.LoopInfinite;
+            ScaleImport = 1.0f;
         }
 
         private class AnimationFactory : IObjectFactory

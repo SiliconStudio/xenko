@@ -23,7 +23,7 @@ namespace SiliconStudio.Assets
     /// A package managing assets.
     /// </summary>
     [DataContract("Package")]
-    [AssetFileExtension(PackageFileExtension)]
+    [AssetDescription(PackageFileExtension)]
     [DebuggerDisplay("Id: {Id}, Name: {Meta.Name}, Version: {Meta.Version}, Assets [{Assets.Count}]")]
     public sealed class Package : Asset, IFileSynchronizable
     {

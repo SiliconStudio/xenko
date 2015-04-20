@@ -153,7 +153,7 @@ namespace SiliconStudio.Paradox.Engine
                 if (modelViewHierarchy != null)
                 {
                     // Reuse previous ModelViewHierarchy
-                    modelViewHierarchy.Initialize(model.Hierarchy != null ? model.Hierarchy.Nodes : null);
+                    modelViewHierarchy.Initialize(model);
                 }
                 else
                 {
