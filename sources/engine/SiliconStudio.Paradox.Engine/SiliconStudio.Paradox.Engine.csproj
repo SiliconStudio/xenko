@@ -2152,6 +2152,7 @@
     <Compile Include="EntityModel\EntityExtensions.cs" />
     <Compile Include="EntityModel\EntityHierarchyData.cs" />
     <Compile Include="EntityModel\IGizmo.cs" />
+    <Compile Include="EntityModel\GameSettings.cs" />
     <Compile Include="EntityModel\Scene.cs" />
     <Compile Include="Engine\SceneChildRenderer.cs" />
     <Compile Include="EntityModel\SceneSystem.cs" />

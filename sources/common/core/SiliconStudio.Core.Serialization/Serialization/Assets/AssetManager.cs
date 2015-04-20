@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Core.Serialization.Assets
 {
@@ -94,10 +95,8 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// </returns>
         public bool Exists(string url)
         {
-            lock (LoadedAssetUrls)
-            {
-                return LoadedAssetUrls.ContainsKey(url);
-            }
+            ObjectId objectId;
+            return FileProvider.AssetIndexMap.TryGetValue(url, out objectId);
         }
 
         public Stream OpenAsStream(string url, StreamFlags streamFlags)

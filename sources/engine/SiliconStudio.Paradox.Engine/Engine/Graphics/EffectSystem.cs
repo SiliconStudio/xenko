@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.ReferenceCounting;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
@@ -28,6 +29,7 @@ namespace SiliconStudio.Paradox.Effects
         private readonly Dictionary<string, List<CompilerResults>> earlyCompilerCache = new Dictionary<string, List<CompilerResults>>();
         private Dictionary<EffectBytecode, Effect> cachedEffects = new Dictionary<EffectBytecode, Effect>();
         private DirectoryWatcher directoryWatcher;
+        private bool isInitialized;
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         // Ideally it should be a "HashStore", but we don't have it yet...
@@ -65,6 +67,8 @@ namespace SiliconStudio.Paradox.Effects
         {
             base.Initialize();
 
+            isInitialized = true;
+
             // Get graphics device service
             graphicsDeviceService = Services.GetSafeServiceAs<IGraphicsDeviceService>();
 
@@ -75,6 +79,25 @@ namespace SiliconStudio.Paradox.Effects
             // TODO: pdxfx too
 #endif
             compiler = (EffectCompilerBase)CreateEffectCompiler();
+        }
+
+        protected override void Destroy()
+        {
+            // Mark effect system as destroyed (so that async effect compilation are ignored)
+            lock (cachedEffects)
+            {
+                // Clear effects
+                foreach (var effect in cachedEffects)
+                {
+                    effect.Value.ReleaseInternal();
+                }
+                cachedEffects.Clear();
+
+                // Mark as not initialized anymore
+                isInitialized = false;
+            }
+
+            base.Destroy();
         }
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
@@ -219,6 +242,9 @@ namespace SiliconStudio.Paradox.Effects
             Effect effect;
             lock (cachedEffects)
             {
+                if (!isInitialized)
+                    throw new InvalidOperationException("EffectSystem has been disposed. This Effect compilation has been cancelled.");
+
                 CheckResult(effectBytecodeCompilerResult.CompilationLog);
 
                 var bytecode = effectBytecodeCompilerResult.Bytecode;

@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
@@ -142,6 +143,11 @@ namespace SiliconStudio.Paradox
         }
 
         /// <summary>
+        /// Automatically initializes game settings like default scene, resolution, graphics profile.
+        /// </summary>
+        public bool AutoLoadDefaultSettings { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Game"/> class.
         /// </summary>
         public Game()
@@ -191,6 +197,8 @@ namespace SiliconStudio.Paradox
 
             // Creates the graphics device manager
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
+
+            AutoLoadDefaultSettings = true;
         }
 
         protected override void Destroy()
@@ -203,12 +211,16 @@ namespace SiliconStudio.Paradox
 
         protected override void Initialize()
         {
-            base.Initialize();
+            base.Initialize(); 
 
+            // Init assets
             if (Context.InitializeDatabase)
             {
                 InitializeAssetDatabase();
             }
+
+            // Read and set game settings
+            SceneSystem.AutoLoadDefaultScene = AutoLoadDefaultSettings;
 
             EffectSystem = new EffectSystem(Services);
             GameSystems.Add(EffectSystem);

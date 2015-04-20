@@ -8,6 +8,7 @@ using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.Games;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.EntityModel
 {
@@ -16,7 +17,6 @@ namespace SiliconStudio.Paradox.EntityModel
     /// </summary>
     public class SceneSystem : GameSystemBase
     {
-        private const string DefaultSceneName = "__DefaultScene__"; // TODO: How to determine the default scene?
 
         private RenderContext renderContext;
 
@@ -39,7 +39,13 @@ namespace SiliconStudio.Paradox.EntityModel
             registry.AddService(typeof(SceneSystem), this);
             Enabled = true;
             Visible = true;
+            AutoLoadDefaultScene = true;
         }
+
+        /// <summary>
+        /// Should we use a default scene upon loading.
+        /// </summary>
+        public bool AutoLoadDefaultScene { get; set; }
 
         /// <summary>
         /// Gets or sets the root scene.
@@ -48,16 +54,36 @@ namespace SiliconStudio.Paradox.EntityModel
         /// <exception cref="System.ArgumentNullException">Scene cannot be null</exception>
         public SceneInstance SceneInstance { get; set; }
 
+        /// <summary>
+        /// URL of the initial scene that should be used upon loading
+        /// </summary>
+        public string InitialSceneUrl { get; set; }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            // Load several default settings
+            if (AutoLoadDefaultScene && Asset.Exists(GameSettings.AssetUrl))
+            {
+                var settings = Asset.Load<GameSettings>(GameSettings.AssetUrl);
+                var deviceManager = (GraphicsDeviceManager)Services.GetSafeServiceAs<IGraphicsDeviceManager>();
+                if (settings.DefaultGraphicsProfileUsed > 0) deviceManager.PreferredGraphicsProfile = new[] { settings.DefaultGraphicsProfileUsed };
+                if (settings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = settings.DefaultBackBufferWidth;
+                if (settings.DefaultBackBufferHeight > 0) deviceManager.PreferredBackBufferHeight = settings.DefaultBackBufferHeight;
+                InitialSceneUrl = settings.DefaultSceneUrl;
+            }
+        }
+
         protected override void LoadContent()
         {
             var assetManager = Services.GetSafeServiceAs<AssetManager>();
 
-            // TODO: Temp work around for PreviewGame init
-            //    // Preload the scene if it exists
-            //    if (assetManager.Exists(DefaultSceneName))
-            //    {
-            //        Scene = assetManager.Load<Scene>(DefaultSceneName);
-            //    }
+            // Preload the scene if it exists
+            if (AutoLoadDefaultScene && InitialSceneUrl != null && assetManager.Exists(InitialSceneUrl))
+            {
+                SceneInstance = new SceneInstance(Services, assetManager.Load<Scene>(InitialSceneUrl));
+            }
 
             if (MainRenderFrame == null)
             {

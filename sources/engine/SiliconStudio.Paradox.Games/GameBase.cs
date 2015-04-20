@@ -51,7 +51,7 @@ namespace SiliconStudio.Paradox.Games
         private ProfilingState profilingDraw;
         private TimeSpan singleFrameUpdateTime;
         private IGraphicsDeviceService graphicsDeviceService;
-        private IGraphicsDeviceManager graphicsDeviceManager;
+        protected IGraphicsDeviceManager graphicsDeviceManager;
         private ResumeManager resumeManager;
         private bool isEndRunRequired;
         private bool isExiting;
