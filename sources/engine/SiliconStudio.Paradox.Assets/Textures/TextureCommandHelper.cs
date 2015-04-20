@@ -47,21 +47,24 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// Utility function to check that the texture size is supported on the graphics platform for the provided graphics profile.
         /// </summary>
         /// <param name="textureFormat">The desired type of format for the output texture</param>
-        /// <param name="textureSize">The size of the texture</param>
-        /// <param name="graphicsProfile">The graphics profile</param>
         /// <param name="platform">The graphics platform</param>
+        /// <param name="graphicsProfile">The graphics profile</param>
+        /// <param name="textureSizeInput">The texture size input.</param>
+        /// <param name="textureSizeRequested">The texture size requested.</param>
         /// <param name="generateMipmaps">Indicate if mipmaps should be generated for the output texture</param>
-        /// <param name="logger">The logger used to log messages</param>
+        /// <param name="logger">The logger.</param>
         /// <returns>true if the texture size is supported</returns>
-        public static bool TextureSizeSupported(TextureFormat textureFormat, GraphicsPlatform platform, GraphicsProfile graphicsProfile, Int2 textureSize, bool generateMipmaps, Logger logger)
+        /// <exception cref="System.ArgumentOutOfRangeException">graphicsProfile</exception>
+        public static Size2 FindBestTextureSize(TextureFormat textureFormat, GraphicsPlatform platform, GraphicsProfile graphicsProfile, Size2 textureSizeInput, Size2 textureSizeRequested, bool generateMipmaps, ILogger logger)
         {
+            var textureSize = textureSizeRequested;
+
             // compressed DDS files has to have a size multiple of 4.
             if (platform == GraphicsPlatform.Direct3D11 && textureFormat == TextureFormat.Compressed
-                && ((textureSize.X % 4) != 0 || (textureSize.Y % 4) != 0))
+                && ((textureSizeRequested.Width % 4) != 0 || (textureSizeRequested.Height % 4) != 0))
             {
-                logger.Error("DDS compression does not support texture files that do not have a size multiple of 4." +
-                             "Please disable texture compression or adjust your texture size to multiple of 4.");
-                return false;
+                textureSize.Width = unchecked((int)(((uint)(textureSizeRequested.Width + 3)) & ~(uint)3));
+                textureSize.Height = unchecked((int)(((uint)(textureSizeRequested.Height + 3)) & ~(uint)3));
             }
 
             // determine if the desired size if valid depending on the graphics profile
@@ -70,11 +73,12 @@ namespace SiliconStudio.Paradox.Assets.Textures
                 case GraphicsProfile.Level_9_1:
                 case GraphicsProfile.Level_9_2:
                 case GraphicsProfile.Level_9_3:
-                    if (generateMipmaps && (!IsPowerOfTwo(textureSize.Y) || !IsPowerOfTwo(textureSize.X)))
+                    if (generateMipmaps && (!IsPowerOfTwo(textureSize.Width) || !IsPowerOfTwo(textureSize.Height)))
                     {
-                        logger.Error("Graphic profiles 9.1/9.2/9.3 do not support mipmaps with textures that are not power of 2. " +
-                                     "Please disable mipmap generation, modify your texture resolution or upgrade your graphic profile to a value >= 10.0.");
-                        return false;
+                        // TODO: TEMPORARY SETUP A MAX TEXTURE OF 1024. THIS SHOULD BE SPECIFIED DONE IN THE ASSET INSTEAD
+                        textureSize.Width = Math.Min(MathUtil.NextPowerOfTwo(textureSize.Width), 1024);
+                        textureSize.Height = Math.Min(MathUtil.NextPowerOfTwo(textureSize.Height), 1024);
+                        logger.Warning("Graphic profiles 9.1/9.2/9.3 do not support mipmaps with textures that are not power of 2. Asset is automatically resized to " + textureSize);
                     }
                     break;
                 case GraphicsProfile.Level_10_0:
@@ -82,11 +86,9 @@ namespace SiliconStudio.Paradox.Assets.Textures
                 case GraphicsProfile.Level_11_0:
                 case GraphicsProfile.Level_11_1:
                     break;
-                default:
-                    throw new ArgumentOutOfRangeException("graphicsProfile");
             }
 
-            return true;
+            return textureSize;
         }
 
         /// <summary>
@@ -360,23 +362,30 @@ namespace SiliconStudio.Paradox.Assets.Textures
 
                 if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
                     return ResultStatus.Cancelled;
-                
+
+                var fromSize =  new Size2(texImage.Width, texImage.Height);
+                var targetSize = new Size2((int)textureAsset.Width, (int)textureAsset.Height);
+
                 // Resize the image
                 if (textureAsset.IsSizeInPercentage)
-                    texTool.Rescale(texImage, textureAsset.Width / 100.0f, textureAsset.Height / 100.0f, Filter.Rescaling.Lanczos3);
-                else
-                    texTool.Resize(texImage, (int)textureAsset.Width, (int)textureAsset.Height, Filter.Rescaling.Lanczos3);
+                {
+                    targetSize = new Size2((int)(fromSize.Width * (float)textureAsset.Width / 100.0f), (int)(fromSize.Height * (float) textureAsset.Height / 100.0f));
+                }
+
+                // Find the target size
+                targetSize = FindBestTextureSize(textureAsset.Format, parameters.GraphicsPlatform, parameters.GraphicsProfile, fromSize, targetSize, textureAsset.GenerateMipmaps, logger);
+
+                // Resize the image only if needed
+                if (targetSize != fromSize)
+                {
+                    texTool.Resize(texImage, targetSize.Width, targetSize.Height, Filter.Rescaling.Lanczos3);
+                }
 
                 if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
                     return ResultStatus.Cancelled;
 
                 // texture size is now determined, we can cache it
                 var textureSize = new Int2(texImage.Width, texImage.Height);
-
-                // Check that the resulting texture size is supported by the targeted graphics profile
-                if (!TextureSizeSupported(textureAsset.Format, parameters.GraphicsPlatform, parameters.GraphicsProfile, textureSize, textureAsset.GenerateMipmaps, logger))
-                    return ResultStatus.Failed;
-
 
                 // Apply the color key
                 if (textureAsset.ColorKeyEnabled)
