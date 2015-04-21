@@ -252,7 +252,7 @@ namespace SiliconStudio.Paradox.EntityModel
         /// <summary>
         /// Removes all entities from the <see cref="EntityManager"/>.
         /// </summary>
-        internal void Reset()
+        protected internal virtual void Reset()
         {
             // TODO: Not sure this method is correctly implemented
             // TODO: Check that we are correctly removing all indirect collection watchers (in processors...etc.)

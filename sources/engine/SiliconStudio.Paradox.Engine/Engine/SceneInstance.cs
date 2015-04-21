@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -55,6 +56,7 @@ namespace SiliconStudio.Paradox.Engine
             this.enableScripting = enableScripting;
             Scene = sceneEntityRoot;
             RendererTypes = new EntityComponentRendererTypeCollection();
+            SelectedEntities = new HashSet<Entity>();
             Load();
         }
 
@@ -78,6 +80,12 @@ namespace SiliconStudio.Paradox.Engine
                 }
             }
         }
+
+        /// <summary>
+        /// Gets the selected entities in the current scene instance.
+        /// </summary>
+        /// <value>The selected entities.</value>
+        public HashSet<Entity> SelectedEntities { get; private set; }
 
         /// <summary>
         /// Gets the component renderers.
@@ -194,6 +202,12 @@ namespace SiliconStudio.Paradox.Engine
                 Reset();
                 Load();
             }
+        }
+
+        protected internal override void Reset()
+        {
+            base.Reset();
+            SelectedEntities.Clear();
         }
 
         private void Load()
