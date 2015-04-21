@@ -37,6 +37,8 @@ namespace SiliconStudio.Paradox.Effects
 
         public bool IsShadowCaster;
 
+        public bool IsShadowReceiver;
+
         public bool HasTransparency { get; private set; }
 
         private readonly ParameterCollection parameters;
@@ -193,9 +195,11 @@ namespace SiliconStudio.Paradox.Effects
             }
 
             IsShadowCaster = RenderModel.ModelComponent.IsShadowCaster;
+            IsShadowReceiver = RenderModel.ModelComponent.IsShadowReceiver;
             if (materialInstance != null)
             {
                 IsShadowCaster = IsShadowCaster && materialInstance.IsShadowCaster;
+                IsShadowReceiver = IsShadowReceiver && materialInstance.IsShadowReceiver;
             }
         }
 

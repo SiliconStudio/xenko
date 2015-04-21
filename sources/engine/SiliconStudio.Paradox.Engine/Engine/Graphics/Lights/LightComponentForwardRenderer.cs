@@ -462,7 +462,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             }
 
             // TODO: copy shadow receiver info to mesh
-            var isShadowReceiver = renderMesh.IsShadowCaster;
+            var isShadowReceiver = renderMesh.IsShadowReceiver;
             if (currentModelLightShadersPermutationEntry != renderModelLights.LightShadersPermutation || currentModelShadersParameters != renderModelLights.Parameters || currentShadowReceiver != isShadowReceiver)
             {
                 currentModelLightShadersPermutationEntry = renderModelLights.LightShadersPermutation;
