@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Assets.Model
     [AssetCompiler(typeof(AnimationAssetCompiler))]
     [ObjectFactory(typeof(AnimationFactory))]
     [ThumbnailCompiler(PreviewerCompilerNames.AnimationThumbnailCompilerQualifiedName)]
-    [Display("Animation", "A skeletal animation")]
+    [Display(180, "Animation", "A skeletal animation")]
     public class AnimationAsset : AssetImport
     {
         /// <summary>

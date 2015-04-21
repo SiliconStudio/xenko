@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     [ThumbnailCompiler(PreviewerCompilerNames.MaterialThumbnailCompilerQualifiedName, true, Priority = -5000)]
     [AssetCompiler(typeof(MaterialAssetCompiler))]
     [ObjectFactory(typeof(MaterialFactory))]
-    [Display("Material", "A material")]
+    [Display(115, "Material", "A material")]
     public sealed class MaterialAsset : Asset, IMaterialDescriptor, IAssetCompileTimeDependencies
     {
         /// <summary>

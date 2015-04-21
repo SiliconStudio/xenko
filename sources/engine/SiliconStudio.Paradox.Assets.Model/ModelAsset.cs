@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Assets.Model
     [AssetDescription(FileExtension, false)]
     [AssetCompiler(typeof(ModelAssetCompiler))]
     [ThumbnailCompiler(PreviewerCompilerNames.ModelThumbnailCompilerQualifiedName, true, Priority = 10000)]
-    [Display("Model", "A 3D model")]
+    [Display(190, "Model", "A 3D model")]
     [AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
     public sealed class ModelAsset : AssetImportTracked, IModelAsset
     {

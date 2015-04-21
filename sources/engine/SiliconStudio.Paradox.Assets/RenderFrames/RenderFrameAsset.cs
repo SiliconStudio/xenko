@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Assets.RenderFrames
     [DataContract("RenderFrame")]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(RenderFrameAssetCompiler))]
-    [Display("Render Frame", "A render frame")]
+    [Display(110, "Render Frame", "A render frame")]
     public class RenderFrameAsset : Asset
     {
         /// <summary>

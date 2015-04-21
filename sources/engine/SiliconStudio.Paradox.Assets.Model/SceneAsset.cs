@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Assets.Model
     [AssetDescription(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
     //[ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName, true)]
-    [Display("Scene", "A scene")]
+    [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
         public const string FileSceneExtension = ".pdxscene";

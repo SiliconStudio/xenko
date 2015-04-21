@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
     [AssetDescription(FileExtension)]
     [ThumbnailCompiler(PreviewerCompilerNames.ProceduralModelThumbnailCompilerQualifiedName, true)]
     [AssetCompiler(typeof(ProceduralModelAssetCompiler))]
-    [Display("Procedural Model", "A procedural model")]
+    [Display(185, "Procedural Model", "A procedural model")]
     [AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
     public sealed class ProceduralModelAsset : Asset, IModelAsset
     {

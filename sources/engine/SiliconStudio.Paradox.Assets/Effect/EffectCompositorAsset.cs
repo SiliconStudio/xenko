@@ -10,7 +10,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
     /// </summary>
     [DataContract("EffectCompositorAsset")]
     [AssetDescription(FileExtension)]
-    [Display("Effect Compositor", "An effect compositor")]
+    [Display(95, "Effect Compositor", "An effect compositor")]
     public sealed class EffectCompositorAsset : SourceCodeAsset
     {
         /// <summary>
