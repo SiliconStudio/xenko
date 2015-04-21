@@ -18,8 +18,9 @@ namespace SiliconStudio.Paradox.EntityModel
     public abstract class GizmoBase : ComponentBase, IGizmo
     {
         private bool isEnabled = true;
-        private readonly EntityGroup entityGroup;
         private IGraphicsDeviceService graphicsDeviceService;
+
+        protected const float WireFrameBackColorFactor = 0.5f;
 
         /// <summary>
         /// The default entity group of the gizmo.
@@ -27,9 +28,19 @@ namespace SiliconStudio.Paradox.EntityModel
         public const EntityGroup DefaultGroup = EntityGroup.Group1;
 
         /// <summary>
+        /// The wire frame group
+        /// </summary>
+        public const EntityGroup WireFrameGroup = EntityGroup.Group5;
+
+        /// <summary>
         /// The default entity group of the gizmo.
         /// </summary>
         public const EntityGroupMask DefaultGroupMask = EntityGroupMask.Group1;
+
+        /// <summary>
+        /// The default entity group of the gizmo.
+        /// </summary>
+        public const EntityGroupMask WireFrameGroupMask = EntityGroupMask.Group5;
 
         /// <summary>
         /// Gets the scene instance in charge of the gizmos.
@@ -72,13 +83,15 @@ namespace SiliconStudio.Paradox.EntityModel
 
         public virtual bool IsSelected { get; set; }
 
+        public EntityGroup EntityGroup { get; protected set; }
+
         /// <summary>
         /// Creates a new instance of <see cref="GizmoBase"/>.
         /// </summary>
         /// <param name="group">The entity group of the gizmo</param>
         protected GizmoBase(EntityGroup group = DefaultGroup)
         {
-            entityGroup = group;
+            EntityGroup = group;
         }
 
         public virtual bool IsEnabled
@@ -131,7 +144,11 @@ namespace SiliconStudio.Paradox.EntityModel
 
         private void AssignEntityGroupToEntity(Entity rootEntity)
         {
-            rootEntity.Group = entityGroup;
+            if (rootEntity.Group == EntityGroup.Group0)
+            {
+                rootEntity.Group = EntityGroup;
+            }
+
             foreach (var subTransform in rootEntity.Transform.Children)
             {
                 AssignEntityGroupToEntity(subTransform.Entity);
