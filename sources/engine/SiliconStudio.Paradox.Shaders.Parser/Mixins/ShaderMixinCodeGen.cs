@@ -239,7 +239,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             // A discard will be transformed to 'return'
             if (keywordExpression.Name.Text == "discard")
             {
-                Write("return");
+                WriteLinkLine(keywordExpression);
+                WriteLine("context.Discard();");
             }
             else
             {
