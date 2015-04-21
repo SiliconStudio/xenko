@@ -160,7 +160,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             base.Destroy();
         }
 
-        protected T ToLoadAndUnload<T>(T effect) where T : IGraphicsRendererCore
+        protected T ToLoadAndUnload<T>(T effect) where T : class, IGraphicsRendererCore
         {
             if (effect == null) throw new ArgumentNullException("effect");
             effect.Initialize(Context);
