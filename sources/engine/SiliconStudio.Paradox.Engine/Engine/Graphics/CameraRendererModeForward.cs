@@ -4,6 +4,9 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Effects.Materials;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Engine.Graphics
 {
@@ -25,11 +28,22 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         }
 
         /// <summary>
-        /// Gets or sets the effect to use to render the models in the scene.
+        /// Gets or sets the material filter used to render this scene camera.
         /// </summary>
-        /// <value>The main model effect.</value>
-        [DataMember(100)]
-        [DefaultValue(ForwardEffect)]
-        public string ModelEffect { get; set; }// TODO: This is not a good extensibility point. Check how to improve this
+        /// <value>The material filter.</value>
+        [DataMemberIgnore]
+        public ShaderSource MaterialFilter { get; set; }
+
+        protected override void DrawCore(RenderContext context)
+        {
+            // TODO: Find a better extensibility point for PixelStageSurfaceFilter
+            var currentFilter = context.Parameters.Get(MaterialKeys.PixelStageSurfaceFilter);
+            if (!ReferenceEquals(currentFilter, MaterialFilter))
+            {
+                context.Parameters.Set(MaterialKeys.PixelStageSurfaceFilter, MaterialFilter);
+            }
+
+            base.DrawCore(context);
+        }
     }
 }

@@ -7,9 +7,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Materials;
 using SiliconStudio.Paradox.Engine.Graphics.Composers;
-using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Engine.Graphics
 {
@@ -66,13 +64,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         public bool IsPickingMode { get; set; }
 
         /// <summary>
-        /// Gets or sets the material filter used to render this scene camera.
-        /// </summary>
-        /// <value>The material filter.</value>
-        [DataMemberIgnore]
-        public ShaderSource MaterialFilter { get; set; }
-
-        /// <summary>
         /// Gets the pre-renderers attached to this instance that are called before rendering this camera.
         /// </summary>
         /// <value>The pre renderers.</value>
@@ -105,13 +96,6 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 foreach (var renderer in PreRenderers)
                 {
                     renderer.Draw(context);
-                }
-
-                // TODO: Find a better extensibility point for PixelStageSurfaceFilter
-                var currentFilter = context.Parameters.Get(MaterialKeys.PixelStageSurfaceFilter);
-                if (!ReferenceEquals(currentFilter, MaterialFilter))
-                {
-                    context.Parameters.Set(MaterialKeys.PixelStageSurfaceFilter, MaterialFilter);
                 }
 
                 // Draw the scene based on its drawing mode (e.g. implementation forward or deferred... etc.)
