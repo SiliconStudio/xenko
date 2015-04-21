@@ -48,6 +48,14 @@ namespace SiliconStudio.Paradox.Engine
             return new RenderModel(entity);
         }
 
+        public Dictionary<Entity, RenderModel> EntityToRenderModel
+        {
+            get
+            {
+                return enabledEntities;
+            }
+        }
+
         /// <summary>
         /// Gets the current models to render per group.
         /// </summary>
