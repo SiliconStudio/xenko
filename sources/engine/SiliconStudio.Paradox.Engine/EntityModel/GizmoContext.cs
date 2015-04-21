@@ -8,6 +8,8 @@ namespace SiliconStudio.Paradox.EntityModel
     /// </summary>
     public class GizmoContext
     {
+        private const float SceneUnitFactor = 0.25f;
+
         /// <summary>
         /// The scale unit of the current scene
         /// </summary>
@@ -30,7 +32,7 @@ namespace SiliconStudio.Paradox.EntityModel
 
         public GizmoContext(float sceneUnit, bool isMultiSelecting, bool isCameraMoving)
         {
-            SceneUnit = sceneUnit;
+            SceneUnit = sceneUnit * SceneUnitFactor;
             IsCameraMoving = isCameraMoving;
             IsMultiSelecting = isMultiSelecting;
         }
