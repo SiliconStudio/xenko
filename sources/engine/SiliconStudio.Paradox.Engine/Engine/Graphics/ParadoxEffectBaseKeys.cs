@@ -2,11 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Effects
 {
     public static class ParadoxEffectBaseKeys
     {
-        public static readonly ParameterKey<string> ExtensionPostVertexStageShader = ParameterKeys.New<string>();
+        public static readonly ParameterKey<ShaderSource> ExtensionPostVertexStageShader = ParameterKeys.New<ShaderSource>();
     }
 }

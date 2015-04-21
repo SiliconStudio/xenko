@@ -11,7 +11,6 @@ namespace SiliconStudio.Paradox.Effects
     /// </summary>
     partial shader ParadoxEffectBase
     {
-        using params LightingKeys;
         using params MaterialKeys;
         using params ParadoxEffectBaseKeys;
 
@@ -24,11 +23,12 @@ namespace SiliconStudio.Paradox.Effects
         // -----------------------------------------------
         // Mix material per Vertex Shader
         // -----------------------------------------------
-        if (MaterialKeys.VertexStageSurfaceShaders != null)
+        var extensionPreVertexStageSurfaceShaders = MaterialKeys.VertexStageSurfaceShaders;
+        if (extensionPreVertexStageSurfaceShaders != null)
         {
             // Must come before TransformationBase as this is responsible to modify the vertex input stream
             mixin MaterialSurfaceVertexStageCompositor;  
-            mixin compose materialVertexStage = MaterialKeys.VertexStageSurfaceShaders;
+            mixin compose materialVertexStage = (extensionPreVertexStageSurfaceShaders);
             mixin compose streamInitializerVertexStage = MaterialKeys.VertexStageStreamInitializer;
         }
 
@@ -91,14 +91,16 @@ namespace SiliconStudio.Paradox.Effects
         // --------------------------------------------
         // Mix material tessellation for Domain shader
         //---------------------------------------------
-        if(MaterialKeys.TessellationShader != null)
+        var extensionTessellationShader = MaterialKeys.TessellationShader;
+        if(extensionTessellationShader != null)
         {
-            mixin MaterialKeys.TessellationShader;
+            mixin (extensionTessellationShader);
 
-            if(MaterialKeys.DomainStageSurfaceShaders != null)
+            var extensionDomainStageSurfaceShaders = MaterialKeys.DomainStageSurfaceShaders;
+            if(extensionDomainStageSurfaceShaders != null)
             {
                 mixin MaterialSurfaceDomainStageCompositor;  
-                mixin compose materialDomainStage = MaterialKeys.DomainStageSurfaceShaders;
+                mixin compose materialDomainStage = (extensionDomainStageSurfaceShaders);
                 mixin compose streamInitializerDomainStage = MaterialKeys.DomainStageStreamInitializer;
             }
         }
@@ -110,48 +112,6 @@ namespace SiliconStudio.Paradox.Effects
         if (extensionPostVertexStage != null)
         {
             mixin (extensionPostVertexStage);
-            return;
         }
-
-        // -----------------------------------------------
-        // Mix material and lighting shading for Pixel Shader
-        // -----------------------------------------------
-        if (MaterialKeys.PixelStageSurfaceShaders != null)
-        {
-            mixin MaterialSurfacePixelStageCompositor;
-            mixin compose materialPixelStage = MaterialKeys.PixelStageSurfaceShaders;
-            mixin compose streamInitializerPixelStage = MaterialKeys.PixelStageStreamInitializer;
-
-            if (MaterialKeys.PixelStageSurfaceFilter != null)
-            {
-                mixin MaterialKeys.PixelStageSurfaceFilter;
-            }
-        }
-
-        // -----------------------------------------------
-        // Add light groups
-        // -----------------------------------------------
-        var directLightGroups = LightingKeys.DirectLightGroups;
-        if (directLightGroups != null)
-        {
-            foreach(var directLightGroup in directLightGroups)
-            {
-                // Use parenthesis (...) to avoid lightGroup to be interpreted as a mixin named "lightGroup"
-                mixin compose directLightGroups += (directLightGroup);
-            }
-        }
-
-        // -----------------------------------------------
-        // Add environment light groups
-        // -----------------------------------------------
-        var environmentLights = LightingKeys.EnvironmentLights;
-        if (environmentLights != null)
-        {
-            foreach(var environmentLight in environmentLights)
-            {
-                // Use parenthesis (...) to avoid lightGroup to be interpreted as a mixin named "lightGroup"
-                mixin compose environmentLights += (environmentLight);
-            }
-        }
-    };
+   };
 }

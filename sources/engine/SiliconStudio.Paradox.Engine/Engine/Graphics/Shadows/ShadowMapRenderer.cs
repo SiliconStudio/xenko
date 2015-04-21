@@ -13,6 +13,7 @@ using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Graphics;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Effects.Shadows
 {
@@ -37,7 +38,12 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         internal static readonly ParameterKey<ShadowMapReceiverVsmInfo[]> ReceiversVsm = ParameterKeys.New(new ShadowMapReceiverVsmInfo[1]);
         internal static readonly ParameterKey<ShadowMapCascadeLevel[]> LevelReceivers = ParameterKeys.New(new ShadowMapCascadeLevel[1]);
         internal static readonly ParameterKey<int> ShadowMapLightCount = ParameterKeys.New(0);
-        
+
+        /// <summary>
+        /// The shadow map caster extension a discard extension
+        /// </summary>
+        private static readonly ShaderMixinGeneratorSource ShadowMapCasterExtension = new ShaderMixinGeneratorSource("ShadowMapCaster") { Discard = true };
+
         // rectangles to blur for each shadow map
         private HashSet<LightShadowMapTexture> shadowMapTexturesToBlur = new HashSet<LightShadowMapTexture>();
 
@@ -102,6 +108,7 @@ namespace SiliconStudio.Paradox.Effects.Shadows
         /// The shadow camera used for rendering from the shadow space.
         /// </summary>
         public readonly CameraComponent ShadowCamera;
+
 
         public Dictionary<Type, ILightShadowMapRenderer> Renderers
         {
@@ -346,12 +353,13 @@ namespace SiliconStudio.Paradox.Effects.Shadows
                 {
                     meshes.SwapRemoveAt(i--);
                 }
-
-                var extension = mesh.Parameters.Get(ParadoxEffectBaseKeys.ExtensionPostVertexStageShader);
-                const string ShadowMapCasterExtension = "ShadowMapCaster";
-                if (extension != ShadowMapCasterExtension)
+                else
                 {
-                    mesh.Parameters.Set(ParadoxEffectBaseKeys.ExtensionPostVertexStageShader, ShadowMapCasterExtension);
+                    var extension = mesh.Parameters.Get(ParadoxEffectBaseKeys.ExtensionPostVertexStageShader);
+                    if (!ReferenceEquals(extension, ShadowMapCasterExtension))
+                    {
+                        mesh.Parameters.Set(ParadoxEffectBaseKeys.ExtensionPostVertexStageShader, ShadowMapCasterExtension);
+                    }
                 }
             }
         }

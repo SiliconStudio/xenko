@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Engine.Graphics
 {
@@ -12,6 +13,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
     {
         private ModelComponentRenderer modelRenderer;
         private bool isPickingRendering;
+
+        private static readonly ShaderMixinGeneratorSource PickingEffect = new ShaderMixinGeneratorSource("ModelComponentPickingEffect");
 
         public override bool SupportPicking { get { return true; } }
 
@@ -25,7 +28,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             if (isPickingRendering)
             {
                 effectName += ".Picking";
-                Context.Parameters.Set(ParadoxEffectBaseKeys.ExtensionPostVertexStageShader, "ModelComponentPickingEffect");
+                Context.Parameters.Set(ParadoxEffectBaseKeys.ExtensionPostVertexStageShader, PickingEffect);
             }
 
             modelRenderer = ToLoadAndUnload(new ModelComponentRenderer(effectName));

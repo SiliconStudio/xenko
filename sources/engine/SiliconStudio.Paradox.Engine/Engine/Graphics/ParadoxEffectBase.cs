@@ -27,12 +27,13 @@ namespace SiliconStudio.Paradox.Effects
             {
                 context.Mixin(mixin, "ShaderBase");
                 context.Mixin(mixin, "ShadingBase");
-                if (context.GetParam(MaterialKeys.VertexStageSurfaceShaders) != null)
+                var extensionPreVertexStageSurfaceShaders = context.GetParam(MaterialKeys.VertexStageSurfaceShaders);
+                if (extensionPreVertexStageSurfaceShaders != null)
                 {
                     context.Mixin(mixin, "MaterialSurfaceVertexStageCompositor");
 
                     {
-                        var __mixinToCompose__ = context.GetParam(MaterialKeys.VertexStageSurfaceShaders);
+                        var __mixinToCompose__ = (extensionPreVertexStageSurfaceShaders);
                         var __subMixin = new ShaderMixinSource();
                         context.PushComposition(mixin, "materialVertexStage", __subMixin);
                         context.Mixin(__subMixin, __mixinToCompose__);
@@ -86,15 +87,17 @@ namespace SiliconStudio.Paradox.Effects
                         }
                     }
                 }
-                if (context.GetParam(MaterialKeys.TessellationShader) != null)
+                var extensionTessellationShader = context.GetParam(MaterialKeys.TessellationShader);
+                if (extensionTessellationShader != null)
                 {
-                    context.Mixin(mixin, context.GetParam(MaterialKeys.TessellationShader));
-                    if (context.GetParam(MaterialKeys.DomainStageSurfaceShaders) != null)
+                    context.Mixin(mixin, (extensionTessellationShader));
+                    var extensionDomainStageSurfaceShaders = context.GetParam(MaterialKeys.DomainStageSurfaceShaders);
+                    if (extensionDomainStageSurfaceShaders != null)
                     {
                         context.Mixin(mixin, "MaterialSurfaceDomainStageCompositor");
 
                         {
-                            var __mixinToCompose__ = context.GetParam(MaterialKeys.DomainStageSurfaceShaders);
+                            var __mixinToCompose__ = (extensionDomainStageSurfaceShaders);
                             var __subMixin = new ShaderMixinSource();
                             context.PushComposition(mixin, "materialDomainStage", __subMixin);
                             context.Mixin(__subMixin, __mixinToCompose__);
@@ -114,63 +117,6 @@ namespace SiliconStudio.Paradox.Effects
                 if (extensionPostVertexStage != null)
                 {
                     context.Mixin(mixin, (extensionPostVertexStage));
-                    return;
-                }
-                if (context.GetParam(MaterialKeys.PixelStageSurfaceShaders) != null)
-                {
-                    context.Mixin(mixin, "MaterialSurfacePixelStageCompositor");
-
-                    {
-                        var __mixinToCompose__ = context.GetParam(MaterialKeys.PixelStageSurfaceShaders);
-                        var __subMixin = new ShaderMixinSource();
-                        context.PushComposition(mixin, "materialPixelStage", __subMixin);
-                        context.Mixin(__subMixin, __mixinToCompose__);
-                        context.PopComposition();
-                    }
-
-                    {
-                        var __mixinToCompose__ = context.GetParam(MaterialKeys.PixelStageStreamInitializer);
-                        var __subMixin = new ShaderMixinSource();
-                        context.PushComposition(mixin, "streamInitializerPixelStage", __subMixin);
-                        context.Mixin(__subMixin, __mixinToCompose__);
-                        context.PopComposition();
-                    }
-                    if (context.GetParam(MaterialKeys.PixelStageSurfaceFilter) != null)
-                    {
-                        context.Mixin(mixin, context.GetParam(MaterialKeys.PixelStageSurfaceFilter));
-                    }
-                }
-                var directLightGroups = context.GetParam(LightingKeys.DirectLightGroups);
-                if (directLightGroups != null)
-                {
-                    foreach(var directLightGroup in directLightGroups)
-
-                    {
-
-                        {
-                            var __mixinToCompose__ = (directLightGroup);
-                            var __subMixin = new ShaderMixinSource();
-                            context.PushCompositionArray(mixin, "directLightGroups", __subMixin);
-                            context.Mixin(__subMixin, __mixinToCompose__);
-                            context.PopComposition();
-                        }
-                    }
-                }
-                var environmentLights = context.GetParam(LightingKeys.EnvironmentLights);
-                if (environmentLights != null)
-                {
-                    foreach(var environmentLight in environmentLights)
-
-                    {
-
-                        {
-                            var __mixinToCompose__ = (environmentLight);
-                            var __subMixin = new ShaderMixinSource();
-                            context.PushCompositionArray(mixin, "environmentLights", __subMixin);
-                            context.Mixin(__subMixin, __mixinToCompose__);
-                            context.PopComposition();
-                        }
-                    }
                 }
             }
 
