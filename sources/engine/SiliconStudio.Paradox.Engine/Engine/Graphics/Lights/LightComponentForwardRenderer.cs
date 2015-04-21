@@ -294,7 +294,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
             }
         }
 
-        private void PrepareRenderModelForRendering(RenderContext context, RenderModel model)
+        private bool PrepareRenderModelForRendering(RenderContext context, RenderModel model)
         {
             var shaderKeyIdBuilder = new ObjectIdSimpleBuilder();
             var parametersKeyIdBuilder = new ObjectIdSimpleBuilder();
@@ -448,6 +448,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
                 modelToLights.Add(model, new RenderModelLights(newLightShaderPermutationEntry, newShaderEntryParameters));
             }
+
+            return true;
         }
 
         private void PreRenderMesh(RenderContext context, RenderMesh renderMesh)

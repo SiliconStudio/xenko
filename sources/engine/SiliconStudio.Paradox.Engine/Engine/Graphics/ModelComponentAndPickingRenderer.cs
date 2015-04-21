@@ -1,6 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Shaders;
 
@@ -18,12 +20,35 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
         public override bool SupportPicking { get { return true; } }
 
+        public ModelComponentAndPickingRenderer()
+        {
+            modelRenderer = new ModelComponentRenderer();
+        }
+
+        public ModelComponentRenderer ModelRenderer
+        {
+            get
+            {
+                return modelRenderer;
+            }
+        }
+
         protected override void InitializeCore()
         {
             base.InitializeCore();
 
-            var forwardMode = SceneCameraRenderer.Mode as CameraRendererModeForward;
-            var effectName =  (forwardMode != null? forwardMode.ModelEffect: null) ?? "";
+            if (SceneCameraRenderer == null)
+            {
+                return;
+            }
+
+            var forwardMode = SceneCameraRenderer.Mode;
+            var effectName =  forwardMode.ModelEffect;
+            if (effectName == null)
+            {
+                throw new InvalidOperationException("ModelEffect cannot be null");
+            }
+
             isPickingRendering = Context.IsPicking();
             if (isPickingRendering)
             {
@@ -31,7 +56,8 @@ namespace SiliconStudio.Paradox.Engine.Graphics
                 Context.Parameters.Set(ParadoxEffectBaseKeys.ExtensionPostVertexStageShader, PickingEffect);
             }
 
-            modelRenderer = ToLoadAndUnload(new ModelComponentRenderer(effectName));
+            modelRenderer.EffectName = effectName;
+            modelRenderer = ToLoadAndUnload(modelRenderer);
 
             // Setup the ModelComponentRenderer as the main renderer for the scene Camera Renderer
             // This is used by the LightComponentForwardRenderer

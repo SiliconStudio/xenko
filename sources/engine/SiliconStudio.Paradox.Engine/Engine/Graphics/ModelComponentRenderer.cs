@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Effects
 
         public delegate void PostEffectUpdateDelegate(RenderContext context, RenderMesh renderMesh);
 
-        public delegate void PreRenderModelDelegate(RenderContext context, RenderModel renderModel);
+        public delegate bool PreRenderModelDelegate(RenderContext context, RenderModel renderModel);
 
         public PreRenderModelDelegate PreRenderModel;
 
@@ -40,14 +40,19 @@ namespace SiliconStudio.Paradox.Effects
 
         private int modelRenderSlot;
 
-        private ModelProcessor modelProcessor;
-
         private readonly FastList<RenderMesh> meshesToRender;
 
         private DynamicEffectCompiler dynamicEffectCompiler;
-        private readonly string effectName;
+        private string effectName;
         
         public override bool SupportPicking { get { return true; } }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ModelComponentRenderer"/> class.
+        /// </summary>
+        public ModelComponentRenderer() : this(null)
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelComponentRenderer" /> class.
@@ -56,23 +61,38 @@ namespace SiliconStudio.Paradox.Effects
         /// <exception cref="System.ArgumentNullException">effectName</exception>
         public ModelComponentRenderer(string effectName)
         {
-            if (effectName == null) throw new ArgumentNullException("effectName");
-
-            this.effectName = effectName;
-            Name = string.Format("ModelRenderer [{0}]", effectName);
+            if (effectName != null)
+            {
+                EffectName = effectName;
+            }
 
             meshesToRender = new FastList<RenderMesh>();
 
             modelRenderSlot = -1;
 
             Callbacks = new ModelComponentRendererCallback();
+            CustomRenderModelList = new List<RenderModel>();
         }
 
+        /// <summary>
+        /// Gets or sets the name of the effect.
+        /// </summary>
+        /// <value>The name of the effect.</value>
+        /// <exception cref="System.ArgumentNullException">value</exception>
+        /// <exception cref="System.InvalidOperationException">Cannot change effect name after first initialize</exception>
         public string EffectName
         {
             get
             {
                 return effectName;
+            }
+            set
+            {
+                if (value == null) throw new ArgumentNullException("value");
+                if (dynamicEffectCompiler != null) throw new InvalidOperationException("Cannot change effect name after first initialize");
+
+                effectName = value;
+                Name = string.Format("ModelRenderer [{0}]", effectName);
             }
         }
 
@@ -81,6 +101,18 @@ namespace SiliconStudio.Paradox.Effects
         /// </summary>
         /// <value>The callbacks.</value>
         public ModelComponentRendererCallback Callbacks { get; private set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether [use custom render model list].
+        /// </summary>
+        /// <value><c>true</c> if [use custom render model list]; otherwise, <c>false</c>.</value>
+        public bool UseCustomRenderModelList { get; set; }
+
+        /// <summary>
+        /// Gets the custom render model list to be used instead of the model processor list
+        /// </summary>
+        /// <value>The custom render model list.</value>
+        public List<RenderModel> CustomRenderModelList { get; private set; }
 
         public DynamicEffectCompiler DynamicEffectCompiler
         {
@@ -94,18 +126,23 @@ namespace SiliconStudio.Paradox.Effects
         {
             base.InitializeCore();
 
-            dynamicEffectCompiler = new DynamicEffectCompiler(Services, effectName);
+            if (effectName != null)
+            {
+                dynamicEffectCompiler = new DynamicEffectCompiler(Services, effectName);
+            }
         }
 
         protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
-            modelProcessor = SceneInstance.GetProcessor<ModelProcessor>();
-
-            // If no camera, early exit
-            var camera = context.GetCurrentCamera();
-            if (camera == null)
+            // If EffectName is not setup, exit
+            if (effectName == null)
             {
                 return;
+            }
+
+            if (dynamicEffectCompiler == null)
+            {
+                dynamicEffectCompiler = new DynamicEffectCompiler(Services, effectName);                
             }
 
             // If we don't have yet a render slot, create a new one
@@ -119,49 +156,71 @@ namespace SiliconStudio.Paradox.Effects
                 modelRenderSlot = pipelineModelState.AllocateModelSlot(EffectName);
             }
 
-            var viewProjectionMatrix = camera.ViewProjectionMatrix;
+            if (UseCustomRenderModelList)
+            {
+                PrepareModels(context, CustomRenderModelList, opaqueList, transparentList);
+            }
+            else
+            {
+                // Get all meshes from the render model processor
+                var modelProcessor = SceneInstance.GetProcessor<ModelProcessor>();
+                foreach (var renderModelGroup in modelProcessor.ModelGroups)
+                {
+                    // Perform culling on group and accept
+                    if (!CurrentCullingMask.Contains(renderModelGroup.Group))
+                    {
+                        continue;
+                    }
 
+                    PrepareModels(context, renderModelGroup, opaqueList, transparentList);
+                }
+            }
+        }
+
+        private void PrepareModels(RenderContext context, List<RenderModel> renderModels, RenderItemCollection opaqueList, RenderItemCollection transparentList)
+        {
+            // If no camera, early exit
+            var camera = context.GetCurrentCamera();
+            if (camera == null)
+            {
+                return;
+            }
+
+            var viewProjectionMatrix = camera.ViewProjectionMatrix;
             var preRenderModel = Callbacks.PreRenderModel;
 
-            // Get all meshes from render models
-            foreach (var renderModelGroup in modelProcessor.ModelGroups)
+            foreach (var renderModel in renderModels)
             {
-                // Perform culling on group and accept
-                if (!CurrentCullingMask.Contains(renderModelGroup.Group))
+                if (preRenderModel != null)
                 {
-                    continue;
+                    if (!preRenderModel(context, renderModel))
+                    {
+                        continue;
+                    }
                 }
 
-                foreach (var renderModel in renderModelGroup)
+                // Always prepare the slot for the render meshes even if they are not used.
+                EnsureRenderMeshes(renderModel);
+
+                var meshes = PrepareModelForRendering(context, renderModel);
+
+                foreach (var renderMesh in meshes)
                 {
-                    if (preRenderModel != null)
+                    if (!renderMesh.Enabled)
                     {
-                        preRenderModel(context, renderModel);
+                        continue;
                     }
 
-                    // Always prepare the slot for the render meshes even if they are not used.
-                    EnsureRenderMeshes(renderModel);
+                    // Project the position
+                    // TODO: This could be done in a SIMD batch, but we need to figure-out how to plugin in with RenderMesh object
+                    var worldPosition = new Vector4(renderMesh.Parameters.Get(TransformationKeys.World).TranslationVector, 1.0f);
+                    Vector4 projectedPosition;
+                    Vector4.Transform(ref worldPosition, ref viewProjectionMatrix, out projectedPosition);
+                    var projectedZ = projectedPosition.Z / projectedPosition.W;
 
-                    var meshes = PrepareModelForRendering(context, renderModel);
-
-                    foreach (var renderMesh in meshes)
-                    {
-                        if (!renderMesh.Enabled)
-                        {
-                            continue;
-                        }
-
-                        // Project the position
-                        // TODO: This could be done in a SIMD batch, but we need to figure-out how to plugin in with RenderMesh object
-                        var worldPosition = new Vector4(renderMesh.Parameters.Get(TransformationKeys.World).TranslationVector, 1.0f);
-                        Vector4 projectedPosition;
-                        Vector4.Transform(ref worldPosition, ref viewProjectionMatrix, out projectedPosition);
-                        var projectedZ = projectedPosition.Z / projectedPosition.W;
-
-                        renderMesh.UpdateMaterial();
-                        var list = renderMesh.HasTransparency ? transparentList : opaqueList;
-                        list.Add(new RenderItem(this, renderMesh, projectedZ));
-                    }
+                    renderMesh.UpdateMaterial();
+                    var list = renderMesh.HasTransparency ? transparentList : opaqueList;
+                    list.Add(new RenderItem(this, renderMesh, projectedZ));
                 }
             }
         }
@@ -254,10 +313,6 @@ namespace SiliconStudio.Paradox.Effects
 
         private List<RenderMesh> PrepareModelForRendering(RenderContext context, RenderModel renderModel)
         {
-            // TODO: this is obviously wrong since a pipeline can have several ModelRenderer with the same effect.
-            // In that case, a Mesh may be added several times to the list and as a result rendered several time in a single ModelRenderer.
-            // We keep it that way for now since we only have two ModelRenderer with the same effect in the deferrent pipeline (splitting between opaque and transparent objects) and their acceptance tests are exclusive.
-
             // Create the list of RenderMesh objects
             var renderMeshes = renderModel.RenderMeshesList[modelRenderSlot];
             var modelMeshes = renderModel.ModelComponent.Model.Meshes;

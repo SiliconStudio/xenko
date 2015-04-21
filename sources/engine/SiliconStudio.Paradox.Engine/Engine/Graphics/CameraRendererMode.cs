@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Effects;
@@ -22,6 +23,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         private readonly List<EntityComponentRendererType> sortedRendererTypes;
         private readonly EntityComponentRendererBatch batchRenderer;
 
+        /// <summary>
+        /// Occurs when a renderer is created.
+        /// </summary>
+        public event EventHandler<EntityComponentRendererEventArgs> RendererCreated;
+
         protected CameraRendererMode()
         {
             sortedRendererTypes = new List<EntityComponentRendererType>();
@@ -30,6 +36,13 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             RenderComponentTypes = new HashSet<Type>();
             SkipComponentTypes = new HashSet<Type>();
         }
+
+        /// <summary>
+        /// Gets or sets the effect to use to render the models in the scene.
+        /// </summary>
+        /// <value>The main model effect.</value>
+        [DataMember(10)]
+        public string ModelEffect { get; set; }// TODO: This is not a good extensibility point. Check how to improve this
 
         /// <summary>
         /// Gets the renderer overrides.
@@ -127,7 +140,18 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             componentTypeToRenderer.Clear();
         }
 
-        protected virtual IEntityComponentRenderer CreateRenderer(EntityComponentRendererType rendererType)
+        private IEntityComponentRenderer CreateRenderer(EntityComponentRendererType rendererType)
+        {
+            var renderer = CreateRendererCore(rendererType);
+            var handler = RendererCreated;
+            if (handler != null)
+            {
+                handler(this, new EntityComponentRendererEventArgs(this, renderer));
+            }
+            return renderer;
+        }
+
+        protected virtual IEntityComponentRenderer CreateRendererCore(EntityComponentRendererType rendererType)
         {
             return (IEntityComponentRenderer)Activator.CreateInstance(rendererType.RendererType);
         }

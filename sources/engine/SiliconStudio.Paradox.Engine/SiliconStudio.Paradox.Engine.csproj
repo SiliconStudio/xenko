@@ -76,6 +76,8 @@
     <Compile Include="Effects\EffectCompilerRemote.cs" />
     <Compile Include="Engine\BackgroundComponent.cs" />
     <Compile Include="Engine\BackgroundComponentProcessor.cs" />
+    <Compile Include="Engine\Graphics\CameraRendererModeWireFrame.cs" />
+    <Compile Include="Engine\Graphics\EntityComponentRendererEventArgs.cs" />
     <Compile Include="Engine\Graphics\Images\DepthMinMax\DepthMinMax.cs" />
     <Compile Include="Engine\Graphics\Images\DepthMinMax\DepthMinMaxShader.cs">
       <DependentUpon>DepthMinMaxShader.pdxsl</DependentUpon>
@@ -123,6 +125,13 @@
     <Compile Include="Engine\Graphics\Lights\LightSkyboxShaderKeys.cs" />
     <Compile Include="Engine\Graphics\Lights\LightStandardShadowMap.cs" />
     <Compile Include="Engine\Graphics\MaterialInstance.cs" />
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialFrontBackBlendShader.cs">
+      <DependentUpon>MaterialFrontBackBlendShader.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Engine\Graphics\Materials\Shaders\MaterialFrontBackBlendShaderKeys.cs" />
     <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceDiffuse.cs">
       <DependentUpon>MaterialSurfaceDiffuse.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -131,6 +140,12 @@
     </Compile>
     <Compile Include="Engine\Graphics\Materials\Shaders\MaterialSurfaceDiffuseSpecularAlphaBlendColor.cs">
       <DependentUpon>MaterialSurfaceDiffuseSpecularAlphaBlendColor.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Engine\Graphics\ParadoxWireFrameShadingEffect.cs">
+      <DependentUpon>ParadoxWireFrameShadingEffect.pdxfx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -2967,6 +2982,10 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialTessellationStream1.cs</LastGenOutput>
     </None>
+    <None Include="Engine\Graphics\Materials\Shaders\MaterialFrontBackBlendShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialFrontBackBlendShader.cs</LastGenOutput>
+    </None>
     <None Include="Engine\Graphics\Materials\Shaders\ComputeColorMaterialAlphaBlend.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorMaterialAlphaBlend.cs</LastGenOutput>
@@ -3154,6 +3173,10 @@
     <None Include="Engine\Graphics\Materials\Shaders\MaterialVertexStream.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialVertexStream.cs</LastGenOutput>
+    </None>
+    <None Include="Engine\Graphics\ParadoxWireFrameShadingEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ParadoxWireFrameShadingEffect.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\ParadoxForwardShadingEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>

@@ -17,6 +17,11 @@ namespace SiliconStudio.Paradox.Effects.Lights
             base.InitializeCore();
 
             // TODO: restrict to forward mode only for now
+            if (SceneCameraRenderer == null)
+            {
+                return;
+            }
+
             var forwardMode = SceneCameraRenderer.Mode as CameraRendererModeForward;
             if (forwardMode != null)
             {
