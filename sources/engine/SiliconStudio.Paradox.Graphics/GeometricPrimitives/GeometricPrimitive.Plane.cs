@@ -33,6 +33,16 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
         public static class Plane
         {
             /// <summary>
+            /// Enumerates the different possible direction of a plane normal.
+            /// </summary>
+            public enum NormalDirection
+            {
+                UpZ,
+                UpY,
+                UpX,
+            }
+
+            /// <summary>
             /// Creates a Plane primitive on the X/Y plane with a normal equal to -<see cref="Vector3.UnitZ"/>.
             /// </summary>
             /// <param name="device">The device.</param>
@@ -44,11 +54,12 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// <param name="uFactor">Scale U coordinates between 0 and the values of this parameter.</param>
             /// <param name="vFactor">Scale V coordinates 0 and the values of this parameter.</param>
             /// <param name="generateBackFace">Add a back face to the plane</param>
+            /// <param name="normalDirection">The direction of the plane normal</param>
             /// <returns>A Plane primitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;tessellation must be > 0</exception>
-            public static GeometricPrimitive New(GraphicsDevice device, float sizeX = 1.0f, float sizeY = 1.0f, int tessellationX = 1, int tessellationY = 1, float uFactor = 1f, float vFactor = 1f, bool generateBackFace = false, bool toLeftHanded = false)
+            public static GeometricPrimitive New(GraphicsDevice device, float sizeX = 1.0f, float sizeY = 1.0f, int tessellationX = 1, int tessellationY = 1, float uFactor = 1f, float vFactor = 1f, bool generateBackFace = false, bool toLeftHanded = false, NormalDirection normalDirection = NormalDirection.UpZ)
             {
-                return new GeometricPrimitive(device, New(sizeX, sizeY, tessellationX, tessellationY, uFactor, vFactor, generateBackFace, toLeftHanded));
+                return new GeometricPrimitive(device, New(sizeX, sizeY, tessellationX, tessellationY, uFactor, vFactor, generateBackFace, toLeftHanded, normalDirection));
             }
 
             /// <summary>
@@ -64,7 +75,7 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// <param name="generateBackFace">Add a back face to the plane</param>
             /// <returns>A Plane primitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;tessellation must be > 0</exception>
-            public static GeometricMeshData<VertexPositionNormalTexture> New(float sizeX = 1.0f, float sizeY = 1.0f, int tessellationX = 1, int tessellationY = 1, float uFactor = 1f, float vFactor = 1f, bool generateBackFace = false, bool toLeftHanded = false)
+            public static GeometricMeshData<VertexPositionNormalTexture> New(float sizeX = 1.0f, float sizeY = 1.0f, int tessellationX = 1, int tessellationY = 1, float uFactor = 1f, float vFactor = 1f, bool generateBackFace = false, bool toLeftHanded = false, NormalDirection faceNormalDirection = 0)
             {
                 if (tessellationX < 1)
                     tessellationX = 1;
@@ -84,7 +95,15 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
 
                 int vertexCount = 0;
                 int indexCount = 0;
-                var normal = Vector3.UnitZ;
+
+                Vector3 normal;
+                switch (faceNormalDirection)
+                {
+                    default:
+                    case NormalDirection.UpZ: normal = Vector3.UnitZ; break;
+                    case NormalDirection.UpY: normal = Vector3.UnitY; break;
+                    case NormalDirection.UpX: normal = Vector3.UnitX; break;
+                }
 
                 var uv = new Vector2(uFactor, vFactor);
 
@@ -93,7 +112,14 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
                 {
                     for (int x = 0; x < (tessellationX + 1); x++)
                     {
-                        var position = new Vector3(-sizeX + deltaX * x, sizeY - deltaY * y, 0);
+                        Vector3 position;
+                        switch (faceNormalDirection)
+                        {
+                            default:
+                            case NormalDirection.UpZ: position = new Vector3(-sizeX + deltaX * x, sizeY - deltaY * y, 0); break;
+                            case NormalDirection.UpY: position = new Vector3(-sizeX + deltaX * x, 0, -sizeY + deltaY * y); break;
+                            case NormalDirection.UpX: position = new Vector3(0, sizeY - deltaY * y, sizeX - deltaX * x); break;
+                        }
                         var texCoord = new Vector2(uv.X * x / tessellationX, uv.Y * y / tessellationY);
                         vertices[vertexCount++] = new VertexPositionNormalTexture(position, normal, texCoord);
                     }
@@ -117,12 +143,14 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
                 }
                 if(generateBackFace)
                 {
-                    normal = -Vector3.UnitZ;
+                    var numVertices = lineWidth * lineHeight;
+                    normal = -normal;
                     for (int y = 0; y < (tessellationY + 1); y++)
                     {
                         for (int x = 0; x < (tessellationX + 1); x++)
                         {
-                            var position = new Vector3(-sizeX + deltaX * x, sizeY - deltaY * y, 0);
+                            var baseVertex = vertices[vertexCount - numVertices];
+                            var position = new Vector3(baseVertex.Position.X, baseVertex.Position.Y, baseVertex.Position.Z);
                             var texCoord = new Vector2(uv.X * x / tessellationX, uv.Y * y / tessellationY);
                             vertices[vertexCount++] = new VertexPositionNormalTexture(position, normal, texCoord);
                         }
