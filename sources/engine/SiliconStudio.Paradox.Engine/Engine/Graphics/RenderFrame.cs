@@ -112,15 +112,16 @@ namespace SiliconStudio.Paradox.Engine.Graphics
         /// Activates the specified render context.
         /// </summary>
         /// <param name="renderContext">The render context.</param>
+        /// <param name="enableDepth">if set to <c>true</c> [enable depth].</param>
         /// <exception cref="System.ArgumentNullException">renderContext</exception>
-        public void Activate(RenderContext renderContext)
+        public void Activate(RenderContext renderContext, bool enableDepth = true)
         {
             if (renderContext == null) throw new ArgumentNullException("renderContext");
 
             // TODO: Handle support for shared depth stencil buffer
 
             // Sets the depth and render target
-            renderContext.GraphicsDevice.SetDepthAndRenderTargets(DepthStencil, RenderTargets);
+            renderContext.GraphicsDevice.SetDepthAndRenderTargets(enableDepth ? DepthStencil : null, RenderTargets);
         }
 
         /// <summary>
