@@ -228,6 +228,9 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             }
 
             UpdateImage(image, libraryData);
+            
+            var alphaSize = DDSHeader.GetAlphaDepth(loader.FilePath);
+            image.OriginalAlphaDepth = alphaSize != -1 ? alphaSize : TexImage.GetAlphaDepthFromFormat(image.Format);
         }
 
         private static void ChangeDxtImageType(DxtTextureLibraryData libraryData, DXGI_FORMAT dxgiFormat)
@@ -683,6 +686,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             image.MipmapCount = libraryData.Metadata.MipLevels;
             image.ArraySize = libraryData.Metadata.ArraySize;
             image.SlicePitch = libraryData.DxtImages[0].SlicePitch;
+            image.OriginalAlphaDepth = Math.Min(image.OriginalAlphaDepth, TexImage.GetAlphaDepthFromFormat(image.Format));
         }
 
 
@@ -697,5 +701,6 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         {
             return ((int) (format) >= 1 && (int) (format) <= 115);
         }
+
     }
 }
