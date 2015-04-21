@@ -1460,7 +1460,7 @@ namespace SiliconStudio.Assets.Analysis
             {
                 dependencies = new AssetDependencies(item);
 
-                Visit(item);
+                Visit(item.Asset);
                 
                 // composition inheritances
                 var assetComposer = item.Asset as IAssetComposer;
