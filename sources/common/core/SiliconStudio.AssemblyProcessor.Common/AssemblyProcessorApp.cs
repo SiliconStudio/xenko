@@ -23,6 +23,7 @@ namespace SiliconStudio.AssemblyProcessor
         public AssemblyProcessorApp()
         {
             SearchDirectories = new List<string>();
+            SerializationProjectReferences = new List<string>();
             ModuleInitializer = true;
         }
 
@@ -43,6 +44,8 @@ namespace SiliconStudio.AssemblyProcessor
         public string TargetFramework { get; set; }
 
         public List<string> SearchDirectories { get; set; }
+
+        public List<string> SerializationProjectReferences { get; set; } 
 
         public string SignKeyFile { get; set; }
 
@@ -141,7 +144,7 @@ namespace SiliconStudio.AssemblyProcessor
 
                 if (SerializationAssembly)
                 {
-                    processors.Add(new SerializationProcessor(SignKeyFile));
+                    processors.Add(new SerializationProcessor(SignKeyFile, SerializationProjectReferences));
                 }
 
                 if (GenerateUserDocumentation)

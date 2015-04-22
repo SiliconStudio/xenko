@@ -25,8 +25,23 @@ namespace SiliconStudio.AssemblyProcessor
     {
         public static CodeDomProvider codeDomProvider = new Microsoft.CSharp.CSharpCodeProvider();
 
-        public static AssemblyDefinition GenerateSerializationAssembly(PlatformType platformType, BaseAssemblyResolver assemblyResolver, AssemblyDefinition assembly, string serializationAssemblyLocation, string signKeyFile = null)
+        public static AssemblyDefinition GenerateSerializationAssembly(PlatformType platformType, BaseAssemblyResolver assemblyResolver, AssemblyDefinition assembly, string serializationAssemblyLocation, string signKeyFile, List<string> serializatonProjectReferencePaths)
         {
+            // Make sure all assemblies in serializatonProjectReferencePaths are referenced (sometimes they might be optimized out if no direct references)
+            foreach (var serializatonProjectReferencePath in serializatonProjectReferencePaths)
+            {
+                var shortAssemblyName = Path.GetFileNameWithoutExtension(serializatonProjectReferencePath);
+
+                // Still in references (not optimized)
+                if (assembly.MainModule.AssemblyReferences.Any(x => x.Name == shortAssemblyName))
+                    continue;
+
+                // For now, use AssemblyDefinition.ReadAssembly to compute full name -- maybe not very efficient but it shouldn't happen often anyway)
+                var referencedAssembly = AssemblyDefinition.ReadAssembly(serializatonProjectReferencePath);
+
+                assembly.MainModule.AssemblyReferences.Add(AssemblyNameReference.Parse(referencedAssembly.FullName));
+            }
+
             // Create the serializer code generator
             var serializerGenerator = new ComplexSerializerCodeGenerator(assemblyResolver, assembly);
 
