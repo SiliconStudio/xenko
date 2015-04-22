@@ -63,16 +63,19 @@ namespace SiliconStudio.Paradox.Assets.Model
                 }
             }
 
-            result.BuildSteps = new AssetBuildStep(AssetItem) { new EntityCombineCommand(urlInStorage, AssetItem.Package, asset) };
+            result.BuildSteps = new AssetBuildStep(AssetItem) { new EntityCombineCommand(urlInStorage, AssetItem.Package, context, asset) };
         }
 
         private class EntityCombineCommand : AssetCommand<EntityAsset>
         {
             private readonly Package package;
+            private readonly AssetCompilerContext context;
 
-            public EntityCombineCommand(string url, Package package, EntityAsset asset) : base(url, asset)
+
+            public EntityCombineCommand(string url, Package package, AssetCompilerContext context, EntityAsset asset) : base(url, asset)
             {
                 this.package = package;
+                this.context = context;
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
@@ -85,7 +88,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                 // Save the default settings
                 if (IsDefaultScene())
                 {
-                    assetManager.Save(GameSettings.AssetUrl, GameSettingsAsset.CreateFromPackage(package));
+                    assetManager.Save(GameSettings.AssetUrl, GameSettingsAsset.CreateFromPackage(package, context.Platform));
                 }
 
                 return Task.FromResult(ResultStatus.Successful);
@@ -94,7 +97,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
             {
                 base.ComputeParameterHash(writer);
-                var gameSettings = GameSettingsAsset.CreateFromPackage(package);
+                var gameSettings = GameSettingsAsset.CreateFromPackage(package, context.Platform);
                 if (IsDefaultScene()) writer.Write(gameSettings);
             }
 

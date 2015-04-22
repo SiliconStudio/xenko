@@ -88,11 +88,11 @@ namespace SiliconStudio.Paradox.Assets.Model
         }
 
         // Build a full GameSettings from a package
-        public static GameSettings CreateFromPackage(Package package)
+        public static GameSettings CreateFromPackage(Package package, PlatformType platform)
         {
             var result = new GameSettings();
 
-            // Default scene
+            // Default settings
             var sharedProfile = package.Profiles.FindSharedProfile();
             if (sharedProfile != null)
             {
@@ -101,6 +101,17 @@ namespace SiliconStudio.Paradox.Assets.Model
                 result.DefaultBackBufferWidth = sharedProfile.Properties.Get(BackBufferWidth);
                 result.DefaultBackBufferHeight = sharedProfile.Properties.Get(BackBufferHeight);
                 result.DefaultGraphicsProfileUsed = sharedProfile.Properties.Get(DefaultGraphicsProfile);
+            }
+            
+            // Platform-specific settings have priority
+            if (platform > 0)
+            {
+                var platformProfile = package.Profiles[platform];
+                if (platformProfile != null)
+                {
+                    var customProfile = platformProfile.Properties.Get(ParadoxConfig.GraphicsProfile);
+                    if (customProfile > 0) result.DefaultGraphicsProfileUsed = customProfile;
+                }
             }
 
             return result;
