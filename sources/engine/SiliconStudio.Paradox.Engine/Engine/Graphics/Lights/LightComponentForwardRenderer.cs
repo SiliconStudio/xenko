@@ -11,6 +11,7 @@ using SiliconStudio.Core.Storage;
 using SiliconStudio.Paradox.Effects.Shadows;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Graphics;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Effects.Lights
@@ -27,6 +28,7 @@ namespace SiliconStudio.Paradox.Effects.Lights
 
         private LightProcessor lightProcessor;
 
+        // Might be null if shadow mapping is not enabled (i.e. graphics device feature level too low)
         private ShadowMapRenderer shadowMapRenderer;
 
         private readonly List<KeyValuePair<Type, LightGroupRendererBase>> lightRenderers;
@@ -168,9 +170,12 @@ namespace SiliconStudio.Paradox.Effects.Lights
                 modelRenderer.Callbacks.PreRenderMesh += PreRenderMesh;
 
                 // TODO: Make this pluggable
-                shadowMapRenderer = new ShadowMapRenderer(modelRenderer.EffectName);
-                shadowMapRenderer.Renderers.Add(typeof(LightDirectional), new LightDirectionalShadowMapRenderer());
-                shadowMapRenderer.Renderers.Add(typeof(LightSpot), new LightSpotShadowMapRenderer());
+                if (context.GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0)
+                {
+                    shadowMapRenderer = new ShadowMapRenderer(modelRenderer.EffectName);
+                    shadowMapRenderer.Renderers.Add(typeof(LightDirectional), new LightDirectionalShadowMapRenderer());
+                    shadowMapRenderer.Renderers.Add(typeof(LightSpot), new LightSpotShadowMapRenderer());
+                }
 
                 isModelComponentRendererSetup = true;
             }
@@ -179,7 +184,8 @@ namespace SiliconStudio.Paradox.Effects.Lights
             CollectVisibleLights();
 
             // Draw shadow maps
-            shadowMapRenderer.Draw(context, visibleLightsWithShadows);
+            if (shadowMapRenderer != null)
+                shadowMapRenderer.Draw(context, visibleLightsWithShadows);
 
             // Prepare active renderers in an ordered list (by type and shadow on/off)
             CollectActiveLightRenderers(context);
@@ -360,11 +366,11 @@ namespace SiliconStudio.Paradox.Effects.Lights
                             continue;
                         }
 
-                        LightShadowMapTexture shadowTexture;
+                        LightShadowMapTexture shadowTexture = null;
                         LightShadowType shadowType = 0;
                         ILightShadowMapRenderer newShadowRenderer = null;
 
-                        if (shadowMapRenderer.LightComponentsWithShadows.TryGetValue(light, out shadowTexture))
+                        if (shadowMapRenderer != null && shadowMapRenderer.LightComponentsWithShadows.TryGetValue(light, out shadowTexture))
                         {
                             shadowType = shadowTexture.ShadowType;
                             newShadowRenderer = shadowTexture.Renderer;
