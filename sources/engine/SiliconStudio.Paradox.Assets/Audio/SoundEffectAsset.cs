@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Assets.Audio
     [ObjectFactory(typeof(SoundEffectFactory))]
     [AssetCompiler(typeof(SoundAssetCompiler))]
     [ThumbnailCompiler(PreviewerCompilerNames.SoundThumbnailCompilerQualifiedName)]
-    [Display("Sound Effect", "A sound effect")]
+    [Display(120, "Sound Effect", "A sound effect")]
     public class SoundEffectAsset : SoundAsset
     {
         private class SoundEffectFactory : IObjectFactory

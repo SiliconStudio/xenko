@@ -122,5 +122,11 @@ namespace SiliconStudio.Core
                 return value;
             }
         }
+
+        public static int? GetOrder(MemberInfo memberInfo)
+        {
+            var display = GetDisplay(memberInfo);
+            return display.Order;
+        }
     }
 }

@@ -80,6 +80,15 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
                     return result;
                 }
 
+                // load the skybox texture from the asset.
+                var reference = AttachedReferenceManager.GetAttachedReference(cubemap);
+                var skyboxTexture = context.Assets.Load<Texture>(reference.Url);
+                if (skyboxTexture.Dimension != TextureDimension.TextureCube)
+                {
+                    result.Error("SkyboxGenerator: The texture used as skybox should be a Cubemap.");
+                    return result;
+                }
+
                 var shaderSource = asset.Model.Generate(context);
                 parameters.Set(SkyboxKeys.Shader, shaderSource);
 
@@ -88,8 +97,6 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
                 // -------------------------------------------------------------------
                 var lamberFiltering = new LambertianPrefilteringSH(context.DrawEffectContext);
 
-                var reference = AttachedReferenceManager.GetAttachedReference(cubemap);
-                var skyboxTexture = context.Assets.Load<Texture>(reference.Url);
 
                 lamberFiltering.HarmonicOrder = (int)asset.DiffuseSHOrder;
                 lamberFiltering.RadianceMap = skyboxTexture;
@@ -154,8 +161,11 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
                 textureSize = (int)Math.Pow(2, Math.Round(Math.Log(textureSize, 2)));
                 if (textureSize < 64) textureSize = 64;
 
+                // TODO: Add support for HDR 32bits 
+                var filteringTextureFormat = skyboxTexture.Format.IsHDR() ? skyboxTexture.Format : PixelFormat.R8G8B8A8_UNorm;
+
                 //var outputTexture = Texture.New2D(graphicsDevice, 256, 256, skyboxTexture.Format, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 6);
-                using (var outputTexture = Texture.New2D(context.GraphicsDevice, textureSize, textureSize, true, skyboxTexture.Format, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 6))
+                using (var outputTexture = Texture.New2D(context.GraphicsDevice, textureSize, textureSize, true, filteringTextureFormat, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 6))
                 {
                     specularRadiancePrefilterGGX.RadianceMap = skyboxTexture;
                     specularRadiancePrefilterGGX.PrefilteredRadiance = outputTexture;
