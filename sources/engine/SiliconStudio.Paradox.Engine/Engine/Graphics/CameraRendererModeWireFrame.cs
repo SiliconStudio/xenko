@@ -46,6 +46,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             ShowBackface = true;
         }
 
+        /// <inheritdoc/>
+        [DefaultValue(WireFrameEffect)]
+        public override string ModelEffect { get; set; }
+
         /// <summary>
         /// Gets or sets the material filter used to render this scene camera.
         /// </summary>

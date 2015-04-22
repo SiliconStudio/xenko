@@ -27,6 +27,10 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             ModelEffect = ForwardEffect;
         }
 
+        /// <inheritdoc/>
+        [DefaultValue(ForwardEffect)]
+        public override string ModelEffect { get; set; }
+
         /// <summary>
         /// Gets or sets the material filter used to render this scene camera.
         /// </summary>
