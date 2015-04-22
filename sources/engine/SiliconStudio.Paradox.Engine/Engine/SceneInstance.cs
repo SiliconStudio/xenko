@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine.Graphics;
@@ -56,7 +57,7 @@ namespace SiliconStudio.Paradox.Engine
             this.enableScripting = enableScripting;
             Scene = sceneEntityRoot;
             RendererTypes = new EntityComponentRendererTypeCollection();
-            SelectedEntities = new HashSet<Entity>();
+            SelectedEntities = new TrackingHashSet<Entity>();
             Load();
         }
 
@@ -85,7 +86,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets the selected entities in the current scene instance.
         /// </summary>
         /// <value>The selected entities.</value>
-        public HashSet<Entity> SelectedEntities { get; private set; }
+        public TrackingHashSet<Entity> SelectedEntities { get; private set; }
 
         /// <summary>
         /// Gets the component renderers.
