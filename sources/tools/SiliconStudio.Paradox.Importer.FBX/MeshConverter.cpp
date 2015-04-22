@@ -947,16 +947,16 @@ public:
 								if (previousNode == nullptr)
 									previousNode = currentMaterialReference;
 								else
-									previousNode = gcnew ComputeBinaryColor(previousNode, currentMaterialReference, BinaryOperand::Add); // not sure
+									previousNode = gcnew ComputeBinaryColor(previousNode, currentMaterialReference, BinaryOperator::Add); // not sure
 							}
 							else
 							{
-								auto newNode = gcnew ComputeBinaryColor(previousNode, currentMaterialReference, BinaryOperand::Add);
+								auto newNode = gcnew ComputeBinaryColor(previousNode, currentMaterialReference, BinaryOperator::Add);
 								previousNode = newNode;
 								
 								FbxLayeredTexture::EBlendMode blendMode;
 								lLayeredTexture->GetTextureBlendMode(k, blendMode);
-								newNode->Operand = BlendModeToBlendOperand(blendMode);								
+								newNode->Operator = BlendModeToBlendOperand(blendMode);								
 							}
 
 							compositionCount++;
@@ -971,7 +971,7 @@ public:
 						if (previousNode == nullptr)
 							previousNode = newMaterialReference;
 						else
-							previousNode = gcnew ComputeBinaryColor(previousNode, newMaterialReference, BinaryOperand::Add); // not sure
+							previousNode = gcnew ComputeBinaryColor(previousNode, newMaterialReference, BinaryOperator::Add); // not sure
 					}
 				}
 
@@ -991,81 +991,81 @@ public:
 		}
 		else
 		{
-			compositionTree = gcnew ComputeBinaryColor(compositionTrees[0], compositionTrees[1], BinaryOperand::Multiply);
+			compositionTree = gcnew ComputeBinaryColor(compositionTrees[0], compositionTrees[1], BinaryOperator::Multiply);
 		}
 
 		return compositionTree;
 	}
 
-	BinaryOperand BlendModeToBlendOperand(FbxLayeredTexture::EBlendMode blendMode)
+	BinaryOperator BlendModeToBlendOperand(FbxLayeredTexture::EBlendMode blendMode)
 	{
 		switch (blendMode)
 		{
 		case FbxLayeredTexture::eOver:
-			return BinaryOperand::Over;
+			return BinaryOperator::Over;
 		case FbxLayeredTexture::eAdditive:
-			return BinaryOperand::Add;
+			return BinaryOperator::Add;
 		case FbxLayeredTexture::eModulate:
-			return BinaryOperand::Multiply;
+			return BinaryOperator::Multiply;
 		//case FbxLayeredTexture::eTranslucent:
-		//	return BinaryOperand::Multiply;
+		//	return BinaryOperator::Multiply;
 		//case FbxLayeredTexture::eModulate2:
-		//	return BinaryOperand::Multiply;
+		//	return BinaryOperator::Multiply;
 		//case FbxLayeredTexture::eNormal:
-		//	return BinaryOperand::Multiply;
+		//	return BinaryOperator::Multiply;
 		//case FbxLayeredTexture::eDissolve:
-		//	return BinaryOperand::Multiply;
+		//	return BinaryOperator::Multiply;
 		case FbxLayeredTexture::eDarken:
-			return BinaryOperand::Darken;
+			return BinaryOperator::Darken;
 		case FbxLayeredTexture::eColorBurn:
-			return BinaryOperand::ColorBurn;
+			return BinaryOperator::ColorBurn;
 		case FbxLayeredTexture::eLinearBurn:
-			return BinaryOperand::LinearBurn;
+			return BinaryOperator::LinearBurn;
 		//case FbxLayeredTexture::eDarkerColor:
-		//	return BinaryOperand::Multiply;
+		//	return BinaryOperator::Multiply;
 		case FbxLayeredTexture::eLighten:
-			return BinaryOperand::Lighten;
+			return BinaryOperator::Lighten;
 		case FbxLayeredTexture::eScreen:
-			return BinaryOperand::Screen;
+			return BinaryOperator::Screen;
 		case FbxLayeredTexture::eColorDodge:
-			return BinaryOperand::ColorDodge;
+			return BinaryOperator::ColorDodge;
 		case FbxLayeredTexture::eLinearDodge:
-			return BinaryOperand::LinearDodge;
+			return BinaryOperator::LinearDodge;
 		//case FbxLayeredTexture::eLighterColor:
-		//	return BinaryOperand::Multiply;
+		//	return BinaryOperator::Multiply;
 		case FbxLayeredTexture::eSoftLight:
-			return BinaryOperand::SoftLight;
+			return BinaryOperator::SoftLight;
 		case FbxLayeredTexture::eHardLight:
-			return BinaryOperand::HardLight;
+			return BinaryOperator::HardLight;
 		//case FbxLayeredTexture::eVividLight:
-		//	return BinaryOperand::Multiply;
+		//	return BinaryOperator::Multiply;
 		//case FbxLayeredTexture::eLinearLight:
-		//	return BinaryOperand::Multiply;
+		//	return BinaryOperator::Multiply;
 		case FbxLayeredTexture::ePinLight:
-			return BinaryOperand::PinLight;
+			return BinaryOperator::PinLight;
 		case FbxLayeredTexture::eHardMix:
-			return BinaryOperand::HardMix;
+			return BinaryOperator::HardMix;
 		case FbxLayeredTexture::eDifference:
-			return BinaryOperand::Difference;
+			return BinaryOperator::Difference;
 		case FbxLayeredTexture::eExclusion:
-			return BinaryOperand::Exclusion;
+			return BinaryOperator::Exclusion;
 		case FbxLayeredTexture::eSubtract:
-			return BinaryOperand::Subtract;
+			return BinaryOperator::Subtract;
 		case FbxLayeredTexture::eDivide:
-			return BinaryOperand::Divide;
+			return BinaryOperator::Divide;
 		case FbxLayeredTexture::eHue:
-			return BinaryOperand::Hue;
+			return BinaryOperator::Hue;
 		case FbxLayeredTexture::eSaturation:
-			return BinaryOperand::Saturation;
+			return BinaryOperator::Saturation;
 		//case FbxLayeredTexture::eColor:
-		//	return BinaryOperand::Multiply;
+		//	return BinaryOperator::Multiply;
 		//case FbxLayeredTexture::eLuminosity:
-		//	return BinaryOperand::Multiply;
+		//	return BinaryOperator::Multiply;
 		case FbxLayeredTexture::eOverlay:
-			return BinaryOperand::Overlay;
+			return BinaryOperator::Overlay;
 		default:
 			logger->Error("Material blending mode '{0}' is not supported yet. Multiplying blending mode will be used instead.", gcnew Int32(blendMode));
-			return BinaryOperand::Multiply;
+			return BinaryOperator::Multiply;
 		}
 	}
 

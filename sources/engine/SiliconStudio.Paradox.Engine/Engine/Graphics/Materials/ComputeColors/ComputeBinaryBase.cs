@@ -28,22 +28,22 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// </summary>
         /// <param name="leftChild">The left child.</param>
         /// <param name="rightChild">The right child.</param>
-        /// <param name="binaryOperand">The material binary operand.</param>
-        protected ComputeBinaryBase(T leftChild, T rightChild, BinaryOperand binaryOperand)
+        /// <param name="binaryOperator">The material binary operand.</param>
+        protected ComputeBinaryBase(T leftChild, T rightChild, BinaryOperator binaryOperator)
         {
             LeftChild = leftChild;
             RightChild = rightChild;
-            Operand = binaryOperand;
+            Operator = binaryOperator;
         }
 
         /// <summary>
         /// The operation to blend the nodes.
         /// </summary>
         /// <userdoc>
-        /// The operation between the background (LeftChild) and the foreground (RightChild).
+        /// The operation between the background (Left) and the foreground (Right).
         /// </userdoc>
         [DataMember(10)]
-        public BinaryOperand Operand { get; set; }
+        public BinaryOperator Operator { get; set; }
 
         /// <summary>
         /// The left (background) child node.
@@ -52,6 +52,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// The background color mapping.
         /// </userdoc>
         [DataMember(20)]
+        [Display("Left")]
         public T LeftChild { get; set; }
 
         /// <summary>
@@ -61,6 +62,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// The foreground color mapping.
         /// </userdoc>
         [DataMember(30)]
+        [Display("Right")]
         public T RightChild { get; set; }
 
         /// <inheritdoc/>
@@ -80,12 +82,12 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
             var leftShaderSource = LeftChild.GenerateShaderSource(context, baseKeys);
             var rightShaderSource = RightChild.GenerateShaderSource(context, baseKeys);
 
-            var shaderSource = new ShaderClassSource(GetCorrespondingShaderSourceName(Operand));
+            var shaderSource = new ShaderClassSource(GetCorrespondingShaderSourceName(Operator));
             var mixin = new ShaderMixinSource();
             mixin.Mixins.Add(shaderSource);
             if (leftShaderSource != null)
                 mixin.AddComposition(BackgroundCompositionName, leftShaderSource);
-            if (Operand != BinaryOperand.None && Operand != BinaryOperand.Opaque && rightShaderSource != null)
+            if (rightShaderSource != null)
                 mixin.AddComposition(ForegroundCompositionName, rightShaderSource);
 
             return mixin;
@@ -102,73 +104,69 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// </summary>
         /// <param name="binaryOperand">The operand.</param>
         /// <returns>The name of the ShaderClassSource.</returns>
-        private static string GetCorrespondingShaderSourceName(BinaryOperand binaryOperand)
+        private static string GetCorrespondingShaderSourceName(BinaryOperator binaryOperand)
         {
             switch (binaryOperand)
             {
-                case BinaryOperand.Add:
+                case BinaryOperator.Add:
                     return "ComputeColorAdd3ds"; //TODO: change this (ComputeColorAdd?)
-                case BinaryOperand.Average:
+                case BinaryOperator.Average:
                     return "ComputeColorAverage";
-                case BinaryOperand.Color:
+                case BinaryOperator.Color:
                     return "ComputeColorColor";
-                case BinaryOperand.ColorBurn:
+                case BinaryOperator.ColorBurn:
                     return "ComputeColorColorBurn";
-                case BinaryOperand.ColorDodge:
+                case BinaryOperator.ColorDodge:
                     return "ComputeColorColorDodge";
-                case BinaryOperand.Darken:
+                case BinaryOperator.Darken:
                     return "ComputeColorDarken3ds"; //"ComputeColorDarkenMaya" //TODO: change this
-                case BinaryOperand.Desaturate:
+                case BinaryOperator.Desaturate:
                     return "ComputeColorDesaturate";
-                case BinaryOperand.Difference:
+                case BinaryOperator.Difference:
                     return "ComputeColorDifference3ds"; //"ComputeColorDifferenceMaya" //TODO: change this
-                case BinaryOperand.Divide:
+                case BinaryOperator.Divide:
                     return "ComputeColorDivide";
-                case BinaryOperand.Exclusion:
+                case BinaryOperator.Exclusion:
                     return "ComputeColorExclusion";
-                case BinaryOperand.HardLight:
+                case BinaryOperator.HardLight:
                     return "ComputeColorHardLight";
-                case BinaryOperand.HardMix:
+                case BinaryOperator.HardMix:
                     return "ComputeColorHardMix";
-                case BinaryOperand.Hue:
+                case BinaryOperator.Hue:
                     return "ComputeColorHue";
-                case BinaryOperand.Illuminate:
+                case BinaryOperator.Illuminate:
                     return "ComputeColorIlluminate";
-                case BinaryOperand.In:
+                case BinaryOperator.In:
                     return "ComputeColorIn";
-                case BinaryOperand.Lighten:
+                case BinaryOperator.Lighten:
                     return "ComputeColorLighten3ds"; //"ComputeColorLightenMaya" //TODO: change this
-                case BinaryOperand.LinearBurn:
+                case BinaryOperator.LinearBurn:
                     return "ComputeColorLinearBurn";
-                case BinaryOperand.LinearDodge:
+                case BinaryOperator.LinearDodge:
                     return "ComputeColorLinearDodge";
-                case BinaryOperand.Mask:
+                case BinaryOperator.Mask:
                     return "ComputeColorMask";
-                case BinaryOperand.Multiply:
+                case BinaryOperator.Multiply:
                     return "ComputeColorMultiply"; //return "ComputeColorMultiply3ds"; //"ComputeColorMultiplyMaya" //TODO: change this
-                case BinaryOperand.None:
-                    return "ComputeColorNone";
-                case BinaryOperand.Opaque:
-                    return "ComputeColorOpaque";
-                case BinaryOperand.Out:
+                case BinaryOperator.Out:
                     return "ComputeColorOut";
-                case BinaryOperand.Over:
+                case BinaryOperator.Over:
                     return "ComputeColorOver3ds"; //TODO: change this to "ComputeColorLerpAlpha"
-                case BinaryOperand.Overlay:
+                case BinaryOperator.Overlay:
                     return "ComputeColorOverlay3ds"; //"ComputeColorOverlayMaya" //TODO: change this
-                case BinaryOperand.PinLight:
+                case BinaryOperator.PinLight:
                     return "ComputeColorPinLight";
-                case BinaryOperand.Saturate:
+                case BinaryOperator.Saturate:
                     return "ComputeColorSaturate";
-                case BinaryOperand.Saturation:
+                case BinaryOperator.Saturation:
                     return "ComputeColorSaturation";
-                case BinaryOperand.Screen:
+                case BinaryOperator.Screen:
                     return "ComputeColorScreen";
-                case BinaryOperand.SoftLight:
+                case BinaryOperator.SoftLight:
                     return "ComputeColorSoftLight";
-                case BinaryOperand.Subtract:
+                case BinaryOperator.Subtract:
                     return "ComputeColorSubtract"; // "ComputeColorSubtract3ds" "ComputeColorSubtractMaya" //TODO: change this
-                case BinaryOperand.SubstituteAlpha:
+                case BinaryOperator.SubstituteAlpha:
                     return "ComputeColorSubstituteAlpha";
                 default:
                     throw new ArgumentOutOfRangeException("binaryOperand");

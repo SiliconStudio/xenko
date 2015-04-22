@@ -16,8 +16,8 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         {
         }
 
-        public ComputeBinaryColor(IComputeColor leftChild, IComputeColor rightChild, BinaryOperand binaryOperand)
-            : base(leftChild, rightChild, binaryOperand)
+        public ComputeBinaryColor(IComputeColor leftChild, IComputeColor rightChild, BinaryOperator binaryOperator)
+            : base(leftChild, rightChild, binaryOperator)
         {
         }
     }

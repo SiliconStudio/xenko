@@ -126,6 +126,7 @@
     <Compile Include="Engine\Graphics\Lights\LightSkyboxShaderKeys.cs" />
     <Compile Include="Engine\Graphics\Lights\LightStandardShadowMap.cs" />
     <Compile Include="Engine\Graphics\MaterialInstance.cs" />
+    <Compile Include="Engine\Graphics\Materials\ComputeColors\BinaryOperator.cs" />
     <Compile Include="Engine\Graphics\Materials\Shaders\MaterialFrontBackBlendShader.cs">
       <DependentUpon>MaterialFrontBackBlendShader.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -542,20 +543,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Graphics\ComputeColor\ComputeColorNone.cs">
-      <DependentUpon>ComputeColorNone.pdxsl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Engine\Graphics\ComputeColor\ComputeColorOne.cs">
       <DependentUpon>ComputeColorOne.pdxsl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Engine\Graphics\ComputeColor\ComputeColorOpaque.cs">
-      <DependentUpon>ComputeColorOpaque.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -975,7 +964,6 @@
     <Compile Include="Engine\Graphics\Images\IImageEffect.cs" />
     <Compile Include="Engine\Graphics\IRenderFrameProvider.cs" />
     <Compile Include="Engine\Graphics\ISceneRenderer.cs" />
-    <Compile Include="Engine\Graphics\Materials\ComputeColors\BinaryOperand.cs" />
     <Compile Include="Engine\Graphics\Materials\ComputeColors\ComputeBinaryBase.cs" />
     <Compile Include="Engine\Graphics\Materials\ComputeColors\ComputeBinaryColor.cs" />
     <Compile Include="Engine\Graphics\Materials\ComputeColors\ComputeBinaryScalar.cs" />
@@ -2403,17 +2391,9 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorMultiply.cs</LastGenOutput>
     </None>
-    <None Include="Engine\Graphics\ComputeColor\ComputeColorNone.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeColorNone.cs</LastGenOutput>
-    </None>
     <None Include="Engine\Graphics\ComputeColor\ComputeColorOne.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorOne.cs</LastGenOutput>
-    </None>
-    <None Include="Engine\Graphics\ComputeColor\ComputeColorOpaque.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeColorOpaque.cs</LastGenOutput>
     </None>
     <None Include="Engine\Graphics\ComputeColor\ComputeColorOut.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

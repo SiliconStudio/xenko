@@ -724,20 +724,20 @@ private:
 			{
 				auto realTop = (AssimpNet::Material::StackOperation^) top;
 				AssimpNet::Material::Operation op = realTop->operation;
-				auto binNode = gcnew ComputeBinaryColor(nullptr, nullptr, BinaryOperand::Add);
+				auto binNode = gcnew ComputeBinaryColor(nullptr, nullptr, BinaryOperator::Add);
 
 				switch (op)
 				{
 					case AssimpNet::Material::Operation::Add3ds:
 					case AssimpNet::Material::Operation::AddMaya:
-						binNode->Operand = BinaryOperand::Add; //BinaryOperand::Add3ds;
+						binNode->Operator = BinaryOperator::Add; //BinaryOperator::Add3ds;
 						break;
 					case AssimpNet::Material::Operation::Multiply3ds:
 					case AssimpNet::Material::Operation::MultiplyMaya:
-						binNode->Operand = BinaryOperand::Multiply;
+						binNode->Operator = BinaryOperator::Multiply;
 						break;
 					default:
-						binNode->Operand = BinaryOperand::Add;
+						binNode->Operator = BinaryOperator::Add;
 						break;
 				}
 
@@ -768,12 +768,12 @@ private:
 				
 				
 				auto factorComposition = gcnew ComputeFloat4(Vector4(strength, strength, strength, strengthAlpha));
-				curComposition = gcnew ComputeBinaryColor(curComposition, factorComposition, BinaryOperand::Multiply);
+				curComposition = gcnew ComputeBinaryColor(curComposition, factorComposition, BinaryOperator::Multiply);
 			}
 			else if (alpha != 1.f && type != AssimpNet::Material::StackType::Color)
 			{
 				auto factorComposition = gcnew ComputeFloat4(Vector4(1.0f, 1.0f, 1.0f, alpha));
-				curComposition = gcnew ComputeBinaryColor(curComposition, factorComposition, BinaryOperand::Multiply);
+				curComposition = gcnew ComputeBinaryColor(curComposition, factorComposition, BinaryOperator::Multiply);
 			}
 
 			if (isRootElement)
@@ -843,7 +843,7 @@ private:
 			{
 				auto lightMap = GenerateOneTextureTypeLayers(pMat, aiTextureType_LIGHTMAP, textureCount, finalMaterial);
 				if (lightMap != nullptr)
-					computeColorNode = gcnew ComputeBinaryColor(computeColorNode, lightMap, BinaryOperand::Add);
+					computeColorNode = gcnew ComputeBinaryColor(computeColorNode, lightMap, BinaryOperator::Add);
 			}
 
 			finalMaterial->Attributes->Diffuse = gcnew MaterialDiffuseMapFeature(computeColorNode);

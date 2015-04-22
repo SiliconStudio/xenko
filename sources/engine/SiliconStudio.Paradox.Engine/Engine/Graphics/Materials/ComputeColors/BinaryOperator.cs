@@ -8,14 +8,9 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
     /// <summary>
     /// Operands of the MaterialNode.
     /// </summary>
-    [DataContract("BinaryOperand")]
-    public enum BinaryOperand
+    [DataContract("BinaryOperator")]
+    public enum BinaryOperator
     {
-        /// <summary>
-        /// Do nothing on the first texture.
-        /// </summary>
-        None,
-
         /// <summary>
         /// Add of the two textures.
         /// </summary>
@@ -115,12 +110,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// Multiply the two textures.
         /// </summary>
         Multiply,
-
-        /// <summary>
-        /// Take color for the first texture and use alpha = 1
-        /// </summary>
-        Opaque,
-
+        
         /// <summary>
         /// Out effect from the two textures.
         /// </summary>

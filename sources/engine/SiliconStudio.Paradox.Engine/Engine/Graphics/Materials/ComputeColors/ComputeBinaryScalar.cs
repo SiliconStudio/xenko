@@ -24,9 +24,9 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// </summary>
         /// <param name="leftChild">The left child.</param>
         /// <param name="rightChild">The right child.</param>
-        /// <param name="binaryOperand">The material binary operand.</param>
-        public ComputeBinaryScalar(IComputeScalar leftChild, IComputeScalar rightChild, BinaryOperand binaryOperand)
-            : base(leftChild, rightChild, binaryOperand)
+        /// <param name="binaryOperator">The material binary operand.</param>
+        public ComputeBinaryScalar(IComputeScalar leftChild, IComputeScalar rightChild, BinaryOperator binaryOperator)
+            : base(leftChild, rightChild, binaryOperator)
         {
         }
     }

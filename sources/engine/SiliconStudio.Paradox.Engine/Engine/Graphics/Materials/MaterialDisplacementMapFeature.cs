@@ -102,10 +102,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
             var displacement = DisplacementMap;
             if (ScaleAndBias) // scale and bias should be done by layer
             {
-                displacement = new ComputeBinaryScalar(displacement, new ComputeFloat(2f), BinaryOperand.Multiply);
-                displacement = new ComputeBinaryScalar(displacement, new ComputeFloat(1f), BinaryOperand.Subtract);
+                displacement = new ComputeBinaryScalar(displacement, new ComputeFloat(2f), BinaryOperator.Multiply);
+                displacement = new ComputeBinaryScalar(displacement, new ComputeFloat(1f), BinaryOperator.Subtract);
             }
-            displacement = new ComputeBinaryScalar(displacement, Intensity, BinaryOperand.Multiply);
+            displacement = new ComputeBinaryScalar(displacement, Intensity, BinaryOperator.Multiply);
 
             // Workaround to inform compute colors that sampling is occurring from a vertex shader
             context.IsNotPixelStage = materialStage != MaterialShaderStage.Pixel;
