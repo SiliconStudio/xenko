@@ -97,8 +97,11 @@ namespace SiliconStudio.Paradox.Assets.Model
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
             {
                 base.ComputeParameterHash(writer);
-                var gameSettings = GameSettingsAsset.CreateFromPackage(package, context.Platform);
-                if (IsDefaultScene()) writer.Write(gameSettings);
+                if (IsDefaultScene())
+                {
+                    var gameSettings = GameSettingsAsset.CreateFromPackage(package, context.Platform);
+                    writer.Write(gameSettings);
+                }
             }
 
             private bool IsDefaultScene()
