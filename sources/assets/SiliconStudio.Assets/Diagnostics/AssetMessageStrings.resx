@@ -198,4 +198,7 @@
   <data name="CompilationMessage" xml:space="preserve">
     <value>{1}</value>
   </data>
+  <data name="DefaultSceneNotFound" xml:space="preserve">
+    <value>A default scene was not found in the package</value>
+  </data>
 </root>

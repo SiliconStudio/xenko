@@ -142,5 +142,10 @@ namespace SiliconStudio.Assets.Diagnostics
         /// A warning that occured in the asset compilation.
         /// </summary>
         CompilationWarning,
+
+        /// <summary>
+        /// A default scene was not found in the package.
+        /// </summary>
+        DefaultSceneNotFound,
     }
 }

@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
@@ -105,6 +106,18 @@ namespace SiliconStudio.Paradox.Assets.Model
             return result;
         }
 
+        public static void CreateAndSetDefaultScene(Package package, String location = "MainScene")
+        {
+            var defaultSceneAsset = SceneAsset.Create();
+
+            var sceneAssetItem = new AssetItem(location, defaultSceneAsset);
+            package.Assets.Add(sceneAssetItem);
+            sceneAssetItem.IsDirty = true;
+            var sceneAsset = new AssetReference<SceneAsset>(sceneAssetItem.Id, sceneAssetItem.Location);
+
+            // Sets the scene created as default in the shared profile
+            SetDefaultScene(package, sceneAsset);
+        }
         
     }
 }
