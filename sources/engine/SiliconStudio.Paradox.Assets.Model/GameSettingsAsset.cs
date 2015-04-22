@@ -2,6 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Linq;
+
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
@@ -104,9 +106,9 @@ namespace SiliconStudio.Paradox.Assets.Model
             }
             
             // Platform-specific settings have priority
-            if (platform > 0)
+            if (platform != PlatformType.Shared)
             {
-                var platformProfile = package.Profiles[platform];
+                var platformProfile = package.Profiles.FirstOrDefault(o => o.Platform == platform);
                 if (platformProfile != null)
                 {
                     var customProfile = platformProfile.Properties.Get(ParadoxConfig.GraphicsProfile);
