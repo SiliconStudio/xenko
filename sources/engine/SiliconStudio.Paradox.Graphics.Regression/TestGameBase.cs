@@ -22,6 +22,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1 };
             StopOnFrameCount = -1;
+            AutoLoadDefaultSettings = false;
         }
 
         protected override void Update(GameTime gameTime)
