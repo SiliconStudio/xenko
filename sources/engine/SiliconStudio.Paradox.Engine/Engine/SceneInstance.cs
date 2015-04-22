@@ -34,6 +34,11 @@ namespace SiliconStudio.Paradox.Engine
         private bool enableScripting = true;
 
         /// <summary>
+        /// Occurs when the scene changed from a scene child component.
+        /// </summary>
+        public event EventHandler<EventArgs> SceneChanged;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="EntityManager" /> class.
         /// </summary>
         /// <param name="registry">The registry.</param>
@@ -57,7 +62,7 @@ namespace SiliconStudio.Paradox.Engine
             this.enableScripting = enableScripting;
             Scene = sceneEntityRoot;
             RendererTypes = new EntityComponentRendererTypeCollection();
-            SelectedEntities = new TrackingHashSet<Entity>();
+            ComponentTypeAdded += EntitySystemOnComponentTypeAdded;
             Load();
         }
 
@@ -81,12 +86,6 @@ namespace SiliconStudio.Paradox.Engine
                 }
             }
         }
-
-        /// <summary>
-        /// Gets the selected entities in the current scene instance.
-        /// </summary>
-        /// <value>The selected entities.</value>
-        public TrackingHashSet<Entity> SelectedEntities { get; private set; }
 
         /// <summary>
         /// Gets the component renderers.
@@ -205,23 +204,18 @@ namespace SiliconStudio.Paradox.Engine
             }
         }
 
-        protected internal override void Reset()
-        {
-            base.Reset();
-            SelectedEntities.Clear();
-        }
-
         private void Load()
         {
             previousScene = Scene;
+            RendererTypes.Clear();
+
+            OnSceneChanged();
 
             // If Scene is null, early exit
             if (Scene == null)
             {
                 return;
             }
-
-            RendererTypes.Clear();
 
             // Initialize processors
             if (enableScripting)
@@ -245,8 +239,6 @@ namespace SiliconStudio.Paradox.Engine
 
             // Make sure that we always have a camera component registered
             RendererTypes.Add(new EntityComponentRendererType(typeof(CameraComponent), typeof(CameraComponentRenderer), int.MinValue));
-
-            ComponentTypeAdded += EntitySystemOnComponentTypeAdded;
         }
 
         private void EntitySystemOnComponentTypeAdded(object sender, Type type)
@@ -262,6 +254,12 @@ namespace SiliconStudio.Paradox.Engine
                 var entityComponentRendererType = new EntityComponentRendererType(type, renderType, rendererTypeAttribute.Order);
                 RendererTypes.Add(entityComponentRendererType);
             }
+        }
+
+        private void OnSceneChanged()
+        {
+            EventHandler<EventArgs> handler = SceneChanged;
+            if (handler != null) handler(this, EventArgs.Empty);
         }
     }
 }
