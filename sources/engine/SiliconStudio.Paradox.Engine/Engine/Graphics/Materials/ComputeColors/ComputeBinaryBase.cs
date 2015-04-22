@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
@@ -14,6 +15,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
     /// </summary>
     [DataContract(Inherited = true)]
     [Display("Binary Operator")]
+    [InlineProperty]
     public abstract class ComputeBinaryBase<T> : ComputeNode where T : class, IComputeNode
     {
         /// <summary>
@@ -43,6 +45,7 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
         /// The operation between the background (Left) and the foreground (Right).
         /// </userdoc>
         [DataMember(10)]
+        [InlineProperty]
         public BinaryOperator Operator { get; set; }
 
         /// <summary>
