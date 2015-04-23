@@ -140,7 +140,7 @@ namespace SiliconStudio.Paradox.Effects
                 }
             }
 
-            if (effectInstance.CurrentlyCompilingEffect == null && // Check again, in case effect was just finished async compilation
+            if (effectChanged || // Check again, in case effect was just finished async compilation
                 (effectInstance.Effect == null || !EffectSystem.IsValid(effectInstance.Effect) || HasCollectionChanged(effectInstance, passParameters) || effectInstance.HasErrors))
             {
                 if (effectInstance.HasErrors)
