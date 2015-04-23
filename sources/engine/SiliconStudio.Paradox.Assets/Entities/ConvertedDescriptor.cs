@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using SiliconStudio.Core.Reflection;
 
-namespace SiliconStudio.Paradox.Assets.Model
+namespace SiliconStudio.Paradox.Assets.Entities
 {
     // TODO: Move it to Assets? Or Core/Core.Design?
     public class ConvertedDescriptor : MemberDescriptorBase

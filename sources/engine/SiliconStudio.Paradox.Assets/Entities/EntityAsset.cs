@@ -3,25 +3,24 @@
 
 using System;
 using System.Collections.Generic;
-
 using System.Linq;
 
 using SharpYaml.Serialization;
+
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Assets.Model.Analysis;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
+
 using IObjectFactory = SiliconStudio.Core.Reflection.IObjectFactory;
 
-namespace SiliconStudio.Paradox.Assets.Model
+namespace SiliconStudio.Paradox.Assets.Entities
 {
     [DataContract("EntityAsset")]
     [AssetDescription(FileExtension, false)]

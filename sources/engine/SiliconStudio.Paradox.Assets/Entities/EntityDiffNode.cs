@@ -3,12 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 
-namespace SiliconStudio.Paradox.Assets.Model
+namespace SiliconStudio.Paradox.Assets.Entities
 {
     [DataContract("EntityDiffNode")]
     public class EntityDiffNode : IDiffKey

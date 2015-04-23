@@ -14,7 +14,7 @@ using SiliconStudio.Paradox.Assets.Serializers;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 
-namespace SiliconStudio.Paradox.Assets.Model
+namespace SiliconStudio.Paradox.Assets.Entities
 {
     public class EntityAssetCompiler : AssetCompilerBase<EntityAsset>
     {

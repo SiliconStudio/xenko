@@ -30,7 +30,7 @@ Profiles:
                 RawImports: []
         OutputGroupDirectories: {}
         Properties:
-            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+            GameSettingsAsset.DefaultGraphicsProfile: !GraphicsProfile Level_9_1
         ProjectReferences:
             -   Id: 117bf9f8-d2d9-4d32-9702-251c3e038090
                 Location: SiliconStudio.Paradox.Assets.Tests.csproj

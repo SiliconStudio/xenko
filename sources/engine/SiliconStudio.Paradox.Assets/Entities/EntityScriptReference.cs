@@ -5,7 +5,7 @@ using System;
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Assets.Model
+namespace SiliconStudio.Paradox.Assets.Entities
 {
     [DataContract]
     [DataStyle(DataStyle.Compact)]

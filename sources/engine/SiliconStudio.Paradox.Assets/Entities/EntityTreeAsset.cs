@@ -2,7 +2,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.EntityModel;
 
-namespace SiliconStudio.Paradox.Assets.Model
+namespace SiliconStudio.Paradox.Assets.Entities
 {
     /// <summary>
     /// Temporary representation of <see cref="EntityHierarchyData"/> used during diff/merge, to map reimported node mapping easily.

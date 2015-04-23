@@ -1,16 +1,17 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Linq;
+
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Paradox.Assets.Entities;
 
-namespace SiliconStudio.Paradox.Assets.Model.Analysis
+namespace SiliconStudio.Paradox.Assets.Analysis
 {
     /// <summary>
     /// Analyses a game package, checks the default scene exists.

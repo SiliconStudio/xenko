@@ -10,7 +10,7 @@ using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 
-namespace SiliconStudio.Paradox.Assets.Model.Analysis
+namespace SiliconStudio.Paradox.Assets.Entities
 {
     public static class EntityAnalysis
     {

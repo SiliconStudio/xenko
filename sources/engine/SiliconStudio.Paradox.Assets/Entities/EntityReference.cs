@@ -4,7 +4,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.EntityModel;
 
-namespace SiliconStudio.Paradox.Assets.Model
+namespace SiliconStudio.Paradox.Assets.Entities
 {
     /// <summary>
     /// Represents a reference to an <see cref="Entity"/>, using its Id (and Name for easier matching and readability).

@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Paradox.Assets.Model.Analysis;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 
-namespace SiliconStudio.Paradox.Assets.Model
+namespace SiliconStudio.Paradox.Assets.Entities
 {
     /// <summary>
     /// Transforms <see cref="EntityHierarchyData"/> nodes into hierarchical <see cref="EntityDiffNode"/>.

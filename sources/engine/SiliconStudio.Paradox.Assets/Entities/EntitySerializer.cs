@@ -2,15 +2,14 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+
 using SharpYaml.Serialization;
 using SharpYaml.Serialization.Serializers;
-using SiliconStudio.Paradox.Assets.Model.Analysis;
-using SiliconStudio.Paradox.Assets.Serializers;
+
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
-using ITypeDescriptor = SharpYaml.Serialization.ITypeDescriptor;
 
-namespace SiliconStudio.Paradox.Assets.Model
+namespace SiliconStudio.Paradox.Assets.Entities
 {
     //[YamlSerializerFactory]
     public class EntitySerializer : ObjectSerializer //, IDataCustomVisitor

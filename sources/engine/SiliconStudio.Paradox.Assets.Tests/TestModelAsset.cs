@@ -14,8 +14,8 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
+using SiliconStudio.Paradox.Assets.Entities;
 using SiliconStudio.Paradox.Assets.Model;
-using SiliconStudio.Paradox.Assets.Model.Analysis;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 

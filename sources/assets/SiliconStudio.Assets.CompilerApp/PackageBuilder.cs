@@ -86,6 +86,7 @@ namespace SiliconStudio.Assets.CompilerApp
             var package = projectSession.LocalPackages.First();
 
             // Check build profile
+            var sharedProfile = package.Profiles.FindSharedProfile();
             var buildProfile = package.Profiles.FirstOrDefault(pair => pair.Name == builderOptions.BuildProfile);
             if (buildProfile == null)
             {
@@ -107,8 +108,16 @@ namespace SiliconStudio.Assets.CompilerApp
                 Package = package,
                 Platform = builderOptions.Platform
             };
-            // If a build profile is available, output the properties
+
+            // Copy properties from shared profiles to context properties
+            foreach (var propertyValue in sharedProfile.Properties)
+            {
+                context.Properties.Set(propertyValue.Key, propertyValue.Value);
+            }
+
             context.Properties.Set(SiliconStudio.Paradox.Assets.ParadoxConfig.GraphicsPlatform, builderOptions.GraphicsPlatform.HasValue ? builderOptions.GraphicsPlatform.Value : builderOptions.GetDefaultGraphicsPlatform());
+
+            // Copy properties from build profile
             foreach (var propertyValue in buildProfile.Properties)
             {
                 context.Properties.Set(propertyValue.Key, propertyValue.Value);

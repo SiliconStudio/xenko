@@ -28,7 +28,7 @@ Profiles:
         AssetFolders: []
         OutputGroupDirectories: {}
         Properties:
-            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+            GameSettingsAsset.DefaultGraphicsProfile: !GraphicsProfile Level_9_1
         ProjectReferences:
             -   Id: 01700344-cf44-482c-bebc-60213b0f844c
                 Location: SiliconStudio.Paradox.Input.Tests.Windows.csproj
@@ -39,7 +39,7 @@ Profiles:
         AssetFolders: []
         OutputGroupDirectories: {}
         Properties:
-            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+            GameSettingsAsset.DefaultGraphicsProfile: !GraphicsProfile Level_9_1
         ProjectReferences:
             -   Id: 01700344-cf44-482c-bebc-60213b0f844c
                 Location: SiliconStudio.Paradox.Input.Tests.Android.csproj
@@ -50,7 +50,7 @@ Profiles:
         AssetFolders: []
         OutputGroupDirectories: {}
         Properties:
-            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+            GameSettingsAsset.DefaultGraphicsProfile: !GraphicsProfile Level_9_1
         ProjectReferences:
             -   Id: 01700344-cf44-482c-bebc-60213b0f844c
                 Location: SiliconStudio.Paradox.Input.Tests.iOS.csproj

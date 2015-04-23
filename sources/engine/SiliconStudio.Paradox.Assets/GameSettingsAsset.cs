@@ -5,13 +5,13 @@ using System;
 using System.Linq;
 
 using SiliconStudio.Assets;
-using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Paradox.Assets.Entities;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Assets.Model
+namespace SiliconStudio.Paradox.Assets
 {
     /// <summary>
     /// Settings for a game with the default scene, resolution, graphics profile...
@@ -111,7 +111,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                 var platformProfile = package.Profiles.FirstOrDefault(o => o.Platform == platform);
                 if (platformProfile != null)
                 {
-                    var customProfile = platformProfile.Properties.Get(ParadoxConfig.GraphicsProfile);
+                    var customProfile = platformProfile.Properties.Get(DefaultGraphicsProfile);
                     if (customProfile > 0) result.DefaultGraphicsProfileUsed = customProfile;
                 }
             }

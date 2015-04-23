@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Paradox.Assets.Textures;
+using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Assets
@@ -20,7 +21,7 @@ namespace SiliconStudio.Paradox.Assets
 
         public static GraphicsProfile GetGraphicsProfile(this AssetCompilerContext context)
         {
-            return context.Properties.Get(ParadoxConfig.GraphicsProfile);
+            return context.Properties.Get(GameSettingsAsset.DefaultGraphicsProfile);
         }
     }
 }

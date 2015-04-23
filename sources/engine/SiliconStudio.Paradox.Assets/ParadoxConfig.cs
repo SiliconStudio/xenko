@@ -24,8 +24,6 @@ namespace SiliconStudio.Paradox.Assets
 
         public static PropertyKey<GraphicsPlatform> GraphicsPlatform = new PropertyKey<GraphicsPlatform>("GraphicsPlatform", typeof(ParadoxConfig));
 
-        public static PropertyKey<GraphicsProfile> GraphicsProfile = new PropertyKey<GraphicsProfile>("GraphicsProfile", typeof(ParadoxConfig));
-
         public static PropertyKey<TextureQuality> TextureQuality = new PropertyKey<TextureQuality>("TextureQuality", typeof(ParadoxConfig));
 
         public static readonly PackageVersion LatestPackageVersion = new PackageVersion(ParadoxVersion.CurrentAsText);

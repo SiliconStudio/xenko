@@ -4,15 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Assets.Model.Analysis;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 
-namespace SiliconStudio.Paradox.Assets.Model
+namespace SiliconStudio.Paradox.Assets.Entities
 {
     public static class EntityAssetOperations
     {
