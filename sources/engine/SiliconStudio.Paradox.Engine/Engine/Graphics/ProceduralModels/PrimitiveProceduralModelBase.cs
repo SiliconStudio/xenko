@@ -106,7 +106,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics.ProceduralModels
             model.BoundingSphere = boundingSphere;
             model.Add(mesh);
 
-            if (MaterialInstance != null)
+            if (MaterialInstance != null && MaterialInstance.Material != null)
             {
                 model.Materials.Add(MaterialInstance);
             }
