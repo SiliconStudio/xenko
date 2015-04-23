@@ -10,7 +10,7 @@ namespace SiliconStudio.Paradox.Rendering.Sprites
     /// <summary>
     /// A sprite provider from a <see cref="SpriteGroup"/>
     /// </summary>
-    [DataContract]
+    [DataContract("SpriteFromSpriteGroup")]
     [Display("Sprite Group")]
     public class SpriteFromSpriteGroup : ISpriteProvider
     {
