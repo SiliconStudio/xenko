@@ -10,8 +10,8 @@ Hierarchy:
             Components:
                 ModelComponent.Key:
                     Model: 66dbdb13-bb8f-448a-86f9-a787fe3e0c3b:cube Model
-                    DrawOrder: 0
                     Materials: []
+                    DrawOrder: 0
                     Parameters: {}
                 TransformComponent.Key:
                     Position: {X: 0, Y: 0, Z: 0}
@@ -32,8 +32,8 @@ Hierarchy:
                     Components:
                         ModelComponent.Key:
                             Model: 66dbdb13-bb8f-448a-86f9-a787fe3e0c3b:cube Model
-                            DrawOrder: 0
                             Materials: []
+                            DrawOrder: 0
                             Parameters: {}
                         TransformComponent.Key:
                             Position: {X: 0, Y: 0, Z: 0}

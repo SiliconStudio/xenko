@@ -8,8 +8,8 @@ Hierarchy:
             Components:
                 ModelComponent.Key:
                     Model: a22fce22-5505-4761-ac9d-91c74d92494c:megalodon Model
-                    DrawOrder: 0
                     Materials: []
+                    DrawOrder: 0
                     Parameters: {}
                 TransformComponent.Key:
                     Position: {X: 0, Y: 0, Z: 0}
