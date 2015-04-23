@@ -12,7 +12,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Assets.Serializers;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.Engine.Design;
 
 namespace SiliconStudio.Paradox.Assets.Entities
 {

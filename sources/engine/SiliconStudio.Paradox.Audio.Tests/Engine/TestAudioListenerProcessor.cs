@@ -8,7 +8,6 @@ using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Audio.Tests.Engine
 {

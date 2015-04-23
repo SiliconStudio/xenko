@@ -8,7 +8,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.Assets.Entities;
-using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.Engine.Design;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Assets

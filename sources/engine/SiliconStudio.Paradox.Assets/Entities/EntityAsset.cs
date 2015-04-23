@@ -16,8 +16,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
-
+using SiliconStudio.Paradox.Engine.Design;
 using IObjectFactory = SiliconStudio.Core.Reflection.IObjectFactory;
 
 namespace SiliconStudio.Paradox.Assets.Entities

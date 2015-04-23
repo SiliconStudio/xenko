@@ -22,15 +22,12 @@ using namespace SiliconStudio::Core::Serialization;
 using namespace SiliconStudio::Core::Serialization::Assets;
 using namespace SiliconStudio::Core::Serialization::Contents;
 using namespace SiliconStudio::Paradox::Assets::Materials;
-using namespace SiliconStudio::Paradox::Effects::Materials;
-using namespace SiliconStudio::Paradox::Assets::Materials::ComputeColors;
+using namespace SiliconStudio::Paradox::Rendering;
+using namespace SiliconStudio::Paradox::Rendering::Materials;
+using namespace SiliconStudio::Paradox::Rendering::Materials::ComputeColors;
 using namespace SiliconStudio::Paradox::AssimpNet;
-using namespace SiliconStudio::Paradox::DataModel;
+using namespace SiliconStudio::Paradox::Animations;
 using namespace SiliconStudio::Paradox::Engine;
-using namespace SiliconStudio::Paradox::Engine::Graphics::Materials;
-using namespace SiliconStudio::Paradox::EntityModel;
-using namespace SiliconStudio::Paradox::Effects;
-using namespace SiliconStudio::Paradox::Effects::Data;
 using namespace SiliconStudio::Paradox::Extensions;
 using namespace SiliconStudio::Paradox::Graphics;
 using namespace SiliconStudio::Paradox::Graphics::Data;
@@ -939,7 +936,7 @@ private:
   //              propertyName = propertyName->Substring(index);
   //              propertyName = propertyName->Replace('_','.');
   //              // TODO Paradox Change name 
-  //              propertyName = gcnew String("SiliconStudio.Paradox.Effects") + propertyName;
+  //              propertyName = gcnew String("SiliconStudio.Paradox.Rendering") + propertyName;
 
 		//		switch (pProp->mDataLength)
 		//		{

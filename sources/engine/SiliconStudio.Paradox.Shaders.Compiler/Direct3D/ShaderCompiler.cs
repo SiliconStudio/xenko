@@ -6,7 +6,7 @@ using System.Linq;
 using SharpDX.D3DCompiler;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 using ConstantBufferType = SiliconStudio.Paradox.Shaders.ConstantBufferType;
 using ShaderBytecode = SiliconStudio.Paradox.Shaders.ShaderBytecode;

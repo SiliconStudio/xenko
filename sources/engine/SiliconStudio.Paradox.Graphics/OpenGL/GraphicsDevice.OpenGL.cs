@@ -12,7 +12,7 @@ using OpenTK.Graphics;
 using OpenTK.Platform;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Paradox.Graphics.OpenGL;
 using Color4 = SiliconStudio.Core.Mathematics.Color4;

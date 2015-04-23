@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.Engine.Design;
 
 namespace SiliconStudio.Paradox.Assets.Entities
 {

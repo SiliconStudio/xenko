@@ -9,7 +9,7 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Effects.ProceduralModels;
+using SiliconStudio.Paradox.Rendering.ProceduralModels;
 
 namespace SiliconStudio.Paradox.Assets.ProceduralModels
 {

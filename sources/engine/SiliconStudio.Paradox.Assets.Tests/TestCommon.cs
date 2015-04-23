@@ -5,6 +5,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Games;
 
 namespace SiliconStudio.Paradox.Assets.Tests

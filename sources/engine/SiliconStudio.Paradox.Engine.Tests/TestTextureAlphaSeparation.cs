@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Engine.Tests

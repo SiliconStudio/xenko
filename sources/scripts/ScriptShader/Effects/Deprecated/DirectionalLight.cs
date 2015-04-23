@@ -1,8 +1,8 @@
 using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     public class DirectionalLight : Light
     {

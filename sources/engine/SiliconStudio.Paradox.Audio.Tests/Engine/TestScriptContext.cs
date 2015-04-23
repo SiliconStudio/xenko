@@ -4,6 +4,7 @@
 using NUnit.Framework;
 
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Graphics.Regression;
 
 namespace SiliconStudio.Paradox.Audio.Tests.Engine

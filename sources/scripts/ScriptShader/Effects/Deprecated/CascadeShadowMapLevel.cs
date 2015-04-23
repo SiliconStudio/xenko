@@ -1,6 +1,6 @@
 // Copyright (c) 2011 Silicon Studio
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     /// <summary>
     /// Level defined for a cascade shadow map.

@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
-using SiliconStudio.Paradox.Effects.Data;
+using SiliconStudio.Paradox.Rendering.Data;
 using SiliconStudio.Paradox.Extensions;
 using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Paradox.Shaders.Compiler;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     public class TessellationPlugin : ShaderPlugin<RenderPassPlugin>
     {

@@ -7,9 +7,9 @@ using NUnit.Framework;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.ComputeEffect.LambertianPrefiltering;
-using SiliconStudio.Paradox.Effects.Images.SphericalHarmonics;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Rendering.ComputeEffect.LambertianPrefiltering;
+using SiliconStudio.Paradox.Rendering.Images.SphericalHarmonics;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Input;
 

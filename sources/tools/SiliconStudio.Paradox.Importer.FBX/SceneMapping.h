@@ -8,9 +8,8 @@ using namespace System::IO;
 using namespace System::Collections::Generic;
 using namespace System::Runtime::InteropServices;
 using namespace SiliconStudio::Core::Diagnostics;
-using namespace SiliconStudio::Paradox::DataModel;
-using namespace SiliconStudio::Paradox::EntityModel;
-using namespace SiliconStudio::Paradox::Effects;
+using namespace SiliconStudio::Paradox::Animations;
+using namespace SiliconStudio::Paradox::Rendering;
 using namespace SiliconStudio::Paradox::Engine;
 using namespace SiliconStudio::Core::Mathematics;
 
@@ -92,7 +91,7 @@ namespace SiliconStudio {
 					/// Finds the index of the FBX node in the <see cref="ModelNodeDefinition"/> from a FBX node.
 					/// </summary>
 					/// <param name="node">The node.</param>
-					/// <returns>SiliconStudio.Paradox.Effects.ModelNodeDefinition.</returns>
+					/// <returns>SiliconStudio.Paradox.Rendering.ModelNodeDefinition.</returns>
 					int FindNodeIndex(FbxNode* node)
 					{
 						int nodeIndex;
@@ -109,7 +108,7 @@ namespace SiliconStudio {
 					/// Finds a <see cref="ModelNodeDefinition"/> from a FBX node.
 					/// </summary>
 					/// <param name="node">The node.</param>
-					/// <returns>SiliconStudio.Paradox.Effects.ModelNodeDefinition.</returns>
+					/// <returns>SiliconStudio.Paradox.Rendering.ModelNodeDefinition.</returns>
 					ModelNodeDefinition FindNode(FbxNode* node)
 					{
 						int nodeIndex;

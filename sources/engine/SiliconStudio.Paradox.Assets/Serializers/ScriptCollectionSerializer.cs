@@ -9,6 +9,7 @@ using SharpYaml.Serialization;
 using SharpYaml.Serialization.Serializers;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Engine.Design;
 
 namespace SiliconStudio.Paradox.Assets.Serializers
 {

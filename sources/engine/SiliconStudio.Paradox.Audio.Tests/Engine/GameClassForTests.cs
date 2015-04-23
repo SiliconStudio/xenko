@@ -3,7 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
-
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Games;
 
 namespace SiliconStudio.Paradox.Audio.Tests.Engine

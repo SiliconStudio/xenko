@@ -1,9 +1,7 @@
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Paradox.Engine.Design;
 
 namespace SiliconStudio.Paradox.Engine
 {

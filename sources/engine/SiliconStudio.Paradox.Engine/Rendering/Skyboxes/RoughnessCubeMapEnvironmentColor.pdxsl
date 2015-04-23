@@ -1,0 +1,22 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Paradox.Rendering.Skyboxes
+{
+    /// <summary>
+    /// Sample a cubemap using the MaterialPixelShadingStream roughness parameter.
+    /// </summary>
+    class RoughnessCubeMapEnvironmentColor : IComputeEnvironmentColor, Texturing, MaterialPixelShadingStream
+    {
+        TextureCube CubeMap;
+        float MipCount;
+
+        override float4 Compute(float3 direction)
+        {
+            var alpha = streams.alphaRoughness;
+            var mipLevel = sqrt(alpha) * MipCount;
+
+            return CubeMap.SampleLevel(LinearSampler, direction, mipLevel);
+        }
+    };
+}

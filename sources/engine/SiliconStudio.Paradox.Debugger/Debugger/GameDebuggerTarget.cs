@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Debugger.Target
 {

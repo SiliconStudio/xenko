@@ -6,7 +6,7 @@ using SharpYaml.Serialization;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Assets.Serializers
 {

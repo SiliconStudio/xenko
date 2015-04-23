@@ -315,7 +315,7 @@ namespace SiliconStudio {
 								time = endTime;
 							}
 
-							key.Time = FBXTimeToTimeSpane(time);
+							key.Time = FBXTimeToTimeSpan(time);
 
 							bool hasDiscontinuity = false;
 							bool needUpdate = false;
@@ -573,7 +573,7 @@ namespace SiliconStudio {
 								Quaternion rotation;
 								matrix.Decompose(scaling, rotation, translation);
 
-								auto time = FBXTimeToTimeSpane(fbxTime);
+								auto time = FBXTimeToTimeSpan(fbxTime);
 
 								scalingFrames->Add(KeyFrameData<Vector3>(time, scaling));
 								translationFrames->Add(KeyFrameData<Vector3>(time, translation));

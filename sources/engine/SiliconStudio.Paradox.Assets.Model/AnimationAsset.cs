@@ -8,7 +8,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Paradox.DataModel;
+using SiliconStudio.Paradox.Animations;
 
 namespace SiliconStudio.Paradox.Assets.Model
 {

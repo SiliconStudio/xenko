@@ -17,7 +17,6 @@ using SiliconStudio.Core.Storage;
 using SiliconStudio.Paradox.Assets.Entities;
 using SiliconStudio.Paradox.Assets.Model;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Assets.Tests
 {
@@ -76,7 +75,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 var databaseFileProvider = new DatabaseFileProvider(objDatabase);
                 AssetManager.GetFileProvider = () => databaseFileProvider;
 
-                ((EntityAsset)assetItem.Asset).Hierarchy.Entities[0].Components.RemoveWhere(x => x.Key != SiliconStudio.Paradox.Engine.TransformComponent.Key);
+                ((EntityAsset)assetItem.Asset).Hierarchy.Entities[0].Components.RemoveWhere(x => x.Key != TransformComponent.Key);
                 //((EntityAsset)assetItem.Asset).Data.Entities[1].Components.RemoveWhere(x => x.Key != SiliconStudio.Paradox.Engine.TransformComponent.Key);
 
                 var assetManager = new AssetManager();

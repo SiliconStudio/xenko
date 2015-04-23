@@ -3,9 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Paradox.Effects.Materials;
+using SiliconStudio.Paradox.Rendering.Materials;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {

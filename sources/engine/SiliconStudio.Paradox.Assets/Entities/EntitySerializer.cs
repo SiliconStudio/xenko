@@ -7,7 +7,7 @@ using SharpYaml.Serialization;
 using SharpYaml.Serialization.Serializers;
 
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.Engine.Design;
 
 namespace SiliconStudio.Paradox.Assets.Entities
 {

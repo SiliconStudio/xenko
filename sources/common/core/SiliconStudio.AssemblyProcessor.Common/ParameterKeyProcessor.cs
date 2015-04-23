@@ -44,7 +44,7 @@ namespace SiliconStudio.AssemblyProcessor
                     var fieldBaseType = field.FieldType;
                     while (fieldBaseType != null)
                     {
-                        if (fieldBaseType.FullName == "SiliconStudio.Paradox.Effects.ParameterKey")
+                        if (fieldBaseType.FullName == "SiliconStudio.Paradox.Rendering.ParameterKey")
                             break;
 
                         var resolvedFieldBaseType = fieldBaseType.Resolve();

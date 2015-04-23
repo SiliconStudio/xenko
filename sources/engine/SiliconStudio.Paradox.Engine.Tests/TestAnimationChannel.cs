@@ -3,8 +3,7 @@
 using System;
 
 using NUnit.Framework;
-
-using SiliconStudio.Paradox.DataModel;
+using SiliconStudio.Paradox.Animations;
 
 namespace SiliconStudio.Paradox.Engine.Tests
 {

@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.ComputeEffect;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Rendering.ComputeEffect;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Input;
 

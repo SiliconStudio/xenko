@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Extensions;
 using SiliconStudio.Paradox.Input;
 

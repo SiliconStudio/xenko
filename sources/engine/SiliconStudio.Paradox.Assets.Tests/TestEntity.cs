@@ -8,7 +8,7 @@ using NUnit.Framework;
 using SiliconStudio.Assets;
 using SiliconStudio.Paradox.Assets.Entities;
 using SiliconStudio.Paradox.Assets.Model;
-using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Assets.Tests
 {

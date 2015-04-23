@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Graphics.Internals
 {

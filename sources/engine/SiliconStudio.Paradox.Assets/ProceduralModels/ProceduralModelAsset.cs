@@ -12,8 +12,8 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Engine.Graphics.ProceduralModels;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Rendering.ProceduralModels;
 
 namespace SiliconStudio.Paradox.Assets.ProceduralModels
 {

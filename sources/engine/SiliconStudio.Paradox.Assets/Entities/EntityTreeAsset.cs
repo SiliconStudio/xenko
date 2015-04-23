@@ -1,6 +1,6 @@
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.Engine.Design;
 
 namespace SiliconStudio.Paradox.Assets.Entities
 {

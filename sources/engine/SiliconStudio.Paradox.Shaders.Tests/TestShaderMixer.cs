@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Engine.Shaders.Mixins;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Paradox.Shaders.Compiler;

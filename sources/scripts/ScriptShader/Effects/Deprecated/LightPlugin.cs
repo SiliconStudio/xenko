@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2011 Silicon Studio
 
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     public class LightPlugin : EffectPlugin
     {

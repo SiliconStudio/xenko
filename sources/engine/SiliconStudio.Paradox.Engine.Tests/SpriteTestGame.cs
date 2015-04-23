@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.Animations;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Input;
+using SiliconStudio.Paradox.Rendering.Sprites;
 
 namespace SiliconStudio.Paradox.Engine.Tests
 {

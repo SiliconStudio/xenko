@@ -1,5 +1,5 @@
 using System.Text;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Graphics.Internals
 {

@@ -4,10 +4,8 @@
 using System.Threading.Tasks;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Engine.Graphics;
-using SiliconStudio.Paradox.Engine.Graphics.Composers;
-using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Rendering.Composers;
 using SiliconStudio.Paradox.Graphics.Regression;
 
 namespace SiliconStudio.Paradox.Engine.Tests

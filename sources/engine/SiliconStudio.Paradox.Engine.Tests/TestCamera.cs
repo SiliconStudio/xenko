@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Extensions;
 using SiliconStudio.Paradox.Input;
 

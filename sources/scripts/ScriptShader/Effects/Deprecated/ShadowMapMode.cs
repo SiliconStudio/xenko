@@ -1,6 +1,6 @@
 using System;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     [Flags]
     public enum ShadowMapMode

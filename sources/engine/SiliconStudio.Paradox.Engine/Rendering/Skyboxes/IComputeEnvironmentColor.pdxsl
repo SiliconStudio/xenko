@@ -1,0 +1,16 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Paradox.Rendering.Skyboxes
+{
+    /// <summary>
+    /// Base class to sample an environment
+    /// </summary>
+    class IComputeEnvironmentColor
+    {
+        float4 Compute(float3 direction)
+        {
+            return 0;
+        }
+    };
+}

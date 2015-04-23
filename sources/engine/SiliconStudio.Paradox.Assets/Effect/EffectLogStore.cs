@@ -3,7 +3,8 @@ using System.IO;
 using System.Text;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Shaders.Compiler;
 
 namespace SiliconStudio.Paradox.Assets.Effect
 {

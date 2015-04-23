@@ -1,4 +1,4 @@
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     public class ShadowMapPermutation : Permutation
     {

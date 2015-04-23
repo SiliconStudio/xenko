@@ -3,14 +3,14 @@ using System.Linq;
 using System.Collections.Generic;
 
 using SiliconStudio.Paradox.BinPacking;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     public class LightingPlugin : RenderPassPlugin
     {

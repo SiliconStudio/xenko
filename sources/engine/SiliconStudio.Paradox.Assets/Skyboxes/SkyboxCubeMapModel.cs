@@ -7,8 +7,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Assets.Textures;
-using SiliconStudio.Paradox.Effects.Skyboxes;
-using SiliconStudio.Paradox.Engine.Graphics.Skyboxes;
+using SiliconStudio.Paradox.Rendering.Skyboxes;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 

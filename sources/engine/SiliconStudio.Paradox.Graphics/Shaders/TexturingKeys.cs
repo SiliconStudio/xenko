@@ -8,7 +8,7 @@ using System.Collections.ObjectModel;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     public partial class TexturingKeys
     {

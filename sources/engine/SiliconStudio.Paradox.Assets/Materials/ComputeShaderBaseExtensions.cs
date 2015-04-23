@@ -4,11 +4,11 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Rendering.Materials;
+using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
 using SiliconStudio.Paradox.Shaders.Parser.Ast;
 using SiliconStudio.Paradox.Shaders.Parser.Mixins;
 using SiliconStudio.Shaders.Ast;

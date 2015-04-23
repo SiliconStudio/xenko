@@ -1,0 +1,41 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Paradox.Rendering.Lights
+{
+    /// <summary>
+    /// Defines a group of spot lights
+    /// </summary>
+    class LightPointGroup<int TMaxLightCount> : DirectLightGroup, NormalStream, PositionStream4, LightUtil
+    {
+        cbuffer PerObject
+        {
+            float3 LightPositionWS[TMaxLightCount];
+            float  LightInvSquareRadius[TMaxLightCount];
+            [Color]
+            float3 LightColor[TMaxLightCount];
+        }
+
+        override int GetMaxLightCount()
+        {
+            return TMaxLightCount;
+        }
+
+        /// <summary>
+        /// Compute the light color/direction for the specified index within this group
+        /// </summary>
+        override void PrepareDirectLightCore(int lightIndex)
+        {
+            float3 lightVector = LightPositionWS[lightIndex] - streams.PositionWS;
+            float lightVectorLength = length(lightVector);
+            float3 lightVectorNorm = lightVector / lightVectorLength;
+
+            float lightInvSquareRadius = LightInvSquareRadius[lightIndex];
+
+            float attenuation = 1;
+            attenuation *= GetDistanceAttenuation(lightVector , lightInvSquareRadius);
+
+            streams.lightColor = LightColor[lightIndex] * attenuation;
+            streams.lightDirectionWS = lightVectorNorm;
+        }
+    };
+}

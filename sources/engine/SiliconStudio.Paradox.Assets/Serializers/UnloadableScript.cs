@@ -4,6 +4,7 @@ using SharpYaml.Events;
 using SiliconStudio.Core;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Assets.Serializers
 {

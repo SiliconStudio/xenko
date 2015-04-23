@@ -5,7 +5,7 @@ using System.Linq;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Shaders;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     /// <summary>
     /// Shader effect used with <see cref="GBufferPlugin"/>

@@ -14,7 +14,7 @@ Meta:
 Profiles:
     - Name: Shared
       AssetFolders:
-        - Path: sources/engine/SiliconStudio.Paradox.Engine/Engine/Graphics
+        - Path: sources/engine/SiliconStudio.Paradox.Engine/Rendering
         - Path: sources/engine/SiliconStudio.Paradox.Graphics/Shaders
         - Path: sources/editor/SiliconStudio.Paradox.Assets.Presentation/Shaders
 TemplateFolders:

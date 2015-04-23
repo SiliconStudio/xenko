@@ -4,7 +4,7 @@
 using System;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Assets.Entities
 {

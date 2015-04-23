@@ -6,7 +6,7 @@ using System.Linq;
 using ScriptShader.Effects;
 using SiliconStudio.Paradox.Engine;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     public struct LightBinding
     {

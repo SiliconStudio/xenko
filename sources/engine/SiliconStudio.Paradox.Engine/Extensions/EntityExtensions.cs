@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Extensions
 {
