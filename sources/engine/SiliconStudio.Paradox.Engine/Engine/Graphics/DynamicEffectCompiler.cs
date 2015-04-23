@@ -127,7 +127,9 @@ namespace SiliconStudio.Paradox.Effects
                     else
                     {
                         effectInstance.HasErrors = false;
-                        UpdateEffect(effectInstance, currentlyCompilingEffect.Result, effectInstance.CurrentlyCompilingUsedParameters, passParameters);
+                        // Do not update effect right away: passParameters might have changed since last compilation; just try to go through a CreateEffect that will properly update the effect synchronously
+                        // TODO: This class (and maybe whole ParameterCollection system) need a complete rethink and rewrite with newest assumptions...
+                        //UpdateEffect(effectInstance, currentlyCompilingEffect.Result, effectInstance.CurrentlyCompilingUsedParameters, passParameters);
                     }
 
                     effectChanged = true;
@@ -137,7 +139,9 @@ namespace SiliconStudio.Paradox.Effects
                     effectInstance.CurrentlyCompilingUsedParameters = null;
                 }
             }
-            else if (effectInstance.Effect == null || !EffectSystem.IsValid(effectInstance.Effect) || HasCollectionChanged(effectInstance, passParameters) || effectInstance.HasErrors)
+
+            if (effectInstance.CurrentlyCompilingEffect == null && // Check again, in case effect was just finished async compilation
+                (effectInstance.Effect == null || !EffectSystem.IsValid(effectInstance.Effect) || HasCollectionChanged(effectInstance, passParameters) || effectInstance.HasErrors))
             {
                 if (effectInstance.HasErrors)
                 {
