@@ -254,12 +254,8 @@ namespace SiliconStudio {
 						for (int i = 0; i < numCurves; ++i)
 						{
 							auto curve = curves[i];
-
-							// If one of the expected channel is null, the group is skipped.
-							// Ideally, we would still want to use default values
-							// (i.e. in the unlikely situation where X and Y have animation channels but not Z, it should still be processed with default Z values).
 							if (curve == NULL)
-								return nullptr;
+								continue;
 
 							FbxTimeSpan timeSpan;
 							curve->GetTimeInterval(timeSpan);
@@ -298,7 +294,6 @@ namespace SiliconStudio {
 
 						for (int i = 0; i < numCurves; ++i)
 						{
-							auto curve = curves[i];
 							currentKeyIndices[i] = 0;
 							currentEvaluationIndices[i] = 0;
 							isConstant[i] = false;
@@ -328,30 +323,38 @@ namespace SiliconStudio {
 							for (int i = 0; i < numCurves; ++i)
 							{
 								auto curve = curves[i];
-								int currentIndex = currentKeyIndices[i];
-
-								FbxAnimCurveKey curveKey;
-
-								// Advance to appropriate key that should be active during this frame
-								while (curve->KeyGetTime(currentIndex) <= time && currentIndex + 1 < curve->KeyGetCount())
+								if (curve != nullptr)
 								{
-									++currentIndex;
 
-									// If new key over constant, there is a discontinuity
-									bool wasConstant = isConstant[i];
-									hasDiscontinuity |= wasConstant;
+									int currentIndex = currentKeyIndices[i];
 
-									auto interpolation = curve->KeyGetInterpolation(currentIndex);
-									isConstant[i] = interpolation == FbxAnimCurveDef::eInterpolationConstant;
+									FbxAnimCurveKey curveKey;
+
+									// Advance to appropriate key that should be active during this frame
+									while (curve->KeyGetTime(currentIndex) <= time && currentIndex + 1 < curve->KeyGetCount())
+									{
+										++currentIndex;
+
+										// If new key over constant, there is a discontinuity
+										bool wasConstant = isConstant[i];
+										hasDiscontinuity |= wasConstant;
+
+										auto interpolation = curve->KeyGetInterpolation(currentIndex);
+										isConstant[i] = interpolation == FbxAnimCurveDef::eInterpolationConstant;
+									}
+
+									currentKeyIndices[i] = currentIndex;
+
+									// Update non-constant values
+									if (!isConstant[i])
+									{
+										values[i] = curve->Evaluate(time, &currentEvaluationIndices[i]);
+										needUpdate = true;
+									}
 								}
-
-								currentKeyIndices[i] = currentIndex;
-
-								// Update non-constant values
-								if (!isConstant[i])
+								else
 								{
-									values[i] = curve->Evaluate(time, &currentEvaluationIndices[i]);
-									needUpdate = true;
+									values[i] = 0;
 								}
 							}
 
@@ -371,7 +374,7 @@ namespace SiliconStudio {
 							{
 								auto curve = curves[i];
 								if (isConstant[i])
-									values[i] = curve->Evaluate(time, &currentEvaluationIndices[i]);
+									values[i] = curve == nullptr ? 0 : curve->Evaluate(time, &currentEvaluationIndices[i]);
 							}
 
 							keyFrames->Add(key);
