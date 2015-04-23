@@ -14,6 +14,11 @@ namespace SiliconStudio.Paradox.Engine.Graphics
             if (entity == null) throw new ArgumentNullException("entity");
             Entity = entity;
             ModelComponent = entity.Get<ModelComponent>();
+            if (ModelComponent == null)
+            {
+                throw new ArgumentException("Entity must have a ModelComponent");
+            }
+
             Parameters = ModelComponent.Parameters;
             TransformComponent = entity.Transform;
             RenderMeshesList = new List<RenderMeshCollection>(4);
@@ -75,7 +80,7 @@ namespace SiliconStudio.Paradox.Engine.Graphics
 
             // Try to get material first from model instance, then model
             return ModelComponent.Materials.GetItemOrNull(materialIndex)
-                ?? GetMaterialHelper(Model.Materials, materialIndex);
+                ?? (Model != null ? GetMaterialHelper(Model.Materials, materialIndex) : null);
         }
 
         public MaterialInstance GetMaterialInstance(int materialIndex)

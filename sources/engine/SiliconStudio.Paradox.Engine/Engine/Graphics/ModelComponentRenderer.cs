@@ -191,6 +191,12 @@ namespace SiliconStudio.Paradox.Effects
 
             foreach (var renderModel in renderModels)
             {
+                // If Model is null, then skip it
+                if (renderModel.Model == null)
+                {
+                    continue;
+                }
+
                 if (preRenderModel != null)
                 {
                     if (!preRenderModel(context, renderModel))
