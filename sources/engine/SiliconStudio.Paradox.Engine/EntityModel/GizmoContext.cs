@@ -8,7 +8,7 @@ namespace SiliconStudio.Paradox.EntityModel
     /// </summary>
     public class GizmoContext
     {
-        private const float SceneUnitFactor = 0.25f;
+        private const float SceneUnitFactor = 0.5f;
 
         /// <summary>
         /// The scale unit of the current scene
