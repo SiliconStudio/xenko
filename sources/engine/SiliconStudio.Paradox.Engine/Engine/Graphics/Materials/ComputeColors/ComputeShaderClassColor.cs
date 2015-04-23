@@ -10,7 +10,8 @@ namespace SiliconStudio.Paradox.Assets.Materials.ComputeColors
     /// </summary>
     [DataContract("ComputeShaderClassColor")]
     [Display("Shader")]
-    public class ComputeShaderClassColor : ComputeShaderClassBase<IComputeColor>, IComputeColor 
+    // TODO: This class has been made abstract to be removed from the editor - unabstract it to re-enable it!
+    public abstract class ComputeShaderClassColor : ComputeShaderClassBase<IComputeColor>, IComputeColor 
     {
     }
 }
