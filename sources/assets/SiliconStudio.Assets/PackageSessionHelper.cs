@@ -341,5 +341,37 @@ MinimumVisualStudioVersion = 10.0.40219.1";
                 log.Error("Error while saving solution [{0}]", ex, solutionPath);
             }
         }
+
+        /// <summary>
+        /// Saves a .props file for the specified package, containing the paradox version (only Major.Minor)
+        /// used to compile the package. 
+        /// </summary>
+        /// <param name="package">The package.</param>
+        public static void SaveProperties(Package package)
+        {
+            // Props file is in the same folder as the pdxpkg file, just with a ".props" extension.
+            var packagePath = package.FullPath;
+            var propsFilePath = UPath.Combine(packagePath.GetParent(), (UFile)(packagePath.GetFileName() + ".props")) ;
+
+            var projectCollection = new Microsoft.Build.Evaluation.ProjectCollection();
+            var project = new Microsoft.Build.Evaluation.Project(projectCollection);
+            var commonPropertyGroup = project.Xml.AddPropertyGroup();
+
+            var dependencies = package.FindDependencies(false, false, true);
+
+            // Add Paradox version
+            var pdxVersion = dependencies.FirstOrDefault(d => d.Meta.Name == "Paradox");
+            if (pdxVersion != null)
+            {
+                var versionText = pdxVersion.Meta.Version.Version.Major + "." + pdxVersion.Meta.Version.Version.Minor;
+                commonPropertyGroup.AddProperty("SiliconStudioPackageParadoxVersion", versionText);
+            }
+
+            if (File.Exists(propsFilePath))
+            {
+                File.Delete(propsFilePath);
+            }
+            project.Save(propsFilePath);
+        }
     }
 }
