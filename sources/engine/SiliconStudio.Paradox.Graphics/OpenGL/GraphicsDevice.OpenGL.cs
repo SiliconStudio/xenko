@@ -1516,8 +1516,7 @@ namespace SiliconStudio.Paradox.Graphics
                 }
             }
 
-            //flipRenderTarget = ChooseFlipRenderTarget(depthStencilBuffer, renderTargets);
-            flipRenderTarget = true;
+            flipRenderTarget = ChooseFlipRenderTarget(depthStencilBuffer, renderTargets);
 
 #if DEBUG
             EnsureContextActive();
