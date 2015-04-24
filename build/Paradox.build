@@ -16,7 +16,7 @@ Example of use:
     <ILRepackPath>$(ParadoxRootBin)ILRepack.exe</ILRepackPath>
     <NuGetPath>$(MSBuildThisFileDirectory).nuget\NuGet.exe</NuGetPath>
     <SiliconStudioStoreUrl>https://store.paradox3d.net</SiliconStudioStoreUrl>
-    <AdvancedInstallerPath>$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 11.5\bin\x86\advinst.exe</AdvancedInstallerPath>
+    <AdvancedInstallerPath Condition="'$(AdvancedInstallerPath)' == '' And Exists('$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 11.6.3\bin\x86\advinst.exe')">$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 11.6.3\bin\x86\advinst.exe</AdvancedInstallerPath>
   </PropertyGroup>
 
   <UsingTask TaskName="SiliconStudio.Assets.PackageArchiveTask" AssemblyFile="$(ParadoxRootBin)SiliconStudio.Assets.dll" />
