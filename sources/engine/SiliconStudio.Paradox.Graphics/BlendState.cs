@@ -85,6 +85,6 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// Gets or sets a bitmask which defines which samples can be written during multisampling. The default is 0xffffffff.
         /// </summary>
-        public int MultiSampleMask;
+        public int MultiSampleMask = -1;
     }
 }
