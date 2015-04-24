@@ -172,8 +172,8 @@ namespace SiliconStudio.Paradox.Graphics
         private int indexElementSize;
         private IntPtr indexBufferOffset;
         private bool flipRenderTarget = false;
-        private FrontFaceDirection currentFrontFace = FrontFaceDirection.Ccw;
-        private FrontFaceDirection boundFrontFace = FrontFaceDirection.Ccw;
+        private FrontFaceDirection currentFrontFace = FrontFaceDirection.Cw;
+        private FrontFaceDirection boundFrontFace = FrontFaceDirection.Cw;
 
 #if SILICONSTUDIO_PLATFORM_ANDROID
         [DllImport("libEGL.dll", EntryPoint = "eglGetCurrentContext")]
@@ -479,6 +479,8 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
             UnbindVertexArrayObject();
             currentVertexArrayObject = null;
+
+            SetDefaultStates();
 
             // Clear sampler states
             for (int i = 0; i < samplerStates.Length; ++i)
@@ -1514,7 +1516,8 @@ namespace SiliconStudio.Paradox.Graphics
                 }
             }
 
-            flipRenderTarget = ChooseFlipRenderTarget(depthStencilBuffer, renderTargets);
+            //flipRenderTarget = ChooseFlipRenderTarget(depthStencilBuffer, renderTargets);
+            flipRenderTarget = true;
 
 #if DEBUG
             EnsureContextActive();
