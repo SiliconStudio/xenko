@@ -43,7 +43,6 @@ TemplateFolders:
         - samples\Graphics\SimpleDynamicTexture\SimpleDynamicTexture.pdxtpl
         - samples\Graphics\SimpleModel\SimpleModel.pdxtpl
         - samples\Graphics\SimpleSprite\SimpleSprite.pdxtpl
-        - samples\Graphics\SimpleTerrain\SimpleTerrain.pdxtpl
         - samples\Graphics\SpriteEntity\SpriteEntity.pdxtpl
         - samples\Graphics\SpriteFonts\SpriteFonts.pdxtpl
         - samples\Input\TouchInputs\TouchInputs.pdxtpl
