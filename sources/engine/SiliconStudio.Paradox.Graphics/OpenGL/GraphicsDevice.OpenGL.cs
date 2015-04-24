@@ -1496,7 +1496,7 @@ namespace SiliconStudio.Paradox.Graphics
         private void SetDepthAndRenderTargetsImpl(Texture depthStencilBuffer, params Texture[] renderTargets)
         {
             var renderTargetsLength = 0;
-            if (renderTargets != null && renderTargets.Length > 0)
+            if (renderTargets != null && renderTargets.Length > 0 && renderTargets[0] != null)
             {
                 renderTargetsLength = renderTargets.Length;
                 // ensure size is coherent
@@ -1509,7 +1509,7 @@ namespace SiliconStudio.Paradox.Graphics
                 }
                 for (int i = 1; i < renderTargets.Length; ++i)
                 {
-                    if (expectedWidth != renderTargets[i].Width || expectedHeight != renderTargets[i].Height)
+                    if (renderTargets[i] != null && (expectedWidth != renderTargets[i].Width || expectedHeight != renderTargets[i].Height))
                         throw new Exception("Render targets do nt have the same size");
                 }
             }
