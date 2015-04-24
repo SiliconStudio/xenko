@@ -115,7 +115,7 @@ namespace SiliconStudio.Paradox.Rendering
                     {
                         sprite3DBatch.End();
                     }
-                    sprite3DBatch.Begin(viewProjection, SpriteSortMode.Deferred, blendState, rasterizerState: cullMode, effect: currentEffect);
+                    sprite3DBatch.Begin(viewProjection, SpriteSortMode.Deferred, blendState, null, context.GraphicsDevice.DepthStencilStates.None, cullMode, currentEffect);
                     hasBegin = true;
                 }
                 previousEffect = currentEffect;
