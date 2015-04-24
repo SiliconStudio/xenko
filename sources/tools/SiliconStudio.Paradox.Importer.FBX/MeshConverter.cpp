@@ -147,12 +147,6 @@ public:
 				FbxSkin* skin = FbxCast<FbxSkin>(pMesh->GetDeformer(deformerIndex, FbxDeformer::eSkin));
 				controlPointWeights.resize(pMesh->GetControlPointsCount());
 
-				// Computes geometry matrix.
-				FbxAMatrix geometry_matrix(
-					pMesh->GetNode()->GetGeometricTranslation(FbxNode::eSourcePivot),
-					pMesh->GetNode()->GetGeometricRotation(FbxNode::eSourcePivot),
-					pMesh->GetNode()->GetGeometricScaling(FbxNode::eSourcePivot));
-
 				totalClusterCount = skin->GetClusterCount();
 				for (int clusterIndex = 0 ; clusterIndex < totalClusterCount; ++clusterIndex)
 				{
@@ -173,7 +167,7 @@ public:
 
 					cluster->GetTransformMatrix(transformMatrix);
 					cluster->GetTransformLinkMatrix(transformLinkMatrix);
-					auto globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * geometry_matrix;
+					auto globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix;
 
 					MeshBoneDefinition bone;
 					int boneIndex = bones->Count;
@@ -1412,6 +1406,9 @@ private:
 
 		// Import the contents of the file into the scene.
 		lImporter->Import(scene);
+
+		const float framerate = static_cast<float>(FbxTime::GetFrameRate(scene->GetGlobalSettings().GetTimeMode()));
+		scene->GetRootNode()->ResetPivotSetAndConvertAnimation(framerate, false, false);
 
 		// Initialize the node mapping
 		sceneMapping = gcnew SceneMapping(scene, ScaleImport);
