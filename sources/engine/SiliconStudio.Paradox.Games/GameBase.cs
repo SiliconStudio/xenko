@@ -439,6 +439,8 @@ namespace SiliconStudio.Paradox.Games
             // Gets the GameWindow Context
             Context = gameContext ?? new GameContext();
 
+            PrepareRun();
+
             try
             {
                 // TODO temporary workaround as the engine doesn't support yet resize
@@ -469,6 +471,10 @@ namespace SiliconStudio.Paradox.Games
                     IsRunning = false;
                 }
             }
+        }
+
+        internal protected virtual void PrepareRun()
+        {
         }
 
         /// <summary>

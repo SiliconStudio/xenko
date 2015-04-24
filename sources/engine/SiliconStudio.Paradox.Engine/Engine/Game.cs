@@ -210,18 +210,31 @@ namespace SiliconStudio.Paradox.Engine
                 GlobalLogger.GlobalMessageLogged -= logListener;
         }
 
-        protected override void Initialize()
+        protected internal override void PrepareRun()
         {
-            base.Initialize(); 
+            base.PrepareRun();
 
             // Init assets
             if (Context.InitializeDatabase)
             {
                 InitializeAssetDatabase();
-            }
 
-            // Read and set game settings
-            SceneSystem.AutoLoadDefaultScene = AutoLoadDefaultSettings;
+                // Load several default settings
+                if (AutoLoadDefaultSettings && Asset.Exists(GameSettings.AssetUrl))
+                {
+                    var settings = Asset.Load<GameSettings>(GameSettings.AssetUrl);
+                    var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
+                    if (settings.DefaultGraphicsProfileUsed > 0) deviceManager.PreferredGraphicsProfile = new[] { settings.DefaultGraphicsProfileUsed };
+                    if (settings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = settings.DefaultBackBufferWidth;
+                    if (settings.DefaultBackBufferHeight > 0) deviceManager.PreferredBackBufferHeight = settings.DefaultBackBufferHeight;
+                    SceneSystem.InitialSceneUrl = settings.DefaultSceneUrl;
+                }
+            }
+        }
+
+        protected override void Initialize()
+        {
+            base.Initialize(); 
 
             EffectSystem = new EffectSystem(Services);
             GameSystems.Add(EffectSystem);
