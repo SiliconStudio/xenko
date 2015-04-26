@@ -1,6 +1,8 @@
 Paradox
 =======
 
+[![Join the chat at https://gitter.im/SiliconStudio/paradox](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/SiliconStudio/paradox?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 This is the source code for Paradox Game Engine (http://paradox3d.net/).
 
 ## License
