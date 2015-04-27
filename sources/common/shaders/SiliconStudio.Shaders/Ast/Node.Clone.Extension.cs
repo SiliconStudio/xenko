@@ -251,8 +251,9 @@ namespace SiliconStudio.Shaders.Ast
                 ParameterExpression localOutput;
                 ParameterExpression localObj;
                 bool isStruct = type.IsValueType && typeof(T) == type;
+                bool isArray = type.IsArray;
 
-                if (isStruct)
+                if (isStruct || isArray)
                 {
                     localCast = param;
                     localOutput = output;
@@ -286,7 +287,14 @@ namespace SiliconStudio.Shaders.Ast
                 var fields = GetFields(type);
 
                 // If we have a struct with primitive only
-                if (isStruct && fields.All(field => IsPrimitive(field.FieldType)))
+                if (isArray)
+                {
+                    var genericCloneMethod = DeepcloneArray.GetGenericMethodDefinition();
+                    genericCloneMethod = genericCloneMethod.MakeGenericMethod(new[] { type.GetElementType() });
+
+                    statements.Add(LinqExpression.Call(genericCloneMethod, localCast, localOutput, contextParam));
+                }
+                else if (isStruct && fields.All(field => IsPrimitive(field.FieldType)))
                 {
                     statements.Add(LinqExpression.Assign(localOutput, param));
                 }
@@ -336,7 +344,7 @@ namespace SiliconStudio.Shaders.Ast
                 }
 
                 LinqExpression body;
-                if (isStruct)
+                if (isStruct || isArray)
                 {
                     if (statements.Count == 0)
                     {

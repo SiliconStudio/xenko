@@ -3,8 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
@@ -157,7 +155,7 @@ namespace SiliconStudio.Paradox.Rendering
         public static IEffectCompiler CreateEffectCompiler(TaskSchedulerSelector taskSchedulerSelector = null)
         {
             // Create compiler
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if SILICONSTUDIO_PARADOX_EFFECT_COMPILER
             var effectCompiler = new Shaders.Compiler.EffectCompiler();
             effectCompiler.SourceDirectories.Add(EffectCompilerBase.DefaultSourceShaderFolder);
 #else

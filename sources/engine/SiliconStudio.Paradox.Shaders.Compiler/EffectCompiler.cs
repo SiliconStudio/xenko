@@ -165,6 +165,8 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     File.WriteAllText(shaderSourceFilename, shaderSourceText);
                 }
             }
+#else
+            string shaderSourceFilename = null;
 #endif
             // -------------------------------------------------------
 
@@ -174,9 +176,11 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             IShaderCompiler compiler;
             switch (platform)
             {
+#if SILICONSTUDIO_PLATFORM_WINDOWS
                 case GraphicsPlatform.Direct3D11:
                     compiler = new Direct3D.ShaderCompiler();
                     break;
+#endif
                 case GraphicsPlatform.OpenGL:
                 case GraphicsPlatform.OpenGLES:
                     // get the number of render target outputs

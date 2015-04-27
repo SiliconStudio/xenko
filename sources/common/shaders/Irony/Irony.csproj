@@ -15,7 +15,7 @@
     </TargetFrameworkProfile>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ParadoxBuildTags>Windows</ParadoxBuildTags>
+    <ParadoxBuildTags>Windows;Android</ParadoxBuildTags>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
