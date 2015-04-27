@@ -4,7 +4,6 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering.Shadows;
 
 namespace SiliconStudio.Paradox.Rendering.Lights
 {
