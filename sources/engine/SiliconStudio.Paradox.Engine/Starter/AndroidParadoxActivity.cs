@@ -70,12 +70,8 @@ namespace SiliconStudio.Paradox.Starter
             ringerModeIntentReceiver = new RingerModeIntentReceiver((AudioManager)GetSystemService(AudioService));
             RegisterReceiver(ringerModeIntentReceiver, new IntentFilter(AudioManager.RingerModeChangedAction));
 
-            // TODO: remove the Kitkat requirement once the class implements View.IOnSystemUiVisibilityChangeListener.
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.Kitkat)
-            {
-                SetFullscreenView();
-                InitializeFullscreenViewCallback();
-            }
+            SetFullscreenView();
+            InitializeFullscreenViewCallback();
         }
 
         public void OnSystemUiVisibilityChange(StatusBarVisibility visibility)
@@ -104,7 +100,8 @@ namespace SiliconStudio.Paradox.Starter
                     SetFullscreenView();
                 }
             }
-            else if (Build.VERSION.SdkInt >= BuildVersionCodes.IceCreamSandwich)
+            // TODO: uncomment this once the class implements View.IOnSystemUiVisibilityChangeListener.
+            /*else if (Build.VERSION.SdkInt >= BuildVersionCodes.IceCreamSandwich)
             {
                 // use fullscreen low profile mode, with a delay
                 if (hasFocus)
@@ -116,7 +113,7 @@ namespace SiliconStudio.Paradox.Starter
                 {
                     RemoveFullscreenViewCallback();
                 }
-            }
+            }*/
         }
 
         private void SetupGameViewAndGameContext()
