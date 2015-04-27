@@ -167,8 +167,8 @@ namespace SiliconStudio.Paradox.Engine
 
             // Update the bounding sphere / bounding box in world space
             var meshes = Model.Meshes;
-            var modelBoundingSphere = new BoundingSphere();
-            var modelBoundingBox = new BoundingBox();
+            var modelBoundingSphere = BoundingSphere.Empty;
+            var modelBoundingBox = BoundingBox.Empty;
             bool hasBoundingBox = false;
             Matrix world;
             foreach (var mesh in meshes)

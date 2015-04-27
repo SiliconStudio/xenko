@@ -51,7 +51,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
                 throw new InvalidOperationException("Invalid GeometricPrimitive [{0}]. Expecting non-zero Vertices array");
             }
 
-            var boundingBox = new BoundingBox();
+            var boundingBox = BoundingBox.Empty;
             for (int i = 0; i < data.Vertices.Length; i++)
                 BoundingBox.Merge(ref boundingBox, ref data.Vertices[i].Position, out boundingBox);
 
