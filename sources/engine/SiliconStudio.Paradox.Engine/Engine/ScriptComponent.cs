@@ -41,6 +41,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The scripts.
         /// </value>
+        [Display("Script", AlwaysExpand = true)]
         public TrackingCollection<Script> Scripts { get; private set; }
 
         /// <inheritdoc/>
