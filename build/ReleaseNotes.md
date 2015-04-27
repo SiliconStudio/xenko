@@ -131,6 +131,7 @@ Release date: 2015/04/29
 - Platforms: iOS x64 is not yet supported (this will be added soon)
 - Assets: Reimporting a Model asset (i.e. FBX) might have issues when merging materials
 - Assets: ModelAsset scaling and orientation works only for .FBX, not other formats supported by Assimp library
+- Studio: Scripts are not automatically reloaded by the editor. Closing and re-opening it is needed in order to see new scripts.
 - Studio: Renaming default scene won’t properly update reference. Please set again the reference in project properties.
 - Studio: DDS images cannot be viewed in the Sprite editor
 - Studio: Collections in assets properties cannot be edited nor displayed in multi-selection
