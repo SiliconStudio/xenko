@@ -88,7 +88,7 @@ namespace SiliconStudio.Core.Collections
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="T"/> at the specified index.
+        /// Gets or sets the item at the specified index.
         /// </summary>
         /// <param name="index">The index.</param>
         /// <returns>An instance of T</returns>
@@ -102,7 +102,7 @@ namespace SiliconStudio.Core.Collections
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="T"/> at the specified index.
+        /// Gets or sets the item at the specified index.
         /// </summary>
         /// <param name="index">The index.</param>
         /// <returns>An instance of T</returns>
