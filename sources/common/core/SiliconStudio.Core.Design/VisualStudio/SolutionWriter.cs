@@ -52,6 +52,11 @@ namespace SiliconStudio.Core.VisualStudio
             }
         }
 
+        public void Flush()
+        {
+            writer.Flush();
+        }
+
         public void WriteSolutionFile(Solution solution)
         {
             lock (writer)
