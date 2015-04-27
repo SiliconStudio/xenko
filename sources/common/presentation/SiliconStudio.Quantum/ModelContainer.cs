@@ -234,6 +234,7 @@ namespace SiliconStudio.Quantum
 
                     if (singleReference.TargetNode == null)
                     {
+                        // This call will recursively update the references.
                         IModelNode node = singleReference.SetTarget(this);
                         if (node != null)
                         {                 
@@ -242,23 +243,6 @@ namespace SiliconStudio.Quantum
                             {
                                 structContent.BoxedStructureOwner = content;
                                 structContent.BoxedStructureOwnerIndices = indices != null ? indices.Reverse().ToArray() : null;
-                            }
-
-                            // If the node is a reference itself (that can happen for example for lists of lists)
-                            if (singleReference.TargetNode.Content.IsReference)
-                            {
-                                var targetNode = singleReference.TargetNode;
-                                var targetContent = singleReference.TargetNode.Content;
-                                // Then we refresh this reference
-                                targetContent.Reference.Refresh(targetContent.Value);
-                                UpdateOrCreateReferenceTarget(targetContent.Reference, targetNode);
-                            }
-
-                            // Otherwise refresh potential references in its children.
-                            foreach (var child in node.Children.SelectDeep(x => x.Children).Where(x => x.Content.IsReference))
-                            {
-                                child.Content.Reference.Refresh(child.Content.Value);
-                                UpdateOrCreateReferenceTarget(child.Content.Reference, child);
                             }
                         }
                         else
