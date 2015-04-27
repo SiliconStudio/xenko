@@ -51,11 +51,13 @@ namespace SiliconStudio.Paradox.Rendering
             viewParameters.Set(CameraKeys.FarClipPlane, camera.FarClipPlane);
             viewParameters.Set(CameraKeys.VerticalFieldOfView, camera.VerticalFieldOfView);
             viewParameters.Set(CameraKeys.OrthoSize, camera.OrthographicSize);
-            viewParameters.Set(CameraKeys.AspectRatio, camera.AspectRatio);
 
             // Setup viewport size
             var currentViewport = context.GraphicsDevice.Viewport;
             viewParameters.Set(CameraKeys.ViewSize, new Vector2(currentViewport.Width, currentViewport.Height));
+
+            // TODO: Review camera aspect ratio
+            viewParameters.Set(CameraKeys.AspectRatio, currentViewport.AspectRatio);
 
             //viewParameters.Set(CameraKeys.FocusDistance, camera.FocusDistance);
         }
