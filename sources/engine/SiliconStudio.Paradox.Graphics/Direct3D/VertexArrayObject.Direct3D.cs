@@ -18,6 +18,10 @@ namespace SiliconStudio.Paradox.Graphics
         private SharpDX.Direct3D11.Buffer nativeIndexBuffer;
         internal InputLayout InputLayout;
 
+        // Cache previous use
+        internal EffectInputSignature LastEffectInputSignature;
+        internal InputLayout LastInputLayout;
+
         internal VertexArrayLayout Layout { get; private set; }
 
         private VertexArrayObject(GraphicsDevice graphicsDevice, EffectInputSignature shaderSignature, IndexBufferBinding indexBufferBinding, VertexBufferBinding[] vertexBufferBindings)

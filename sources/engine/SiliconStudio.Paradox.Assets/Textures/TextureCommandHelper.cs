@@ -9,9 +9,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Rendering.Materials;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.Data;
 using SiliconStudio.TextureConverter;
@@ -67,6 +65,8 @@ namespace SiliconStudio.Paradox.Assets.Textures
                 textureSize.Height = unchecked((int)(((uint)(textureSizeRequested.Height + 3)) & ~(uint)3));
             }
 
+            var maxTextureSize = 0;
+
             // determine if the desired size if valid depending on the graphics profile
             switch (graphicsProfile)
             {
@@ -80,12 +80,23 @@ namespace SiliconStudio.Paradox.Assets.Textures
                         textureSize.Height = Math.Min(MathUtil.NextPowerOfTwo(textureSize.Height), 1024);
                         logger.Warning("Graphic profiles 9.1/9.2/9.3 do not support mipmaps with textures that are not power of 2. Asset is automatically resized to " + textureSize);
                     }
+                    maxTextureSize = graphicsProfile >= GraphicsProfile.Level_9_3 ? 4096 : 2048;
                     break;
                 case GraphicsProfile.Level_10_0:
                 case GraphicsProfile.Level_10_1:
+                    maxTextureSize = 8192;
+                    break;
                 case GraphicsProfile.Level_11_0:
                 case GraphicsProfile.Level_11_1:
+                    maxTextureSize = 16384;
                     break;
+            }
+
+            if (textureSize.Width > maxTextureSize || textureSize.Height > maxTextureSize)
+            {
+                logger.Error("Graphic profile {0} do not support texture with resolution {2} x {3} because it is larger than {1}. " +
+                             "Please reduce texture size or upgrade your graphic profile.", graphicsProfile, maxTextureSize, textureSize.Width, textureSize.Height);
+                return new Size2(Math.Min(textureSize.Width, maxTextureSize), Math.Min(textureSize.Height, maxTextureSize));
             }
 
             return textureSize;
