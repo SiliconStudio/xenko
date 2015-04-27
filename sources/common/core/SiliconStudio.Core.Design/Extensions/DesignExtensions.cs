@@ -90,13 +90,20 @@ namespace SiliconStudio.Core.Extensions
         /// <returns></returns>
         public static IEnumerable<T> SelectDeep<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> childrenSelector)
         {
-            foreach (T item in source)
+            var stack = new Stack<IEnumerable<T>>();
+            stack.Push(source);
+            while (stack.Count != 0)
             {
-                yield return item;
+                var current = stack.Pop();
+                if (current == null)
+                    continue;
 
-                foreach (T child in childrenSelector(item).SelectDeep(childrenSelector))
-                    yield return child;
-            }
+                foreach (T item in current)
+                {
+                    yield return item;
+                    stack.Push(childrenSelector(item));
+                }
+            } 
         }
 
         public static IEnumerable<T> Distinct<T, TKey>(this IEnumerable<T> source, Func<T, TKey> selector)
