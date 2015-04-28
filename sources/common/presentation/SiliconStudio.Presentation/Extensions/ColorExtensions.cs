@@ -55,7 +55,7 @@ namespace SiliconStudio.Presentation.Extensions
             var g = (value & 0x0000FF00) >> 8;
             var b = (value & 0x00FF0000) >> 16;
             var a = (value & 0xFF000000) >> 24;
-            return string.Format("#{0:X2}{1:X2}{2:X2}{3:X2}", r, g, b, a);
+            return string.Format("#{0:X2}{1:X2}{2:X2}{3:X2}", a, r, g, b);
         }
     }
 }
