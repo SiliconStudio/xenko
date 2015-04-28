@@ -200,7 +200,7 @@ namespace SiliconStudio.Assets
         {
             if (packageName == null) throw new ArgumentNullException("packageName");
             var directory = GetPackageDirectory(packageName, versionRange, allowPreleaseVersion, allowUnlisted);
-            return directory != null ? UPath.Combine(directory, new UFile(packageName + Package.PackageFileExtension)) : null;
+            return directory != null ? UPath.Combine(UPath.Combine(UPath.Combine(InstallationPath, (UDirectory)store.RepositoryPath), directory), new UFile(packageName + Package.PackageFileExtension)) : null;
         }
 
         /// <summary>
