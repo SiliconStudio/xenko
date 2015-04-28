@@ -127,8 +127,8 @@ Release date: 2015/04/28
 - Studio: The studio and asset compilation process are now running only on 64bits machines
 
 #### Known Issues
-- Platforms: iOS/WindowsPhone/WindowsStore shaders can’t compiled due to lack of a proper workflow (this will be fixed soon)
-- Platforms: Android shaders can be compiled at runtime but can be slow on first run.
+- Platforms: Shaders can’t compile due to lack of a proper workflow on other platforms than Windows Desktop  (this will be fixed soon)
+- Platforms: Android and iOS platforms are currently not properly supported (this will be fixed soon).
 - Platforms: iOS x64 is not yet supported (this will be added soon)
 - Assets: Reimporting a Model asset (i.e. FBX) might have issues when merging materials
 - Assets: ModelAsset scaling and orientation works only for .FBX, not other formats supported by Assimp library
