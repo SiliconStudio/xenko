@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.IO;
 using System.Linq;
 using System.ServiceModel;
 
@@ -9,7 +8,6 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.MicroThreading;
@@ -66,7 +64,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
             // When the current platform is not on windows, we need to make sure that all plugins are build, so we
             // setup auto-compile when loading the session
-            var sessionLoadParameters = new PackageLoadParameters()
+            var sessionLoadParameters = new PackageLoadParameters
                 {
                     AutoCompileProjects = builderOptions.Platform != PlatformType.Windows || builderOptions.ProjectConfiguration != "Debug", // Avoid compiling if Windows|Debug
                     ExtraCompileProperties = builderOptions.ExtraCompileProperties,
@@ -110,12 +108,13 @@ namespace SiliconStudio.Assets.CompilerApp
             };
 
             // Copy properties from shared profiles to context properties
-            foreach (var propertyValue in sharedProfile.Properties)
+            if (sharedProfile != null)
             {
-                context.Properties.Set(propertyValue.Key, propertyValue.Value);
+                foreach (var propertyValue in sharedProfile.Properties)
+                    context.Properties.Set(propertyValue.Key, propertyValue.Value);
             }
 
-            context.Properties.Set(SiliconStudio.Paradox.Assets.ParadoxConfig.GraphicsPlatform, builderOptions.GraphicsPlatform.HasValue ? builderOptions.GraphicsPlatform.Value : builderOptions.GetDefaultGraphicsPlatform());
+            context.Properties.Set(Paradox.Assets.ParadoxConfig.GraphicsPlatform, builderOptions.GraphicsPlatform.HasValue ? builderOptions.GraphicsPlatform.Value : builderOptions.GetDefaultGraphicsPlatform());
 
             // Copy properties from build profile
             foreach (var propertyValue in buildProfile.Properties)
