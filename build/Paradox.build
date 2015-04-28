@@ -30,10 +30,10 @@ Example of use:
   -->
   <Target Name="Package">
     <ItemGroup>
-        <FilesToDelete Include="$(MSBuildThisFileDirectory)Paradox*.nupkg"/>
+        <FilesToDeletePackage Include="$(MSBuildThisFileDirectory)Paradox*.nupkg"/>
     </ItemGroup>    
     
-    <Delete Files="@(FilesToDelete)"/>
+    <Delete Files="@(FilesToDeletePackage)"/>
     <PackageArchiveTask File="$(ParadoxPackage)" SpecialVersion="$(ParadoxPackageSpecialVersion)"/>
   </Target>
 
@@ -42,10 +42,10 @@ Example of use:
   -->
   <Target Name="PackageLauncher">
     <ItemGroup>
-      <FilesToDelete Include="$(MSBuildThisFileDirectory)SiliconStudio.LauncherApp*.nupkg"/>
+      <FilesToDeleteLauncher Include="$(MSBuildThisFileDirectory)SiliconStudio.LauncherApp*.nupkg"/>
     </ItemGroup>
 
-    <Delete Files="@(FilesToDelete)"/>
+    <Delete Files="@(FilesToDeleteLauncher)"/>
 
     <MSBuild Targets="10-Assets\SiliconStudio_LauncherApp" Projects="$(ParadoxSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
     <Exec Command='"$(ILRepackPath)" SiliconStudio.LauncherApp.exe Nuget.Core.dll /out:Paradox.exe' WorkingDirectory="$(ParadoxRoot)sources\install\SiliconStudio.LauncherApp\bin\Release"/>
@@ -59,10 +59,10 @@ Example of use:
   -->
   <Target Name="VSIXPlugin">
     <ItemGroup>
-      <FilesToDelete Include="$(MSBuildThisFileDirectory)SiliconStudio.Paradox.VisualStudio.Package.*.nupkg"/>
+      <FilesToDeleteVSIX Include="$(MSBuildThisFileDirectory)SiliconStudio.Paradox.VisualStudio.Package.*.nupkg"/>
     </ItemGroup>
 
-    <Delete Files="@(FilesToDelete)"/>
+    <Delete Files="@(FilesToDeleteVSIX)"/>
 
     <MSBuild Targets="91-VisualStudio\SiliconStudio_Paradox_VisualStudio_Package" Projects="$(ParadoxSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
     <Exec Command='"$(NuGetPath)" pack "$(ParadoxRoot)sources\tools\SiliconStudio.Paradox.VisualStudio.Package\SiliconStudio.Paradox.VisualStudio.Package.nuspec" -BasePath "$(ParadoxRoot)Bin\Windows-Direct3D11"' />
