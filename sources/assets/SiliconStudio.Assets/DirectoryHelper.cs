@@ -54,7 +54,7 @@ namespace SiliconStudio.Assets
             // Check if we have a regular distribution
             if (packageDirectoryInfo.Parent != null && packageDirectoryInfo.Parent.Parent != null && IsInstallationDirectory(packageDirectoryInfo.Parent.Parent.FullName))
             {
-                return packageDirectoryInfo.Parent.FullName;
+                return packageDirectoryInfo.Parent.Parent.FullName;
             }
             if (IsInstallationDirectory(packageDirectoryInfo.FullName))
             {
