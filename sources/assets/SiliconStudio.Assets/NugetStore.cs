@@ -210,6 +210,9 @@ namespace SiliconStudio.Assets
             using (GetLocalRepositoryLocker())
             {
                 Manager.UninstallPackage(package);
+
+                // Every time a new package is installed, we are updating the common targets
+                UpdateTargetsInternal();
             }
         }
 
@@ -314,7 +317,9 @@ namespace SiliconStudio.Assets
                 commonPropertyGroup.AddProperty(packageVarInvalid, "true").Condition = "'$(" + packageVar + ")' == '' or !" + importElement.Condition;
 
                 // <SiliconStudioPackageParadoxVersion Condition="'$(SiliconStudioPackageParadoxVersionInvalid)' == 'true'">1.0.0-alpha01</SiliconStudioPackageParadoxVersion>
-                var invalidProperty = commonPropertyGroup.AddProperty(packageVar, package.Version.ToString());
+                // Special case: if major version 1.0 still exists, use it as default (new projects should be created with props file)
+                var defaultPackageVersion = LocalRepository.FindPackagesById(package.Id).Select(x => x.Version).FirstOrDefault(x => x.Version.Major == 1 && x.Version.Minor == 0) ?? package.Version;
+                var invalidProperty = commonPropertyGroup.AddProperty(packageVar, defaultPackageVersion.ToString());
                 invalidProperty.Condition = "'$(" + packageVarInvalid + ")' == 'true'";
 
                 // Add in CheckPackages target
