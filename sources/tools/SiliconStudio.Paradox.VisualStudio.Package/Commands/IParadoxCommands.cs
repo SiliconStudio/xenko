@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
         /// <summary>
         /// Initialize parsing (this method can be called from a separate thread).
         /// </summary>
-        void Initialize();
+        void Initialize(string paradoxSdkDir);
 
         /// <summary>
         /// Test whether we should reload these commands (assemblies changed)

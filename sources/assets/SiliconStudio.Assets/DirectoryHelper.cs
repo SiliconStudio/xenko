@@ -13,6 +13,8 @@ namespace SiliconStudio.Assets
         private const string CommonTargets = @"Targets\SiliconStudio.Common.targets";
         private const string ParadoxSolution = @"build\Paradox.sln";
 
+        public static string packageDirectoryOverride;
+
         /// <summary>
         /// Gets the directory of the package from which the <see cref="SiliconStudio.Assets"/> assembly has been loaded.
         /// </summary>
@@ -21,6 +23,9 @@ namespace SiliconStudio.Assets
         /// <exception cref="InvalidOperationException">The package from which the <see cref="SiliconStudio.Assets"/> assembly has been loaded does not match the <paramref name="packageName"/>.</exception>
         public static string GetPackageDirectory(string packageName)
         {
+            if (packageDirectoryOverride != null)
+                return packageDirectoryOverride;
+
             var thisAssemblyLocation = typeof(DirectoryHelper).Assembly.Location;
             var binDirectory = !String.IsNullOrWhiteSpace(thisAssemblyLocation) ? new FileInfo(thisAssemblyLocation).Directory : null;
             if (binDirectory != null && binDirectory.Parent != null && binDirectory.Parent.Parent != null)

@@ -23,8 +23,9 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
 {
     public class ParadoxCommands : IParadoxCommands
     {
-        public void Initialize()
+        public void Initialize(string paradoxSdkDir)
         {
+            DirectoryHelper.packageDirectoryOverride = paradoxSdkDir;
             ParadoxShaderParser.Initialize();
         }
 
