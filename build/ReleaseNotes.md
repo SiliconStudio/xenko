@@ -1,30 +1,30 @@
 ### Version 1.1.0-beta
 
-Release date: 2015/04/29
+Release date: 2015/04/28
 
 #### New Features
-- Assets: New asset type `RenderFrameAsset`
-- Assets: New asset type `ProceduralModelAsset`
-- Effects: New built-in post-effects: depth-of-field, color aberration, light streaks, lens flares, vignetting, film grain (noise)
-- Engine: New Material System supporting PBR materials, multi-layered materials with multiple attributes, including: Tessellation, Displacement, Normal, Diffuse, Specular/Metalness, Transparent, Occlusion/Cavity
-- Engine: New Scene Compositor allowing to compose the rendering of the scene by layers and renderers
-- Engine: New Ambient and Skybox lighting
-- Engine: New light culling and object culling
-- Engine: New implementation of Shadow Mapping with support for SDSM (Sample Distribution Shadow Maps with adaptive depth splits)
-- Engine: New scripting system, to easily add behavior and data to entities.
-- Engine: New `ComputeEffectShader` class for compute shader live compilation and dispatching
-- Engine: New entity background component to add a background in a scene
-- Engine: New entity UI component to add a UI on entities of the scene
-- Graphics: Add a shared 2x2 pixel white texture on the `GraphicsDevice`  (extension method)
-- Input: Add the possibility to hide and lock the mouse using `LockMousePosition` function
-- Launcher: New launcher can now manage several versions of the Paradox SDK
-- Mathematics: New `SphericalHarmonics` class
-- Physics: Renamed PhysicsEngine into Simulation, the engine now supports one separate Simulation for each scene.
-- Studio: Introducing a brand new scene editor
+- Launcher: New **launcher** can now manage several versions of the Paradox SDK
+- Studio: Introducing a brand new **scene editor**
 - Studio: The scene editor is now the central component of the Studio
 - Studio: The asset log panel now display logs (errors, etc.) of the seleced assets and their dependencies
 - Studio: Packages now have properties that can be displayed and edited (to set the default scene and some graphics settings)
-- Studio: Editor and asset compiler are now x64 compatible.
+- Studio: Editor and asset compiler are now **x64** compatible.
+- Effects: New built-in **post-effects**: depth-of-field, color aberration, light streaks, lens flares, vignetting, film grain (noise)
+- Engine: New Material System supporting **PBR materials**, multi-layered materials with multiple attributes, including: Tessellation, Displacement, Normal, Diffuse, Specular/Metalness, Transparent, Occlusion/Cavity
+- Engine: New **rendering pipeline compositor** allowing to compose the rendering of the scene by layers and renderers
+- Engine: New Ambient and Skybox lighting
+- Engine: New light culling and object culling
+- Engine: New implementation of **Shadow Mapping** with support for SDSM (Sample Distribution Shadow Maps with adaptive depth splits)
+- Engine: New **scripting system**, to easily add behavior and data to entities.
+- Engine: New `ComputeEffectShader` class for compute-shader live compilation and dispatching
+- Engine: New entity background component to add a background in a scene
+- Engine: New entity UI component to add an UI on entities of the scene.
+- Graphics: Add a shared 2x2 pixel white texture on the `GraphicsDevice`  (extension method)
+- Input: Add the possibility to hide and lock the mouse using `LockMousePosition` function
+- Mathematics: New `SphericalHarmonics` class
+- Physics: Renamed PhysicsEngine into Simulation, the engine now supports one separate Simulation for each scene.
+- Assets: New asset type `RenderFrameAsset`
+- Assets: New asset type `ProceduralModelAsset`
 
 #### Enhancements
 - Assets: Yaml now uses a shorter qualified name without culture and keytoken.
@@ -46,7 +46,7 @@ Release date: 2015/04/29
 - Core: “Data” classes don’t exist anymore. Now uses AttachedReferenceManager to directly represent design-time and runtime representation of an object with a single unified runtime class.
 - Core: Add Collections.PoolListStruct
 - Studio: If an asset or one of its dependency has a compile error, properly add a failure sticker on top of thumbnail, and details in the asset log
-- Studio: Inside a scene, entities and components can reference each others.
+- Studio: Inside a scene, entities, components and scripts can reference each others.
 - Studio: If a script can’t properly be loaded (i.e. due to missing types), be nice and try to keep data as is for next save.
 - Studio: Reduce number of threads by sharing build system for assets, scene, preview & thumbnails (with priority management)
 - Studio: Shaders are compiled asynchronously (glowing green effect) and compilation errors will be visible (glowing red effect); various shaders are precompiled for faster startup.
@@ -126,8 +126,9 @@ Release date: 2015/04/29
 - Studio: Changed naming conventions of imported assets.
 - Studio: The studio and asset compilation process are now running only on 64bits machines
 
- #### Known Issues
-- Platforms: Android and iOS shaders can’t compiled due to lack of a proper workflow (this will be fixed soon)
+#### Known Issues
+- Platforms: iOS/WindowsPhone/WindowsStore shaders can’t compiled due to lack of a proper workflow (this will be fixed soon)
+- Platforms: Android shaders can be compiled at runtime but can be slow on first run.
 - Platforms: iOS x64 is not yet supported (this will be added soon)
 - Assets: Reimporting a Model asset (i.e. FBX) might have issues when merging materials
 - Assets: ModelAsset scaling and orientation works only for .FBX, not other formats supported by Assimp library
