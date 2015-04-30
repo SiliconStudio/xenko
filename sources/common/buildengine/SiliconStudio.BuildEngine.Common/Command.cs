@@ -82,6 +82,8 @@ namespace SiliconStudio.BuildEngine
         {
             // Safeguard, will throw an exception if a inherited command does not call base.PostCommand
             BasePostCommandCalled = true;
+
+            commandContext.RegisterCommandLog(commandContext.Logger.Messages);
         }
 
         public Command Clone()
@@ -160,6 +162,7 @@ namespace SiliconStudio.BuildEngine
         public void ComputeCommandHash(Stream stream, IPrepareContext prepareContext)
         {
             var writer = new BinarySerializationWriter(stream);
+            writer.Context.SerializerSelector = SerializerSelector.AssetWithReuse;
 
             writer.Write(CommandCacheVersion);
 

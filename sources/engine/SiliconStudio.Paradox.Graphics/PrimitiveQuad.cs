@@ -1,9 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Graphics.Internals;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -17,12 +18,14 @@ namespace SiliconStudio.Paradox.Graphics
         private const int QuadCount = 3;
 
         private readonly ParameterCollection parameters;
+        private readonly EffectParameterCollectionGroup parameterCollectionGroup;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PrimitiveQuad" /> class with a <see cref="SimpleEffect"/>.
+        /// Initializes a new instance of the <see cref="PrimitiveQuad" /> class with a <see cref="SpriteEffect"/>.
         /// </summary>
         /// <param name="graphicsDevice">The graphics device.</param>
-        public PrimitiveQuad(GraphicsDevice graphicsDevice) : this(graphicsDevice, new SimpleEffect(graphicsDevice))
+        public PrimitiveQuad(GraphicsDevice graphicsDevice)
+            : this(graphicsDevice, new Effect(graphicsDevice, SpriteEffect.Bytecode))
         {
         }
 
@@ -37,7 +40,8 @@ namespace SiliconStudio.Paradox.Graphics
             simpleEffect = effect;
             parameters = new ParameterCollection();
             parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
-            sharedData = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, "PrimitiveQuad::VertexBuffer", () => new SharedData(GraphicsDevice, simpleEffect.InputSignature));
+            parameterCollectionGroup = new EffectParameterCollectionGroup(graphicsDevice, simpleEffect, new[] { parameters });
+            sharedData = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, "PrimitiveQuad::VertexBuffer", d => new SharedData(GraphicsDevice, simpleEffect.InputSignature));
         }
 
         /// <summary>
@@ -92,7 +96,7 @@ namespace SiliconStudio.Paradox.Graphics
             parameters.Set(SpriteEffectKeys.Color, color);
             parameters.Set(TexturingKeys.Texture0, texture);
             parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
-            simpleEffect.Apply(parameters, applyEffectStates);
+            simpleEffect.Apply(GraphicsDevice, parameterCollectionGroup, applyEffectStates);
             Draw();
 
             // TODO ADD QUICK UNBIND FOR SRV

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     /// <summary>
     /// Various extension methods to quickly get and set values in EffectVariable.

@@ -1,12 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
-using System.IO;
 
 using NUnit.Framework;
 using SiliconStudio.TextureConverter.Requests;
 using SiliconStudio.TextureConverter.TexLibraries;
-using SiliconStudio.TextureConverter;
 
 namespace SiliconStudio.TextureConverter.Tests
 {
@@ -42,7 +41,7 @@ namespace SiliconStudio.TextureConverter.Tests
             Assert.IsTrue(libraryData.DxtImages.Length == image.SubImageArray.Length);
             for (int i = 0; i < libraryData.DxtImages.Length; ++i) // Checking on features
             {
-                Assert.IsTrue(libraryData.DxtImages[i].rowPitch == image.SubImageArray[i].RowPitch);
+                Assert.IsTrue(libraryData.DxtImages[i].RowPitch == image.SubImageArray[i].RowPitch);
             }
 
             image.CurrentLibrary = null; // If we don't set the CurrentLibrary to null, the Dispose() method of TexImage will try calling the EndMethod, which won't work if no operation has been made on the image since the StartLibrary call. This case can't happen.
@@ -68,14 +67,14 @@ namespace SiliconStudio.TextureConverter.Tests
         public void CanHandleRequestTest()
         {
             TexImage image = TestTools.Load(library, "TextureArray_WMipMaps_BC3.dds");
-            Assert.IsTrue(library.CanHandleRequest(image, new DecompressingRequest()));
+            Assert.IsTrue(library.CanHandleRequest(image, new DecompressingRequest(false)));
             Assert.IsTrue(library.CanHandleRequest(image, new FixedRescalingRequest(0, 0, Filter.Rescaling.Nearest)));
             Assert.IsTrue(library.CanHandleRequest(image, new MipMapsGenerationRequest(Filter.MipMapGeneration.Nearest)));
             Assert.IsTrue(library.CanHandleRequest(image, new NormalMapGenerationRequest(1)));
-            Assert.IsTrue(library.CanHandleRequest(image, new LoadingRequest("TextureArray_WMipMaps_BC3.dds")));
+            Assert.IsTrue(library.CanHandleRequest(image, new LoadingRequest("TextureArray_WMipMaps_BC3.dds", false)));
             Assert.IsTrue(library.CanHandleRequest(image, new ExportRequest("TextureArray_WMipMaps_BC3.dds", 0)));
-            Assert.IsTrue(library.CanHandleRequest(image, new CompressingRequest(SiliconStudio.Paradox.Graphics.PixelFormat.BC3_UNorm)));
-            Assert.IsFalse(library.CanHandleRequest(image, new CompressingRequest(SiliconStudio.Paradox.Graphics.PixelFormat.ATC_RGBA_Explicit)));
+            Assert.IsTrue(library.CanHandleRequest(image, new CompressingRequest(Paradox.Graphics.PixelFormat.BC3_UNorm)));
+            Assert.IsFalse(library.CanHandleRequest(image, new CompressingRequest(Paradox.Graphics.PixelFormat.ATC_RGBA_Explicit)));
             Assert.IsFalse(library.CanHandleRequest(image, new GammaCorrectionRequest(0)));
             image.Dispose();
         }
@@ -98,12 +97,11 @@ namespace SiliconStudio.TextureConverter.Tests
         {
             TexImage image = TestTools.Load(library, file);
 
-            Assert.IsTrue(image.Format == SiliconStudio.Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm);
-            int dataSize = image.DataSize;
+            Assert.IsTrue(image.Format == Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm);
 
             try
             {
-                library.Execute(image, new DecompressingRequest());
+                library.Execute(image, new DecompressingRequest(false));
                 Assert.IsTrue(false);
             }
             catch (TextureToolsException)
@@ -115,13 +113,13 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [TestCase("TextureArray_WMipMaps_BGRA8888.dds", SiliconStudio.Paradox.Graphics.PixelFormat.BC3_UNorm)]
-        [TestCase("TextureCube_WMipMaps_BGRA8888.dds", SiliconStudio.Paradox.Graphics.PixelFormat.BC3_UNorm)]
-        [TestCase("Texture3D_WMipMaps_BGRA8888.dds", SiliconStudio.Paradox.Graphics.PixelFormat.BC3_UNorm)]
-        [TestCase("TextureArray_WMipMaps_BGRA8888.dds", SiliconStudio.Paradox.Graphics.PixelFormat.BC1_UNorm)]
-        [TestCase("TextureCube_WMipMaps_BGRA8888.dds", SiliconStudio.Paradox.Graphics.PixelFormat.BC1_UNorm)]
-        [TestCase("Texture3D_WMipMaps_BGRA8888.dds", SiliconStudio.Paradox.Graphics.PixelFormat.BC1_UNorm)]
-        public void CompressTest(string file, SiliconStudio.Paradox.Graphics.PixelFormat format)
+        [TestCase("TextureArray_WMipMaps_BGRA8888.dds", Paradox.Graphics.PixelFormat.BC3_UNorm)]
+        [TestCase("TextureCube_WMipMaps_BGRA8888.dds", Paradox.Graphics.PixelFormat.BC3_UNorm)]
+        [TestCase("Texture3D_WMipMaps_BGRA8888.dds", Paradox.Graphics.PixelFormat.BC3_UNorm)]
+        [TestCase("TextureArray_WMipMaps_BGRA8888.dds", Paradox.Graphics.PixelFormat.BC1_UNorm)]
+        [TestCase("TextureCube_WMipMaps_BGRA8888.dds", Paradox.Graphics.PixelFormat.BC1_UNorm)]
+        [TestCase("Texture3D_WMipMaps_BGRA8888.dds", Paradox.Graphics.PixelFormat.BC1_UNorm)]
+        public void CompressTest(string file, Paradox.Graphics.PixelFormat format)
         {
             TexImage image = TestTools.Load(library, file);
 
@@ -221,15 +219,6 @@ namespace SiliconStudio.TextureConverter.Tests
             TexLibraryTest.PreMultiplyAlphaTest(image, library);
 
             image.Dispose();
-        }
-
-        private TexImage LoadOutput(string file)
-        {
-            TexImage image = new TexImage();
-            library.Execute(image, new LoadingRequest(TestTools.TempFolder + file));
-            image.CurrentLibrary = library;
-
-            return image;
         }
     }
 }

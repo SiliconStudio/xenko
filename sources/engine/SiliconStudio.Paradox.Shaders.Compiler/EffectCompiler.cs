@@ -6,11 +6,13 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
-
+using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders.Parser;
 using SiliconStudio.Shaders.Ast;
@@ -37,6 +39,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
         public Dictionary<string, string> UrlToFilePath { get; private set; }
 
+        public override IVirtualFileProvider FileProvider { get; set; }
         public bool UseFileSystem { get; set; }
 
         public EffectCompiler()
@@ -67,7 +70,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 // Generate the AST from the mixin description
                 if (shaderMixinParser == null)
                 {
-                    shaderMixinParser = new ShaderMixinParser();
+                    shaderMixinParser = new ShaderMixinParser(FileProvider ?? AssetManager.FileProvider);
                     shaderMixinParser.SourceManager.LookupDirectoryList.AddRange(SourceDirectories); // TODO: temp
                     shaderMixinParser.SourceManager.UseFileSystem = UseFileSystem;
                     shaderMixinParser.SourceManager.UrlToFilePath = UrlToFilePath; // TODO: temp
@@ -76,8 +79,10 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             }
         }
 
-        public override EffectBytecode Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, LoggerResult log)
+        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, CompilerParameters compilerParameters)
         {
+            var log = new LoggerResult();
+
             // Load D3D compiler dll
             // Note: No lock, it's probably fine if it gets called from multiple threads at the same time.
             if (Platform.IsWindowsDesktop && !d3dCompilerLoaded)
@@ -86,8 +91,8 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 d3dCompilerLoaded = true;
             }
 
-            var shaderMixinSource = mixinTree.Mixin;
-            var fullEffectName = mixinTree.GetFullName();
+            var shaderMixinSource = mixinTree;
+            var fullEffectName = mixinTree.Name;
             var usedParameters = mixinTree.UsedParameters;
 
             // Make a copy of shaderMixinSource. Use deep clone since shaderMixinSource can be altered during compilation (e.g. macros)
@@ -123,7 +128,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             // Return directly if there are any errors
             if (parsingResult.HasErrors)
             {
-                return null;
+                return new EffectBytecodeCompilerResult(null, log);
             }
 
             // Convert the AST to HLSL
@@ -137,7 +142,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             if (string.IsNullOrEmpty(shaderSourceText))
             {
                 log.Error("No code generated for effect [{0}]", fullEffectName);
-                return null;
+                return new EffectBytecodeCompilerResult(null, log);
             }
 
             // -------------------------------------------------------
@@ -160,6 +165,8 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     File.WriteAllText(shaderSourceFilename, shaderSourceText);
                 }
             }
+#else
+            string shaderSourceFilename = null;
 #endif
             // -------------------------------------------------------
 
@@ -169,9 +176,11 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             IShaderCompiler compiler;
             switch (platform)
             {
+#if SILICONSTUDIO_PLATFORM_WINDOWS
                 case GraphicsPlatform.Direct3D11:
                     compiler = new Direct3D.ShaderCompiler();
                     break;
+#endif
                 case GraphicsPlatform.OpenGL:
                 case GraphicsPlatform.OpenGLES:
                     // get the number of render target outputs
@@ -260,7 +269,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 builder.AppendLine("***************************");
                 builder.Append("@P EffectName: ");
                 builder.AppendLine(fullEffectName ?? "");
-                WriteParameters(builder, usedParameters, 0, false);
+                builder.Append(usedParameters.ToStringDetailed());
                 builder.AppendLine("***************************");
 
                 if (bytecode.Reflection.ConstantBuffers.Count > 0)
@@ -317,7 +326,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             }
 #endif
 
-            return bytecode;
+            return new EffectBytecodeCompilerResult(bytecode, log);
         }
 
         private static void CopyLogs(SiliconStudio.Shaders.Utility.LoggerResult inputLog, LoggerResult outputLog)
@@ -341,55 +350,6 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 outputLog.Log(outputMessage);
             }
             outputLog.HasErrors = inputLog.HasErrors;
-        }
-
-        private static void WriteParameters(StringBuilder builder, ParameterCollection parameters, int indent, bool isArray)
-        {
-            var indentation = "";
-            for (var i = 0; i < indent - 1; ++i)
-                indentation += "    ";
-            var first = true;
-            foreach (var usedParam in parameters)
-            {
-                builder.Append("@P ");
-                builder.Append(indentation);
-                if (isArray && first)
-                {
-                    builder.Append("  - ");
-                    first = false;
-                }
-                else if (indent > 0)
-                    builder.Append("    ");
-                
-                if (usedParam.Key == null)
-                    builder.Append("NullKey");
-                else
-                    builder.Append(usedParam.Key);
-                builder.Append(": ");
-                if (usedParam.Value == null)
-                    builder.AppendLine("NullValue");
-                else
-                {
-                    if (usedParam.Value is ParameterCollection)
-                    {
-                        WriteParameters(builder, usedParam.Value as ParameterCollection, indent + 1, false);
-                    }
-                    else if (usedParam.Value is ParameterCollection[])
-                    {
-                        var collectionArray = (ParameterCollection[])usedParam.Value;
-                        foreach (var collection in collectionArray)
-                            WriteParameters(builder, collection, indent + 1, true);
-                    }
-                    else if (usedParam.Value is Array)
-                    {
-                        builder.AppendLine(string.Join(", ", (Array)usedParam.Value));
-                    }
-                    else
-                    {
-                        builder.AppendLine(usedParam.Value.ToString());
-                    }
-                }
-            }
         }
 
         private static void CleanupReflection(EffectReflection reflection)

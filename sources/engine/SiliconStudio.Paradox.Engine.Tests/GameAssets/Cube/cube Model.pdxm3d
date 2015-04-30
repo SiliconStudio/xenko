@@ -1,0 +1,29 @@
+!Model
+Id: fdd84cdb-1e11-4cb8-a5eb-8bba7f2fe729
+SerializedVersion: 2
+BuildOrder: 500
+Tags: []
+Source: ../../../../data/tests/cube/cube.fbx
+SourceHash: 2471e6b1be7106f3e68cf790e9306164
+Materials:
+    -   Name: lambert1
+        MaterialInstance:
+            Material: ed1bbd82-0078-4d58-9544-ff7e47697d77:Cube/lambert1
+Nodes:
+    - {Name: RootNode, Depth: 0, Preserve: false}
+    - {Name: pCube1, Depth: 1, Preserve: false}
+~Base:
+    Location: --import--
+    Asset: !Model
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: 2
+        BuildOrder: 500
+        Tags: []
+        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
+        Materials:
+            -   Name: lambert1
+                MaterialInstance:
+                    Material: ed1bbd82-0078-4d58-9544-ff7e47697d77:Cube/lambert1
+        Nodes:
+            - {Name: RootNode, Depth: 0, Preserve: false}
+            - {Name: pCube1, Depth: 1, Preserve: false}

@@ -4,10 +4,11 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using System.Reflection;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 using SiliconStudio.Core.Storage;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     /// <summary>
     /// Key of an effect parameter.

@@ -45,9 +45,11 @@ namespace SiliconStudio.Paradox.Input
 
         internal bool LostFocus;
 
-        internal List<MouseInputEvent> MouseInputEvents = new List<MouseInputEvent>();
+        internal readonly List<MouseInputEvent> MouseInputEvents = new List<MouseInputEvent>();
 
         internal Vector2 CurrentMousePosition;
+
+        internal Vector2 CurrentMouseDelta;
 
         private readonly Dictionary<Keys, bool> activeKeys = new Dictionary<Keys, bool>();
 
@@ -160,6 +162,27 @@ namespace SiliconStudio.Paradox.Input
 
             Services.AddService(typeof(InputManager), this);
         }
+
+        /// <summary>
+        /// Lock the mouse's position and hides it until the next call to <see cref="UnlockMousePosition"/>.
+        /// </summary>
+        /// <remarks>This function has no effects on devices that does not have mouse</remarks>
+        public virtual void LockMousePosition()
+        {
+        }
+
+        /// <summary>
+        /// Unlock the mouse's position previously locked by calling <see cref="LockMousePosition"/> and restore the mouse visibility.
+        /// </summary>
+        /// <remarks>This function has no effects on devices that does not have mouse</remarks>
+        public virtual void UnlockMousePosition()
+        {
+        }
+
+        /// <summary>
+        /// Gets the value indicating if the mouse position is currently locked or not.
+        /// </summary>
+        public bool IsMousePositionLocked { get; protected set; }
 
         private void ActivatedGesturesChanged(object sender, TrackingCollectionChangedEventArgs trackingCollectionChangedEventArgs)
         {
@@ -315,6 +338,12 @@ namespace SiliconStudio.Paradox.Input
         /// </summary>
         /// <value>The mouse position.</value>
         public Vector2 MousePosition { get; private set; }
+
+        /// <summary>
+        /// Gets the mouse delta.
+        /// </summary>
+        /// <value>The mouse position.</value>
+        public Vector2 MouseDelta { get; private set; }
 
         /// <summary>
         /// Gets a binding value for the specified name and the specified config extract from the current <see cref="VirtualButtonConfigSet"/>.
@@ -549,6 +578,8 @@ namespace SiliconStudio.Paradox.Input
             UpdatePointerEvents();
             UpdateVirtualButtonValues();
             UpdateGestureEvents(gameTime.Elapsed);
+            
+            LostFocus = false;
         }
         
         private void UpdateGestureEvents(TimeSpan elapsedGameTime)
@@ -657,17 +688,18 @@ namespace SiliconStudio.Paradox.Input
                     }
                 }
                 MouseInputEvents.Clear();
+
+                MousePosition = CurrentMousePosition;
+                MouseDelta = CurrentMouseDelta;
+                CurrentMouseDelta = Vector2.Zero;
             }
 
-            MousePosition = CurrentMousePosition;
 
             if (LostFocus)
             {
                 for (int i = 0; i < mouseButtons.Length; ++i)
                     mouseButtons[i] = false;
             }
-
-            LostFocus = false;
         }
 
         private void UpdateKeyboard()
@@ -691,9 +723,11 @@ namespace SiliconStudio.Paradox.Input
                             if (!IsKeyDown(key)) // prevent from several inconsistent pressed key due to OS repeat key  
                             {
                                 activeKeys[key] = true;
-                                pressedKeysSet.Add(key);
-
-                                KeyEvents.Add(new KeyEvent(key, KeyEventType.Pressed));
+                                if (!keyboardInputEvent.OutOfFocus)
+                                {
+                                    pressedKeysSet.Add(key);
+                                    KeyEvents.Add(new KeyEvent(key, KeyEventType.Pressed));
+                                }
                                 downKeysList.Add(key);
                             }
                             break;
@@ -796,7 +830,10 @@ namespace SiliconStudio.Paradox.Input
 
             public InputEventType Type;
 
+            public bool OutOfFocus;
+
             #endregion
+
         }
 
         internal struct MouseInputEvent

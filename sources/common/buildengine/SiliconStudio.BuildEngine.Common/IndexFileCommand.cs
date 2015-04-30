@@ -16,24 +16,99 @@ namespace SiliconStudio.BuildEngine
     public abstract class IndexFileCommand : Command
     {
         private BuildTransaction buildTransaction;
-        internal static ObjectDatabase ObjectDatabase;
+        private static readonly IDictionary<ObjectUrl, OutputObject> CommonOutputObjects = new Dictionary<ObjectUrl, OutputObject>();
+        private static readonly MicroThreadLocal<DatabaseFileProvider> MicroThreadLocalDatabaseFileProvider;
+        public static ObjectDatabase ObjectDatabase;
 
-        public static MicroThreadLocal<DatabaseFileProvider> DatabaseFileProvider = new MicroThreadLocal<DatabaseFileProvider>(() =>
-            {
-                throw new InvalidOperationException("No VirtualFileProvider set for this microthread.");
-            });
-
-        private static readonly IDictionary<ObjectUrl, OutputObject> commomOutputObjects = new Dictionary<ObjectUrl, OutputObject>();
-
-        public static void MergeOutputObjects(IDictionary<ObjectUrl, OutputObject>  outputObjects)
+        static IndexFileCommand()
         {
-            lock (commomOutputObjects)
+            MicroThreadLocalDatabaseFileProvider = new MicroThreadLocal<DatabaseFileProvider>();
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance has a valid database file provider.
+        /// </summary>
+        /// <value><c>true</c> if this instance has database file provider; otherwise, <c>false</c>.</value>
+        public static bool HasValidDatabaseFileProvider
+        {
+            get
             {
-                foreach (var outputObject in outputObjects)
-                    commomOutputObjects[outputObject.Key] = outputObject.Value;
+                return MicroThreadLocalDatabaseFileProvider.Value != null;
             }
         }
 
+        /// <summary>
+        /// Gets the currently mounted microthread-local database provider.
+        /// </summary>
+        public static DatabaseFileProvider DatabaseFileProvider
+        {
+            get
+            {
+                var databaseFileProvider = MicroThreadLocalDatabaseFileProvider.Value;
+                if (databaseFileProvider == null)
+                {
+                    throw new InvalidOperationException("No VirtualFileProvider set for this microthread.");                    
+                }
+                return databaseFileProvider;
+            }
+        }
+
+        /// <summary>
+        /// Merges the given dictionary of build output objects into the common group. Objects merged here will be integrated to every database,
+        /// </summary>
+        /// <param name="outputObjects">The dictionary containing the <see cref="OutputObject"/> to merge into the common group.</param>
+        public static void MergeOutputObjectsInCommonGroup(IDictionary<ObjectUrl, OutputObject>  outputObjects)
+        {
+            lock (CommonOutputObjects)
+            {
+                foreach (var outputObject in outputObjects)
+                    CommonOutputObjects[outputObject.Key] = outputObject.Value;
+            }
+        }
+
+        /// <summary>
+        /// Gets a <see cref="MicroThreadLocalDatabaseFileProvider"/> containing only objects from the common group. The common group is a group of objects registered
+        /// via <see cref="MergeOutputObjectsInCommonGroup"/> and shared amongst all databases.
+        /// </summary>
+        /// <returns>A <see cref="MicroThreadLocalDatabaseFileProvider"/> that can provide objects from the common group.</returns>
+        public static DatabaseFileProvider GetCommonDatabase()
+        {
+            return CreateDatabase(CreateTransaction(null));
+        }
+
+        // TODO: Remove this once the thumbnail has been refactored to be done out of the preview game, if possible
+        public static void MountDatabase(DatabaseFileProvider databaseFileProvider)
+        {
+
+            MicroThreadLocalDatabaseFileProvider.Value = databaseFileProvider;
+        }
+        
+        /// <summary>
+        /// Creates and mounts a database containing the given output object groups and the common group in the microthread-local <see cref="MicroThreadLocalDatabaseFileProvider"/>.
+        /// </summary>
+        /// <param name="outputObjectsGroups">A collection of dictionaries representing a group of output object.</param>
+        public static void MountDatabase(IEnumerable<IDictionary<ObjectUrl, OutputObject>> outputObjectsGroups)
+        {
+            MountDatabase(CreateTransaction(outputObjectsGroups));
+        }
+
+        /// <summary>
+        /// Creates and mounts a database containing output objects merged in the common group via <see cref="MergeOutputObjectsInCommonGroup"/>
+        /// in the microthread-local <see cref="MicroThreadLocalDatabaseFileProvider"/>.
+        /// </summary>
+        public static void MountCommonDatabase()
+        {
+            MicroThreadLocalDatabaseFileProvider.Value = CreateDatabase(CreateTransaction(null));
+        }
+
+        /// <summary>
+        /// Unmount the currently mounted microthread-local database.
+        /// </summary>
+        public static void UnmountDatabase()
+        {
+            MicroThreadLocalDatabaseFileProvider.ClearValue();
+        }
+        
         private static IEnumerable<IDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups(IEnumerable<IDictionary<ObjectUrl, OutputObject>> transactionOutputObjectsGroups)
         {
             if (transactionOutputObjectsGroups != null)
@@ -41,43 +116,23 @@ namespace SiliconStudio.BuildEngine
                 foreach (var outputObjects in transactionOutputObjectsGroups)
                     yield return outputObjects;
             }
-            yield return commomOutputObjects;
+            yield return CommonOutputObjects;
         }
 
 
-        internal static void MountDatabases(IExecuteContext executeContext)
+        private static void MountDatabase(BuildTransaction transaction)
         {
-            MountDatabases(CreateTransaction(executeContext.GetOutputObjectsGroups()));
-        }
-
-        public static void MountDatabases(ICommandContext commandContext)
-        {
-            MountDatabases(CreateTransaction(commandContext.GetOutputObjectsGroups()));
-        }
-
-        private static void MountDatabases(BuildTransaction transaction)
-        {
-            DatabaseFileProvider.Value = CreateDatabases(transaction); 
+            MicroThreadLocalDatabaseFileProvider.Value = CreateDatabase(transaction); 
         }
 
         private static BuildTransaction CreateTransaction(IEnumerable<IDictionary<ObjectUrl, OutputObject>> transactionOutputObjectsGroups)
         {
-            return new BuildTransaction(GetOutputObjectsGroups(transactionOutputObjectsGroups));
+            return new BuildTransaction(ObjectDatabase.AssetIndexMap, GetOutputObjectsGroups(transactionOutputObjectsGroups));
         }
 
-        private static DatabaseFileProvider CreateDatabases(BuildTransaction transaction)
+        private static DatabaseFileProvider CreateDatabase(BuildTransaction transaction)
         {
             return new DatabaseFileProvider(new BuildTransaction.DatabaseAssetIndexMap(transaction), ObjectDatabase);
-        }
-
-        public static DatabaseFileProvider GetCommonDatabase()
-        {
-            return CreateDatabases(CreateTransaction(null));
-        }
-
-        internal static void UnmountDatabases(IExecuteContext executeContext)
-        {
-            DatabaseFileProvider.Value = null;
         }
 
         public override void PreCommand(ICommandContext commandContext)
@@ -85,7 +140,7 @@ namespace SiliconStudio.BuildEngine
             base.PreCommand(commandContext);
 
             buildTransaction = CreateTransaction(commandContext.GetOutputObjectsGroups());
-            MountDatabases(buildTransaction);
+            MountDatabase(buildTransaction);
         }
 
         public override void PostCommand(ICommandContext commandContext, ResultStatus status)
@@ -108,7 +163,7 @@ namespace SiliconStudio.BuildEngine
                 //AssetIndexMap.Save();
             }
 
-            DatabaseFileProvider.Value = null;
+            MicroThreadLocalDatabaseFileProvider.ClearValue();
         }
     }
 }

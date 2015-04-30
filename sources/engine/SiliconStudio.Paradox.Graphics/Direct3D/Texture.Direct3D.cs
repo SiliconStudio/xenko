@@ -116,7 +116,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
 
             NativeShaderResourceView = GetShaderResourceView(ViewType, ArraySlice, MipLevel);
-            NativeUnorderedAccessView = GetUnorderedAccessView(ArraySlice, MipLevel);
+            NativeUnorderedAccessView = GetUnorderedAccessView(ViewType, ArraySlice, MipLevel);
             NativeRenderTargetView = GetRenderTargetView(ViewType, ArraySlice, MipLevel);
             NativeDepthStencilView = GetDepthStencilView(out HasStencil);
         }
@@ -340,24 +340,28 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// Gets a specific <see cref="UnorderedAccessView" /> from this texture.
         /// </summary>
+        /// <param name="viewType">The desired view type on the unordered resource</param>
         /// <param name="arrayOrDepthSlice">The texture array slice index.</param>
         /// <param name="mipIndex">Index of the mip.</param>
         /// <returns>An <see cref="UnorderedAccessView" /></returns>
-        private UnorderedAccessView GetUnorderedAccessView(int arrayOrDepthSlice, int mipIndex)
+        private UnorderedAccessView GetUnorderedAccessView(ViewType viewType, int arrayOrDepthSlice, int mipIndex)
         {
             if (!IsUnorderedAccess)
                 return null;
 
+            if (IsMultiSample)
+                throw new NotSupportedException("Multisampling is not supported for unordered access views");
+
             int arrayCount;
             int mipCount;
-            GetViewSliceBounds(ViewType.Single, ref arrayOrDepthSlice, ref mipIndex, out arrayCount, out mipCount);
+            GetViewSliceBounds(viewType, ref arrayOrDepthSlice, ref mipIndex, out arrayCount, out mipCount);
 
-            var uavDescription = new UnorderedAccessViewDescription()
+            var uavDescription = new UnorderedAccessViewDescription
             {
                 Format = (SharpDX.DXGI.Format)ViewFormat
             };
 
-            if (this.ArraySize > 1)
+            if (ArraySize > 1)
             {
                 switch (Dimension)
                 {
@@ -395,7 +399,7 @@ namespace SiliconStudio.Paradox.Graphics
                         uavDescription.Texture3D.WSize = arrayCount;
                         break;
                     case TextureDimension.TextureCube:
-                        throw new NotSupportedException("TextureCube dimension is expecting an arraysize > 1");
+                        throw new NotSupportedException("TextureCube dimension is expecting an array size > 1");
                 }
             }
 

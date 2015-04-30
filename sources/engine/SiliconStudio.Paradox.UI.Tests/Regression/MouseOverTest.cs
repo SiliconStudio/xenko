@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.UI.Controls;
@@ -37,20 +37,23 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public MouseOverTest()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 3;
         }
 
         protected override async Task LoadContent()
         {
             await base.LoadContent();
 
-            button1 = new Button { Content = new TextBlock { Text = "text block button 1", Font = Asset.Load<SpriteFont>("CourierNew12")} };
+            var background = new Entity { new BackgroundComponent { Texture = Asset.Load<Texture>("ParadoxBackground") } };
+            Scene.AddChild(background);
+
+            button1 = new Button { Content = new TextBlock { Text = "text block button 1", Font = Asset.Load<SpriteFont>("CourierNew12"), SynchronousCharacterGeneration = true } };
             button1.SetCanvasRelativePosition(new Vector3(0.025f, 0.05f, 0f));
 
-            edit1 = new EditText(Services) {  Text = "Edit text 1", Font = Asset.Load<SpriteFont>("CourierNew12"), };
+            edit1 = new EditText(Services) { Text = "Edit text 1", Font = Asset.Load<SpriteFont>("CourierNew12"), SynchronousCharacterGeneration = true, };
             edit1.SetCanvasRelativePosition(new Vector3(0.025f, 0.15f, 0f));
 
-            button2 = new Button { Content = new TextBlock { Text = "text block button 2", Font = Asset.Load<SpriteFont>("MicrosoftSansSerif15") } };
+            button2 = new Button { Content = new TextBlock { Text = "text block button 2", Font = Asset.Load<SpriteFont>("MicrosoftSansSerif15"), SynchronousCharacterGeneration = true } };
             edit2 = new EditText(Services) { Text = "Edit text 2", Font = Asset.Load<SpriteFont>("MicrosoftSansSerif15"), };
 
             stackPanel = new StackPanel
@@ -72,14 +75,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             canvas.MouseOverStateChanged += (sender, args) => { triggeredCanvas = true;};
             stackPanel.MouseOverStateChanged += (sender, args) => { triggeredStackPanel = true;};
 
-            UI.RootElement = canvas;
-        }
-
-        protected override void CreatePipeline()
-        {
-            RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services));
-            RenderSystem.Pipeline.Renderers.Add(new BackgroundRenderer(Services) { BackgroundTexture = Asset.Load<Texture>("ParadoxBackground")});
-            RenderSystem.Pipeline.Renderers.Add(UIRenderer = new UIRenderer(Services));
+            UIComponent.RootElement = canvas;
         }
 
         protected override void RegisterTests()
@@ -88,14 +84,19 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
             FrameGameSystem.DrawOrder = -1;
             FrameGameSystem.TakeScreenshot();
-            FrameGameSystem.Draw(Test1);
-            FrameGameSystem.Draw(Test2);
-            FrameGameSystem.Draw(Test3);
-            FrameGameSystem.Draw(Test4);
-            FrameGameSystem.Draw(Test5);
-            FrameGameSystem.Draw(Test6);
-            FrameGameSystem.Draw(Draw1).TakeScreenshot();
-            FrameGameSystem.Draw(Draw2).TakeScreenshot();
+            FrameGameSystem.Draw(1, Test1);
+            FrameGameSystem.Draw(2, PrepareTest2);
+            FrameGameSystem.Draw(3, Test2);
+            FrameGameSystem.Draw(4, PrepareTest3);
+            FrameGameSystem.Draw(5, Test3);
+            FrameGameSystem.Draw(6, PrepareTest4);
+            FrameGameSystem.Draw(7, Test4);
+            FrameGameSystem.Draw(8, PrepareTest5);
+            FrameGameSystem.Draw(9, Test5);
+            FrameGameSystem.Draw(10, PrepareTest6);
+            FrameGameSystem.Draw(11, Test6);
+            FrameGameSystem.Draw(12, Draw1).TakeScreenshot(12);
+            FrameGameSystem.Draw(13, Draw2).TakeScreenshot(13);
         }
 
         private void Test1()
@@ -117,14 +118,15 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             Assert.IsFalse(triggeredStackPanel);
         }
 
-        private void Test2()
+        private void PrepareTest2()
         {
             ResetStates();
-
             Input.CurrentMousePosition = new Vector2(0.1f, 0.08f);
             Input.Update(new GameTime());
-            UI.Update(new GameTime());
+        }
 
+        private void Test2()
+        {
             Assert.AreEqual(MouseOverState.MouseOverChild, canvas.MouseOverState);
             Assert.AreEqual(MouseOverState.MouseOverNone, stackPanel.MouseOverState);
             Assert.AreEqual(MouseOverState.MouseOverElement, button1.MouseOverState);
@@ -143,14 +145,15 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             Assert.AreEqual(MouseOverState.MouseOverElement, newValueButton1);
         }
 
-        private void Test3()
+        private void PrepareTest3()
         {
             ResetStates();
-
             Input.CurrentMousePosition = new Vector2(0.1f, 0.18f);
             Input.Update(new GameTime());
-            UI.Update(new GameTime());
+        }
 
+        private void Test3()
+        {
             Assert.AreEqual(MouseOverState.MouseOverChild, canvas.MouseOverState);
             Assert.AreEqual(MouseOverState.MouseOverNone, stackPanel.MouseOverState);
             Assert.AreEqual(MouseOverState.MouseOverNone, button1.MouseOverState);
@@ -165,15 +168,16 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             Assert.IsFalse(triggeredEdit2);
             Assert.IsFalse(triggeredStackPanel);
         }
+        
+        private void PrepareTest4()
+        {
+            ResetStates();
+            Input.CurrentMousePosition = new Vector2(0.1f, 0.3f);
+            Input.Update(new GameTime());
+        }
 
         private void Test4()
         {
-            ResetStates();
-
-            Input.CurrentMousePosition = new Vector2(0.1f, 0.3f);
-            Input.Update(new GameTime());
-            UI.Update(new GameTime());
-
             Assert.AreEqual(MouseOverState.MouseOverElement, canvas.MouseOverState);
             Assert.AreEqual(MouseOverState.MouseOverNone, stackPanel.MouseOverState);
             Assert.AreEqual(MouseOverState.MouseOverNone, button1.MouseOverState);
@@ -188,15 +192,16 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             Assert.IsFalse(triggeredEdit2);
             Assert.IsFalse(triggeredStackPanel);
         }
+        
+        private void PrepareTest5()
+        {
+            ResetStates();
+            Input.CurrentMousePosition = new Vector2(0.5f, 0.5f);
+            Input.Update(new GameTime());
+        }
 
         private void Test5()
         {
-            ResetStates();
-
-            Input.CurrentMousePosition = new Vector2(0.5f, 0.5f);
-            Input.Update(new GameTime());
-            UI.Update(new GameTime());
-
             Assert.AreEqual(MouseOverState.MouseOverChild, canvas.MouseOverState);
             Assert.AreEqual(MouseOverState.MouseOverChild, stackPanel.MouseOverState);
             Assert.AreEqual(MouseOverState.MouseOverNone, button1.MouseOverState);
@@ -212,14 +217,15 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             Assert.IsFalse(triggeredEdit1);
         }
 
-        private void Test6()
+        private void PrepareTest6()
         {
             ResetStates();
-
             Input.CurrentMousePosition = new Vector2(0.56f, 0.5f);
             Input.Update(new GameTime());
-            UI.Update(new GameTime());
+        }
 
+        private void Test6()
+        {
             Assert.AreEqual(MouseOverState.MouseOverChild, canvas.MouseOverState);
             Assert.AreEqual(MouseOverState.MouseOverChild, stackPanel.MouseOverState);
             Assert.AreEqual(MouseOverState.MouseOverNone, button1.MouseOverState);

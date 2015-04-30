@@ -1,12 +1,12 @@
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Converters;
 
 namespace SiliconStudio.Paradox.Graphics
 {
     /// <summary>
     /// A region of an image.
     /// </summary>
-    [DataConverter(AutoGenerate = true, ContentReference = false)]
+    [DataContract(Inherited = true)]
     public class ImageFragment
     {
         internal RectangleF RegionInternal;
@@ -48,19 +48,16 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// Gets or sets the name of the image fragment.
         /// </summary>
-        [DataMemberConvert]
-        public string Name { get; internal set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// The texture in which the image is contained
         /// </summary>
-        [DataMemberConvert]
         public Texture Texture { get; set; }
 
         /// <summary>
         /// The texture in which the image alpha is contained
         /// </summary>
-        [DataMemberConvert]
         public Texture TextureAlpha { get; set; }
 
         /// <summary>
@@ -74,7 +71,6 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// The rectangle specifying the region of the texture to use as fragment.
         /// </summary>
-        [DataMemberConvert]
         public virtual RectangleF Region
         {
             get { return RegionInternal; }
@@ -84,13 +80,11 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// Gets or sets the value indicating if the fragment contains transparent regions.
         /// </summary>
-        [DataMemberConvert]
         public bool IsTransparent { get; set; }
 
         /// <summary>
         /// Gets or sets the rotation to apply to the texture region when rendering the <see cref="ImageFragment"/>
         /// </summary>
-        [DataMemberConvert]
         public virtual ImageOrientation Orientation { get; set; }
 
         public override string ToString()

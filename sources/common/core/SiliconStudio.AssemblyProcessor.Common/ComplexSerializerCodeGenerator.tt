@@ -4,7 +4,7 @@
 <#@ import namespace="System.Reflection" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Mono.Cecil" #>
-<#@ import namespace="SiliconStudio.Core.Serialization.Serializers" #>
+<#@ import namespace="SiliconStudio.Core.Serialization" #>
 
 using System;
 using System.Collections.Generic;

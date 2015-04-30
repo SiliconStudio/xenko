@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Shaders
 {
@@ -47,9 +47,13 @@ namespace SiliconStudio.Paradox.Shaders
         public static bool Contains(string pdxfxEffectName)
         {
             if (pdxfxEffectName == null) throw new ArgumentNullException("pdxfxEffectName");
+
+            var effectName = GetEffectName(pdxfxEffectName);
+            var rootEffectName = effectName.Key;
+
             lock (RegisteredBuilders)
             {
-                return RegisteredBuilders.ContainsKey(pdxfxEffectName);
+                return RegisteredBuilders.ContainsKey(rootEffectName);
             }
         }
 
@@ -72,7 +76,7 @@ namespace SiliconStudio.Paradox.Shaders
         }
 
         /// <summary>
-        /// Generates a <see cref="ShaderMixinSourceTree" /> for the specified names and parameters.
+        /// Generates a <see cref="ShaderMixinSource" /> for the specified names and parameters.
         /// </summary>
         /// <param name="pdxfxEffectName">The name.</param>
         /// <param name="properties">The properties.</param>
@@ -83,31 +87,48 @@ namespace SiliconStudio.Paradox.Shaders
         /// properties
         /// </exception>
         /// <exception cref="System.ArgumentException">pdxfxEffectName</exception>
-        public static ShaderMixinSourceTree Generate(string pdxfxEffectName, ParameterCollection properties)
+        public static ShaderMixinSource Generate(string pdxfxEffectName, ParameterCollection properties)
         {
             if (pdxfxEffectName == null) throw new ArgumentNullException("pdxfxEffectName");
 
             if (properties == null)
                 throw new ArgumentNullException("properties");
 
+            // Get the effect name and child effect name "RootEffectName.ChildEffectName"
+            var effectName = GetEffectName(pdxfxEffectName);
+            var rootEffectName = effectName.Key;
+            var childEffectName = effectName.Value;
+
             IShaderMixinBuilder builder;
             Dictionary<string, IShaderMixinBuilder> builders;
             lock (RegisteredBuilders)
             {
-                if (!TryGet(pdxfxEffectName, out builder))
-                    throw new ArgumentException(string.Format("Pdxfx effect [{0}] not found", pdxfxEffectName), "pdxfxEffectName");
+                if (!TryGet(rootEffectName, out builder))
+                    throw new ArgumentException(string.Format("Pdxfx effect [{0}] not found", rootEffectName), "pdxfxEffectName");
 
                 builders = new Dictionary<string, IShaderMixinBuilder>(RegisteredBuilders);
             }
 
             // TODO cache mixin context and avoid to recreate one (check if if thread concurrency could occur here)
-            var context = new ShaderMixinContext(properties, builders);
-            var mixinTree = new ShaderMixinSourceTree() { Name = pdxfxEffectName };
-            context.BeginChild(mixinTree);
-            builder.Generate(mixinTree, context);
-            context.EndChild();
-
+            var mixinTree = new ShaderMixinSource() { Name = pdxfxEffectName };
+            var context = new ShaderMixinContext(mixinTree, properties, builders) { ChildEffectName = childEffectName };
+            try
+            {
+                builder.Generate(mixinTree, context);
+            }
+            catch (ShaderMixinDiscardException discard)
+            {
+                // We don't rethrow as this exception is on purpose to early exit/escape from a shader mixin
+            }
             return mixinTree;
+        }
+
+        private static KeyValuePair<string, string> GetEffectName(string pdxfxEffectName)
+        {
+            var mainEffectNameEnd = pdxfxEffectName.IndexOf('.');
+            var rootEffectName = mainEffectNameEnd != -1 ? pdxfxEffectName.Substring(0, mainEffectNameEnd) : pdxfxEffectName;
+            var childEffectName = mainEffectNameEnd != -1 ? pdxfxEffectName.Substring(mainEffectNameEnd + 1) : string.Empty;
+            return new KeyValuePair<string, string>(rootEffectName, childEffectName);
         }
 
         /// <summary>

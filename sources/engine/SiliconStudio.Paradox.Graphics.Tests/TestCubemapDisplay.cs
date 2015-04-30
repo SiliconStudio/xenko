@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 Draw = GeometricPrimitive.GeoSphere.New(GraphicsDevice).ToMeshDraw(),
                 Material = material
             };
-            mesh.Parameters.Set(RenderingParameters.RenderLayer, RenderLayers.RenderLayer1);
+            mesh.Parameters.Set(RenderingParameters.RenderGroup, RenderGroups.Group1);
 
             var entity = new Entity()
             {
@@ -94,7 +94,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 await Script.NextFrame();
 
                 var angle = Math.PI * UpdateTime.Total.TotalMilliseconds / 5000;
-                mainCamera.Transformation.Translation = new Vector3((float)(cameraDistance * Math.Cos(angle)), cameraHeight, (float)(cameraDistance * Math.Sin(angle)));
+                mainCamera.Transform.Translation = new Vector3((float)(cameraDistance * Math.Cos(angle)), cameraHeight, (float)(cameraDistance * Math.Sin(angle)));
             }
         }
 

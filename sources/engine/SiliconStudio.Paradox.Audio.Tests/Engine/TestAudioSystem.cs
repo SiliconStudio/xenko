@@ -8,7 +8,6 @@ using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Audio.Tests.Engine
 {
@@ -62,7 +61,8 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             // Add a listenerComponent already present in the entity system and check that it is correctly added to the AudioSystem internal data structures
             var entity = new Entity("Test");
             entity.Add(addedToEntityListener);
-            game.Entities.Add(entity);
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            //game.Entities.Add(entity);
             Assert.DoesNotThrow(() => audio.AddListener(addedToEntityListener), "Adding a listener present in the entity system failed");
             Assert.IsTrue(audio.Listeners.ContainsKey(addedToEntityListener), "The list of listeners of AudioSystem does not contains the addedToEntityListener.");
 
@@ -107,12 +107,12 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             listCompEntities = new List<Entity> { new Entity(), new Entity() };
             emitCompEntities = new List<Entity> { new Entity(), new Entity() };
 
-            rootSubEntity1.Transformation.Parent = rootEntity.Transformation;
-            rootSubEntity2.Transformation.Parent = rootEntity.Transformation;
-            listCompEntities[0].Transformation.Parent = rootSubEntity1.Transformation;
-            listCompEntities[1].Transformation.Parent = rootSubEntity2.Transformation;
-            emitCompEntities[0].Transformation.Parent = listCompEntities[0].Transformation;
-            emitCompEntities[1].Transformation.Parent = listCompEntities[1].Transformation;
+            rootSubEntity1.Transform.Parent = rootEntity.Transform;
+            rootSubEntity2.Transform.Parent = rootEntity.Transform;
+            listCompEntities[0].Transform.Parent = rootSubEntity1.Transform;
+            listCompEntities[1].Transform.Parent = rootSubEntity2.Transform;
+            emitCompEntities[0].Transform.Parent = listCompEntities[0].Transform;
+            emitCompEntities[1].Transform.Parent = listCompEntities[1].Transform;
         }
 
         /// <summary>
@@ -168,7 +168,8 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
         /// <param name="game"></param>
         private void AddRootEntityToEntitySystem(Game game)
         {
-            game.Entities.Add(rootEntity);
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            //game.Entities.Add(rootEntity);
         }
 
         /// <summary>
@@ -218,9 +219,9 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             {
                 // isolate the two listeners such that emitter 1 can be heard only by listener 1 and emitter 2 by listener 2
                 // and place emitters such that emitters 1 output on left ear and emitter 2 on right ear.
-                listCompEntities[0].Transformation.Translation = listCompEntities[0].Transformation.Translation - new Vector3(1000, 0, 0);
-                emitCompEntities[0].Transformation.Translation = emitCompEntities[0].Transformation.Translation - new Vector3(1, 0, 0);
-                emitCompEntities[1].Transformation.Translation = emitCompEntities[1].Transformation.Translation + new Vector3(1, 0, 0);
+                listCompEntities[0].Transform.Position = listCompEntities[0].Transform.Position - new Vector3(1000, 0, 0);
+                emitCompEntities[0].Transform.Position = emitCompEntities[0].Transform.Position - new Vector3(1, 0, 0);
+                emitCompEntities[1].Transform.Position = emitCompEntities[1].Transform.Position + new Vector3(1, 0, 0);
 
                 // add a new listener not present into the entity system yet to the audio system
                 listComps.Add(new AudioListenerComponent());
@@ -236,7 +237,8 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             else if(loopCount == 180)
             {
                 // add the new listener to the entity system
-                game.Entities.Add(listCompEntities[2]);
+                throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+                //game.Entities.Add(listCompEntities[2]);
 
                 // check the sounds are heard by the two listeners.
                 soundControllers[0].Play();
@@ -270,13 +272,14 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             listComps.Add(new AudioListenerComponent());
             listCompEntities.Add(new Entity());
             listCompEntities[2].Add(listComps[2]);
-            game.Entities.Add(listCompEntities[2]);
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            //game.Entities.Add(listCompEntities[2]);
 
             // isolate the two listeners such that emitter 1 can be heard only by listener 1 and emitter 2 by listener 3
             // and place emitters such that emitters 1 output on left ear and emitter 2 on right ear.
-            listCompEntities[0].Transformation.Translation = listCompEntities[0].Transformation.Translation - new Vector3(1000,0,0);
-            emitCompEntities[0].Transformation.Translation = emitCompEntities[0].Transformation.Translation - new Vector3(1, 0, 0);
-            emitCompEntities[1].Transformation.Translation = emitCompEntities[1].Transformation.Translation + new Vector3(1, 0, 0);
+            listCompEntities[0].Transform.Position = listCompEntities[0].Transform.Position - new Vector3(1000,0,0);
+            emitCompEntities[0].Transform.Position = emitCompEntities[0].Transform.Position - new Vector3(1, 0, 0);
+            emitCompEntities[1].Transform.Position = emitCompEntities[1].Transform.Position + new Vector3(1, 0, 0);
 
             game.Audio.AddListener(listComps[2]);
             game.Audio.AddListener(listComps[0]);
@@ -297,7 +300,8 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             else if (loopCount == 60)
             {
                 // remove listener 3 from the entity system => check that the sounds are now heard only via listener 1
-                game.Entities.Remove(listCompEntities[2]);
+                throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+                //game.Entities.Remove(listCompEntities[2]);
             }
             // here we should hear the soundEffect 0 on left ear only
             else if (loopCount == 120)
@@ -330,9 +334,9 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
 
             // isolate the two listeners such that emitter 1 can be heard only by listener 1 and emitter 2 by listener 3
             // and place emitters such that emitters 1 output on left ear and emitter 2 on right ear.
-            listCompEntities[0].Transformation.Translation = listCompEntities[0].Transformation.Translation - new Vector3(1000, 0, 0);
-            emitCompEntities[0].Transformation.Translation = emitCompEntities[0].Transformation.Translation - new Vector3(1, 0, 0);
-            emitCompEntities[1].Transformation.Translation = emitCompEntities[1].Transformation.Translation + new Vector3(1, 0, 0);
+            listCompEntities[0].Transform.Position = listCompEntities[0].Transform.Position - new Vector3(1000, 0, 0);
+            emitCompEntities[0].Transform.Position = emitCompEntities[0].Transform.Position - new Vector3(1, 0, 0);
+            emitCompEntities[1].Transform.Position = emitCompEntities[1].Transform.Position + new Vector3(1, 0, 0);
 
             emitComps = new List<AudioEmitterComponent> { new AudioEmitterComponent(), new AudioEmitterComponent() };
             emitCompEntities = new List<Entity> { new Entity(), new Entity()};
@@ -354,7 +358,8 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             else if (loopCount == 60)
             {
                 // add emitter 1 to the entity system
-                game.Entities.Add(emitCompEntities[0]);
+                throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+                //game.Entities.Add(emitCompEntities[0]);
 
                 // check that emitter 1 can now be heard.
                 soundControllers[0].Play();
@@ -364,7 +369,8 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             else if (loopCount == 120)
             {
                 // add now emitter 2 to the entity system
-                game.Entities.Add(emitCompEntities[1]);
+                throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+                //game.Entities.Add(emitCompEntities[1]);
 
                 // test that now both emitters can be heard.
                 soundControllers[0].Play();
@@ -374,7 +380,8 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             else if (loopCount == 180)
             {
                 // remove emitter 2 from the entity system  
-                game.Entities.Remove(emitCompEntities[1]);
+                throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+                //game.Entities.Remove(emitCompEntities[1]);
 
                 // test that now only emitter 1 can be heard.
                 soundControllers[0].Play();
@@ -384,7 +391,8 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             else if (loopCount == 240)
             {
                 // remove emitter 1 from the entity system  
-                game.Entities.Remove(emitCompEntities[0]);
+                throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+                //game.Entities.Remove(emitCompEntities[0]);
 
                 // check that there is not more audio output at all
                 soundControllers[0].Play();
@@ -472,7 +480,7 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
         private void TestSeveralControllersLoopImpl(Game game, int loopCount, int loopCountSum)
         {
             // have the emitter turn around the listener to check that all sounds are coming from the same emitter.
-            emitCompEntities[0].Transformation.Translation = new Vector3((float)Math.Cos(loopCount * Math.PI / 30), 0, (float)Math.Sin(loopCount * Math.PI / 30));
+            emitCompEntities[0].Transform.Position = new Vector3((float)Math.Cos(loopCount * Math.PI / 30), 0, (float)Math.Sin(loopCount * Math.PI / 30));
 
             if (loopCount == 0)
             {
@@ -525,10 +533,10 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
         private void TestDopplerCoherencyLoopImpl(Game game, int loopCount, int loopCountSum)
         {
             // useless motion on the root entities just to check that is does not disturb to calculations.
-            rootSubEntity1.Transformation.Translation += new Vector3(1, 2, 3);
-            listCompEntities[0].Transformation.Translation += new Vector3(3, 2, -1);
+            rootSubEntity1.Transform.Position += new Vector3(1, 2, 3);
+            listCompEntities[0].Transform.Position += new Vector3(3, 2, -1);
             // apply a left to right motion to the emitter entity
-            emitCompEntities[0].Transformation.Translation = new Vector3(20*(loopCount-200), 0, 2);
+            emitCompEntities[0].Transform.Position = new Vector3(20*(loopCount-200), 0, 2);
 
             // the sound should be modified in pitch depending on which side the emitter is
             // ( first pitch should be increased and then decreased)
@@ -564,7 +572,7 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
         private void TestAttenuationCoherencyLoopImpl(Game game, int loopCount, int loopCountSum)
         {
             // put away progressively the emitter.
-            emitCompEntities[0].Transformation.Translation = new Vector3(0, 0, loopCount / 10f);
+            emitCompEntities[0].Transform.Position = new Vector3(0, 0, loopCount / 10f);
 
             // the sound should progressively attenuate
             if (loopCount == 800)
@@ -599,10 +607,10 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
         private void TestLocalizationCoherencyLoopImpl(Game game, int loopCount, int loopCountSum)
         {
             // useless motion on the root entities just to check that is does not disturb to calculations.
-            rootSubEntity1.Transformation.Translation += new Vector3(1, 2, 3);
-            listCompEntities[0].Transformation.Translation += new Vector3(3, 2, -1);
+            rootSubEntity1.Transform.Position += new Vector3(1, 2, 3);
+            listCompEntities[0].Transform.Position += new Vector3(3, 2, -1);
             // have the emitter turn clockwise around the listener.
-            emitCompEntities[0].Transformation.Translation = new Vector3((float)Math.Cos(loopCount * Math.PI / 100), 0, (float)Math.Sin(loopCount * Math.PI / 100));
+            emitCompEntities[0].Transform.Position = new Vector3((float)Math.Cos(loopCount * Math.PI / 100), 0, (float)Math.Sin(loopCount * Math.PI / 100));
 
             // the sound should turn around clockwise 
             if (loopCount == 800)

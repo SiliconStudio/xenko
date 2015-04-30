@@ -8,7 +8,8 @@ using SharpYaml.Serialization.Serializers;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Assets.Materials;
+using SiliconStudio.Paradox.Rendering.Materials;
+using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
 
 using ITypeDescriptor = SharpYaml.Serialization.ITypeDescriptor;
 
@@ -25,7 +26,7 @@ namespace SiliconStudio.Paradox.Assets.Serializers
 
         protected override void WriteDictionaryItems(ref ObjectContext objectContext)
         {
-            //TODO: make SortKeyForMapping accessible in object context since it modifies the behavior of the serializer for children of the GenericDictionary
+            //TODO: make SortKeyForMapping accessible in object context since it modifies the behavior of the serializer for children of the ComputeColorParameters
             var savedSettings = objectContext.Settings.SortKeyForMapping;
             objectContext.Settings.SortKeyForMapping = false;
             base.WriteDictionaryItems(ref objectContext);
@@ -34,12 +35,12 @@ namespace SiliconStudio.Paradox.Assets.Serializers
 
         public bool CanVisit(Type type)
         {
-            return typeof(GenericDictionary).IsAssignableFrom(type);
+            return typeof(ComputeColorParameters).IsAssignableFrom(type);
         }
 
         public void Visit(ref VisitorContext context)
         {
-            // Visit a GenericDictionary without visiting properties
+            // Visit a ComputeColorParameters without visiting properties
             context.Visitor.VisitObject(context.Instance, context.Descriptor, false);
         }
     }

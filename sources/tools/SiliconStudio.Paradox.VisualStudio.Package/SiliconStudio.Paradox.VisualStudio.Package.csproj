@@ -97,7 +97,7 @@
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.11.0" />
     <Reference Include="Microsoft.VisualStudio.TextManager.Interop.8.0, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="NuGet">
-      <HintPath>..\..\..\deps\Nuget\NuGet.exe</HintPath>
+      <HintPath>..\..\..\deps\Nuget\NuGet.Core.dll</HintPath>
     </Reference>
     <Reference Include="SharpYaml">
       <HintPath>..\..\common\deps\SharpYaml\SharpYaml.dll</HintPath>
@@ -201,7 +201,6 @@
     <Compile Include="Commands\BuildMonitorCallback.cs" />
     <Compile Include="Commands\IParadoxCommands.cs" />
     <Compile Include="Commands\ParadoxCommandsProxy.cs" />
-    <Compile Include="DataGenerator\DataCodeGenerator.cs" />
     <Compile Include="MyControl.xaml.cs">
       <DependentUpon>MyControl.xaml</DependentUpon>
     </Compile>
@@ -269,6 +268,7 @@
     <EmbeddedResource Include="NShader\Common\ParadoxShaderKeywords.map" />
     <None Include="NShader\Common\ShaderMPLexer.lex" />
     <None Include="packages.config" />
+    <None Include="SiliconStudio.Paradox.VisualStudio.Package.nuspec" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>

@@ -1,55 +1,64 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.Collections.Generic;
 
-using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Core.Serialization.Converters;
 
 namespace SiliconStudio.Paradox.Graphics.Font
 {
-    [ContentSerializer(typeof(DataContentConverterSerializer<StaticSpriteFont>))]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<StaticSpriteFont>), Profile = "Asset")]
+    [ContentSerializer(typeof(StaticSpriteFontContentSerializer))]
+    [DataSerializer(typeof(StaticSpriteFontSerializer))]
     internal class StaticSpriteFont : SpriteFont
     {
-        private readonly Dictionary<char, Glyph> characterToGlyph;
+        internal Dictionary<char, Glyph> CharacterToGlyph;
 
-        internal Texture[] StaticTextures;
+        internal List<Texture> StaticTextures;
 
-        public StaticSpriteFont(FontSystem fontSystem, StaticSpriteFontData spriteFontData)
-            : base(fontSystem, spriteFontData, false)
+        internal StaticSpriteFont()
         {
-            characterToGlyph = new Dictionary<char, Glyph>(spriteFontData.Glyphs.Length);
+        }
+
+        internal StaticSpriteFont(float size, IList<Glyph> glyphs, IEnumerable<Texture> textures, float baseOffset, float defaultLineSpacing, IList<Kerning> kernings, float extraSpacing, float extraLineSpacing, char defaultCharacter)
+        {
+            Size = size;
+            StaticTextures = new List<Texture>();
+            CharacterToGlyph = new Dictionary<char, Glyph>(glyphs.Count);
+            KerningMap = new Dictionary<int, float>();
+            BaseOffsetY = baseOffset;
+            DefaultLineSpacing = defaultLineSpacing;
+            ExtraSpacing = extraSpacing;
+            ExtraLineSpacing = extraLineSpacing;
+            DefaultCharacter = defaultCharacter;
 
             // build the character map
-            foreach (var glyph in spriteFontData.Glyphs)
+            foreach (var glyph in glyphs)
             {
                 var character = (char)glyph.Character;
-                characterToGlyph[character] = glyph;
+                CharacterToGlyph[character] = glyph;
             }
 
             // Prepare kernings if they are available.
-            var kernings = spriteFontData.Kernings;
             if (kernings != null)
             {
-                for (int i = 0; i < kernings.Length; i++)
+                for (int i = 0; i < kernings.Count; i++)
                 {
                     int key = (kernings[i].First << 16) | kernings[i].Second;
                     KerningMap.Add(key, kernings[i].Offset);
                 }
             }
 
-            // Read the texture data.
-            StaticTextures = new Texture[spriteFontData.Bitmaps.Length];
-            for (int i = 0; i < StaticTextures.Length; i++)
-            {
-                if (spriteFontData.Bitmaps[i].Value != null)
-                    StaticTextures[i] = Texture.New(fontSystem.GraphicsDevice, spriteFontData.Bitmaps[i].Value).DisposeBy(this);
-            }
-            Textures = StaticTextures;
+            // add the textures if any
+            if(textures != null)
+                StaticTextures.AddRange(textures);
+        }
 
-            BaseOffsetY = spriteFontData.BaseOffset;
-            DefaultLineSpacing = spriteFontData.FontDefaultLineSpacing;
+        public override IReadOnlyList<Texture> Textures 
+        { 
+            get { return StaticTextures; }
         }
 
         public override float GetExtraSpacing(float fontSize)
@@ -74,17 +83,17 @@ namespace SiliconStudio.Paradox.Graphics.Font
 
         public override bool IsCharPresent(char c)
         {
-            return characterToGlyph.ContainsKey(c);
+            return CharacterToGlyph.ContainsKey(c);
         }
 
         protected override Glyph GetGlyph(char character, ref Vector2 fontSize, bool dumb)
         {
             Glyph glyph = null;
 
-            if (!characterToGlyph.ContainsKey(character))
+            if (!CharacterToGlyph.ContainsKey(character))
                 Logger.Warning("Character '{0}' is not available in the static font character map", character);
             else
-                glyph = characterToGlyph[character];
+                glyph = CharacterToGlyph[character];
 
             return glyph;
         }

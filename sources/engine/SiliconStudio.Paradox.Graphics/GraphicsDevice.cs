@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics.Internals;
 
 namespace SiliconStudio.Paradox.Graphics
@@ -15,6 +15,8 @@ namespace SiliconStudio.Paradox.Graphics
     public partial class GraphicsDevice : ComponentBase
     {
         public static readonly int ThreadCount = 1; //AppConfig.GetConfiguration<Config>("RenderSystem").ThreadCount;
+
+        private const int MaxRenderTargetCount = 8;
 
         internal readonly Dictionary<SamplerStateDescription, SamplerState> CachedSamplerStates = new Dictionary<SamplerStateDescription, SamplerState>();
         internal readonly Dictionary<BlendStateDescription, BlendState> CachedBlendStates = new Dictionary<BlendStateDescription, BlendState>();
@@ -39,6 +41,11 @@ namespace SiliconStudio.Paradox.Graphics
         private VertexArrayObject newVertexArrayObject;
         private GraphicsPresenter presenter;
 
+        // Current states
+        private StateAndTargets currentState;
+
+        private int currentStateIndex;
+        private readonly List<StateAndTargets> allocatedStates = new List<StateAndTargets>(10);
         private PrimitiveQuad primitiveQuad;
 
         /// <summary>
@@ -75,20 +82,22 @@ namespace SiliconStudio.Paradox.Graphics
             // Initialize this instance
             InitializePlatformDevice(profile, deviceCreationFlags, windowHandle);
 
+            InitializeFactories();
+
             // Create a new graphics device
             Features = new GraphicsDeviceFeatures(this);
 
-            InitializeFactories();
+            SamplerStates = new SamplerStateFactory(this);
+            BlendStates = new BlendStateFactory(this);
+            RasterizerStates = new RasterizerStateFactory(this);
+            DepthStencilStates = new DepthStencilStateFactory(this);
 
-            if (SamplerStates == null)
-            {
-                SamplerStates = new SamplerStateFactory(this);
-                BlendStates = new BlendStateFactory(this);
-                RasterizerStates = new RasterizerStateFactory(this);
-                DepthStencilStates = new DepthStencilStateFactory(this);
-            }
+            currentState = null;
+            allocatedStates.Clear();
+            currentStateIndex = -1;
+            PushState();
 
-            SetDefaultStates();
+            ClearState();
         }
 
         protected override void Destroy()
@@ -106,6 +115,11 @@ namespace SiliconStudio.Paradox.Graphics
                 DepthStencilBuffer.Dispose();
             primitiveQuad.Dispose();
 
+            SamplerStates = null;
+            BlendStates = null;
+            RasterizerStates = null;
+            DepthStencilStates = null;
+
             base.Destroy();
         }
 
@@ -122,7 +136,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <remarks>
         ///     Because this method is being called from a lock region, this method should not be time consuming.
         /// </remarks>
-        public delegate T CreateSharedData<out T>() where T : class, IDisposable;
+        public delegate T CreateSharedData<out T>(GraphicsDevice device) where T : class, IDisposable;
 
         /// <summary>
         ///     Gets the adapter this instance is attached to.
@@ -307,6 +321,42 @@ namespace SiliconStudio.Paradox.Graphics
             return new GraphicsDevice(adapter ?? GraphicsAdapterFactory.Default, graphicsProfiles, creationFlags, windowHandle);
         }
 
+
+        /// <summary>
+        ///     Gets the first viewport.
+        /// </summary>
+        /// <value>The first viewport.</value>
+        public Viewport Viewport
+        {
+            get
+            {
+                return currentState.Viewports[0];
+            }
+        }
+
+        /// <summary>
+        /// Clears the state and restore the state of the device.
+        /// </summary>
+        public void ClearState()
+        {
+            ClearStateImpl();
+
+            currentStateIndex = 0;
+            currentState = allocatedStates[currentStateIndex];
+
+            // Setup empty viewports
+            for (int i = 0; i < currentState.Viewports.Length; i++)
+                currentState.Viewports[i] = new Viewport();
+
+            // Setup default states
+            SetBlendState(BlendStates.Default);
+            SetRasterizerState(RasterizerStates.CullBack);
+            SetDepthStencilState(DepthStencilStates.Default);
+
+            // Setup the default render target
+            SetDepthAndRenderTarget(DepthStencilBuffer, BackBuffer);
+        }
+
         /// <summary>
         /// Draws a full screen quad. An <see cref="Effect"/> must be applied before calling this method.
         /// </summary>
@@ -373,6 +423,63 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
+        /// Set the blend state of the output-merger stage with a white default blend color and sample mask set to 0xffffffff. See <see cref="Render+states"/> to learn how to use it.
+        /// </summary>
+        /// <param name="blendState">a blend-state</param>
+        public void SetBlendState(BlendState blendState)
+        {
+            SetBlendState(blendState, blendState == null ? Color.White : blendState.BlendFactor, blendState == null ? -1 : blendState.MultiSampleMask);
+        }
+
+        /// <summary>
+        /// Set the blend state of the output-merger stage. See <see cref="Render+states"/> to learn how to use it.
+        /// </summary>
+        /// <param name="blendState">a blend-state</param>
+        /// <param name="blendFactor">Blend factors, one for each RGBA component. This requires a blend state object that specifies the <see cref="Blend.BlendFactor" /></param>
+        /// <param name="multiSampleMask">32-bit sample coverage. The default value is 0xffffffff.</param>
+        public void SetBlendState(BlendState blendState, Color4 blendFactor, int multiSampleMask = -1)
+        {
+            currentState.BlendState = blendState;
+            currentState.BlendFactor = blendFactor;
+            currentState.BlendMultiSampleMask = multiSampleMask;
+            SetBlendStateImpl(blendState, blendFactor, multiSampleMask);
+        }
+
+        /// <summary>
+        /// Sets the depth-stencil state of the output-merger stage. See <see cref="Render+states"/> to learn how to use it.
+        /// </summary>
+        /// <param name="depthStencilState">a depth-stencil state</param>
+        /// <param name="stencilReference">Reference value to perform against when doing a depth-stencil test.</param>
+        public void SetDepthStencilState(DepthStencilState depthStencilState, int stencilReference = 0)
+        {
+            currentState.DepthStencilState = depthStencilState;
+            currentState.StencilReference = stencilReference;
+            SetDepthStencilStateImpl(depthStencilState, stencilReference);
+        }
+
+        /// <summary>
+        /// Set the <strong>rasterizer state</strong> for the rasterizer stage of the pipeline. See <see cref="Render+states"/> to learn how to use it.
+        /// </summary>
+        /// <param name="rasterizerState">The rasterizser state to set on this device.</param>
+        public void SetRasterizerState(RasterizerState rasterizerState)
+        {
+            currentState.RasterizerState = rasterizerState;
+            SetRasterizerStateImpl(rasterizerState);
+        }
+
+        /// <summary>
+        /// Set the blend state of the output-merger stage. See <see cref="Render+states"/> to learn how to use it.
+        /// </summary>
+        /// <param name="blendState">a blend-state</param>
+        /// <param name="blendFactor">Blend factors, one for each RGBA component. This requires a blend state object that specifies the <see cref="Blend.BlendFactor" /></param>
+        /// <param name="multiSampleMask">32-bit sample coverage. The default value is 0xffffffff.</param>
+        public void SetBlendState(BlendState blendState, Color4 blendFactor, uint multiSampleMask = 0xFFFFFFFF)
+        {
+            SetBlendState(blendState, blendFactor, unchecked((int)multiSampleMask));
+        }
+
+
+        /// <summary>
         ///     Sets a new depthStencilBuffer to this GraphicsDevice. If there is any RenderTarget already bound, it will be unbinded. See <see cref="Textures+and+render+targets"/> to learn how to use it.
         /// </summary>
         /// <param name="depthStencilBuffer">The depth stencil.</param>
@@ -400,6 +507,140 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
+        /// Unbinds all depth-stencil buffer and render targets from the output-merger stage.
+        /// </summary>
+        public void ResetTargets()
+        {
+            ResetTargetsImpl();
+
+            currentState.DepthStencilBuffer = null;
+            for (int i = 0; i < currentState.RenderTargets.Length; i++)
+                currentState.RenderTargets[i] = null;
+        }
+
+        /// <summary>
+        /// Sets the viewport for the first render target.
+        /// </summary>
+        /// <value>The viewport.</value>
+        public void SetViewport(Viewport value)
+        {
+            SetViewport(0, value);
+        }
+
+        /// <summary>
+        /// Sets the viewport for the specified render target.
+        /// </summary>
+        /// <value>The viewport.</value>
+        public void SetViewport(int index, Viewport value)
+        {
+            currentState.Viewports[index] = value;
+            SetViewportImpl(index, value);
+        }
+
+        /// <summary>
+        /// Pushes the state of <see cref="DepthStencilState"/>, <see cref="RasterizerState"/>, <see cref="BlendState"/> and the Render targets bound to this instance. To restore the state, use <see cref="PopState"/>.
+        /// </summary>
+        public void PushState()
+        {
+            var previousState = currentState;
+
+            // Check if we need to allocate a new StateAndTargets
+            if (currentStateIndex == (allocatedStates.Count - 1))
+            {
+                currentState = new StateAndTargets();
+                allocatedStates.Add(currentState);
+            }
+            currentStateIndex++;
+            currentState = allocatedStates[currentStateIndex];
+            currentState.Initialize(this, previousState);
+        }
+
+        /// <summary>
+        /// Restore the state and targets.
+        /// </summary>
+        public void PopState()
+        {
+            if (currentStateIndex <= 0)
+            {
+                throw new InvalidOperationException("Cannot pop more than push");
+            }
+            currentStateIndex--;
+
+            currentState = allocatedStates[currentStateIndex];
+            currentState.Restore(this);
+        }
+
+        /// <summary>
+        /// Binds a depth-stencil buffer and a single render target to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.
+        /// </summary>
+        /// <param name="depthStencilView">A view of the depth-stencil buffer to bind.</param>
+        /// <param name="renderTargetView">A view of the render target to bind.</param>
+        public void SetDepthAndRenderTarget(Texture depthStencilView, Texture renderTargetView)
+        {
+            currentState.DepthStencilBuffer = depthStencilView;
+            currentState.RenderTargets[0] = renderTargetView;
+
+            // Clear the other render targets bound
+            for (int i = 1; i < currentState.RenderTargets.Length; i++)
+            {
+                currentState.RenderTargets[i] = null;
+            }
+
+            CommonSetDepthAndRenderTargets(currentState.DepthStencilBuffer, currentState.RenderTargets);
+        }
+
+        /// <summary>
+        /// Binds a depth-stencil buffer and a set of render targets to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.
+        /// </summary>
+        /// <param name="depthStencilView">A view of the depth-stencil buffer to bind.</param>
+        /// <param name="renderTargetViews">A set of render target views to bind.</param>
+        /// <exception cref="System.ArgumentNullException">renderTargetViews</exception>
+        public void SetDepthAndRenderTargets(Texture depthStencilView, params Texture[] renderTargetViews)
+        {
+            currentState.DepthStencilBuffer = depthStencilView;
+
+            if (renderTargetViews != null)
+            {
+                for (int i = 0; i < currentState.RenderTargets.Length; i++)
+                {
+                    currentState.RenderTargets[i] = i < renderTargetViews.Length ? renderTargetViews[i] : null;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < currentState.RenderTargets.Length; i++)
+                {
+                    currentState.RenderTargets[i] = null;
+                }
+            }
+
+            CommonSetDepthAndRenderTargets(currentState.DepthStencilBuffer, currentState.RenderTargets);
+        }
+
+        private void CommonSetDepthAndRenderTargets(Texture depthStencilView, Texture[] renderTargetViews)
+        {
+            if (depthStencilView != null)
+            {
+                SetViewport(new Viewport(0, 0, depthStencilView.ViewWidth, depthStencilView.ViewHeight));
+            }
+            else
+            {
+                // Setup the viewport from the rendertarget view
+                foreach (var rtv in renderTargetViews)
+                {
+                    if (rtv != null)
+                    {
+                        SetViewport(new Viewport(0, 0, rtv.ViewWidth, rtv.ViewHeight));
+                        break;
+                    }
+                }
+            }
+
+            SetDepthAndRenderTargetsImpl(depthStencilView, renderTargetViews);
+        }
+
+
+        /// <summary>
         ///     Gets a shared data for this device context with a delegate to create the shared data if it is not present.
         /// </summary>
         /// <typeparam name="T">Type of the shared data to get/create.</typeparam>
@@ -418,7 +659,7 @@ namespace SiliconStudio.Paradox.Graphics
                 IDisposable localValue;
                 if (!dictionary.TryGetValue(key, out localValue))
                 {
-                    localValue = sharedDataCreator();
+                    localValue = sharedDataCreator(this);
                     if (localValue == null)
                     {
                         return null;
@@ -428,6 +669,83 @@ namespace SiliconStudio.Paradox.Graphics
                     dictionary.Add(key, localValue);
                 }
                 return (T)localValue;
+            }
+        }
+
+        /// <summary>
+        /// Holds blend, rasterizer and depth stencil, current viewports and render targets.
+        /// </summary>
+        private class StateAndTargets
+        {
+            public BlendState BlendState;
+            public Color4 BlendFactor;
+            public int BlendMultiSampleMask;
+
+            public DepthStencilState DepthStencilState;
+            public int StencilReference;
+
+            public RasterizerState RasterizerState;
+
+            public Viewport[] Viewports;
+
+            public Texture DepthStencilBuffer;
+
+            public Texture[] RenderTargets;
+
+            public void Initialize(GraphicsDevice device, StateAndTargets parentState)
+            {
+                int renderTargetCount = MaxRenderTargetCount;
+                switch (device.Features.Profile)
+                {
+                    case GraphicsProfile.Level_9_1:
+                    case GraphicsProfile.Level_9_2:
+                    case GraphicsProfile.Level_9_3:
+                        renderTargetCount = 1;
+                        break;
+                }
+
+                if (RenderTargets == null || RenderTargets.Length != renderTargetCount)
+                {
+                    RenderTargets = new Texture[renderTargetCount];
+                    Viewports = new Viewport[renderTargetCount];
+                }
+
+                if (parentState != null)
+                {
+                    this.BlendState = parentState.BlendState;
+                    this.BlendFactor = parentState.BlendFactor;
+                    BlendMultiSampleMask = parentState.BlendMultiSampleMask;
+
+                    this.DepthStencilState = parentState.DepthStencilState;
+                    this.StencilReference = parentState.StencilReference;
+
+                    DepthStencilBuffer = parentState.DepthStencilBuffer;
+
+                    for (int i = 0; i < renderTargetCount; i++)
+                    {
+                        Viewports[i] = parentState.Viewports[i];
+                        RenderTargets[i] = parentState.RenderTargets[i];
+                    }
+                }
+            }
+
+            public void Restore(GraphicsDevice graphicsDevice)
+            {
+                graphicsDevice.SetDepthAndRenderTargets(DepthStencilBuffer, RenderTargets);
+
+                graphicsDevice.SetBlendState(BlendState, BlendFactor, BlendMultiSampleMask);
+                graphicsDevice.SetDepthStencilState(DepthStencilState, StencilReference);
+                graphicsDevice.SetRasterizerState(RasterizerState);
+
+                // TODO: This is not optimized
+                for (int i = 0; i < Viewports.Length; i++)
+                {
+                    var viewport = Viewports[i];
+                    if (viewport != Graphics.Viewport.Empty)
+                    {
+                        graphicsDevice.SetViewport(i, viewport);
+                    }
+                }
             }
         }
     }

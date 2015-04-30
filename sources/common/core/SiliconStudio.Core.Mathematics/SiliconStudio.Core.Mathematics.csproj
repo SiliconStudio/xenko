@@ -26,6 +26,7 @@
     <Compile Include="Angle.cs" />
     <Compile Include="AngleType.cs" />
     <Compile Include="BoundingBox.cs" />
+    <Compile Include="BoundingBoxExt.cs" />
     <Compile Include="BoundingFrustum.cs" />
     <Compile Include="BoundingSphere.cs" />
     <Compile Include="Collision.cs" />
@@ -36,6 +37,7 @@
     <Compile Include="ColorBGRA.cs" />
     <Compile Include="ColorHSV.cs" />
     <Compile Include="ContainmentType.cs" />
+    <Compile Include="GuillotinePacker.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="Point.cs" />
@@ -44,6 +46,7 @@
     <Compile Include="Size3.cs" />
     <Compile Include="Size2.cs" />
     <Compile Include="Size2F.cs" />
+    <Compile Include="SphericalHarmonics.cs" />
     <Compile Include="UInt4.cs" />
     <Compile Include="Half.cs" />
     <Compile Include="Half2.cs" />
@@ -63,6 +66,7 @@
     <Compile Include="Vector2.cs" />
     <Compile Include="Vector3.cs" />
     <Compile Include="Vector4.cs" />
+    <Compile Include="VectorExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">

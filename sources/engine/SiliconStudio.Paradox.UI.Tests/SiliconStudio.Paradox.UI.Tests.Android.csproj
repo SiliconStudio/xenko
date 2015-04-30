@@ -21,6 +21,7 @@
     <MandroidI18n />
     <JavaMaximumHeapSize />
     <JavaOptions />
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <SiliconStudioPlatform>Android</SiliconStudioPlatform>
     <SiliconStudioBuildProfile>Android</SiliconStudioBuildProfile>
@@ -215,6 +216,7 @@
     <Compile Include="Module.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="RandomExtension.cs" />
+    <Compile Include="Regression\BillboardModeTests.cs" />
     <Compile Include="Regression\BorderImageTest.cs" />
     <Compile Include="Regression\BorderTest.cs" />
     <Compile Include="Regression\ButtonTest.cs" />
@@ -235,6 +237,7 @@
     <Compile Include="Regression\ImageRotatedTest.cs" />
     <Compile Include="Regression\ImageSeparateAlphaTest.cs" />
     <Compile Include="Regression\ImageTest.cs" />
+    <Compile Include="Regression\InSceneUITest.cs" />
     <Compile Include="Regression\LeaveEnterTest.cs" />
     <Compile Include="Regression\ModalElementTest.cs" />
     <Compile Include="Regression\MouseOverTest.cs" />
@@ -243,6 +246,7 @@
     <Compile Include="Regression\ScrollViewerTest.cs" />
     <Compile Include="Regression\SliderTest.cs" />
     <Compile Include="Regression\StackPanelTest.cs" />
+    <Compile Include="Regression\TestCamera.cs" />
     <Compile Include="Regression\TextBlockTest.cs" />
     <Compile Include="Regression\TextBlockWrappingTest.cs" />
     <Compile Include="Regression\ToggleButtonTest.cs" />

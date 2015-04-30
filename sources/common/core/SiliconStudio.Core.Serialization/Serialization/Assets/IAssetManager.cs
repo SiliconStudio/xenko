@@ -12,6 +12,13 @@ namespace SiliconStudio.Core.Serialization.Assets
     public interface IAssetManager
     {
         /// <summary>
+        /// Check if the specified asset url exists.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <returns><c>true</c> if the specified asset url exists, <c>false</c> otherwise.</returns>
+        bool Exists(string url);
+
+        /// <summary>
         /// Opens the specified URL as a stream used for custom raw asset loading.
         /// </summary>
         /// <param name="url">The URL to the raw asset.</param>

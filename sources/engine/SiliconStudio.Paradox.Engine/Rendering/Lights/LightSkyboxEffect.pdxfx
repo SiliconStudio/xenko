@@ -1,0 +1,28 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using SiliconStudio.Paradox.Rendering.Data;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Rendering.Materials;
+
+namespace SiliconStudio.Paradox.Rendering.Lights
+{
+    /// <summary>
+    /// Base shader
+    /// </summary>
+    shader LightSkyboxEffect
+    {
+        using params LightSkyboxShaderKeys;
+
+        mixin LightSkyboxShader;
+
+        if (LightSkyboxShaderKeys.LightDiffuseColor != null)
+        {
+            mixin compose lightDiffuseColor = LightSkyboxShaderKeys.LightDiffuseColor;
+        }
+
+        if (LightSkyboxShaderKeys.LightSpecularColor != null)
+        {
+            mixin compose lightSpecularColor = LightSkyboxShaderKeys.LightSpecularColor;
+        }
+   };
+}

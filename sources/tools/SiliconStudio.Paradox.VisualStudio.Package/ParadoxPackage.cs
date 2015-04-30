@@ -68,15 +68,12 @@ namespace SiliconStudio.Paradox.VisualStudio
     [CodeGeneratorRegistration(typeof(ShaderKeyFileGenerator), ShaderKeyFileGenerator.InternalName, GuidList.vsContextGuidVCSProject, GeneratorRegKeyName = ".pdxsl")]
     [CodeGeneratorRegistration(typeof(ShaderKeyFileGenerator), ShaderKeyFileGenerator.InternalName, GuidList.vsContextGuidVCSProject, GeneratorRegKeyName = ".pdxfx")]
     [CodeGeneratorRegistration(typeof(ShaderKeyFileGenerator), ShaderKeyFileGenerator.DisplayName, GuidList.vsContextGuidVCSProject, GeneratorRegKeyName = ShaderKeyFileGenerator.InternalName, GeneratesDesignTimeSource = true, GeneratesSharedDesignTimeSource = true)]
-    // Data C# Code generator
-    [CodeGeneratorRegistration(typeof(DataCodeGenerator), DataCodeGenerator.InternalName, GuidList.vsContextGuidVCSProject, GeneratorRegKeyName = ".pdxdata")]
-    [CodeGeneratorRegistration(typeof(DataCodeGenerator), DataCodeGenerator.DisplayName, GuidList.vsContextGuidVCSProject, GeneratorRegKeyName = DataCodeGenerator.InternalName, GeneratesDesignTimeSource = true, GeneratesSharedDesignTimeSource = true)]
     // Temporarily force load for easier debugging
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
     public sealed class ParadoxPackage : Package, IOleComponent
     {
-        public const string Version = "1.153";
+        public const string Version = "1.155";
 
         private DTE2 dte2;
         private AppDomain buildMonitorDomain;
@@ -194,7 +191,7 @@ namespace SiliconStudio.Paradox.VisualStudio
                 {
                     try
                     {
-                        ParadoxCommandsProxy.GetProxy().Initialize();
+                        ParadoxCommandsProxy.GetProxy().Initialize(null);
                     }
                     catch (Exception ex)
                     {

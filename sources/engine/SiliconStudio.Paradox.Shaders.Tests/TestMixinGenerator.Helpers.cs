@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Shaders.Tests
 {
@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         /// <param name="properties">The properties that the mixin will use.</param>
         /// <param name="usedProperties">The properties effectively used by the mixin.</param>
         /// <returns>ShaderMixinSource.</returns>
-        private static ShaderMixinSourceTree GenerateMixin(string mixinName, ParameterCollection properties, out ShaderMixinParameters usedProperties)
+        private static ShaderMixinSource GenerateMixin(string mixinName, ParameterCollection properties, out ShaderMixinParameters usedProperties)
         {
             var allUsedProperties = new List<ShaderMixinParameters>();
             var mixin = ShaderMixinManager.Generate(mixinName, properties);

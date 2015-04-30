@@ -8,11 +8,9 @@ namespace SiliconStudio.Paradox.Shaders
     /// <summary>
     /// A shader source that is linked to a pdxfx effect.
     /// </summary>
-    [DataContract]
+    [DataContract("ShaderMixinGeneratorSource")]
     public sealed class ShaderMixinGeneratorSource : ShaderSource, IEquatable<ShaderMixinGeneratorSource>
     {
-        private string name;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderMixinGeneratorSource"/> class.
         /// </summary>
@@ -26,24 +24,14 @@ namespace SiliconStudio.Paradox.Shaders
         /// <param name="name">The name of the pdxfx effect.</param>
         public ShaderMixinGeneratorSource(string name)
         {
-            this.name = name;
+            Name = name;
         }
 
         /// <summary>
         /// Gets or sets the name of the pdxfx effect.
         /// </summary>
         /// <value>The name of the pdxfx effect.</value>
-        public string Name
-        {
-            get
-            {
-                return name;
-            }
-            set
-            {
-                name = value;
-            }
-        }
+        public string Name { get; set; }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -54,12 +42,12 @@ namespace SiliconStudio.Paradox.Shaders
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(name, other.name);
+            return string.Equals(Name, other.Name);
         }
 
         public override object Clone()
         {
-            return new ShaderMixinGeneratorSource(name);
+            return new ShaderMixinGeneratorSource(Name);
         }
 
         public override bool Equals(object obj)
@@ -71,7 +59,7 @@ namespace SiliconStudio.Paradox.Shaders
 
         public override int GetHashCode()
         {
-            return (name != null ? name.GetHashCode() : 0);
+            return (Name != null ? Name.GetHashCode() : 0);
         }
 
         public static bool operator ==(ShaderMixinGeneratorSource left, ShaderMixinGeneratorSource right)

@@ -12,7 +12,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SiliconStudio.Paradox.Engine.Tests</RootNamespace>
     <AssemblyName>SiliconStudio.Paradox.Engine.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <ParadoxBuildTags>*</ParadoxBuildTags>
@@ -26,7 +26,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Paradox.Engine.Tests.SpriteTestGame</StartupObject>
+    <StartupObject>SiliconStudio.Paradox.Engine.Tests.TestTesselation</StartupObject>
   </PropertyGroup>
   <!--Import Local Pre Settings for the solution being loaded -->
   <Import Project="$(SolutionDir)$(SolutionName).PreSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PreSettings.Local.targets')" />
@@ -88,12 +88,12 @@
       <Name>SiliconStudio.Paradox.Input</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders.Compiler\SiliconStudio.Paradox.Shaders.Compiler.csproj">
+    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'Android'" Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders.Compiler\SiliconStudio.Paradox.Shaders.Compiler.csproj">
       <Project>{E8B3553F-A79F-4E50-B75B-ACEE771C320C}</Project>
       <Name>SiliconStudio.Paradox.Shaders.Compiler</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders.Parser\SiliconStudio.Paradox.Shaders.Parser.csproj">
+    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'Android'" Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders.Parser\SiliconStudio.Paradox.Shaders.Parser.csproj">
       <Project>{14A47447-2A24-4ECD-B24D-6571499DCD4C}</Project>
       <Name>SiliconStudio.Paradox.Shaders.Parser</Name>
       <Private>False</Private>
@@ -118,10 +118,14 @@
       <Name>SiliconStudio.Paradox.Graphics</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\common\shaders\SiliconStudio.Shaders\SiliconStudio.Shaders.csproj">
+    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'Android'" Include="..\..\..\sources\common\shaders\SiliconStudio.Shaders\SiliconStudio.Shaders.csproj">
       <Project>{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}</Project>
       <Name>SiliconStudio.Shaders</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.csproj">
+      <Project>{0342c3e7-4a38-46b4-a8ec-e728d50085d3}</Project>
+      <Name>SiliconStudio.Paradox.Effects</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.Games\SiliconStudio.Paradox.Games.csproj">
       <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
@@ -142,30 +146,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Build\TestBuilder.cs" />
+    <Compile Include="EngineTestBase.cs" />
     <Compile Include="SpriteTestGame.cs" />
+    <Compile Include="TestCamera.cs" />
     <Compile Include="TestSpriteAnimation.cs" />
+    <Compile Include="TestTesselation.cs" />
     <Compile Include="TestTextureAlphaSeparation.cs" />
     <None Include="Build\TestSerializer.cs" />
     <Compile Include="Build\TestStorage.cs" />
-    <Compile Include="FBXEntityAnimTestGame.cs" />
-    <Compile Include="FBXTestGame.cs" />
-    <Compile Include="FBXEntityTestGame.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="TestAnimationChannel.cs" />
     <Compile Include="TestEntitySerializer.cs" />
     <Compile Include="TestParameterPath.cs" />
-    <Compile Include="Default.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Default.pdxfx</DependentUpon>
-    </Compile>
-    <Compile Include="TestShaderMerging.cs" />
     <Compile Include="TestParameters.cs" />
-    <None Include="Default.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>Default.cs</LastGenOutput>
-    </None>
     <None Include="effects_test.xml">
       <SubType>Designer</SubType>
     </None>
@@ -173,6 +166,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Label="Paradox.DoNotSync" Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="GameAssets\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SiliconStudioPackageProps)" Condition="Exists('$(SiliconStudioPackageProps)')" />

@@ -45,76 +45,9 @@ namespace SiliconStudio.Assets.Tests
             var overrideType = newComponent.GetOverride(localComponentDescriptor["Name"]);
             Assert.AreEqual(OverrideType.Sealed, overrideType);
         }
-
-        [Test]
-        public void TestAccessor()
-        {
-            // -------------------------
-            // Init
-            // -------------------------
-            var localAssetDescriptor = TypeDescriptorFactory.Default.Find(typeof(LocalAsset));
-            var localComponentDescriptor = TypeDescriptorFactory.Default.Find(typeof(LocalComponent));
-            var collectionDescriptor = (DictionaryDescriptor)TypeDescriptorFactory.Default.Find(typeof(CustomParameterCollection));
-
-            var baseAsset = new LocalAsset { Name = "base", Value = 1 };
-            baseAsset.Parameters.Set(LocalAsset.StringKey, "string");
-
-            var component = new LocalComponent() { Name = "comp1", Position = Vector4.UnitX };
-            component.SetOverride(localComponentDescriptor["Name"], OverrideType.Sealed);
-            baseAsset.Parameters.Set(LocalAsset.ComponentKey, component);
-
-            var baseAssetItem = new AssetItem("base1", baseAsset);
-
-            // Create a child asset
-            var newAsset = (LocalAsset)baseAssetItem.CreateChildAsset();
-            var newAssetItem = new AssetItem("new1", newAsset);
-
-            // -------------------------
-            // Setup project + assets
-            // -------------------------
-            var project = new Package();
-            project.Assets.Add(baseAssetItem);
-            project.Assets.Add(newAssetItem);
-            var session = new PackageSession(project);
-
-            // Create accessor on new item
-            var accessor = new AssetItemAccessor(newAssetItem);
-
-            var memberPath = new MemberPath();
-            memberPath.Push(localAssetDescriptor["Parameters"]);
-            memberPath.Push(collectionDescriptor, LocalAsset.ComponentKey);
-            memberPath.Push(localComponentDescriptor["Name"]);
-
-            // Get value for member path
-            var memberValue = accessor.TryGetMemberValue(memberPath);
-
-            Assert.IsTrue(memberValue.IsValid);
-            Assert.AreEqual(OverrideType.Sealed, memberValue.Override);
-            Assert.NotNull(memberValue.OverriderItem);
-            Assert.AreEqual(baseAsset.Id, memberValue.OverriderItem.Id);
-
-            memberPath.Pop();
-            memberPath.Push(localComponentDescriptor["Position"]);
-
-            // Get value for member path
-            memberValue = accessor.TryGetMemberValue(memberPath);
-
-            Assert.IsTrue(memberValue.IsValid);
-            Assert.AreEqual(OverrideType.Base, memberValue.Override);
-            Assert.NotNull(memberValue.OverriderItem);
-            Assert.AreEqual(baseAsset.Id, memberValue.OverriderItem.Id);
-
-            // Set Position as a new value 
-            newAsset.Parameters[LocalAsset.ComponentKey].SetOverride(localComponentDescriptor["Position"], OverrideType.New);
-            memberValue = accessor.TryGetMemberValue(memberPath);
-
-            Assert.IsTrue(memberValue.IsValid);
-            Assert.AreEqual(OverrideType.New, memberValue.Override);
-            Assert.IsNull(memberValue.OverriderItem);
-        }
-
+        
         [DataContract("TestAssetItemAccessor-LocalAsset")]
-        [AssetFileExtension(".pdxlocalasset")]
+        [AssetDescription(".pdxlocalasset")]
         public class LocalAsset : Asset
         {
             public static readonly PropertyKey<string> StringKey = new PropertyKey<string>("StringKey", typeof(LocalAsset));

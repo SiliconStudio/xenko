@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     /// <summary>
     /// Assembly attribute used to mark assembly that has been preprocessed using the <see cref="ParameterKeyProcessor"/>.

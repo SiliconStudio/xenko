@@ -14,7 +14,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
-    <ParadoxBuildTags>Windows</ParadoxBuildTags>
+    <ParadoxBuildTags>Windows;Android</ParadoxBuildTags>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -34,6 +34,7 @@
     <Compile Include="Ast\ClassIdentifierGeneric.cs" />
     <Compile Include="Ast\EnumType.cs" />
     <Compile Include="Ast\ForEachStatement.cs" />
+    <Compile Include="Ast\IGenericStringArgument.cs" />
     <Compile Include="Ast\ImportBlockStatement.cs" />
     <Compile Include="Ast\LinkType.cs" />
     <Compile Include="Ast\LiteralIdentifier.cs" />
@@ -49,6 +50,7 @@
     <Compile Include="Ast\ShaderClassType.cs" />
     <Compile Include="Ast\ShaderRootClassType.cs" />
     <Compile Include="Ast\ShaderTypeName.cs" />
+    <Compile Include="Ast\MemberName.cs" />
     <Compile Include="Ast\StreamsType.cs" />
     <Compile Include="Ast\TypelIdentifier.cs" />
     <Compile Include="Ast\UsingParametersStatement.cs" />
@@ -56,6 +58,8 @@
     <Compile Include="Ast\VarType.cs" />
     <Compile Include="Grammar\ParadoxGrammar.Ast.cs" />
     <Compile Include="Grammar\ParadoxGrammar.cs" />
+    <Compile Include="Mixins\CompositionDictionary.cs" />
+    <Compile Include="Mixins\ExpressionSimplifierVisitor.cs" />
     <Compile Include="Mixins\MethodDeclarationShaderCouple.cs" />
     <Compile Include="Mixins\MixinVirtualTable.cs" />
     <Compile Include="Mixins\ModuleMixin.cs" />

@@ -2,41 +2,82 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Core.Serialization.Assets
 {
+    /// <summary>
+    /// Loads and saves assets.
+    /// </summary>
     public sealed partial class AssetManager : IAssetManager
     {
-        public static DatabaseFileProvider FileProvider { get { return GetFileProvider(); } }
+        private static readonly Logger Log = GlobalLogger.GetLogger("AssetManager");
+
+        public static DatabaseFileProvider FileProvider
+        {
+            get
+            {
+                // Don't try to call GetFileProvider if it is null
+                if (GetFileProvider == null)
+                {
+                    return null;
+                }
+                return GetFileProvider();
+            }
+        }
 
         public static Func<DatabaseFileProvider> GetFileProvider { get; set; }
 
         public AssetSerializer Serializer { get; private set; }
 
-        // If multiple object shares the same Url, they will be stored as a linked list (AssetReference.Next).
-        private readonly Dictionary<ObjectId, AssetReference> loadedAssetsByUrl = new Dictionary<ObjectId, AssetReference>();
+        /// <summary>
+        /// A dictionary mapping, for each loaded object, its url to the corresponding instance of <see cref="AssetReference"/>.
+        /// </summary>
+        internal readonly Dictionary<string, AssetReference> LoadedAssetUrls = new Dictionary<string, AssetReference>();
 
-        private readonly Dictionary<object, AssetReference> loadedAssetsUrl = new Dictionary<object, AssetReference>();
+        /// <summary>
+        /// A dictionary mapping, for each loaded object, the corresponding instance of <see cref="AssetReference"/>.
+        /// </summary>
+        internal readonly Dictionary<object, AssetReference> LoadedAssetReferences = new Dictionary<object, AssetReference>();
 
-        public AssetManager()
+        public AssetManager() : this(null)
         {
-            Serializer = new AssetSerializer { LowLevelSerializerSelector = SerializerSelector.Default };
         }
 
+        public AssetManager(IServiceRegistry services)
+        {
+            Serializer = new AssetSerializer();
+            if (services != null)
+            {
+                services.AddService(typeof(IAssetManager), this);
+                services.AddService(typeof(AssetManager), this);
+                Serializer.SerializerContextTags.Set(ServiceRegistry.ServiceRegistryKey, services);
+            }
+        }
+
+        /// <summary>
+        /// Saves an asset at a specific URL.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <param name="asset">The asset.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// url
+        /// or
+        /// asset
+        /// </exception>
         public void Save(string url, object asset)
         {
             if (url == null) throw new ArgumentNullException("url");
             if (asset == null) throw new ArgumentNullException("asset");
 
-            lock (loadedAssetsByUrl)
+            lock (LoadedAssetUrls)
             {
                 using (var profile = Profiler.Begin(AssetProfilingKeys.AssetSave))
                 {
@@ -45,40 +86,155 @@ namespace SiliconStudio.Core.Serialization.Assets
             }
         }
 
+        /// <summary>
+        /// Check if the specified asset exists.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified asset url exists, <c>false</c> otherwise.
+        /// </returns>
+        public bool Exists(string url)
+        {
+            ObjectId objectId;
+            return FileProvider.AssetIndexMap.TryGetValue(url, out objectId);
+        }
+
         public Stream OpenAsStream(string url, StreamFlags streamFlags)
         {
             return FileProvider.OpenStream(url, VirtualFileMode.Open, VirtualFileAccess.Read, streamFlags:streamFlags);
         }
 
+        /// <summary>
+        /// Loads an asset from the specified URL.
+        /// </summary>
+        /// <typeparam name="T">The content type.</typeparam>
+        /// <param name="url">The URL to load from.</param>
+        /// <param name="settings">The settings. If null, fallback to <see cref="AssetManagerLoaderSettings.Default" />.</param>
+        /// <returns></returns>
         public T Load<T>(string url, AssetManagerLoaderSettings settings = null) where T : class
+        {
+            return (T)Load(typeof(T), url, settings);
+        }
+
+        /// <summary>
+        /// Loads an asset from the specified URL.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="url">The URL.</param>
+        /// <param name="settings">The settings.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">url</exception>
+        public object Load(Type type, string url, AssetManagerLoaderSettings settings = null)
         {
             if (settings == null)
                 settings = AssetManagerLoaderSettings.Default;
 
             if (url == null) throw new ArgumentNullException("url");
 
-            lock (loadedAssetsByUrl)
+            lock (LoadedAssetUrls)
             {
                 using (var profile = Profiler.Begin(AssetProfilingKeys.AssetLoad, url))
                 {
-                    AssetReference assetReference;
-                    return (T)DeserializeObject(null, out assetReference, url, typeof(T), settings);
+                    return DeserializeObject(url, type, null, settings);
                 }
             }
         }
 
+        /// <summary>
+        /// Reloads an asset. If possible, same recursively referenced objects are reused.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        /// <param name="settings">The settings.</param>
+        /// <returns>True if it could be reloaded, false otherwise.</returns>
+        /// <exception cref="System.InvalidOperationException">Asset not loaded through this AssetManager.</exception>
+        public bool Reload(object obj, AssetManagerLoaderSettings settings = null)
+        {
+            if (settings == null)
+                settings = AssetManagerLoaderSettings.Default;
+
+            lock (LoadedAssetUrls)
+            {
+                AssetReference assetReference;
+                if (!LoadedAssetReferences.TryGetValue(obj, out assetReference))
+                    return false;
+
+                var url = assetReference.Url;
+
+                using (var profile = Profiler.Begin(AssetProfilingKeys.AssetReload, url))
+                {
+                    DeserializeObject(url, obj.GetType(), obj, settings);
+                }
+
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Loads an asset from the specified URL asynchronously.
+        /// </summary>
+        /// <typeparam name="T">The content type.</typeparam>
+        /// <param name="url">The URL to load from.</param>
+        /// <param name="settings">The settings. If null, fallback to <see cref="AssetManagerLoaderSettings.Default" />.</param>
+        /// <returns></returns>
         public Task<T> LoadAsync<T>(string url, AssetManagerLoaderSettings settings = null) where T : class
         {
             return Task.Factory.StartNew(() => Load<T>(url, settings));
         }
 
+        /// <summary>
+        /// Loads an asset from the specified URL asynchronously.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="url">The URL.</param>
+        /// <param name="settings">The settings.</param>
+        /// <returns></returns>
+        public Task<object> LoadAsync(Type type, string url, AssetManagerLoaderSettings settings = null)
+        {
+            return Task.Factory.StartNew(() => Load(type, url, settings));
+        }
+
+        /// <summary>
+        /// Gets a previously loaded asset from its URL.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="url">The URL.</param>
+        /// <returns></returns>
+        public T Get<T>(string url)
+        {
+            return (T)Get(typeof(T), url);
+        }
+
+        /// <summary>
+        /// Gets a previously loaded asset from its URL.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="url">The URL.</param>
+        /// <returns></returns>
+        public object Get(Type type, string url)
+        {
+            var reference = FindDeserializedObject(url, type);
+            return reference != null ? reference.Object : null;
+        }
+
+        /// <summary>
+        /// Gets or sets whether an asset with the given URL is currently loaded.
+        /// </summary>
+        /// <param name="url">The URL to check.</param>
+        /// <param name="loadedManuallyOnly">If <c>true</c>, this method will return true only if an asset with the given URL has been manually loaded via <see cref="Load"/>, and not if the asset has been only loaded indirectly from another asset.</param>
+        /// <returns><c>True</c> if an asset with the given URL is currently loaded, <c>false</c> otherwise.</returns>
+        public bool IsLoaded(string url, bool loadedManuallyOnly = false)
+        {
+            AssetReference assetReference;
+            return LoadedAssetUrls.TryGetValue(url, out assetReference) && (!loadedManuallyOnly || assetReference.PublicReferenceCount > 0);
+        }
+
         public bool TryGetAssetUrl(object obj, out string url)
         {
             if (obj == null) throw new ArgumentNullException("obj");
-            lock (loadedAssetsByUrl)
+            lock (LoadedAssetUrls)
             {
                 AssetReference assetReference;
-                if (!loadedAssetsUrl.TryGetValue(obj, out assetReference))
+                if (!LoadedAssetReferences.TryGetValue(obj, out assetReference))
                 {
                     url = null;
                     return false;
@@ -89,17 +245,50 @@ namespace SiliconStudio.Core.Serialization.Assets
             }
         }
 
+        /// <summary>
+        /// Unloads the specified asset.
+        /// </summary>
+        /// <param name="obj">The object to unload.</param>
+        /// <exception cref="System.InvalidOperationException">Asset not loaded through this AssetManager.</exception>
         public void Unload(object obj)
         {
-            lock (loadedAssetsByUrl)
+            lock (LoadedAssetUrls)
             {
                 AssetReference assetReference;
-                if (!loadedAssetsUrl.TryGetValue(obj, out assetReference))
+                if (!LoadedAssetReferences.TryGetValue(obj, out assetReference))
                     throw new InvalidOperationException("Asset not loaded through this AssetManager.");
 
                 // Release reference
                 DecrementReference(assetReference, true);
             }
+        }
+
+        /// <summary>
+        /// Unloads the asset at the specified URL.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <exception cref="System.InvalidOperationException">Asset not loaded through this AssetManager.</exception>
+        public void Unload(string url)
+        {
+            lock (LoadedAssetUrls)
+            {
+                // Try to find already loaded object
+                AssetReference assetReference;
+                if (!LoadedAssetUrls.TryGetValue(url, out assetReference))
+                    throw new InvalidOperationException("Asset not loaded through this AssetManager.");
+                
+                // Release reference
+                DecrementReference(assetReference, true);
+            }
+        }
+
+        /// <summary>
+        /// Computes statistics about the assets that are currently loaded. This method is intended to be used for debug purpose only.
+        /// </summary>
+        /// <returns></returns>
+        public AssetManagerStats GetStats()
+        {
+            return new AssetManagerStats(LoadedAssetUrls.Values);
         }
 
         private void PrepareSerializerContext(ContentSerializerContext contentSerializerContext, SerializerContext context)
@@ -113,15 +302,79 @@ namespace SiliconStudio.Core.Serialization.Assets
             }
         }
 
-        internal object DeserializeObject(AssetReference parentAssetReference, out AssetReference assetReference, string url, Type objType, AssetManagerLoaderSettings settings, ConverterContext converterContext = null)
+        struct DeserializeOperation
         {
-            // Resolve URL
-            ObjectId objectId;
-            if (!FileProvider.AssetIndexMap.TryGetValue(url, out objectId))
-                throw new InvalidOperationException(string.Format("Asset [{0}] not found.", url));
+            public readonly AssetReference ParentAssetReference;
+            public readonly string Url;
+            public readonly Type ObjectType;
+            public readonly Object Object;
 
+            public DeserializeOperation(AssetReference parentAssetReference, string url, Type objectType, object obj)
+            {
+                ParentAssetReference = parentAssetReference;
+                Url = url;
+                ObjectType = objectType;
+                Object = obj;
+            }
+        }
+
+        private object DeserializeObject(string url, Type type, object obj, AssetManagerLoaderSettings settings)
+        {
+            var serializeOperations = new Queue<DeserializeOperation>();
+            serializeOperations.Enqueue(new DeserializeOperation(null, url, type, obj));
+
+            AssetReference reference = null;
+            if (obj != null)
+            {
+                reference = FindDeserializedObject(url, type);
+                if (reference.Object != obj)
+                {
+                    throw new InvalidOperationException("Object doesn't match, can't reload");
+                }
+            }
+
+            // Let's put aside old references, so that we unload them only afterwise (avoid a referenced object to be unloaded for no reason)
+            HashSet<AssetReference> references = null;
+            if (reference != null)
+            {
+                // Let's collect dependent reference, and reset current list
+                references = reference.References;
+                reference.References = new HashSet<AssetReference>();
+
+                // Mark object as not deserialized yet
+                reference.Deserialized = false;
+            }
+
+            bool isFirstOperation = true;
+            object result = null;
+
+            while (serializeOperations.Count > 0)
+            {
+                var serializeOperation = serializeOperations.Dequeue();
+                var deserializedObject = DeserializeObject(serializeOperations, serializeOperation.ParentAssetReference, serializeOperation.Url, serializeOperation.ObjectType, serializeOperation.Object, settings);
+                if (isFirstOperation)
+                {
+                    result = deserializedObject;
+                    isFirstOperation = false;
+                }
+            }
+
+            if (reference != null)
+            {
+                foreach (var dependentReference in references)
+                {
+                    DecrementReference(dependentReference, false);
+                }
+            }
+
+            return result;
+        }
+
+        internal AssetReference FindDeserializedObject(string url, Type objType)
+        {
             // Try to find already loaded object
-            if (loadedAssetsByUrl.TryGetValue(objectId, out assetReference))
+            AssetReference assetReference;
+            if (LoadedAssetUrls.TryGetValue(url, out assetReference))
             {
                 while (assetReference != null && !objType.GetTypeInfo().IsAssignableFrom(assetReference.Object.GetType().GetTypeInfo()))
                 {
@@ -130,19 +383,42 @@ namespace SiliconStudio.Core.Serialization.Assets
 
                 if (assetReference != null)
                 {
-                    // Add reference
-                    bool isRoot = parentAssetReference == null;
-                    if (isRoot || parentAssetReference.References.Add(assetReference))
-                    {
-                        IncrementReference(assetReference, isRoot);
-                    }
-
-                    return assetReference.Object;
+                    // TODO: Currently ReferenceSerializer creates a ContentReference, so we will go through DeserializeObject later to add the reference
+                    // This should be unified at some point
+                    return assetReference;
                 }
             }
 
+            return null;
+        }
+
+        internal void RegisterDeserializedObject<T>(string url, T obj)
+        {
+            var assetReference = new AssetReference(url, false);
+            SetAssetObject(assetReference, obj);
+        }
+
+        private object DeserializeObject(Queue<DeserializeOperation> serializeOperations, AssetReference parentAssetReference, string url, Type objType, object obj, AssetManagerLoaderSettings settings)
+        {
+            // Try to find already loaded object
+            AssetReference assetReference = FindDeserializedObject(url, objType);
+            if (assetReference != null && assetReference.Deserialized)
+            {
+                // Add reference
+                bool isRoot = parentAssetReference == null;
+                if (isRoot || parentAssetReference.References.Add(assetReference))
+                {
+                    IncrementReference(assetReference, isRoot);
+                }
+
+                return assetReference.Object;
+            }
+
             if (!FileProvider.FileExists(url))
-                throw new InvalidOperationException(string.Format("Asset [{0}] not found.", url));
+            {
+                HandleAssetNotFound(url);
+                return null;
+            }
 
             ContentSerializerContext contentSerializerContext;
             object result;
@@ -180,18 +456,25 @@ namespace SiliconStudio.Core.Serialization.Assets
                     streamReader.NativeStream.Seek(chunkHeader.OffsetToObject, SeekOrigin.Begin);
                 }
 
-                // Create AssetReference
-                assetReference = new AssetReference(objectId, url, parentAssetReference == null);
-                contentSerializerContext.AssetReference = assetReference;
+                if (assetReference == null)
+                {
+                    // Create AssetReference
+                    assetReference = new AssetReference(url, parentAssetReference == null);
+                    contentSerializerContext.AssetReference = assetReference;
+                    result = obj ?? serializer.Construct(contentSerializerContext);
+                    SetAssetObject(assetReference, result);
+                }
+                else
+                {
+                    result = assetReference.Object;
+                    contentSerializerContext.AssetReference = assetReference;
+                }
 
-                result = serializer.Construct(contentSerializerContext);
+                assetReference.Deserialized = true;
 
                 PrepareSerializerContext(contentSerializerContext, streamReader.Context);
-                contentSerializerContext.ConverterContext = converterContext;
 
-                result = contentSerializerContext.SerializeContent(streamReader, serializer, result);
-
-                SetAssetObject(assetReference, result);
+                contentSerializerContext.SerializeContent(streamReader, serializer, result);
 
                 // Add reference
                 if (parentAssetReference != null)
@@ -208,14 +491,14 @@ namespace SiliconStudio.Core.Serialization.Assets
                 {
                     bool shouldBeLoaded = true;
 
-                    AssetReference childReference;
+                    //AssetReference childReference;
 
                     if (settings.ContentFilter != null)
                         settings.ContentFilter(contentReference, ref shouldBeLoaded);
 
                     if (shouldBeLoaded)
                     {
-                        contentReference.ObjectValue = DeserializeObject(assetReference, out childReference, contentReference.Location, contentReference.Type, settings);
+                        serializeOperations.Enqueue(new DeserializeOperation(assetReference, contentReference.Location, contentReference.Type, contentReference.ObjectValue));
                     }
                 }
             }
@@ -223,47 +506,33 @@ namespace SiliconStudio.Core.Serialization.Assets
             return result;
         }
 
-        internal object DeserializeObjectRecursive(AssetReference parentAssetReference, out AssetReference assetReference,
-            string url, Type objType, AssetManagerLoaderSettings settings, ContentSerializerContext otherContext, Stream stream, Type headerObjType, ConverterContext converterContext = null)
+        struct SerializeOperation
         {
-            // Resolve URL
-            ObjectId objectId;
-            if (!FileProvider.AssetIndexMap.TryGetValue(url, out objectId))
-                throw new InvalidOperationException(string.Format("Asset [{0}] not found.", url));
+            public readonly string Url;
+            public readonly object Object;
+            public readonly bool PublicReference;
 
-            // Find serializer
-            var serializer = Serializer.GetSerializer(headerObjType, objType);
-            if (serializer == null)
-                throw new InvalidOperationException(string.Format("Content serializer for {0}/{1} could not be found.", headerObjType, objType));
-            var contentSerializerContext = new ContentSerializerContext(url, ArchiveMode.Deserialize, this);
-
-            contentSerializerContext.chunkReferences.AddRange(otherContext.chunkReferences);
-
-            // Create AssetReference
-            assetReference = new AssetReference(objectId, url, parentAssetReference == null);
-            contentSerializerContext.AssetReference = assetReference;
-
-            var result = serializer.Construct(contentSerializerContext);
-
-            var streamReader = new BinarySerializationReader(stream);
-
-            PrepareSerializerContext(contentSerializerContext, streamReader.Context);
-            contentSerializerContext.ConverterContext = converterContext;
-
-            result = contentSerializerContext.SerializeContent(streamReader, serializer, result);
-
-            SetAssetObject(assetReference, result);
-
-            // Add reference
-            if (parentAssetReference != null)
+            public SerializeOperation(string url, object obj, bool publicReference)
             {
-                parentAssetReference.References.Add(assetReference);
+                Url = url;
+                Object = obj;
+                PublicReference = publicReference;
             }
-            
-            return result;
         }
 
         private void SerializeObject(string url, object obj, bool publicReference)
+        {
+            var serializeOperations = new Queue<SerializeOperation>();
+            serializeOperations.Enqueue(new SerializeOperation(url, obj, publicReference));
+
+            while (serializeOperations.Count > 0)
+            {
+                var serializeOperation = serializeOperations.Dequeue();
+                SerializeObject(serializeOperations, serializeOperation.Url, serializeOperation.Object, serializeOperation.PublicReference);
+            }
+        }
+
+        private void SerializeObject(Queue<SerializeOperation> serializeOperations, string url, object obj, bool publicReference)
         {
             // Don't create context in case we don't want to serialize referenced objects
             //if (!SerializeReferencedObjects && obj != RootObject)
@@ -271,7 +540,7 @@ namespace SiliconStudio.Core.Serialization.Assets
 
             // Already saved?
             // TODO: Ref counting? Should we change it on save? Probably depends if we cache or not.
-            if (loadedAssetsUrl.ContainsKey(obj))
+            if (LoadedAssetReferences.ContainsKey(obj))
                 return;
 
             var serializer = Serializer.GetSerializer(null, obj.GetType());
@@ -314,12 +583,7 @@ namespace SiliconStudio.Core.Serialization.Assets
                 }
             }
 
-            // Resolve URL
-            ObjectId objectId;
-            if (!FileProvider.AssetIndexMap.TryGetValue(url, out objectId))
-                throw new InvalidOperationException(string.Format("Asset [{0}] not found.", url));
-
-            var assetReference = new AssetReference(objectId, url, publicReference);
+            var assetReference = new AssetReference(url, publicReference);
             contentSerializerContext.AssetReference = assetReference;
             SetAssetObject(assetReference, obj);
 
@@ -328,7 +592,13 @@ namespace SiliconStudio.Core.Serialization.Assets
             foreach (var contentReference in contentSerializerContext.ContentReferences)
             {
                 if (contentReference.ObjectValue != null)
-                    SerializeObject(contentReference.Location, contentReference.ObjectValue, false);
+                {
+                    var attachedReference = AttachedReferenceManager.GetAttachedReference(contentReference.ObjectValue);
+                    if (attachedReference == null || attachedReference.IsProxy)
+                        continue;
+
+                    serializeOperations.Enqueue(new SerializeOperation(contentReference.Location, contentReference.ObjectValue, false));
+                }
             }
         }
 
@@ -347,14 +617,14 @@ namespace SiliconStudio.Core.Serialization.Assets
                 return;
             }
 
-            var objectId = assetReference.ObjectId;
+            var url = assetReference.Url;
             assetReference.Object = obj;
 
-            lock (loadedAssetsByUrl)
+            lock (LoadedAssetUrls)
             {
                 AssetReference previousAssetReference;
 
-                if (loadedAssetsByUrl.TryGetValue(objectId, out previousAssetReference))
+                if (LoadedAssetUrls.TryGetValue(url, out previousAssetReference))
                 {
                     assetReference.Next = previousAssetReference.Next;
                     assetReference.Prev = previousAssetReference;
@@ -365,15 +635,39 @@ namespace SiliconStudio.Core.Serialization.Assets
                 }
                 else
                 {
-                    loadedAssetsByUrl[objectId] = assetReference;
+                    LoadedAssetUrls[url] = assetReference;
                 }
 
-                loadedAssetsUrl[obj] = assetReference;
+                LoadedAssetReferences[obj] = assetReference;
 
                 // TODO: Currently here so that ContentReference.ObjectValue later keeps its Url.
                 // Need some reorganization?
-                UrlServices.SetUrl(obj, assetReference.Url);
+                AttachedReferenceManager.SetUrl(obj, assetReference.Url);
             }
+        }
+
+        /// <summary>
+        /// Notify debugger and logging when an asset could not be found.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <exception cref="SiliconStudio.Core.Serialization.Assets.AssetManagerException"></exception>
+        // TODO: Replug this when an asset is not found?
+        private static void HandleAssetNotFound(string url)
+        {
+            // If a debugger is attached, throw an exception (we do that instead of Debugger.Break so that user can easily ignore this specific type of exception)
+            if (Debugger.IsAttached)
+            {
+                try
+                {
+                    throw new AssetManagerException(string.Format("Asset [{0}] not found.", url));
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            // Log error
+            Log.Error("Asset [{0}] could not be found.");
         }
     }
 }

@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public BorderImageTest()
         {
-            CurrentVersion = 4;
+            CurrentVersion = 6;
         }
 
         protected override async Task LoadContent()
@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             stackPanel.Children.Add(bi2);
             stackPanel.Children.Add(bi3);
 
-            UI.RootElement = new ScrollViewer { Content = stackPanel, ScrollMode = ScrollingMode.HorizontalVertical };
+            UIComponent.RootElement = new ScrollViewer { Content = stackPanel, ScrollMode = ScrollingMode.HorizontalVertical };
         }
 
         protected override void RegisterTests()

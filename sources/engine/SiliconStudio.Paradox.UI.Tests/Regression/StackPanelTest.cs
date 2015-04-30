@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public StackPanelTest()
         {
-            CurrentVersion = 4;
+            CurrentVersion = 5;
         }
 
         protected override void RegisterTests()
@@ -130,7 +130,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
             scrollViewer = new ScrollViewer { Name = "sv", Content = currentStackPanel, ScrollMode = ScrollingMode.Vertical };
 
-            UI.RootElement = scrollViewer;
+            UIComponent.RootElement = scrollViewer;
         }
 
         protected override void Update(GameTime gameTime)

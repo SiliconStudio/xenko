@@ -1,0 +1,39 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Paradox.Rendering.Skyboxes
+{
+    /// <summary>
+    /// Base class to perform post effects. Draws the input mesh without transformation.
+    /// </summary>
+    class SkyboxShader : ImageEffectShader, Transformation, SkyboxStream
+    {
+        [Link("Skybox.Intensity")]
+        stage float Intensity;
+
+        [Link("Skybox.SkyMatrix")]
+        stage float4x4 SkyMatrix;
+
+        compose IComputeEnvironmentColor skyboxColor;
+
+        override stage void VSMain()
+        {
+            base.VSMain();
+            var position = float4(streams.TexCoord.x * 2 - 1, 1 - streams.TexCoord.y * 2, 1.0f, 1.0f);
+#ifdef SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
+            // On OpenGL, we need to flip Y
+            position.y = -position.y;
+#endif
+            var directionVS = mul(position, ProjectionInverse).xyz;
+            var directionWS = mul(directionVS, (float3x3)ViewInverse);
+            streams.skyboxViewDirection = mul(directionWS, (float3x3)SkyMatrix);
+        }
+
+        override stage float4 Shading()
+        {
+            var samplingDir = normalize(streams.skyboxViewDirection);
+            var color = skyboxColor.Compute(float3(samplingDir.x, samplingDir.y, -samplingDir.z)).rgb;
+            return float4(color * Intensity, 1.0);
+        }
+    };
+}

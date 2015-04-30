@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Graphics
 {
     public partial class Buffer
     {
-        private readonly SharpDX.Direct3D11.BufferDescription nativeDescription;
+        private SharpDX.Direct3D11.BufferDescription nativeDescription;
 
         internal SharpDX.Direct3D11.Buffer NativeBuffer
         {
@@ -26,22 +26,32 @@ namespace SiliconStudio.Paradox.Graphics
         /// Initializes a new instance of the <see cref="Buffer" /> class.
         /// </summary>
         /// <param name="device">The <see cref="GraphicsDevice"/>.</param>
+        protected Buffer(GraphicsDevice device)
+            : base(device)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Buffer" /> class.
+        /// </summary>
         /// <param name="description">The description.</param>
-        /// <param name="bufferFlags">Type of the buffer.</param>
+        /// <param name="viewFlags">Type of the buffer.</param>
         /// <param name="viewFormat">The view format.</param>
         /// <param name="dataPointer">The data pointer.</param>
-        protected Buffer(GraphicsDevice device, BufferDescription description, BufferFlags bufferFlags, PixelFormat viewFormat, IntPtr dataPointer) : base(device)
+        protected Buffer InitializeFromImpl(BufferDescription description, BufferFlags viewFlags, PixelFormat viewFormat, IntPtr dataPointer)
         {
-            Description = description;
+            bufferDescription = description;
             nativeDescription = ConvertToNativeDescription(Description);
-            BufferFlags = bufferFlags;
+            ViewFlags = viewFlags;
+            InitCountAndViewFormat(out this.elementCount, ref viewFormat);
             ViewFormat = viewFormat;
-            InitCountAndViewFormat(out this.elementCount, ref ViewFormat);
-            NativeDeviceChild = new SharpDX.Direct3D11.Buffer(device.RootDevice.NativeDevice, dataPointer, nativeDescription);
-        
+            NativeDeviceChild = new SharpDX.Direct3D11.Buffer(GraphicsDevice.RootDevice.NativeDevice, dataPointer, nativeDescription);
+
             // Staging resource don't have any views
             if (nativeDescription.Usage != ResourceUsage.Staging)
                 this.InitializeViews();
+
+            return this;
         }
 
         /// <inheritdoc/>
@@ -109,7 +119,7 @@ namespace SiliconStudio.Paradox.Graphics
                     }
                 };
 
-                if (((BufferFlags & BufferFlags.RawBuffer) == BufferFlags.RawBuffer))
+                if (((ViewFlags & BufferFlags.RawBuffer) == BufferFlags.RawBuffer))
                     description.BufferEx.Flags |= ShaderResourceViewExtendedBufferFlags.Raw;
 
                 srv = new ShaderResourceView(this.GraphicsDevice.NativeDevice, NativeResource, description);
@@ -163,14 +173,19 @@ namespace SiliconStudio.Paradox.Graphics
         {
             if (Description.StructureByteStride == 0)
             {
-                if ((BufferFlags & BufferFlags.RawBuffer) != 0)
-                    count = Description.SizeInBytes / sizeof(int);
-                else if ((BufferFlags & BufferFlags.IndexBuffer) != 0)
+                // TODO: The way to calculate the count is not always correct depending on the ViewFlags...etc.
+                if ((ViewFlags & BufferFlags.RawBuffer) != 0)
                 {
-                    count = (BufferFlags & BufferFlags.ShaderResource) != 0 ? Description.SizeInBytes / ViewFormat.SizeInBytes() : 0;
+                    count = Description.SizeInBytes / sizeof(int);
+                }
+                else if ((ViewFlags & BufferFlags.ShaderResource) != 0)
+                {
+                    count = Description.SizeInBytes / viewFormat.SizeInBytes();
                 }
                 else
-                    count = 1;
+                {
+                    count = 0;
+                }
             }
             else
             {
@@ -238,7 +253,7 @@ namespace SiliconStudio.Paradox.Graphics
             var srvFormat = ViewFormat;
             var uavFormat = ViewFormat;
 
-            if (((BufferFlags & BufferFlags.RawBuffer) != 0))
+            if (((ViewFlags & BufferFlags.RawBuffer) != 0))
             {
                 srvFormat = PixelFormat.R32_Typeless;
                 uavFormat = PixelFormat.R32_Typeless;
@@ -263,13 +278,13 @@ namespace SiliconStudio.Paradox.Graphics
                     },
                 };
 
-                if (((BufferFlags & BufferFlags.RawBuffer) == BufferFlags.RawBuffer))
+                if (((ViewFlags & BufferFlags.RawBuffer) == BufferFlags.RawBuffer))
                     description.Buffer.Flags |= UnorderedAccessViewBufferFlags.Raw;
 
-                if (((BufferFlags & BufferFlags.StructuredAppendBuffer) == BufferFlags.StructuredAppendBuffer))
+                if (((ViewFlags & BufferFlags.StructuredAppendBuffer) == BufferFlags.StructuredAppendBuffer))
                     description.Buffer.Flags |= UnorderedAccessViewBufferFlags.Append;
 
-                if (((BufferFlags & BufferFlags.StructuredCounterBuffer) == BufferFlags.StructuredCounterBuffer))
+                if (((ViewFlags & BufferFlags.StructuredCounterBuffer) == BufferFlags.StructuredCounterBuffer))
                     description.Buffer.Flags |= UnorderedAccessViewBufferFlags.Counter;
 
                 this.NativeUnorderedAccessView = new UnorderedAccessView(this.GraphicsDevice.NativeDevice, NativeBuffer, description);

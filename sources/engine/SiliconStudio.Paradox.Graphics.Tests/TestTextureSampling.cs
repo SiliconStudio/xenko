@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Games;
+using SiliconStudio.Paradox.Graphics.Internals;
 
 namespace SiliconStudio.Paradox.Graphics.Tests
 {
@@ -25,11 +26,15 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             public SamplerState Sampler;
         };
 
-        private SimpleEffect simpleEffect;
+        private Effect simpleEffect;
 
         private VertexArrayObject vao;
 
         private DrawOptions[] myDraws;
+
+        private EffectParameterCollectionGroup parameterCollectionGroup;
+
+        private ParameterCollection parameterCollection;
 
         public TestTextureSampling()
         {
@@ -76,8 +81,10 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 Draw = meshDraw,
             };
 
-            simpleEffect = new SimpleEffect(GraphicsDevice);
-            simpleEffect.Texture = UVTexture;
+            simpleEffect = new Effect(GraphicsDevice, SpriteEffect.Bytecode);
+            parameterCollection = new ParameterCollection();
+            parameterCollectionGroup = new EffectParameterCollectionGroup(GraphicsDevice, simpleEffect, new[] { parameterCollection });
+            parameterCollection.Set(TexturingKeys.Texture0, UVTexture);
 
             vao = VertexArrayObject.New(GraphicsDevice, mesh.Draw.IndexBuffer, mesh.Draw.VertexBuffers);
 
@@ -87,7 +94,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             myDraws[2] = new DrawOptions { Sampler = SamplerState.New(GraphicsDevice, new SamplerStateDescription(TextureFilter.Linear, TextureAddressMode.Mirror)), Transform = Matrix.Multiply(Matrix.Scaling(0.4f), Matrix.Translation(0.5f, -0.5f, 0f)) };
             //var borderDescription = new SamplerStateDescription(TextureFilter.Linear, TextureAddressMode.Border) { BorderColor = Color.Purple };
             //var border = SamplerState.New(GraphicsDevice, borderDescription);
-            //myDraws[3] = new DrawOptions { Sampler = border, Transform = Matrix.Multiply(Matrix.Scaling(0.3f), Matrix.Translation(-0.5f, -0.5f, 0f)) };
+            //myDraws[3] = new DrawOptions { Sampler = border, Transform = Matrix.Multiply(Matrix.Scale(0.3f), Matrix.Translation(-0.5f, -0.5f, 0f)) };
         }
 
         protected override void Draw(GameTime gameTime)
@@ -110,9 +117,9 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             for (var i = 0; i < myDraws.Length; ++i)
             {
-                simpleEffect.Sampler = myDraws[i].Sampler;
-                simpleEffect.Transform = myDraws[i].Transform;
-                simpleEffect.Apply();
+                parameterCollection.Set(TexturingKeys.Sampler, myDraws[i].Sampler);
+                parameterCollection.Set(SpriteBaseKeys.MatrixTransform, myDraws[i].Transform);
+                simpleEffect.Apply(GraphicsDevice, parameterCollectionGroup, true);
                 GraphicsDevice.DrawIndexed(PrimitiveType.TriangleList, 6);
             }
             GraphicsDevice.SetVertexArrayObject(null);

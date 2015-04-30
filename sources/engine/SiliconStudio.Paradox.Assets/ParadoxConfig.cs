@@ -24,8 +24,6 @@ namespace SiliconStudio.Paradox.Assets
 
         public static PropertyKey<GraphicsPlatform> GraphicsPlatform = new PropertyKey<GraphicsPlatform>("GraphicsPlatform", typeof(ParadoxConfig));
 
-        public static PropertyKey<GraphicsProfile> GraphicsProfile = new PropertyKey<GraphicsProfile>("GraphicsProfile", typeof(ParadoxConfig));
-
         public static PropertyKey<TextureQuality> TextureQuality = new PropertyKey<TextureQuality>("TextureQuality", typeof(ParadoxConfig));
 
         public static readonly PackageVersion LatestPackageVersion = new PackageVersion(ParadoxVersion.CurrentAsText);
@@ -59,7 +57,6 @@ namespace SiliconStudio.Paradox.Assets
             windowsPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS");
             windowsPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP");
             windowsPlatform.Properties[GraphicsPlatform] = Graphics.GraphicsPlatform.Direct3D11;
-            windowsPlatform.Properties[GraphicsProfile] = Graphics.GraphicsProfile.Level_9_1;
             windowsPlatform.Configurations.Add(new SolutionConfiguration("Testing"));
             windowsPlatform.Configurations.Add(new SolutionConfiguration("AppStore"));
 
@@ -87,7 +84,6 @@ namespace SiliconStudio.Paradox.Assets
             windowsStorePlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME");
             windowsStorePlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS_STORE");
             windowsStorePlatform.Properties[GraphicsPlatform] = Graphics.GraphicsPlatform.Direct3D11;
-            windowsStorePlatform.Properties[GraphicsProfile] = Graphics.GraphicsProfile.Level_9_1;
             windowsStorePlatform.Configurations.Add(new SolutionConfiguration("Testing"));
             windowsStorePlatform.Configurations.Add(new SolutionConfiguration("AppStore"));
             windowsStorePlatform.Configurations["Release"].Properties.Add("<NoWarn>;2008</NoWarn>");
@@ -151,7 +147,6 @@ namespace SiliconStudio.Paradox.Assets
             windowsPhonePlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME");
             windowsPhonePlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS_PHONE");
             windowsPhonePlatform.Properties[GraphicsPlatform] = Graphics.GraphicsPlatform.Direct3D11;
-            windowsPhonePlatform.Properties[GraphicsProfile] = Graphics.GraphicsProfile.Level_9_1;
             windowsPhonePlatform.Configurations.Add(new SolutionConfiguration("Testing"));
             windowsPhonePlatform.Configurations.Add(new SolutionConfiguration("AppStore"));
 
@@ -199,7 +194,6 @@ namespace SiliconStudio.Paradox.Assets
             androidPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_MONO_MOBILE");
             androidPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_ANDROID");
             androidPlatform.Properties[GraphicsPlatform] = Graphics.GraphicsPlatform.OpenGLES;
-            androidPlatform.Properties[GraphicsProfile] = Graphics.GraphicsProfile.Level_9_1;
             androidPlatform.Configurations.Add(new SolutionConfiguration("Testing"));
             androidPlatform.Configurations.Add(new SolutionConfiguration("AppStore"));
             androidPlatform.Configurations["Debug"].Properties.AddRange(new[]
@@ -229,7 +223,6 @@ namespace SiliconStudio.Paradox.Assets
             iphonePlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_MONO_MOBILE");
             iphonePlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_IOS");
             iphonePlatform.Properties[GraphicsPlatform] = Graphics.GraphicsPlatform.OpenGLES;
-            iphonePlatform.Properties[GraphicsProfile] = Graphics.GraphicsProfile.Level_9_1;
             iphonePlatform.Configurations.Add(new SolutionConfiguration("Testing"));
             iphonePlatform.Configurations.Add(new SolutionConfiguration("AppStore"));
             var iPhoneCommonProperties = new List<string>()

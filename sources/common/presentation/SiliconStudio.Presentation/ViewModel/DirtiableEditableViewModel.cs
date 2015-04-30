@@ -37,13 +37,13 @@ namespace SiliconStudio.Presentation.ViewModel
         public override IEnumerable<IDirtiableViewModel> Dirtiables { get { return this.Yield(); } }
 
         /// <inheritdoc/>
-        public event EventHandler<DirtinessChangedEventArgs> DirtinessChanged;
+        public event EventHandler<DirtinessUpdatedEventArgs> DirtinessUpdated;
 
         /// <inheritdoc/>
         public virtual void Dispose()
         {
             foreach (var dependency in dependencies)
-                dependency.DirtinessChanged -= DependencyDirtinessChanged;
+                dependency.DirtinessUpdated -= DependencyDirtinessUpdated;
         }
         
         /// <inheritdoc/>
@@ -73,13 +73,13 @@ namespace SiliconStudio.Presentation.ViewModel
         {
             if (dependencies.Contains(dirtiable)) throw new ArgumentException(@"The given dirtiable object is already registered as a dependency.", "dirtiable");
             dependencies.Add(dirtiable);
-            dirtiable.DirtinessChanged += DependencyDirtinessChanged;
+            dirtiable.DirtinessUpdated += DependencyDirtinessUpdated;
         }
 
         /// <inheritdoc/>
         public void UnregisterDirtiableDependency(IDirtiableViewModel dirtiable)
         {
-            dirtiable.DirtinessChanged -= DependencyDirtinessChanged;
+            dirtiable.DirtinessUpdated -= DependencyDirtinessUpdated;
             bool removed = dependencies.Remove(dirtiable);
             if (!removed) throw new ArgumentException(@"The given dirtiable object was not registered as a dependency.", "dirtiable");
         }
@@ -89,7 +89,7 @@ namespace SiliconStudio.Presentation.ViewModel
             // intentionally do nothing
         }
 
-        private void DependencyDirtinessChanged(object sender, EventArgs e)
+        private void DependencyDirtinessUpdated(object sender, DirtinessUpdatedEventArgs e)
         {
             UpdateDirtiness();
         }
@@ -98,10 +98,10 @@ namespace SiliconStudio.Presentation.ViewModel
         {
             bool previousValue = IsDirty;
             IsDirty = changes.Any(x => x.IsSaved != x.IsDone) || dependencies.Any(x => x.IsDirty);
-            var handler = DirtinessChanged;
-            if (previousValue != IsDirty && handler != null)
+            var handler = DirtinessUpdated;
+            if (handler != null)
             {
-                handler(this, new DirtinessChangedEventArgs(IsDirty));
+                handler(this, new DirtinessUpdatedEventArgs(previousValue, IsDirty));
             }
         }
     }

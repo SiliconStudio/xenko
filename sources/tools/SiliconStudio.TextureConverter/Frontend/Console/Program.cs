@@ -52,8 +52,10 @@ namespace SiliconStudio.TextureConverter
 
         [Option("Flip:", Description = "Flip the texture in the specified orientation", Value = "<flip>")]
         public Orientation? FlipOrientation = null;
-        
 
+        [Option("IsSRgb", Description = "Specify that the input file is an sRGB file (default is false)", Value = "<issrgb>")]
+        public bool IsSRgb = false;
+        
         /*public static void Main(string[] args)
         {
             new Program().Run(args);
@@ -133,7 +135,7 @@ namespace SiliconStudio.TextureConverter
             }
             else
             {
-                inputOutputFiles.Add(new Tuple<string, string>(InputPatternFile, OutputFileOrDirectory)); ;
+                inputOutputFiles.Add(new Tuple<string, string>(InputPatternFile, OutputFileOrDirectory));
             }
 
             var texTool = new TextureTool();
@@ -148,7 +150,7 @@ namespace SiliconStudio.TextureConverter
                 TexImage image = null;
                 try
                 {
-                    image = texTool.Load(inputFile);
+                    image = texTool.Load(inputFile, IsSRgb);
 
                     HandleResizing(texTool, image);
 

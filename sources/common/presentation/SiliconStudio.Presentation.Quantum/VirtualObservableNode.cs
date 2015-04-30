@@ -1,47 +1,58 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
+using System.Collections;
+using System.Linq;
 
 namespace SiliconStudio.Presentation.Quantum
 {
     public abstract class VirtualObservableNode : SingleObservableNode
     {
-        private readonly Dictionary<string, object> associatedData = new Dictionary<string,object>();
         private readonly int? order;
+        private readonly bool isPrimitive;
 
-        protected VirtualObservableNode(ObservableViewModel ownerViewModel, string name, SingleObservableNode parentNode, int? order, NodeCommandWrapperBase valueChangedCommand)
-            : base(ownerViewModel, name, parentNode, null)
+        protected VirtualObservableNode(ObservableViewModel ownerViewModel, string name, int? order, bool isPrimitive, object index, NodeCommandWrapperBase valueChangedCommand)
+            : base(ownerViewModel, name, index)
         {
             this.order = order;
+            this.isPrimitive = isPrimitive;
             Name = name;
             ValueChangedCommand = valueChangedCommand;
         }
 
-        internal static VirtualObservableNode Create(ObservableViewModel ownerViewModel, string name, IObservableNode parentNode, int? order, Type contentType, object initialValue, NodeCommandWrapperBase valueChangedCommand)
+        internal static VirtualObservableNode Create(ObservableViewModel ownerViewModel, string name, int? order, bool isPrimitive, Type contentType, object initialValue, object index, NodeCommandWrapperBase valueChangedCommand)
         {
-            var node = (VirtualObservableNode)Activator.CreateInstance(typeof(VirtualObservableNode<>).MakeGenericType(contentType), ownerViewModel, name, parentNode, order, initialValue, valueChangedCommand);
+            var node = (VirtualObservableNode)Activator.CreateInstance(typeof(VirtualObservableNode<>).MakeGenericType(contentType), ownerViewModel, name, order, isPrimitive, initialValue, index, valueChangedCommand);
             return node;
         }
 
-        public override IDictionary<string, object> AssociatedData { get { return associatedData; } }
-
         public override int? Order { get { return order; } }
         
-        public override bool HasList { get { return false; } }
+        public override bool HasList { get { return typeof(ICollection).IsAssignableFrom(Type); } }
 
-        public override bool HasDictionary { get { return false; } }
+        public override bool HasDictionary { get { return typeof(IDictionary).IsAssignableFrom(Type); } }
 
-        public override bool IsPrimitive { get { return true; } }
+        public override bool IsPrimitive { get { return isPrimitive; } }
 
         /// <summary>
         /// Gets the command to execute when the value of this node is changed.
         /// </summary>
         public NodeCommandWrapperBase ValueChangedCommand { get; private set; }
-        
-        internal void AddAssociatedData(string key, object data)
+
+        /// <summary>
+        /// Clears the list of children from this <see cref="VirtualObservableNode"/>.
+        /// </summary>
+        public void ClearChildren()
         {
-            associatedData.Add(key, data);
+            foreach (var child in Children.Cast<ObservableNode>().ToList())
+            {
+                RemoveChild(child);
+            }
+        }
+
+        public new void AddCommand(INodeCommandWrapper command)
+        {
+            base.AddCommand(command);
         }
     }
 
@@ -49,9 +60,10 @@ namespace SiliconStudio.Presentation.Quantum
     {
         private T value;
 
-        public VirtualObservableNode(ObservableViewModel ownerViewModel, string name, SingleObservableNode parentNode, int? order, object initialValue, NodeCommandWrapperBase valueChangedCommand)
-            : base(ownerViewModel, name, parentNode, order, valueChangedCommand)
+        public VirtualObservableNode(ObservableViewModel ownerViewModel, string name, int? order, bool isPrimitive, object initialValue, object index, NodeCommandWrapperBase valueChangedCommand = null)
+            : base(ownerViewModel, name, order, isPrimitive, index, valueChangedCommand)
         {
+            DependentProperties.Add("TypedValue", new[] { "Value" });
             value = (T)initialValue;
         }
 
@@ -64,9 +76,13 @@ namespace SiliconStudio.Presentation.Quantum
             set
             {
                 bool hasChanged = SetValue(ref this.value, value);
-                if (hasChanged && ValueChangedCommand != null)
+                if (hasChanged)
                 {
-                    ValueChangedCommand.Execute(value);
+                    if (ValueChangedCommand != null)
+                    {
+                        ValueChangedCommand.Execute(value);
+                    }
+                    OnValueChanged();
                 }
             }
         }

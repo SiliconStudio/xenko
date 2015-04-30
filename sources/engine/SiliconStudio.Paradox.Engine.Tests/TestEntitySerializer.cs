@@ -8,7 +8,6 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Engine.Tests
 {
@@ -40,13 +39,13 @@ namespace SiliconStudio.Paradox.Engine.Tests
             var assetManager = new AssetManager();
 
             var entity = new Entity();
-            entity.Transformation.Translation = new Vector3(100.0f, 0.0f, 0.0f);
+            entity.Transform.Position = new Vector3(100.0f, 0.0f, 0.0f);
             assetManager.Save("EntityAssets/Entity", entity);
 
             GC.Collect();
 
             var entity2 = assetManager.Load<Entity>("EntityAssets/Entity");
-            Assert.AreEqual(entity.Transformation.Translation, entity2.Transformation.Translation);
+            Assert.AreEqual(entity.Transform.Position, entity2.Transform.Position);
         }
     }
 }

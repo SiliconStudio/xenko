@@ -4,8 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
+using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.BuildEngine;
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Assets.Compiler
 {
@@ -56,7 +57,7 @@ namespace SiliconStudio.Assets.Compiler
         /// <param name="context">The context.</param>
         /// <param name="compilationResult">The compilation result.</param>
         /// <param name="assetItem">The asset item.</param>
-        protected BuildStep CompileItem(CompilerContext context, AssetCompilerResult compilationResult, AssetItem assetItem)
+        protected ListBuildStep CompileItem(CompilerContext context, AssetCompilerResult compilationResult, AssetItem assetItem)
         {
             // First try to find an asset compiler for this particular asset.
             IAssetCompiler compiler;
@@ -86,10 +87,23 @@ namespace SiliconStudio.Assets.Compiler
                 if (handler != null)
                     handler(this, new AssetCompiledArgs(assetItem, resultPerAssetType));
 
-                resultPerAssetType.CopyTo(compilationResult);
+                // TODO: See if this can be unified with PackageBuilder.BuildStepProcessed
+                foreach (var message in resultPerAssetType.Messages)
+                {
+                    var assetMessage = new AssetLogMessage(null, assetItem.ToReference(), message.Type, AssetMessageCode.CompilationMessage, assetItem.Location, message.Text)
+                    {
+                        Exception = message is LogMessage ? ((LogMessage)message).Exception : null
+                    };
+                    // Forward log messages to compilationResult
+                    compilationResult.Log(assetMessage);
 
-                if (resultPerAssetType.BuildSteps == null)
-                    return null;
+                    // Forward log messages to build step logger
+                    resultPerAssetType.BuildSteps.Logger.Log(assetMessage);
+                }
+
+                // Make the build step fail if there was an error during compiling (only when we are compiling the build steps of an asset)
+                if (resultPerAssetType.BuildSteps is AssetBuildStep && resultPerAssetType.BuildSteps.Logger.HasErrors)
+                    resultPerAssetType.BuildSteps.Add(new CommandBuildStep(new FailedCommand(assetItem.Location)));
 
                 // Build the module string
                 var assetAbsolutePath = assetItem.FullPath;

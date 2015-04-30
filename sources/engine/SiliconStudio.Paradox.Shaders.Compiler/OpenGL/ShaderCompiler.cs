@@ -218,6 +218,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
 
                 if (generateUniformBlocks) // TODO: is it really needed? It produces only a warning.
                     glslShaderCode
+                        .AppendLine("#extension GL_EXT_gpu_shader4 : enable")
                         .AppendLine("#extension GL_ARB_gpu_shader5 : enable")
                         .AppendLine();
 
@@ -237,6 +238,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
             {
                 // TODO: identifiers starting with "gl_" should be reserved. Compilers usually accept them but it may should be prevented.
                 glslShaderCode
+                    .AppendLine("#define gl_FragData _glesFragData")
                     .AppendLine("out vec4 gl_FragData[" + renderTargetCount + "];")
                     .AppendLine();
             }
@@ -245,15 +247,26 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
 
             var realShaderSource = glslShaderCode.ToString();
 
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             // optimize shader
-            var optShaderSource = RunOptimizer(realShaderSource, isOpenGLES, isOpenGLES3, pipelineStage == PipelineStage.Vertex);
-            if (!String.IsNullOrEmpty(optShaderSource))
-                realShaderSource = optShaderSource;
+            try
+            {
+                var optShaderSource = RunOptimizer(shaderBytecodeResult, realShaderSource, isOpenGLES, isOpenGLES3, pipelineStage == PipelineStage.Vertex);
+                if (!String.IsNullOrEmpty(optShaderSource))
+                    realShaderSource = optShaderSource;
+            }
+            catch (Exception e)
+            {
+                shaderBytecodeResult.Warning("Could not run GLSL optimizer:\n{0}", e.Message);
+            }
+#else
+            shaderBytecodeResult.Warning("GLSL optimized has not been executed because it is currently not supported on this platform.");
+#endif
 
             return realShaderSource;
         }
 
-        private string RunOptimizer(string baseShader, bool openGLES, bool es30, bool vertex)
+        private string RunOptimizer(ShaderBytecodeResult shaderBytecodeResult, string baseShader, bool openGLES, bool es30, bool vertex)
 	    {
             lock (GlslOptimizerLock)
             {
@@ -262,23 +275,13 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
                 if (openGLES)
                 {
                     if (es30)
-                        ctx = glslopt_initialize(2);
+                        ctx = glslopt_initialize(2); // kGlslTargetOpenGLES30
                     else
-                        ctx = glslopt_initialize(1);
-
-                    if (vertex)
-                    {
-                        var pre = "#define gl_Vertex _glesVertex\nattribute highp vec4 _glesVertex;\n";
-                        pre += "#define gl_Normal _glesNormal\nattribute mediump vec3 _glesNormal;\n";
-                        pre += "#define gl_MultiTexCoord0 _glesMultiTexCoord0\nattribute highp vec4 _glesMultiTexCoord0;\n";
-                        pre += "#define gl_MultiTexCoord1 _glesMultiTexCoord1\nattribute highp vec4 _glesMultiTexCoord1;\n";
-                        pre += "#define gl_Color _glesColor\nattribute lowp vec4 _glesColor;\n";
-                        inputShader = pre + inputShader;
-                    }
+                        ctx = glslopt_initialize(1); // kGlslTargetOpenGLES20
                 }
                 else
                 {
-                    ctx = glslopt_initialize(0);
+                    ctx = glslopt_initialize(0); // kGlslTargetOpenGL
                 }
 
                 int type = vertex ? 0 : 1;
@@ -291,6 +294,12 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
                 {
                     IntPtr optShader = glslopt_get_output(shader);
                     shaderAsString = Marshal.PtrToStringAnsi(optShader);
+                }
+                else
+                {
+                    IntPtr log = glslopt_get_log(shader);
+                    var logAsString = Marshal.PtrToStringAnsi(log);
+                    shaderBytecodeResult.Warning("Could not run GLSL optimizer:\n{0}", logAsString);
                 }
 
                 glslopt_shader_delete(shader);
@@ -314,6 +323,9 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
 
         [DllImport("glsl_optimizer.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void glslopt_shader_delete(IntPtr shader);
+
+        [DllImport("glsl_optimizer.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr glslopt_get_log(IntPtr shader);
 
         [DllImport("glsl_optimizer.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void glslopt_cleanup(IntPtr ctx);

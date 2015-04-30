@@ -16,6 +16,8 @@ namespace SiliconStudio.Core.Serialization
 
         public static readonly Dictionary<string, List<Action<DataSerializerFactory>>> SerializationProfileInitializers = new Dictionary<string, List<Action<DataSerializerFactory>>>();
 
+        public string ProfileName { get; private set; }
+
         public static void RegisterSerializationProfile(string profileName, Action<DataSerializerFactory> serializationProfileInitializer)
         {
             lock (SerializationProfileInitializers)
@@ -30,7 +32,10 @@ namespace SiliconStudio.Core.Serialization
                 }
 
                 // Register new combined delegate
-                existingSerializationProfileInitializers.Add(serializationProfileInitializer);
+                lock (existingSerializationProfileInitializers)
+                {
+                    existingSerializationProfileInitializers.Add(serializationProfileInitializer);
+                }
             }
         }
 
@@ -38,16 +43,23 @@ namespace SiliconStudio.Core.Serialization
         {
             lock (SerializationProfileInitializers)
             {
-                // Run all initializers
-                var serializationProfileInitializers = SerializationProfileInitializers[profileName];
-                var dataSerializerFactory = new DataSerializerFactory(serializationProfileInitializers);
+                // Try to find the profile.
+                // If not existing yet, create an empty one.
+                List<Action<DataSerializerFactory>> serializationProfileInitializers;
+                if (!SerializationProfileInitializers.TryGetValue(profileName, out serializationProfileInitializers))
+                {
+                    serializationProfileInitializers = new List<Action<DataSerializerFactory>>();
+                    SerializationProfileInitializers.Add(profileName, serializationProfileInitializers);
+                }
+                var dataSerializerFactory = new DataSerializerFactory(profileName, serializationProfileInitializers);
 
                 return dataSerializerFactory;
             }
         }
 
-        public DataSerializerFactory(List<Action<DataSerializerFactory>> serializationProfileInitializers)
+        public DataSerializerFactory(string profileName, List<Action<DataSerializerFactory>> serializationProfileInitializers)
         {
+            this.ProfileName = profileName;
             this.serializationProfileInitializers = serializationProfileInitializers;
             this.serializationProfileInitializerCount = 0;
         }
@@ -90,7 +102,10 @@ namespace SiliconStudio.Core.Serialization
         {
             CheckForNewAssemblies();
 
-            return dataSerializersByType.ContainsKey(type);
+            lock (dataSerializersByType)
+            {
+                return dataSerializersByType.ContainsKey(type);
+            }
         }
 
         /// <summary>
@@ -104,15 +119,18 @@ namespace SiliconStudio.Core.Serialization
         {
             CheckForNewAssemblies();
 
-            return dataSerializersById.ContainsKey(typeId);
+            lock (dataSerializersByType)
+            {
+                return dataSerializersById.ContainsKey(typeId);
+            }
         }
 
         private void CheckForNewAssemblies()
         {
             // New assemblies loaded?
-            if (serializationProfileInitializers.Count > serializationProfileInitializerCount)
+            lock (serializationProfileInitializers)
             {
-                lock (SerializationProfileInitializers)
+                if (serializationProfileInitializers.Count > serializationProfileInitializerCount)
                 {
                     var start = serializationProfileInitializerCount;
                     serializationProfileInitializerCount = serializationProfileInitializers.Count;
@@ -133,7 +151,10 @@ namespace SiliconStudio.Core.Serialization
         /// <returns>A <see cref="DataSerializer{T}"/> that can serialize this specific type.</returns>
         public KeyValuePair<ObjectId, DataSerializer> GetSerializer(Type type)
         {
-            return dataSerializersByType[type];
+            lock (dataSerializersByType)
+            {
+                return dataSerializersByType[type];
+            }
         }
 
         /// <summary>
@@ -143,7 +164,10 @@ namespace SiliconStudio.Core.Serialization
         /// <returns>A <see cref="DataSerializer{T}"/> that can serialize this specific type.</returns>
         public DataSerializer GetSerializer(ref ObjectId typeId)
         {
-            return dataSerializersById[typeId];
+            lock (dataSerializersByType)
+            {
+                return dataSerializersById[typeId];
+            }
         }
     }
 }

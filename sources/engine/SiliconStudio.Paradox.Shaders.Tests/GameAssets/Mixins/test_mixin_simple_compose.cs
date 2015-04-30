@@ -8,7 +8,7 @@
 
 using System;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
@@ -20,16 +20,17 @@ namespace Test6
     {
         internal partial class DefaultSimpleCompose  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "A");
                 context.Mixin(mixin, "B");
                 context.Mixin(mixin, "C");
 
                 {
-                    var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                    var __mixinToCompose__ = "X";
+                    var __subMixin = new ShaderMixinSource();
                     context.PushComposition(mixin, "x", __subMixin);
-                    context.Mixin(__subMixin, "X");
+                    context.Mixin(__subMixin, __mixinToCompose__);
                     context.PopComposition();
                 }
             }

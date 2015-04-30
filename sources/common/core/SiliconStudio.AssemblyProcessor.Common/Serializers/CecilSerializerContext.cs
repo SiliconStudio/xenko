@@ -6,7 +6,7 @@ using System.Linq;
 using System.Runtime.Remoting.Contexts;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using SiliconStudio.Core.Serialization.Serializers;
+using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.AssemblyProcessor.Serializers
 {
@@ -199,9 +199,14 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
             // Process members
             foreach (var serializableItem in ComplexClassSerializerGenerator.GetSerializableItems(type, true))
             {
+                var resolvedType = serializableItem.Type.Resolve();
                 // Check that all closed types have a proper serializer
-                if (!serializableItem.Type.ContainsGenericParameter() && GenerateSerializer(serializableItem.Type, profile: profile) == null
-                    && !serializableItem.Attributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Core.DataMemberCustomSerializerAttribute"))
+                if (serializableItem.Attributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Core.DataMemberCustomSerializerAttribute")
+                    || (resolvedType != null && resolvedType.IsInterface)
+                    || serializableItem.Type.ContainsGenericParameter())
+                    continue;
+
+                if (GenerateSerializer(serializableItem.Type, profile: profile) == null)
                 {
                     throw new InvalidOperationException(string.Format("Member {0} (type: {1}) doesn't seem to have a valid serializer.", serializableItem.MemberInfo, serializableItem.Type.ConvertCSharp()));
                 }
@@ -256,7 +261,7 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
             // 2.1. Check if there is DataSerializerAttribute on this type (if yes, it is serializable, but not a "complex type")
             var dataSerializerAttribute =
                 resolvedType.CustomAttributes.FirstOrDefault(
-                    x => x.AttributeType.FullName == "SiliconStudio.Core.Serialization.Serializers.DataSerializerAttribute");
+                    x => x.AttributeType.FullName == "SiliconStudio.Core.Serialization.DataSerializerAttribute");
             if (dataSerializerAttribute != null)
             {
                 var modeField = dataSerializerAttribute.Fields.FirstOrDefault(x => x.Name == "Mode");
@@ -482,7 +487,7 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
                                     var importedType = Assembly.MainModule.Import(dependentType);
                                     if (GenerateSerializer(importedType) == null)
                                     {
-                                        throw new InvalidOperationException(string.Format("Could not find serializer for generic dependent type {0}", dependentType));
+                                        throw new InvalidOperationException(string.Format("Could not find serializer for generic dependent type {0} when processing {1}", dependentType, dataType));
                                     }
                                 }
                             }
@@ -544,6 +549,8 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
             /// </summary>
             public Dictionary<TypeReference, SerializableTypeInfo> SerializableTypes = new Dictionary<TypeReference, SerializableTypeInfo>(TypeReferenceEqualityComparer.Default);
 
+            public bool IsFrozen { get; set; }
+
             /// <summary>
             /// Generic serializable types.
             /// </summary>
@@ -561,7 +568,13 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
                 if (serializableTypeInfo.Mode != DataSerializerGenericMode.None)
                     GenericSerializableTypes.Add(typeReference, serializableTypeInfo);
                 else
+                {
+                    if (IsFrozen)
+                    {
+                        throw new InvalidOperationException(string.Format("Unexpected type [{0}] to add while serializable types are frozen", typeReference));
+                    }
                     SerializableTypes.Add(typeReference, serializableTypeInfo);
+                }
             }
         }
     }

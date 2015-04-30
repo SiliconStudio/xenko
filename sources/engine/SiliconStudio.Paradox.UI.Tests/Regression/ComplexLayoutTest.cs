@@ -31,14 +31,14 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public ComplexLayoutTest()
         {
-            CurrentVersion = 5;
+            CurrentVersion = 7;
         }
 
         protected override async Task LoadContent()
         {
             await base.LoadContent();
 
-            var resolution = UI.VirtualResolution;
+            var resolution = (Vector3)UIComponent.VirtualResolution;
 
             var canvas = new Canvas();
             var imgElt = new ImageElement { Name = "UV image", Source = new UIImage(Asset.Load<Texture>("uv")), Width = resolution.X / 5, Height = resolution.Y / 5, StretchType = StretchType.Fill };
@@ -119,7 +119,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             canvas.Children.Add(imgElt);
             canvas.Children.Add(scrollViewer);
 
-            UI.RootElement = canvas;
+            UIComponent.RootElement = canvas;
         }
 
         protected override void Update(GameTime gameTime)

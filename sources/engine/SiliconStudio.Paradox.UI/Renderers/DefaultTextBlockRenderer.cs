@@ -30,10 +30,10 @@ namespace SiliconStudio.Paradox.UI.Renderers
             {
                 Color = textBlock.RenderOpacity * textBlock.TextColor,
                 DepthBias = context.DepthBias,
-                FontScale = element.RealSizeVirtualResolutionRatio,
+                FontScale = element.LayoutingContext.RealVirtualResolutionRatio,
                 FontSize = textBlock.TextSize,
                 Batch = Batch,
-                SnapText = textBlock.SnapText,
+                SnapText = context.ShouldSnapText && !textBlock.DoNotSnapText,
                 WorldMatrix = textBlock.WorldMatrixInternal,
                 Alignment = textBlock.TextAlignment,
                 Size = new Vector2(textBlock.ActualWidth, textBlock.ActualHeight)

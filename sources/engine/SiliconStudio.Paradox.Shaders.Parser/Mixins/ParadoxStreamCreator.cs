@@ -9,6 +9,7 @@ using SiliconStudio.Paradox.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Utility;
+using SiliconStudio.Shaders.Visitor;
 
 using ParameterQualifier = SiliconStudio.Shaders.Ast.ParameterQualifier;
 
@@ -371,9 +372,13 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                             var isOutStream = outStreamList.Contains(streamUsage.Variable);
                             var isInStream = inStreamList.Contains(streamUsage.Variable);
 
-                            if (streamUsage.Usage == StreamUsage.Write && !isOutStream)
+                            if (streamUsage.Usage.IsWrite() && !isOutStream)
+                            {
                                 outStreamList.Add(streamUsage.Variable);
-                            else if (streamUsage.Usage == StreamUsage.Read && !isOutStream && !isInStream) // first read
+                                if (streamUsage.Usage.IsPartial() && !isInStream) // force variable to be passed from previous stages when affectation is only partial.
+                                    inStreamList.Add(streamUsage.Variable);
+                            }
+                            else if (streamUsage.Usage.IsRead() && !isOutStream && !isInStream) // first read
                                 inStreamList.Add(streamUsage.Variable);
                         }
                         else if (streamUsage.CallType == StreamCallType.Method)
@@ -738,6 +743,15 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         param.Qualifiers |= ParameterQualifier.InOut;
                         methodDefinition.Parameters.Insert(0, param);
 
+                        // If any parameters in the method are streams, then replace by using the intermediate stream
+                        foreach (var parameter in methodDefinition.Parameters)
+                        {
+                            if (parameter.Type == StreamsType.Streams)
+                            {
+                                parameter.Type = new TypeName(intermediateStream.Name);
+                            }
+                        }
+
                         methodsWithStreams.Add(methodDefinition);
                     }
                 }
@@ -757,13 +771,28 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <param name="outputStreamStruct">the output structure of the stage</param>
         private void TransformStreamsAssignments(MethodDefinition methodDefinition, StructType inputStreamStruct, StructType intermediateStreamStruct, StructType outputStreamStruct)
         {
+            var statementLists = new List<StatementList>();
+            SearchVisitor.Run(
+                methodDefinition,
+                node =>
+                {
+                    if (node is StatementList)
+                    {
+                        statementLists.Add((StatementList)node);
+                    }
+                    return node;
+                });
+
             // replace stream assignement with field values assignements
-            foreach (var assignment in streamAnalyzer.AssignationsToStream)
+            foreach (var assignmentKeyBlock in streamAnalyzer.AssignationsToStream)
             {
-                StatementList parent;
-                var index = SearchExpressionStatement(methodDefinition.Body, assignment, out parent);
-                if (index < 0 || parent == null)
+                var assignment = assignmentKeyBlock.Key;
+                var parent = assignmentKeyBlock.Value;
+                if (!statementLists.Contains(parent))
+                {
                     continue;
+                }
+                var index = SearchExpressionStatement(parent, assignment);
 
                 // TODO: check that it is "output = streams"
                 var statementList = CreateOutputFromStream(outputStreamStruct, (assignment.Target as VariableReferenceExpression).Name.Text, intermediateStreamStruct, "streams").ToList();
@@ -773,53 +802,45 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             }
 
             // replace stream assignement with field values assignements
-            foreach (var assignment in streamAnalyzer.StreamAssignations)
+            foreach (var assignmentKeyBlock in streamAnalyzer.StreamAssignations)
             {
-                StatementList parent;
-                var index = SearchExpressionStatement(methodDefinition.Body, assignment, out parent);
-                if (index < 0 || parent == null)
+                var assignment = assignmentKeyBlock.Key;
+                var parent = assignmentKeyBlock.Value;
+                if (!statementLists.Contains(parent))
+                {
                     continue;
+                }
+                var index = SearchExpressionStatement(parent, assignment);
 
                 var statementList = CreateStreamFromInput(intermediateStreamStruct, "streams", inputStreamStruct, assignment.Value, false).ToList();
                 statementList.RemoveAt(0); // do not keep the variable declaration
                 parent.RemoveAt(index);
                 parent.InsertRange(index, statementList);
             }
+
+            foreach (var variableAndParent in streamAnalyzer.VariableStreamsAssignment)
+            {
+                var variable = variableAndParent.Key;
+                var parent = variableAndParent.Value;
+
+                if (!statementLists.Contains(parent))
+                {
+                    continue;
+                }
+
+                variable.Type = new TypeName(intermediateStreamStruct.Name);
+            }
         }
 
         /// <summary>
         /// Search a statement in method.
         /// </summary>
-        /// <param name="topStatement">The statement to look into</param>
-        /// <param name="expression">The expression to look for.</param>
-        /// <param name="parentStatement">The statement list where the expression was found.</param>
+        /// <param name="statementList">The statement list.</param>
+        /// <param name="expression">The expression.</param>
         /// <returns>The index of the statement in the statement list.</returns>
-        private int SearchExpressionStatement(Statement topStatement, Expression expression, out StatementList parentStatement)
+        private int SearchExpressionStatement(StatementList statementList, Expression expression)
         {
-            // handle special case because BlockStatement.Children returns children of child (Statements members)
-            if (topStatement is BlockStatement)
-                topStatement = ((BlockStatement)topStatement).Statements;
-            if (topStatement is StatementList)
-            {
-                var statementList = (StatementList)topStatement;
-                var index = statementList.IndexOf(statementList.OfType<ExpressionStatement>().FirstOrDefault(x => x.Expression == expression));
-                if (index >= 0)
-                {
-                    parentStatement = (StatementList)topStatement;
-                    return index;
-                }
-
-            }
-
-            foreach (var statement in topStatement.Childrens().OfType<Statement>())
-            {
-                var index = SearchExpressionStatement(statement, expression, out parentStatement);
-                if (index >= 0)
-                    return index;
-            }
-            
-            parentStatement = null;
-            return -1;
+            return statementList.IndexOf(statementList.OfType<ExpressionStatement>().FirstOrDefault(x => x.Expression == expression));
         }
 
         /// <summary>

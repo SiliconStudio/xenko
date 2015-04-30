@@ -98,9 +98,21 @@ namespace SiliconStudio.Core.Mathematics
         /// The alpha component is ignored.</param>
         public Color3(int rgb)
         {
-            R = ((rgb >> 16) & 255) / 255.0f;
+            B = ((rgb >> 16) & 255) / 255.0f;
             G = ((rgb >> 8) & 255) / 255.0f;
-            B = (rgb & 255) / 255.0f;
+            R = (rgb & 255) / 255.0f;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SiliconStudio.Core.Mathematics.Color3"/> struct.
+        /// </summary>
+        /// <param name="rgb">A packed unsigned integer containing all three color components.
+        /// The alpha component is ignored.</param>
+        public Color3(uint rgb)
+        {
+            B = ((rgb >> 16) & 255) / 255.0f;
+            G = ((rgb >> 8) & 255) / 255.0f;
+            R = (rgb & 255) / 255.0f;
         }
 
         /// <summary>
@@ -166,9 +178,9 @@ namespace SiliconStudio.Core.Mathematics
             uint g = (uint)(G * 255.0f);
             uint b = (uint)(B * 255.0f);
 
-            uint value = b;
+            uint value = r;
             value += g << 8;
-            value += r << 16;
+            value += b << 16;
             value += a << 24;
 
             return (int)value;
@@ -544,6 +556,24 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Converts this color from linear space to sRGB space.
+        /// </summary>
+        /// <returns>A color3 in sRGB space.</returns>
+        public Color3 ToSRgb()
+        {
+            return new Color3(MathUtil.LinearToSRgb(R), MathUtil.LinearToSRgb(G), MathUtil.LinearToSRgb(B));
+        }
+
+        /// <summary>
+        /// Converts this color from sRGB space to linear space.
+        /// </summary>
+        /// <returns>Color3.</returns>
+        public Color3 ToLinear()
+        {
+            return new Color3(MathUtil.SRgbToLinear(R), MathUtil.SRgbToLinear(G), MathUtil.SRgbToLinear(B));
+        }
+
+        /// <summary>
         /// Adds two colors.
         /// </summary>
         /// <param name="left">The first color to add.</param>
@@ -647,7 +677,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>The result of the conversion.</returns>
         public static explicit operator Color4(Color3 value)
         {
-            return new Color4(1.0f, value.R, value.G, value.B);
+            return new Color4(value.R, value.G, value.B, 1.0f);
         }
 
         /// <summary>

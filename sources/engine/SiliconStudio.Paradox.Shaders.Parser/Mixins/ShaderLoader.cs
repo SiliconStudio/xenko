@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if PARADOX_EFFECT_COMPILER
+#if SILICONSTUDIO_PARADOX_EFFECT_COMPILER
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -143,7 +143,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 var genericAssociation = CreateGenericAssociation(shaderClassType.ShaderGenerics, shaderClassSource.GenericArguments);
                 var identifierGenerics = GenerateIdentifierFromGenerics(genericAssociation);
                 var expressionGenerics = GenerateGenericsExpressionValues(shaderClassType.ShaderGenerics, shaderClassSource.GenericArguments);
-                ParadoxClassInstantiator.Instantiate(shaderClassType, expressionGenerics, identifierGenerics, log);
+                ParadoxClassInstantiator.Instantiate(shaderClassType, expressionGenerics, identifierGenerics, autoGenericInstances, log);
                 shaderClassType.ShaderGenerics.Clear();
                 shaderClassType.IsInstanciated = true;
             }
@@ -157,12 +157,11 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             {
                 return "false";
             }
-            if (variableType != TypeBase.Void && variableType != TypeBase.String)
+            else if (variableType is IGenericStringArgument)
             {
-                return "0";
+                return "\"\""; // to allow parsing of string
             }
-
-            return string.Empty;
+            return "0";
         }
 
 
@@ -265,8 +264,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             return (Expression)result.Root.AstNode;
         }
 
-        private ShaderClassType LoadShaderClass(string type, string generics, LoggerResult log, SiliconStudio.Shaders.Parser.ShaderMacro[] macros = null)
+        private ShaderClassType LoadShaderClass(ShaderClassSource classSource, string generics, LoggerResult log, SiliconStudio.Shaders.Parser.ShaderMacro[] macros = null)
         {
+            var type = classSource.ClassName;
             if (type == null) throw new ArgumentNullException("type");
             var shaderSourceKey = new ShaderSourceKey(type, generics, macros);
 
@@ -282,7 +282,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
                 // Load file
                 var shaderSource = SourceManager.LoadShaderSource(type);
-
                 string preprocessedSource;
                 try
                 {
@@ -343,7 +342,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             }
         }
 
-        public ShaderClassType ParseSource(string shaderSource, LoggerResult log)
+        public static ShaderClassType ParseSource(string shaderSource, LoggerResult log)
         {
             var parsingResult = ParadoxShaderParser.TryParse(shaderSource, null);
             parsingResult.CopyTo(log);

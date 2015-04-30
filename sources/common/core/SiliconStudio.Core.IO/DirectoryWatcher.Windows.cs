@@ -173,6 +173,10 @@ namespace SiliconStudio.Core.IO
             DirectoryWatcherItem watcher;
             if (watchers.TryGetValue(info.FullName, out watcher))
             {
+                if (watcher.Watcher == null && watcherNode)
+                {
+                    watcher.Watcher = CreateFileSystemWatcher(watcher.Path);
+                }
                 watcher.TrackCount++;
                 return watcher;
             }

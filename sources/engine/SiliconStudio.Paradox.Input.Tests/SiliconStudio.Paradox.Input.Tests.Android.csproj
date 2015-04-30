@@ -21,6 +21,7 @@
     <MandroidI18n />
     <JavaMaximumHeapSize />
     <JavaOptions />
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <SiliconStudioPlatform>Android</SiliconStudioPlatform>
     <SiliconStudioBuildProfile>Android</SiliconStudioBuildProfile>

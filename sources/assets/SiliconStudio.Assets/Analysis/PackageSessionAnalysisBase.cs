@@ -11,7 +11,7 @@ namespace SiliconStudio.Assets.Analysis
     /// </summary>
     public abstract class PackageSessionAnalysisBase
     {
-        private readonly PackageSession packageSession;
+        private PackageSession packageSession;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PackageSessionAnalysis" /> class.
@@ -24,6 +24,11 @@ namespace SiliconStudio.Assets.Analysis
             this.packageSession = packageSession;
         }
 
+        protected PackageSessionAnalysisBase()
+        {
+            
+        }
+
         /// <summary>
         /// Gets the session.
         /// </summary>
@@ -34,6 +39,10 @@ namespace SiliconStudio.Assets.Analysis
             {
                 return packageSession;
             }
+            set
+            {
+                packageSession = value;
+            }
         }
 
         /// <summary>
@@ -42,6 +51,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <returns>Result of the validation.</returns>
         public LoggerResult Run()
         {
+            if (packageSession == null) throw new InvalidOperationException("packageSession is null");
             var results = new LoggerResult();
             Run(results);
             return results;

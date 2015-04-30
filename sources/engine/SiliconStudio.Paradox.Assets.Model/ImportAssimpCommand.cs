@@ -5,9 +5,9 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using SiliconStudio.BuildEngine;
-using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Effects.Data;
+using SiliconStudio.Paradox.Animations;
+using SiliconStudio.Paradox.Rendering.Data;
 
 namespace SiliconStudio.Paradox.Assets.Model
 {
@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Assets.Model
     [Description("Import Assimp")]
     public class ImportAssimpCommand : ImportModelCommand
     {
-        private static string[] supportedExtensions = { ".dae", ".dae", ".3ds", ".obj", ".blend" };
+        private static string[] supportedExtensions = { ".x", ".dae", ".dae", ".3ds", ".obj", ".blend" };
 
         /// <inheritdoc/>
         public override string Title { get { string title = "Import Assimp "; try { title += Path.GetFileName(SourcePath) ?? "[File]"; } catch { title += "[INVALID PATH]"; } return title; } }
@@ -31,14 +31,17 @@ namespace SiliconStudio.Paradox.Assets.Model
         {
             return new Paradox.Importer.AssimpNET.MeshConverter(commandContext.Logger)
             {
-                ViewDirectionForTransparentZSort = this.ViewDirectionForTransparentZSort,
                 AllowUnsignedBlendIndices = this.AllowUnsignedBlendIndices
             };
         }
 
-        protected override ModelData LoadModel(ICommandContext commandContext, AssetManager assetManager)
+        protected override Rendering.Model LoadModel(ICommandContext commandContext, AssetManager assetManager)
         {
             var converter = CreateMeshConverter(commandContext);
+
+            // Note: FBX exporter uses Materials for the mapping, but Assimp already uses indices so we can reuse them
+            // We should still unify the behavior to be more consistent at some point (i.e. if model was changed on the HDD but not in the asset).
+            // This should probably be better done during a large-scale FBX/Assimp refactoring.
             var sceneData = converter.Convert(SourcePath, Location);
             return sceneData;
         }

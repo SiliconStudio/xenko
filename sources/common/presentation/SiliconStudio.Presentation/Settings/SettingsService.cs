@@ -9,6 +9,7 @@ using System.Linq;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Presentation.Extensions;
 
 namespace SiliconStudio.Presentation.Settings
 {
@@ -124,7 +125,7 @@ namespace SiliconStudio.Presentation.Settings
             }
             catch (Exception e)
             {
-                Logger.Error("Error while loading settings file [{0}]: {1}", e, filePath, Extensions.StringExtensions.FormatExceptionForReport(e));
+                Logger.Error("Error while loading settings file [{0}]: {1}", e, filePath, e.FormatForReport());
                 return null;
             }
 
@@ -177,7 +178,7 @@ namespace SiliconStudio.Presentation.Settings
             }
             catch (Exception e)
             {
-                Logger.Error("Error while loading settings file [{0}]: {1}", e, filePath, Extensions.StringExtensions.FormatExceptionForReport(e));
+                Logger.Error("Error while loading settings file [{0}]: {1}", e, filePath, e.FormatForReport());
             }
 
             var handler = SettingsFileLoaded;
@@ -227,7 +228,7 @@ namespace SiliconStudio.Presentation.Settings
             }
             catch (Exception e)
             {
-                Logger.Error("Error while saving settings file [{0}]: {1}", e, filePath, Extensions.StringExtensions.FormatExceptionForReport(e));
+                Logger.Error("Error while saving settings file [{0}]: {1}", e, filePath, e.FormatForReport());
                 return false;
             }
             finally

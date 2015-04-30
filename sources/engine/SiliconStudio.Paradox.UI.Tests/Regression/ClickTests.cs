@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public ClickTests()
         {
-            CurrentVersion = 3;
+            CurrentVersion = 6;
         }
 
         protected override async Task LoadContent()
@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
             var element1 = new Button { Name = "1", Width = 800, Height = 400, Content = new TextBlock { Font = Asset.Load<SpriteFont>("CourierNew12"), SynchronousCharacterGeneration = true } };
             element1.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(100, 50, 0));
-            element1.DependencyProperties.Set(Panel.ZIndexPropertyKey, 0);
+            element1.DependencyProperties.Set(Panel.ZIndexPropertyKey, -1);
 
             var element2 = new Button { Name = "2", Width = 400, Height = 200, Content = new TextBlock { Font = Asset.Load<SpriteFont>("CourierNew12"), SynchronousCharacterGeneration = true } };
             element2.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(300, 150, 0));
@@ -55,14 +55,14 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
             elements = new List<Button> { element1, element2, element3, element4 };
 
-            UI.RootElement = canvas;
+            UIComponent.RootElement = canvas;
         }
 
         protected override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
 
-            const float depthIncrement = 10f;
+            const float depthIncrement = 1f;
             const float rotationIncrement = 0.1f;
 
             var localMatrix = elements[1].LocalMatrix;
@@ -113,9 +113,9 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             FrameGameSystem.Draw(0, UpdateTextBlockText).TakeScreenshot(0);
             FrameGameSystem.Draw(1, Draw1).TakeScreenshot(1);
             FrameGameSystem.Draw(2, Draw2).TakeScreenshot(2);
-            FrameGameSystem.Draw(3, () => SetElement2Matrix(Matrix.Translation(0, 0, 110))).Draw(4, Draw3).TakeScreenshot(4);
-            FrameGameSystem.Draw(5, () => SetElement2Matrix(Matrix.Translation(0, 0, -170))).Draw(6, Draw4).TakeScreenshot(6);
-            FrameGameSystem.Draw(7, () => SetElement2Matrix(Matrix.RotationYawPitchRoll(0.1f, 0.2f, 0.3f))).Draw(8, Draw5).TakeScreenshot(8);
+            FrameGameSystem.Draw(3, () => SetElement2Matrix(Matrix.Translation(0, 0, -110))).Draw(4, Draw3).TakeScreenshot(4);
+            FrameGameSystem.Draw(5, () => SetElement2Matrix(Matrix.Translation(0, 0, 170))).Draw(6, Draw4).TakeScreenshot(6);
+            FrameGameSystem.Draw(7, () => SetElement2Matrix(Matrix.RotationYawPitchRoll(-0.1f, -0.2f, 0.3f))).Draw(8, Draw5).TakeScreenshot(8);
             FrameGameSystem.Draw(Draw6).TakeScreenshot();
         }
 
@@ -128,7 +128,6 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         {
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.4f, 0.6f)));
-            UI.Update(new GameTime());
         }
 
         public void Draw2()
@@ -136,7 +135,6 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.4f, 0.6f)));
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.6f, 0.4f)));
-            UI.Update(new GameTime());
         }
 
         public void Draw3()
@@ -144,31 +142,27 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.6f, 0.4f)));
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.4f, 0.6f)));
-            UI.Update(new GameTime());
         }
 
         public void Draw4()
         {
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.4f, 0.6f)));
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.6f, 0.4f)));
-            UI.Update(new GameTime());
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.4f, 0.4f)));
         }
 
         public void Draw5()
         {
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.4f, 0.6f)));
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.348f, 0.231f)));
-            UI.Update(new GameTime());
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.27625f, 0.5667f)));
         }
 
         public void Draw6()
         {
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.348f, 0.231f)));
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.698f, 0.566f)));
-            UI.Update(new GameTime());
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.441f, 0.418f)));
         }
 
         [Test]

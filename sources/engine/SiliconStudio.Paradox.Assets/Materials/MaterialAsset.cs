@@ -1,25 +1,30 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using System.ComponentModel;
 
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
-using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Rendering.Materials;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
     /// <summary>
-    /// Description of a material.
+    /// The material asset.
     /// </summary>
     [DataContract("MaterialAsset")]
-    [AssetFileExtension(FileExtension)]
-    [ThumbnailCompiler(PreviewerCompilerNames.MaterialThumbnailCompilerQualifiedName)]
+    [AssetDescription(FileExtension)]
+    [ThumbnailCompiler(PreviewerCompilerNames.MaterialThumbnailCompilerQualifiedName, true, Priority = -5000)]
     [AssetCompiler(typeof(MaterialAssetCompiler))]
-    [AssetFactory(typeof(MaterialFactory))]
-    [AssetDescription("Material", "A material", true)]
-    public sealed class MaterialAsset : Asset
+    [ObjectFactory(typeof(MaterialFactory))]
+    [Display(115, "Material", "A material")]
+    public sealed class MaterialAsset : Asset, IMaterialDescriptor, IAssetCompileTimeDependencies
     {
         /// <summary>
         /// The default file extension used by the <see cref="MaterialAsset"/>.
@@ -31,27 +36,87 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// </summary>
         public MaterialAsset()
         {
-            BuildOrder = 250;
+            Attributes = new MaterialAttributes();
+            Layers = new MaterialBlendLayers();
+            Parameters = new ParameterCollection();
         }
 
-        [Obsolete]
-        [DataMember(10)]
-        [DefaultValue(null)]
-        [Browsable(false)]
-        public UFile Source { get; set; }
+        protected override int InternalBuildOrder
+        {
+            get { return 100; }
+        }
 
         /// <summary>
-        /// The material.
+        /// Gets or sets the material attributes.
         /// </summary>
-        [DataMember(20)]
-        public MaterialDescription Material { get; set; }
+        /// <value>The material attributes.</value>
+        [DataMember(10)]
+        [NotNull]
+        [Display("Attributes", AlwaysExpand = true)]
+        public MaterialAttributes Attributes { get; set; }
 
-        private class MaterialFactory : IAssetFactory
+
+        /// <summary>
+        /// Gets or sets the material compositor.
+        /// </summary>
+        /// <value>The material compositor.</value>
+        [DefaultValue(null)]
+        [DataMember(20)]
+        [NotNull]
+        [Category]
+        public MaterialBlendLayers Layers { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parameters.
+        /// </summary>
+        /// <value>The parameters.</value>
+        [DataMember(30)]
+        public ParameterCollection Parameters { get; set; }
+
+        public IEnumerable<AssetReference<MaterialAsset>> FindMaterialReferences()
         {
-            public Asset New()
+            foreach (var layer in Layers)
             {
-                var newMaterial = new MaterialAsset { Material = new MaterialDescription() };
+                if (layer.Material != null)
+                {
+                    var reference = AttachedReferenceManager.GetAttachedReference(layer.Material);
+                    yield return new AssetReference<MaterialAsset>(reference.Id, reference.Url);
+                }
+            }
+        }
+
+        private class MaterialFactory : IObjectFactory
+        {
+            public object New(Type type)
+            {
+                var newMaterial = new MaterialAsset
+                {
+                    Attributes = ObjectFactory.NewInstance<MaterialAttributes>(),
+                    Layers = ObjectFactory.NewInstance<MaterialBlendLayers>(),
+                };
                 return newMaterial;
+            }
+        }
+
+        public void Visit(MaterialGeneratorContext context)
+        {
+            if (Attributes != null)
+            {
+                Attributes.Visit(context);
+            }
+
+            if (Layers != null)
+            {
+                Layers.Visit(context);
+            }
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<IContentReference> EnumerateCompileTimeDependencies()
+        {
+            foreach (var materialReference in FindMaterialReferences())
+            {
+                yield return materialReference;
             }
         }
     }

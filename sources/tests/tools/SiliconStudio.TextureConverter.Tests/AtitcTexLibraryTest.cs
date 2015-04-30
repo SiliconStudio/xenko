@@ -5,7 +5,6 @@ using System;
 using NUnit.Framework;
 using SiliconStudio.TextureConverter.Requests;
 using SiliconStudio.TextureConverter.TexLibraries;
-using SiliconStudio.TextureConverter;
 
 namespace SiliconStudio.TextureConverter.Tests
 {
@@ -53,9 +52,9 @@ namespace SiliconStudio.TextureConverter.Tests
             IntPtr buffer;
 
             buffer = image.SubImageArray[0].Data;
-            library.Execute(image, new DecompressingRequest());
+            library.Execute(image, new DecompressingRequest(false));
 
-            Assert.IsTrue(image.Format == SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm); // The images features are updated with the call to Execute
+            Assert.IsTrue(image.Format == Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm); // The images features are updated with the call to Execute
             Assert.IsTrue(image.SubImageArray[0].Data == buffer); // The sub images are only updated on the call to EndLibrary
 
             library.EndLibrary(image);
@@ -70,9 +69,9 @@ namespace SiliconStudio.TextureConverter.Tests
         {
             TexImage image = LoadInput("TextureArray_WMipMaps_ATC_RGBA_Explicit.pdx");
 
-            Assert.IsTrue(library.CanHandleRequest(image, new DecompressingRequest()));
-            Assert.IsTrue(library.CanHandleRequest(image, new CompressingRequest(SiliconStudio.Paradox.Graphics.PixelFormat.ATC_RGBA_Explicit)));
-            Assert.IsFalse(library.CanHandleRequest(image, new CompressingRequest(SiliconStudio.Paradox.Graphics.PixelFormat.BC3_UNorm)));
+            Assert.IsTrue(library.CanHandleRequest(image, new DecompressingRequest(false)));
+            Assert.IsTrue(library.CanHandleRequest(image, new CompressingRequest(Paradox.Graphics.PixelFormat.ATC_RGBA_Explicit)));
+            Assert.IsFalse(library.CanHandleRequest(image, new CompressingRequest(Paradox.Graphics.PixelFormat.BC3_UNorm)));
 
             image.Dispose();
         }
@@ -90,10 +89,10 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
-        [TestCase("Texture3D_WMipMap_RGBA8888.pdx", SiliconStudio.Paradox.Graphics.PixelFormat.ATC_RGBA_Explicit)]
-        [TestCase("TextureArray_WMipMaps_RGBA8888.pdx", SiliconStudio.Paradox.Graphics.PixelFormat.ATC_RGBA_Interpolated)]
-        [TestCase("TextureCube_WMipMaps_RGBA8888.pdx", SiliconStudio.Paradox.Graphics.PixelFormat.ATC_RGBA_Explicit)]
-        public void CompressTest(string file, SiliconStudio.Paradox.Graphics.PixelFormat format)
+        [TestCase("Texture3D_WMipMap_RGBA8888.pdx", Paradox.Graphics.PixelFormat.ATC_RGBA_Explicit)]
+        [TestCase("TextureArray_WMipMaps_RGBA8888.pdx", Paradox.Graphics.PixelFormat.ATC_RGBA_Interpolated)]
+        [TestCase("TextureCube_WMipMaps_RGBA8888.pdx", Paradox.Graphics.PixelFormat.ATC_RGBA_Explicit)]
+        public void CompressTest(string file, Paradox.Graphics.PixelFormat format)
         {
             TexImage image = LoadInput(file);
 

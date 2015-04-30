@@ -3,6 +3,8 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+
+using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
@@ -30,6 +32,16 @@ namespace SiliconStudio.TextureConverter
         private List<ITexLibrary> textureLibraries;
 
         private static Logger Log = GlobalLogger.GetLogger("TextureTool");
+
+        static TextureTool()
+        {
+            NativeLibrary.PreloadLibrary("AtitcWrapper.dll");
+            NativeLibrary.PreloadLibrary("DxtWrapper.dll");
+            NativeLibrary.PreloadLibrary("PVRTexLib.dll");
+            NativeLibrary.PreloadLibrary("PvrttWrapper.dll");
+            NativeLibrary.PreloadLibrary("FreeImage.dll");
+            NativeLibrary.PreloadLibrary("FreeImageNET.dll");
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureTool"/> class.
@@ -218,7 +230,7 @@ namespace SiliconStudio.TextureConverter
         /// </summary>
         /// <param name="layout">The layout.</param>
         /// <param name="file">The file.</param>
-        /// <returns>An isntance of <see cref="TexAtlas"/>.</returns>
+        /// <returns>An instance of <see cref="TexAtlas"/>.</returns>
         /// <exception cref="TextureToolsException">
         /// The file doesn't exist. Please check the file path.
         /// or
@@ -232,7 +244,7 @@ namespace SiliconStudio.TextureConverter
                 throw new TextureToolsException("The file " + file + " doesn't exist. Please check the file path.");
             }
 
-            var atlas = new TexAtlas(layout, Load(new LoadingRequest(file)));
+            var atlas = new TexAtlas(layout, Load(new LoadingRequest(file, false)));
 
             CheckConformity(atlas, layout);
             
@@ -243,7 +255,7 @@ namespace SiliconStudio.TextureConverter
         /// <summary>
         /// Loads the Atlas corresponding to the specified texture file and layout file.
         /// </summary>
-        /// <param name="layout">The layout.</param>
+        /// <param name="layoutFile">The layout.</param>
         /// <param name="file">The file.</param>
         /// <returns>An instance of <see cref="TexAtlas"/>.</returns>
         /// <exception cref="TextureToolsException">
@@ -275,7 +287,7 @@ namespace SiliconStudio.TextureConverter
             }
 
             var layout = TexAtlas.TexLayout.Import(layoutFile);
-            var atlas = new TexAtlas(layout, Load(new LoadingRequest(file)));
+            var atlas = new TexAtlas(layout, Load(new LoadingRequest(file, false)));
 
             CheckConformity(atlas, layout);
 
@@ -306,7 +318,6 @@ namespace SiliconStudio.TextureConverter
             }
         }
 
-
         /// <summary>
         /// Loads the specified file.
         /// </summary>
@@ -314,9 +325,10 @@ namespace SiliconStudio.TextureConverter
         /// The file can be an image or a texture.
         /// </remarks>
         /// <param name="file">The file.</param>
+        /// <param name="isSRgb">Indicate if the input file contains sRGB data</param>
         /// <returns>An instance of <see cref="TexImage"/>.</returns>
         /// <exception cref="TextureToolsException">The file doesn't exist. Please check the file path.</exception>
-        public TexImage Load(string file)
+        public TexImage Load(string file, bool isSRgb)
         {
             if (!File.Exists(file))
             {
@@ -324,9 +336,8 @@ namespace SiliconStudio.TextureConverter
                 throw new TextureToolsException("The file " + file + " doesn't exist. Please check the file path.");
             }
 
-            return Load(new LoadingRequest(file));
+            return Load(new LoadingRequest(file, isSRgb));
         }
-
 
         /// <summary>
         /// Loads the specified image of the class <see cref="SiliconStudio.Paradox.Graphics.Image"/>.
@@ -334,7 +345,7 @@ namespace SiliconStudio.TextureConverter
         /// <param name="image">The image.</param>
         /// <remarks>The ownership of the provided image is not taken by the tex tool. The user has to dispose it him-self</remarks>
         /// <returns>An instance of the class <see cref="TexImage"/> containing your loaded image</returns>
-        public TexImage Load(SiliconStudio.Paradox.Graphics.Image image)
+        public TexImage Load(Image image)
         {
             if (image == null) throw new ArgumentNullException("image");
             return Load(new LoadingRequest(image));
@@ -366,19 +377,19 @@ namespace SiliconStudio.TextureConverter
             throw new TextureToolsException("No available library could perform the task : " + request.Type);
         }
 
-
         /// <summary>
         /// Decompresses the specified <see cref="TexImage"/>.
         /// </summary>
         /// <param name="image">The <see cref="TexImage"/>.</param>
-        public void Decompress(TexImage image)
+        /// <param name="isSRgb">Indicate is the image to decompress is an sRGB image</param>
+        public void Decompress(TexImage image, bool isSRgb)
         {
-            if (!Tools.IsCompressed(image.Format))
+            if (!image.Format.IsCompressed())
             {
                 return;
             }
 
-            ExecuteRequest(image, new DecompressingRequest());
+            ExecuteRequest(image, new DecompressingRequest(isSRgb));
         }
 
 
@@ -398,10 +409,10 @@ namespace SiliconStudio.TextureConverter
 
             var request = new ExportRequest(fileName, minimumMipMapSize);
 
-            if (FindLibrary(image, request) == null && Tools.IsCompressed(image.Format))
+            if (FindLibrary(image, request) == null && image.Format.IsCompressed())
             {
                 Log.Warning("No library can export this texture with the actual compression format. We will try to decompress it first.");
-                Decompress(image);
+                Decompress(image, image.Format.IsSRgb());
             }
 
             ExecuteRequest(image, request);
@@ -415,7 +426,7 @@ namespace SiliconStudio.TextureConverter
         /// <param name="fileName">Name of the file.</param>
         /// <param name="format">The new format.</param>
         /// <param name="minimumMipMapSize">Minimum size of the mip map.</param>
-        public void Save(TexImage image, String fileName, SiliconStudio.Paradox.Graphics.PixelFormat format, int minimumMipMapSize = 1)
+        public void Save(TexImage image, String fileName, PixelFormat format, int minimumMipMapSize = 1)
         {
             if (fileName == null || fileName.Equals(""))
             {
@@ -429,17 +440,17 @@ namespace SiliconStudio.TextureConverter
                 throw new TextureToolsException("The minimup Mipmap size can't be negative. Put 0 or 1 for a complete Mipmap chain.");
             }
 
-            if (image.Format != format && Tools.IsCompressed(format) && !Tools.IsCompressed(image.Format))
+            if (image.Format != format && format.IsCompressed() && !image.Format.IsCompressed())
             {
                 TexImage workingImage = (TexImage)image.Clone();
                 Compress(workingImage, format);
                 ExecuteRequest(workingImage, new ExportRequest(fileName, minimumMipMapSize));
                 workingImage.Dispose();
             }
-            else if (image.Format != format && Tools.IsCompressed(format))
+            else if (image.Format != format && format.IsCompressed())
             {
                 TexImage workingImage = (TexImage)image.Clone();
-                Decompress(workingImage);
+                Decompress(workingImage, image.Format.IsSRgb());
                 Compress(workingImage, format);
                 ExecuteRequest(workingImage, new ExportRequest(fileName, minimumMipMapSize));
                 workingImage.Dispose();
@@ -461,10 +472,10 @@ namespace SiliconStudio.TextureConverter
         /// <param name="image">The image.</param>
         public void SwitchChannel(TexImage image)
         {
-            if (Tools.IsCompressed(image.Format))
+            if (image.Format.IsCompressed())
             {
                 Log.Warning("You can't switch channels of a compressed texture. It will be decompressed first..");
-                Decompress(image);
+                Decompress(image, image.Format.IsSRgb());
             }
 
             ExecuteRequest(image, new SwitchingBRChannelsRequest());
@@ -480,14 +491,14 @@ namespace SiliconStudio.TextureConverter
         /// </remarks>
         /// <param name="image">The image.</param>
         /// <param name="format">The format.</param>
-        public void Compress(TexImage image, SiliconStudio.Paradox.Graphics.PixelFormat format, TextureQuality quality = TextureQuality.Fast)
+        public void Compress(TexImage image, PixelFormat format, TextureQuality quality = TextureQuality.Fast)
         {
             if (image.Format == format) return;
 
-            if (Tools.IsCompressed(image.Format))
+            if (image.Format.IsCompressed())
             {
                 Log.Warning("You can't compress an already compressed texture. It will be decompressed first..");
-                Decompress(image);
+                Decompress(image, format.IsSRgb());
             }
 
             var request = new CompressingRequest(format, quality);
@@ -502,13 +513,14 @@ namespace SiliconStudio.TextureConverter
         /// <param name="colorKey">The color key.</param>
         public void ColorKey(TexImage image, Color colorKey)
         {
-            if (Tools.IsCompressed(image.Format))
+            if (image.Format.IsCompressed())
             {
                 Log.Warning("You can't compress an already compressed texture. It will be decompressed first..");
-                Decompress(image);
+                Decompress(image, image.Format.IsSRgb());
             }
 
-            if (image.Format != PixelFormat.R8G8B8A8_UNorm && image.Format != PixelFormat.B8G8R8A8_UNorm)
+            if (image.Format != PixelFormat.R8G8B8A8_UNorm && image.Format != PixelFormat.B8G8R8A8_UNorm 
+                && image.Format != PixelFormat.B8G8R8A8_UNorm_SRgb && image.Format != PixelFormat.R8G8B8A8_UNorm_SRgb)
             {
                 Log.Error("ColorKey TextureConverter is only supporting R8G8B8A8_UNorm or B8G8R8A8_UNorm while Texture Format is [{0}]", image.Format);
                 return;
@@ -528,10 +540,10 @@ namespace SiliconStudio.TextureConverter
         /// <param name="filter">The filter.</param>
         public void GenerateMipMaps(TexImage image, Filter.MipMapGeneration filter)
         {
-            if (Tools.IsCompressed(image.Format))
+            if (image.Format.IsCompressed())
             {
                 Log.Warning("You can't generate mipmaps for a compressed texture. It will be decompressed first..");
-                Decompress(image);
+                Decompress(image, image.Format.IsSRgb());
             }
 
             ExecuteRequest(image, new MipMapsGenerationRequest(filter));
@@ -562,10 +574,10 @@ namespace SiliconStudio.TextureConverter
                 return;
             }
 
-            if (Tools.IsCompressed(image.Format))
+            if (image.Format.IsCompressed())
             {
                 Log.Warning("You can't resize a compressed texture. It will be decompressed first..");
-                Decompress(image);
+                Decompress(image, image.Format.IsSRgb());
             }
 
             ExecuteRequest(image, new FixedRescalingRequest(width, height, filter));
@@ -597,10 +609,10 @@ namespace SiliconStudio.TextureConverter
                 return;
             }
 
-            if (Tools.IsCompressed(image.Format))
+            if (image.Format.IsCompressed())
             {
                 Log.Warning("You can't rescale a compressed texture. It will be decompressed first..");
-                Decompress(image);
+                Decompress(image, image.Format.IsSRgb());
             }
 
             ExecuteRequest(image, new FactorRescalingRequest(widthFactor, heightFactor, filter));
@@ -621,10 +633,10 @@ namespace SiliconStudio.TextureConverter
                 throw new TextureToolsException("The amplitude must be a positive float.");
             }
 
-            if (Tools.IsCompressed(heightMap.Format))
+            if (heightMap.Format.IsCompressed())
             {
                 Log.Warning("You can't generate a normal map from a compressed height hmap. It will be decompressed first..");
-                Decompress(heightMap);
+                Decompress(heightMap, heightMap.Format.IsSRgb());
             }
 
             var request = new NormalMapGenerationRequest(amplitude);
@@ -641,10 +653,10 @@ namespace SiliconStudio.TextureConverter
         /// <param name="image">The image.</param>
         public void PreMultiplyAlpha(TexImage image)
         {
-            if (Tools.IsCompressed(image.Format))
+            if (image.Format.IsCompressed())
             {
                 Log.Warning("You can't premultiply alpha on a compressed texture. It will be decompressed first..");
-                Decompress(image);
+                Decompress(image, image.Format.IsSRgb());
             }
 
             ExecuteRequest(image, new PreMultiplyAlphaRequest());
@@ -685,7 +697,7 @@ namespace SiliconStudio.TextureConverter
         /// <returns>The extracted region <see cref="TexImage"/>. Note: it is the user responsibility to dispose the returned image.</returns>
         public unsafe Image CreateImageFromRegion(TexImage texImage, Rectangle region)
         {
-            if (texImage.Dimension != TexImage.TextureDimension.Texture2D || Tools.IsCompressed(texImage.Format))
+            if (texImage.Dimension != TexImage.TextureDimension.Texture2D || texImage.Format.IsCompressed())
                 throw new NotImplementedException();
 
             Log.Info("Extracting region and exporting to Paradox Image ...");
@@ -760,10 +772,10 @@ namespace SiliconStudio.TextureConverter
                 throw new TextureToolsException("The gamma must be a positive float.");
             }
 
-            if (Tools.IsCompressed(image.Format))
+            if (image.Format.IsCompressed())
             {
                 Log.Warning("You can't correct gamme on a compressed texture. It will be decompressed first..");
-                Decompress(image);
+                Decompress(image, image.Format.IsSRgb());
             }
 
             var request = new GammaCorrectionRequest(gamma);
@@ -779,10 +791,10 @@ namespace SiliconStudio.TextureConverter
         /// <param name="orientation">The orientation <see cref="Orientation.Flip"/>.</param>
         public void Flip(TexImage image, Orientation orientation)
         {
-            if (Tools.IsCompressed(image.Format))
+            if (image.Format.IsCompressed())
             {
                 Log.Warning("You can't flip a compressed texture. It will be decompressed first..");
-                Decompress(image);
+                Decompress(image, image.Format.IsSRgb());
             }
 
             var request = new FlippingRequest(orientation);
@@ -798,10 +810,10 @@ namespace SiliconStudio.TextureConverter
         /// <param name="orientation">The orientation <see cref="Orientation.Flip"/>.</param>
         public void FlipSub(TexImage image, int index, Orientation orientation)
         {
-            if (Tools.IsCompressed(image.Format))
+            if (image.Format.IsCompressed())
             {
                 Log.Warning("You can't flip a compressed texture. It will be decompressed first..");
-                Decompress(image);
+                Decompress(image, image.Format.IsSRgb());
             }
 
             var request = new FlippingSubRequest(index, orientation);
@@ -872,9 +884,9 @@ namespace SiliconStudio.TextureConverter
 
             var request = new AtlasExtractionRequest(name, minimumMipmapSize);
 
-            if(Tools.IsCompressed(atlas.Format))
+            if (atlas.Format.IsCompressed())
             {
-                Decompress(atlas);
+                Decompress(atlas, atlas.Format.IsSRgb());
             }
 
             ExecuteRequest(atlas, request);
@@ -934,10 +946,10 @@ namespace SiliconStudio.TextureConverter
 
             var request = new AtlasExtractionRequest(minimumMipmapSize);
 
-            if (Tools.IsCompressed(atlas.Format))
+            if (atlas.Format.IsCompressed())
             {
                 Log.Warning("You can't extract a texture from a compressed atlas. The atlas will be decompressed first..");
-                Decompress(atlas);
+                Decompress(atlas, atlas.Format.IsSRgb());
             }
 
             ExecuteRequest(atlas, request);
@@ -963,9 +975,9 @@ namespace SiliconStudio.TextureConverter
 
             var request = new ArrayExtractionRequest(minimumMipmapSize);
 
-            if (Tools.IsCompressed(array.Format))
+            if (array.Format.IsCompressed())
             {
-                Decompress(array);
+                Decompress(array, array.Format.IsSRgb());
             }
 
             ExecuteRequest(array, request);
@@ -1109,14 +1121,14 @@ namespace SiliconStudio.TextureConverter
             if (candidate.Format != model.Format)
             {
                 Log.Warning("The given texture format isn't correct. The texture will be converted..");
-                if (Tools.IsCompressed(model.Format))
+                if (model.Format.IsCompressed())
                 {
-                    if (Tools.IsCompressed(candidate.Format)) Decompress(candidate);
+                    if (candidate.Format.IsCompressed()) Decompress(candidate, candidate.Format.IsSRgb());
                     Compress(candidate, model.Format);
                 }
                 else
                 {
-                    Decompress(candidate);
+                    Decompress(candidate, candidate.Format.IsSRgb());
                     if (candidate.Format != model.Format) Compress(candidate, model.Format);
                 }
             }
@@ -1141,7 +1153,7 @@ namespace SiliconStudio.TextureConverter
                 ITexLibrary library;
                 if ((library = FindLibrary(image, request)) != null)
                 {
-                    if (Tools.IsInBGRAOrder(image.Format) && !library.SupportBGRAOrder())
+                    if (image.Format.IsInBGRAOrder() && !library.SupportBGRAOrder())
                     {
                         SwitchChannel(image);
                     }

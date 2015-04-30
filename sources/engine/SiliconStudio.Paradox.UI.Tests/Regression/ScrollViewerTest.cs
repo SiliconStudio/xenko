@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public ScrollViewerTest()
         {
-            CurrentVersion = 3;
+            CurrentVersion = 5;
         }
 
         protected override async Task LoadContent()
@@ -70,7 +70,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
             contentDecorator = new ContentDecorator { Content = scrollViewer };
 
-            UI.RootElement = contentDecorator;
+            UIComponent.RootElement = contentDecorator;
         }
 
         protected override void Update(GameTime gameTime)

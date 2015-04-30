@@ -8,7 +8,7 @@
 
 using System;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
@@ -20,9 +20,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
     {
         internal partial class CustomSubEffect  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                context.CloneParentMixinToCurrent();
                 if (context.GetParam(CustomShaderKeys.SwitchEffectLevel) < 10)
                 {
                     context.Mixin(mixin, "CustomShader");
@@ -45,15 +44,13 @@ namespace SiliconStudio.Paradox.Graphics.Tests
     {
         internal partial class CustomEffect  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "CustomShader");
-
+                if (context.ChildEffectName == "CustomSubEffect")
                 {
-                    var __subMixin = new ShaderMixinSourceTree() { Name = "CustomSubEffect" };
-                    context.BeginChild(__subMixin);
-                    context.Mixin(__subMixin, "CustomSubEffect");
-                    context.EndChild();
+                    context.Mixin(mixin, "CustomSubEffect");
+                    return;
                 }
             }
 

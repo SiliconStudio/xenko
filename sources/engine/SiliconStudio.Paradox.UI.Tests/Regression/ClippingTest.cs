@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public ClippingTest()
         {
-            CurrentVersion = 4;
+            CurrentVersion = 5;
         }
 
         protected override async Task LoadContent()
@@ -63,7 +63,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             canvas.Children.Add(element1);
             canvas.Children.Add(element2);
 
-            UI.RootElement = canvas;
+            UIComponent.RootElement = canvas;
         }
 
         protected override void Update(GameTime gameTime)

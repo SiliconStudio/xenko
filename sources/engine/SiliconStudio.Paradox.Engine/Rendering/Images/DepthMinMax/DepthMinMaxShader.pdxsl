@@ -1,0 +1,49 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Paradox.Rendering.Images
+{
+    /// <summary>
+    /// A reduction shader
+    /// </summary>
+    class DepthMinMaxShader<bool TFirstPass> : ImageEffectShader
+    {
+        Texture2D<float> TextureMap;
+        Texture2D<float2> TextureReduction;
+
+
+        float max_not_1(float left, float right)
+        {
+            if (left == 1.0f) return right;
+            if (right == 1.0f) return left;
+            return max(left, right);
+        }
+
+        stage override float4 Shading()
+        {
+            // TODO: This shader is only working for model 5.0
+
+            if (TFirstPass)
+            {
+                float4 values = TextureMap.Gather(LinearSampler, streams.TexCoord);
+
+                // TODO: do a simple sort for 4 values quicker than min/max
+                var minValue = min(min(values[0], values[1]), min(values[2], values[3]));
+                var maxValue = max_not_1(max_not_1(values[0], values[1]), max_not_1(values[2], values[3]));
+
+                return float4(minValue, maxValue, 0, 0);
+            }
+            else
+            {
+                float4 minValues = TextureReduction.GatherRed(LinearSampler, streams.TexCoord);
+                float4 maxValues = TextureReduction.GatherGreen(LinearSampler, streams.TexCoord);
+
+                // TODO: do a simple sort for 4 values quicker than min/max
+                var minValue = min(min(minValues[0], minValues[1]), min(minValues[2], minValues[3]));
+                var maxValue = max_not_1(max_not_1(maxValues[0], maxValues[1]), max_not_1(maxValues[2], maxValues[3]));
+
+                return float4(minValue, maxValue, 0, 0);
+            }
+        }
+    };
+}

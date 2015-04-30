@@ -30,6 +30,14 @@
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0467D515-FD66-4B8A-A128-CB642C2ED03F}</ProjectGuid>
@@ -38,40 +46,50 @@
     <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath11)</VCTargetsPath>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CLRSupport>true</CLRSupport>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CLRSupport>true</CLRSupport>
   </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(OutputPath)</OutDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(OutputPath)</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(FbxSdkDir)\include;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(FbxSdkDir)\include;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;FBXSDK_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(FbxSdkDir)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <AdditionalOptions>/wd 4945 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -117,18 +135,70 @@
       </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;FBXSDK_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalOptions>/wd 4945 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>libfbxsdk.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(FbxSdkDir)\lib\$(FbxLibVersionDir)x64\debug</AdditionalLibraryDirectories>
+      <AdditionalOptions>/ignore:4049 %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+    <CustomBuildStep>
+      <Command>copy "$(FbxSdkDir)\lib\$(FbxLibVersionDir)x64\debug\libfbxsdk.dll" "$(TargetDir)"</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>$(TargetDir)libfbxsdk.dll;%(Outputs)</Outputs>
+      <Inputs>$(FbxSdkDir)\lib\$(FbxLibVersionDir)x64\release\libfbxsdk.dll</Inputs>
+      <TreatOutputAsContent>true</TreatOutputAsContent>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>NDEBUG;FBXSDK_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(FbxSdkDir)\include</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalOptions>/wd 4945 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>libfbxsdk.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(FbxSdkDir)\lib\$(FbxLibVersionDir)x64\release</AdditionalLibraryDirectories>
+      <AdditionalOptions>/ignore:4049 %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+    <CustomBuildStep>
+      <Command>copy "$(FbxSdkDir)\lib\$(FbxLibVersionDir)x64\release\libfbxsdk.dll" "$(TargetDir)"</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>$(TargetDir)libfbxsdk.dll;%(Outputs)</Outputs>
+      <Inputs>$(FbxSdkDir)\lib\$(FbxLibVersionDir)x64\release\libfbxsdk.dll</Inputs>
+      <TreatOutputAsContent>true</TreatOutputAsContent>
+    </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AssemblyInfo.cpp" />
-    <ClCompile Include="Paradox.Importer.FBX.cpp" />
+    <ClCompile Include="AnimationConverter.h" />
+    <ClCompile Include="AssemblyInfo.h" />
+    <ClCompile Include="SceneMapping.h" />
+    <ClCompile Include="MeshConverter.cpp" />
     <ClCompile Include="stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="UtilityFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\SiliconStudio.Paradox.Importer.Common\ImporterUtils.h" />
-    <ClInclude Include="FnHook.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="UtilityFunctions.h" />
   </ItemGroup>
@@ -168,9 +238,6 @@
     </ProjectReference>
     <ProjectReference Include="..\..\engine\SiliconStudio.Paradox\SiliconStudio.Paradox.csproj">
       <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.csproj">
-      <Project>{0342c3e7-4a38-46b4-a8ec-e728d50085d3}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\common\buildengine\SiliconStudio.BuildEngine.Common\SiliconStudio.BuildEngine.Common.csproj">
       <Project>{7732cb84-a39a-4adf-b740-fd32a352fa8a}</Project>

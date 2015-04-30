@@ -28,14 +28,12 @@
     <XamarinVersion>$([MSBuild]::GetRegistryValueFromView('HKEY_LOCAL_MACHINE\SOFTWARE\Xamarin\iOS', 'InstalledVersion', '8.2.0', RegistryView.Registry32))</XamarinVersion>
     <XamarinIOSMajorVersion>$([System.Text.RegularExpressions.Regex]::Match($(XamarinVersion), `^(\d+)\.(\d+)\.`).get_Groups().get_Item(1).ToString())</XamarinIOSMajorVersion>
     <XamarinIOSMinorVersion>$([System.Text.RegularExpressions.Regex]::Match($(XamarinVersion), `^(\d+)\.(\d+)\.`).get_Groups().get_Item(2).ToString())</XamarinIOSMinorVersion>
-    <XamarinIOSSubMinorVersion>$([System.Text.RegularExpressions.Regex]::Match($(XamarinVersion), `^(\d+)\.(\d+)\.(\d+)`).get_Groups().get_Item(3).ToString())</XamarinIOSSubMinorVersion>
-    <XamarinIOSSubMinorVersion Condition="'$(XamarinIOSSubMinorVersion)' == ''">0</XamarinIOSSubMinorVersion>
   </PropertyGroup>
 
   <Target Name="EnsureXamarinVersion" BeforeTargets="PrepareForBuild">
     <Error Condition="'$(XamarinVersion)' == ''" Text="Xamarin iOS version was not found. Ensure HKEY_LOCAL_MACHINE\SOFTWARE\Xamarin\iOS\InstalledVersion is properly set."/>
     <Error Condition="($(XamarinIOSMajorVersion) == 7 and $(XamarinIOSMinorVersion) >= 3) or ($(XamarinIOSMajorVersion) == 8 and $(XamarinIOSMinorVersion) &lt; 2)" Text="Xamarin iOS versions 7.3 to 8.1 are not compatible with Paradox (https://bugzilla.xamarin.com/show_bug.cgi?id=22906). Either downgrade to 7.2 (Xamarin 3.3) or upgrade to 8.2 (Xamarin 3.7)."/>
-    <Error Condition="($(XamarinIOSMajorVersion) == 8 and $(XamarinIOSMinorVersion) == 6 and $(XamarinIOSSubMinorVersion) &lt; 1)" Text="Xamarin iOS versions 8.6.0 is not compatible with Paradox (https://bugzilla.xamarin.com/show_bug.cgi?id=22906). Please upgrade to 8.6.1 (Xamarin 3.9.289)."/>
+    <Error Condition="($(XamarinIOSMajorVersion) == 8 and $(XamarinIOSMinorVersion) >= 6 and $(XamarinIOSMinorVersion) &lt; 9)" Text="Xamarin iOS versions 8.6 to 8.8 are not compatible with Paradox. Please upgrade to 8.9 (Xamarin 3.9)."/>
   </Target>
 
   <!-- Rewrite BuildDependsOn and ResolveReferencesDependsOn -->
@@ -56,7 +54,7 @@
   <Target Name="CopyParadoxNativeiOsLibrary" Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
     <!-- Xamarin iOS 7.3- (deprecated) -->
     <Copy Condition="$(XamarinIOSMajorVersion) &lt;= 7" SourceFiles="@(ResolvedSiliconStudioEmbeddedNativeLibrary)" DestinationFiles="@(SiliconStudioEmbeddedNativeLibrary->'$(ProjectDir)%(Filename)%(Extension)')"/>
-    <!-- Xamarin iOS 8.2+ until 8.6:
+    <!-- Xamarin iOS 8.2+
          HACK: Use LogicalName so that it is not actually inside the app bundle
     -->
     <ItemGroup Condition="$(XamarinIOSMajorVersion) >= 8 And $(XamarinIOSMinorVersion) &lt; 6">
@@ -66,23 +64,23 @@
       </BundleResource>
     </ItemGroup>
 
-    <ItemGroup Condition="$(XamarinIOSMajorVersion) >= 8 And $(XamarinIOSMinorVersion) >= 6">
+    <ItemGroup Condition="$(XamarinIOSMajorVersion) >= 8 And $(XamarinIOSMinorVersion) >= 9">
       <NativeReferences Include="@(SiliconStudioEmbeddedNativeLibrary)">
-        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <LogicalName>..\lib%(SiliconStudioEmbeddedNativeLibrary.LibraryName)%(SiliconStudioEmbeddedNativeLibrary.Extension)</LogicalName>
       </NativeReferences>
     </ItemGroup>
   </Target>
 
   <!-- Deploy assets and native libraries (Xamarin iOS 8.2+ version) -->
   <Target Name="DeployAssetsiOS8" DependsOnTargets="_GenerateBundleName;SiliconStudioCompileAsset" Condition="'$(SiliconStudioIsExecutable)' == 'true' And $(XamarinIOSMajorVersion) >= 8">
-    <PropertyGroup Condition="$(XamarinIOSMinorVersion) >= 6">
-      <MtouchExtraArgsLibs>@(SiliconStudioEmbeddedNativeLibrary->'-L%24{ProjectDir}/%(RootDir)%(Directory) -l%(LibraryName) -force_load %24{ProjectDir}/%(RootDir)%(Directory)/%(Filename)%(Extension)',' ')</MtouchExtraArgsLibs>
-      <MtouchExtraArgs>$(MtouchExtraArgs) --compiler=clang -cxx -gcc_flags "-lstdc++ $(MtouchExtraArgsLibs)"</MtouchExtraArgs>
-    </PropertyGroup>
-
     <PropertyGroup Condition="$(XamarinIOSMinorVersion) &lt; 6">
-      <MtouchExtraArgsLibs>@(SiliconStudioEmbeddedNativeLibrary->'-l%(LibraryName) -force_load %24{ProjectDir}/$(_AppBundlePath)../%(Filename)%(Extension)',' ')</MtouchExtraArgsLibs>
+      <MtouchExtraArgsLibs>@(SiliconStudioEmbeddedNativeLibrary->'-l%(LibraryName) -force_load "%24{ProjectDir}/$(_AppBundlePath)../%(Filename)%(Extension)"',' ')</MtouchExtraArgsLibs>
       <MtouchExtraArgs>$(MtouchExtraArgs) --compiler=clang -cxx -gcc_flags "-L%24{ProjectDir}/$(_AppBundlePath)../ -lstdc++ $(MtouchExtraArgsLibs)"</MtouchExtraArgs>
+    </PropertyGroup>
+    <PropertyGroup Condition="$(XamarinIOSMinorVersion) >= 9">
+      <MtouchExtraArgsLibs>@(SiliconStudioEmbeddedNativeLibrary->'-L"%24{ProjectDir}/%(RootDir)%(Directory)" -l%(LibraryName) -force_load "%24{ProjectDir}/%(FullPath)"',' ')</MtouchExtraArgsLibs>
+      <MtouchExtraArgs>$(MtouchExtraArgs) --compiler=clang -cxx -gcc_flags '-lstdc++ $(MtouchExtraArgsLibs)'</MtouchExtraArgs>
     </PropertyGroup>
 
     <!-- Add all game data as content on iphone. Note that "Link" doesn't work but Xamarin seems to use a similar "LogicalName" property. -->
@@ -102,7 +100,7 @@
        Deprecated, later we will only support Xamarin iOS 8.2+ -->
   <Target Name="DeployAssetsiOS7" BeforeTargets="_GenerateBundleContentDir" Condition="'$(SiliconStudioIsExecutable)' == 'true' And $(XamarinIOSMajorVersion) &lt;= 7">
     <PropertyGroup>
-      <MtouchExtraArgsLibs>@(SiliconStudioEmbeddedNativeLibrary->'-l%(LibraryName) -force_load %24{ProjectDir}/source/%(Filename)%(Extension)',' ')</MtouchExtraArgsLibs>
+      <MtouchExtraArgsLibs>@(SiliconStudioEmbeddedNativeLibrary->'-l%(LibraryName) -force_load "%24{ProjectDir}/source/%(Filename)%(Extension)"',' ')</MtouchExtraArgsLibs>
       <MtouchExtraArgs>$(MtouchExtraArgs) --compiler=clang -cxx -gcc_flags "-L%24{ProjectDir}/source -lstdc++ $(MtouchExtraArgsLibs)"</MtouchExtraArgs>
     </PropertyGroup>
 

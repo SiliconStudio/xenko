@@ -2,10 +2,14 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
-
+using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.BuildEngine;
+using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
@@ -20,6 +24,11 @@ namespace SiliconStudio.Assets.Compiler
     {
         private class ThumbnailFailureBuildStep : BuildStep
         {
+            public ThumbnailFailureBuildStep(IEnumerable<ILogMessage> messages)
+            {
+                messages.ForEach(x => Logger.Log(x));
+            }
+
             public override string Title { get { return "FailureThumbnail"; } }
 
             public override Task<ResultStatus> Execute(IExecuteContext executeContext, BuilderContext builderContext)
@@ -29,7 +38,7 @@ namespace SiliconStudio.Assets.Compiler
 
             public override BuildStep Clone()
             {
-                return new ThumbnailFailureBuildStep();
+                return new ThumbnailFailureBuildStep(Enumerable.Empty<LogMessage>());
             }
 
             public override string ToString()
@@ -61,7 +70,12 @@ namespace SiliconStudio.Assets.Compiler
             // Build the path of the thumbnail in the storage
             var assetStorageUrl = AssetItem.Location.GetDirectoryAndFileName();
             var thumbnailStorageUrl = assetStorageUrl.Insert(0, "__THUMBNAIL__");
-    
+
+            // Check if this asset produced any error
+            // (dependent assets errors are generally ignored as long as thumbnail could be generated,
+            // but we will add a thumbnail overlay to indicate the state is not good)
+            var currentAssetHasErrors = false;
+
             try
             {
                 // TODO: fix failures here (see TODOs in Compile and base.Compile)
@@ -73,16 +87,36 @@ namespace SiliconStudio.Assets.Compiler
             catch (Exception)
             {
                 // If an exception occurs, ensure that the build of thumbnail will fail.
-                compilerResult.BuildSteps = null;
+                compilerResult.Error(string.Format("An exception occurred while compiling the asset [{0}]", AssetItem.Location));
             }
 
-            if (compilerResult.BuildSteps == null || compilerResult.HasErrors)
+            foreach (var logMessage in compilerResult.Messages)
             {
-                // if a problem occurs while compiling, we don't want to enqueue null because it would mean
-                // that there is no thumbnail to build, which is incorrect. So we return a special build step
-                // that will always fail. If we don't, some asset ids will never be removed from the in progress
-                // list and thus never be updated again.
-                compilerResult.BuildSteps = new ListBuildStep { new ThumbnailFailureBuildStep() };
+                // Ignore anything less than error
+                if (!logMessage.IsAtLeast(LogMessageType.Error))
+                    continue;
+
+                // Check if there is any non-asset log message
+                // (they are probably just emitted by current compiler, so they concern current asset)
+                // TODO: Maybe we should wrap every message in AssetLogMessage before copying them in compilerResult?
+                var assetLogMessage = logMessage as AssetLogMessage;
+                if (assetLogMessage == null)
+                {
+                    currentAssetHasErrors = true;
+                    break;
+                }
+
+                // If it was an asset log message, check it concerns current asset
+                if (assetLogMessage.AssetReference != null && assetLogMessage.AssetReference.Location == AssetItem.Location)
+                {
+                    currentAssetHasErrors = true;
+                    break;
+                }
+            }
+            if (currentAssetHasErrors)
+            {
+                // if a problem occurs while compiling, we add a special build step that will always fail.
+                compilerResult.BuildSteps.Add(new ThumbnailFailureBuildStep(compilerResult.Messages));
             }
 
             var currentAsset = AssetItem; // copy the current asset item and embrace it in the callback
@@ -96,29 +130,43 @@ namespace SiliconStudio.Assets.Compiler
             if (!context.ShouldNotifyThumbnailBuilt)
                 return;
 
+            // TODO: the way to get last build step (which should be thumbnail, not its dependencies) should be done differently, at the compiler level
+            // (we need to generate two build step that can be accessed directly, one for dependency and one for thumbnail)
+            var lastBuildStep = buildStepEventArgs.Step is ListBuildStep ? ((ListBuildStep)buildStepEventArgs.Step).LastOrDefault() ?? buildStepEventArgs.Step : buildStepEventArgs.Step;
+
             // Retrieving build result
             var result = ThumbnailBuildResult.Failed;
-            if (buildStepEventArgs.Step.Succeeded)
+            if (lastBuildStep.Succeeded)
                 result = ThumbnailBuildResult.Succeeded;
-            else if (buildStepEventArgs.Step.Status == ResultStatus.Cancelled)
+            else if (lastBuildStep.Status == ResultStatus.Cancelled)
                 result = ThumbnailBuildResult.Cancelled;
 
-            var changed = buildStepEventArgs.Step.Status != ResultStatus.NotTriggeredWasSuccessful;
+            // TODO: Display error logo if anything else went wrong?
+
+            var changed = lastBuildStep.Status != ResultStatus.NotTriggeredWasSuccessful;
 
             // Open the image data stream if the build succeeded
             Stream thumbnailStream = null;
             ObjectId thumbnailHash = ObjectId.Empty;
 
-            if (buildStepEventArgs.Step.Succeeded)
+            if (lastBuildStep.Succeeded)
             {
                 thumbnailStream = AssetManager.FileProvider.OpenStream(thumbnailStorageUrl, VirtualFileMode.Open, VirtualFileAccess.Read);
                 thumbnailHash = AssetManager.FileProvider.AssetIndexMap[thumbnailStorageUrl];
             }
-            context.NotifyThumbnailBuilt(assetItem, result, changed, thumbnailStream, thumbnailHash);
 
-            // Close the image data stream if opened
-            if (thumbnailStream != null)
-                thumbnailStream.Dispose();
+            try
+            {
+                context.NotifyThumbnailBuilt(assetItem, result, changed, thumbnailStream, thumbnailHash);
+            }
+            finally
+            {
+                // Close the image data stream if opened
+                if (thumbnailStream != null)
+                {
+                    thumbnailStream.Dispose();
+                }
+            }
         }
 
         /// <summary>

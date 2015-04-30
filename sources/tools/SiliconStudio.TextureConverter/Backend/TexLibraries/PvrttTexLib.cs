@@ -4,6 +4,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.IO;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.TextureConverter.PvrttWrapper;
 using SiliconStudio.TextureConverter.Requests;
 
@@ -248,7 +249,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     break;
 
                 case RequestType.Decompressing:
-                    Decompress(image, libraryData);
+                    Decompress(image, libraryData, (DecompressingRequest)request);
                     break;
 
                 case RequestType.MipMapsGeneration:
@@ -291,7 +292,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         {
             Log.Info("Loading " + request.FilePath + " ...");
 
-            PvrTextureLibraryData libraryData = new PvrTextureLibraryData();
+            var libraryData = new PvrTextureLibraryData();
             image.LibraryData[this] = libraryData;
 
             libraryData.Texture = new PVRTexture(request.FilePath);
@@ -300,10 +301,12 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             image.Width = (int)libraryData.Header.GetWidth();
             image.Height = (int)libraryData.Header.GetHeight();
             image.Depth = (int)libraryData.Header.GetDepth();
-            image.Format = RetrieveFormatFromNativeData(libraryData.Header);
+            
+            var format = RetrieveFormatFromNativeData(libraryData.Header);
+            image.Format = request.LoadAsSRgb? format.ToSRgb(): format.ToNonSRgb();
 
             int pitch, slice;
-            Tools.ComputePitch(image.Format, (int)image.Width, (int)image.Height, out pitch, out slice);
+            Tools.ComputePitch(image.Format, image.Width, image.Height, out pitch, out slice);
             image.RowPitch = pitch;
             image.SlicePitch = slice;
 
@@ -319,7 +322,6 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 image.Dimension = TexImage.TextureDimension.Texture2D;
             else
                 image.Dimension = TexImage.TextureDimension.Texture1D;
-
         }
 
 
@@ -560,14 +562,14 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
             Marshal.FreeHGlobal(destPtr);
         }
-
         /// <summary>
         /// Decompresses the specified image.
         /// </summary>
         /// <param name="image">The image.</param>
         /// <param name="libraryData">The library data.</param>
-        /// <exception cref="TexLibraryException">Decompression failed!</exception>
-        public void Decompress(TexImage image, PvrTextureLibraryData libraryData)
+        /// <param name="request">The decompression request</param>
+        /// <exception cref="TextureToolsException">Decompression failed!</exception>
+        public void Decompress(TexImage image, PvrTextureLibraryData libraryData, DecompressingRequest request)
         {
             Log.Info("Decompressing texture ...");
 
@@ -577,7 +579,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 throw new TextureToolsException("Decompression failed!");
             }
 
-            image.Format = SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm;
+            image.Format = request.DecompressedFormat;
 
             int pitch,slice;
             Tools.ComputePitch(image.Format, image.Width, image.Height, out pitch, out slice);

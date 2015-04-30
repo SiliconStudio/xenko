@@ -14,9 +14,6 @@
     <SiliconStudioCPU Condition="'$(Platform)' == 'x86'">x86</SiliconStudioCPU>
     <SiliconStudioCPU Condition="'$(Platform)' == 'ARM'">ARM</SiliconStudioCPU>
 
-    <!-- Assembly processor is currently unsupported on Windows Phone executables -->
-    <SiliconStudioAssemblyProcessor Condition="'$(SiliconStudioIsExecutable)' == 'true'">false</SiliconStudioAssemblyProcessor>
-
     <!-- Use OutputPath to define AppxPackage directory -->
     <AppxPackageDir>$(OutputPath)\$(AppxPackageDirName)\</AppxPackageDir>
     <AppxPackageTestDir>$(AppxPackageDir)Test\</AppxPackageTestDir>

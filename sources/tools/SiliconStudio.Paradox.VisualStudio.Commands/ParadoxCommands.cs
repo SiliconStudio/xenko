@@ -16,8 +16,6 @@ using SiliconStudio.Assets;
 using SiliconStudio.Paradox.Shaders.Parser;
 using SiliconStudio.Paradox.VisualStudio.BuildEngine;
 using SiliconStudio.Paradox.VisualStudio.Commands.Shaders;
-using SiliconStudio.Paradox.VisualStudio.DataGenerator;
-using SiliconStudio.Paradox.VisualStudio.Shaders;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Utility;
 
@@ -25,8 +23,9 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
 {
     public class ParadoxCommands : IParadoxCommands
     {
-        public void Initialize()
+        public void Initialize(string paradoxSdkDir)
         {
+            DirectoryHelper.packageDirectoryOverride = paradoxSdkDir;
             ParadoxShaderParser.Initialize();
         }
 
@@ -44,11 +43,6 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
         public byte[] GenerateShaderKeys(string inputFileName, string inputFileContent)
         {
             return ShaderKeyFileHelper.GenerateCode(inputFileName, inputFileContent);
-        }
-
-        public byte[] GenerateDataClasses(string assemblyOutput, string projectFullName, string intermediateAssembly)
-        {
-            return DataCodeGeneratorHelper.GenerateSource(assemblyOutput, projectFullName, intermediateAssembly);
         }
 
         public RawShaderNavigationResult AnalyzeAndGoToDefinition(string sourceCode, RawSourceSpan span)

@@ -27,7 +27,16 @@ namespace SiliconStudio.Presentation.ViewModel
         public ViewModelServiceProvider(IViewModelServiceProvider parentProvider, IEnumerable<object> services)
             : this(services)
         {
-            this.parentProvider = parentProvider;
+            // If the parent provider is a ViewModelServiceProvider, try to merge its service list instead of using composition.
+            var parent = parentProvider as ViewModelServiceProvider;
+            if (parent != null)
+            {
+                parent.services.ForEach(RegisterService);
+            }
+            else
+            {
+                this.parentProvider = parentProvider;
+            }
         }
 
         /// <summary>
@@ -42,6 +51,13 @@ namespace SiliconStudio.Presentation.ViewModel
                 throw new InvalidOperationException("A service of the same type has already been registered.");
 
             services.Add(service);
+        }
+
+        public void UnregisterService(object service)
+        {
+            if (service == null) throw new ArgumentNullException("service");
+
+            services.Remove(service);
         }
 
         /// <inheritdoc/>

@@ -51,12 +51,29 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AccessorMetadata.cs" />
+    <Compile Include="Annotations\CategoryOrderAttribute.cs" />
+    <Compile Include="Annotations\DynamicTypeAttributeBase.cs" />
+    <Compile Include="Annotations\InlinePropertyAttribute.cs" />
+    <Compile Include="Annotations\NotNullAttribute.cs" />
+    <Compile Include="Annotations\NotNullItemsAttribute.cs" />
     <Compile Include="AnonymousDisposable.cs" />
+    <Compile Include="BrowsableAttribute.cs" />
+    <Compile Include="CategoryAttribute.cs" />
+    <Compile Include="Collections\ITrackingCollectionChanged.cs" />
     <Compile Include="Collections\KeyedSortedList.cs" />
+    <Compile Include="Collections\PoolListStruct.cs" />
     <Compile Include="Collections\SafeList.cs" />
+    <Compile Include="Annotations\DataMemberRangeAttribute.cs" />
+    <Compile Include="Diagnostics\ForwardingLoggerResult.cs" />
+    <Compile Include="DisplayAttribute.cs" />
+    <Compile Include="DisposeBase.cs" />
     <Compile Include="IO\NativeFile.cs" />
     <Compile Include="IO\NativeFile.WindowsRuntime.cs" />
     <Compile Include="PlatformFolders.cs" />
+    <Compile Include="Reflection\IObjectFactory.cs" />
+    <Compile Include="Reflection\ObjectFactory.cs" />
+    <Compile Include="Reflection\ObjectFactoryAttribute.cs" />
+    <Compile Include="Storage\ObjectIdSimpleBuilder.cs" />
     <Compile Include="ThreadHelper.WindowsRuntime.cs" />
     <Compile Include="Collections\PriorityNodeQueue.cs" />
     <Compile Include="DataMemberCustomSerializerAttribute.cs" />
@@ -193,14 +210,14 @@
     <Compile Include="Serialization\Serializers\CollectionSerializers.cs" />
     <Compile Include="Serialization\Serializers\KeyedSortedListSerializer.cs" />
     <Compile Include="Serialization\Serializers\ComplexTypeSerializerFlags.cs" />
-    <Compile Include="Serialization\Serializers\DataSerializerAttribute.cs" />
-    <Compile Include="Serialization\Serializers\DataSerializerGenericMode.cs" />
+    <Compile Include="Serialization\DataSerializerAttribute.cs" />
+    <Compile Include="Serialization\DataSerializerGenericMode.cs" />
     <Compile Include="Serialization\Serializers\NamespaceDoc.cs" />
     <Compile Include="Serialization\Serializers\NullableSerializer.cs" />
     <Compile Include="Serialization\Serializers\PrimitiveTypeSerializers.cs" />
     <Compile Include="Serialization\Serializers\PropertyInfoSerializer.cs" />
     <Compile Include="Serialization\Serializers\PropertyKeySerializer.cs" />
-    <Compile Include="Serialization\Serializers\DataSerializerGlobalAttribute.cs" />
+    <Compile Include="Serialization\DataSerializerGlobalAttribute.cs" />
     <Compile Include="Serialization\Serializers\TupleSerializer.cs">
       <DependentUpon>TupleSerializer.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -229,6 +246,7 @@
     <Compile Include="DataMemberIgnoreAttribute.cs" />
     <Compile Include="DataContractAttribute.cs" />
     <Compile Include="SuppressUnmanagedCodeSecurityAttribute.cs" />
+    <Compile Include="Threading\TaskList.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="Utilities.Interop.cs" />
     <Compile Include="ValidateValueMetadata.cs" />

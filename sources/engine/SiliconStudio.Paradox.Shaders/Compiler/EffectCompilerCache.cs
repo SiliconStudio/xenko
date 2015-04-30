@@ -2,22 +2,23 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-
+using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Core.Serialization.Serializers;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Effects;
 
 namespace SiliconStudio.Paradox.Shaders.Compiler
 {
+    public delegate TaskScheduler TaskSchedulerSelector(ShaderMixinSource mixinTree, CompilerParameters compilerParameters);
+
     /// <summary>
     /// Checks if an effect has already been compiled in its cache before deferring to a real <see cref="IEffectCompiler"/>.
     /// </summary>
@@ -29,10 +30,19 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         private readonly HashSet<ObjectId> bytecodesByPassingStorage = new HashSet<ObjectId>();
         private const string CompiledShadersKey = "__shaders_bytecode__";
 
+        private readonly Dictionary<ObjectId, Task<EffectBytecodeCompilerResult>> compilingShaders = new Dictionary<ObjectId, Task<EffectBytecodeCompilerResult>>();
+        private readonly TaskSchedulerSelector taskSchedulerSelector;
+
         private int effectCompileCount;
 
-        public EffectCompilerCache(EffectCompilerBase compiler) : base(compiler)
+        public bool CompileEffectAsynchronously { get; set; }
+
+        public override IVirtualFileProvider FileProvider { get; set; }
+
+        public EffectCompilerCache(EffectCompilerBase compiler, TaskSchedulerSelector taskSchedulerSelector = null) : base(compiler)
         {
+            CompileEffectAsynchronously = true;
+            this.taskSchedulerSelector = taskSchedulerSelector;
         }
 
         public override void ResetCache(HashSet<string> modifiedShaders)
@@ -45,17 +55,20 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             }
         }
 
-        public override EffectBytecode Compile(ShaderMixinSourceTree mixinTree, CompilerParameters compilerParameters, LoggerResult log)
+        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixin, CompilerParameters compilerParameters)
         {
-            var database = AssetManager.FileProvider;
+            var database = (FileProvider ?? AssetManager.FileProvider) as DatabaseFileProvider;
             if (database == null)
             {
                 throw new NotSupportedException("Using the cache requires to AssetManager.FileProvider to be valid.");
             }
 
-            var mixin = mixinTree.Mixin;
-            var usedParameters = mixinTree.UsedParameters;
+            // Forward DatabaseFileProvider to actual compiler here
+            // Since we might be in a Task, it has to be forwarded manually (otherwise MicroThreadLocal ones wouldn't work during build)
+            // Note: this system might need an overhaul... (too many states?)
+            base.FileProvider = database;
 
+            var usedParameters = mixin.UsedParameters;
             var mixinObjectId = ShaderMixinObjectId.Compute(mixin, usedParameters);
 
             // Final url of the compiled bytecode
@@ -70,11 +83,11 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 ObjectId bytecodeId;
                 if (database.AssetIndexMap.TryGetValue(compiledUrl, out bytecodeId))
                 {
-                    bytecode = LoadEffectBytecode(bytecodeId);
+                    bytecode = LoadEffectBytecode(database, bytecodeId);
                 }
 
                 // On non Windows platform, we are expecting to have the bytecode stored directly
-                if (!Platform.IsWindowsDesktop && bytecode == null)
+                if (Compiler is NullEffectCompiler && bytecode == null)
                 {
                     var stringBuilder = new StringBuilder();
                     stringBuilder.AppendFormat("Unable to find compiled shaders [{0}] for mixin [{1}] with parameters [{2}]", compiledUrl, mixin, usedParameters.ToStringDetailed());
@@ -94,7 +107,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                         if (stream.Read(objectIdBuffer, 0, ObjectId.HashSize) == ObjectId.HashSize)
                         {
                             var newBytecodeId = new ObjectId(objectIdBuffer);
-                            bytecode = LoadEffectBytecode(newBytecodeId);
+                            bytecode = LoadEffectBytecode(database, newBytecodeId);
 
                             if (bytecode != null)
                             {
@@ -106,61 +119,99 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 }
             }
 
+            if (bytecode != null)
+            {
+                return new EffectBytecodeCompilerResult(bytecode);
+            }
+
             // ------------------------------------------------------------------------------------------------------------
             // 3) Compile the shader
             // ------------------------------------------------------------------------------------------------------------
-            if (bytecode == null)
+            lock (compilingShaders)
             {
-                // Open the database for writing
-                var localLogger = new LoggerResult();
-
-                // Compile the mixin
-                bytecode = base.Compile(mixinTree, compilerParameters, localLogger);
-                localLogger.CopyTo(log);
-
-                // If there are any errors, return immediately
-                if (localLogger.HasErrors)
+                Task<EffectBytecodeCompilerResult> compilingShaderTask;
+                if (compilingShaders.TryGetValue(mixinObjectId, out compilingShaderTask))
                 {
-                    return null;
+                    // Note: Task might still be compiling
+                    return compilingShaderTask;
                 }
 
-                // Compute the bytecodeId
-                var newBytecodeId = bytecode.ComputeId();
-
-                // Check if we really need to store the bytecode
-                lock (bytecodes)
+                // Compile the mixin in a Task
+                if (CompileEffectAsynchronously)
                 {
-                    // Using custom serialization to the database to store an object with a custom id
-                    // TODO: Check if we really need to write the bytecode everytime even if id is not changed
-                    var memoryStream = new MemoryStream();
-                    bytecode.WriteTo(memoryStream);
-                    memoryStream.Position = 0;
-                    database.ObjectDatabase.Write(memoryStream, newBytecodeId, true);
-                    database.AssetIndexMap[compiledUrl] = newBytecodeId;
+                    var resultTask = Task.Factory.StartNew(() => CompileBytecode(mixin, compilerParameters, mixinObjectId, database, compiledUrl, usedParameters), CancellationToken.None, TaskCreationOptions.None, taskSchedulerSelector != null ? taskSchedulerSelector(mixin, compilerParameters) : TaskScheduler.Default);
 
-                    // Save bytecode Id to the database cache as well
-                    memoryStream.SetLength(0);
-                    memoryStream.Write((byte[])newBytecodeId, 0, ObjectId.HashSize);
-                    memoryStream.Position = 0;
-                    database.ObjectDatabase.Write(memoryStream, mixinObjectId);
+                    compilingShaders.Add(mixinObjectId, resultTask);
 
-                    if (!bytecodes.ContainsKey(newBytecodeId))
-                    {
-                        log.Info("New effect compiled #{0} [{1}] (db: {2})\r\n{3}", effectCompileCount, mixinObjectId, newBytecodeId, usedParameters.ToStringDetailed());
-                        Interlocked.Increment(ref effectCompileCount);
+                    return resultTask;
+                }
+                else
+                {
+                    return CompileBytecode(mixin, compilerParameters, mixinObjectId, database, compiledUrl, usedParameters);
+                }
+            }
+        }
 
-                        // Replace or add new bytecode
-                        bytecodes[newBytecodeId] = bytecode;
-                    }
+        private EffectBytecodeCompilerResult CompileBytecode(ShaderMixinSource mixinTree, CompilerParameters compilerParameters, ObjectId mixinObjectId, DatabaseFileProvider database, string compiledUrl, ShaderMixinParameters usedParameters)
+        {
+            // Open the database for writing
+            var log = new LoggerResult();
+
+            // Note: this compiler is expected to not be async and directly write stuff in localLogger
+            var compiledShader = base.Compile(mixinTree, compilerParameters).WaitForResult();
+            compiledShader.CompilationLog.CopyTo(log);
+            
+            // If there are any errors, return immediately
+            if (log.HasErrors)
+            {
+                lock (compilingShaders)
+                {
+                    compilingShaders.Remove(mixinObjectId);
+                }
+
+                return new EffectBytecodeCompilerResult(null, log);
+            }
+
+            // Compute the bytecodeId
+            var newBytecodeId = compiledShader.Bytecode.ComputeId();
+
+            // Check if we really need to store the bytecode
+            lock (bytecodes)
+            {
+                // Using custom serialization to the database to store an object with a custom id
+                // TODO: Check if we really need to write the bytecode everytime even if id is not changed
+                var memoryStream = new MemoryStream();
+                compiledShader.Bytecode.WriteTo(memoryStream);
+                memoryStream.Position = 0;
+                database.ObjectDatabase.Write(memoryStream, newBytecodeId, true);
+                database.AssetIndexMap[compiledUrl] = newBytecodeId;
+
+                // Save bytecode Id to the database cache as well
+                memoryStream.SetLength(0);
+                memoryStream.Write((byte[])newBytecodeId, 0, ObjectId.HashSize);
+                memoryStream.Position = 0;
+                database.ObjectDatabase.Write(memoryStream, mixinObjectId, true);
+
+                if (!bytecodes.ContainsKey(newBytecodeId))
+                {
+                    log.Info("New effect compiled #{0} [{1}] (db: {2})\r\n{3}", effectCompileCount, mixinObjectId, newBytecodeId, usedParameters.ToStringDetailed());
+                    Interlocked.Increment(ref effectCompileCount);
+
+                    // Replace or add new bytecode
+                    bytecodes[newBytecodeId] = compiledShader.Bytecode;
                 }
             }
 
-            return bytecode;
+            lock (compilingShaders)
+            {
+                compilingShaders.Remove(mixinObjectId);
+            }
+
+            return compiledShader;
         }
 
-        private EffectBytecode LoadEffectBytecode(ObjectId bytecodeId)
+        private EffectBytecode LoadEffectBytecode(DatabaseFileProvider database, ObjectId bytecodeId)
         {
-            var database = AssetManager.FileProvider;
             EffectBytecode bytecode = null;
 
             if (!bytecodes.TryGetValue(bytecodeId, out bytecode))

@@ -25,7 +25,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Games.Time;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core;
@@ -36,7 +35,7 @@ namespace SiliconStudio.Paradox.Games
     /// <summary>
     /// The game.
     /// </summary>
-    public abstract class GameBase : ComponentBase, IGame, IVirtualResolution
+    public abstract class GameBase : ComponentBase, IGame
     {
         #region Fields
 
@@ -52,7 +51,7 @@ namespace SiliconStudio.Paradox.Games
         private ProfilingState profilingDraw;
         private TimeSpan singleFrameUpdateTime;
         private IGraphicsDeviceService graphicsDeviceService;
-        private IGraphicsDeviceManager graphicsDeviceManager;
+        protected IGraphicsDeviceManager graphicsDeviceManager;
         private ResumeManager resumeManager;
         private bool isEndRunRequired;
         private bool isExiting;
@@ -75,8 +74,6 @@ namespace SiliconStudio.Paradox.Games
 
         internal bool SlowDownDrawCalls;
 
-        private Vector3 virtualResolution;
-
         #endregion
 
         #region Constructors and Destructors
@@ -87,7 +84,7 @@ namespace SiliconStudio.Paradox.Games
         protected GameBase()
         {
             // Internals
-            Log = GlobalLogger.GetLogger(this.GetType().GetTypeInfo().Name);
+            Log = GlobalLogger.GetLogger(GetType().GetTypeInfo().Name);
             updateTime = new GameTime();
             drawTime = new GameTime();
             playTimer = new TimerTick();
@@ -111,8 +108,7 @@ namespace SiliconStudio.Paradox.Games
             Services = new ServiceRegistry();
 
             // Asset manager
-            Asset = new AssetManager();
-            Asset.Serializer.SerializerContextTags.Set(ServiceRegistry.ServiceRegistryKey, Services);
+            Asset = new AssetManager(Services);
 
             LaunchParameters = new LaunchParameters();
             GameSystems = new GameSystemCollection();
@@ -126,9 +122,6 @@ namespace SiliconStudio.Paradox.Games
 
             // Setup registry
             Services.AddService(typeof(IGame), this);
-            Services.AddService(typeof(IVirtualResolution), this);
-            Services.AddService(typeof(IAssetManager), Asset);
-            Services.AddService(typeof(AssetManager), Asset);
             Services.AddService(typeof(IGamePlatform), gamePlatform);
 
             IsActive = true;
@@ -331,25 +324,7 @@ namespace SiliconStudio.Paradox.Games
         }
 
         public GameState State { get; set; }
-
-        public Vector3 VirtualResolution
-        {
-            get { return virtualResolution; }
-            set
-            {
-                if(virtualResolution == value)
-                    return;
-
-                virtualResolution = value;
-
-                var handler = VirtualResolutionChanged;
-                if (handler != null)
-                    handler(this, EventArgs.Empty);
-            }
-        }
-
-        public event EventHandler<EventArgs> VirtualResolutionChanged;
-
+        
         #endregion
 
         internal EventHandler<GameUnhandledExceptionEventArgs> UnhandledExceptionInternal
@@ -383,9 +358,11 @@ namespace SiliconStudio.Paradox.Games
         {
             try
             {
-
                 using (var profile = Profiler.Begin(GameProfilingKeys.GameInitialize))
                 {
+                    // Initialize this instance and all game systems before trying to create the device.
+                    Initialize();
+
                     // Make sure that the device is already created
                     graphicsDeviceManager.CreateDevice();
 
@@ -402,11 +379,11 @@ namespace SiliconStudio.Paradox.Games
                         throw new InvalidOperationException("No GraphicsDevice found");
                     }
 
+                    // Setup the graphics device if it was not already setup.
+                    SetupGraphicsDeviceEvents();
+
                     // Bind Graphics Context enabling initialize to use GL API eg. SetData to texture ...etc
                     BeginDraw();
-
-                    // Initialize this instance and all game systems
-                    Initialize();
 
                     LoadContentInternal();
 
@@ -460,7 +437,9 @@ namespace SiliconStudio.Paradox.Games
             }
 
             // Gets the GameWindow Context
-            this.Context = gameContext ?? new GameContext();
+            Context = gameContext ?? new GameContext();
+
+            PrepareRun();
 
             try
             {
@@ -494,6 +473,10 @@ namespace SiliconStudio.Paradox.Games
             }
         }
 
+        internal protected virtual void PrepareRun()
+        {
+        }
+
         /// <summary>
         /// Prevents calls to Draw until the next Update.
         /// </summary>
@@ -525,6 +508,10 @@ namespace SiliconStudio.Paradox.Games
                 }
 
                 // Update the timer
+                if (updateTime.FrameCount < 2) //-> delay timer reset after first draw to avoid important gap in game time space
+                {
+                    timer.Reset();
+                }
                 timer.Tick();
 
                 // Update the playTimer timer
@@ -638,7 +625,7 @@ namespace SiliconStudio.Paradox.Games
                     if (!suppressNextDraw)
                     {
                         totalDrawTime = TimeSpan.FromTicks(totalUpdateTime.Ticks + drawLag);
-                        DrawInterpolationFactor = (float)drawLag/(float)TargetElapsedTime.Ticks;
+                        DrawInterpolationFactor = drawLag/(float)TargetElapsedTime.Ticks;
                         DrawFrame();
                     }
 
@@ -706,7 +693,7 @@ namespace SiliconStudio.Paradox.Games
                     Window.OnPause();
 
                 var array = new IGameSystemBase[GameSystems.Count];
-                this.GameSystems.CopyTo(array, 0);
+                GameSystems.CopyTo(array, 0);
                 for (int i = 0; i < array.Length; i++)
                 {
                     var disposable = array[i] as IDisposable;
@@ -772,9 +759,6 @@ namespace SiliconStudio.Paradox.Games
         /// <summary>Called after the Game and GraphicsDevice are created, but before LoadContent.  Reference page contains code sample.</summary>
         protected virtual void Initialize()
         {
-            // Setup the graphics device if it was not already setup.
-            SetupGraphicsDeviceEvents();
-
             GameSystems.Initialize();
         }
 

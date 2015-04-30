@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using SiliconStudio.Paradox.Effects.Data;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering.Data;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Shaders;
@@ -13,7 +13,7 @@ using SiliconStudio.Paradox.Shaders;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 using PrimitiveType = SiliconStudio.Paradox.Graphics.PrimitiveType;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     internal class LightingPrepassShaderPlugin : ShaderPlugin<LightingPrepassPlugin>
     {

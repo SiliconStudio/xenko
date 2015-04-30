@@ -7,7 +7,7 @@ namespace SiliconStudio.Paradox.Graphics
 {
     internal class ImageSerializer : ContentSerializerBase<Image>
     {
-        public override void Serialize(ContentSerializerContext context, SerializationStream stream, ref Image textureData)
+        public override void Serialize(ContentSerializerContext context, SerializationStream stream, Image textureData)
         {
             if (context.Mode == ArchiveMode.Deserialize)
             {

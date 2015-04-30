@@ -81,20 +81,19 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             generics[1] = "TEXCOORD0";
             generics[2] = "float4(2.0,1,1,1)";
 
-            var mixinSource = new ShaderMixinSource();
-            mixinSource.Mixins.Add(new ShaderClassSource("GenericClass2", generics));
-
             var compilerParameters = new ShaderMixinParameters();
             compilerParameters.Set(EffectSourceCodeKeys.Enable, true);
             compilerParameters.Set(CompilerParameters.GraphicsProfileKey, GraphicsProfile.Level_11_0);
+
+            var mixinSource = new ShaderMixinSource { Name = "TestShaderCompilationGenericClass", UsedParameters = compilerParameters };
+            mixinSource.Mixins.Add(new ShaderClassSource("GenericClass2", generics));
 
             var log = new CompilerResults();
 
             var compiler = new EffectCompiler();
             compiler.SourceDirectories.Add("shaders");
 
-            var mixinTree = new ShaderMixinSourceTree() { Name = "TestShaderCompilationGenericClass", Mixin = mixinSource, UsedParameters = compilerParameters };
-            var effectByteCode = compiler.Compile(mixinTree, new CompilerParameters(), log);
+            var effectByteCode = compiler.Compile(mixinSource, new CompilerParameters());
         }
 
 

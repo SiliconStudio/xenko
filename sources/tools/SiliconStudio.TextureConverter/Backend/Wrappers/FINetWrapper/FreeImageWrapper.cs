@@ -44,6 +44,8 @@ using System.Runtime.InteropServices;
 using FreeImageAPI.IO;
 using FreeImageAPI.Metadata;
 
+using ParadoxPixelFormat = SiliconStudio.Paradox.Graphics.PixelFormat;
+
 namespace FreeImageAPI
 {
 	/// <summary>
@@ -796,11 +798,11 @@ namespace FreeImageAPI
 		/// <param name="pitch">Defines the total width of a scanline in the raw bitmap,
 		/// including padding bytes.</param>
 		/// <param name="bpp">The bit depth (bits per pixel) of the raw bitmap.</param>
-		/// <param name="red_mask">The bit mask describing the bits used to store a single 
+		/// <param name="redMask">The bit mask describing the bits used to store a single 
 		/// pixel's red component in the raw bitmap. This is only applied to 16-bpp raw bitmaps.</param>
-		/// <param name="green_mask">The bit mask describing the bits used to store a single
+		/// <param name="greenMask">The bit mask describing the bits used to store a single
 		/// pixel's green component in the raw bitmap. This is only applied to 16-bpp raw bitmaps.</param>
-		/// <param name="blue_mask">The bit mask describing the bits used to store a single
+		/// <param name="blueMask">The bit mask describing the bits used to store a single
 		/// pixel's blue component in the raw bitmap. This is only applied to 16-bpp raw bitmaps.</param>
 		/// <param name="topdown">If true, the raw bitmap is stored in top-down order (top-left pixel first)
 		/// and in bottom-up order (bottom-left pixel first) otherwise.</param>
@@ -812,9 +814,9 @@ namespace FreeImageAPI
 			int height,
 			int pitch,
 			uint bpp,
-			uint red_mask,
-			uint green_mask,
-			uint blue_mask,
+			uint redMask,
+			uint greenMask,
+			uint blueMask,
 			bool topdown)
 		{
 			fixed (byte* ptr = bits)
@@ -826,9 +828,9 @@ namespace FreeImageAPI
 					height,
 					pitch,
 					bpp,
-					red_mask,
-					green_mask,
-					blue_mask,
+					redMask,
+					greenMask,
+					blueMask,
 					topdown);
 			}
 		}
@@ -843,11 +845,11 @@ namespace FreeImageAPI
 		/// <param name="pitch">Defines the total width of a scanline in the raw bitmap,
 		/// including padding bytes.</param>
 		/// <param name="bpp">The bit depth (bits per pixel) of the raw bitmap.</param>
-		/// <param name="red_mask">The bit mask describing the bits used to store a single 
+		/// <param name="redMask">The bit mask describing the bits used to store a single 
 		/// pixel's red component in the raw bitmap. This is only applied to 16-bpp raw bitmaps.</param>
-		/// <param name="green_mask">The bit mask describing the bits used to store a single
+		/// <param name="greenMask">The bit mask describing the bits used to store a single
 		/// pixel's green component in the raw bitmap. This is only applied to 16-bpp raw bitmaps.</param>
-		/// <param name="blue_mask">The bit mask describing the bits used to store a single
+		/// <param name="blueMask">The bit mask describing the bits used to store a single
 		/// pixel's blue component in the raw bitmap. This is only applied to 16-bpp raw bitmaps.</param>
 		/// <param name="topdown">If true, the raw bitmap is stored in top-down order (top-left pixel first)
 		/// and in bottom-up order (bottom-left pixel first) otherwise.</param>
@@ -859,9 +861,9 @@ namespace FreeImageAPI
 			int height,
 			int pitch,
 			uint bpp,
-			uint red_mask,
-			uint green_mask,
-			uint blue_mask,
+			uint redMask,
+			uint greenMask,
+			uint blueMask,
 			bool topdown)
 		{
 			byte* addr = (byte*)bits;
@@ -870,7 +872,7 @@ namespace FreeImageAPI
 				return FIBITMAP.Zero;
 			}
 
-			FIBITMAP dib = AllocateT(type, width, height, (int)bpp, red_mask, green_mask, blue_mask);
+			FIBITMAP dib = AllocateT(type, width, height, (int)bpp, redMask, greenMask, blueMask);
 			if (dib != FIBITMAP.Zero)
 			{
 				if (topdown)
@@ -2653,104 +2655,263 @@ namespace FreeImageAPI
 			return result;
 		}
 
-		/// <summary>
-		/// Retrieves all parameters needed to create a new FreeImage bitmap from
-		/// the format of a .NET <see cref="System.Drawing.Image"/>.
-		/// </summary>
-		/// <param name="format">The <see cref="System.Drawing.Imaging.PixelFormat"/>
-		/// of the .NET <see cref="System.Drawing.Image"/>.</param>
-		/// <param name="type">Returns the type used for the new bitmap.</param>
-		/// <param name="bpp">Returns the color depth for the new bitmap.</param>
-		/// <param name="red_mask">Returns the red_mask for the new bitmap.</param>
-		/// <param name="green_mask">Returns the green_mask for the new bitmap.</param>
-		/// <param name="blue_mask">Returns the blue_mask for the new bitmap.</param>
-		/// <returns>True in case a matching conversion exists; else false.
-		/// </returns>
-		public static bool GetFormatParameters(
-			PixelFormat format,
-			out FREE_IMAGE_TYPE type,
-			out uint bpp,
-			out uint red_mask,
-			out uint green_mask,
-			out uint blue_mask)
-		{
-			bool result = false;
-			type = FREE_IMAGE_TYPE.FIT_UNKNOWN;
-			bpp = 0;
-			red_mask = 0;
-			green_mask = 0;
-			blue_mask = 0;
-			switch (format)
-			{
-				case PixelFormat.Format1bppIndexed:
-					type = FREE_IMAGE_TYPE.FIT_BITMAP;
-					bpp = 1;
-					result = true;
-					break;
-				case PixelFormat.Format4bppIndexed:
-					type = FREE_IMAGE_TYPE.FIT_BITMAP;
-					bpp = 4;
-					result = true;
-					break;
-				case PixelFormat.Format8bppIndexed:
-					type = FREE_IMAGE_TYPE.FIT_BITMAP;
-					bpp = 8;
-					result = true;
-					break;
-				case PixelFormat.Format16bppRgb565:
-					type = FREE_IMAGE_TYPE.FIT_BITMAP;
-					bpp = 16;
-					red_mask = FI16_565_RED_MASK;
-					green_mask = FI16_565_GREEN_MASK;
-					blue_mask = FI16_565_BLUE_MASK;
-					result = true;
-					break;
-				case PixelFormat.Format16bppRgb555:
-				case PixelFormat.Format16bppArgb1555:
-					type = FREE_IMAGE_TYPE.FIT_BITMAP;
-					bpp = 16;
-					red_mask = FI16_555_RED_MASK;
-					green_mask = FI16_555_GREEN_MASK;
-					blue_mask = FI16_555_BLUE_MASK;
-					result = true;
-					break;
-				case PixelFormat.Format24bppRgb:
-					type = FREE_IMAGE_TYPE.FIT_BITMAP;
-					bpp = 24;
-					red_mask = FI_RGBA_RED_MASK;
-					green_mask = FI_RGBA_GREEN_MASK;
-					blue_mask = FI_RGBA_BLUE_MASK;
-					result = true;
-					break;
-				case PixelFormat.Format32bppRgb:
-				case PixelFormat.Format32bppArgb:
-				case PixelFormat.Format32bppPArgb:
-					type = FREE_IMAGE_TYPE.FIT_BITMAP;
-					bpp = 32;
-					red_mask = FI_RGBA_RED_MASK;
-					green_mask = FI_RGBA_GREEN_MASK;
-					blue_mask = FI_RGBA_BLUE_MASK;
-					result = true;
-					break;
-				case PixelFormat.Format16bppGrayScale:
-					type = FREE_IMAGE_TYPE.FIT_UINT16;
-					bpp = 16;
-					result = true;
-					break;
-				case PixelFormat.Format48bppRgb:
-					type = FREE_IMAGE_TYPE.FIT_RGB16;
-					bpp = 48;
-					result = true;
-					break;
-				case PixelFormat.Format64bppArgb:
-				case PixelFormat.Format64bppPArgb:
-					type = FREE_IMAGE_TYPE.FIT_RGBA16;
-					bpp = 64;
-					result = true;
-					break;
-			}
-			return result;
-		}
+        /// <summary>
+        /// Retrieves all parameters needed to create a new FreeImage bitmap from
+        /// the format of a .NET <see cref="System.Drawing.Image"/>.
+        /// </summary>
+        /// <param name="format">The <see cref="System.Drawing.Imaging.PixelFormat"/>
+        /// of the .NET <see cref="System.Drawing.Image"/>.</param>
+        /// <param name="type">Returns the type used for the new bitmap.</param>
+        /// <param name="bpp">Returns the color depth for the new bitmap.</param>
+        /// <param name="redMask">Returns the red_mask for the new bitmap.</param>
+        /// <param name="greenMask">Returns the green_mask for the new bitmap.</param>
+        /// <param name="blueMask">Returns the blue_mask for the new bitmap.</param>
+        /// <returns>True in case a matching conversion exists; else false.
+        /// </returns>
+        public static bool GetFormatParameters(
+            PixelFormat format,
+            out FREE_IMAGE_TYPE type,
+            out uint bpp,
+            out uint redMask,
+            out uint greenMask,
+            out uint blueMask)
+        {
+            bool result = false;
+            type = FREE_IMAGE_TYPE.FIT_UNKNOWN;
+            bpp = 0;
+            redMask = 0;
+            greenMask = 0;
+            blueMask = 0;
+            switch (format)
+            {
+                case PixelFormat.Format1bppIndexed:
+                    type = FREE_IMAGE_TYPE.FIT_BITMAP;
+                    bpp = 1;
+                    result = true;
+                    break;
+                case PixelFormat.Format4bppIndexed:
+                    type = FREE_IMAGE_TYPE.FIT_BITMAP;
+                    bpp = 4;
+                    result = true;
+                    break;
+                case PixelFormat.Format8bppIndexed:
+                    type = FREE_IMAGE_TYPE.FIT_BITMAP;
+                    bpp = 8;
+                    result = true;
+                    break;
+                case PixelFormat.Format16bppRgb565:
+                    type = FREE_IMAGE_TYPE.FIT_BITMAP;
+                    bpp = 16;
+                    redMask = FI16_565_RED_MASK;
+                    greenMask = FI16_565_GREEN_MASK;
+                    blueMask = FI16_565_BLUE_MASK;
+                    result = true;
+                    break;
+                case PixelFormat.Format16bppRgb555:
+                case PixelFormat.Format16bppArgb1555:
+                    type = FREE_IMAGE_TYPE.FIT_BITMAP;
+                    bpp = 16;
+                    redMask = FI16_555_RED_MASK;
+                    greenMask = FI16_555_GREEN_MASK;
+                    blueMask = FI16_555_BLUE_MASK;
+                    result = true;
+                    break;
+                case PixelFormat.Format24bppRgb:
+                    type = FREE_IMAGE_TYPE.FIT_BITMAP;
+                    bpp = 24;
+                    redMask = FI_RGBA_RED_MASK;
+                    greenMask = FI_RGBA_GREEN_MASK;
+                    blueMask = FI_RGBA_BLUE_MASK;
+                    result = true;
+                    break;
+                case PixelFormat.Format32bppRgb:
+                case PixelFormat.Format32bppArgb:
+                case PixelFormat.Format32bppPArgb:
+                    type = FREE_IMAGE_TYPE.FIT_BITMAP;
+                    bpp = 32;
+                    redMask = FI_RGBA_RED_MASK;
+                    greenMask = FI_RGBA_GREEN_MASK;
+                    blueMask = FI_RGBA_BLUE_MASK;
+                    result = true;
+                    break;
+                case PixelFormat.Format16bppGrayScale:
+                    type = FREE_IMAGE_TYPE.FIT_UINT16;
+                    bpp = 16;
+                    result = true;
+                    break;
+                case PixelFormat.Format48bppRgb:
+                    type = FREE_IMAGE_TYPE.FIT_RGB16;
+                    bpp = 48;
+                    result = true;
+                    break;
+                case PixelFormat.Format64bppArgb:
+                case PixelFormat.Format64bppPArgb:
+                    type = FREE_IMAGE_TYPE.FIT_RGBA16;
+                    bpp = 64;
+                    result = true;
+                    break;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Retrieves all parameters needed to create a new FreeImage bitmap from the pixel format.
+        /// </summary>
+        /// <param name="format">The <see cref="SiliconStudio.Paradox.Graphics.PixelFormat"/> of the image.</param>
+        /// <param name="type">Returns the type used for the new bitmap.</param>
+        /// <param name="bpp">Returns the color depth for the new bitmap.</param>
+        /// <param name="redMask">Returns the red_mask for the new bitmap.</param>
+        /// <param name="greenMask">Returns the green_mask for the new bitmap.</param>
+        /// <param name="blueMask">Returns the blue_mask for the new bitmap.</param>
+        /// <returns>True in case a matching conversion exists; else false.
+        /// </returns>
+        public static bool GetFormatParameters(
+            ParadoxPixelFormat format,
+            out FREE_IMAGE_TYPE type,
+            out uint bpp,
+            out uint redMask,
+            out uint greenMask,
+            out uint blueMask)
+        {
+            var result = true;
+            type = FREE_IMAGE_TYPE.FIT_UNKNOWN;
+            bpp = 0;
+            redMask = 0;
+            greenMask = 0;
+            blueMask = 0;
+
+            switch (format)
+            {
+                case ParadoxPixelFormat.R32G32B32A32_Float:
+                    type = FREE_IMAGE_TYPE.FIT_RGBAF;
+                    bpp = 128;
+                    break;
+                case ParadoxPixelFormat.R32G32B32_Float:
+                    type = FREE_IMAGE_TYPE.FIT_RGBF;
+                    bpp = 96;
+                    break;
+                case ParadoxPixelFormat.R16G16B16A16_Typeless:
+                case ParadoxPixelFormat.R16G16B16A16_Float:
+                case ParadoxPixelFormat.R16G16B16A16_UNorm:
+                case ParadoxPixelFormat.R16G16B16A16_UInt:
+                case ParadoxPixelFormat.R16G16B16A16_SNorm:
+                case ParadoxPixelFormat.R16G16B16A16_SInt:
+                    type = FREE_IMAGE_TYPE.FIT_RGBA16;
+                    bpp = 64;
+                    break;
+                case ParadoxPixelFormat.D32_Float:
+                case ParadoxPixelFormat.R32_Float:
+                    type = FREE_IMAGE_TYPE.FIT_FLOAT;
+                    bpp = 32;
+                    break;
+                case ParadoxPixelFormat.R32_SInt:
+                    type = FREE_IMAGE_TYPE.FIT_INT32;
+                    bpp = 32;
+                    break;
+                case ParadoxPixelFormat.R32_UInt:
+                    type = FREE_IMAGE_TYPE.FIT_UINT32;
+                    bpp = 32;
+                    break;
+                case ParadoxPixelFormat.R16_SInt:
+                    type = FREE_IMAGE_TYPE.FIT_INT16;
+                    bpp = 16;
+                    break;
+                case ParadoxPixelFormat.R16_UInt:
+                    type = FREE_IMAGE_TYPE.FIT_UINT16;
+                    bpp = 16;
+                    break;
+                case ParadoxPixelFormat.R32_Typeless:
+                    type = FREE_IMAGE_TYPE.FIT_BITMAP;
+                    bpp = 32;
+                    break;
+                case ParadoxPixelFormat.R8G8B8A8_Typeless:
+                case ParadoxPixelFormat.R8G8B8A8_UNorm:
+                case ParadoxPixelFormat.R8G8B8A8_UNorm_SRgb:
+                case ParadoxPixelFormat.R8G8B8A8_UInt:
+                case ParadoxPixelFormat.R8G8B8A8_SNorm:
+                case ParadoxPixelFormat.R8G8B8A8_SInt:
+                    type = FREE_IMAGE_TYPE.FIT_BITMAP;
+                    bpp = 32;
+                    redMask = FI_RGBA_RED_MASK;
+                    greenMask = FI_RGBA_GREEN_MASK;
+                    blueMask = FI_RGBA_BLUE_MASK;
+                    break;
+                case ParadoxPixelFormat.R16G16_Typeless:
+                case ParadoxPixelFormat.R16G16_Float:
+                case ParadoxPixelFormat.R16G16_UNorm:
+                case ParadoxPixelFormat.R16G16_UInt:
+                case ParadoxPixelFormat.R16G16_SNorm:
+                case ParadoxPixelFormat.R16G16_SInt:
+                    type = FREE_IMAGE_TYPE.FIT_BITMAP;
+                    bpp = 32;
+                    redMask = 0xFFFF0000;
+                    greenMask = 0x0000FFFF;
+                    break;
+                case ParadoxPixelFormat.B8G8R8A8_Typeless:
+                case ParadoxPixelFormat.B8G8R8A8_UNorm_SRgb:
+                case ParadoxPixelFormat.B8G8R8X8_Typeless:
+                case ParadoxPixelFormat.B8G8R8X8_UNorm_SRgb:
+                case ParadoxPixelFormat.B8G8R8A8_UNorm:
+                case ParadoxPixelFormat.B8G8R8X8_UNorm:
+                    type = FREE_IMAGE_TYPE.FIT_BITMAP;
+                    bpp = 32;
+                    redMask = FI_RGBA_BLUE_MASK;
+                    greenMask = FI_RGBA_GREEN_MASK;
+                    blueMask = FI_RGBA_RED_MASK;
+                    break;
+
+                case ParadoxPixelFormat.B5G6R5_UNorm:
+                    type = FREE_IMAGE_TYPE.FIT_BITMAP;
+                    bpp = 16;
+                    redMask = FI16_565_RED_MASK;
+                    greenMask = FI16_565_GREEN_MASK;
+                    blueMask = FI16_565_BLUE_MASK;
+                    break;
+                case ParadoxPixelFormat.B5G5R5A1_UNorm:
+                    type = FREE_IMAGE_TYPE.FIT_BITMAP;
+                    bpp = 16;
+                    redMask = FI16_555_RED_MASK;
+                    greenMask = FI16_555_GREEN_MASK;
+                    blueMask = FI16_555_BLUE_MASK;
+                    break;
+                case ParadoxPixelFormat.R16_Typeless:
+                case ParadoxPixelFormat.R16_Float:
+                case ParadoxPixelFormat.D16_UNorm:
+                case ParadoxPixelFormat.R16_UNorm:
+                case ParadoxPixelFormat.R16_SNorm:
+                    type = FREE_IMAGE_TYPE.FIT_BITMAP;
+                    bpp = 16;
+                    break;
+                case ParadoxPixelFormat.R8G8_Typeless:
+                case ParadoxPixelFormat.R8G8_UNorm:
+                case ParadoxPixelFormat.R8G8_UInt:
+                case ParadoxPixelFormat.R8G8_SNorm:
+                case ParadoxPixelFormat.R8G8_SInt:
+                    type = FREE_IMAGE_TYPE.FIT_BITMAP;
+                    bpp = 16;
+                    redMask = 0xFF00;
+                    greenMask= 0x00FF;
+                    break;
+                case ParadoxPixelFormat.R8_Typeless:
+                case ParadoxPixelFormat.R8_UNorm:
+                case ParadoxPixelFormat.R8_UInt:
+                case ParadoxPixelFormat.R8_SNorm:
+                case ParadoxPixelFormat.R8_SInt:
+                case ParadoxPixelFormat.A8_UNorm:
+                    type = FREE_IMAGE_TYPE.FIT_BITMAP;
+                    bpp = 8;
+                    break;
+                case ParadoxPixelFormat.R1_UNorm:
+                    type = FREE_IMAGE_TYPE.FIT_BITMAP;
+                    bpp = 1;
+                    break;
+                default:
+                    result = false;
+                    break;
+            }
+
+            return result;
+        }
 
 		/// <summary>
 		/// Returns the <see cref="FREE_IMAGE_FORMAT"/> for the specified

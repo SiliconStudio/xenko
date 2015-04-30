@@ -28,10 +28,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestObjectIdBuilder.cs" />
     <Compile Include="TestPriorityLinkedQueue.cs" />
     <Compile Include="MemoryFileProvider.cs" />
     <Compile Include="Module.cs" />
-    <Compile Include="TestConverters.cs" />
     <Compile Include="TestPriorityQueue.cs" />
     <Compile Include="TestProfiler.cs" />
     <Compile Include="TestSerialization.StructLayout.cs" />

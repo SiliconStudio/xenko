@@ -558,7 +558,7 @@ namespace SiliconStudio.Shaders.Analysis
 
             // If member reference is used from method invocation expression, let the method invocation resolve the type
             if (!(ParentNode is MethodInvocationExpression) && memberReference.TypeInference.TargetType == null)
-                Error(MessageCode.ErrorNoTypeReferenceMember, memberReference.Span, memberReference);
+                Warning(MessageCode.WarningNoTypeReferenceMember, memberReference.Span, memberReference);
         }
 
         /// <summary>

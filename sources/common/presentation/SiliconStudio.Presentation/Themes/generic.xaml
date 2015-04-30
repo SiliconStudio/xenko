@@ -20,6 +20,11 @@
         </Setter>
     </Style>-->
 
+    <SolidColorBrush x:Key="RedBrush" Color="#FFDC4E4E"/>
+    <SolidColorBrush x:Key="GreenBrush" Color="#FF65C36A"/>
+    <SolidColorBrush x:Key="BlueBrush" Color="#FF3F74D1"/>
+    <SolidColorBrush x:Key="AlphaBrush" Color="#FFBCBCBC"/>
+
     <!-- ### EditableListBox ################################################################################################################################################# -->
     <SolidColorBrush x:Key="GlyphBrush" Color="Black"/>
     
@@ -233,6 +238,179 @@
             </Setter.Value>
         </Setter>
     </Style>-->
+
+    <Style TargetType="{x:Type ctrl:ColorPicker}">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="InputColumnWidth" Value="120"/>
+        <Setter Property="PickupAreaSize" Value="160, 160"/>
+        <Setter Property="StripsHeight" Value="22"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ctrl:ColorPicker}">
+                    <Grid x:Name="RootLayout" VerticalAlignment="Top" Focusable="False">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="{TemplateBinding InputColumnWidth}"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid x:Name="LeftPaneLayout" Margin="2" VerticalAlignment="Top" Focusable="False">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Canvas x:Name="PART_HuePickerRenderSurface" Width="{Binding PickupAreaSize.Width, RelativeSource={RelativeSource TemplatedParent}}"
+                                    Height="{TemplateBinding StripsHeight}">
+                                <Canvas.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                        <GradientStop Color="Red" Offset="0.0"/>
+                                        <GradientStop Color="Yellow" Offset="0.166666666667"/>
+                                        <GradientStop Color="Lime" Offset="0.333333333333"/>
+                                        <GradientStop Color="Cyan" Offset="0.5"/>
+                                        <GradientStop Color="Blue" Offset="0.666666666667"/>
+                                        <GradientStop Color="Fuchsia" Offset="0.88888888883"/>
+                                        <GradientStop Color="Red" Offset="1.0"/>
+                                    </LinearGradientBrush>
+                                </Canvas.Background>
+                                <Rectangle x:Name="PART_HuePickerSelector" Height="{TemplateBinding StripsHeight}" Width="2">
+                                    <Rectangle.Fill>
+                                        <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                                            <GradientStop Color="Black" Offset="0"/>
+                                            <GradientStop Color="White" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Canvas>
+                            <Canvas Width="{Binding PickupAreaSize.Width, RelativeSource={RelativeSource TemplatedParent}}" Grid.Row="1" Margin="2"
+                                    Height="{Binding PickupAreaSize.Height, RelativeSource={RelativeSource TemplatedParent}}" Focusable="False">
+                                <Rectangle x:Name="PART_ColorPickerRenderSurface" Fill="White" StrokeThickness="0" VerticalAlignment="Top" HorizontalAlignment="Left"
+                                           Width="{Binding PickupAreaSize.Width, RelativeSource={RelativeSource TemplatedParent}}" Focusable="False"
+                                           Height="{Binding PickupAreaSize.Height, RelativeSource={RelativeSource TemplatedParent}}" Margin="0"/>
+                                <Canvas x:Name="PART_ColorPickerSelector" Width="0" Height="0" Focusable="False">
+                                    <Ellipse Width="10" Height="10" Canvas.Left="-5" Canvas.Top="-5" StrokeThickness="2" Focusable="False">
+                                        <Ellipse.Stroke>
+                                            <LinearGradientBrush EndPoint="0,0" StartPoint="1,1">
+                                                <GradientStop Color="Black" Offset="0"/>
+                                                <GradientStop Color="White" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Ellipse.Stroke>
+                                    </Ellipse>
+                                </Canvas>
+                            </Canvas>
+                            <Grid Height="21" Margin="2" Grid.Row="2" Focusable="False">
+                                <Rectangle Focusable="False">
+                                    <Rectangle.Fill>
+                                        <DrawingBrush Viewport="0,0,14,14" TileMode="Tile" ViewportUnits="Absolute">
+                                            <DrawingBrush.Drawing>
+                                                <DrawingGroup>
+                                                    <GeometryDrawing Brush="White">
+                                                        <GeometryDrawing.Geometry>
+                                                            <RectangleGeometry Rect="0,0,2,2"/>
+                                                        </GeometryDrawing.Geometry>
+                                                    </GeometryDrawing>
+                                                    <GeometryDrawing Brush="Black">
+                                                        <GeometryDrawing.Geometry>
+                                                            <GeometryGroup>
+                                                                <RectangleGeometry Rect="0,0,1,1"/>
+                                                                <RectangleGeometry Rect="1,1,1,1"/>
+                                                            </GeometryGroup>
+                                                        </GeometryDrawing.Geometry>
+                                                    </GeometryDrawing>
+                                                </DrawingGroup>
+                                            </DrawingBrush.Drawing>
+                                        </DrawingBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Rectangle x:Name="PART_ColorPreviewRenderSurface" Focusable="False"/>
+                            </Grid>
+                        </Grid>
+                        <Grid x:Name="RightPaneGrid" Grid.Column="1" Margin="2" Focusable="False">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.5*"/>
+                                <RowDefinition Height="0.5*"/>
+                            </Grid.RowDefinitions>
+                            <GroupBox Header="RGBA" VerticalAlignment="Top" Grid.Column="0" HorizontalContentAlignment="Stretch" BorderThickness="0" Margin="2" Focusable="False">
+                                <ctrl:KeyValueGrid x:Name="RGBGrid" HorizontalAlignment="Stretch" Focusable="False">
+                                    <TextBlock Margin="4,0" Text="R:" ToolTipService.ToolTip="Red" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                                    <StackPanel Margin="0,2">
+                                        <ctrl:NumericTextBox x:Name="RedTextBox" Value="{Binding Red, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="{StaticResource RedBrush}" Minimum="0" Maximum="255" Margin="0" MouseValidationTrigger="OnMouseMove"/>
+                                        <Rectangle Height="3" Fill="{StaticResource RedBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                            <Rectangle.RenderTransform>
+                                                <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=RedTextBox}"/>
+                                            </Rectangle.RenderTransform>
+                                        </Rectangle>
+                                    </StackPanel>
+                                    <TextBlock Margin="4,0" Text="G:" ToolTipService.ToolTip="Green" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                                    <StackPanel Margin="0,2">
+                                        <ctrl:NumericTextBox x:Name="GreenTextBox" Value="{Binding Green, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="{StaticResource GreenBrush}" Minimum="0" Maximum="255" Margin="0" MouseValidationTrigger="OnMouseMove"/>
+                                        <Rectangle Height="3" Fill="{StaticResource GreenBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                            <Rectangle.RenderTransform>
+                                                <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=GreenTextBox}"/>
+                                            </Rectangle.RenderTransform>
+                                        </Rectangle>
+                                    </StackPanel>
+                                    <TextBlock Margin="4,0" Text="B:" ToolTipService.ToolTip="Blue" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                                    <StackPanel Margin="0,2">
+                                        <ctrl:NumericTextBox x:Name="BlueTextBox" Value="{Binding Blue, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="{StaticResource BlueBrush}" Minimum="0" Maximum="255" Margin="0" MouseValidationTrigger="OnMouseMove"/>
+                                        <Rectangle Height="3" Fill="{StaticResource BlueBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                            <Rectangle.RenderTransform>
+                                                <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=BlueTextBox}"/>
+                                            </Rectangle.RenderTransform>
+                                        </Rectangle>
+                                    </StackPanel>
+                                    <TextBlock x:Name="AlphaTextBlock" Margin="4,0" Text="A:" ToolTipService.ToolTip="Alpha" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                                    <StackPanel Margin="0,2" x:Name="AlphaValue">
+                                        <ctrl:NumericTextBox x:Name="AlphaTextBox" Value="{Binding Alpha, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="{StaticResource AlphaBrush}" Minimum="0" Maximum="255" Margin="0"/>
+                                        <Rectangle Height="3" Fill="{StaticResource AlphaBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                            <Rectangle.RenderTransform>
+                                                <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=AlphaTextBox}"/>
+                                            </Rectangle.RenderTransform>
+                                        </Rectangle>
+                                    </StackPanel>
+                                </ctrl:KeyValueGrid>
+                            </GroupBox>
+                            <GroupBox Header="HSB" VerticalAlignment="Top" d:LayoutOverrides="Width" BorderThickness="0" Grid.Row="1" Margin="2" Focusable="False">
+                                <ctrl:KeyValueGrid Focusable="False">
+                                    <TextBlock Margin="4,0" Text="H:" ToolTipService.ToolTip="Hue" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                                    <StackPanel Margin="0,2">
+                                        <ctrl:NumericTextBox x:Name="HueTextBox" Value="{Binding Hue, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="{StaticResource AlphaBrush}" Minimum="0" Maximum="360" Margin="0" MouseValidationTrigger="OnMouseMove"/>
+                                        <Rectangle Height="3" Fill="{StaticResource AlphaBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                            <Rectangle.RenderTransform>
+                                                <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=HueTextBox}"/>
+                                            </Rectangle.RenderTransform>
+                                        </Rectangle>
+                                    </StackPanel>
+                                    <TextBlock Margin="4,0" Text="S:" ToolTipService.ToolTip="Saturation" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                                    <StackPanel Margin="0,2">
+                                        <ctrl:NumericTextBox x:Name="SaturationTextBox" Value="{Binding Saturation, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="{StaticResource AlphaBrush}" Minimum="0" Maximum="100" Margin="0" MouseValidationTrigger="OnMouseMove"/>
+                                        <Rectangle Height="3" Fill="{StaticResource AlphaBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                            <Rectangle.RenderTransform>
+                                                <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=SaturationTextBox}"/>
+                                            </Rectangle.RenderTransform>
+                                        </Rectangle>
+                                    </StackPanel>
+                                    <TextBlock Margin="4,0" Text="B:" ToolTipService.ToolTip="Value" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                                    <StackPanel Margin="0,2">
+                                        <ctrl:NumericTextBox x:Name="BrightnessTextBox" Value="{Binding Brightness, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="{StaticResource AlphaBrush}" Minimum="0" Maximum="100" Margin="0" MouseValidationTrigger="OnMouseMove"/>
+                                        <Rectangle Height="3" Fill="{StaticResource AlphaBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                            <Rectangle.RenderTransform>
+                                                <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=BrightnessTextBox}"/>
+                                            </Rectangle.RenderTransform>
+                                        </Rectangle>
+                                    </StackPanel>
+                                </ctrl:KeyValueGrid>
+                            </GroupBox>
+                        </Grid>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="ShowAlpha" Value="False">
+                            <Setter TargetName="AlphaTextBlock" Property="Visibility" Value="Collapsed"/>
+                            <Setter TargetName="AlphaValue" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
     <Style x:Key="DefaultLogViewerStyle" TargetType="ctrl:TextLogViewer">
         <Setter Property="Focusable" Value="False"/>

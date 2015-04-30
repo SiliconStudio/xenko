@@ -18,6 +18,7 @@
     <SiliconStudioPackageGuid>{b18707e8-1d26-49fc-9911-3834506d8149}</SiliconStudioPackageGuid>
     <SiliconStudioParadoxDir>$(MSBuildThisFileDirectory)..\..\..</SiliconStudioParadoxDir>
     <SiliconStudioParadoxGraphicsApi Condition="'$(SiliconStudioParadoxGraphicsApi)' == ''">Direct3D11</SiliconStudioParadoxGraphicsApi>
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
     <!-- Force msbuild to check to rebuild this assembly instead of letting VS IDE guess -->
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
@@ -35,7 +36,8 @@
     <IntermediateOutputPath>obj\Windows\Debug\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -45,9 +47,10 @@
     <IntermediateOutputPath>obj\Windows\Release\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Paradox.UI.Tests.Regression.ClippingTest</StartupObject>
+    <StartupObject>SiliconStudio.Paradox.UI.Tests.Regression.InSceneUITest</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
@@ -178,6 +181,7 @@
     <Compile Include="Program.cs" />
     <Compile Label="Paradox.DoNotSync" Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RandomExtension.cs" />
+    <Compile Include="Regression\BillboardModeTests.cs" />
     <Compile Include="Regression\BorderImageTest.cs" />
     <Compile Include="Regression\BorderTest.cs" />
     <Compile Include="Regression\ButtonTest.cs" />
@@ -198,6 +202,7 @@
     <Compile Include="Regression\ImageRotatedTest.cs" />
     <Compile Include="Regression\ImageSeparateAlphaTest.cs" />
     <Compile Include="Regression\ImageTest.cs" />
+    <Compile Include="Regression\InSceneUITest.cs" />
     <Compile Include="Regression\LeaveEnterTest.cs" />
     <Compile Include="Regression\ModalElementTest.cs" />
     <Compile Include="Regression\MouseOverTest.cs" />
@@ -206,6 +211,7 @@
     <Compile Include="Regression\ScrollViewerTest.cs" />
     <Compile Include="Regression\SliderTest.cs" />
     <Compile Include="Regression\StackPanelTest.cs" />
+    <Compile Include="Regression\TestCamera.cs" />
     <Compile Include="Regression\TextBlockTest.cs" />
     <Compile Include="Regression\TextBlockWrappingTest.cs" />
     <Compile Include="Regression\ToggleButtonTest.cs" />

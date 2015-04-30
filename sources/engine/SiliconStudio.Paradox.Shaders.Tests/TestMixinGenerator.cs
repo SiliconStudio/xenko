@@ -6,7 +6,7 @@ using System.Linq;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Shaders.Tests
 {
@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             ShaderMixinParameters usedProperties;
 
             var mixin = GenerateMixin("DefaultSimple", properties, out usedProperties);
-            mixin.Mixin.CheckMixin("A", "B", "C");
+            mixin.CheckMixin("A", "B", "C");
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             ShaderMixinParameters usedProperties;
 
             var mixin = GenerateMixin("DefaultSimpleChild", properties, out usedProperties);
-            mixin.Mixin.CheckMixin("A", "B", "C", "C1", "C2");
+            mixin.CheckMixin("A", "B", "C", "C1", "C2");
         }
 
         /// <summary>
@@ -52,8 +52,8 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             ShaderMixinParameters usedProperties;
 
             var mixin = GenerateMixin("DefaultSimpleCompose", properties, out usedProperties);
-            mixin.Mixin.CheckMixin("A", "B", "C");
-            mixin.Mixin.CheckComposition("x", "X");
+            mixin.CheckMixin("A", "B", "C");
+            mixin.CheckComposition("x", "X");
         }
 
         /// <summary>
@@ -66,17 +66,17 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             ShaderMixinParameters usedProperties;
 
             var mixin = GenerateMixin("DefaultSimpleParams", properties, out usedProperties);
-            mixin.Mixin.CheckMixin("A", "B", "D");
-            mixin.Mixin.CheckComposition("y", "Y");
-            mixin.Mixin.CheckMacro("Test", "ok");
+            mixin.CheckMixin("A", "B", "D");
+            mixin.CheckComposition("y", "Y");
+            mixin.CheckMacro("Test", "ok");
 
             // Set a key to modify the mixin
             properties.Set(Test7.TestParameters.param1, true);
 
             mixin = GenerateMixin("DefaultSimpleParams", properties, out usedProperties);
-            mixin.Mixin.CheckMixin("A", "B", "C");
-            mixin.Mixin.CheckComposition("x", "X");
-            mixin.Mixin.CheckMacro("param2", 1);
+            mixin.CheckMixin("A", "B", "C");
+            mixin.CheckComposition("x", "X");
+            mixin.CheckMacro("param2", 1);
         }
 
         /// <summary>
@@ -89,10 +89,10 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             ShaderMixinParameters usedProperties;
 
             var mixin = GenerateMixin("DefaultSimpleClone", properties, out usedProperties);
-            mixin.Mixin.CheckMixin("A", "B", "C");
-            Assert.That(mixin.Children.Count, Is.EqualTo(1), "Expecting one children mixin");
+            mixin.CheckMixin("A", "B", "C");
 
-            mixin.Children.Values.First().Mixin.CheckMixin("A", "B", "C", "C1", "C2");
+            var childMixin = GenerateMixin("DefaultSimpleClone.Test", properties, out usedProperties);
+            childMixin.CheckMixin("A", "B", "C", "C1", "C2");
         }
 
 
@@ -113,17 +113,17 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             ShaderMixinParameters usedProperties;
 
             var mixin = GenerateMixin("test_mixin_compose_keys", properties, out usedProperties);
-            mixin.Mixin.CheckMixin("A");
+            mixin.CheckMixin("A");
 
-            Assert.AreEqual(3, mixin.Mixin.Compositions.Count);
+            Assert.AreEqual(3, mixin.Compositions.Count);
 
-            Assert.IsTrue(mixin.Mixin.Compositions.ContainsKey("SubCompute1"));
-            Assert.IsTrue(mixin.Mixin.Compositions.ContainsKey("SubCompute2"));
-            Assert.IsTrue(mixin.Mixin.Compositions.ContainsKey("SubComputes"));
+            Assert.IsTrue(mixin.Compositions.ContainsKey("SubCompute1"));
+            Assert.IsTrue(mixin.Compositions.ContainsKey("SubCompute2"));
+            Assert.IsTrue(mixin.Compositions.ContainsKey("SubComputes"));
 
-            Assert.AreEqual("mixin ComputeColor2", mixin.Mixin.Compositions["SubCompute1"].ToString());
-            Assert.AreEqual("mixin ComputeColor", mixin.Mixin.Compositions["SubCompute2"].ToString());
-            Assert.AreEqual("[mixin ComputeColorRedirect [{ColorRedirect = mixin ComputeColor2}]]", mixin.Mixin.Compositions["SubComputes"].ToString());
+            Assert.AreEqual("mixin ComputeColor2", mixin.Compositions["SubCompute1"].ToString());
+            Assert.AreEqual("mixin ComputeColor", mixin.Compositions["SubCompute2"].ToString());
+            Assert.AreEqual("[mixin ComputeColorRedirect [{ColorRedirect = mixin ComputeColor2}]]", mixin.Compositions["SubComputes"].ToString());
 
             Assert.IsTrue(mixin.UsedParameters.ContainsKey(subCompute1Key));
             Assert.IsTrue(mixin.UsedParameters.ContainsKey(subCompute2Key));
@@ -145,10 +145,10 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             ShaderMixinParameters usedProperties;
 
             var mixin = GenerateMixin("DefaultSimpleChildParams", properties, out usedProperties);
-            mixin.Mixin.CheckMixin("A", "B", "C");
-            Assert.That(mixin.Children.Count, Is.EqualTo(1), "Expecting one children mixin");
-            var childMixin = mixin.Children.Values.First();
-            childMixin.Mixin.CheckMixin("A", "B", "C1");
+            mixin.CheckMixin("A", "B", "C");
+
+            var childMixin = GenerateMixin("DefaultSimpleChildParams.ChildParamsMixin", properties, out usedProperties);
+            childMixin.CheckMixin("A", "B", "C1");
             Assert.IsTrue(childMixin.UsedParameters.ContainsKey(Test4.TestParameters.TestCount));
             Assert.AreEqual(0, childMixin.UsedParameters.Get(Test4.TestParameters.TestCount));
         }
@@ -175,7 +175,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
             // Generate the mixin with default properties
             var mixin = GenerateMixin("DefaultComplexParams", properties, out usedProperties);
-            mixin.Mixin.CheckMixin("A", "B", "C", "D");
+            mixin.CheckMixin("A", "B", "C", "D");
 
             // Modify properties in order to modify mixin
             for (int i = 0; i < subParameters.Length; i++)
@@ -185,7 +185,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             subParam1.Set(Test1.SubParameters.param2, 2);
 
             mixin = GenerateMixin("DefaultComplexParams", properties, out usedProperties);
-            mixin.Mixin.CheckMixin("A", "B", "C", "C1", "C3");
+            mixin.CheckMixin("A", "B", "C", "C1", "C3");
         }
 
         public static ParameterKey<int> PropertyInt = ParameterKeys.New<int>();

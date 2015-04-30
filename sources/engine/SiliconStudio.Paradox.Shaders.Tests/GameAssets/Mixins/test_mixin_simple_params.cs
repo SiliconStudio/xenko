@@ -8,7 +8,7 @@
 
 using System;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
@@ -26,31 +26,33 @@ namespace Test7
     {
         internal partial class DefaultSimpleParams  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "A");
                 context.Mixin(mixin, "B");
                 if (context.GetParam(TestParameters.param1))
                 {
                     context.Mixin(mixin, "C");
-                    mixin.Mixin.AddMacro("param2", context.GetParam(TestParameters.param2));
+                    mixin.AddMacro("param2", context.GetParam(TestParameters.param2));
 
                     {
-                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        var __mixinToCompose__ = "X";
+                        var __subMixin = new ShaderMixinSource();
                         context.PushComposition(mixin, "x", __subMixin);
-                        context.Mixin(__subMixin, "X");
+                        context.Mixin(__subMixin, __mixinToCompose__);
                         context.PopComposition();
                     }
                 }
                 else
                 {
                     context.Mixin(mixin, "D");
-                    mixin.Mixin.AddMacro("Test", context.GetParam(TestParameters.param3));
+                    mixin.AddMacro("Test", context.GetParam(TestParameters.param3));
 
                     {
-                        var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };
+                        var __mixinToCompose__ = "Y";
+                        var __subMixin = new ShaderMixinSource();
                         context.PushComposition(mixin, "y", __subMixin);
-                        context.Mixin(__subMixin, "Y");
+                        context.Mixin(__subMixin, __mixinToCompose__);
                         context.PopComposition();
                     }
                 }

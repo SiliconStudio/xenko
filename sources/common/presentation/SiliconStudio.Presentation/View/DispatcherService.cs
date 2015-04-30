@@ -50,7 +50,7 @@ namespace SiliconStudio.Presentation.View
         /// <inheritdoc/>
         public void BeginInvoke(Action callback)
         {
-            dispatcher.InvokeAsync (callback);
+            dispatcher.InvokeAsync(callback);
         }
 
         /// <inheritdoc/>

@@ -30,6 +30,9 @@ namespace SiliconStudio.LauncherApp
             // Setup the SiliconStudioParadoxDir to make sure that it is passed to the underlying process (msbuild...etc.)
             Environment.SetEnvironmentVariable("SiliconStudioParadoxDir", Path.GetDirectoryName(typeof(Program).Assembly.Location));
 
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
             var program = new Program();
             program.RunSafe(() => program.Run(AppHelper.GetCommandLineArgs()));
         }

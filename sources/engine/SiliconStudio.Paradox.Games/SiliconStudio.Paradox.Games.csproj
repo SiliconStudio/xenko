@@ -60,7 +60,6 @@
     <Compile Include="iOS\GamePlatformiOS.cs" />
     <Compile Include="iOS\GameWindowiOS.cs" />
     <Compile Include="iOS\IAnimatedGameView.cs" />
-    <Compile Include="IVirtualResolution.cs" />
     <Compile Include="ListBoundExtensions.cs" />
     <Compile Include="OpenTK\GamePlatformOpenTK.cs" />
     <Compile Include="OpenTK\GameWindowOpenTK.cs" />
@@ -137,14 +136,19 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Desktop\Win32Native.DirectX.cs" />
     <None Include="Resources\Logo.ico" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' And '$(ParadoxGraphicsApi)' == 'OpenGLES' ">
-    <None Include="..\..\..\deps\SDL2\$(SiliconStudioPlatform)\**\SDL2.dll">
-      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+  <Choose>
+    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' And '$(ParadoxGraphicsApi)' == 'OpenGLES' ">
+      <ItemGroup>
+        <None Include="..\..\..\deps\SDL2\$(SiliconStudioPlatform)\**\SDL2.dll">
+          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+      </ItemGroup>
+    </When>
+  </Choose>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

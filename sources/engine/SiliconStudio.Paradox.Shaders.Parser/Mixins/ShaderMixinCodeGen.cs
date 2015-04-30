@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
     /// </summary>
     public class ShaderMixinCodeGen : ShaderKeyGeneratorBase//ShaderWriter
     {
-        private const string DefaultNameSpace = "SiliconStudio.Paradox.Effects";
+        private const string DefaultNameSpace = "SiliconStudio.Paradox.Rendering";
 
         private const string BlockContextTag = "BlockContextTag";
         private readonly LoggerResult logging;
@@ -114,12 +114,14 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 return true;
             }
 
+            IsPdxfx = blockVisitor.HasMixin;
+
             // Header of usings declaration
             // TODO: Should probably be better to use fully qualified name of types to avoid conflicts.
 
             WriteLine("using System;");
             WriteLine("using SiliconStudio.Core;");
-            WriteLine("using SiliconStudio.Paradox.Effects;");
+            WriteLine("using SiliconStudio.Paradox.Rendering;");
             WriteLine("using SiliconStudio.Paradox.Graphics;");
             WriteLine("using SiliconStudio.Paradox.Shaders;");
             WriteLine("using SiliconStudio.Core.Mathematics;");
@@ -237,7 +239,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             // A discard will be transformed to 'return'
             if (keywordExpression.Name.Text == "discard")
             {
-                Write("return");
+                WriteLinkLine(keywordExpression);
+                WriteLine("context.Discard();");
             }
             else
             {
@@ -373,7 +376,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 {
                     OpenBrace();
                     // Generate the main generate method for each shader block
-                    Write("public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)");
+                    Write("public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)");
                     {
                         OpenBrace();
                         // Create a context associated with ShaderBlock
@@ -439,21 +442,18 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     ExtractGenericParameters(targetExpression, out mixinName, genericParameters);
                     var childName = assignExpression != null ? assignExpression.Target : mixinName;
                     {
-                        OpenBrace();
                         WriteLinkLine(mixinStatement);
-                        Write("var __subMixin = new ShaderMixinSourceTree() { Name = ");
+                        Write("if (context.ChildEffectName == ");
                         WriteMixinName(childName);
-                        WriteLine(" };");
-                        WriteLine("context.BeginChild(__subMixin);");
+                        Write(")");
+                        OpenBrace();
 
                         WriteLinkLine(mixinStatement);
-                        Write("context.Mixin(__subMixin, ");
+                        Write("context.Mixin(mixin, ");
                         WriteMixinName(mixinName);
                         WriteGenericParameters(genericParameters);
                         WriteLine(");");
-
-                        WriteLinkLine(mixinStatement);
-                        WriteLine("context.EndChild();");
+                        WriteLine("return;");
 
                         CloseBrace();
                     }
@@ -470,11 +470,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         logging.Error("Removing with generic parameters is not supported", mixinStatement.Span);
                     }
                     WriteLine(");");
-                    break;
-
-                case MixinStatementType.Clone:
-                    WriteLinkLine(mixinStatement);
-                    WriteLine("context.CloneParentMixinToCurrent();");
                     break;
 
                 case MixinStatementType.Macro:
@@ -509,7 +504,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         }
                     }
 
-                    Write("mixin.Mixin.AddMacro(");
+                    Write("mixin.AddMacro(");
                     VisitDynamic(macroName);
                     Write(", ");
                     VisitDynamic(macroValue);
@@ -537,7 +532,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     {
                         OpenBrace();
                         WriteLinkLine(mixinStatement);
-                        WriteLine("var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };");
+                        Write("var __mixinToCompose__ = ");
+                        WriteMixinName(mixinName);
+                        WriteLine(";");
+                        WriteLine("var __subMixin = new ShaderMixinSource();");
 
                         WriteLinkLine(mixinStatement);
                         Write("context.").Write(addCompositionFunction).Write("(mixin, ");
@@ -545,8 +543,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         WriteLine(", __subMixin);");
 
                         WriteLinkLine(mixinStatement);
-                        Write("context.Mixin(__subMixin, ");
-                        WriteMixinName(mixinName);
+                        Write("context.Mixin(__subMixin, __mixinToCompose__");
                         WriteGenericParameters(genericParameters);
                         WriteLine(");");
 

@@ -125,9 +125,9 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
             return (ParadoxCommandsProxy)domain.CreateInstanceFromAndUnwrap(typeof(ParadoxCommandsProxy).Assembly.Location, typeof(ParadoxCommandsProxy).FullName);
         }
 
-        public void Initialize()
+        public void Initialize(string dumb)
         {
-            remote.Initialize();
+            remote.Initialize(ParadoxSdkDir);
         }
 
         public bool ShouldReload()
@@ -161,11 +161,6 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
         public byte[] GenerateShaderKeys(string inputFileName, string inputFileContent)
         {
             return remote.GenerateShaderKeys(inputFileName, inputFileContent);
-        }
-
-        public byte[] GenerateDataClasses(string assemblyOutput, string projectFullName, string intermediateAssembly)
-        {
-            return remote.GenerateDataClasses(assemblyOutput, projectFullName, intermediateAssembly);
         }
 
         public RawShaderNavigationResult AnalyzeAndGoToDefinition(string sourceCode, RawSourceSpan span)
@@ -260,7 +255,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
                     return null;
 
                 var packageDirectory = store.PathResolver.GetPackageDirectory(paradoxPackage);
-                return Path.Combine(paradoxSdkDir, NugetStore.DefaultGamePackagesDirectory, packageDirectory);
+                return Path.Combine(paradoxSdkDir, store.RepositoryPath, packageDirectory);
             }
 
             return null;

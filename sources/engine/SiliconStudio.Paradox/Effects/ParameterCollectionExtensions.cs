@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     /// <summary>
     /// Extensions for <see cref="ParameterCollection"/>.
@@ -47,7 +47,7 @@ namespace SiliconStudio.Paradox.Effects
         public static void CopySharedTo<T>(this T parameters, ParameterCollection parametersTo) where T : ParameterCollection
         {
             if (parametersTo == null) throw new ArgumentNullException("parametersTo");
-            foreach (var parameter in parameters.valueList)
+            foreach (var parameter in parameters.InternalValues)
             {
                 parameters.CopySharedTo(parameter.Key, null, parametersTo);
             }

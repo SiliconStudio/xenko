@@ -32,6 +32,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Backend\PixelFormat.Extensions.cs" />
     <Compile Include="Backend\Requests\ArrayCreationRequest.cs" />
     <Compile Include="Backend\Requests\ArrayExtractionRequest.cs" />
     <Compile Include="Backend\Requests\ArrayInsertionRequest.cs" />
@@ -149,32 +150,20 @@
     <Compile Include="Frontend\TexImage.cs" />
     <Compile Include="Backend\Interfaces\ITextureLibraryData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
+  </ItemGroup>  
   <ItemGroup>
-    <Content Include="$(ParadoxDependenciesDir)FreeImage\FreeImage.dll">
-      <Link>FreeImage.dll</Link>
+    <None Include="$(ParadoxDependenciesDir)FreeImage\$(Configuration)\**\*.dll">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(ParadoxDependenciesDir)FreeImage\FreeImageNET.dll">
-      <Link>FreeImageNET.dll</Link>
+    </None>
+    <None Include="$(ParadoxDependenciesDir)TextureWrappers\$(Configuration)\**\*.dll">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(ParadoxDependenciesDir)PVRTT\PVRTexLib.dll">
-      <Link>PVRTexLib.dll</Link>
+    </None>
+    <None Include="$(ParadoxDependenciesDir)PVRTT\**\*.dll">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(ParadoxDependenciesDir)TextureWrappers\$(Configuration)\PvrttWrapper.dll">
-      <Link>PvrttWrapper.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(ParadoxDependenciesDir)TextureWrappers\$(Configuration)\DxtWrapper.dll">
-      <Link>DxtWrapper.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(ParadoxDependenciesDir)TextureWrappers\$(Configuration)\AtitcWrapper.dll">
-      <Link>AtitcWrapper.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">

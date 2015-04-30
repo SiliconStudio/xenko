@@ -74,5 +74,10 @@ namespace SiliconStudio.Assets.Visitors
                 return instance != null ? instance.GetType() : instanceType;
             }
         }
+
+        public virtual DataVisitNode CreateWithEmptyInstance()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

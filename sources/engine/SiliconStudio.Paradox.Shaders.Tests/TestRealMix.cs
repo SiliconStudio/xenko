@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Engine.Shaders.Mixins;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Paradox.Shaders.Compiler;
@@ -100,7 +100,7 @@ namespace SiliconStudio.Shaders.Tests
                     new ShaderClassSource("NormalPack"),
                     new ShaderClassSource("NormalSkinning"),
                     new ShaderClassSource("NormalStream"),
-                    new ShaderClassSource("NormalVSBase"),
+                    new ShaderClassSource("NormalBase"),
                     new ShaderClassSource("NormalVSGBuffer"),
                     new ShaderClassSource("NormalVSStream"),
                     new ShaderClassSource("Particle"),
@@ -124,7 +124,7 @@ namespace SiliconStudio.Shaders.Tests
                     new ShaderClassSource("PositionStream4"),
                     new ShaderClassSource("PositionVSBase"),
                     new ShaderClassSource("PositionVSGBuffer"),
-                    new ShaderClassSource("PositionVSStream"),
+                    new ShaderClassSource("PositionVertexTransform"),
                     new ShaderClassSource("PostEffectBase"),
                     new ShaderClassSource("PostEffectBilateralGaussian"),
                     new ShaderClassSource("PostEffectBlur"),
@@ -217,11 +217,11 @@ namespace SiliconStudio.Shaders.Tests
                     new ShaderClassSource("TessellationFlat"),
                     new ShaderClassSource("ShaderBase"),
                     new ShaderClassSource("Texturing"),
-                    new ShaderClassSource("NormalVSBase"),
+                    new ShaderClassSource("NormalBase"),
                     new ShaderClassSource("NormalVSStream"),
                     new ShaderClassSource("NormalStream"),
                     new ShaderClassSource("ComputeColor"),
-                    new ShaderClassSource("PositionVSStream"),
+                    new ShaderClassSource("PositionVertexTransform"),
                     new ShaderClassSource("Transformation"),
                     new ShaderClassSource("TransformationBase"),
                     new ShaderClassSource("PositionVSBase"),

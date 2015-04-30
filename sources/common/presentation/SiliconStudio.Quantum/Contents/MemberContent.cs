@@ -12,16 +12,19 @@ namespace SiliconStudio.Quantum.Contents
     /// <summary>
     /// An implementation of <see cref="IContent"/> that gives access to a member of an object.
     /// </summary>
-    public class MemberContent : ContentBase
+    public class MemberContent : ContentBase, IUpdatableContent
     {
         protected IContent Container;
+        private readonly ModelContainer modelContainer;
+        private IModelNode modelNode;
 
-        public MemberContent(IContent container, IMemberDescriptor member, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
-            : base(member.Type, descriptor, isPrimitive, reference)
+        public MemberContent(INodeBuilder nodeBuilder, IContent container, IMemberDescriptor member, bool isPrimitive, IReference reference)
+            : base(nodeBuilder.TypeDescriptorFactory.Find(member.Type), isPrimitive, reference)
         {
             if (container == null) throw new ArgumentNullException("container");
             Member = member;
             Container = container;
+            modelContainer = nodeBuilder.ModelContainer;
         }
 
         /// <summary>
@@ -45,7 +48,24 @@ namespace SiliconStudio.Quantum.Contents
 
                 if (Container.Value.GetType().GetTypeInfo().IsValueType)
                     Container.Value = containerValue;
+
+                if (modelContainer != null && modelNode != null)
+                {
+                    modelContainer.UpdateReferences(modelNode);
+                }
             }
+        }
+
+        internal void UpdateReferences()
+        {
+            if (modelContainer != null && modelNode != null)
+            {
+                modelContainer.UpdateReferences(modelNode);
+            }
+        }
+        void IUpdatableContent.RegisterOwner(IModelNode node)
+        {
+            modelNode = node;
         }
     }
 }

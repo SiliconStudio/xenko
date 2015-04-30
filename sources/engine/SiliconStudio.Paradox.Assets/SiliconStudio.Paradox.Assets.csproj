@@ -14,6 +14,7 @@
     <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions) --generate-user-doc</SiliconStudioAssemblyProcessorOptions>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="SharpYaml, Version=1.0.2.26673, Culture=neutral, PublicKeyToken=1ced8108e942bc02, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\deps\SharpYaml\SharpYaml.dll</HintPath>
@@ -47,11 +48,6 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
       <Project>{66581dad-70ad-4475-ae47-c6c0df1ec5e2}</Project>
       <Name>SiliconStudio.Core.Design</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.csproj">
-      <Project>{0342C3E7-4A38-46B4-A8EC-E728D50085D3}</Project>
-      <Name>SiliconStudio.Paradox.Effects</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\tools\SiliconStudio.TextureConverter\SiliconStudio.TextureConverter.csproj">
@@ -135,64 +131,41 @@
     <Compile Include="Audio\RawSoundAssetImporter.cs" />
     <Compile Include="Audio\SoundAsset.cs" />
     <Compile Include="Audio\RawMusicAssetImporter.cs" />
-    <Compile Include="Effect\CompilerParameterGeneratorBase.cs" />
-    <Compile Include="Effect\EffectShaderAssetCompiler.cs" />
-    <Compile Include="Effect\EffectCompositorAsset.cs" />
-    <Compile Include="Effect\EffectCompositorAssetCompiler.cs" />
-    <Compile Include="Effect\EffectShaderAsset.cs" />
     <Compile Include="Effect\EffectByteCodeToSourceCodeWriter.cs" />
-    <Compile Include="Effect\EffectKeys.cs" />
-    <Compile Include="Effect\Generators\DefaultCompilerParametersGenerator.cs" />
     <Compile Include="Effect\EffectCompileCommand.cs" />
-    <Compile Include="Effect\EffectCompileGeneratorBuildStep.cs" />
-    <Compile Include="Effect\EffectLibraryAsset.cs" />
-    <Compile Include="Effect\EffectLibraryAssetCompiler.cs" />
-    <Compile Include="Effect\EffectParameterValueGeneratorCollection.cs" />
-    <Compile Include="Effect\EffectPermutation.cs" />
-    <Compile Include="Effect\ICompilerParametersGenerator.cs" />
-    <Compile Include="Effect\IEffectParameterGenerator.cs" />
-    <Compile Include="Effect\IEffectParameterValueGenerator.cs" />
-    <Compile Include="Effect\LightingAssetCompiler.cs" />
-    <Compile Include="Effect\LightingCompileGenerator.cs" />
-    <Compile Include="Effect\LightingAsset.cs" />
-    <Compile Include="Effect\PermutationGeneratorBuildStep.cs" />
-    <Compile Include="Effect\ValueGenerators\EffectParameterKeyStandardGenerator.cs" />
-    <Compile Include="Effect\ValueGenerators\EffectParameterRangeValueGenerator.cs" />
-    <Compile Include="Effect\ValueGenerators\EffectParameterValuesGenerator.cs" />
+    <Compile Include="Effect\EffectCompositorAsset.cs" />
+    <Compile Include="Effect\EffectLogAsset.cs" />
+    <Compile Include="Effect\EffectLogAssetCompiler.cs" />
+    <Compile Include="Effect\EffectLogStore.cs" />
+    <Compile Include="Effect\EffectShaderAssetCompiler.cs" />
+    <Compile Include="Effect\EffectShaderAsset.cs" />
+    <Compile Include="Entities\ConvertedDescriptor.cs" />
+    <Compile Include="Entities\EntityAnalysis.cs" />
+    <Compile Include="Entities\EntityAsset.cs" />
+    <Compile Include="Entities\EntityAssetCompiler.cs" />
+    <Compile Include="Entities\EntityAssetOperations.cs" />
+    <Compile Include="Entities\EntityComponentReference.cs" />
+    <Compile Include="Entities\EntityDiffNode.cs" />
+    <Compile Include="Entities\EntityHierarchyDiffNodeBuilder.cs" />
+    <Compile Include="Entities\EntityReference.cs" />
+    <Compile Include="Entities\EntityScriptReference.cs" />
+    <Compile Include="Entities\EntitySerializer.cs" />
+    <Compile Include="Entities\EntityTreeAsset.cs" />
+    <Compile Include="Analysis\GamePackageSessionAnalysis.cs" />
+    <Compile Include="Entities\IEntityComponentReference.cs" />
+    <Compile Include="Entities\IEntityScriptReference.cs" />
+    <Compile Include="GameSettingsAsset.cs" />
+    <Compile Include="Entities\SceneAsset.cs" />
+    <Compile Include="Materials\ComputeShaderBaseExtensions.cs" />
+    <Compile Include="Materials\MaterialNodeClassLoader.cs" />
+    <Compile Include="Materials\MaterialStreamFactory.cs" />
+    <Compile Include="Materials\ShaderGeneratorContextExtensions.cs" />
+    <Compile Include="IModelAsset.cs" />
+    <Compile Include="ProceduralModels\ProceduralModelAsset.cs" />
+    <Compile Include="ProceduralModels\ProceduralModelAssetCompiler.cs" />
     <Compile Include="ImageGroupAsset.cs" />
-    <Compile Include="Materials\Generators\MaterialCompilerParametersGenerator.cs" />
     <Compile Include="ImageGroupCompiler.cs" />
     <Compile Include="ImageInfo.cs" />
-    <Compile Include="Materials\GenericDictionary.cs" />
-    <Compile Include="Materials\NodeParameter.cs" />
-    <Compile Include="Materials\IMaterialNode.cs" />
-    <Compile Include="Materials\IMaterialValueNode.cs" />
-    <Compile Include="Materials\LayeredMaterial.cs" />
-    <Compile Include="Materials\MaterialContext.cs" />
-    <Compile Include="Materials\MaterialDescription.cs" />
-    <Compile Include="Materials\MaterialNodeBase.cs" />
-    <Compile Include="Materials\MaterialNodeClassLoader.cs" />
-    <Compile Include="Materials\MaterialNodeEntry.cs" />
-    <Compile Include="Materials\Nodes\MaterialBinaryNode.cs" />
-    <Compile Include="Materials\Nodes\MaterialBinaryOperand.cs" />
-    <Compile Include="Materials\Nodes\MaterialColorNode.cs" />
-    <Compile Include="Materials\Nodes\MaterialConstantNode.cs" />
-    <Compile Include="Materials\Nodes\MaterialFloat4Node.cs" />
-    <Compile Include="Materials\Nodes\MaterialFloatNode.cs" />
-    <Compile Include="Materials\Nodes\MaterialReferenceNode.cs" />
-    <Compile Include="Materials\Nodes\MaterialShaderClassNode.cs" />
-    <Compile Include="Materials\Nodes\MaterialTextureNode.cs" />
-    <Compile Include="Materials\Processor\Flattener\MaterialTextureLayerFlattener.cs" />
-    <Compile Include="Materials\Processor\Visitors\MaterialBaseVisitor.cs" />
-    <Compile Include="Materials\Processor\Visitors\MaterialNodeReplacer.cs" />
-    <Compile Include="Materials\Processor\Visitors\MaterialParametersCreator.cs" />
-    <Compile Include="Materials\Processor\Visitors\MaterialParametersVisitor.cs" />
-    <Compile Include="Materials\Processor\Visitors\MaterialReductionUtils.cs" />
-    <Compile Include="Materials\Processor\Visitors\MaterialTextureVisitor.cs" />
-    <Compile Include="Materials\Processor\Visitors\MaterialTreeReducer.cs" />
-    <Compile Include="Materials\Processor\Visitors\MaterialTreeShaderCreator.cs" />
-    <Compile Include="Materials\TextureAlphaComponentSplitter.cs" />
-    <Compile Include="Materials\TextureCoordinate.cs" />
     <Compile Include="Materials\MaterialAsset.cs" />
     <Compile Include="Materials\MaterialAssetCompiler.cs" />
     <Compile Include="Audio\SoundMusicAsset.cs" />
@@ -201,12 +174,22 @@
     <Compile Include="ParadoxConfig.cs" />
     <Compile Include="Physics\ColliderShapeAsset.cs" />
     <Compile Include="Physics\ColliderShapeAssetCompiler.cs" />
-    <Compile Include="Serializers\EffectParameterKeyStandardGeneratorSerializer.cs" />
+    <Compile Include="RenderFrames\RenderFrameAsset.cs" />
+    <Compile Include="RenderFrames\RenderFrameAssetCompiler.cs" />
     <Compile Include="Serializers\ParameterKeyDictionarySerializer.cs" />
+    <Compile Include="Serializers\ScriptCollectionSerializer.cs" />
+    <Compile Include="Serializers\UnloadableScript.cs" />
+    <Compile Include="Skyboxes\ISkyboxModel.cs" />
+    <Compile Include="Skyboxes\SkyboxAssetCompiler.cs" />
+    <Compile Include="Skyboxes\SkyboxAsset.cs" />
+    <Compile Include="Skyboxes\SkyboxCubeMapModel.cs" />
+    <Compile Include="Skyboxes\SkyboxGenerator.cs" />
+    <Compile Include="Skyboxes\SkyboxPreFilteringDiffuseOrder.cs" />
     <Compile Include="Sprite\SpriteInfo.cs" />
     <Compile Include="Sprite\SpriteGroupAsset.cs" />
     <Compile Include="Sprite\SpriteGroupCompiler.cs" />
     <Compile Include="Textures\TextureCommandHelper.cs" />
+    <Compile Include="Textures\TextureHint.cs" />
     <Compile Include="Textures\TextureQuality.cs" />
     <Compile Include="Serializers\GenericDictionarySerializer.cs" />
     <Compile Include="Serializers\ParameterKeySerializer.cs" />
@@ -215,13 +198,13 @@
     <Compile Include="SpriteFont\Compiler\BitmapUtils.cs" />
     <Compile Include="SpriteFont\Compiler\CharacterRegionTypeConverter.cs" />
     <Compile Include="SpriteFont\Compiler\ContentCompilerResult.cs" />
-    <Compile Include="SpriteFont\Compiler\FontCompiler.cs" />
+    <Compile Include="SpriteFont\Compiler\StaticFontCompiler.cs" />
     <Compile Include="SpriteFont\Compiler\FontNotFoundException.cs" />
     <Compile Include="SpriteFont\Compiler\Glyph.cs" />
     <Compile Include="SpriteFont\Compiler\GlyphCropper.cs" />
     <Compile Include="SpriteFont\Compiler\GlyphPacker.cs" />
     <Compile Include="SpriteFont\Compiler\IFontImporter.cs" />
-    <Compile Include="SpriteFont\Compiler\SpriteFontWriter.cs" />
+    <Compile Include="SpriteFont\Compiler\StaticSpriteFontWriter.cs" />
     <Compile Include="SpriteFont\Compiler\TrueTypeImporter.cs" />
     <Compile Include="SpriteFont\SpriteFontAsset.cs" />
     <Compile Include="SpriteFont\SpriteFontAssetCompiler.cs" />
@@ -237,6 +220,7 @@
     <Compile Include="UIImage\UIImageGroupAsset.cs" />
     <Compile Include="UIImage\UIImageInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

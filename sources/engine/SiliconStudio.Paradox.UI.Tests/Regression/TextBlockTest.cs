@@ -21,14 +21,14 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public TextBlockTest()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 4;
         }
 
         protected override async Task LoadContent()
         {
             await base.LoadContent();
 
-            UI.VirtualResolution = new Vector3(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height, 500);
+            UIComponent.VirtualResolution = new Vector3(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height, 500);
 
             textBlock = new TextBlock
             {
@@ -44,7 +44,7 @@ This is the last line.",
                 BackgroundColor = Color.LightSkyBlue
             };
 
-            UI.RootElement = textBlock;
+            UIComponent.RootElement = textBlock;
         }
 
         protected override void Update(GameTime gameTime)
@@ -52,11 +52,11 @@ This is the last line.",
             base.Update(gameTime);
 
             if (Input.IsKeyPressed(Keys.Down))
-                UI.VirtualResolution = 3 * UI.VirtualResolution / 4;
+                UIComponent.VirtualResolution = 3 * UIComponent.VirtualResolution / 4;
             if (Input.IsKeyPressed(Keys.Up))
-                UI.VirtualResolution = 4 * UI.VirtualResolution / 3;
+                UIComponent.VirtualResolution = 4 * UIComponent.VirtualResolution / 3;
             if (Input.IsKeyPressed(Keys.R))
-                UI.VirtualResolution = new Vector3(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height, 500);
+                UIComponent.VirtualResolution = new Vector3(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height, 500);
 
             if (Input.IsKeyPressed(Keys.Left))
                 textBlock.TextSize = 3 * textBlock.TextSize / 4;
@@ -194,7 +194,7 @@ This is the last line.",
             textBlock.TextAlignment = TextAlignment.Left;
             textBlock.VerticalAlignment = VerticalAlignment.Center;
             textBlock.HorizontalAlignment = HorizontalAlignment.Center;
-            UI.VirtualResolution = new Vector3(GraphicsDevice.BackBuffer.Width/2f, GraphicsDevice.BackBuffer.Height/2f, 500);
+            UIComponent.VirtualResolution = new Vector3(GraphicsDevice.BackBuffer.Width / 2, GraphicsDevice.BackBuffer.Height / 2, 500);
         }
         public void Draw14()
         {
@@ -202,7 +202,7 @@ This is the last line.",
             textBlock.TextAlignment = TextAlignment.Left;
             textBlock.VerticalAlignment = VerticalAlignment.Center;
             textBlock.HorizontalAlignment = HorizontalAlignment.Center;
-            UI.VirtualResolution = new Vector3(GraphicsDevice.BackBuffer.Width*2, GraphicsDevice.BackBuffer.Height*2, 500);
+            UIComponent.VirtualResolution = new Vector3(GraphicsDevice.BackBuffer.Width * 2, GraphicsDevice.BackBuffer.Height * 2, 500);
         }
 
         [Test]

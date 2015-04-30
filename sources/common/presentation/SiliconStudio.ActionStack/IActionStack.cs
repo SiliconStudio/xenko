@@ -16,6 +16,16 @@ namespace SiliconStudio.ActionStack
         IEnumerable<IActionItem> ActionItems { get; }
 
         /// <summary>
+        /// Gets whether an undo operation can be executed.
+        /// </summary>
+        bool CanUndo { get; }
+
+        /// <summary>
+        /// Gets whether an redo operation can be executed.
+        /// </summary>
+        bool CanRedo { get; }
+        
+        /// <summary>
         /// Raised whenever action items are added to the stack.
         /// </summary>
         event EventHandler<ActionItemsEventArgs<IActionItem>> ActionItemsAdded;

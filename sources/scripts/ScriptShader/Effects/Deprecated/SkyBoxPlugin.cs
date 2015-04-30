@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -12,7 +12,7 @@ using SiliconStudio.Paradox.Shaders;
 
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     /// <summary>
     /// Posteffect manager.

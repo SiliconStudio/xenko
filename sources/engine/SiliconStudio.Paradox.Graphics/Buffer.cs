@@ -23,7 +23,9 @@
 
 using System;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization.Converters;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Paradox.Graphics.Data;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -33,15 +35,60 @@ namespace SiliconStudio.Paradox.Graphics
     /// <remarks>
     /// This class is able to create constant buffers, indexelementCountrtex buffers, structured buffer, raw buffers, argument buffers.
     /// </remarks>
-    [DataConverter(AutoGenerate = false, ContentReference = true)]
+    [DataSerializer(typeof(BufferSerializer))]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<Buffer>), Profile = "Asset")]
+    [ContentSerializer(typeof(DataContentSerializer<Buffer>))]
     public partial class Buffer : GraphicsResource
     {
         protected int elementCount;
+        private BufferDescription bufferDescription;
+
+        public Buffer()
+        {
+        }
 
         /// <summary>
         /// Gets the description of this buffer.
         /// </summary>
-        public readonly BufferDescription Description;
+        public BufferDescription Description
+        {
+            get { return bufferDescription; }
+        }
+
+        /// <summary>	
+        /// Value that identifies how the buffer is to be read from and written to.
+        /// </summary>	
+        public GraphicsResourceUsage Usage
+        {
+            get { return bufferDescription.Usage; }
+        }
+
+        /// <summary>
+        /// Buffer flags describing the type of buffer.
+        /// </summary>
+        public BufferFlags Flags
+        {
+            get { return bufferDescription.BufferFlags; }
+        }
+
+        /// <summary>
+        /// Gets the size of the buffer in bytes.
+        /// </summary>
+        /// <value>
+        /// The size of the buffer in bytes.
+        /// </value>
+        public int SizeInBytes
+        {
+            get { return bufferDescription.SizeInBytes; }
+        }
+
+        /// <summary>	
+        /// The size of the structure (in bytes) when it represents a structured/typed buffer.
+        /// </summary>	
+        public int StructureByteStride
+        {
+            get { return bufferDescription.StructureByteStride; }
+        }
 
         /// <summary>
         /// Gets the number of elements.
@@ -62,13 +109,14 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
-        /// Gets the type of this belementCount    /// </summary>
-        public readonly BufferFlags BufferFlags;
+        /// Gets the type of this buffer view.
+        /// </summary>
+        public BufferFlags ViewFlags { get; private set; }
 
         /// <summary>
-        /// Gets the default view format of this buffer.
+        /// Gets the format of this buffer view.
         /// </summary>
-        public readonly PixelFormat ViewFormat;
+        public PixelFormat ViewFormat { get; private set; }
 
         /// <summary>
         /// Return an equivalent staging texture CPU read-writable from this instance.
@@ -79,7 +127,7 @@ namespace SiliconStudio.Paradox.Graphics
             var stagingDesc = Description;
             stagingDesc.Usage = GraphicsResourceUsage.Staging;
             stagingDesc.BufferFlags = BufferFlags.None;
-            return new Buffer(GraphicsDevice, stagingDesc, BufferFlags.None, ViewFormat, IntPtr.Zero);
+            return new Buffer(GraphicsDevice).InitializeFromImpl(stagingDesc, BufferFlags.None, ViewFormat, IntPtr.Zero);
         }
 
         /// <summary>
@@ -91,7 +139,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// </remarks>
         public Buffer Clone()
         {
-            return new Buffer(GraphicsDevice, Description, BufferFlags, ViewFormat, IntPtr.Zero);
+            return new Buffer(GraphicsDevice).InitializeFromImpl(Description, ViewFlags, ViewFormat, IntPtr.Zero);
         }
 
         /// <summary>
@@ -343,7 +391,7 @@ namespace SiliconStudio.Paradox.Graphics
         public static Buffer New(GraphicsDevice device, BufferDescription description, PixelFormat viewFormat = PixelFormat.None)
         {
             var bufferType = description.BufferFlags;
-            return new Buffer(device, description, bufferType, viewFormat, IntPtr.Zero);
+            return new Buffer(device).InitializeFromImpl(description, bufferType, viewFormat, IntPtr.Zero);
         }
 
         /// <summary>
@@ -418,7 +466,7 @@ namespace SiliconStudio.Paradox.Graphics
         {
             viewFormat = CheckPixelFormat(bufferFlags, elementSize, viewFormat);
             var description = NewDescription(bufferSize, elementSize, bufferFlags, usage);
-            return new Buffer(device, description, bufferFlags, viewFormat, IntPtr.Zero);
+            return new Buffer(device).InitializeFromImpl(description, bufferFlags, viewFormat, IntPtr.Zero);
         }
 
         /// <summary>
@@ -500,13 +548,9 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="viewFormat">The view format must be specified if the buffer is declared as a shared resource view.</param>
         /// <param name="usage">The usage.</param>
         /// <returns>An instance of a new <see cref="Buffer" /></returns>
-        public static unsafe Buffer New(GraphicsDevice device, byte[] initialValue, int elementSize, BufferFlags bufferFlags, PixelFormat viewFormat = PixelFormat.None, GraphicsResourceUsage usage = GraphicsResourceUsage.Immutable)
+        public static Buffer New(GraphicsDevice device, byte[] initialValue, int elementSize, BufferFlags bufferFlags, PixelFormat viewFormat = PixelFormat.None, GraphicsResourceUsage usage = GraphicsResourceUsage.Immutable)
         {
-            int bufferSize = initialValue.Length;
-            viewFormat = CheckPixelFormat(bufferFlags, elementSize, viewFormat);
-
-            var description = NewDescription(bufferSize, elementSize, bufferFlags, usage);
-            return new Buffer(device, description, bufferFlags, viewFormat, (IntPtr)Interop.Fixed(initialValue));
+            return new Buffer(device).InitializeFrom(initialValue, elementSize, bufferFlags, viewFormat, usage);
         }
 
         /// <summary>
@@ -538,7 +582,16 @@ namespace SiliconStudio.Paradox.Graphics
             int bufferSize = dataPointer.Size;
             viewFormat = CheckPixelFormat(bufferFlags, elementSize, viewFormat);
             var description = NewDescription(bufferSize, elementSize, bufferFlags, usage);
-            return new Buffer(device, description, bufferFlags, viewFormat, dataPointer.Pointer);
+            return new Buffer(device).InitializeFromImpl(description, bufferFlags, viewFormat, dataPointer.Pointer);
+        }
+
+        internal unsafe Buffer InitializeFrom(byte[] initialValue, int elementSize, BufferFlags bufferFlags, PixelFormat viewFormat = PixelFormat.None, GraphicsResourceUsage usage = GraphicsResourceUsage.Immutable)
+        {
+            int bufferSize = initialValue.Length;
+            viewFormat = CheckPixelFormat(bufferFlags, elementSize, viewFormat);
+
+            var description = NewDescription(bufferSize, elementSize, bufferFlags, usage);
+            return InitializeFromImpl(description, bufferFlags, viewFormat, (IntPtr)Interop.Fixed(initialValue));
         }
 
         private static PixelFormat CheckPixelFormat(BufferFlags bufferFlags, int elementSize, PixelFormat viewFormat)
@@ -606,8 +659,9 @@ namespace SiliconStudio.Paradox.Graphics
     /// <typeparam name="T">Type of an element of this buffer.</typeparam>
     public class Buffer<T> : Buffer where T : struct
     {
-        protected internal Buffer(GraphicsDevice device, BufferDescription description, BufferFlags bufferFlags, PixelFormat viewFormat, IntPtr dataPointer) : base(device, description, bufferFlags, viewFormat, dataPointer)
+        protected internal Buffer(GraphicsDevice device, BufferDescription description, BufferFlags viewFlags, PixelFormat viewFormat, IntPtr dataPointer) : base(device)
         {
+            InitializeFromImpl(description, viewFlags, viewFormat, dataPointer);
             this.ElementSize = Utilities.SizeOf<T>();
             this.ElementCount = Description.SizeInBytes / ElementSize;
         }

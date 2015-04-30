@@ -70,9 +70,6 @@
         <Reference Include="SiliconStudio.Paradox.Audio">
           <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.Audio.dll</HintPath>
         </Reference>
-        <Reference Include="SiliconStudio.Paradox.Effects">
-          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.Effects.dll</HintPath>
-        </Reference>
         <Reference Include="SiliconStudio.Paradox.Engine">
           <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.Engine.dll</HintPath>
         </Reference>
@@ -118,10 +115,12 @@
   Assembly Processor
   *****************************************************************************************************************************
   -->
-  <Target Name="SiliconStudioRunAssemblyProcessor" AfterTargets="CopyFilesToOutputDirectory"  Condition=" '$(SiliconStudioAssemblyProcessor)' == 'true'">
+  <Target Name="SiliconStudioRunAssemblyProcessor" AfterTargets="CopyFilesToOutputDirectory" DependsOnTargets="ResolveProjectReferences" Condition=" '$(SiliconStudioAssemblyProcessor)' == 'true'">
     <PropertyGroup>
       <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioAssemblyProcessorOptions)' == ''">--auto-notify-property --parameter-key --auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
-      <SiliconStudioAssemblyProcessorCommand Condition="'$(SiliconStudioAssemblyProcessorCommand)' == ''">"$(SiliconStudioPackageParadoxSdkBin)\SiliconStudio.AssemblyProcessor.exe" --platform=$(SiliconStudioPlatform) --targetFramework=$(SiliconStudioNETFrameworkVersion)  $(SiliconStudioAssemblyProcessorOptions) "$(TargetPath)"</SiliconStudioAssemblyProcessorCommand>
+      <!-- If building user solutions (not unit tests), provide assembly processor with ProjectReferences paths so that they can be readded to assembly references for serialization module initializer (otherwise .exe don't have real reference on Game assemblies with auto load scene game) -->
+      <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioUnitTest)' != 'true'">$(SiliconStudioAssemblyProcessorOptions) --serializationProjectReferencePaths="@(_ResolvedProjectReferencePaths)"</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorCommand Condition="'$(SiliconStudioAssemblyProcessorCommand)' == ''">"$(SiliconStudioPackageParadoxSdkBin)\SiliconStudio.AssemblyProcessor.exe" --platform=$(SiliconStudioPlatform) --targetFramework=$(SiliconStudioNETFrameworkVersion) $(SiliconStudioAssemblyProcessorOptions) "$(TargetPath)"</SiliconStudioAssemblyProcessorCommand>
       <SiliconStudioAssemblyProcessorCommand Condition="'$(AssemblyOriginatorKeyFile)' != ''">$(SiliconStudioAssemblyProcessorCommand) --signkeyfile="$(AssemblyOriginatorKeyFile)"</SiliconStudioAssemblyProcessorCommand>
     </PropertyGroup>
     

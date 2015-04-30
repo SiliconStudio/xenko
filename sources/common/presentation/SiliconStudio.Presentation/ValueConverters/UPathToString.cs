@@ -22,11 +22,22 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (targetType == typeof(UFile))
-                return value != null ? new UFile((string)value) : null;
+            try
+            {
+                if (targetType == typeof(UFile))
+                    return value != null ? new UFile((string)value) : null;
 
-            if (targetType == typeof(UDirectory))
-                return value != null ? new UDirectory((string)value) : null;
+                if (targetType == typeof(UDirectory))
+                    return value != null ? new UDirectory((string)value) : null;
+            }
+            catch
+            {
+                if (targetType == typeof(UFile))
+                    return value != null ? new UFile("") : null;
+
+                if (targetType == typeof(UDirectory))
+                    return value != null ? new UDirectory("") : null;
+            }
 
             throw new ArgumentException(@"target type must be either UFile or UDirectory", "targetType");
         }

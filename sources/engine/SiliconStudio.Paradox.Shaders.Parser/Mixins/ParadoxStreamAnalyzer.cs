@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using SiliconStudio.Paradox.Shaders.Parser.Analysis;
 using SiliconStudio.Paradox.Shaders.Parser.Ast;
@@ -54,12 +55,17 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <summary>
         /// List of assignations in the form of "streams = ...;"
         /// </summary>
-        public HashSet<AssignmentExpression> StreamAssignations = new HashSet<AssignmentExpression>();
+        public Dictionary<AssignmentExpression, StatementList> StreamAssignations = new Dictionary<AssignmentExpression, StatementList>();
 
         /// <summary>
         /// List of assignations in the form of "... = streams;"
         /// </summary>
-        public HashSet<AssignmentExpression> AssignationsToStream = new HashSet<AssignmentExpression>();
+        public Dictionary<AssignmentExpression, StatementList> AssignationsToStream = new Dictionary<AssignmentExpression, StatementList>();
+
+        /// <summary>
+        /// List of assignations in the form of "StreamType backup = streams;"
+        /// </summary>
+        public Dictionary<Variable, StatementList> VariableStreamsAssignment = new Dictionary<Variable, StatementList>();
 
         /// <summary>
         /// streams usage by method
@@ -170,7 +176,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         {
             Visit((Node)variableReferenceExpression);
             // HACK: force types on base, this and stream keyword to eliminate errors in the log an use the standard type inference
-            if (variableReferenceExpression.Name == StreamsType.ThisStreams)
+            if (variableReferenceExpression.Name == StreamsType.ThisStreams.Name)
             {
                 if (!(ParentNode is MemberReferenceExpression)) // streams is alone
                     currentStreamUsageList.Add(new StreamUsageInfo { CallType = StreamCallType.Direct, Variable = StreamsType.ThisStreams, Expression = variableReferenceExpression, Usage = currentStreamUsage });
@@ -180,7 +186,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         [Visit]
         protected void Visit(MemberReferenceExpression memberReferenceExpression)
         {
+            var usageCopy = currentStreamUsage;
+            currentStreamUsage |= StreamUsage.Partial;
             Visit((Node)memberReferenceExpression);
+            currentStreamUsage = usageCopy;
 
             // check if it is a stream
             if (IsStreamMember(memberReferenceExpression))
@@ -226,12 +235,26 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             currentAssignmentOperatorStatus = AssignmentOperatorStatus.Read;
             currentStreamUsage = prevStreamUsage;
 
-            if (assignmentExpression.Operator == AssignmentOperator.Default)
+            var parentBlock = this.NodeStack.OfType<StatementList>().LastOrDefault();
+
+            if (assignmentExpression.Operator == AssignmentOperator.Default && parentBlock != null)
             {
-                if (assignmentExpression.Target is VariableReferenceExpression && (assignmentExpression.Target as VariableReferenceExpression).TypeInference.TargetType is StreamsType) // "streams = ...;"
-                    StreamAssignations.Add(assignmentExpression);
-                else if (assignmentExpression.Value is VariableReferenceExpression && (assignmentExpression.Value as VariableReferenceExpression).TypeInference.TargetType is StreamsType) // "... = streams;"
-                    AssignationsToStream.Add(assignmentExpression);
+                if (assignmentExpression.Target is VariableReferenceExpression && (assignmentExpression.Target as VariableReferenceExpression).Name == StreamsType.ThisStreams.Name) // "streams = ...;"
+                    StreamAssignations.Add(assignmentExpression, parentBlock);
+                else if (assignmentExpression.Value is VariableReferenceExpression && (assignmentExpression.Value as VariableReferenceExpression).Name == StreamsType.ThisStreams.Name) // "... = streams;"
+                    AssignationsToStream.Add(assignmentExpression, parentBlock);
+            }
+        }
+
+        [Visit]
+        private void Visit(Variable variableStatement)
+        {
+            Visit((Node)variableStatement);
+
+            var parentBlock = this.NodeStack.OfType<StatementList>().LastOrDefault();
+            if (parentBlock != null && variableStatement.Type == StreamsType.Streams && variableStatement.InitialValue is VariableReferenceExpression && ((VariableReferenceExpression)(variableStatement.InitialValue)).TypeInference.TargetType is StreamsType)
+            {
+                VariableStreamsAssignment.Add(variableStatement, parentBlock);
             }
         }
 
@@ -254,7 +277,19 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
     {
         Unknown = 0,
         Read = 1,
-        Write = 2
+        Write = 2,
+
+        /// <summary>
+        /// Not all the components of the variable have been read/written
+        /// </summary>
+        Partial = 4,
+    }
+
+    internal static class StreamUsageExtensions
+    {
+        public static bool IsRead(this StreamUsage usage) { return (usage & StreamUsage.Read) != 0; }
+        public static bool IsWrite(this StreamUsage usage) { return (usage & StreamUsage.Write) != 0; }
+        public static bool IsPartial(this StreamUsage usage) { return (usage & StreamUsage.Partial) != 0; }
     }
 
     internal enum StreamCallType

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.IO.Packaging;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -22,6 +23,7 @@ namespace SiliconStudio.LauncherApp
         private readonly NugetStore store;
         private readonly string mainPackage;
         private readonly string mainExecutable;
+        private readonly string vsixPackage;
         private bool isSynchronous = false;
         private readonly List<Thread> downloadThreads;
         private readonly Stopwatch clock;
@@ -29,6 +31,8 @@ namespace SiliconStudio.LauncherApp
         private bool isInNegativeMode; // workaround for download progression
 
         private bool isDownloading;
+
+        public SDKVersionManager SdkVersionManager { get; set; }
 
         public bool IsSelfUpdated { get; private set; }
 
@@ -46,6 +50,8 @@ namespace SiliconStudio.LauncherApp
 
         internal event EventHandler<NugetLogEventArgs> LogAvailable;
 
+        internal event EventHandler<EventArgs> SDKVersionListUpdated;
+
         public event EventHandler<LoadingEventArgs> Loading;
 
         public event EventHandler<EventArgs> DownloadFinished;
@@ -55,6 +61,10 @@ namespace SiliconStudio.LauncherApp
         public event EventHandler<Exception> UnhandledException;
 
         public event EventHandler<EventArgs> Running;
+
+        public event EventHandler<EventArgs> Processing;
+
+        public event EventHandler<EventArgs> Idle;
 
         public bool IsDownloading
         {
@@ -73,6 +83,8 @@ namespace SiliconStudio.LauncherApp
             }
         }
 
+        public bool IsProcessing { get; set; }
+
         public static readonly string Version;
 
         static LauncherApp()
@@ -86,6 +98,7 @@ namespace SiliconStudio.LauncherApp
         public LauncherApp()
         {
             clock = Stopwatch.StartNew();
+            IsProcessing = false;
 
             // TODO: Add a way to clear the cache more othen than the default nuget (>= 200 files)
 
@@ -100,6 +113,9 @@ namespace SiliconStudio.LauncherApp
             store.SourceRepository.Logger = this;
 
             mainPackage = store.MainPackageId;
+            vsixPackage = store.VSIXPluginId;
+
+            SdkVersionManager = new SDKVersionManager(store.Manager, mainPackage, vsixPackage);
 
             mainExecutable = store.Settings.GetConfigValue(MainExecutableKey);
             if (string.IsNullOrWhiteSpace(mainExecutable))
@@ -137,112 +153,30 @@ namespace SiliconStudio.LauncherApp
             }
         }
 
+
         public int Run(string[] args)
         {
             // Start self update
             downloadThreads.Add(RunThread(SelfUpdate));
             DebugStep("SelfUpdate launched");
 
-            // Find locally installed package
-            var installedPackage = FindLatestInstalledPackage(store.Manager.LocalRepository);
+            // Scan the local installed packages
+            IsProcessing = true;
+            Info("Retrieving packages");
+            SdkVersionManager.fetchLocal();
+            SdkVersionManager.synchronizeData();
+            OnSDKVersionsUpdated();
+            DebugStep("Local Packages");
 
-            DebugStep("Find installed package");
+            // Scan the remote package and update the view
+            SdkVersionManager.fetchServer();
+            SdkVersionManager.synchronizeData();
+            OnSDKVersionsUpdated();
+            IsProcessing = false;
+            if (!SdkVersionManager.serverPackages.IsEmpty()) Info("");
+            DebugStep("Get all server packages");
 
-            // Do we have a package in the cache?
-            var cachePackage = FindLatestInstalledPackage(MachineCache.Default);
-
-            DebugStep("Find cache package");
-
-            // If a package is installed
-            if (installedPackage != null)
-            {
-                if (cachePackage != null && cachePackage.Version > installedPackage.Version)
-                {
-                    var processCount = GetProcessCount();
-                    bool isSafeToUpdate = processCount <= 1;
-
-                    // If we are safe to update, install the new package
-                    if (isSafeToUpdate)
-                    {
-                        IsDownloading = true;
-                        Info("Preparing installer for new {0} version {1}", mainPackage, cachePackage.Version);
-                        PackageUpdate(installedPackage, false);
-                        IsDownloading = false;
-                        DebugStep("Update package");
-                    }
-                    else
-                    {
-                        ShowInformationDialog(
-                            string.Format("Cannot update {0} as there are [{1}] instances currently running.\n\nClose all your applications and restart", mainPackage, processCount));
-                    }
-                }
-                else
-                {
-                    DebugStep("Start download package in cache");
-
-                    var localPackage = installedPackage;
-                    downloadThreads.Add(RunThread(() => PackageUpdate(localPackage, true)));
-                }
-            }
-            else
-            {
-                if (store.CheckSource())
-                {
-                    //store.Manager.InstallPackage(mainPackage);
-                    IsDownloading = true;
-                    Info("Preparing installer for {0}", mainPackage);
-
-                    store.InstallPackage(mainPackage, null);
-
-                    IsDownloading = false;
-                    DebugStep("Package installed");
-                }
-                else
-                {
-                    ShowErrorDialog("Download server not available. Please try again later");
-                    return 1;
-                }
-
-            }
-
-            installedPackage = FindLatestInstalledPackage(store.Manager.LocalRepository);
-
-            if (installedPackage == null)
-            {
-                ShowErrorDialog("No package installed");
-                return 1;
-            }
-
-            // Load the assembly and call the default entry point:
-            var fullExePath = GetMainExecutable(installedPackage);
-            Environment.CurrentDirectory = Path.GetDirectoryName(fullExePath);
-            var appDomainSetup = new AppDomainSetup { ApplicationBase = Path.GetDirectoryName(fullExePath) };
-            var newAppDomain = AppDomain.CreateDomain("LauncherAppDomain", null, appDomainSetup);
-
-            DebugStep("Run executable");
-            OnLoading(new LoadingEventArgs(installedPackage.Id, installedPackage.Version.ToString()));
-
-            var newArgList = new List<string> { "/LauncherWindowHandle", MainWindowHandle.ToInt64().ToString(CultureInfo.InvariantCulture) };
-            newArgList.AddRange(args);
-
-            try
-            {
-                return newAppDomain.ExecuteAssembly(fullExePath, newArgList.ToArray());
-            }
-            finally
-            {
-                // Important!: Force back current directory to this application as previous ExecuteAssembly is changing it
-                Environment.CurrentDirectory = Path.GetDirectoryName(typeof(LauncherApp).Assembly.Location);
-
-                // Note: The AppDomain.Unload method can block indefinitely when a crash occurs in the UI
-                //try
-                //{
-                //    AppDomain.Unload(newAppDomain);
-                //}
-                //catch (Exception)
-                //{
-                //}
-            }
+            return 0;
         }
 
         protected virtual void OnRunning()
@@ -274,6 +208,12 @@ namespace SiliconStudio.LauncherApp
             return store.Manager.SourceRepository.GetUpdates(new[] { previousPackage }, true, false).FirstOrDefault();
         }
 
+        private IQueryable<IPackage> GetServerPackageList()
+        {
+            return store.Manager.SourceRepository.GetPackages();
+        }
+
+        // Not used anymore
         private void PackageUpdate(IPackage package, bool putInMachineCache)
         {
             //var latestPackages = packages.Where(p => p.IsLatestVersion);
@@ -304,6 +244,153 @@ The new version will be available on next run after all GameStudio are closed");
                     store.UpdatePackage(newPackage);
                 }
             }            
+        }
+
+        public Boolean isSafeToProcess()
+        {
+            var processCount = GetProcessCount();
+            bool isSafeToUpdate = processCount <= 1;
+
+            if (isSafeToUpdate) return true;
+
+            ShowInformationDialog(
+                string.Format("There are [{0}] instances currently running.\n\nClose all your applications and restart.", processCount));
+
+            return false;
+        }
+
+        // Install a package
+        public void InstallPackage(IPackage package, Action onComplete = null)
+        {
+            downloadThreads.Add(RunThread(() =>
+            {
+                if (!isSafeToProcess()) return;
+                Info("Preparing Installation");
+                OnProcessing();
+                IsDownloading = true;
+                try
+                {
+                    store.InstallPackage(package.Id, package.Version);
+                }
+                catch (Exception)
+                {
+                    ShowErrorDialog("Could not retrieve package!");
+                }
+                IsDownloading = false;
+                SdkVersionManager.synchronizeData();
+                OnSDKVersionsUpdated();
+                Info("");
+                OnIdle();
+                if (onComplete != null) onComplete();
+            }));
+        }
+
+        // Uninstall a package
+        public void UninstallPackage(IPackage package, Action onComplete = null)
+        {
+            downloadThreads.Add(RunThread(() =>
+            {
+                if (!isSafeToProcess()) return;
+                Info("Preparing Uninstallation");
+                OnProcessing();
+                store.UninstallPackage(package);
+                SdkVersionManager.synchronizeData();
+                OnSDKVersionsUpdated();
+                Info("");
+                OnIdle();
+                if (onComplete != null) onComplete();
+            }));
+        }
+
+        // Upgrade a package
+        public void UpgradePackage(IPackage currentPackage, IPackage newPackage, Action onComplete = null)
+        {
+            downloadThreads.Add(RunThread(() =>
+            {
+                if (!isSafeToProcess()) return;
+                Info("Preparing Upgrade");
+                OnProcessing();
+                try
+                {
+                    store.UninstallPackage(currentPackage);
+                    IsDownloading = true;
+                    store.InstallPackage(currentPackage.Id, newPackage.Version);
+                }
+                catch (Exception)
+                {
+                    ShowErrorDialog("Could not retrieve package!");
+                }
+                finally
+                {
+                    IsDownloading = false;
+                }
+                SdkVersionManager.synchronizeData();
+                OnSDKVersionsUpdated();
+                Info("");
+                OnIdle();
+                if (onComplete != null) onComplete();
+            }));
+        }
+
+        // Install / Upgrade / Re-install the VSIX plugin
+        public void InstallVsixPackage(IPackage currentPackage, IPackage newPackage, Action onComplete = null)
+        {
+            downloadThreads.Add(RunThread(() =>
+            {
+                if (!isSafeToProcess()) return;
+                Info("Preparing VSIX Upgrade");
+                OnProcessing();
+                try
+                {
+                    if (currentPackage != null) store.UninstallPackage(currentPackage);
+                    IsDownloading = true;
+                    store.InstallPackage(newPackage.Id, newPackage.Version);
+                    IsDownloading = false;
+                    // Now installs the plugin
+                    Info("Installing plugin for Visual Studio");
+                    store.InstallVsix(newPackage);
+                }
+                catch (Exception)
+                {
+                    ShowErrorDialog("VSIX package cannot be retrieved!");
+                }
+                finally
+                {
+                    IsDownloading = false;
+                }
+                SdkVersionManager.synchronizeData();
+                OnSDKVersionsUpdated();
+                Info("");
+                OnIdle();
+                if (onComplete != null) onComplete();
+            }));
+        }
+
+        // Run the game studio of a specific version
+        public void LaunchSDK(IPackage package)
+        {
+            downloadThreads.Add(RunThread(() =>
+            {
+                Info("Launching " + package);
+                OnProcessing();
+
+                // Load the assembly and call the default entry point:
+                var fullExePath = GetMainExecutable(package);
+
+                try
+                {
+                    Process.Start(fullExePath);
+                }
+                catch (Exception)
+                {
+                }
+
+                // Visual feedback: gives a few seconds to the editor to start
+                Thread.Sleep(3000); 
+                Info("");
+                OnIdle();
+            }));
+            
         }
 
         private Thread RunThread(ThreadStart threadStart)
@@ -507,6 +594,12 @@ The new version will be available on next run after all GameStudio are closed");
             if (handler != null) handler(this, e);
         }
 
+        private void OnSDKVersionsUpdated()
+        {
+            var handler = SDKVersionListUpdated;
+            if (handler != null) handler(this, EventArgs.Empty);
+        }
+
         private void DebugStep(string step)
         {
             Console.WriteLine("Step {0} ({1}ms)", step, clock.ElapsedMilliseconds);
@@ -545,6 +638,20 @@ The new version will be available on next run after all GameStudio are closed");
         private void OnDownloadFinished()
         {
             EventHandler<EventArgs> handler = DownloadFinished;
+            if (handler != null) handler(this, EventArgs.Empty);
+        }
+
+        private void OnProcessing()
+        {
+            IsProcessing = true;
+            EventHandler<EventArgs> handler = Processing;
+            if (handler != null) handler(this, EventArgs.Empty);
+        }
+
+        private void OnIdle()
+        {
+            IsProcessing = false;
+            EventHandler<EventArgs> handler = Idle;
             if (handler != null) handler(this, EventArgs.Empty);
         }
 

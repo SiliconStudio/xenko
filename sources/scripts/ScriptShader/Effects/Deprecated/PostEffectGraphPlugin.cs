@@ -6,7 +6,7 @@ using SiliconStudio.Paradox.Graphics;
 using QuickGraph;
 using QuickGraph.Algorithms;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     /// <summary>
     /// Posteffect manager.

@@ -5,6 +5,7 @@ using System.Threading;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Graphics.Font;
 
 namespace SiliconStudio.Paradox.Graphics.Tests

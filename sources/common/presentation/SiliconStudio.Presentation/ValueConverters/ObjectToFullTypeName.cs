@@ -16,7 +16,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <summary>
         /// The string representation of the type of a null object
         /// </summary>
-        public const string NullObjectType = "(null)";
+        public const string NullObjectType = "(None)";
 
         /// <inheritdoc/>
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)

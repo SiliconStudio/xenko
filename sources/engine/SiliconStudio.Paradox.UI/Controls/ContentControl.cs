@@ -131,7 +131,7 @@ namespace SiliconStudio.Paradox.UI.Controls
                 VisualContent.Arrange(childSizeWithoutPadding, IsCollapsed);
 
                 // compute the rendering offsets of the child element wrt the parent origin (0,0,0)
-                var childOffsets = new Vector3(Padding.Left, Padding.Top, Padding.Back) - finalSizeWithoutMargins/2;
+                var childOffsets = new Vector3(Padding.Left, Padding.Top, Padding.Front) - finalSizeWithoutMargins/2;
 
                 // set the arrange matrix of the child.
                 VisualContent.DependencyProperties.Set(ContentArrangeMatrixPropertyKey, Matrix.Translation(childOffsets));

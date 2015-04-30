@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Shaders;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     public class LightingShaderPlugin : ShaderPlugin<LightingPlugin>
     {

@@ -4,12 +4,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Serializers;
+
 namespace SiliconStudio.Core.Collections
 {
     /// <summary>
     /// Represent a collection associated with a constraint. When an item is added to this collection, it is tested against the constraint.
     /// If the test fails, the item can either be discarded, or an exception can be thrown. The desired behavior can be defined with <see cref="ThrowException"/>.
     /// </summary>
+    [DataSerializer(typeof(ListAllSerializer<,>), Mode = DataSerializerGenericMode.TypeAndGenericArguments)]
     public class ConstrainedList<T> : IList<T>
     {
         private readonly List<T> innerList = new List<T>();
@@ -31,17 +35,24 @@ namespace SiliconStudio.Core.Collections
         /// <summary>
         /// Gets or sets whether the collection should throw an <see cref="ArgumentException"/> when an item to add or insert doesn't pass the constraint.
         /// </summary>
+        [DataMemberIgnore]
         public bool ThrowException { get; set; }
 
         /// <summary>
         /// Gets or sets the constraint for items added to the collection. If <c>null</c>, this collection behaves like a <see cref="List{T}"/>.
         /// </summary>
+        [DataMemberIgnore]
         public Func<ConstrainedList<T>, T, bool> Constraint { get; set; }
 
-        /// <inheritdoc/>
-        public IEnumerator<T> GetEnumerator()
+        public List<T>.Enumerator GetEnumerator()
         {
             return innerList.GetEnumerator();
+        }
+
+        /// <inheritdoc/>
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         /// <inheritdoc/>

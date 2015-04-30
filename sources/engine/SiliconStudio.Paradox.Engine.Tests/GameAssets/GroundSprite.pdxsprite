@@ -1,24 +1,13 @@
 !SpriteGroup
-Id: e5a2d064-4599-4594-ac23-cbe9b7a603f7
+Id: f959170b-df62-40ff-869a-fd72304a8464
 Tags: []
 Images:
     -   Source: ../../../data/tests/SpriteBackground.png
-        Name: background
-        TextureRegion:
-            X: 0
-            Y: 0
-            Width: 512
-            Height: 512
+        Name: New frame
+        TextureRegion: {X: 0, Y: 0, Width: 512, Height: 512}
         Center: {X: 0, Y: 0}
-        CenterFromMiddle: false
     -   Source: ../../../data/tests/spriteForeground.png
-        Name: foreground
-        TextureRegion:
-            X: 0
-            Y: 0
-            Width: 256
-            Height: 256
-        Center: {X: 0, Y: 256}
-        CenterFromMiddle: false
+        Name: null
+        TextureRegion: {X: 0, Y: 0, Width: 0, Height: 0}
+        Center: {X: 0, Y: 0}
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Alpha: Explicit

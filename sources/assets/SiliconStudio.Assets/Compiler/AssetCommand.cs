@@ -42,12 +42,34 @@ namespace SiliconStudio.Assets.Compiler
             }
         }
 
+        protected static void ComputeCompileTimeDependenciesHash(PackageSession packageSession, BinarySerializationWriter writer, Asset asset)
+        {
+            var assetWithCompileTimeDependencies = asset as IAssetCompileTimeDependencies;
+            if (assetWithCompileTimeDependencies != null)
+            {
+                foreach (var dependentAssetReference in assetWithCompileTimeDependencies.EnumerateCompileTimeDependencies())
+                {
+                    var dependentAssetItem = packageSession.FindAsset(dependentAssetReference.Id) ?? packageSession.FindAsset(dependentAssetReference.Location);
+                    var dependentAsset = dependentAssetItem != null ? dependentAssetItem.Asset : null;
+                    if (dependentAsset == null)
+                        continue;
+                    
+                    // Hash asset content (since it is embedded, not a real reference)
+                    // Note: we hash child and not current, because when we start with main asset, it has already been hashed by base.ComputeParameterHash()
+                    writer.SerializeExtended(ref dependentAsset, ArchiveMode.Serialize);
+
+                    // Recurse
+                    ComputeCompileTimeDependenciesHash(packageSession, writer, dependentAsset);
+                }
+            }
+        }
+
         protected override void ComputeParameterHash(BinarySerializationWriter writer)
         {
             base.ComputeParameterHash(writer);
             
             var url = Url;
-            writer.Serialize(ref asset, ArchiveMode.Serialize);
+            writer.SerializeExtended(ref asset, ArchiveMode.Serialize);
             writer.Serialize(ref url, ArchiveMode.Serialize);
         }
 

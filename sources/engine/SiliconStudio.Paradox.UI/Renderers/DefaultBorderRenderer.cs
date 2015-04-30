@@ -33,22 +33,22 @@ namespace SiliconStudio.Paradox.UI.Renderers
             var elementHalfSize = elementSize / 2;
 
             // left/front
-            offsets = new Vector3(-elementHalfSize.X + elementHalfBorders.Left, 0, -elementHalfSize.Z + elementHalfBorders.Back);
-            borderSize = new Vector3(borderThickness.Left, elementSize.Y, borderThickness.Back);
+            offsets = new Vector3(-elementHalfSize.X + elementHalfBorders.Left, 0, -elementHalfSize.Z + elementHalfBorders.Front);
+            borderSize = new Vector3(borderThickness.Left, elementSize.Y, borderThickness.Front);
             DrawBorder(border, ref offsets, ref borderSize, context);
             
             // right/front
-            offsets = new Vector3(elementHalfSize.X - elementHalfBorders.Right, 0, -elementHalfSize.Z + elementHalfBorders.Back);
-            borderSize = new Vector3(borderThickness.Right, elementSize.Y, borderThickness.Back);
+            offsets = new Vector3(elementHalfSize.X - elementHalfBorders.Right, 0, -elementHalfSize.Z + elementHalfBorders.Front);
+            borderSize = new Vector3(borderThickness.Right, elementSize.Y, borderThickness.Front);
             DrawBorder(border, ref offsets, ref borderSize, context);
             
             // top/front
-            offsets = new Vector3(0, -elementHalfSize.Y + elementHalfBorders.Top, -elementHalfSize.Z + elementHalfBorders.Back);
-            borderSize = new Vector3(elementSize.X, borderThickness.Top, borderThickness.Back);
+            offsets = new Vector3(0, -elementHalfSize.Y + elementHalfBorders.Top, -elementHalfSize.Z + elementHalfBorders.Front);
+            borderSize = new Vector3(elementSize.X, borderThickness.Top, borderThickness.Front);
             DrawBorder(border, ref offsets, ref borderSize, context);
             
             // bottom/front
-            offsets = new Vector3(0, elementHalfSize.Y - elementHalfBorders.Bottom, -elementHalfSize.Z + elementHalfBorders.Back);
+            offsets = new Vector3(0, elementHalfSize.Y - elementHalfBorders.Bottom, -elementHalfSize.Z + elementHalfBorders.Front);
             borderSize = new Vector3(elementSize.X, borderThickness.Bottom, borderThickness.Back);
             DrawBorder(border, ref offsets, ref borderSize, context);
 
@@ -56,23 +56,23 @@ namespace SiliconStudio.Paradox.UI.Renderers
             if (element.ActualDepth > MathUtil.ZeroTolerance)
             {
                 // left/back
-                offsets = new Vector3(-elementHalfSize.X + elementHalfBorders.Left, 0, elementHalfSize.Z - elementHalfBorders.Front);
-                borderSize = new Vector3(borderThickness.Left, elementSize.Y, borderThickness.Front);
+                offsets = new Vector3(-elementHalfSize.X + elementHalfBorders.Left, 0, elementHalfSize.Z - elementHalfBorders.Back);
+                borderSize = new Vector3(borderThickness.Left, elementSize.Y, borderThickness.Back);
                 DrawBorder(border, ref offsets, ref borderSize, context);
                 
                 // right/back
-                offsets = new Vector3(elementHalfSize.X - elementHalfBorders.Right, 0, elementHalfSize.Z - elementHalfBorders.Front);
-                borderSize = new Vector3(borderThickness.Right, elementSize.Y, borderThickness.Front);
+                offsets = new Vector3(elementHalfSize.X - elementHalfBorders.Right, 0, elementHalfSize.Z - elementHalfBorders.Back);
+                borderSize = new Vector3(borderThickness.Right, elementSize.Y, borderThickness.Back);
                 DrawBorder(border, ref offsets, ref borderSize, context);
                 
                 // top/back
-                offsets = new Vector3(0, -elementHalfSize.Y + elementHalfBorders.Top, elementHalfSize.Z - elementHalfBorders.Front);
-                borderSize = new Vector3(elementSize.X, borderThickness.Top, borderThickness.Front);
+                offsets = new Vector3(0, -elementHalfSize.Y + elementHalfBorders.Top, elementHalfSize.Z - elementHalfBorders.Back);
+                borderSize = new Vector3(elementSize.X, borderThickness.Top, borderThickness.Back);
                 DrawBorder(border, ref offsets, ref borderSize, context);
                 
                 // bottom/back
-                offsets = new Vector3(0, elementHalfSize.Y - elementHalfBorders.Bottom, elementHalfSize.Z - elementHalfBorders.Front);
-                borderSize = new Vector3(elementSize.X, borderThickness.Bottom, borderThickness.Front);
+                offsets = new Vector3(0, elementHalfSize.Y - elementHalfBorders.Bottom, elementHalfSize.Z - elementHalfBorders.Back);
+                borderSize = new Vector3(elementSize.X, borderThickness.Bottom, borderThickness.Back);
                 DrawBorder(border, ref offsets, ref borderSize, context);
                 
                 // left/top

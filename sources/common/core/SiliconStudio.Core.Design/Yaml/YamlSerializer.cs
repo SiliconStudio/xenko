@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using SharpYaml;
+using SharpYaml.Events;
 using SharpYaml.Serialization;
 using SiliconStudio.Core.Reflection;
 using AttributeRegistry = SharpYaml.Serialization.AttributeRegistry;
@@ -31,6 +32,28 @@ namespace SiliconStudio.Core.Yaml
         {
             var serializer = GetYamlSerializer(false);
             return serializer.Deserialize(stream);
+        }
+
+        /// <summary>
+        /// Deserializes an object from the specified stream (expecting a YAML string).
+        /// </summary>
+        /// <param name="stream">A YAML string from a stream .</param>
+        /// <returns>An instance of the YAML data.</returns>
+        public static IEnumerable<T> DeserializeMultiple<T>(Stream stream)
+        {
+            var serializer = GetYamlSerializer(false);
+
+            var input = new StreamReader(stream);
+            var reader = new EventReader(new Parser(input));
+            reader.Expect<StreamStart>();
+
+            while (reader.Accept<DocumentStart>())
+            {
+                // Deserialize the document
+                var doc = serializer.Deserialize<T>(reader);
+
+                yield return doc;
+            }
         }
 
         /// <summary>
@@ -71,6 +94,7 @@ namespace SiliconStudio.Core.Yaml
                         LimitPrimitiveFlowSequence = 0,
                         Attributes = new AtributeRegistryFilter(),
                         PreferredIndent = 4,
+                        EmitShortTypeName = true,
                     };
 
                 foreach (var registeredAssembly in RegisteredAssemblies)
@@ -98,7 +122,29 @@ namespace SiliconStudio.Core.Yaml
                     var attribute = attributes[i] as DataMemberAttribute;
                     if (attribute != null)
                     {
-                        attributes[i] = new YamlMemberAttribute(attribute.Name) { Order = attribute.Order };
+                        SerializeMemberMode mode;
+                        switch (attribute.Mode)
+                        {
+                            case DataMemberMode.Default:
+                            case DataMemberMode.ReadOnly: // ReadOnly is better as default or content?
+                                mode = SerializeMemberMode.Default;
+                                break;
+                            case DataMemberMode.Assign:
+                                mode = SerializeMemberMode.Assign;
+                                break;
+                            case DataMemberMode.Content:
+                                mode = SerializeMemberMode.Content;
+                                break;
+                            case DataMemberMode.Binary:
+                                mode = SerializeMemberMode.Binary;
+                                break;
+                            case DataMemberMode.Never:
+                                mode = SerializeMemberMode.Never;
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                        attributes[i] = new YamlMemberAttribute(attribute.Name, mode) { Order = attribute.Order };
                     }
                     else if (attributes[i] is DataMemberIgnoreAttribute)
                     {

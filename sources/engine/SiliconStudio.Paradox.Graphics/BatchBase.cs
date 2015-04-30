@@ -25,7 +25,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics.Internals;
 
 namespace SiliconStudio.Paradox.Graphics
@@ -94,6 +94,7 @@ namespace SiliconStudio.Paradox.Graphics
         private readonly VertexDeclaration vertexDeclaration;
 
         private readonly ParameterCollection parameters;
+        private EffectParameterCollectionGroup defaultParameterCollectionGroup;
 
         /// <summary>
         /// Boolean indicating if we are between a call of Begin and End.
@@ -104,6 +105,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// The effect used for the current Begin/End session.
         /// </summary>
         protected Effect Effect { get; private set; }
+        protected EffectParameterCollectionGroup ParameterCollectionGroup { get; private set; }
         protected readonly Effect DefaultEffect;
 
         protected TextureIdComparer TextureComparer { get; set; }
@@ -133,9 +135,10 @@ namespace SiliconStudio.Paradox.Graphics
             vertexStructSize = vertexDeclaration.CalculateSize();
 
             parameters = new ParameterCollection();
+            defaultParameterCollectionGroup = new EffectParameterCollectionGroup(device, DefaultEffect, new[] { parameters });
             
             // Creates the vertex buffer (shared by within a device context).
-            ResourceContext = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerContext, resourceBufferInfo.ResourceKey, () => new DeviceResourceContext(GraphicsDevice, DefaultEffect, vertexDeclaration, resourceBufferInfo, indexStructSize));
+            ResourceContext = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerContext, resourceBufferInfo.ResourceKey, d => new DeviceResourceContext(GraphicsDevice, DefaultEffect, vertexDeclaration, resourceBufferInfo, indexStructSize));
         }
 
         /// <summary>
@@ -151,18 +154,20 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
-        /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil, rasterizer state objects and a custom effect. 
-        /// Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, depthStencilState.None, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp). 
-        /// Passing a null effect selects the default effect shader. 
+        /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil, rasterizer state objects and a custom effect.
+        /// Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, depthStencilState.None, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp).
+        /// Passing a null effect selects the default effect shader.
         /// </summary>
         /// <param name="effect">The effect to use for this begin/end draw session (default effect if null)</param>
+        /// <param name="parameterCollectionGroup">The parameter collection group.</param>
         /// <param name="sessionSortMode">Sprite drawing order used for the Begin/End session.</param>
         /// <param name="sessionBlendState">Blending state used for the Begin/End session</param>
         /// <param name="sessionSamplerState">Texture sampling used for the Begin/End session</param>
         /// <param name="sessionDepthStencilState">Depth and stencil state used for the Begin/End session</param>
         /// <param name="sessionRasterizerState">Rasterization state used for the Begin/End session</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference for the Begin/End session</param>
-        protected void Begin(Effect effect, SpriteSortMode sessionSortMode, BlendState sessionBlendState, SamplerState sessionSamplerState, DepthStencilState sessionDepthStencilState, RasterizerState sessionRasterizerState, int stencilValue)
+        /// <exception cref="System.InvalidOperationException">Only one SpriteBatch at a time can use SpriteSortMode.Immediate</exception>
+        protected void Begin(Effect effect, EffectParameterCollectionGroup parameterCollectionGroup, SpriteSortMode sessionSortMode, BlendState sessionBlendState, SamplerState sessionSamplerState, DepthStencilState sessionDepthStencilState, RasterizerState sessionRasterizerState, int stencilValue)
         {
             CheckEndHasBeenCalled("begin");
 
@@ -174,13 +179,28 @@ namespace SiliconStudio.Paradox.Graphics
             StencilReferenceValue = stencilValue;
 
             Effect = effect ?? DefaultEffect;
+            ParameterCollectionGroup = parameterCollectionGroup ?? defaultParameterCollectionGroup;
+            if (ParameterCollectionGroup == defaultParameterCollectionGroup && ParameterCollectionGroup.Effect != Effect)
+            {
+                // If ParameterCollectionGroup is not specified (using default one), let's make sure it is updated to matches effect
+                // It is quite inefficient if user is often switching effect without providing a matching ParameterCollectionGroup
+                ParameterCollectionGroup = defaultParameterCollectionGroup = new EffectParameterCollectionGroup(GraphicsDevice, Effect, new[] { parameters });
+            }
 
             texture0Updater = null;
             texture1Updater = null;
             if (Effect.HasParameter(TexturingKeys.Texture0))
                 texture0Updater = Effect.GetParameterFastUpdater(TexturingKeys.Texture0);
+            if (Effect.HasParameter(TexturingKeys.TextureCube0))
+                texture0Updater = Effect.GetParameterFastUpdater(TexturingKeys.TextureCube0);
+            if (Effect.HasParameter(TexturingKeys.Texture3D0))
+                texture0Updater = Effect.GetParameterFastUpdater(TexturingKeys.Texture3D0);
             if (Effect.HasParameter(TexturingKeys.Texture1))
                 texture1Updater = Effect.GetParameterFastUpdater(TexturingKeys.Texture1);
+            if (Effect.HasParameter(TexturingKeys.TextureCube1))
+                texture1Updater = Effect.GetParameterFastUpdater(TexturingKeys.TextureCube1);
+            if (Effect.HasParameter(TexturingKeys.Texture3D1))
+                texture1Updater = Effect.GetParameterFastUpdater(TexturingKeys.Texture3D1);
 
             // Immediate mode, then prepare for rendering here instead of End()
             if (sessionSortMode == SpriteSortMode.Immediate)
@@ -206,7 +226,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             // Sets the sampler state of the effect
             Parameters.Set(TexturingKeys.Sampler, localSamplerState);
-            Effect.Apply(Parameters);
+            Effect.Apply(GraphicsDevice, ParameterCollectionGroup, false);
 
             // Setup states (Blend, DepthStencil, Rasterizer)
             GraphicsDevice.SetBlendState(BlendState ?? GraphicsDevice.BlendStates.AlphaBlend);
@@ -619,11 +639,11 @@ namespace SiliconStudio.Paradox.Graphics
         /// <remarks>
         /// The index buffer is used in static mode and contains six indices for each quad. The vertex buffer contains 4 vertices for each quad.
         /// Rectangle is composed of two triangles as follow: 
-        ///  v0 - - - v1
-        ///  |  \      |
-        ///  |    \ t1 |
-        ///  | t2   \  |
-        ///  v3 - - - v2
+        ///                  v0 - - - v1                  v0 - - - v1
+        ///                  |  \      |                  | t1   /  |
+        ///  If cycle=true:  |    \ t1 | If cycle=false:  |    /    |
+        ///                  | t2   \  |                  | /    t2 |
+        ///                  v3 - - - v2                  v2 - - - v3
         /// </remarks>
         protected class StaticQuadBufferInfo: ResourceBufferInfo
         {
@@ -636,7 +656,7 @@ namespace SiliconStudio.Paradox.Graphics
             {
             }
 
-            public static StaticQuadBufferInfo CreateQuadBufferInfo(string resourceKey, int maxQuadNumber, int batchCapacity = 64)
+            public static StaticQuadBufferInfo CreateQuadBufferInfo(string resourceKey, bool cycle, int maxQuadNumber, int batchCapacity = 64)
             {
                 var indices = new short[maxQuadNumber * IndicesByElement];
                 var k = 0;
@@ -645,9 +665,18 @@ namespace SiliconStudio.Paradox.Graphics
                     indices[i++] = (short)(k + 0);
                     indices[i++] = (short)(k + 1);
                     indices[i++] = (short)(k + 2);
-                    indices[i++] = (short)(k + 0);
-                    indices[i++] = (short)(k + 2);
-                    indices[i++] = (short)(k + 3);
+                    if (cycle)
+                    {
+                        indices[i++] = (short)(k + 0);
+                        indices[i++] = (short)(k + 2);
+                        indices[i++] = (short)(k + 3);
+                    }
+                    else
+                    {
+                        indices[i++] = (short)(k + 1);
+                        indices[i++] = (short)(k + 3);
+                        indices[i++] = (short)(k + 2);
+                    }
                 }
 
                 return new StaticQuadBufferInfo(resourceKey, indices, VertexByElement * maxQuadNumber) { BatchCapacity = batchCapacity };

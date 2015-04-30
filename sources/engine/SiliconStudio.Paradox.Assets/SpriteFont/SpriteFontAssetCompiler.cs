@@ -12,25 +12,25 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Assets.SpriteFont.Compiler;
-using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.Font;
 
 using Font = SharpDX.DirectWrite.Font;
-using FontStyle = SiliconStudio.Paradox.Graphics.Font.FontStyle;
 
 namespace SiliconStudio.Paradox.Assets.SpriteFont
 {
     public class SpriteFontAssetCompiler : AssetCompilerBase<SpriteFontAsset>
     {
+        private static readonly FontDataFactory FontDataFactory = new FontDataFactory();
+
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SpriteFontAsset asset, AssetCompilerResult result)
         {
             if (asset.IsDynamic)
             {
                 UFile fontPathOnDisk;
-                if (asset.Source != null)
+
+                if (!string.IsNullOrEmpty(asset.Source))
                 {
                     var assetDirectory = assetAbsolutePath.GetParent();
                     fontPathOnDisk = UPath.Combine(assetDirectory, asset.Source);
@@ -53,7 +53,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
                 }
                 var fontImportLocation = FontHelper.GetFontPath(asset.FontName, asset.Style);
 
-                result.BuildSteps = new ListBuildStep
+                result.BuildSteps = new AssetBuildStep(AssetItem)
                 {
                     new ImportStreamCommand { SourcePath = fontPathOnDisk, Location = fontImportLocation },
                     new DynamicFontCommand(urlInStorage, asset)
@@ -64,21 +64,19 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
                 // copy the asset and transform the source and character set file path to absolute paths
                 var assetClone = (SpriteFontAsset)AssetCloner.Clone(asset);
                 var assetDirectory = assetAbsolutePath.GetParent();
-                assetClone.Source = asset.Source != null? UPath.Combine(assetDirectory, asset.Source): null;
+                assetClone.Source = !string.IsNullOrEmpty(asset.Source) ? UPath.Combine(assetDirectory, asset.Source): null;
                 assetClone.CharacterSet = asset.CharacterSet != null ? UPath.Combine(assetDirectory, asset.CharacterSet): null;
 
-                result.BuildSteps = new ListBuildStep { new StaticFontCommand(urlInStorage, assetAbsolutePath, assetClone) };
+                result.BuildSteps = new AssetBuildStep(AssetItem) { new StaticFontCommand(urlInStorage, assetClone) };
             }
         }
 
         internal class StaticFontCommand : AssetCommand<SpriteFontAsset>
         {
-            private readonly UFile assetAbsolutePath;
 
-            public StaticFontCommand(string url, UFile assetAbsolutePath, SpriteFontAsset description)
+            public StaticFontCommand(string url, SpriteFontAsset description)
                 : base(url, description)
             {
-                this.assetAbsolutePath = assetAbsolutePath;
             }
 
             public override IEnumerable<ObjectUrl> GetInputFiles()
@@ -94,86 +92,29 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                const bool useCacheFonts = false;
-
-                // compute the path of the cache files
-                var cachedImagePath = assetAbsolutePath.GetFileName() + ".CachedImage";
-                var cachedFontGlyphs = assetAbsolutePath.GetFileName() + ".CachedGlyphs";
-
                 // try to import the font from the original bitmap or ttf file
-                StaticSpriteFontData data;
+                Graphics.SpriteFont staticFont;
                 try
                 {
-                    data = FontCompiler.Compile(asset);
+                    staticFont = StaticFontCompiler.Compile(FontDataFactory, asset);
                 }
                 catch (FontNotFoundException ex) 
                 {
-                    if (!useCacheFonts)
-                    {
-                        commandContext.Logger.Error("Font [{0}] was not found on this machine.", ex.FontName);
-                        return Task.FromResult(ResultStatus.Failed);
-                    }
-                    else
-                    {
-                        // If the original fo
-                        commandContext.Logger.Warning("Font [{0}] was not found on this machine. Trying to use cached glyphs/image", ex.FontName);
-                        if (!File.Exists(cachedFontGlyphs))
-                        {
-                            commandContext.Logger.Error("Expecting cached glyphs [{0}]", cachedFontGlyphs);
-                            return Task.FromResult(ResultStatus.Failed);
-                        }
-
-                        if (!File.Exists(cachedImagePath))
-                        {
-                            commandContext.Logger.Error("Expecting cached image [{0}]", cachedImagePath);
-                            return Task.FromResult(ResultStatus.Failed);
-                        }
-
-                        // read the cached glyphs
-                        using (var glyphStream = File.OpenRead(cachedFontGlyphs))
-                            data = BinarySerialization.Read<StaticSpriteFontData>(glyphStream);
-
-                        // read the cached image
-                        data.Bitmaps = new[] { new ContentReference<Image>() };
-                        using (var imageStream = File.OpenRead(cachedImagePath))
-                            data.Bitmaps[0].Value = Image.Load(imageStream);
-                    }
+                    commandContext.Logger.Error("Font [{0}] was not found on this machine.", ex.FontName);
+                    return Task.FromResult(ResultStatus.Failed);
                 }
 
                 // check that the font data is valid
-                if (data == null || data.Bitmaps.Length == 0)
+                if (staticFont == null || staticFont.Textures.Count == 0)
                     return Task.FromResult(ResultStatus.Failed);
 
                 // save the data into the database
-                var imageUrl = Url + "__image";
-                data.Bitmaps[0].Location = imageUrl;
                 var assetManager = new AssetManager();
-                assetManager.Save(Url, data);
+                assetManager.Save(Url, staticFont);
 
-                var image = data.Bitmaps[0].Value;
-
-                // cache the generated data
-                if (useCacheFonts)
-                {
-                    try
-                    {
-                        // the image
-                        using (var imageStream = File.OpenWrite(cachedImagePath))
-                            image.Save(imageStream, ImageFileType.Paradox);
-
-                        // the glyphs
-                        data.Bitmaps = null;
-                        using (var glyphStream = File.OpenWrite(cachedFontGlyphs))
-                            BinarySerialization.Write(glyphStream, data);
-                    }
-                    catch (IOException ex)
-                    {
-                        commandContext.Logger.Warning("Cannot save cached glyphs [{0}] or image [{1}]", ex, cachedFontGlyphs, cachedImagePath);
-                    }
-                }
-
-                // free the objects
-                image.Dispose();
+                // dispose textures allocated by the StaticFontCompiler
+                foreach (var texture in staticFont.Textures)
+                    texture.Dispose();
 
                 return Task.FromResult(ResultStatus.Successful);
             }
@@ -227,18 +168,9 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                var dynamicFont = new DynamicSpriteFontData
-                {
-                    Size = FontHelper.PointsToPixels(asset.Size),
-                    DefaultCharacter = asset.DefaultCharacter,
-                    FontName = asset.FontName,
-                    ExtraLineSpacing = asset.LineSpacing,
-                    DefaultSize = asset.Size,
-                    ExtraSpacing = asset.Spacing,
-                    Style = asset.Style,
-                    UseKerning = asset.UseKerning,
-                    AntiAlias = asset.AntiAlias,
-                };
+                var dynamicFont = FontDataFactory.NewDynamic(
+                    FontHelper.PointsToPixels(asset.Size), asset.FontName, asset.Style, 
+                    asset.AntiAlias, asset.UseKerning, asset.Spacing, asset.LineSpacing, asset.DefaultCharacter);
 
                 var assetManager = new AssetManager();
                 assetManager.Save(Url, dynamicFont);

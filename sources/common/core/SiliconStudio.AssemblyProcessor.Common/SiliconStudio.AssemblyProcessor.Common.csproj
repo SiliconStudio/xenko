@@ -3,6 +3,8 @@
   <PropertyGroup>
     <SiliconStudioPlatform>Windows</SiliconStudioPlatform>
     <ParadoxGraphicsApi>Direct3D11</ParadoxGraphicsApi>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\..\build\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -19,12 +21,26 @@
     <RootNamespace>SiliconStudio.AssemblyProcessor</RootNamespace>
     <AssemblyName>SiliconStudio.AssemblyProcessor.Common</AssemblyName>
     <ParadoxBuildTags>*</ParadoxBuildTags>
+	<DefineConstants>$(DefineConstants);ASSEMBLY_PROCESSOR</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ILRepack">
       <HintPath>$(SiliconStudioDependenciesDir)ILRepack\ILRepack.exe</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\..\build\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc1\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp">
+      <HintPath>..\..\..\..\build\packages\Microsoft.CodeAnalysis.CSharp.1.0.0-rc1\lib\net45\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Desktop">
+      <HintPath>..\..\..\..\build\packages\Microsoft.CodeAnalysis.CSharp.1.0.0-rc1\lib\net45\Microsoft.CodeAnalysis.CSharp.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Desktop">
+      <HintPath>..\..\..\..\build\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc1\lib\net45\Microsoft.CodeAnalysis.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Options, Version=0.2.3.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="Mono.Posix">
       <HintPath>$(SiliconStudioDependenciesDir)ILRepack\Mono.Posix.dll</HintPath>
       <Private>True</Private>
@@ -42,10 +58,16 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.1.33.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\build\packages\System.Collections.Immutable.1.1.33-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Reflection.Metadata">
+      <HintPath>..\..\..\..\build\packages\System.Reflection.Metadata.1.0.18-beta\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -56,7 +78,7 @@
     <Compile Include="..\SiliconStudio.Core\PlatformType.cs">
       <Link>Core\PlatformType.cs</Link>
     </Compile>
-    <Compile Include="..\SiliconStudio.Core\Serialization\Serializers\DataSerializerGenericMode.cs">
+    <Compile Include="..\SiliconStudio.Core\Serialization\DataSerializerGenericMode.cs">
       <Link>Core\DataSerializerGenericMode.cs</Link>
     </Compile>
     <Compile Include="..\SiliconStudio.Core\Storage\ObjectId.cs">
@@ -121,12 +143,20 @@
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>ComplexClassSerializerGenerator.cs</LastGenOutput>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

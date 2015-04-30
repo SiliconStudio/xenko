@@ -23,7 +23,7 @@ Vector4 FbxDouble4ToVector4(FbxDouble4 vector)
 	return Vector4((float)vector[0], (float)vector[1], (float)vector[2], (float)vector[3]);
 }
 
-CompressedTimeSpan FBXTimeToTimeSpane(const FbxTime& time)
+CompressedTimeSpan FBXTimeToTimeSpan(const FbxTime& time)
 {
 	double resultTime = (double)time.Get();
 	resultTime *= (double)CompressedTimeSpan::TicksPerSecond / (double)FBXSDK_TIME_ONE_SECOND.Get();
@@ -37,6 +37,17 @@ Matrix FBXMatrixToMatrix(FbxAMatrix& matrix)
 	for (int i = 0; i < 4; ++i)
 		for (int j = 0; j < 4; ++j)
 			((float*)&result)[i * 4 + j] = (float)((double*)&matrix)[j * 4 + i];
+
+	return result;
+}
+
+FbxAMatrix MatrixToFBXMatrix(Matrix& matrix)
+{
+	FbxAMatrix result;
+
+	for (int i = 0; i < 4; ++i)
+		for (int j = 0; j < 4; ++j)
+			((double*)&result)[i * 4 + j] = (double)((float*)&matrix)[j * 4 + i];
 
 	return result;
 }

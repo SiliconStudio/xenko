@@ -1,12 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using System.IO;
 
 using NUnit.Framework;
 using SiliconStudio.TextureConverter.Requests;
 using SiliconStudio.TextureConverter.TexLibraries;
-using SiliconStudio.TextureConverter;
 
 namespace SiliconStudio.TextureConverter.Tests
 {
@@ -46,10 +43,10 @@ namespace SiliconStudio.TextureConverter.Tests
         public void CanHandleRequestTest()
         {
             TexImage image = TestTools.Load(library, "Texture3D_WMipMaps_ATC_RGBA_Explicit.pdx");
-            Assert.IsFalse(library.CanHandleRequest(image, new DecompressingRequest()));
+            Assert.IsFalse(library.CanHandleRequest(image, new DecompressingRequest(false)));
             Assert.IsFalse(library.CanHandleRequest(image, new LoadingRequest(new TexImage())));
-            Assert.IsTrue(library.CanHandleRequest(image, new LoadingRequest(SiliconStudio.Paradox.Graphics.Image.New1D(5, 0, SiliconStudio.Paradox.Graphics.PixelFormat.ATC_RGBA_Explicit))));
-            Assert.IsTrue(library.CanHandleRequest(image, new LoadingRequest("TextureArray_WMipMaps_BC3.dds")));
+            Assert.IsTrue(library.CanHandleRequest(image, new LoadingRequest(Paradox.Graphics.Image.New1D(5, 0, Paradox.Graphics.PixelFormat.ATC_RGBA_Explicit))));
+            Assert.IsTrue(library.CanHandleRequest(image, new LoadingRequest("TextureArray_WMipMaps_BC3.dds", false)));
             Assert.IsTrue(library.CanHandleRequest(image, new ExportRequest("TextureArray_WMipMaps_BC3.pdx", 0)));
             Assert.IsTrue(library.CanHandleRequest(image, new ExportToParadoxRequest()));
             image.Dispose();

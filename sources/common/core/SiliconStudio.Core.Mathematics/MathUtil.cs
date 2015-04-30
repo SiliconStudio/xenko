@@ -407,129 +407,6 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Calculates the modulo of the specified value, handling negative values.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="modulo">The modulo.</param>
-        /// <returns>The result of the modulo applied to value</returns>
-        public static int Mod(int value, int modulo)
-        {
-            if (modulo == 0)
-            {
-                return value;
-            }
-            value %= modulo;
-            return value < 0 ? value + modulo : value;
-        }
-
-        /// <summary>
-        /// Calculates the modulo of the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="modulo">The modulo.</param>
-        /// <returns>The result of the modulo applied to value</returns>
-        public static float Mod(float value, float modulo)
-        {
-            if (modulo == 0.0f)
-            {
-                return value;
-            }
-            value %= modulo;
-            return value < 0 ? value + modulo : value;
-        }
-
-        /// <summary>
-        /// Calculates the modulo 2*PI of the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the modulo applied to value</returns>
-        public static float Mod2PI(float value)
-        {
-            return Mod(value, TwoPi);
-        }
-
-        /// <summary>
-        /// Wraps the specified value into a range [min, max]
-        /// </summary>
-        /// <param name="value">The value to wrap.</param>
-        /// <param name="min">The min.</param>
-        /// <param name="max">The max.</param>
-        /// <returns>Result of the wrapping.</returns>
-        /// <exception cref="ArgumentException">Is thrown when <paramref name="min"/> is greater than <paramref name="max"/>.</exception>
-        public static int Wrap(int value, int min, int max)
-        {
-            if (min > max)
-                throw new ArgumentException(string.Format("min {0} should be less than or equal to max {1}", min, max), "min");
-
-            // Code from http://stackoverflow.com/a/707426/1356325
-            int range_size = max - min + 1;
-
-            if (value < min)
-                value += range_size * ((min - value) / range_size + 1);
-
-            return min + (value - min) % range_size;
-        }
-
-        /// <summary>
-        /// Wraps the specified value into a range [min, max[
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="min">The min.</param>
-        /// <param name="max">The max.</param>
-        /// <returns>Result of the wrapping.</returns>
-        /// <exception cref="ArgumentException">Is thrown when <paramref name="min"/> is greater than <paramref name="max"/>.</exception>
-        public static float Wrap(float value, float min, float max)
-        {
-            if (NearEqual(min, max)) return min;
-
-            double mind = min;
-            double maxd = max;
-            double valued = value;
-
-            if (mind > maxd)
-                throw new ArgumentException(string.Format("min {0} should be less than or equal to max {1}", min, max), "min");
-
-            var range_size = maxd - mind;
-            return (float)(mind + (valued - mind) - (range_size * Math.Floor((valued - mind) / range_size)));
-        }
-
-        /// <summary>
-        /// Gauss function.
-        /// </summary>
-        /// <param name="amplitude">Curve amplitude.</param>
-        /// <param name="x">Position X.</param>
-        /// <param name="y">Position Y</param>
-        /// <param name="radX">Radius X.</param>
-        /// <param name="radY">Radius Y.</param>
-        /// <param name="sigmaX">Curve sigma X.</param>
-        /// <param name="sigmaY">Curve sigma Y.</param>
-        /// <returns>The result of Gaussian function.</returns>
-        public static float Gauss(float amplitude, float x, float y, float radX, float radY, float sigmaX, float sigmaY)
-        {
-            return (float)Gauss((double)amplitude, x, y, radX, radY, sigmaX, sigmaY);
-        }
-
-        /// <summary>
-        /// Gauss function.
-        /// </summary>
-        /// <param name="amplitude">Curve amplitude.</param>
-        /// <param name="x">Position X.</param>
-        /// <param name="y">Position Y</param>
-        /// <param name="radX">Radius X.</param>
-        /// <param name="radY">Radius Y.</param>
-        /// <param name="sigmaX">Curve sigma X.</param>
-        /// <param name="sigmaY">Curve sigma Y.</param>
-        /// <returns>The result of Gaussian function.</returns>
-        public static double Gauss(double amplitude, double x, double y, double radX, double radY, double sigmaX, double sigmaY)
-        {
-            return (amplitude * Math.E) -
-                (
-                    Math.Pow(x - (radX / 2), 2) / (2 * Math.Pow(sigmaX, 2)) +
-                    Math.Pow(y - (radY / 2), 2) / (2 * Math.Pow(sigmaY, 2))
-                );
-        }
-
-        /// <summary>
         /// Determines whether the specified x is pow2.
         /// </summary>
         /// <param name="x">The x.</param>
@@ -537,6 +414,73 @@ namespace SiliconStudio.Core.Mathematics
         public static bool IsPow2(int x)
         {
             return ((x != 0) && (x & (x - 1)) == 0);
+        }
+
+        /// <summary>
+        /// Converts a float value from sRGB to linear.
+        /// </summary>
+        /// <param name="sRgbValue">The sRGB value.</param>
+        /// <returns>A linear value.</returns>
+        public static float SRgbToLinear(float sRgbValue)
+        {
+            if (sRgbValue < 0.04045f) return sRgbValue / 12.92f;
+            return (float)Math.Pow((sRgbValue + 0.055) / 1.055, 2.4);
+        }
+
+        /// <summary>
+        /// Converts a float value from linear to sRGB.
+        /// </summary>
+        /// <param name="linearValue">The linear value.</param>
+        /// <returns>The encoded sRGB value.</returns>
+        public static float LinearToSRgb(float linearValue)
+        {
+            if (linearValue < 0.0031308f) return linearValue * 12.92f;
+            return (float)(1.055 * Math.Pow(linearValue, 1 / 2.4) - 0.055);
+        }
+
+        /// <summary>
+        /// Calculate the logarithm 2 of a floating point.
+        /// </summary>
+        /// <param name="x">The input float</param>
+        /// <returns><value>Log2(x)</value></returns>
+        public static float Log2(float x)
+        {
+            return (float) Math.Log(x) / 0.6931471805599453f;
+        }
+
+        /// <summary>
+        /// Calculate the logarithm 2 of an integer.
+        /// </summary>
+        /// <param name="i">The input integer</param>
+        /// <returns><value>the log2(i) rounded to lower integer</value></returns>
+        public static int Log2(int i)
+        {
+            var r = 0;
+
+            while ((i >>= 1) != 0)
+                ++r;
+
+            return r;
+        }
+
+        /// <summary>
+        /// Get the next power of two for a size.
+        /// </summary>
+        /// <param name="size">The size.</param>
+        /// <returns>System.Int32.</returns>
+        public static int NextPowerOfTwo(int size)
+        {
+            return 1 << (int)Math.Ceiling(Math.Log(size, 2));
+        }
+
+        /// <summary>
+        /// Get the next power of two for a size.
+        /// </summary>
+        /// <param name="size">The size.</param>
+        /// <returns>System.Int32.</returns>
+        public static float NextPowerOfTwo(float size)
+        {
+            return (float)Math.Pow(2, Math.Ceiling(Math.Log(size, 2)));
         }
     }
 }

@@ -9,6 +9,8 @@ using System.Runtime.Remoting.Contexts;
 using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
@@ -17,14 +19,29 @@ using SiliconStudio.Core;
 namespace SiliconStudio.AssemblyProcessor
 {
     /// <summary>
-    /// Various helper functions to generate complex serializer.
+    /// Various helper functions to compile low-level "complex" serializer.
     /// </summary>
     public static class ComplexSerializerGenerator
     {
         public static CodeDomProvider codeDomProvider = new Microsoft.CSharp.CSharpCodeProvider();
 
-        public static AssemblyDefinition GenerateSerializationAssembly(PlatformType platformType, BaseAssemblyResolver assemblyResolver, AssemblyDefinition assembly, string serializationAssemblyLocation, string signKeyFile = null)
+        public static AssemblyDefinition GenerateSerializationAssembly(PlatformType platformType, BaseAssemblyResolver assemblyResolver, AssemblyDefinition assembly, string serializationAssemblyLocation, string signKeyFile, List<string> serializatonProjectReferencePaths)
         {
+            // Make sure all assemblies in serializatonProjectReferencePaths are referenced (sometimes they might be optimized out if no direct references)
+            foreach (var serializatonProjectReferencePath in serializatonProjectReferencePaths)
+            {
+                var shortAssemblyName = Path.GetFileNameWithoutExtension(serializatonProjectReferencePath);
+
+                // Still in references (not optimized)
+                if (assembly.MainModule.AssemblyReferences.Any(x => x.Name == shortAssemblyName))
+                    continue;
+
+                // For now, use AssemblyDefinition.ReadAssembly to compute full name -- maybe not very efficient but it shouldn't happen often anyway)
+                var referencedAssembly = AssemblyDefinition.ReadAssembly(serializatonProjectReferencePath);
+
+                assembly.MainModule.AssemblyReferences.Add(AssemblyNameReference.Parse(referencedAssembly.FullName));
+            }
+
             // Create the serializer code generator
             var serializerGenerator = new ComplexSerializerCodeGenerator(assemblyResolver, assembly);
 
@@ -34,17 +51,13 @@ namespace SiliconStudio.AssemblyProcessor
             // Generate serializer code
             var serializerGeneratedCode = serializerGenerator.TransformText();
 
-            var compilerParameters = new CompilerParameters();
-            compilerParameters.IncludeDebugInformation = false;
-            compilerParameters.GenerateInMemory = false;
-            compilerParameters.CompilerOptions = "/nostdlib";
-            compilerParameters.TreatWarningsAsErrors = false;
-            compilerParameters.TempFiles.KeepFiles = false;
-            //Console.WriteLine("Generating {0}", serializationAssemblyLocation);
+            var syntaxTree = CSharpSyntaxTree.ParseText(serializerGeneratedCode);
 
             // Add reference from source assembly
             // Use a hash set because it seems including twice mscorlib (2.0 and 4.0) seems to be a problem.
             var skipWindows = "Windows, Version=255.255.255.255, Culture=neutral, PublicKeyToken=null";
+
+            var compilerOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, allowUnsafe: true);
 
             // Sign the serialization assembly the same way the source was signed
             // TODO: Transmit over command line
@@ -54,28 +67,25 @@ namespace SiliconStudio.AssemblyProcessor
                 if (signKeyFile == null)
                     throw new InvalidOperationException("Generating serialization code for signed assembly, but no key was specified.");
 
-                var assemblyPath = Path.GetDirectoryName(assembly.MainModule.FullyQualifiedName);
-                if ((assembly.MainModule.Attributes & ModuleAttributes.StrongNameSigned) == ModuleAttributes.StrongNameSigned)
-                {
-                    // Strongly signed
-                    compilerParameters.CompilerOptions += string.Format(" /keyfile:\"{0}\"", signKeyFile);
-                }
-                else
+                compilerOptions = compilerOptions.WithCryptoKeyFile(signKeyFile).WithStrongNameProvider(new DesktopStrongNameProvider());
+                if ((assembly.MainModule.Attributes & ModuleAttributes.StrongNameSigned) != ModuleAttributes.StrongNameSigned)
                 {
                     // Delay signed
-                    compilerParameters.CompilerOptions += string.Format(" /delaysign+ /keyfile:\"{0}\"", signKeyFile);
+                    compilerOptions = compilerOptions.WithDelaySign(true);
                 }
             }
 
+            var metadataReferences = new List<MetadataReference>();
             var assemblyLocations = new HashSet<string>();
             foreach (var referencedAssemblyName in assembly.MainModule.AssemblyReferences)
             {
-                if (referencedAssemblyName.FullName != skipWindows)
+                // We skip both Windows, and current assembly (AssemblyProcessor.Common, which might be added with an alias)
+                if (referencedAssemblyName.FullName != skipWindows && referencedAssemblyName.FullName != typeof(ComplexSerializerGenerator).Assembly.FullName && referencedAssemblyName.FullName != "SiliconStudio.AssemblyProcessor")
                 {
                     if (assemblyLocations.Add(referencedAssemblyName.Name))
                     {
                         //Console.WriteLine("Resolve Assembly for serialization [{0}]", referencedAssemblyName.FullName);
-                        compilerParameters.ReferencedAssemblies.Add(assemblyResolver.Resolve(referencedAssemblyName).MainModule.FullyQualifiedName);
+                        metadataReferences.Add(CreateMetadataReference(assemblyResolver, assemblyResolver.Resolve(referencedAssemblyName)));
                     }
                 }
             }
@@ -83,9 +93,9 @@ namespace SiliconStudio.AssemblyProcessor
             // typeof(Dictionary<,>)
             // Special case for 4.5: Because Dictionary<,> is forwarded, we need to add a reference to the actual assembly
             var mscorlibAssembly = CecilExtensions.FindCorlibAssembly(assembly);
-            compilerParameters.ReferencedAssemblies.Add(mscorlibAssembly.MainModule.FullyQualifiedName);
+            metadataReferences.Add(CreateMetadataReference(assemblyResolver, mscorlibAssembly));
             var collectionType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(Dictionary<,>).FullName);
-            compilerParameters.ReferencedAssemblies.Add(collectionType.Module.FullyQualifiedName);
+            metadataReferences.Add(CreateMetadataReference(assemblyResolver, collectionType.Module.Assembly));
 
             // Make sure System and System.Reflection are added
             // TODO: Maybe we should do that for .NETCore and PCL too? (instead of WinRT only)
@@ -93,33 +103,44 @@ namespace SiliconStudio.AssemblyProcessor
             {
                 if (assemblyLocations.Add("System"))
                 {
-                    compilerParameters.ReferencedAssemblies.Add(assemblyResolver.Resolve("System").MainModule.FullyQualifiedName);
+                    metadataReferences.Add(CreateMetadataReference(assemblyResolver, assemblyResolver.Resolve("System")));
                 }
                 if (assemblyLocations.Add("System.Reflection"))
                 {
-                    compilerParameters.ReferencedAssemblies.Add(assemblyResolver.Resolve("System.Reflection").MainModule.FullyQualifiedName);
+                    metadataReferences.Add(CreateMetadataReference(assemblyResolver, assemblyResolver.Resolve("System.Reflection")));
                 }
             }
 
-            compilerParameters.ReferencedAssemblies.Add(assembly.MainModule.FullyQualifiedName);
+            metadataReferences.Add(CreateMetadataReference(assemblyResolver, assembly));
             assemblyLocations.Add(assembly.Name.Name);
 
             // In case Paradox.Framework.Serialization was not referenced, let's add it.
             if (!assemblyLocations.Contains("SiliconStudio.Core"))
             {
-                compilerParameters.ReferencedAssemblies.Add(assemblyResolver.Resolve("SiliconStudio.Core").MainModule.FullyQualifiedName);
+                metadataReferences.Add(CreateMetadataReference(assemblyResolver, assemblyResolver.Resolve("SiliconStudio.Core")));
+                assemblyLocations.Add("SiliconStudio.Core");
             }
 
-            compilerParameters.OutputAssembly = serializationAssemblyLocation;
-            var compilerResults = codeDomProvider.CompileAssemblyFromSource(compilerParameters, serializerGeneratedCode);
+            // Create roslyn compilation object
+            var assemblyName = Path.GetFileNameWithoutExtension(serializationAssemblyLocation);
+            var compilation = CSharpCompilation.Create(assemblyName, new[] { syntaxTree }, metadataReferences, compilerOptions);
 
-            if (compilerResults.Errors.HasErrors)
+            // Do the actual compilation, and check errors
+            using (var peStream = new FileStream(serializationAssemblyLocation, FileMode.Create, FileAccess.Write))
             {
-                var errors = new StringBuilder();
-                errors.AppendLine(string.Format("Serialization assembly compilation: {0} error(s)", compilerResults.Errors.Count));
-                foreach (var error in compilerResults.Errors)
-                    errors.AppendLine(error.ToString());
-                throw new InvalidOperationException(errors.ToString());
+                var compilationResult = compilation.Emit(peStream);
+
+                if (!compilationResult.Success)
+                {
+                    var errors = new StringBuilder();
+                    errors.AppendLine(string.Format("Serialization assembly compilation: {0} error(s)", compilationResult.Diagnostics.Count(x => x.Severity >= DiagnosticSeverity.Error)));
+                    foreach (var error in compilationResult.Diagnostics)
+                    {
+                        if (error.Severity >= DiagnosticSeverity.Warning)
+                            errors.AppendLine(error.ToString());
+                    }
+                    throw new InvalidOperationException(errors.ToString());
+                }
             }
 
             // Run ILMerge
@@ -143,6 +164,10 @@ namespace SiliconStudio.AssemblyProcessor
             //merge.SetTargetPlatform("v4", frameworkFolder);
             merge.SetSearchDirectories(assemblyResolver.GetSearchDirectories());
             merge.Merge();
+
+            // Copy name
+            merge.TargetAssemblyDefinition.Name.Name = assembly.Name.Name;
+            merge.TargetAssemblyDefinition.Name.Version = assembly.Name.Version;
 
             // Add assembly signing info
             if (assembly.Name.HasPublicKey)
@@ -171,6 +196,22 @@ namespace SiliconStudio.AssemblyProcessor
             }
 
             return merge.TargetAssemblyDefinition;
+        }
+
+        private static MetadataReference CreateMetadataReference(IAssemblyResolver assemblyResolver, AssemblyDefinition assembly)
+        {
+            // Try to find if it has been registed with a in-memory version first
+            var customAssemblyResolver = assemblyResolver as CustomAssemblyResolver;
+            if (customAssemblyResolver != null)
+            {
+                var assemblyData = customAssemblyResolver.GetAssemblyData(assembly);
+                if (assemblyData != null)
+                {
+                    return MetadataReference.CreateFromStream(new MemoryStream(assemblyData));
+                }
+            }
+
+            return MetadataReference.CreateFromFile(assembly.MainModule.FullyQualifiedName);
         }
 
         private static void RegisterDefaultSerializationProfile(IAssemblyResolver assemblyResolver, AssemblyDefinition assembly, ComplexSerializerCodeGenerator generator)

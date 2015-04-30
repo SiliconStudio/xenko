@@ -46,24 +46,12 @@
   <PropertyGroup>
     <!-- Process by default scripts with AssemblyProcessor -->
     <SiliconStudioAssemblyProcessor Condition="'$(ParadoxScript)' == 'true'">true</SiliconStudioAssemblyProcessor>
-    <!-- Disable assembly processor in compilation first step -->
-    <SiliconStudioAssemblyProcessor Condition="'$(ParadoxBuildStep)' != ''">false</SiliconStudioAssemblyProcessor>
     
     <!--By default, use AssemblyProcessor from solution, unless this is a user build-->
     <ParadoxSdkToolsDir Condition="'$(ParadoxSdkToolsDir)' == ''">$(SolutionDir)Bin\Windows-Direct3D11\</ParadoxSdkToolsDir>
     <ParadoxSdkToolsDir Condition="'$(ParadoxUserBuild)' == 'true'">$(ParadoxSdkDir)\Bin\Windows-Direct3D11\</ParadoxSdkToolsDir>
     <ParadoxAssetCompilerCommand>$(ParadoxSdkToolsDir)SiliconStudio.Assets.CompilerApp.exe</ParadoxAssetCompilerCommand>
   </PropertyGroup>
-
-  <!-- During StepData, ignore Data source folder -->
-  <Target Name="ParadoxIgnoreData"
-          BeforeTargets="BeforeCompile"
-          Condition="'$(ParadoxBuildStep)' != ''">
-    <Message Importance="High" Text="Paradox Build Step $(ParadoxBuildStep)" />
-    <ItemGroup>
-      <Compile Remove="Data\*.*" />
-    </ItemGroup>
-  </Target>
 
   <!--Import Paradox settings-->
   <Import Project="$(MSBuildThisFileDirectory)..\common\targets\SiliconStudio.PostSettings.targets"/>

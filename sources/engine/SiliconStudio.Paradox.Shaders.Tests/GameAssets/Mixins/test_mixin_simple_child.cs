@@ -8,7 +8,7 @@
 
 using System;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
@@ -20,7 +20,7 @@ namespace Test3
     {
         internal partial class ChildMixin  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "C1");
                 context.Mixin(mixin, "C2");
@@ -38,7 +38,7 @@ namespace Test3
     {
         internal partial class DefaultSimpleChild  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "A");
                 context.Mixin(mixin, "B");

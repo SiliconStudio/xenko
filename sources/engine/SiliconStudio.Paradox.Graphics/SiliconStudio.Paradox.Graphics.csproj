@@ -71,57 +71,70 @@
     </When>
   </Choose>
   <ItemGroup>
-    <None Include="..\..\..\deps\freetype-2.5.3\$(SiliconStudioPlatform)\**\*.*">
+    <None Include="..\..\..\deps\freetype-2.5.3\$(SiliconStudioPlatform)\$(Configuration)\**\*.*">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'WindowsStore' Or '$(SiliconStudioPlatform)' == 'WindowsPhone' Or '$(SiliconStudioPlatform)' == 'Android' ">
+  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'WindowsStore' Or '$(SiliconStudioPlatform)' == 'WindowsPhone'">
     <Reference Include="SharpFont">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ParadoxDependenciesDir)SharpFont\SharpFont.dll</HintPath>
+      <HintPath>$(ParadoxDependenciesDir)SharpFont\Windows\$(Configuration)\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS'">
     <Reference Include="SharpFont">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ParadoxDependenciesDir)SharpFont\iOS\SharpFont.dll</HintPath>
+      <HintPath>$(ParadoxDependenciesDir)SharpFont\iOS\$(Configuration)\SharpFont.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Android'">
+    <Reference Include="SharpFont">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(ParadoxDependenciesDir)SharpFont\Android\$(Configuration)\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
   <!-- Files for Direct3D  -->
   <ItemGroup>
     <Compile Include="AppContextType.cs" />
     <Compile Include="BatchBase.cs" />
+    <Compile Include="BlendStateSerializer.cs" />
     <Compile Include="DataOld\GpuBlendStateSerializer.cs" />
     <Compile Include="DataOld\GpuDepthStencilStateSerializer.cs" />
     <Compile Include="DataOld\GpuRasterizerStateSerializer.cs" />
     <Compile Include="DataOld\GpuSamplerStateSerializer2.cs" />
     <Compile Include="DataOld\GpuTextureSerializer2.cs" />
+    <Compile Include="Effects\EffectParameterUpdaterDefinition.cs" />
+    <Compile Include="Effects\ParameterDependency.cs" />
+    <Compile Include="Font\DynamicSpriteFontContentSerializer.cs" />
+    <Compile Include="Font\FontDataFactory.cs" />
+    <Compile Include="Font\StaticSpriteFontContentSerializer.cs" />
+    <Compile Include="Font\StaticSpriteFontSerializer.cs" />
+    <Compile Include="Font\DynamicSpriteFontSerializer.cs" />
+    <Compile Include="GraphicsDeviceServiceLocal.cs" />
+    <Compile Include="RasterizerStateSerializer.cs" />
     <Compile Include="Data\BufferData.cs" />
-    <Compile Include="Data\BufferDataConverter.cs" />
-    <Compile Include="Data\CustomConverters.cs" />
-    <Compile Include="Data\GraphicsData.cs">
-      <DependentUpon>GraphicsData.pdxdata</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Data\ImageGroupData.cs" />
-    <Compile Include="Data\SpriteGroupData.cs" />
+    <Compile Include="Data\GraphicsSerializerExtensions.cs" />
+    <Compile Include="Data\BufferSerializer.cs" />
+    <Compile Include="Data\TextureSerializer.cs" />
     <Compile Include="Direct3D\DisplayMode.Direct3D.cs" />
     <Compile Include="Direct3D\EffectInputSignature.Direct3D.cs" />
     <Compile Include="Direct3D\GraphicsOutput.Direct3D.cs" />
     <Compile Include="Direct3D\InputLayoutManager.cs" />
     <Compile Include="Direct3D\Rational.Direct3D.cs" />
-    <Compile Include="FakeDepthStencilState.cs" />
-    <Compile Include="FakeRasterizerState.cs" />
+    <Compile Include="DepthStencilStateSerializer.cs" />
+    <Compile Include="Sprite3DBatch.cs" />
+    <Compile Include="Shaders\ShaderBaseStream.cs">
+      <DependentUpon>ShaderBaseStream.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="VertexHelper.cs" />
+    <Compile Include="WorkingSpace.cs" />
     <Compile Include="Font\FontAntiAliasMode.cs" />
     <Compile Include="Font\FontStyleExtensions.cs" />
-    <Compile Include="GeometricMultiTexcoordPrimitive.cs" />
-    <Compile Include="GeometricMultiTexcoordPrimitive.Cube.cs" />
-    <Compile Include="GeometricMultiTexcoordPrimitive.Cylinder.cs" />
-    <Compile Include="GeometricMultiTexcoordPrimitive.Torus.cs" />
-    <Compile Include="GeometricPrimitive.Cone.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Cone.cs" />
     <Compile Include="GraphicsDeviceExtensions.cs" />
     <Compile Include="GraphicsOutput.cs" />
     <Compile Include="GraphicsResourceAllocator.cs" />
@@ -140,40 +153,36 @@
     <Compile Include="Effects\ConstantBufferData.cs" />
     <Compile Include="Effects\Effect.cs" />
     <Compile Include="EffectInputSignature.cs" />
-    <Compile Include="Effects\EffectConverter.cs" />
+    <Compile Include="Effects\EffectSerializer.cs" />
     <Compile Include="Effects\EffectParameterResourceBinding.cs" />
     <Compile Include="Effects\EffectStateBindings.cs" />
     <Compile Include="Effects\ParameterConstantBuffer.cs" />
     <Compile Include="Effects\StageStatus.cs" />
-    <Compile Include="FakeBlendState.cs" />
     <Compile Include="Font\FontHelper.cs" />
     <Compile Include="Font\FontManager.cs" />
     <Compile Include="Font\CharacterBitmap.cs" />
     <Compile Include="Font\DynamicSpriteFont.cs" />
-    <Compile Include="Font\DynamicSpriteFontData.cs" />
     <Compile Include="Font\FontCacheManager.cs" />
     <Compile Include="Font\CharacterSpecification.cs" />
     <Compile Include="Font\FontStyle.cs" />
     <Compile Include="Font\FontSystem.cs" />
-    <Compile Include="Font\GuillotinePacker.cs" />
-    <Compile Include="Font\IFontSystem.cs" />
+    <Compile Include="Font\IFontFactory.cs" />
     <Compile Include="Font\StaticSpriteFont.cs" />
     <Compile Include="FrameworkResources.Designer.cs">
       <DependentUpon>FrameworkResources.resx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="GeometricMeshData.cs" />
-    <Compile Include="GeometricMultiTexcoordPrimitive.Sphere.cs" />
-    <Compile Include="GeometricPrimitive.cs" />
-    <Compile Include="GeometricPrimitive.Capsule.cs" />
-    <Compile Include="GeometricPrimitive.Cube.cs" />
-    <Compile Include="GeometricPrimitive.Cylinder.cs" />
-    <Compile Include="GeometricPrimitive.GeoSphere.cs" />
-    <Compile Include="GeometricPrimitive.Plane.cs" />
-    <Compile Include="GeometricPrimitive.Sphere.cs" />
-    <Compile Include="GeometricPrimitive.Teapot.cs" />
-    <Compile Include="GeometricPrimitive.Torus.cs" />
+    <Compile Include="GeometricPrimitives\GeometricMeshData.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Capsule.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Cube.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Cylinder.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.GeoSphere.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Plane.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Sphere.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Teapot.cs" />
+    <Compile Include="GeometricPrimitives\GeometricPrimitive.Torus.cs" />
     <Compile Include="GraphicsDeviceSharedDataType.cs" />
     <Compile Include="GraphicsResourceState.cs" />
     <Compile Include="IVertex.cs" />
@@ -181,7 +190,7 @@
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="OpenGL\EffectInputSignature.OpenGL.cs" />
     <Compile Include="OpenGL\SwapChainGraphicsPresenter.iOS.cs" />
-    <Compile Include="Effects\ShaderParameterUpdater.cs" />
+    <Compile Include="Effects\EffectParameterCollectionGroup.cs" />
     <Compile Include="PrimitiveQuad.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecode.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecode.OpenGL.Level_9_1.cs" />
@@ -243,7 +252,6 @@
       <DependentUpon>UIEffect.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Shaders.Bytecodes\UIEffectSeparateAlpha.Extensions.cs" />
-    <Compile Include="SimpleEffect.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="SpriteBatch.cs" />
     <Compile Include="SpriteEffects.cs" />
@@ -307,7 +315,6 @@
     <Compile Include="VertexPositionColorTexture.cs" />
     <Compile Include="VertexPositionColorTextureSwizzle.cs" />
     <Compile Include="VertexPositionNormalColor.cs" />
-    <Compile Include="VertexPositionNormalTangentMultiTexture.cs" />
     <Compile Include="VertexPositionNormalTexture.cs" />
     <Compile Include="VertexPositionTexture.cs" />
     <Compile Include="WindowContext.cs" />
@@ -369,7 +376,7 @@
     <Compile Include="GraphicsResourceBase.cs" />
     <Compile Include="GraphicsAdapterFactory.cs" />
     <Compile Include="IndexBufferBinding.cs" />
-    <Compile Include="FakeSamplerState.cs" />
+    <Compile Include="SamplerStateSerializer.cs" />
     <Compile Include="Texture.Extensions1D.cs" />
     <Compile Include="DataOld\TextureFileTGASerializer.cs" />
     <Compile Include="DepthStencilStencilOpDescription.cs" />
@@ -466,13 +473,13 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <None Include="Data\GraphicsData.pdxdata">
-      <Generator>ParadoxDataCodeGenerator</Generator>
-      <LastGenOutput>GraphicsData.cs</LastGenOutput>
-    </None>
     <None Include="Shaders.Bytecodes\CompileShaders.cmd" />
     <None Include="Shaders.Bytecodes\Graphics.pdxpkg" />
     <None Include="Shaders.Bytecodes\Shaders.pdxfxlib" />
+    <None Include="Shaders\ShaderBaseStream.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ShaderBaseStream.cs</LastGenOutput>
+    </None>
     <None Include="Shaders\UIEffectSeparateAlpha.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>UIEffectSeparateAlpha.cs</LastGenOutput>

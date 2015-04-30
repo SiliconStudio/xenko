@@ -47,19 +47,13 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Data\ParadoxData.cs">
-      <DependentUpon>ParadoxData.pdxdata</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Data\ParameterCollectionData.cs" />
     <Compile Include="Data\ParameterCollectionHashSerializer.cs" />
     <Compile Include="Data\ParameterCollectionSerializer.cs" />
     <Compile Include="Effects\AssemblyEffectKeysAttribute.cs" />
     <Compile Include="Effects\EffectParameterExtensions.cs" />
     <Compile Include="Effects\ParameterCollectionSerializer.cs" />
-    <Compile Include="Effects\ParameterUpdater.cs" />
+    <Compile Include="Effects\ParameterCollectionGroup.cs" />
+    <Compile Include="Graphics\ColorExtensions.cs" />
     <Compile Include="Graphics\CompareFunction.cs" />
     <Compile Include="Graphics\DataBox.cs" />
     <Compile Include="Graphics\DataPointer.cs" />
@@ -85,12 +79,10 @@
     <Compile Include="Graphics\PixelFormat.cs" />
     <Compile Include="Graphics\PixelFormat.Extensions.cs" />
     <Compile Include="Graphics\SamplerStateDescription.cs" />
-    <Compile Include="Graphics\SpriteFontData.cs" />
     <Compile Include="Graphics\StandardImageHelper.Android.cs" />
     <Compile Include="Graphics\StandardImageHelper.cs" />
     <Compile Include="Graphics\StandardImageHelper.WindowsRuntime.cs" />
     <Compile Include="Graphics\StandardImageHelper.Windows.cs" />
-    <Compile Include="Graphics\StaticSpriteFontData.cs" />
     <Compile Include="Graphics\TextureAddressMode.cs" />
     <Compile Include="Graphics\TextureDimension.cs" />
     <Compile Include="Graphics\TextureFilter.cs" />
@@ -134,10 +126,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Data\ParadoxData.pdxdata">
-      <Generator>ParadoxDataCodeGenerator</Generator>
-      <LastGenOutput>ParadoxData.cs</LastGenOutput>
-    </None>
     <None Include="Effects\ParameterDynamicBase.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ParameterDynamicBase.cs</LastGenOutput>

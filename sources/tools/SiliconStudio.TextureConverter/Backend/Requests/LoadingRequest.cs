@@ -1,9 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace SiliconStudio.TextureConverter.Requests
 {
@@ -12,7 +9,6 @@ namespace SiliconStudio.TextureConverter.Requests
     /// </summary>
     internal class LoadingRequest : IRequest
     {
-
         /// <summary>
         /// The different loading mode : TexImage, file, Paradox Image
         /// </summary>
@@ -29,14 +25,12 @@ namespace SiliconStudio.TextureConverter.Requests
         /// The mode used by the request
         /// </summary>
         public LoadingMode Mode { set; get; }
-
-
+        
         /// <summary>
         /// The file path
         /// </summary>
         public String FilePath { set; get; }
-
-
+        
         /// <summary>
         /// The TexImage to be loaded
         /// </summary>
@@ -45,7 +39,7 @@ namespace SiliconStudio.TextureConverter.Requests
         /// <summary>
         /// The Paradox Image to be loaded
         /// </summary>
-        public SiliconStudio.Paradox.Graphics.Image PdxImage;
+        public Paradox.Graphics.Image PdxImage;
 
         /// <summary>
         /// Indicate if we should keep the original mip-maps during the load
@@ -53,39 +47,40 @@ namespace SiliconStudio.TextureConverter.Requests
         public bool KeepMipMap { get; set; }
 
         /// <summary>
+        /// Indicate if the input file should be loaded as an sRGB file.
+        /// </summary>
+        public bool LoadAsSRgb { get; private set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="LoadingRequest"/> class to load a texture from a file.
         /// </summary>
         /// <param name="filePath">The file path.</param>
-        public LoadingRequest(String filePath)
+        /// <param name="loadAsSRgb">Indicate if the input file should be loaded as in sRGB file</param>
+        public LoadingRequest(String filePath, bool loadAsSRgb)
         {
-            this.FilePath = filePath;
-            this.Mode = LoadingMode.FilePath;
-            KeepMipMap = false;
+            FilePath = filePath;
+            Mode = LoadingMode.FilePath;
+            LoadAsSRgb = loadAsSRgb;
         }
-
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadingRequest"/> class to load a texture from a <see cref="TexImage"/> instance.
         /// </summary>
         /// <param name="image">The image.</param>
         public LoadingRequest(TexImage image)
         {
-            this.Image = image;
-            this.Mode = LoadingMode.TexImage;
-            KeepMipMap = false;
+            Image = image;
+            Mode = LoadingMode.TexImage;
         }
-
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadingRequest"/> class to load a texture from a <see cref="SiliconStudio.Paradox.Graphics.Image"/> instance.
         /// </summary>
         /// <param name="image">The image.</param>
-        public LoadingRequest(SiliconStudio.Paradox.Graphics.Image image)
+        public LoadingRequest(Paradox.Graphics.Image image)
         {
-            this.PdxImage = image;
-            this.Mode = LoadingMode.PdxImage;
-            KeepMipMap = false;
+            PdxImage = image;
+            Mode = LoadingMode.PdxImage;
         }
-
     }
 }

@@ -5,7 +5,10 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Games;
+using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
+using SiliconStudio.Paradox.Graphics.Internals;
 
 namespace SiliconStudio.Paradox.Graphics.Tests
 {
@@ -18,11 +21,15 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         private Texture depthBuffer;
         private Matrix worldViewProjection;
         private GeometricPrimitive geometry;
-        private SimpleEffect simpleEffect;
+        private Effect simpleEffect;
         private bool firstSave;
 
         private int width;
         private int height;
+
+        private EffectParameterCollectionGroup parameterCollectionGroup;
+
+        private ParameterCollection parameterCollection;
 
         public TestRenderToTexture()
         {
@@ -45,7 +52,10 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             worldViewProjection = Matrix.Multiply(view, projection);
 
             geometry = GeometricPrimitive.Cube.New(GraphicsDevice);
-            simpleEffect = new SimpleEffect(GraphicsDevice) { Texture = UVTexture };
+            simpleEffect = new Effect(GraphicsDevice, SpriteEffect.Bytecode);
+            parameterCollection = new ParameterCollection();
+            parameterCollectionGroup = new EffectParameterCollectionGroup(GraphicsDevice, simpleEffect, new[] { parameterCollection });
+            parameterCollection.Set(TexturingKeys.Texture0, UVTexture);
             
             // TODO DisposeBy is not working with device reset
             offlineTarget0 = Texture.New2D(GraphicsDevice, 512, 512, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this);
@@ -118,8 +128,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         private void DrawGeometry()
         {
-            simpleEffect.Transform = worldViewProjection;
-            simpleEffect.Apply();
+            parameterCollection.Set(SpriteBaseKeys.MatrixTransform, worldViewProjection);
+            simpleEffect.Apply(GraphicsDevice, parameterCollectionGroup, true);
             geometry.Draw();
         }
 

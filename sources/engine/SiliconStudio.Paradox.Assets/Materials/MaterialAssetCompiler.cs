@@ -2,19 +2,13 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Threading.Tasks;
-
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
-using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Assets.Materials.Nodes;
-using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
-using SiliconStudio.Paradox.Effects.Data;
-using System.Linq;
+using SiliconStudio.Paradox.Rendering.Materials;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -23,14 +17,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, MaterialAsset asset, AssetCompilerResult result)
         {
             result.ShouldWaitForPreviousBuilds = true;
-            result.BuildSteps = new ListBuildStep { new MaterialCompileCommand(urlInStorage, AssetItem, asset, context) };
+            result.BuildSteps = new AssetBuildStep(AssetItem) { new MaterialCompileCommand(urlInStorage, AssetItem, asset, context) };
         }
 
         private class MaterialCompileCommand : AssetCommand<MaterialAsset>
         {
             private readonly AssetItem assetItem;
 
-            private readonly AssetCompilerContext context;
+            private readonly Package package;
 
             private UFile assetUrl;
 
@@ -38,21 +32,17 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 : base(url, value)
             {
                 this.assetItem = assetItem;
-                this.context = context;
+                package = context.Package;
                 assetUrl = new UFile(url);
-            }
-
-            private bool IsTextureReferenceValid(MaterialTextureNode node)
-            {
-                return assetItem.Package.Session.FindAsset(node.TextureReference.Location) != null;
             }
 
             public override System.Collections.Generic.IEnumerable<ObjectUrl> GetInputFiles()
             {
-                var materialTextureVisitor = new MaterialTextureVisitor(asset.Material);
-                foreach (var textureLocation in materialTextureVisitor.GetAllTextureValues().Where(IsTextureReferenceValid).Select(x => x.TextureReference.Location).Distinct())
-                    yield return new ObjectUrl(UrlType.Internal, textureLocation);
+                // TODO: Add textures when we will bake them
 
+                //var materialTextureVisitor = new MaterialTextureVisitor(asset.Material);
+                //foreach (var textureLocation in materialTextureVisitor.GetAllTextureValues().Where(IsTextureReferenceValid).Select(x => x.Texture.Location).Distinct())
+                //    yield return new ObjectUrl(UrlType.Internal, textureLocation);
                 foreach (var inputFile in base.GetInputFiles())
                     yield return inputFile;
             }
@@ -61,29 +51,23 @@ namespace SiliconStudio.Paradox.Assets.Materials
             {
                 base.ComputeParameterHash(writer);
                 writer.Serialize(ref assetUrl, ArchiveMode.Serialize);
+
+                // We also want to serialize recursively the compile-time dependent assets
+                // (since they are not added as reference but actually embedded as part of the current asset)
+                // TODO: Ideally we would want to put that automatically in AssetCommand<>, but we would need access to package
+                ComputeCompileTimeDependenciesHash(package.Session, writer, asset);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                var material = asset.Material.Clone();
-
-                // Replace all empty Texture nodes by black color texture nodes (allow a display of the element even if material is incomplete)
-                var emptyTextureNodeKeys = material.Nodes.Where(m=> m.Value is MaterialTextureNode && !IsTextureReferenceValid((MaterialTextureNode)m.Value)).Select(m => m.Key).ToList();
-                foreach (var emptyTextureNodeKey in emptyTextureNodeKeys)
-                {
-                    commandContext.Logger.Warning("Texture node '{0}' of material '{1}' is not pointing to a valid texture reference. " +
-                                                  "This node will be replaced by black color Node.", emptyTextureNodeKey, assetItem.Location);
-                    material.Nodes[emptyTextureNodeKey] = new MaterialColorNode(new Color4(0));
-                }
-
                 // Reduce trees on CPU
-                var materialReducer = new MaterialTreeReducer(material);
-                materialReducer.ReduceTrees();
+                //var materialReducer = new MaterialTreeReducer(material);
+                //materialReducer.ReduceTrees();
 
-                foreach (var reducedTree in materialReducer.ReducedTrees)
-                {
-                    material.Nodes[reducedTree.Key] = reducedTree.Value;
-                }
+                //foreach (var reducedTree in materialReducer.ReducedTrees)
+                //{
+                //    material.Nodes[reducedTree.Key] = reducedTree.Value;
+                //}
 
                 // Reduce on GPU 
                 // TODO: Adapt GPU reduction so that it is compatible Android color/alpha separation
@@ -103,22 +87,31 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 //    }
                 //}
 
-                // Separate the textures into color/alpha components on Android to be able to use native ETC1 compression
-                if (context.Platform == PlatformType.Android)
+                var assetManager = new AssetManager();
+                var materialContext = new MaterialGeneratorContext() { Assets = assetManager };
+                materialContext.AddLoadingFromSession(package);
+
+                var materialClone = (MaterialAsset)AssetCloner.Clone(Asset);
+                var result = MaterialGenerator.Generate(new MaterialDescriptor() { Attributes = materialClone.Attributes, Layers = materialClone.Layers}, materialContext);
+
+                if (result.HasErrors)
                 {
-                    var alphaComponentSplitter = new TextureAlphaComponentSplitter(assetItem.Package.Session);
-                    material = alphaComponentSplitter.Run(material, new UDirectory(assetUrl.GetDirectory())); // store Material with alpha substituted textures
+                    result.CopyTo(commandContext.Logger);
+                    return Task.FromResult(ResultStatus.Failed);
                 }
+                // Separate the textures into color/alpha components on Android to be able to use native ETC1 compression
+                //if (context.Platform == PlatformType.Android)
+                //{
+                //    var alphaComponentSplitter = new TextureAlphaComponentSplitter(assetItem.Package.Session);
+                //    material = alphaComponentSplitter.Run(material, new UDirectory(assetUrl.GetDirectory())); // store Material with alpha substituted textures
+                //}
 
                 // Create the parameters
-                var materialParameterCreator = new MaterialParametersCreator(material, assetUrl);
-                if (materialParameterCreator.CreateParameterCollectionData(commandContext.Logger))
-                    return Task.FromResult(ResultStatus.Failed);
+                //var materialParameterCreator = new MaterialParametersCreator(material, assetUrl);
+                //if (materialParameterCreator.CreateParameterCollectionData(commandContext.Logger))
+                //    return Task.FromResult(ResultStatus.Failed);
 
-                var materialData = new MaterialData { Parameters = materialParameterCreator.Parameters };
-                
-                var assetManager = new AssetManager();
-                assetManager.Save(assetUrl, materialData);
+                assetManager.Save(assetUrl, result.Material);
 
                 return Task.FromResult(ResultStatus.Successful);
             }
@@ -130,3 +123,4 @@ namespace SiliconStudio.Paradox.Assets.Materials
         }
     }
 }
+ 

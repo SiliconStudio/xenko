@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     {
         public UniformGridTest()
         {
-            CurrentVersion = 3;
+            CurrentVersion = 4;
         }
 
         protected override void RegisterTests()
@@ -62,7 +62,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             grid.Children.Add(button2);
             grid.Children.Add(text);
 
-            UI.RootElement = grid;
+            UIComponent.RootElement = grid;
         }
 
         [Test]

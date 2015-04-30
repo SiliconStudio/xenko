@@ -1,15 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System.Runtime.CompilerServices;
-using SiliconStudio.Core.Serialization.Serializers;
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Mono.Cecil;
-using TypeAttributes = Mono.Cecil.TypeAttributes;
 
 namespace SiliconStudio.AssemblyProcessor
 {
@@ -194,7 +191,7 @@ namespace SiliconStudio.AssemblyProcessor
             var fields = new List<FieldDefinition>();
             var properties = new List<PropertyDefinition>();
 
-            var fieldEnum = type.Fields.Where(x => x.IsPublic && !x.IsStatic);
+            var fieldEnum = type.Fields.Where(x => (x.IsPublic || (x.IsAssembly && x.CustomAttributes.Any(a => a.AttributeType.FullName == "SiliconStudio.Core.DataMemberAttribute"))) && !x.IsStatic);
 
             // If there is a explicit or sequential layout, use offset, otherwise use name
             // (not sure if Cecil follow declaration order, in which case it could be OK to not sort;
@@ -216,12 +213,16 @@ namespace SiliconStudio.AssemblyProcessor
                     continue;
 
                 // If it's a struct (!IsValueType), we need a public set method as well
-                if (property.PropertyType.IsValueType && (property.SetMethod == null || !property.SetMethod.IsPublic))
+                if (property.PropertyType.IsValueType && (property.SetMethod == null || !(property.SetMethod.IsAssembly || property.SetMethod.IsPublic)))
                     continue;
 
                 // Only take virtual properties (override ones will be handled by parent serializers)
                 if (property.GetMethod.IsVirtual && !property.GetMethod.IsNewSlot)
-                    continue;
+                {
+                    // Exception: if this one has a DataMember, let's assume parent one was Ignore and we explicitly want to serialize this one
+                    if (!property.CustomAttributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Core.DataMemberAttribute"))
+                        continue;
+                }
 
                 properties.Add(property);
             }
@@ -257,7 +258,7 @@ namespace SiliconStudio.AssemblyProcessor
                     if (property.CustomAttributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Core.DataMemberIgnoreAttribute"))
                         continue;
                     var attributes = property.CustomAttributes;
-                    bool assignBack = property.SetMethod != null && property.SetMethod.IsPublic;
+                    bool assignBack = property.SetMethod != null && (property.SetMethod.IsPublic || property.SetMethod.IsAssembly);
                     yield return new SerializableItem { MemberInfo = property, Type = property.PropertyType, Name = property.Name, Attributes = attributes, AssignBack = assignBack, NeedReference = !type.IsClass || type.IsValueType };
                 }
             }
@@ -323,7 +324,7 @@ namespace SiliconStudio.AssemblyProcessor
             public bool HasFixedAttribute;
             public string Name;
             public IMemberDefinition MemberInfo;
-            public TypeReference Type;
+            public TypeReference Type { get; set; }
             public bool NeedReference;
             public bool AssignBack;
             public IList<CustomAttribute> Attributes;

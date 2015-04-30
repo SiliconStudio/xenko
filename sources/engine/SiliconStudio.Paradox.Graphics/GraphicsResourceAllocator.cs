@@ -22,6 +22,10 @@ namespace SiliconStudio.Paradox.Graphics
         private readonly object thisLock = new object();
         private readonly Dictionary<TextureDescription, List<GraphicsResourceLink>> textureCache = new Dictionary<TextureDescription, List<GraphicsResourceLink>>();
         private readonly Dictionary<BufferDescription, List<GraphicsResourceLink>> bufferCache = new Dictionary<BufferDescription, List<GraphicsResourceLink>>();
+        private readonly Func<Texture, TextureDescription> getTextureDefinitionDelegate;
+        private readonly Func<Buffer, BufferDescription> getBufferDescriptionDelegate;
+        private readonly Func<TextureDescription, PixelFormat, Texture> createTextureDelegate;
+        private readonly Func<BufferDescription, PixelFormat, Buffer> createBufferDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphicsResourceAllocator" /> class.
@@ -32,6 +36,12 @@ namespace SiliconStudio.Paradox.Graphics
             if (serviceRegistry == null) throw new ArgumentNullException("serviceRegistry");
             Services = serviceRegistry;
             GraphicsDevice = serviceRegistry.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
+
+            getTextureDefinitionDelegate = GetTextureDefinition;
+            getBufferDescriptionDelegate = GetBufferDescription;
+            createTextureDelegate = CreateTexture;
+            createBufferDelegate = CreateBuffer;
+            RecyclePolicy = DefaultRecyclePolicy;
         }
 
         /// <summary>
@@ -47,24 +57,24 @@ namespace SiliconStudio.Paradox.Graphics
         public IServiceRegistry Services { get; private set; }
 
         /// <summary>
-        /// Gets or sets the default recycle policy.
+        /// Gets or sets the default recycle policy. Default is always recycle no matter the state of the resources.
         /// </summary>
         /// <value>The default recycle policy.</value>
-        public GraphicsResourceRecyclePolicyDelegate DefaultRecyclePolicy { get; set; }
+        public GraphicsResourceRecyclePolicyDelegate RecyclePolicy { get; set; }
 
         /// <summary>
-        /// Recycles unused resources (with a  <see cref="GraphicsResourceLink.ReferenceCount"/> == 0 ) with the <see cref="DefaultRecyclePolicy"/>. By Default, no recycle policy installed.
+        /// Recycles unused resources (with a  <see cref="GraphicsResourceLink.ReferenceCount"/> == 0 ) with the <see cref="RecyclePolicy"/>. By Default, no recycle policy installed.
         /// </summary>
         public void Recycle()
         {
-            if (DefaultRecyclePolicy != null)
+            if (RecyclePolicy != null)
             {
-                Recycle(DefaultRecyclePolicy);
+                Recycle(RecyclePolicy);
             }
         }
 
         /// <summary>
-        /// Recycles unused resource with the specified recycle policy.
+        /// Recycles unused resource with the specified recycle policy. 
         /// </summary>
         /// <param name="recyclePolicy">The recycle policy.</param>
         /// <exception cref="System.ArgumentNullException">recyclePolicy</exception>
@@ -90,7 +100,7 @@ namespace SiliconStudio.Paradox.Graphics
             // Global lock to be threadsafe. 
             lock (thisLock)
             {
-                return GetTemporaryResource(textureCache, description, CreateTexture, GetTextureDefinition);
+                return GetTemporaryResource(textureCache, description, createTextureDelegate, getTextureDefinitionDelegate, PixelFormat.None);
             }
         }
 
@@ -98,13 +108,14 @@ namespace SiliconStudio.Paradox.Graphics
         /// Gets a texture for the specified description.
         /// </summary>
         /// <param name="description">The description.</param>
+        /// <param name="viewFormat">The pixel format seen by the shader</param>
         /// <returns>A texture</returns>
-        public Buffer GetTemporaryBuffer(BufferDescription description)
+        public Buffer GetTemporaryBuffer(BufferDescription description, PixelFormat viewFormat = PixelFormat.None)
         {
             // Global lock to be threadsafe. 
             lock (thisLock)
             {
-                return GetTemporaryResource(bufferCache, description, CreateBuffer, GetBufferDescription);
+                return GetTemporaryResource(bufferCache, description, createBufferDelegate, getBufferDescriptionDelegate, viewFormat);
             }
         }
 
@@ -138,20 +149,22 @@ namespace SiliconStudio.Paradox.Graphics
         /// Creates a texture for output.
         /// </summary>
         /// <param name="description">The description.</param>
+        /// <param name="viewFormat">The pixel format seen by the shader</param>
         /// <returns>Texture.</returns>
-        protected virtual Texture CreateTexture(TextureDescription description)
+        protected virtual Texture CreateTexture(TextureDescription description, PixelFormat viewFormat)
         {
             return Texture.New(GraphicsDevice, description);
         }
 
         /// <summary>
-        /// Creates a tempoary buffer.
+        /// Creates a temporary buffer.
         /// </summary>
         /// <param name="description">The description.</param>
+        /// <param name="viewFormat">The shader view format on the buffer</param>
         /// <returns>Buffer.</returns>
-        protected virtual Buffer CreateBuffer(BufferDescription description)
+        protected virtual Buffer CreateBuffer(BufferDescription description, PixelFormat viewFormat)
         {
-            return Buffer.New(GraphicsDevice, description);
+            return Buffer.New(GraphicsDevice, description, viewFormat);
         }
 
         protected override void Destroy()
@@ -194,12 +207,12 @@ namespace SiliconStudio.Paradox.Graphics
             return texture.Description;
         }
 
-        private TResource GetTemporaryResource<TResource, TKey>(Dictionary<TKey, List<GraphicsResourceLink>> cache, TKey description, Func<TKey, TResource> creator, Func<TResource, TKey> getDefinition)
+        private TResource GetTemporaryResource<TResource, TKey>(Dictionary<TKey, List<GraphicsResourceLink>> cache, TKey description, Func<TKey, PixelFormat, TResource> creator, Func<TResource, TKey> getDefinition, PixelFormat viewFormat)
             where TResource : GraphicsResource
             where TKey : struct
         {
             // For a specific description, get allocated textures
-            List<GraphicsResourceLink> resourceLinks = null;
+            List<GraphicsResourceLink> resourceLinks;
             if (!cache.TryGetValue(description, out resourceLinks))
             {
                 resourceLinks = new List<GraphicsResourceLink>();
@@ -217,7 +230,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
 
             // If no texture available, then creates a new one
-            var newResource = creator(description);
+            var newResource = creator(description, viewFormat);
             newResource.Name = string.Format("{0}{1}-{2}", Name == null ? string.Empty : string.Format("{0}-", Name), newResource.Name == null ? newResource.GetType().Name : Name, resourceLinks.Count);
 
             // Description may be altered when creating a resource (based on HW limitations...etc.) so we get the actual description
@@ -277,7 +290,7 @@ namespace SiliconStudio.Paradox.Graphics
             bool resourceFound;
             if (texture != null)
             {
-                resourceFound = UpdateReferenceCount(textureCache, texture, GetTextureDefinition, referenceDelta);
+                resourceFound = UpdateReferenceCount(textureCache, texture, getTextureDefinitionDelegate, referenceDelta);
             }
             else
             {
@@ -286,7 +299,7 @@ namespace SiliconStudio.Paradox.Graphics
                 {
                     throw new ArgumentException("Unsupported GraphicsResource - Only Texture and Buffer", "resource");
                 }
-                resourceFound = UpdateReferenceCount(bufferCache, buffer, GetBufferDescription, referenceDelta);
+                resourceFound = UpdateReferenceCount(bufferCache, buffer, getBufferDescriptionDelegate, referenceDelta);
             }
 
             if (!resourceFound)
@@ -304,7 +317,7 @@ namespace SiliconStudio.Paradox.Graphics
                 return false;
             }
 
-            List<GraphicsResourceLink> resourceLinks = null;
+            List<GraphicsResourceLink> resourceLinks;
             if (cache.TryGetValue(getDefinition(resource), out resourceLinks))
             {
                 foreach (var resourceLink in resourceLinks)
@@ -330,6 +343,16 @@ namespace SiliconStudio.Paradox.Graphics
             resourceLink.AccessTotalCount++;
             resourceLink.AccessCountSinceLastRecycle++;
             resourceLink.LastAccessTime = DateTime.Now;
+        }
+
+        /// <summary>
+        /// The default recycle policy is always going to remove all allocated textures.
+        /// </summary>
+        /// <param name="resourceLink">The resource link.</param>
+        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
+        private static bool DefaultRecyclePolicy(GraphicsResourceLink resourceLink)
+        {
+            return true;
         }
     }
 }

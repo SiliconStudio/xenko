@@ -29,8 +29,6 @@
 using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using System.ComponentModel;
-using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Core.Mathematics
 {
@@ -450,49 +448,5 @@ namespace SiliconStudio.Core.Mathematics
 
             return Equals((BoundingBox)value);
         }
-
-#if SlimDX1xInterop
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="SiliconStudio.Core.Mathematics.BoundingBox"/> to <see cref="SlimDX.BoundingBox"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator SlimDX.BoundingBox(BoundingBox value)
-        {
-            return new SlimDX.BoundingBox(value.Minimum, value.Maximum);
-        }
-
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="SlimDX.BoundingBox"/> to <see cref="SiliconStudio.Core.Mathematics.BoundingBox"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator BoundingBox(SlimDX.BoundingBox value)
-        {
-            return new BoundingBox(value.Minimum, value.Maximum);
-        }
-#endif
-
-#if XnaInterop
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="SiliconStudio.Core.Mathematics.BoundingBox"/> to <see cref="Microsoft.Xna.Framework.BoundingBox"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator Microsoft.Xna.Framework.BoundingBox(BoundingBox value)
-        {
-            return new Microsoft.Xna.Framework.BoundingBox(value.Minimum, value.Maximum);
-        }
-
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="Microsoft.Xna.Framework.BoundingBox"/> to <see cref="SiliconStudio.Core.Mathematics.BoundingBox"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator BoundingBox(Microsoft.Xna.Framework.BoundingBox value)
-        {
-            return new BoundingBox(value.Min, value.Max);
-        }
-#endif
     }
 }

@@ -7,6 +7,7 @@ using System.IO;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.TextureConverter.Requests;
 using FreeImageAPI;
 using FreeImageAPI.Plugins;
@@ -54,21 +55,30 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
         public void StartLibrary(TexImage image)
         {
-            if(Tools.IsCompressed(image.Format))
+            if(image.Format.IsCompressed())
             {
                 Log.Error("FreeImage can't process compressed texture.");
                 throw new TextureToolsException("FreeImage can't process compressed texture.");
             }
 
-            FreeImageTextureLibraryData libraryData = new FreeImageTextureLibraryData();
+            var libraryData = new FreeImageTextureLibraryData();
             image.LibraryData[this] = libraryData;
 
             libraryData.Bitmaps = new FIBITMAP[image.SubImageArray.Length];
-            uint bpp = Tools.GetBPP(image.Format);
 
+            FREE_IMAGE_TYPE type;
+            uint bpp, redMask, greenMask, blueMask;
+            if (!FreeImage.GetFormatParameters(image.Format, out type, out bpp, out redMask, out greenMask, out blueMask))
+            {
+                throw new ArgumentException("The pixel format '{0}' is not supported by FreeImage".ToFormat(image.Format));
+            }
             for (int i = 0; i < image.SubImageArray.Length; ++i)
             {
-                libraryData.Bitmaps[i] = FreeImage.ConvertFromRawBits(image.SubImageArray[i].Data, FREE_IMAGE_TYPE.FIT_BITMAP, image.SubImageArray[i].Width, image.SubImageArray[i].Height, image.SubImageArray[i].RowPitch, bpp, 0x00FF0000, 0x0000FF00, 0x000000FF, false);
+                var data = image.SubImageArray[i].Data;
+                var width = image.SubImageArray[i].Width;
+                var heigth = image.SubImageArray[i].Height;
+                var pitch = image.SubImageArray[i].RowPitch;
+                libraryData.Bitmaps[i] = FreeImage.ConvertFromRawBits(data, type, width, heigth, pitch, bpp, redMask, greenMask, blueMask, false);
             }
 
             if (image.DisposingLibrary != null) image.DisposingLibrary.Dispose(image);
@@ -230,7 +240,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             }
 
             // Converting the image into BGRA_8888 format
-            libraryData = new FreeImageTextureLibraryData { Bitmaps = new FIBITMAP[1] { FreeImage.ConvertTo32Bits(temp) } };
+            libraryData = new FreeImageTextureLibraryData { Bitmaps = new [] { FreeImage.ConvertTo32Bits(temp) } };
             image.LibraryData[this] = libraryData;
 
             FreeImage.Unload(temp);
@@ -240,7 +250,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             image.Height = (int)FreeImage.GetHeight(libraryData.Bitmaps[0]);
             image.Depth = 1;
             image.Dimension = image.Height == 1 ? TexImage.TextureDimension.Texture1D : TexImage.TextureDimension.Texture2D;
-            image.Format = SiliconStudio.Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm;
+            image.Format = loader.LoadAsSRgb? PixelFormat.B8G8R8A8_UNorm_SRgb : PixelFormat.B8G8R8A8_UNorm;
             
             int rowPitch, slicePitch;
             Tools.ComputePitch(image.Format, image.Width, image.Height, out rowPitch, out slicePitch);
@@ -366,10 +376,10 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 FreeImage.Unload(redChannel);
             }
 
-            if (Tools.IsInBGRAOrder(image.Format))
-                image.Format = SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm;
+            if (image.Format.IsInBGRAOrder())
+                image.Format = PixelFormat.R8G8B8A8_UNorm;
             else
-                image.Format = SiliconStudio.Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm;
+                image.Format = PixelFormat.B8G8R8A8_UNorm;
         }
 
         public bool SupportBGRAOrder()
@@ -492,7 +502,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 throw new TextureToolsException("Not implemented.");
             }
 
-            if(!Tools.IsInBGRAOrder(image.Format))
+            if(!image.Format.IsInBGRAOrder())
             {
                 SwitchChannels(image, libraryData, new SwitchingBRChannelsRequest());
             }

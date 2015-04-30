@@ -47,13 +47,12 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             compMixin.AddComposition("color1", color1Mixin);
             compMixin.AddComposition("color2", color2Mixin);
 
-            var mixinSource = new ShaderMixinSource();
+            var mixinSource = new ShaderMixinSource { Name = "testRenaming", UsedParameters = MixinParameters };
             mixinSource.Mixins.Add(new ShaderClassSource("ShadingBase"));
             mixinSource.Mixins.Add(new ShaderClassSource("AlbedoFlatShading"));
             mixinSource.AddComposition("albedoDiffuse", compMixin);
 
-            var mixinSourceTree = new ShaderMixinSourceTree { Name = "testRenaming", Mixin = mixinSource, UsedParameters = MixinParameters };
-            var byteCode = Compiler.Compile(mixinSourceTree, new CompilerParameters(), ResultLogger);
+            var byteCode = Compiler.Compile(mixinSource, new CompilerParameters());
             Assert.IsNotNull(byteCode);
         }
 
@@ -70,13 +69,12 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             compMixin.AddComposition("color1", color1Mixin);
             compMixin.AddComposition("color2", color2Mixin);
 
-            var mixinSource = new ShaderMixinSource();
+            var mixinSource = new ShaderMixinSource { Name = "TestRenaming2", UsedParameters = MixinParameters };
             mixinSource.Mixins.Add(new ShaderClassSource("ShadingBase"));
             mixinSource.Mixins.Add(new ShaderClassSource("AlbedoFlatShading"));
             mixinSource.AddComposition("albedoDiffuse", compMixin);
 
-            var mixinSourceTree = new ShaderMixinSourceTree { Name = "TestRenaming2", Mixin = mixinSource, UsedParameters = MixinParameters };
-            var byteCode = Compiler.Compile(mixinSourceTree, new CompilerParameters(), ResultLogger);
+            var byteCode = Compiler.Compile(mixinSource, new CompilerParameters());
             Assert.IsNotNull(byteCode);
         }
 

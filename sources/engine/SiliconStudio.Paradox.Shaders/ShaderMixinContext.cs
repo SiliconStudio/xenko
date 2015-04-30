@@ -2,12 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Shaders
 {
@@ -24,18 +23,20 @@ namespace SiliconStudio.Paradox.Shaders
 
         private string compositionString = null;
 
-        private ShaderMixinSourceTree currentMixinSourceTree;
+        private readonly ShaderMixinSource currentMixinSourceTree;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderMixinContext" /> class.
         /// </summary>
+        /// <param name="mixinTree">The mixin tree.</param>
         /// <param name="compilerParameters">The default property container.</param>
         /// <param name="registeredBuilders">The registered builders.</param>
         /// <exception cref="System.ArgumentNullException">compilerParameters
         /// or
         /// registeredBuilders</exception>
-        public ShaderMixinContext(ParameterCollection compilerParameters, Dictionary<string, IShaderMixinBuilder> registeredBuilders)
+        public ShaderMixinContext(ShaderMixinSource mixinTree, ParameterCollection compilerParameters, Dictionary<string, IShaderMixinBuilder> registeredBuilders)
         {
+            if (mixinTree == null) throw new ArgumentNullException("mixinTree");
             if (compilerParameters == null)
                 throw new ArgumentNullException("compilerParameters");
 
@@ -43,10 +44,17 @@ namespace SiliconStudio.Paradox.Shaders
                 throw new ArgumentNullException("registeredBuilders");
 
             // TODO: use a copy of the compilerParameters?
+            this.currentMixinSourceTree = mixinTree;
             this.compilerParameters = compilerParameters;
             this.registeredBuilders = registeredBuilders;
             this.parameterCollections = new Stack<ParameterCollection>();
         }
+
+        /// <summary>
+        /// Gets or sets the child effect.
+        /// </summary>
+        /// <value>The child effect.</value>
+        public string ChildEffectName { get; set; }
 
         /// <summary>
         /// Pushes the current parameters collection being used.
@@ -70,8 +78,13 @@ namespace SiliconStudio.Paradox.Shaders
         {
             get
             {
-                return currentMixinSourceTree.Mixin;
+                return currentMixinSourceTree;
             }
+        }
+
+        public void Discard()
+        {
+            throw new ShaderMixinDiscardException();
         }
 
         /// <summary>
@@ -167,9 +180,9 @@ namespace SiliconStudio.Paradox.Shaders
         /// </summary>
         /// <param name="mixinTree">The mixin tree.</param>
         /// <param name="name">The name.</param>
-        public void RemoveMixin(ShaderMixinSourceTree mixinTree, string name)
+        public void RemoveMixin(ShaderMixinSource mixinTree, string name)
         {
-            var mixinParent = mixinTree.Mixin;
+            var mixinParent = mixinTree;
             for (int i = mixinParent.Mixins.Count - 1; i >= 0; i--)
             {
                 var mixin = mixinParent.Mixins[i];
@@ -185,7 +198,7 @@ namespace SiliconStudio.Paradox.Shaders
         /// </summary>
         /// <param name="mixinTree">The mixin tree.</param>
         /// <param name="name">The name.</param>
-        public void Mixin(ShaderMixinSourceTree mixinTree, string name)
+        public void Mixin(ShaderMixinSource mixinTree, string name)
         {
             if (name == null)
             {
@@ -196,7 +209,7 @@ namespace SiliconStudio.Paradox.Shaders
             if (!registeredBuilders.TryGetValue(name, out builder))
             {
                 // Else simply add the name of the shader
-                mixinTree.Mixin.Mixins.Add(new ShaderClassSource(name));
+                mixinTree.Mixins.Add(new ShaderClassSource(name));
             }
             else if (builder != null)
             {
@@ -211,13 +224,13 @@ namespace SiliconStudio.Paradox.Shaders
         /// <param name="name">The name.</param>
         /// <param name="genericParameters">The generic parameters.</param>
         /// <exception cref="System.InvalidOperationException">If the class source doesn't support generic parameters</exception>
-        public void Mixin(ShaderMixinSourceTree mixinTree, string name, params object[] genericParameters)
+        public void Mixin(ShaderMixinSource mixinTree, string name, params object[] genericParameters)
         {
             IShaderMixinBuilder builder;
             if (!registeredBuilders.TryGetValue(name, out builder))
             {
                 // Else simply add the name of the shader
-                mixinTree.Mixin.Mixins.Add(new ShaderClassSource(name, genericParameters));
+                mixinTree.Mixins.Add(new ShaderClassSource(name, genericParameters));
             } 
             else if (builder != null)
             {
@@ -229,9 +242,9 @@ namespace SiliconStudio.Paradox.Shaders
             }
         }
 
-        public void PushComposition(ShaderMixinSourceTree mixin, string compositionName, ShaderMixinSourceTree composition)
+        public void PushComposition(ShaderMixinSource mixin, string compositionName, ShaderMixinSource composition)
         {
-            mixin.Mixin.AddComposition(compositionName, composition.Mixin);
+            mixin.AddComposition(compositionName, composition);
 
             compositionIndices.Push(compositionStringBuilder.Length);
             if (compositionString != null)
@@ -244,9 +257,9 @@ namespace SiliconStudio.Paradox.Shaders
             compositionString = compositionStringBuilder.ToString();
         }
 
-        public void PushCompositionArray(ShaderMixinSourceTree mixin, string compositionName, ShaderMixinSourceTree composition)
+        public void PushCompositionArray(ShaderMixinSource mixin, string compositionName, ShaderMixinSource composition)
         {
-            int arrayIndex = mixin.Mixin.AddCompositionToArray(compositionName, composition.Mixin);
+            int arrayIndex = mixin.AddCompositionToArray(compositionName, composition);
 
             compositionIndices.Push(compositionStringBuilder.Length);
             if (compositionString != null)
@@ -265,66 +278,45 @@ namespace SiliconStudio.Paradox.Shaders
         public void PopComposition()
         {
             var compositionIndex = compositionIndices.Pop();
-            compositionStringBuilder.Length = compositionIndex;
+            compositionStringBuilder.Remove(0, compositionStringBuilder.Length - compositionIndex);
             compositionString = compositionIndex == 0 ? null : compositionStringBuilder.ToString();
         }
 
         /// <summary>
-        /// Creates a new ParameterCollection for a child shader.
-        /// </summary>
-        public void BeginChild(ShaderMixinSourceTree subMixin)
-        {
-            var parent = currentMixinSourceTree;
-            subMixin.Parent = parent;
-            subMixin.UsedParameters = new ShaderMixinParameters();
-            currentMixinSourceTree = subMixin;
-
-            if (parent != null)
-            {
-                subMixin.Parent.Children.Add(subMixin);
-                // Copy used parameters
-                subMixin.Parent.UsedParameters.CopyTo(currentMixinSourceTree.UsedParameters);
-
-                // TODO: cache ParameterCollection
-                PushParameters(new ParameterCollection());
-            }
-        }
-
-        /// <summary>
-        /// Copy the properties of the parent to the calling clone.
-        /// </summary>
-        public void CloneParentMixinToCurrent()
-        {
-            var parentTree = currentMixinSourceTree.Parent;
-            if (parentTree == null)
-            {
-                throw new InvalidOperationException("Invalid `mixin clone;` from mixin [{0}]. A clone can only be used if the mixin is a child of another mixin".ToFormat(currentMixinSourceTree.Name));
-            }
-
-            // Copy mixin informations
-            currentMixinSourceTree.Mixin.CloneFrom(parentTree.Mixin);
-        }
-
-        /// <summary>
-        /// Ends the computation of the child mixin and store the used parameters.
-        /// </summary>
-        public void EndChild()
-        {
-            currentMixinSourceTree = currentMixinSourceTree.Parent;
-            if (currentMixinSourceTree != null)
-            {
-                PopParameters();
-            }
-        }
-
-        /// <summary>
-        /// Mixins a <see cref="ShaderMixinSource" /> into the specified mixin tree.
+        /// Mixins a <see cref="ShaderMixinSource"/> into the specified mixin tree.
         /// </summary>
         /// <param name="mixinTree">The mixin tree.</param>
-        /// <param name="shaderMixinSource">The shader mixin source.</param>
-        public void Mixin(ShaderMixinSourceTree mixinTree, ShaderMixinSource shaderMixinSource)
+        /// <param name="shaderSource">The shader source.</param>
+        public void Mixin(ShaderMixinSource mixinTree, ShaderSource shaderSource)
         {
-            mixinTree.Mixin.CloneFrom(shaderMixinSource);
+            if (shaderSource == null)
+            {
+                return;
+            }
+
+            var shaderMixinSource = shaderSource as ShaderMixinSource;
+            if (shaderMixinSource != null)
+            {
+                mixinTree.CloneFrom(shaderMixinSource);
+            }
+            else if (shaderSource is ShaderClassSource)
+            {
+                mixinTree.Mixins.Add((ShaderClassSource)shaderSource);
+            }
+            else if (shaderSource is ShaderMixinGeneratorSource)
+            {
+                Mixin(mixinTree, ((ShaderMixinGeneratorSource)shaderSource).Name);
+            }
+            else
+            {
+                throw new InvalidOperationException("ShaderSource [{0}] is not supported (Only ShaderMixinSource and ShaderClassSource)".ToFormat(shaderSource.GetType()));
+            }
+
+            // If we are mixin a shader source that has an attached discard, don't proceed further
+            if (shaderSource.Discard)
+            {
+                Discard();
+            }
         }
     }
 }

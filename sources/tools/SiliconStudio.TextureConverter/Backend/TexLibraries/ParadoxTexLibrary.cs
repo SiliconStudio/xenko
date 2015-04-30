@@ -337,7 +337,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         {
             Log.Info("Loading Paradox Image ...");
 
-            ParadoxTextureLibraryData libraryData = new ParadoxTextureLibraryData();
+            var libraryData = new ParadoxTextureLibraryData();
             image.LibraryData[this] = libraryData;
 
             Image inputImage;
@@ -357,12 +357,13 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 throw new NotImplementedException();
             }
 
+            var inputFormat = inputImage.Description.Format;
             image.Data = inputImage.DataPointer;
             image.DataSize = 0;
             image.Width = inputImage.Description.Width;
             image.Height = inputImage.Description.Height;
             image.Depth = inputImage.Description.Depth;
-            image.Format = inputImage.Description.Format;
+            image.Format = request.LoadAsSRgb ? inputFormat.ToSRgb() : inputFormat.ToNonSRgb();
             image.MipmapCount = request.KeepMipMap ? inputImage.Description.MipLevels : 1;
             image.ArraySize = inputImage.Description.ArraySize;
 
@@ -401,6 +402,5 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
             image.DisposingLibrary = this;
         }
-
     }
 }

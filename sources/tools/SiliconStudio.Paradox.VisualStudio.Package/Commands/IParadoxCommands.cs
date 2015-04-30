@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
         /// <summary>
         /// Initialize parsing (this method can be called from a separate thread).
         /// </summary>
-        void Initialize();
+        void Initialize(string paradoxSdkDir);
 
         /// <summary>
         /// Test whether we should reload these commands (assemblies changed)
@@ -26,8 +26,6 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
         void StartRemoteBuildLogServer(IBuildMonitorCallback buildMonitorCallback, string logPipeUrl);
 
         byte[] GenerateShaderKeys(string inputFileName, string inputFileContent);
-
-        byte[] GenerateDataClasses(string assemblyOutput, string projectFullName, string intermediateAssembly);
 
         RawShaderNavigationResult AnalyzeAndGoToDefinition(string sourceCode, RawSourceSpan span);
     }

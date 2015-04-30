@@ -12,7 +12,6 @@ namespace Test4
     {
         using params TestParameters;
 
-        mixin clone;
         TestParameters.TestCount = 1;
         if (TestParameters.TestCount == 1)
             mixin C1;

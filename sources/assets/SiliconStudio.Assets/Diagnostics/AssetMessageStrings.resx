@@ -195,4 +195,10 @@
   <data name="PackageDependencyModified" xml:space="preserve">
     <value>The package dependency [{0}] is modified to [{1}]</value>
   </data>
+  <data name="CompilationMessage" xml:space="preserve">
+    <value>{1}</value>
+  </data>
+  <data name="DefaultSceneNotFound" xml:space="preserve">
+    <value>A default scene was not found in the package</value>
+  </data>
 </root>

@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Shaders
     /// <summary>
     /// A mixin performing a combination of <see cref="ShaderClassSource"/> and other mixins.
     /// </summary>
-    [DataContract]
+    [DataContract("ShaderMixinSource")]
     public sealed class ShaderMixinSource : ShaderSource, IEquatable<ShaderMixinSource>
     {
         /// <summary>
@@ -23,7 +23,17 @@ namespace SiliconStudio.Paradox.Shaders
             Mixins = new List<ShaderClassSource>();
             Compositions = new Core.Collections.SortedList<string, ShaderSource>();
             Macros = new List<ShaderMacro>();
+            UsedParameters = new ShaderMixinParameters();
         }
+
+        /// <summary>
+        /// Gets or sets the name of the pdxfx effect linked to this node.
+        /// </summary>
+        /// <value>The name of the pdxfx effect.</value>
+        public string Name { get; set; }
+
+        [DataMemberIgnore]
+        public ShaderMixinSource Parent { get; set; }
 
         /// <summary>
         /// Gets or sets the name of this mixin source (if this ShaderMixinSource was generated from a <see cref="ShaderMixinGeneratorSource"/>,
@@ -49,6 +59,13 @@ namespace SiliconStudio.Paradox.Shaders
         /// </summary>
         /// <value>The compositions.</value>
         public Core.Collections.SortedList<string, ShaderSource> Compositions { get; set; }
+
+        /// <summary>
+        /// Gets the used parameters for this mixin tree.
+        /// </summary>
+        /// <value>The used parameters.</value>
+        [DataMemberIgnore]
+        public ShaderMixinParameters UsedParameters { get; set; }
 
         /// <summary>
         /// Adds a composition to this mixin.

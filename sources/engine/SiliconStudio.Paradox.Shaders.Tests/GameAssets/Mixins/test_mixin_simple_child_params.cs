@@ -8,7 +8,7 @@
 
 using System;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
@@ -16,18 +16,18 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
 namespace Test4
 {
-    [DataContract]public partial class TestParameters : ShaderMixinParameters
+    [DataContract]
+    public partial class TestParameters : ShaderMixinParameters
     {
         public static readonly ParameterKey<int> TestCount = ParameterKeys.New<int>();
         public static readonly ParameterKey<bool> UseComputeColorEffect = ParameterKeys.New<bool>();
     };
     internal static partial class ShaderMixins
     {
-        internal partial class ChildParamsMixin  : IShaderMixinBuilder
+        internal partial class ChildParamsMixin : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                context.CloneParentMixinToCurrent();
                 context.SetParam(TestParameters.TestCount, 1);
                 if (context.GetParam(TestParameters.TestCount) == 1)
                     context.Mixin(mixin, "C1");
@@ -35,7 +35,6 @@ namespace Test4
 
             [ModuleInitializer]
             internal static void __Initialize__()
-
             {
                 ShaderMixinManager.Register("ChildParamsMixin", new ChildParamsMixin());
             }
@@ -43,19 +42,17 @@ namespace Test4
     }
     internal static partial class ShaderMixins
     {
-        internal partial class DefaultSimpleChildParams  : IShaderMixinBuilder
+        internal partial class DefaultSimpleChildParams : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "A");
                 if (context.GetParam(TestParameters.TestCount) == 0)
                     context.Mixin(mixin, "B");
-
+                if (context.ChildEffectName == "ChildParamsMixin")
                 {
-                    var __subMixin = new ShaderMixinSourceTree() { Name = "ChildParamsMixin" };
-                    context.BeginChild(__subMixin);
-                    context.Mixin(__subMixin, "ChildParamsMixin");
-                    context.EndChild();
+                    context.Mixin(mixin, "ChildParamsMixin");
+                    return;
                 }
                 if (context.GetParam(TestParameters.TestCount) == 0)
                     context.Mixin(mixin, "C");
@@ -63,7 +60,6 @@ namespace Test4
 
             [ModuleInitializer]
             internal static void __Initialize__()
-
             {
                 ShaderMixinManager.Register("DefaultSimpleChildParams", new DefaultSimpleChildParams());
             }

@@ -20,18 +20,14 @@ namespace SiliconStudio.Paradox.Assets.Textures
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, TextureAsset asset, AssetCompilerResult result)
         {
-            if (asset.Source == null)
-            {
-                result.Error("Source cannot be null for Texture Asset [{0}]", asset);
+            if (!EnsureSourceExists(result, asset, assetAbsolutePath))
                 return;
-            }
-
+        
             // Get absolute path of asset source on disk
-            var assetDirectory = assetAbsolutePath.GetParent();
-            var assetSource = UPath.Combine(assetDirectory, asset.Source);
+            var assetSource = GetAbsolutePath(assetAbsolutePath, asset.Source);
 
-            result.BuildSteps = new ListBuildStep { new TextureConvertCommand(urlInStorage, 
-                new TextureConvertParameters(assetSource, asset, context.Platform, context.GetGraphicsPlatform(), context.GetGraphicsProfile(), context.GetTextureQuality(), false)) };
+            var parameter = new TextureConvertParameters(assetSource, asset, context.Platform, context.GetGraphicsPlatform(), context.GetGraphicsProfile(), context.GetTextureQuality(), false);
+            result.BuildSteps = new AssetBuildStep(AssetItem) { new TextureConvertCommand(urlInStorage, parameter) };
         }
 
         /// <summary>
@@ -58,7 +54,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
             {
                 var texture = asset.Texture;
 
-                var importResult = TextureCommandHelper.ImportAndSaveTextureImage(asset.SourcePathFromDisk, Url, texture, asset, asset.SeparateAlpha, CancellationToken, commandContext.Logger);
+                var importResult = TextureCommandHelper.ImportAndSaveTextureImage(asset.SourcePathFromDisk, Url, texture, asset, CancellationToken, commandContext.Logger);
 
                 return Task.FromResult(importResult);
             }

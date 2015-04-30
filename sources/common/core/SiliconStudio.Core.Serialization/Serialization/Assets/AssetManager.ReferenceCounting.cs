@@ -42,19 +42,17 @@ namespace SiliconStudio.Core.Serialization.Assets
             int referenceCount;
             if (publicReference)
             {
-                referenceCount = --assetReference.PublicReferenceCount;
-                if (referenceCount < 0)
+                if (assetReference.PublicReferenceCount <= 0)
                     throw new InvalidOperationException("Cannot release an object that doesn't have active public references. Load/Unload pairs must match.");
 
-                referenceCount += assetReference.PrivateReferenceCount;
+                referenceCount = --assetReference.PublicReferenceCount + assetReference.PrivateReferenceCount;
             }
             else
             {
-                referenceCount = --assetReference.PrivateReferenceCount;
-                if (referenceCount < 0)
+                if (assetReference.PrivateReferenceCount <= 0)
                     throw new InvalidOperationException("Cannot release an object that doesn't have active private references. This is either due to non-matching Load/Unload pairs or an engine internal error.");
-
-                referenceCount += assetReference.PublicReferenceCount;
+             
+                referenceCount = --assetReference.PrivateReferenceCount + assetReference.PublicReferenceCount;
             }
 
             if (referenceCount == 0)
@@ -106,11 +104,11 @@ namespace SiliconStudio.Core.Serialization.Assets
             if (oldPrev == null)
             {
                 if (oldNext == null)
-                    loadedAssetsByUrl.Remove(assetReference.ObjectId);
+                    LoadedAssetUrls.Remove(assetReference.Url);
                 else
-                    loadedAssetsByUrl[assetReference.ObjectId] = oldNext;
+                    LoadedAssetUrls[assetReference.Url] = oldNext;
             }
-            loadedAssetsUrl.Remove(assetReference.Object);
+            LoadedAssetReferences.Remove(assetReference.Object);
 
             assetReference.Object = null;
         }
@@ -119,7 +117,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         {
             // Push everything on the stack
             var currentCollectIndex = nextCollectIndex++;
-            foreach (var asset in loadedAssetsByUrl)
+            foreach (var asset in LoadedAssetUrls)
             {
                 var currentAsset = asset.Value;
                 do
@@ -152,7 +150,7 @@ namespace SiliconStudio.Core.Serialization.Assets
             // Collect objects that are not referenceable.
             // Reuse stack
             // TODO: Use collections where you can iterate and remove at the same time?
-            foreach (var asset in loadedAssetsByUrl)
+            foreach (var asset in LoadedAssetUrls)
             {
                 var currentAsset = asset.Value;
                 do

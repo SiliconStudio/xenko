@@ -1,20 +1,16 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Paradox.Shaders.Compiler;
 
@@ -36,8 +32,8 @@ namespace SiliconStudio.Paradox.Assets.Effect
         public EffectCompileCommand(AssetCompilerContext context, UDirectory baseUrl, string effectName, CompilerParameters compilerParameters)
         {
             this.context = context;
-            this.effectName = effectName;
             this.baseUrl = baseUrl;
+            this.effectName = effectName;
             this.compilerParameters = compilerParameters;
         }
 
@@ -68,6 +64,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
         {
             var compiler = GetOrCreateEffectCompiler(context);
 
+            // Get main effect name (before the first dot)
             var isPdxfx = ShaderMixinManager.Contains(effectName);
             var source = isPdxfx ? new ShaderMixinGeneratorSource(effectName) : (ShaderSource)new ShaderClassSource(effectName);
 
@@ -90,7 +87,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
             }
 
             // Register all dependencies
-            var allSources = new HashSet<string>(compilerResults.Bytecodes.SelectMany(bytecode => bytecode.Value.HashSources).Select(keyPair => keyPair.Key));
+            var allSources = new HashSet<string>(compilerResults.Bytecode.WaitForResult().Bytecode.HashSources.Select(keyPair => keyPair.Key));
             foreach (var className in allSources)
             {
                 commandContext.RegisterInputDependency(new ObjectUrl(UrlType.Internal, EffectCompilerBase.GetStoragePathFromShaderType(className)));
@@ -101,11 +98,11 @@ namespace SiliconStudio.Paradox.Assets.Effect
             {
                 var outputDirectory = UPath.Combine(context.Package.RootDirectory, baseUrl);
                 var outputClassFile = effectName + ".bytecode." + compilerParameters.Platform + "." + compilerParameters.Profile + ".cs";
-                var fullOutputClassFile = Path.Combine(outputDirectory, outputClassFile);
+                var fullOutputClassFile = Path.Combine(outputDirectory.ToWindowsPath(), outputClassFile);
 
                 commandContext.Logger.Info("Writing shader bytecode to .cs source [{0}]", fullOutputClassFile);
                 using (var stream = new FileStream(fullOutputClassFile, FileMode.Create, FileAccess.Write, FileShare.Write))
-                    EffectByteCodeToSourceCodeWriter.Write(effectName, compilerParameters, compilerResults.MainBytecode, new StreamWriter(stream, Encoding.UTF8));
+                    EffectByteCodeToSourceCodeWriter.Write(effectName, compilerParameters, compilerResults.Bytecode.WaitForResult().Bytecode, new StreamWriter(stream, System.Text.Encoding.UTF8));
             }
 
             return Task.FromResult(ResultStatus.Successful);

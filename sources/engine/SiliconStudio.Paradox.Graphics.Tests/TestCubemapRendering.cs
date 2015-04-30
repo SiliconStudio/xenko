@@ -8,10 +8,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Effects.Cubemap;
-using SiliconStudio.Paradox.Effects.Processors;
-using SiliconStudio.Paradox.Effects.Renderers;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Extensions;
@@ -60,20 +57,20 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             var material = Asset.Load<Material>("BasicMaterial");
             for (var i =0; i < primitives.Count; ++i)
             {
-                var mesh = new Mesh()
+                var mesh = new Mesh
                 {
                     Draw = primitives[i].Item1.ToMeshDraw(),
-                    Material = material
+                    MaterialIndex = 0,
                 };
-                mesh.Parameters.Set(RenderingParameters.RenderLayer, RenderLayers.RenderLayer1);
+                mesh.Parameters.Set(RenderingParameters.RenderGroup, RenderGroups.Group1);
 
-                var entity = new Entity()
+                var entity = new Entity
                 {
-                    new ModelComponent()
+                    new ModelComponent
                     {
-                        Model = new Model() { mesh }
+                        Model = new Model { mesh, material }
                     },
-                    new TransformationComponent() { Translation = primitives[i].Item2 }
+                    new TransformationComponent { Translation = primitives[i].Item2 }
                 };
                 Entities.Add(entity);
                 primitiveEntities[i] = entity;
@@ -81,27 +78,27 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             }
 
             var reflectivePrimitive = GeometricPrimitive.Sphere.New(GraphicsDevice);
-            var reflectiveMesh = new Mesh()
+            var reflectiveMesh = new Mesh
             {
                 Draw = reflectivePrimitive.ToMeshDraw(),
             };
-            reflectiveMesh.Parameters.Set(RenderingParameters.RenderLayer, RenderLayers.RenderLayer2);
+            reflectiveMesh.Parameters.Set(RenderingParameters.RenderGroup, RenderGroups.Group2);
 
-            var reflectEntity = new Entity()
+            var reflectEntity = new Entity
             {
-                new ModelComponent()
+                new ModelComponent
                 {
-                    Model = new Model() { reflectiveMesh }
+                    Model = new Model { reflectiveMesh }
                 },
                 new TransformationComponent(),
-                new CubemapSourceComponent() { IsDynamic = true, Enabled = true, Size = 128 }
+                new CubemapSourceComponent { IsDynamic = true, Size = 128 }
             };
             Entities.Add(reflectEntity);
             reflectEntity.Get<ModelComponent>().Parameters.Set(TexturingKeys.TextureCube0, reflectEntity.Get<CubemapSourceComponent>().Texture);
 
             var mainCameraTargetEntity = new Entity(Vector3.Zero);
             Entities.Add(mainCameraTargetEntity);
-            mainCamera = new Entity()
+            mainCamera = new Entity
             {
                 new CameraComponent
                 {
@@ -132,7 +129,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             // Rendering pipeline
             var cubeMapPipeline = new RenderPipeline("CubeMap");
-            cubeMapPipeline.Renderers.Add(new ModelRenderer(Services, renderInOnePass ? "CubemapGeomEffect" : "CubemapEffect").AddLayerFilter(RenderLayers.RenderLayer1));
+            cubeMapPipeline.Renderers.Add(new ModelRenderer(Services, renderInOnePass ? "CubemapGeomEffect" : "CubemapEffect").AddLayerFilter(RenderGroups.Group1));
             RenderSystem.Pipeline.Renderers.Add(new CubemapRenderer(Services, cubeMapPipeline, renderInOnePass));
             RenderSystem.Pipeline.Renderers.Add(new CameraSetter(Services));
             RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.CornflowerBlue });
@@ -158,7 +155,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                     var rotationPrim = (float) (2*Math.PI*UpdateTime.Total.TotalMilliseconds/15000);
                     for (var i = 0; i < primitiveEntities.Length; ++i)
                     {
-                        primitiveEntities[i].Transformation.Rotation = Quaternion.RotationAxis(rotationAxis[i], rotationPrim);
+                        primitiveEntities[i].Transform.Rotation = Quaternion.RotationAxis(rotationAxis[i], rotationPrim);
                     }
                 }
 
@@ -174,7 +171,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                     rotationUpFactor = 0.45f;
                 else if (rotationUpFactor < -0.45f)
                     rotationUpFactor = -0.45f;
-                mainCamera.Transformation.Translation = Vector3.Transform(cameraInitPos, Quaternion.RotationZ((float)(Math.PI * rotationUpFactor)) * Quaternion.RotationY((float)(2 * Math.PI * rotationFactor)));
+                mainCamera.Transform.Translation = Vector3.Transform(cameraInitPos, Quaternion.RotationZ((float)(Math.PI * rotationUpFactor)) * Quaternion.RotationY((float)(2 * Math.PI * rotationFactor)));
             }
         }
 

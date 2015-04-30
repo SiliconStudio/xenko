@@ -52,7 +52,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public ScrollViewerAnchorTest()
         {
-            CurrentVersion = 3;
+            CurrentVersion = 5;
         }
 
         protected override async Task LoadContent()
@@ -96,7 +96,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             scrollViewer = new TestScrollViewer { Name = "sv", Content = randomStackPanel, ScrollMode = ScrollingMode.HorizontalVertical, SnapToAnchors = true };
 
             // set the scroll viewer as the root
-            UI.RootElement = scrollViewer;
+            UIComponent.RootElement = scrollViewer;
         }
 
         private Button CreateButton(int col, int row, float minimumHeight = 0, float minimumWidth = 0, bool randomMinHeight = false, bool randowMinWidth = false)

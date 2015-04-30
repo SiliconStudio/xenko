@@ -323,6 +323,66 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Gets or sets the up <see cref="Vector3"/> of the matrix; that is M21, M22, and M23.
+        /// </summary>
+        [DataMemberIgnore]
+        public Vector3 Up
+        {
+            get { return new Vector3(M21, M22, M23); }
+            set { M21 = value.X; M22 = value.Y; M23 = value.Z; }
+        }
+
+        /// <summary>
+        /// Gets or sets the down <see cref="Vector3"/> of the matrix; that is -M21, -M22, and -M23.
+        /// </summary>
+        [DataMemberIgnore]
+        public Vector3 Down
+        {
+            get { return new Vector3(-M21, -M22, -M23); }
+            set { M21 = -value.X; M22 = -value.Y; M23 = -value.Z; }
+        }
+
+        /// <summary>
+        /// Gets or sets the right <see cref="Vector3"/> of the matrix; that is M11, M12, and M13.
+        /// </summary>
+        [DataMemberIgnore]
+        public Vector3 Right
+        {
+            get { return new Vector3(M11, M12, M13); }
+            set { M11 = value.X; M12 = value.Y; M13 = value.Z; }
+        }
+
+        /// <summary>
+        /// Gets or sets the left <see cref="Vector3"/> of the matrix; that is -M11, -M12, and -M13.
+        /// </summary>
+        [DataMemberIgnore]
+        public Vector3 Left
+        {
+            get { return new Vector3(-M11, -M12, -M13); }
+            set { M11 = -value.X; M12 = -value.Y; M13 = -value.Z;}
+        }
+
+        /// <summary>
+        /// Gets or sets the forward <see cref="Vector3"/> of the matrix; that is -M31, -M32, and -M33.
+        /// </summary>
+        [DataMemberIgnore]
+        public Vector3 Forward
+        {
+            get { return new Vector3(-M31, -M32, -M33); }
+            set { M31 = -value.X; M32 = -value.Y; M33 = -value.Z; }
+        }
+
+        /// <summary>
+        /// Gets or sets the backward <see cref="Vector3"/> of the matrix; that is M31, M32, and M33.
+        /// </summary>
+        [DataMemberIgnore]
+        public Vector3 Backward
+        {
+            get { return new Vector3(M31, M32, M33); }
+            set { M31 = value.X; M32 = value.Y; M33 = value.Z; }
+        }
+
+        /// <summary>
         /// Gets a value indicating whether this instance is an identity matrix.
         /// </summary>
         /// <value>
@@ -599,12 +659,10 @@ namespace SiliconStudio.Core.Mathematics
         /// Decomposes a matrix into a scale, rotation, and translation.
         /// </summary>
         /// <param name="scale">When the method completes, contains the scaling component of the decomposed matrix.</param>
-        /// <param name="rotation">When the method completes, contains the rtoation component of the decomposed matrix.</param>
         /// <param name="translation">When the method completes, contains the translation component of the decomposed matrix.</param>
-        /// <remarks>
-        /// This method is designed to decompose an SRT transformation matrix only.
-        /// </remarks>
-        public bool Decompose(out Vector3 scale, out Quaternion rotation, out Vector3 translation)
+        /// <returns><c>true</c> if a rotation exist for this matrix, <c>false</c> otherwise.</returns>
+        /// <remarks>This method is designed to decompose an SRT transformation matrix only.</remarks>
+        public bool Decompose(out Vector3 scale, out Vector3 translation)
         {
             //Source: Unknown
             //References: http://www.gamedev.net/community/forums/topic.asp?topic_id=441695
@@ -624,27 +682,77 @@ namespace SiliconStudio.Core.Mathematics
                 Math.Abs(scale.Y) < MathUtil.ZeroTolerance ||
                 Math.Abs(scale.Z) < MathUtil.ZeroTolerance)
             {
-                rotation = Quaternion.Identity;
                 return false;
             }
 
-            //The rotation is the left over matrix after dividing out the scaling.
-            Matrix rotationmatrix = new Matrix();
-            rotationmatrix.M11 = M11 / scale.X;
-            rotationmatrix.M12 = M12 / scale.X;
-            rotationmatrix.M13 = M13 / scale.X;
+            return true;
+        }
 
-            rotationmatrix.M21 = M21 / scale.Y;
-            rotationmatrix.M22 = M22 / scale.Y;
-            rotationmatrix.M23 = M23 / scale.Y;
+        /// <summary>
+        /// Decomposes a matrix into a scale, rotation, and translation.
+        /// </summary>
+        /// <param name="scale">When the method completes, contains the scaling component of the decomposed matrix.</param>
+        /// <param name="rotation">When the method completes, contains the rtoation component of the decomposed matrix.</param>
+        /// <param name="translation">When the method completes, contains the translation component of the decomposed matrix.</param>
+        /// <remarks>
+        /// This method is designed to decompose an SRT transformation matrix only.
+        /// </remarks>
+        public bool Decompose(out Vector3 scale, out Quaternion rotation, out Vector3 translation)
+        {
+            Matrix rotationMatrix;
+            Decompose(out scale, out rotationMatrix, out translation);
+            Quaternion.RotationMatrix(ref rotationMatrix, out rotation);
+            return true;
+        }
 
-            rotationmatrix.M31 = M31 / scale.Z;
-            rotationmatrix.M32 = M32 / scale.Z;
-            rotationmatrix.M33 = M33 / scale.Z;
+        /// <summary>
+        /// Decomposes a matrix into a scale, rotation, and translation.
+        /// </summary>
+        /// <param name="scale">When the method completes, contains the scaling component of the decomposed matrix.</param>
+        /// <param name="rotation">When the method completes, contains the rtoation component of the decomposed matrix.</param>
+        /// <param name="translation">When the method completes, contains the translation component of the decomposed matrix.</param>
+        /// <remarks>
+        /// This method is designed to decompose an SRT transformation matrix only.
+        /// </remarks>
+        public bool Decompose(out Vector3 scale, out Matrix rotation, out Vector3 translation)
+        {
+            //Source: Unknown
+            //References: http://www.gamedev.net/community/forums/topic.asp?topic_id=441695
 
-            rotationmatrix.M44 = 1f;
+            //Get the translation.
+            translation.X = this.M41;
+            translation.Y = this.M42;
+            translation.Z = this.M43;
 
-            Quaternion.RotationMatrix(ref rotationmatrix, out rotation);
+            //Scaling is the length of the rows.
+            scale.X = (float)Math.Sqrt((M11 * M11) + (M12 * M12) + (M13 * M13));
+            scale.Y = (float)Math.Sqrt((M21 * M21) + (M22 * M22) + (M23 * M23));
+            scale.Z = (float)Math.Sqrt((M31 * M31) + (M32 * M32) + (M33 * M33));
+
+            //If any of the scaling factors are zero, than the rotation matrix can not exist.
+            if (Math.Abs(scale.X) < MathUtil.ZeroTolerance ||
+                Math.Abs(scale.Y) < MathUtil.ZeroTolerance ||
+                Math.Abs(scale.Z) < MathUtil.ZeroTolerance)
+            {
+                rotation = Matrix.Identity;
+                return false;
+            }
+
+            // Calculate an perfect orthonormal matrix (no reflections)
+            var at = new Vector3(M31 / scale.Z, M32 / scale.Z, M33 / scale.Z);
+            var up = Vector3.Cross(at, new Vector3(M11 / scale.X, M12 / scale.X, M13 / scale.X));
+            var right = Vector3.Cross(up, at);
+
+            rotation = Identity;
+            rotation.Right = right;
+            rotation.Up = up;
+            rotation.Backward = at;
+
+            // In case of reflexions
+            scale.X = Vector3.Dot(right, Right) > 0.0f ? scale.X : -scale.X;
+            scale.Y = Vector3.Dot(up, Up) > 0.0f ? scale.Y : -scale.Y;
+            scale.Z = Vector3.Dot(at, Backward) > 0.0f ? scale.Z : -scale.Z;
+
             return true;
         }
 
@@ -1221,25 +1329,23 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="result">When the method completes, contains the transpose of the specified matrix.</param>
         public static void Transpose(ref Matrix value, out Matrix result)
         {
-            Matrix temp = new Matrix();
-            temp.M11 = value.M11;
-            temp.M21 = value.M12;
-            temp.M31 = value.M13;
-            temp.M41 = value.M14;
-            temp.M12 = value.M21;
-            temp.M22 = value.M22;
-            temp.M32 = value.M23;
-            temp.M42 = value.M24;
-            temp.M13 = value.M31;
-            temp.M23 = value.M32;
-            temp.M33 = value.M33;
-            temp.M43 = value.M34;
-            temp.M14 = value.M41;
-            temp.M24 = value.M42;
-            temp.M34 = value.M43;
-            temp.M44 = value.M44;
-
-            result = temp;
+            result =  new Matrix(
+                value.M11,
+                value.M21,
+                value.M31,
+                value.M41,
+                value.M12,
+                value.M22,
+                value.M32,
+                value.M42,
+                value.M13,
+                value.M23,
+                value.M33,
+                value.M43,
+                value.M14,
+                value.M24,
+                value.M34,
+                value.M44);
         }
 
         /// <summary>
@@ -1274,7 +1380,7 @@ namespace SiliconStudio.Core.Mathematics
             float d14 = value.M21 * b3 + value.M22 * -b1 + value.M23 * b0;
 
             float det = value.M11 * d11 - value.M12 * d12 + value.M13 * d13 - value.M14 * d14;
-            if (Math.Abs(det) <= MathUtil.ZeroTolerance)
+            if (Math.Abs(det) == 0.0f)
             {
                 result = Matrix.Zero;
                 return;

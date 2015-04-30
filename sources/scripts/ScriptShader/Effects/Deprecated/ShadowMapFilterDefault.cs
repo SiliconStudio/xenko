@@ -1,6 +1,6 @@
 using SiliconStudio.Paradox.Shaders;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     public class ShadowMapFilterDefault : ShadowMapFilter
     {

@@ -67,6 +67,21 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         }
 
         /// <summary>
+        /// Tests if this instance is a <see cref="ShaderClassSource"/> of the specified type name 
+        /// </summary>
+        /// <param name="typeName">The type name to test</param>
+        /// <returns><c>true</c> if same type name</returns>
+        public bool IsShaderClass(string typeName)
+        {
+            var classSource = ShaderSource as ShaderClassSource;
+            if (classSource == null)
+            {
+                return false;
+            }
+            return classSource.ClassName == typeName;
+        }
+
+        /// <summary>
         /// The ModuleMixin
         /// </summary>
         public ModuleMixin Mixin = new ModuleMixin();

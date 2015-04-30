@@ -1,27 +1,20 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using SiliconStudio.Core.Serialization.Converters;
-using SiliconStudio.Core.Serialization.Serializers;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Games;
+
 using SiliconStudio.Core;
-using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Engine.Design;
+using SiliconStudio.Paradox.Engine.Processors;
 
 namespace SiliconStudio.Paradox.Engine
 {
-    [DataConverter(AutoGenerate = true)]
     [DataContract("ModelNodeLinkComponent")]
+    [Display("Model Node Link")]
+    [DefaultEntityComponentProcessor(typeof(ModelNodeLinkProcessor))]
     public sealed class ModelNodeLinkComponent : EntityComponent
     {
         public static PropertyKey<ModelNodeLinkComponent> Key = new PropertyKey<ModelNodeLinkComponent>("Key", typeof(ModelNodeLinkComponent));
 
-        internal MeshProcessor.EntityLink EntityLink;
+        internal ModelProcessor.EntityLink EntityLink;
         internal ModelNodeLinkProcessor Processor;
         private ModelComponent target;
         private string nodeName;
@@ -32,7 +25,6 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The model which contains the hierarchy to use.
         /// </value>
-        [DataMemberConvert]
         public ModelComponent Target
         {
             get
@@ -52,7 +44,6 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The name of the node.
         /// </value>
-        [DataMemberConvert]
         public string NodeName
         {
             get
@@ -78,9 +69,9 @@ namespace SiliconStudio.Paradox.Engine
             }
         }
 
-        public override PropertyKey DefaultKey
+        public override PropertyKey GetDefaultKey()
         {
-            get { return Key; }
+            return Key;
         }
     }
 }

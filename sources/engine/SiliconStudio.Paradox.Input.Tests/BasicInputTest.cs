@@ -50,7 +50,7 @@ namespace SiliconStudio.Paradox.Input.Tests
             Input.ActivatedGestures.Add(new GestureConfigTap(1, 2));
             Input.ActivatedGestures.Add(new GestureConfigTap(2, 2));
 
-            Script.Add(LogGestures);
+            Script.AddTask(LogGestures);
 
             return Task.FromResult(0);
         }

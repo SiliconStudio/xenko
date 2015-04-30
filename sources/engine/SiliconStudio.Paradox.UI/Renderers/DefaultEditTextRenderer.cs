@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
                 return;
             
             // determine the image to draw in background of the edit text
-            var fontScale = element.RealSizeVirtualResolutionRatio;
+            var fontScale = element.LayoutingContext.RealVirtualResolutionRatio;
             var color = editText.RenderOpacity * Color.White;
             var image = editText.ActiveImage;
             if(!editText.IsSelectionActive)
@@ -55,7 +55,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
             // Draw the selection
             if(editText.IsSelectionActive)
             {
-                var fontSize = fontScale * editText.TextSize;
+                var fontSize = new Vector2(fontScale.Y * editText.TextSize);
                 offsetTextStart = font.MeasureString(editText.TextToDisplay, ref fontSize, editText.SelectionStart).X;
                 selectionSize = font.MeasureString(editText.TextToDisplay, ref fontSize, editText.SelectionStart + editText.SelectionLength).X - offsetTextStart;
                 if (font.IsDynamic)
@@ -88,7 +88,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
                 FontScale = fontScale,
                 FontSize = editText.TextSize,
                 Batch = Batch,
-                SnapText = editText.SnapText,
+                SnapText = context.ShouldSnapText && !editText.DoNotSnapText,
                 WorldMatrix = editText.WorldMatrixInternal,
                 Alignment = editText.TextAlignment,
                 Size = textRegionSize

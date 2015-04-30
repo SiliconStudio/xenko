@@ -1,5 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.Globalization;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Storage;
 using System;
@@ -278,11 +281,11 @@ namespace SiliconStudio.BuildEngine
                 }
 
                 // Create directory
-                File.WriteAllText(versionFile, ExpectedVersion.ToString());
+                File.WriteAllText(versionFile, ExpectedVersion.ToString(CultureInfo.InvariantCulture));
             }
 
             // Prepare data base directories
-            AssetManager.GetFileProvider = () => IndexFileCommand.DatabaseFileProvider.Value;
+            AssetManager.GetFileProvider = () => IndexFileCommand.DatabaseFileProvider;
             var databasePathSplits = DatabasePath.Split('/');
             var accumulatorPath = "/";
             foreach (var pathPart in databasePathSplits.Where(x=>x!=""))
@@ -312,11 +315,11 @@ namespace SiliconStudio.BuildEngine
 
             public ExecuteContext(Builder builder, BuilderContext builderContext, BuildStep buildStep)
             {
-                logger = new BuildStepLogger(builder.Logger, builder.startTime);
+                logger = new BuildStepLogger(buildStep, builder.Logger, builder.startTime);
                 this.builderContext = builderContext;
                 this.builder = builder;
                 this.buildStep = buildStep;
-                buildTransaction = new BuildTransaction(buildStep.GetOutputObjectsGroups());
+                buildTransaction = new BuildTransaction(null, buildStep.GetOutputObjectsGroups());
             }
 
             public Logger Logger { get { return logger; } }
@@ -460,7 +463,7 @@ namespace SiliconStudio.BuildEngine
                         {
                             try
                             {
-                                IndexFileCommand.MountDatabases(executeContext);
+                                IndexFileCommand.MountDatabase(executeContext.GetOutputObjectsGroups());
 
                                 // Execute
                                 status = await buildStep.Execute(executeContext, builderContext);
@@ -479,7 +482,7 @@ namespace SiliconStudio.BuildEngine
                             }
                             finally
                             {
-                                IndexFileCommand.UnmountDatabases(executeContext);
+                                IndexFileCommand.UnmountDatabase();
                                 
                                 // Ensure the command set at least the result status
                                 if (status == ResultStatus.NotProcessed)
@@ -496,9 +499,6 @@ namespace SiliconStudio.BuildEngine
                             status = ResultStatus.NotTriggeredPrerequisiteFailed;
                         }
 
-                        buildStep.RegisterResult(executeContext, status);
-                        stepCounter.AddStepResult(status);
-
                         //if (completedTask.IsCanceled)
                         //{
                         //    completedStep.Status = ResultStatus.Cancelled;
@@ -506,7 +506,7 @@ namespace SiliconStudio.BuildEngine
                         var logType = LogMessageType.Info;
                         string logText = null;
                         
-                        switch (buildStep.Status)
+                        switch (status)
                         {
                             case ResultStatus.Successful:
                                 logType = LogMessageType.Info;
@@ -520,14 +520,21 @@ namespace SiliconStudio.BuildEngine
                                 logType = LogMessageType.Warning;
                                 logText = "BuildStep {0} cancelled.".ToFormat(buildStep.ToString());
                                 break;
+                            case ResultStatus.NotTriggeredWasSuccessful:
+                                logType = LogMessageType.Verbose;
+                                logText = "BuildStep {0} is up-to-date and has been skipped".ToFormat(buildStep.ToString());
+                                break;
                             case ResultStatus.NotProcessed:
                                 throw new InvalidDataException("BuildStep has neither succeeded, failed, nor been cancelled");
                         }
                         if (logText != null)
                         {
                             var logMessage = new LogMessage(buildStep.Module, logType, logText);
-                            executeContext.Logger.Log(logMessage);
+                            Logger.Log(logMessage);
                         }
+
+                        buildStep.RegisterResult(executeContext, status);
+                        stepCounter.AddStepResult(status);
                     });
                 }
                 else
@@ -561,7 +568,7 @@ namespace SiliconStudio.BuildEngine
                 // Exit loop if no more micro threads
                 lock (scheduler.MicroThreads)
                 {
-                    if (!scheduler.MicroThreads.Any())
+                    if (scheduler.MicroThreads.Count == 0)
                         break;
                 }
 
@@ -666,7 +673,7 @@ namespace SiliconStudio.BuildEngine
                 int threadId = 0;
                 foreach (var thread in threads)
                 {
-                    thread.Name = "Builder thread " + (++threadId);
+                    thread.Name = (BuilderName ?? "Builder") + " worker thread " + (++threadId);
                     thread.Start();
                 }
 

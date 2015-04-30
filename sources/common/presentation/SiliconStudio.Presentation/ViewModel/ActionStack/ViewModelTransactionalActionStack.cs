@@ -51,14 +51,14 @@ namespace SiliconStudio.Presentation.ViewModel.ActionStack
 
         protected override void OnActionItemsAdded(ActionItemsEventArgs<IActionItem> e)
         {
-            base.OnActionItemsAdded(e);
             RegisterActionItemsRecursively(e.ActionItems);
+            base.OnActionItemsAdded(e);
         }
 
         protected override void OnActionItemsDiscarded(DiscardedActionItemsEventArgs<IActionItem> e)
         {
-            base.OnActionItemsDiscarded(e);
             DiscardActionItemsRecursively(e.ActionItems, e.Type);
+            base.OnActionItemsDiscarded(e);
         }
 
         private static void RegisterActionItemsRecursively(IEnumerable<IActionItem> actionItems)

@@ -31,23 +31,29 @@ namespace SiliconStudio.Paradox.Graphics
         private const PixelInternalFormat Depth24Stencil8 = (PixelInternalFormat)0x88F0;
         private const PixelInternalFormat DepthComponent32f = (PixelInternalFormat)0x8CAC;
         private const PixelInternalFormat R8 = (PixelInternalFormat)0x8229;
+        private const PixelInternalFormat R16f = (PixelInternalFormat)0x822D;
+        private const PixelInternalFormat Rg16f = (PixelInternalFormat)0x822F;
         private const PixelInternalFormat Rgba16f = (PixelInternalFormat)0x881A;
         private const PixelInternalFormat R32ui = (PixelInternalFormat)0x8236;
         private const PixelInternalFormat R32f = (PixelInternalFormat)0x822E;
         private const PixelInternalFormat Rg32f = (PixelInternalFormat)0x8230;
         private const PixelInternalFormat Rgb32f = (PixelInternalFormat)0x8815;
         private const PixelInternalFormat Rgba32f = (PixelInternalFormat)0x8814;
+        private const PixelInternalFormat Srgb8Alpha8 = (PixelInternalFormat)Token.Srgb8Alpha8;
 #else
         private const PixelInternalFormat DepthComponent16 = PixelInternalFormat.DepthComponent16;
         private const PixelInternalFormat Depth24Stencil8 = PixelInternalFormat.Depth24Stencil8;
         private const PixelInternalFormat DepthComponent32f = PixelInternalFormat.DepthComponent32f;
         private const PixelInternalFormat R8 = PixelInternalFormat.R8;
+        private const PixelInternalFormat R16f = PixelInternalFormat.R16f;
+        private const PixelInternalFormat Rg16f = PixelInternalFormat.Rg16f;
         private const PixelInternalFormat Rgba16f = PixelInternalFormat.Rgba16f;
         private const PixelInternalFormat R32ui = PixelInternalFormat.R32ui;
         private const PixelInternalFormat R32f = PixelInternalFormat.R32f;
         private const PixelInternalFormat Rg32f = PixelInternalFormat.Rg32f;
         private const PixelInternalFormat Rgb32f = PixelInternalFormat.Rgb32f;
         private const PixelInternalFormat Rgba32f = PixelInternalFormat.Rgba32f;
+        private const PixelInternalFormat Srgb8Alpha8 = PixelInternalFormat.Srgb8Alpha8;
 #endif
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
@@ -338,6 +344,34 @@ namespace SiliconStudio.Paradox.Graphics
                     type = PixelType.UnsignedByte;
                     pixelSize = 4;
                     break;
+                case PixelFormat.R8G8B8A8_UNorm_SRgb:
+                    internalFormat = Srgb8Alpha8;
+                    format = PixelFormatGl.Rgba;
+                    type = PixelType.UnsignedByte;
+                    pixelSize = 4;
+                    break;
+                case PixelFormat.B8G8R8A8_UNorm_SRgb:
+                    internalFormat = Srgb8Alpha8;
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                    format = (PixelFormatGl)ExtTextureFormatBgra8888.BgraExt;
+#else
+                    format = PixelFormatGl.Bgra;
+#endif
+                    type = PixelType.UnsignedByte;
+                    pixelSize = 4;
+                    break;
+                case PixelFormat.R16_Float:
+                    internalFormat = R16f;
+                    format = PixelFormatGl.Red;
+                    type = PixelType.HalfFloat;
+                    pixelSize = 2;
+                    break;
+                case PixelFormat.R16G16_Float:
+                    internalFormat = Rg16f;
+                    format = PixelFormatGl.Rg;
+                    type = PixelType.HalfFloat;
+                    pixelSize = 4;
+                    break;
                 case PixelFormat.R16G16B16A16_Float:
                     internalFormat = Rgba16f;
                     format = PixelFormatGl.Rgba;
@@ -382,7 +416,7 @@ namespace SiliconStudio.Paradox.Graphics
                     break;
                 case PixelFormat.D24_UNorm_S8_UInt:
                     internalFormat = Depth24Stencil8;
-                    format = PixelFormatGl.DepthComponent;
+                    format = PixelFormatGl.DepthStencil;
                     type = PixelType.UnsignedInt248;
                     pixelSize = 4;
                     break;

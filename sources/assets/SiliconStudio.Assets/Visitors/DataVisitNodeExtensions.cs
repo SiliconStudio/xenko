@@ -104,5 +104,12 @@ namespace SiliconStudio.Assets.Visitors
                 }
             }
         }
+
+        public static string Dump<T>(this T node) where T : class, IDataVisitNode<T>
+        {
+            var stringWriter = new StringWriter();
+            Dump(node, stringWriter);
+            return stringWriter.ToString();
+        }
     }
 }

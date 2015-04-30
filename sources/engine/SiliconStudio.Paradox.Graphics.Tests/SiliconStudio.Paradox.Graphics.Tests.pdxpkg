@@ -12,16 +12,21 @@ Meta:
 LocalDependencies: []
 Profiles:
     -   Name: Shared
+        Platform: Shared
         InheritProfiles: []
         AssetFolders:
             -   Path: Assets
-                RawImports: 
-                -   SourceDirectory: ../../../data/tests
-                    Patterns:
-                        - JpegImage.jpg
-                        - PngImage.png
+                RawImports:
+                    -   SourceDirectory: ../../../data/tests
+                        Patterns:
+                            - JpegImage.jpg
+                            - PngImage.png
         OutputGroupDirectories: {}
-        Properties: {}
+        Properties:
+            GameSettingsAsset.BackBufferHeight: 720
+            GameSettingsAsset.BackBufferWidth: 1280
+            GameSettingsAsset.DefaultGraphicsProfile: Level_10_0
+            GameSettingsAsset.DefaultScene: b47e4609-0125-41bd-a26e-0fdf9184327e:MainScene
         ProjectReferences:
             -   Id: 9de0aa56-0de7-4adc-baac-cd38b7139ebc
                 Location: SiliconStudio.Paradox.Graphics.Tests.Windows.csproj
@@ -34,7 +39,7 @@ Profiles:
                 RawImports: []
         OutputGroupDirectories: {}
         Properties:
-            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+            GameSettingsAsset.DefaultGraphicsProfile: Level_9_1
         ProjectReferences:
             -   Id: 9de0aa56-0de7-4adc-baac-cd38b7139ebc
                 Location: SiliconStudio.Paradox.Graphics.Tests.Windows.csproj
@@ -47,7 +52,7 @@ Profiles:
                 RawImports: []
         OutputGroupDirectories: {}
         Properties:
-            Paradox.GraphicsProfile: !GraphicsProfile Level_11_0
+            GameSettingsAsset.DefaultGraphicsProfile: Level_11_0
         ProjectReferences:
             -   Id: 9de0aa56-0de7-4adc-baac-cd38b7139ebc
                 Location: SiliconStudio.Paradox.Graphics.Tests.Android.csproj
@@ -60,7 +65,7 @@ Profiles:
                 RawImports: []
         OutputGroupDirectories: {}
         Properties:
-            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+            GameSettingsAsset.DefaultGraphicsProfile: Level_9_1
         ProjectReferences:
             -   Id: 9de0aa56-0de7-4adc-baac-cd38b7139ebc
                 Location: SiliconStudio.Paradox.Graphics.Tests.iOS.csproj

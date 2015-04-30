@@ -87,7 +87,10 @@ namespace SiliconStudio.Paradox.Graphics
                     {
                         case ShaderStage.Vertex:
                             shaderStage = ShaderType.VertexShader;
-                            inputSignature = EffectInputSignature.GetOrCreateLayout(new EffectInputSignature(shader.Id, shader.Data));
+                            // We can't use VS only, since various attributes might get optimized when linked with a specific PS
+                            // Maybe we should unify signature after checking attributes
+                            //inputSignature = EffectInputSignature.GetOrCreateLayout(new EffectInputSignature(shader.Id, shader.Data));
+                            inputSignature = new EffectInputSignature(shader.Id, shader.Data);
                             break;
                         case ShaderStage.Pixel:
                             shaderStage = ShaderType.FragmentShader;
@@ -357,7 +360,7 @@ namespace SiliconStudio.Paradox.Graphics
             //TODO: (?) non texture/buffer uniform outside of a block
             {
                 // Register "NoSampler", required by HLSL=>GLSL translation to support HLSL such as texture.Load().
-                var noSampler = new EffectParameterResourceData { Param = { RawName = "NoSampler", KeyName = "NoSampler", Class = EffectParameterClass.Sampler } };
+                var noSampler = new EffectParameterResourceData { Param = { RawName = "NoSampler", KeyName = "NoSampler", Class = EffectParameterClass.Sampler }, SlotStart = -1 };
                 effectBytecode.Reflection.ResourceBindings.Add(noSampler);
                 bool usingSamplerNoSampler = false;
 
@@ -564,9 +567,6 @@ namespace SiliconStudio.Paradox.Graphics
                             var textureReflection = effectReflection.ResourceBindings[textureReflectionIndex];
                             var samplerReflection = effectReflection.ResourceBindings[samplerReflectionIndex];
 
-                            if (samplerReflection.Param.RawName == "NoSampler")
-                                usingSamplerNoSampler = true;
-
                             // Contrary to Direct3D, samplers and textures are part of the same object in OpenGL
                             // Since we are exposing the Direct3D representation, a single sampler parameter key can be used for several textures, a single texture can be used with several samplers.
                             // When such a case is detected, we need to duplicate the resource binding.
@@ -598,8 +598,8 @@ namespace SiliconStudio.Paradox.Graphics
                     }
                 }
 
-                if (!usingSamplerNoSampler)
-                    effectReflection.ResourceBindings.RemoveAll(x => x.Param.RawName == "NoSampler");
+                // Remove any optimized resource binding
+                effectReflection.ResourceBindings.RemoveAll(x => x.SlotStart == -1);
             }
 
             GL.UseProgram(currentProgram);

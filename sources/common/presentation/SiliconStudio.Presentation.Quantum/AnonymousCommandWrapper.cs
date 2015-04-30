@@ -11,7 +11,7 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public class AnonymousCommandWrapper : NodeCommandWrapperBase
     {
-        private readonly ITransactionalActionStack actionStack;
+        private readonly IViewModelServiceProvider serviceProvider;
         private readonly string name;
         private readonly CombineMode combineMode;
         private readonly Func<object, UndoToken> redo;
@@ -36,7 +36,7 @@ namespace SiliconStudio.Presentation.Quantum
             this.combineMode = combineMode;
             this.redo = redo;
             this.undo = undo;
-            actionStack = serviceProvider.Get<ITransactionalActionStack>();
+            this.serviceProvider = serviceProvider;
         }
 
         /// <inheritdoc/>
@@ -45,12 +45,14 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override CombineMode CombineMode { get { return combineMode; } }
 
+        private ITransactionalActionStack ActionStack { get { return serviceProvider.Get<ITransactionalActionStack>(); } }
+
         /// <inheritdoc/>
         public override void Execute(object parameter)
         {
-            actionStack.BeginTransaction();
+            ActionStack.BeginTransaction();
             base.Execute(parameter);
-            actionStack.EndTransaction(string.Format("Executing {0}", Name));
+            ActionStack.EndTransaction(string.Format("Executing {0}", Name));
         }
 
         /// <inheritdoc/>

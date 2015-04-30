@@ -1,19 +1,14 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using SiliconStudio.Core;
-using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Core.Threading;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Threading;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -22,74 +17,82 @@ namespace SiliconStudio.Paradox.Physics
         public class AssociatedData
         {
             public PhysicsComponent PhysicsComponent;
-            public TransformationComponent TransformationComponent;
+            public TransformComponent TransformComponent;
             public ModelComponent ModelComponent; //not mandatory, could be null e.g. invisible triggers
         }
 
-        readonly FastList<PhysicsElement> elements = new FastList<PhysicsElement>();
-        readonly FastList<PhysicsElement> characters = new FastList<PhysicsElement>();
+        private readonly List<PhysicsElement> elements = new List<PhysicsElement>();
+        private readonly List<PhysicsElement> boneElements = new List<PhysicsElement>();
+        private readonly List<PhysicsElement> characters = new List<PhysicsElement>();
 
-        Bullet2PhysicsSystem physicsSystem;
-        RenderSystem renderSystem;
+        private Bullet2PhysicsSystem physicsSystem;
+        private Simulation simulation;
 
         public PhysicsProcessor()
-            : base(new PropertyKey[] { PhysicsComponent.Key, TransformationComponent.Key })
+            : base(PhysicsComponent.Key, TransformComponent.Key)
         {
         }
 
         protected override AssociatedData GenerateAssociatedData(Entity entity)
         {
-            return new AssociatedData
+            var data = new AssociatedData
             {
                 PhysicsComponent = entity.Get(PhysicsComponent.Key),
-                TransformationComponent = entity.Get(TransformationComponent.Key),
-                ModelComponent = entity.Get(ModelComponent.Key),
+                TransformComponent = entity.Get(TransformComponent.Key),
+                ModelComponent = entity.Get(ModelComponent.Key)
             };
+
+            data.PhysicsComponent.Simulation = simulation;
+
+            return data;
         }
 
-        //This is called by the physics engine to update the transformation of Dynamic rigidbodies
-        static void RigidBodySetWorldTransform(PhysicsElement element, Matrix physicsTransform)
+        //This is called by the physics engine to update the transformation of Dynamic rigidbodies.
+        private static void RigidBodySetWorldTransform(PhysicsElement element, Matrix physicsTransform)
         {
-            element.UpdateTransformationComponent(physicsTransform);
+            if (element.BoneIndex == -1)
+            {
+                element.UpdateTransformationComponent(physicsTransform);
+            }
+            else
+            {
+                element.UpdateBoneTransformation(physicsTransform);
+            }
         }
 
-        //This is valid for Dynamic rigidbodies (called once at initialization) 
-        //and Kinematic rigidbodies (called every simulation tick (if body not sleeping) to let the physics engine know where the kinematic body is)
-        static void RigidBodyGetWorldTransform(PhysicsElement element, out Matrix physicsTransform)
+        //This is valid for Dynamic rigidbodies (called once at initialization)
+        //and Kinematic rigidbodies, called every simulation tick (if body not sleeping) to let the physics engine know where the kinematic body is.
+        private static void RigidBodyGetWorldTransform(PhysicsElement element, out Matrix physicsTransform)
         {
-            physicsTransform = element.DerivePhysicsTransformation();
+            if (element.BoneIndex == -1)
+            {
+                element.DerivePhysicsTransformation(out physicsTransform);
+            }
+            else
+            {
+                element.DeriveBonePhysicsTransformation(out physicsTransform);
+            }
         }
 
-        void NewElement(PhysicsElement element, AssociatedData data, Entity entity)
+        private void NewElement(PhysicsElement element, AssociatedData data, Entity entity)
         {
-            if (element.Shape == null) return; //no shape no purpose
+            if (element.Shape == null || element.Shape.Descriptions == null || element.Shape.Shape == null) return; //no shape no purpose
 
             var shape = element.Shape.Shape;
 
             element.Data = data;
             element.BoneIndex = -1;
 
-            if (!element.Sprite && element.LinkedBoneName != null && data.ModelComponent != null)
+            if (!element.LinkedBoneName.IsNullOrEmpty())
             {
-                //find the linked bone, if can't be found we just skip this element
-                for (var index = 0; index < data.ModelComponent.ModelViewHierarchy.Nodes.Length; index++)
-                {
-                    var node = data.ModelComponent.ModelViewHierarchy.Nodes[index];
-                    if (node.Name != element.LinkedBoneName) continue;
-                    element.BoneIndex = index;
-                    break;
-                }
+                element.BoneIndex = data.ModelComponent.ModelViewHierarchy.Nodes.IndexOf(x => x.Name == element.LinkedBoneName);
 
                 if (element.BoneIndex == -1)
                 {
                     throw new Exception("The specified LinkedBoneName doesn't exist in the model hierarchy.");
                 }
-            }
 
-            //complex hierarchy models not implemented yet
-            if (element.BoneIndex != -1)
-            {
-                throw new NotImplementedException("Physics on complex hierarchy model's bones is not implemented yet.");
+                element.BoneWorldMatrixOut = element.BoneWorldMatrix = data.ModelComponent.ModelViewHierarchy.NodeTransformations[element.BoneIndex].WorldMatrix;
             }
 
             var defaultGroups = element.CanCollideWith == 0 || element.CollisionGroup == 0;
@@ -98,49 +101,51 @@ namespace SiliconStudio.Paradox.Physics
             {
                 case PhysicsElement.Types.PhantomCollider:
                     {
-                        var c = physicsSystem.PhysicsEngine.CreateCollider(shape);
+                        var c = Simulation.CreateCollider(shape);
 
                         element.Collider = c; //required by the next call
-                        element.Collider.EntityObject = entity; //required by the next call
+                        element.Collider.Entity = entity; //required by the next call
                         element.UpdatePhysicsTransformation(); //this will set position and rotation of the collider
 
                         c.IsTrigger = true;
 
                         if (defaultGroups)
                         {
-                            physicsSystem.PhysicsEngine.AddCollider(c);
+                            simulation.AddCollider(c);
                         }
                         else
                         {
-                            physicsSystem.PhysicsEngine.AddCollider(c, (CollisionFilterGroups)element.CollisionGroup, element.CanCollideWith);
+                            simulation.AddCollider(c, (CollisionFilterGroupFlags)element.CollisionGroup, element.CanCollideWith);
                         }
                     }
                     break;
+
                 case PhysicsElement.Types.StaticCollider:
                     {
-                        var c = physicsSystem.PhysicsEngine.CreateCollider(shape);
+                        var c = Simulation.CreateCollider(shape);
 
                         element.Collider = c; //required by the next call
-                        element.Collider.EntityObject = entity; //required by the next call
+                        element.Collider.Entity = entity; //required by the next call
                         element.UpdatePhysicsTransformation(); //this will set position and rotation of the collider
 
                         c.IsTrigger = false;
 
                         if (defaultGroups)
                         {
-                            physicsSystem.PhysicsEngine.AddCollider(c);
+                            simulation.AddCollider(c);
                         }
                         else
                         {
-                            physicsSystem.PhysicsEngine.AddCollider(c, (CollisionFilterGroups)element.CollisionGroup, element.CanCollideWith);
+                            simulation.AddCollider(c, (CollisionFilterGroupFlags)element.CollisionGroup, element.CanCollideWith);
                         }
                     }
                     break;
+
                 case PhysicsElement.Types.StaticRigidBody:
                     {
-                        var rb = physicsSystem.PhysicsEngine.CreateRigidBody(shape);
+                        var rb = Simulation.CreateRigidBody(shape);
 
-                        rb.EntityObject = entity;
+                        rb.Entity = entity;
                         rb.GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(element, out transform);
                         rb.SetWorldTransformCallback = transform => RigidBodySetWorldTransform(element, transform);
                         element.Collider = rb;
@@ -150,19 +155,20 @@ namespace SiliconStudio.Paradox.Physics
 
                         if (defaultGroups)
                         {
-                            physicsSystem.PhysicsEngine.AddRigidBody(rb);
+                            simulation.AddRigidBody(rb);
                         }
                         else
                         {
-                            physicsSystem.PhysicsEngine.AddRigidBody(rb, (CollisionFilterGroups)element.CollisionGroup, element.CanCollideWith);
+                            simulation.AddRigidBody(rb, (CollisionFilterGroupFlags)element.CollisionGroup, element.CanCollideWith);
                         }
                     }
                     break;
+
                 case PhysicsElement.Types.DynamicRigidBody:
                     {
-                        var rb = physicsSystem.PhysicsEngine.CreateRigidBody(shape);
+                        var rb = Simulation.CreateRigidBody(shape);
 
-                        rb.EntityObject = entity;
+                        rb.Entity = entity;
                         rb.GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(element, out transform);
                         rb.SetWorldTransformCallback = transform => RigidBodySetWorldTransform(element, transform);
                         element.Collider = rb;
@@ -173,19 +179,20 @@ namespace SiliconStudio.Paradox.Physics
 
                         if (defaultGroups)
                         {
-                            physicsSystem.PhysicsEngine.AddRigidBody(rb);
+                            simulation.AddRigidBody(rb);
                         }
                         else
                         {
-                            physicsSystem.PhysicsEngine.AddRigidBody(rb, (CollisionFilterGroups)element.CollisionGroup, element.CanCollideWith);
+                            simulation.AddRigidBody(rb, (CollisionFilterGroupFlags)element.CollisionGroup, element.CanCollideWith);
                         }
                     }
                     break;
+
                 case PhysicsElement.Types.KinematicRigidBody:
                     {
-                        var rb = physicsSystem.PhysicsEngine.CreateRigidBody(shape);
+                        var rb = Simulation.CreateRigidBody(shape);
 
-                        rb.EntityObject = entity;
+                        rb.Entity = entity;
                         rb.GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(element, out transform);
                         rb.SetWorldTransformCallback = transform => RigidBodySetWorldTransform(element, transform);
                         element.Collider = rb;
@@ -196,29 +203,30 @@ namespace SiliconStudio.Paradox.Physics
 
                         if (defaultGroups)
                         {
-                            physicsSystem.PhysicsEngine.AddRigidBody(rb);
+                            simulation.AddRigidBody(rb);
                         }
                         else
                         {
-                            physicsSystem.PhysicsEngine.AddRigidBody(rb, (CollisionFilterGroups)element.CollisionGroup, element.CanCollideWith);
+                            simulation.AddRigidBody(rb, (CollisionFilterGroupFlags)element.CollisionGroup, element.CanCollideWith);
                         }
                     }
                     break;
+
                 case PhysicsElement.Types.CharacterController:
                     {
-                        var ch = physicsSystem.PhysicsEngine.CreateCharacter(shape, element.StepHeight);
+                        var ch = Simulation.CreateCharacter(shape, element.StepHeight);
 
                         element.Collider = ch;
-                        element.Collider.EntityObject = entity;
+                        element.Collider.Entity = entity;
                         element.UpdatePhysicsTransformation(); //this will set position and rotation of the collider
 
                         if (defaultGroups)
                         {
-                            physicsSystem.PhysicsEngine.AddCharacter(ch);
+                            simulation.AddCharacter(ch);
                         }
                         else
                         {
-                            physicsSystem.PhysicsEngine.AddCharacter(ch, (CollisionFilterGroups)element.CollisionGroup, element.CanCollideWith);
+                            simulation.AddCharacter(ch, (CollisionFilterGroupFlags)element.CollisionGroup, element.CanCollideWith);
                         }
 
                         characters.Add(element);
@@ -227,45 +235,49 @@ namespace SiliconStudio.Paradox.Physics
             }
 
             elements.Add(element);
+            if (element.BoneIndex != -1) boneElements.Add(element);
         }
 
-        void DeleteElement(PhysicsElement element, bool now = false)
+        private void DeleteElement(PhysicsElement element, bool now = false)
         {
             //might be possible that this element was not valid during creation so it would be already null
-            if (element.Collider == null) return;
+            if (element.InternalCollider == null) return;
 
             var toDispose = new List<IDisposable>();
 
-            elements.Remove(element);   
+            elements.Remove(element);
+            if (element.BoneIndex != -1) boneElements.Remove(element);
 
             switch (element.Type)
             {
                 case PhysicsElement.Types.PhantomCollider:
                 case PhysicsElement.Types.StaticCollider:
-                {
-                    physicsSystem.PhysicsEngine.RemoveCollider(element.Collider);
-                }
+                    {
+                        simulation.RemoveCollider(element.Collider);
+                    }
                     break;
+
                 case PhysicsElement.Types.StaticRigidBody:
                 case PhysicsElement.Types.DynamicRigidBody:
                 case PhysicsElement.Types.KinematicRigidBody:
-                {
-                    var rb = (RigidBody)element.Collider;
-                    var constraints = rb.LinkedConstraints.ToArray();
-                    foreach (var c in constraints)
                     {
-                        physicsSystem.PhysicsEngine.RemoveConstraint(c);
-                        toDispose.Add(c);
-                    }
+                        var rb = (RigidBody)element.Collider;
+                        var constraints = rb.LinkedConstraints.ToArray();
+                        foreach (var c in constraints)
+                        {
+                            simulation.RemoveConstraint(c);
+                            toDispose.Add(c);
+                        }
 
-                    physicsSystem.PhysicsEngine.RemoveRigidBody(rb);
-                }
+                        simulation.RemoveRigidBody(rb);
+                    }
                     break;
+
                 case PhysicsElement.Types.CharacterController:
-                {
-                    characters.Remove(element);
-                    physicsSystem.PhysicsEngine.RemoveCharacter((Character) element.Collider);
-                }
+                    {
+                        characters.Remove(element);
+                        simulation.RemoveCharacter((Character)element.Collider);
+                    }
                     break;
             }
 
@@ -288,7 +300,16 @@ namespace SiliconStudio.Paradox.Physics
 
         protected override void OnEntityAdding(Entity entity, AssociatedData data)
         {
-            if (!physicsSystem.PhysicsEngine.Initialized) return;
+            if (elements.Any(x => !x.LinkedBoneName.IsNullOrEmpty()))
+            {
+                if (data.ModelComponent == null)
+                {
+                    throw new Exception("Physics entity with bones detected but no model component is present in this entity.");
+                }
+
+                //this is not optimal as UpdateMatrices will end up being called twice this frame.. but we need to ensure that we have valid data.
+                data.ModelComponent.ModelViewHierarchy.UpdateMatrices();
+            }
 
             foreach (var element in data.PhysicsComponent.Elements)
             {
@@ -298,8 +319,6 @@ namespace SiliconStudio.Paradox.Physics
 
         protected override void OnEntityRemoved(Entity entity, AssociatedData data)
         {
-            if (!physicsSystem.PhysicsEngine.Initialized) return;
-
             foreach (var element in data.PhysicsComponent.Elements)
             {
                 DeleteElement(element, true);
@@ -308,11 +327,9 @@ namespace SiliconStudio.Paradox.Physics
 
         protected override void OnEnabledChanged(Entity entity, bool enabled)
         {
-            if (!physicsSystem.PhysicsEngine.Initialized) return;
+            var entityElements = entity.Get(PhysicsComponent.Key).Elements;
 
-            var elements = entity.Get(PhysicsComponent.Key).Elements;
-
-            foreach (var element in elements.Where(element => element.Collider != null))
+            foreach (var element in entityElements.Where(element => element.Collider != null))
             {
                 element.Collider.Enabled = enabled;
             }
@@ -321,14 +338,11 @@ namespace SiliconStudio.Paradox.Physics
         protected override void OnSystemAdd()
         {
             physicsSystem = (Bullet2PhysicsSystem)Services.GetSafeServiceAs<IPhysicsSystem>();
-            renderSystem = Services.GetSafeServiceAs<RenderSystem>();
+            simulation = physicsSystem.Create(this);
 
             //setup debug device and debug shader
-            var gfxDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>();
-            physicsSystem.PhysicsEngine.DebugGraphicsDevice = gfxDevice.GraphicsDevice;
-
-            //Debug primitives render, should happen about the last steps of the pipeline
-            renderSystem.Pipeline.EndPass += DebugShapesDraw;
+            //var gfxDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>();
+            //Simulation.DebugGraphicsDevice = gfxDevice.GraphicsDevice;
         }
 
         protected override void OnSystemRemove()
@@ -338,9 +352,12 @@ namespace SiliconStudio.Paradox.Physics
             {
                 DeleteElement(element);
             }
+
+            physicsSystem.Release(this);
         }
 
-        private void DrawDebugCompound(ref Matrix viewProj, CompoundColliderShape compound, PhysicsElement element)
+        /*
+        private static void DrawDebugCompound(ref Matrix viewProj, CompoundColliderShape compound, PhysicsElement element)
         {
             for (var i = 0; i < compound.Count; i++)
             {
@@ -352,23 +369,23 @@ namespace SiliconStudio.Paradox.Physics
                     case ColliderShapeTypes.Compound:
                         DrawDebugCompound(ref viewProj, (CompoundColliderShape)compound[i], element);
                         break;
+
                     default:
-                    {
-                        var physTrans = element.BoneIndex == -1 ? element.Collider.PhysicsWorldTransform : element.BoneWorldMatrix;
-                        physTrans = Matrix.Multiply(subShape.PositiveCenterMatrix, physTrans);
+                        {
+                            var physTrans = Matrix.Multiply(subShape.PositiveCenterMatrix, element.Collider.PhysicsWorldTransform);
 
-                        //must account collider shape scaling
-                        Matrix worldTrans;
-                        Matrix.Multiply(ref subShape.DebugPrimitiveScaling, ref physTrans, out worldTrans);
+                            //must account collider shape scaling
+                            Matrix worldTrans;
+                            Matrix.Multiply(ref subShape.DebugPrimitiveScaling, ref physTrans, out worldTrans);
 
-                        physicsSystem.PhysicsEngine.DebugEffect.WorldViewProj = worldTrans * viewProj;
-                        physicsSystem.PhysicsEngine.DebugEffect.Color = element.Collider.IsActive ? Color.Green : Color.Red;
-                        physicsSystem.PhysicsEngine.DebugEffect.UseUv = subShape.Type != ColliderShapeTypes.ConvexHull;
+                            Simulation.DebugEffect.WorldViewProj = worldTrans * viewProj;
+                            Simulation.DebugEffect.Color = element.Collider.IsActive ? Color.Green : Color.Red;
+                            Simulation.DebugEffect.UseUv = subShape.Type != ColliderShapeTypes.ConvexHull;
 
-                        physicsSystem.PhysicsEngine.DebugEffect.Apply();
+                            Simulation.DebugEffect.Apply();
 
-                        subShape.DebugPrimitive.Draw();
-                    }
+                            subShape.DebugPrimitive.Draw();
+                        }
                         break;
                 }
             }
@@ -376,25 +393,24 @@ namespace SiliconStudio.Paradox.Physics
 
         private void DebugShapesDraw(RenderContext context)
         {
-            if (!physicsSystem.PhysicsEngine.CreateDebugPrimitives ||
-                    !physicsSystem.PhysicsEngine.RenderDebugPrimitives || 
-                    !physicsSystem.PhysicsEngine.Initialized ||
-                    physicsSystem.PhysicsEngine.DebugGraphicsDevice == null ||
-                    physicsSystem.PhysicsEngine.DebugEffect == null) 
+            if (    !Simulation.CreateDebugPrimitives ||
+                    !Simulation.RenderDebugPrimitives ||
+                    Simulation.DebugGraphicsDevice == null ||
+                    Simulation.DebugEffect == null)
                 return;
 
             Matrix viewProj;
-            if (renderSystem.Pipeline.Parameters.ContainsKey(TransformationKeys.View) && renderSystem.Pipeline.Parameters.ContainsKey(TransformationKeys.Projection))
+            if (context.Parameters.ContainsKey(TransformationKeys.View) && context.Parameters.ContainsKey(TransformationKeys.Projection))
             {
-                viewProj = renderSystem.Pipeline.Parameters.Get(TransformationKeys.View) * renderSystem.Pipeline.Parameters.Get(TransformationKeys.Projection);
+                viewProj = context.Parameters.Get(TransformationKeys.View) * context.Parameters.Get(TransformationKeys.Projection);
             }
             else
             {
                 return;
             }
 
-            var rasterizers = physicsSystem.PhysicsEngine.DebugGraphicsDevice.RasterizerStates;
-            physicsSystem.PhysicsEngine.DebugGraphicsDevice.SetRasterizerState(rasterizers.CullNone);
+            var rasterizers = Simulation.DebugGraphicsDevice.RasterizerStates;
+            Simulation.DebugGraphicsDevice.SetRasterizerState(rasterizers.CullNone);
 
             foreach (var element in elements)
             {
@@ -406,81 +422,50 @@ namespace SiliconStudio.Paradox.Physics
                 }
                 else if (shape.Type != ColliderShapeTypes.StaticPlane) //a single shape
                 {
-                    var physTrans = element.BoneIndex == -1 ? element.Collider.PhysicsWorldTransform : element.BoneWorldMatrix;
+                    var physTrans = element.Collider.PhysicsWorldTransform;
 
                     //must account collider shape scaling
                     Matrix worldTrans;
                     Matrix.Multiply(ref element.Shape.Shape.DebugPrimitiveScaling, ref physTrans, out worldTrans);
 
-                    physicsSystem.PhysicsEngine.DebugEffect.WorldViewProj = worldTrans * viewProj;
-                    physicsSystem.PhysicsEngine.DebugEffect.Color = element.Collider.IsActive ? Color.Green : Color.Red;
-                    physicsSystem.PhysicsEngine.DebugEffect.UseUv = shape.Type != ColliderShapeTypes.ConvexHull;
+                    Simulation.DebugEffect.WorldViewProj = worldTrans * viewProj;
+                    Simulation.DebugEffect.Color = element.Collider.IsActive ? Color.Green : Color.Red;
+                    Simulation.DebugEffect.UseUv = shape.Type != ColliderShapeTypes.ConvexHull;
 
-                    physicsSystem.PhysicsEngine.DebugEffect.Apply();
+                    Simulation.DebugEffect.Apply();
 
                     shape.DebugPrimitive.Draw();
                 }
             }
 
-            physicsSystem.PhysicsEngine.DebugGraphicsDevice.SetRasterizerState(rasterizers.CullBack);
+            Simulation.DebugGraphicsDevice.SetRasterizerState(rasterizers.CullBack);
         }
+        */
 
-        public override void Update(GameTime time)
+        internal void UpdateCharacters()
         {
-            if (!physicsSystem.PhysicsEngine.Initialized) return;
-
-            //Simulation processing is from here
-            physicsSystem.PhysicsEngine.Update((float)time.Elapsed.TotalSeconds);
-
             //characters need manual updating
-            foreach (var element in characters.Where(element => element.Collider.Enabled))
+            foreach (var element in characters.Where(x => x.Collider.Enabled))
             {
                 element.UpdateTransformationComponent(element.Collider.PhysicsWorldTransform);
             }
         }
 
-        //public override void Draw(GameTime time)
-        //{
-        //    if (!mPhysicsSystem.PhysicsEngine.Initialized) return;
+        internal void UpdateBones()
+        {
+            foreach (var element in boneElements.Where(x => x.Collider.Enabled))
+            {
+                var model = element.Data.ModelComponent;
 
-        //    //process all enabled elements
-        //    foreach (var e in mElementsToUpdateDraw)
-        //    {
-        //        var collider = e.Collider;
+                //read from ModelViewHierarchy
+                element.BoneWorldMatrix = model.ModelViewHierarchy.NodeTransformations[element.BoneIndex].WorldMatrix;
 
-        //        var mesh = e.Data.ModelComponent;
-        //        if (mesh == null) continue;
-
-        //        var nodeTransform = mesh.ModelViewHierarchy.NodeTransformations[e.BoneIndex];
-
-        //        Vector3 translation;
-        //        Vector3 scale;
-        //        Quaternion rotation;
-        //        nodeTransform.WorldMatrix.Decompose(out scale, out rotation, out translation); //derive rot and translation, scale is ignored for now
-        //        if (collider.UpdateTransformation(ref rotation, ref translation))
-        //        {
-        //            //true, Phys is the authority so we need to update the transformation
-        //            TransformationComponent.CreateMatrixTRS(ref translation, ref rotation, ref scale, out nodeTransform.WorldMatrix);
-        //            if (nodeTransform.ParentIndex != -1) //assuming -1 is root node
-        //            {
-        //                var parentWorld = mesh.ModelViewHierarchy.NodeTransformations[nodeTransform.ParentIndex];
-        //                var inverseParent = parentWorld.WorldMatrix;
-        //                inverseParent.Invert();
-        //                nodeTransform.LocalMatrix = Matrix.Multiply(nodeTransform.WorldMatrix, inverseParent);
-        //            }
-        //            else
-        //            {
-        //                nodeTransform.LocalMatrix = nodeTransform.WorldMatrix;
-        //            }
-        //        }
-
-        //        e.BoneWorldMatrix = Matrix.AffineTransformation(1.0f, rotation, translation);
-
-        //        //update TRS
-        //        nodeTransform.LocalMatrix.Decompose(out nodeTransform.Transform.Scaling, out nodeTransform.Transform.Rotation, out nodeTransform.Transform.Translation);
-
-        //        mesh.ModelViewHierarchy.NodeTransformations[e.BoneIndex] = nodeTransform; //its a struct so we need to copy back
-        //    }
-        //}
+                //write to ModelViewHierarchy
+                if (element.RigidBody != null && element.RigidBody.Type == RigidBodyTypes.Dynamic)
+                {
+                    model.ModelViewHierarchy.NodeTransformations[element.BoneIndex].WorldMatrix = element.BoneWorldMatrixOut;
+                }
+            }
+        }
     }
 }

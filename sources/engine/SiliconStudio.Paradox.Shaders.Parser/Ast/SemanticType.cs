@@ -4,7 +4,7 @@ using SiliconStudio.Shaders.Ast;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Ast
 {
-    public class SemanticType : TypeBase, IDeclaration, IScopeContainer
+    public class SemanticType : TypeBase, IDeclaration, IScopeContainer, IGenericStringArgument
     {
         #region Constructors and Destructors
         /// <summary>

@@ -31,8 +31,6 @@ namespace SiliconStudio.Quantum.References
                 elementType = enumerableType.GetInterface(typeof(IEnumerable<>)).GetGenericArguments()[0];
             else
                 elementType = typeof(object);
-
-            Refresh(enumerable);
         }
 
         /// <inheritdoc/>
@@ -88,19 +86,6 @@ namespace SiliconStudio.Quantum.References
             {
                 indices.Add(reference.Index);
             }
-        }
-
-        /// <inheritdoc/>
-        public bool UpdateTarget(ModelContainer modelContainer)
-        {
-            bool result = false;
-            foreach (var reference in references)
-            {
-                if (reference.UpdateTarget(modelContainer))
-                    result = true;
-            }
-
-            return result;
         }
 
         /// <inheritdoc/>

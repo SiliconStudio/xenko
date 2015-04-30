@@ -22,13 +22,12 @@ using namespace SiliconStudio::Core::Serialization;
 using namespace SiliconStudio::Core::Serialization::Assets;
 using namespace SiliconStudio::Core::Serialization::Contents;
 using namespace SiliconStudio::Paradox::Assets::Materials;
-using namespace SiliconStudio::Paradox::Assets::Materials::Nodes;
+using namespace SiliconStudio::Paradox::Rendering;
+using namespace SiliconStudio::Paradox::Rendering::Materials;
+using namespace SiliconStudio::Paradox::Rendering::Materials::ComputeColors;
 using namespace SiliconStudio::Paradox::AssimpNet;
-using namespace SiliconStudio::Paradox::DataModel;
+using namespace SiliconStudio::Paradox::Animations;
 using namespace SiliconStudio::Paradox::Engine;
-using namespace SiliconStudio::Paradox::EntityModel;
-using namespace SiliconStudio::Paradox::Effects;
-using namespace SiliconStudio::Paradox::Effects::Data;
 using namespace SiliconStudio::Paradox::Extensions;
 using namespace SiliconStudio::Paradox::Graphics;
 using namespace SiliconStudio::Paradox::Graphics::Data;
@@ -39,16 +38,24 @@ using namespace SiliconStudio::Paradox::Importer::Common;
 
 namespace SiliconStudio { namespace Paradox { namespace Importer { namespace AssimpNET {
 
+public ref class MaterialInstantiation
+{
+public:
+	List<String^>^ Parameters;
+	MaterialAsset^ Material;
+	String^ MaterialName;
+};
+
 public ref class MaterialInstances
 {
 public:
 	MaterialInstances()
 	{
-		Instances = gcnew List<MaterialInstanciation^>();
+		Instances = gcnew List<MaterialInstantiation^>();
 	}
 
 	aiMaterial* SourceMaterial;
-	List<MaterialInstanciation^>^ Instances;
+	List<MaterialInstantiation^>^ Instances;
 	String^ MaterialsName;
 };
 
@@ -62,9 +69,10 @@ public:
 		TotalClusterCount = 0;
 	}
 
-	MeshDrawData^ Draw;
+	MeshDraw^ Draw;
 	List<MeshBoneDefinition>^ Bones;
 	String^ Name;
+	int MaterialIndex;
 	bool HasSkinningPosition;
 	bool HasSkinningNormal;
 	int TotalClusterCount;
@@ -74,7 +82,6 @@ public ref class MeshConverter
 {
 public:
 	property Logger^ Logger;
-	property Vector3 ViewDirectionForTransparentZSort;
 	property bool AllowUnsignedBlendIndices;
 
 private:
@@ -86,15 +93,15 @@ private:
 	String^ vfsOutputFilename;
 	String^ vfsInputPath;
 
-	ModelData^ modelData;
+	Model^ modelData;
 	List<ModelNodeDefinition> nodes;
 	Dictionary<IntPtr, int> nodeMapping;
 	Dictionary<String^, int>^ textureNameCount;
 
-	List<MeshData^>^ effectMeshes;	// array of EffectMeshes built from the aiMeshes (same order)
-	Dictionary<String^, List<EntityData^ >^ >^ nodeNameToNodeData; // access to the built nodeData via their String ID (may not be unique)
-	Dictionary<IntPtr, EntityData^>^ nodePtrToNodeData; // access to the built nodeData via their corresponding aiNode
-	Dictionary<int, List<EntityData^>^ >^ meshIndexToReferingNodes; // access all the nodes that reference a Mesh Index
+	List<Mesh^>^ effectMeshes;	// array of EffectMeshes built from the aiMeshes (same order)
+	Dictionary<String^, List<Entity^ >^ >^ nodeNameToNodeData; // access to the built nodeData via their String ID (may not be unique)
+	Dictionary<IntPtr, Entity^>^ nodePtrToNodeData; // access to the built nodeData via their corresponding aiNode
+	Dictionary<int, List<Entity^>^ >^ meshIndexToReferingNodes; // access all the nodes that reference a Mesh Index
 
 public:
 	MeshConverter(Core::Diagnostics::Logger^ logger)
@@ -148,10 +155,10 @@ private:
 	// Reset all data related to one specific file conversion
 	void ResetConvertionData()
 	{
-		effectMeshes = gcnew List<MeshData^>();
-		nodeNameToNodeData = gcnew Dictionary<String^, List<EntityData^ >^ >();
-		nodePtrToNodeData = gcnew Dictionary<IntPtr, EntityData^>();
-		meshIndexToReferingNodes = gcnew Dictionary<int, List<EntityData^>^ >();
+		effectMeshes = gcnew List<Mesh^>();
+		nodeNameToNodeData = gcnew Dictionary<String^, List<Entity^ >^ >();
+		nodePtrToNodeData = gcnew Dictionary<IntPtr, Entity^>();
+		meshIndexToReferingNodes = gcnew Dictionary<int, List<Entity^>^ >();
 		textureNameCount = gcnew Dictionary<String^, int>();
 	}
 	
@@ -430,28 +437,22 @@ private:
 		}
 
 		// Build the mesh data
-		auto vertexBufferBinding = gcnew VertexBufferBindingData(gcnew BufferData(BufferFlags::VertexBuffer, vertexBuffer), gcnew VertexDeclaration(vertexElements->ToArray()), mesh->mNumVertices, 0, 0);
-		auto indexBufferBinding = gcnew IndexBufferBindingData(gcnew BufferData(BufferFlags::IndexBuffer, indexBuffer), is32BitIndex, nbIndices, 0);
+		auto vertexBufferBinding = VertexBufferBinding(GraphicsSerializerExtensions::ToSerializableVersion(gcnew BufferData(BufferFlags::VertexBuffer, vertexBuffer)), gcnew VertexDeclaration(vertexElements->ToArray()), mesh->mNumVertices, 0, 0);
+		auto indexBufferBinding = gcnew IndexBufferBinding(GraphicsSerializerExtensions::ToSerializableVersion(gcnew BufferData(BufferFlags::IndexBuffer, indexBuffer)), is32BitIndex, nbIndices, 0);
 
-		auto drawData = gcnew MeshDrawData();
-		auto vbb = gcnew List<VertexBufferBindingData^>();
+		auto drawData = gcnew MeshDraw();
+		auto vbb = gcnew List<VertexBufferBinding>();
 		vbb->Add(vertexBufferBinding);
 		drawData->VertexBuffers = vbb->ToArray();
 		drawData->IndexBuffer = indexBufferBinding;
 		drawData->PrimitiveType = PrimitiveType::TriangleList;
 		drawData->DrawCount = nbIndices;
 
-		bool isTransparent = IsTransparent(scene->mMaterials[mesh->mMaterialIndex]);
-		bool sortTransparentMeshes = true;	// TODO transform into importer parameter
-		if (isTransparent && sortTransparentMeshes)
-		{
-			PolySortExtensions::SortMeshPolygons(drawData, ViewDirectionForTransparentZSort);
-		}
-
 		auto meshInfo = gcnew MeshInfo();
 		meshInfo->Draw = drawData;
 		meshInfo->Name = gcnew String(meshNames[mesh].c_str());
 		meshInfo->Bones = bones;
+		meshInfo->MaterialIndex = mesh->mMaterialIndex;
 		meshInfo->HasSkinningPosition = hasSkinningPosition;
 		meshInfo->HasSkinningNormal = hasSkinningNormal;
 		meshInfo->TotalClusterCount = totalClusterCount;
@@ -505,7 +506,7 @@ private:
 	// Register all the nodes in dictionnaries
 	void RegisterNodes_old(aiNode* fromNode)
 	{
-		auto curNode = gcnew EntityData();
+		auto curNode = gcnew Entity();
 
 		// the name
 		curNode->Name = aiStringToString(fromNode->mName);
@@ -516,7 +517,7 @@ private:
 
 		// add the current node to the hash tables in order to be able to find it easily when processing attributes 
 		if(!nodeNameToNodeData->ContainsKey(curNode->Name))
-			nodeNameToNodeData->Add(curNode->Name, gcnew List<EntityData^>());
+			nodeNameToNodeData->Add(curNode->Name, gcnew List<Entity^>());
 		nodeNameToNodeData[curNode->Name]->Add(curNode);
 		nodePtrToNodeData->Add((IntPtr)fromNode, curNode); 
 
@@ -525,91 +526,9 @@ private:
 		{
 			int index = fromNode->mMeshes[m];
 			if(!meshIndexToReferingNodes->ContainsKey(index))
-				meshIndexToReferingNodes->Add(index, gcnew List<EntityData^>());
+				meshIndexToReferingNodes->Add(index, gcnew List<Entity^>());
 			meshIndexToReferingNodes[index]->Add(curNode);
 		}
-	}
-
-	void ProcessCamera(const aiCamera* assimpCam)
-	{
-		// In Assimp the cameras are part of the node hierarchy,
-		// but unfortunatelly the camera property structures have no direct reference to their corresponding hierarchy node.
-		// This correspondance can only be found by evaluating the correspondance between the camera node and property names.
-
-		// Find the camera's name of the current camera property
-		auto camName = aiStringToString(assimpCam->mName);
-		// Find its corresponding nodes in the hierarchy
-		if(!(nodeNameToNodeData->ContainsKey(camName)))
-		{
-			Logger->Error(	"The node '{0}' is missing in the node hierarchy. Impossible to properly locate the camera.", 
-							gcnew ArgumentException("Camera node missing in the node hierarchy"), camName,
-							CallerInfo::Get(__FILEW__, __FUNCTIONW__, __LINE__));
-			return;
-		}
-		auto camNodes = nodeNameToNodeData[camName];
-
-		// Build the camera attribute data
-		auto camData = gcnew CameraComponentData();
-		camData->NearPlane = assimpCam->mClipPlaneNear;
-		camData->FarPlane = assimpCam->mClipPlaneFar;
-		camData->AspectRatio = assimpCam->mAspect;
-		camData->VerticalFieldOfView = assimpCam->mHorizontalFOV / assimpCam->mAspect;
-		auto camTargetNodeName = camName + ".Target";
-		if(nodeNameToNodeData->ContainsKey(camTargetNodeName))
-		{
-			auto camTargetNodes = nodeNameToNodeData[camTargetNodeName];
-			if(camTargetNodes->Count > 1)
-			{
-				Logger->Error(	"The camera target '{0}' has several corresponding nodes in the hierarchy. First correspondance will be used.", 
-								gcnew ArgumentException("Several camera's node correspondance found"), camTargetNodeName,
-								CallerInfo::Get(__FILEW__, __FUNCTIONW__, __LINE__));
-			}
-				Logger->Error(	"Camera targets are not implemented in current version.", 
-								gcnew NotImplementedException("Camera targets not implemented"), camTargetNodeName,
-								CallerInfo::Get(__FILEW__, __FUNCTIONW__, __LINE__));
-			//camData->Target = camTargetNodes[0];
-		}
-
-		// Attach the camera attribute to the Camera nodes
-		for each (EntityData^ camNode in camNodes)
-			camNode->Components->Add(CameraComponent::Key, camData);
-	}
-
-	void ProcessLight(const aiLight* assimpLight)
-	{
-		// In Assimp the lights are part of the node hierarchy,
-		// but unfortunatelly the light property structures have no direct reference to their corresponding hierarchy node.
-		// This correspondance can only be found by evaluating the correspondance between the light node and property names.
-
-		// Find the light's name of the current light property
-		auto lightName = aiStringToString(assimpLight->mName);
-		// Find its corresponding nodes in the hierarchy
-		if(!(nodeNameToNodeData->ContainsKey(lightName)))
-		{
-			Logger->Error(	"The node '{0}' is missing in the node hierarchy. Impossible to properly locate the light.", 
-							gcnew ArgumentException("Light node missing in the node hierarchy"), lightName,
-							CallerInfo::Get(__FILEW__, __FUNCTIONW__, __LINE__));
-			return;
-		}
-		auto lightNodes = nodeNameToNodeData[lightName];
-
-		// Build the camera attribute data
-		auto lightData = gcnew LightComponentData();
-		lightData->LightDirection = Vector3(assimpLight->mDirection.x, assimpLight->mDirection.y, assimpLight->mDirection.z);
-		lightData->Type = aiLightTypeToPdxLightType(assimpLight->mType, lightName, Logger);
-
-		// --- Temporary --- TODO expand LightData members and fill them properly 
-		lightData->Color = aiColor3ToColor3(assimpLight->mColorDiffuse);
-		lightData->Deferred = lightData->Type == LightType::Point;
-		lightData->Intensity = 1.f;
-		lightData->DecayStart = 1.f;
-		// --- End Temporary ---
-
-		lightData->Layers = RenderLayers::RenderLayerAll;
-
-		// Attach the camera attribute to the Light nodes
-		for each (EntityData^ lightNode in lightNodes)
-			lightNode->Components->Add(LightComponent::Key, lightData);
 	}
 
 	void ProcessAnimationCurveVector(AnimationClip^ animationClip, const aiVectorKey* keys, unsigned int nbKeys, String^ partialTargetName, double ticksPerSec)
@@ -690,11 +609,11 @@ private:
 		auto nodeName = aiStringToString(nodeAnim->mNodeName);
 		
 		// The scales
-		ProcessAnimationCurveVector(animationClip, nodeAnim->mScalingKeys, nodeAnim->mNumScalingKeys, String::Format("Transformation.Scaling[{0}]", nodeName), ticksPerSec);
+		ProcessAnimationCurveVector(animationClip, nodeAnim->mScalingKeys, nodeAnim->mNumScalingKeys, String::Format("Transform.Scale[{0}]", nodeName), ticksPerSec);
 		// The rotation
-		ProcessAnimationCurveQuaternion(animationClip, nodeAnim->mRotationKeys, nodeAnim->mNumRotationKeys, String::Format("Transformation.Rotation[{0}]", nodeName), ticksPerSec);
+		ProcessAnimationCurveQuaternion(animationClip, nodeAnim->mRotationKeys, nodeAnim->mNumRotationKeys, String::Format("Transform.Rotation[{0}]", nodeName), ticksPerSec);
 		// The translation
-		ProcessAnimationCurveVector(animationClip, nodeAnim->mPositionKeys, nodeAnim->mNumPositionKeys, String::Format("Transformation.Translation[{0}]", nodeName), ticksPerSec);
+		ProcessAnimationCurveVector(animationClip, nodeAnim->mPositionKeys, nodeAnim->mNumPositionKeys, String::Format("Transform.Position[{0}]", nodeName), ticksPerSec);
 	}
 
 	AnimationClip^ ProcessAnimation(const aiScene* scene)
@@ -744,11 +663,13 @@ private:
 		return animationClip;
 	}
 
-	MaterialReferenceNode^ GetTextureReferenceNode(String^ vfsOutputPath, String^ sourceTextureFile, int textureUVSetIndex, Vector2 textureUVscaling, bool wrapTextureU, bool wrapTextureV, MaterialDescription^ finalMaterial, SiliconStudio::Core::Diagnostics::Logger^ logger)
+	ComputeTextureColor^ GetTextureReferenceNode(String^ vfsOutputPath, String^ sourceTextureFile, int textureUVSetIndex, Vector2 textureUVscaling, bool wrapTextureU, bool wrapTextureV, MaterialAsset^ finalMaterial, SiliconStudio::Core::Diagnostics::Logger^ logger)
 	{
 		// TODO: compare with FBX importer - see if there could be some conflict between texture names
 		auto textureValue = TextureLayerGenerator::GenerateMaterialTextureNode(vfsOutputPath, sourceTextureFile, textureUVSetIndex, textureUVscaling, wrapTextureU, wrapTextureV, Logger);
-		auto referenceName = textureValue->TextureName;
+
+		auto attachedReference = AttachedReferenceManager::GetAttachedReference(textureValue);
+		auto referenceName = attachedReference->Url;
 
 		// find a new and correctName
 		if (!textureNameCount->ContainsKey(referenceName))
@@ -760,13 +681,10 @@ private:
 			referenceName = String::Concat(referenceName, "_", count);
 		}
 
-		auto materialReference = gcnew MaterialReferenceNode(referenceName);
-		finalMaterial->AddNode(referenceName, textureValue);
-
-		return materialReference;
+		return textureValue;
 	}
 
-	MaterialNodeBase^ GenerateOneTextureTypeLayers(aiMaterial* pMat, aiTextureType textureType, int& textureCount, SiliconStudio::Paradox::Assets::Materials::MaterialDescription^ finalMaterial)
+	IComputeColor^ GenerateOneTextureTypeLayers(aiMaterial* pMat, aiTextureType textureType, int& textureCount, SiliconStudio::Paradox::Assets::Materials::MaterialAsset^ finalMaterial)
 	{
 		AssimpNet::Material::Stack^ stack = NetTranslation::Materials::convertAssimpStackCppToCs(pMat, textureType);
 		int set;
@@ -775,11 +693,11 @@ private:
 
 		sets.push(0);
 		auto nbTextures = pMat->GetTextureCount(textureType);
-		MaterialNodeBase^ curComposition = nullptr,^ newCompositionFather = nullptr;
-		MaterialNodeBase^ curCompositionFather = nullptr;
+		IComputeColor^ curComposition = nullptr, ^ newCompositionFather = nullptr;
+		IComputeColor^ curCompositionFather = nullptr;
 
 		bool isRootElement = true;
-		MaterialNodeBase^ rootMaterial = nullptr;
+		IComputeColor^ rootMaterial = nullptr;
 
 		while (!stack->IsEmpty)
 		{
@@ -790,7 +708,7 @@ private:
 				if (compositionFathers->Count == 0)
 					Logger->Error(String::Format("Texture Stack Invalid : Operand without Operation."));
 
-				curCompositionFather = (MaterialNodeBase^)compositionFathers->Pop();
+				curCompositionFather = (IComputeColor^)compositionFathers->Pop();
 			}
 
 			set = sets.top();
@@ -803,20 +721,20 @@ private:
 			{
 				auto realTop = (AssimpNet::Material::StackOperation^) top;
 				AssimpNet::Material::Operation op = realTop->operation;
-				auto binNode = gcnew MaterialBinaryNode(nullptr, nullptr, MaterialBinaryOperand::Add);
+				auto binNode = gcnew ComputeBinaryColor(nullptr, nullptr, BinaryOperator::Add);
 
 				switch (op)
 				{
 					case AssimpNet::Material::Operation::Add3ds:
 					case AssimpNet::Material::Operation::AddMaya:
-						binNode->Operand = MaterialBinaryOperand::Add; //MaterialBinaryOperand::Add3ds;
+						binNode->Operator = BinaryOperator::Add; //BinaryOperator::Add3ds;
 						break;
 					case AssimpNet::Material::Operation::Multiply3ds:
 					case AssimpNet::Material::Operation::MultiplyMaya:
-						binNode->Operand = MaterialBinaryOperand::Multiply;
+						binNode->Operator = BinaryOperator::Multiply;
 						break;
 					default:
-						binNode->Operand = MaterialBinaryOperand::Add;
+						binNode->Operator = BinaryOperator::Add;
 						break;
 				}
 
@@ -826,7 +744,7 @@ private:
 			{
 				auto realTop = (AssimpNet::Material::StackColor^)top;
 				Color3 col = realTop->color;
-				curComposition = gcnew MaterialColorNode(Color4(col.R, col.G, col.B, alpha));
+				curComposition = gcnew ComputeColor(Color4(col.R, col.G, col.B, alpha));
 			}
 			else if (type == AssimpNet::Material::StackType::Texture)
 			{
@@ -846,13 +764,13 @@ private:
 					strengthAlpha *= alpha;
 				
 				
-				auto factorComposition = gcnew MaterialFloat4Node(Vector4(strength, strength, strength, strengthAlpha));
-				curComposition = gcnew MaterialBinaryNode(curComposition, factorComposition, MaterialBinaryOperand::Multiply);
+				auto factorComposition = gcnew ComputeFloat4(Vector4(strength, strength, strength, strengthAlpha));
+				curComposition = gcnew ComputeBinaryColor(curComposition, factorComposition, BinaryOperator::Multiply);
 			}
 			else if (alpha != 1.f && type != AssimpNet::Material::StackType::Color)
 			{
-				auto factorComposition = gcnew MaterialFloat4Node(Vector4(1.0f, 1.0f, 1.0f, alpha));
-				curComposition = gcnew MaterialBinaryNode(curComposition, factorComposition, MaterialBinaryOperand::Multiply);
+				auto factorComposition = gcnew ComputeFloat4(Vector4(1.0f, 1.0f, 1.0f, alpha));
+				curComposition = gcnew ComputeBinaryColor(curComposition, factorComposition, BinaryOperator::Multiply);
 			}
 
 			if (isRootElement)
@@ -865,13 +783,13 @@ private:
 			{
 				if (set == 0)
 				{
-					((MaterialBinaryNode^)curCompositionFather)->LeftChild = curComposition;
+					((ComputeBinaryColor^)curCompositionFather)->LeftChild = curComposition;
 					compositionFathers->Push(curCompositionFather);
 					sets.push(1);
 				}
 				else if (set == 1)
 				{
-					((MaterialBinaryNode^)curCompositionFather)->RightChild = curComposition;
+					((ComputeBinaryColor^)curCompositionFather)->RightChild = curComposition;
 				}
 				else
 				{
@@ -889,119 +807,105 @@ private:
 		return rootMaterial;
 	}
 
-	void BuildLayeredSurface(aiMaterial* pMat, bool hasBaseColor, bool hasBaseValue, Color4 baseColor, float baseValue, aiTextureType textureType, SiliconStudio::Paradox::Assets::Materials::MaterialDescription^ finalMaterial)
+	void BuildLayeredSurface(aiMaterial* pMat, bool hasBaseColor, bool hasBaseValue, Color4 baseColor, float baseValue, aiTextureType textureType, SiliconStudio::Paradox::Assets::Materials::MaterialAsset^ finalMaterial)
 	{
 		auto nbTextures = pMat->GetTextureCount(textureType);
 		
-		if(nbTextures == 0)
+		IComputeColor^ computeColorNode;
+		int textureCount = 0;
+		if (nbTextures == 0)
 		{
 			if (hasBaseColor)
 			{
-				auto colorNode = gcnew MaterialColorNode(baseColor);
-				colorNode->AutoAssignKey = false;
-				colorNode->IsReducible = false;
-				if (textureType == aiTextureType_DIFFUSE)
-				{
-					colorNode->Key = MaterialKeys::DiffuseColorValue;
-					finalMaterial->AddColorNode(MaterialParameters::AlbedoDiffuse, "diffuse", colorNode);
-				}
-				else if (textureType == aiTextureType_SPECULAR)
-				{
-					colorNode->Key = MaterialKeys::SpecularColorValue;
-					finalMaterial->AddColorNode(MaterialParameters::AlbedoSpecular, "specular", colorNode);
-				}
-				else if (textureType == aiTextureType_EMISSIVE)
-				{
-					colorNode->Key = MaterialKeys::EmissiveColorValue;
-					finalMaterial->AddColorNode(MaterialParameters::EmissiveMap, "emissive", colorNode);
-				}
-				else if (textureType == aiTextureType_AMBIENT)
-				{
-					colorNode->Key = MaterialKeys::AmbientColorValue;
-					finalMaterial->AddColorNode(MaterialParameters::AmbientMap, "ambient", colorNode);
-				}
-				else if (textureType == aiTextureType_REFLECTION)
-				{
-					colorNode->Key = MaterialKeys::ReflectionColorValue;
-					finalMaterial->AddColorNode(MaterialParameters::ReflectionMap, "reflectionMap", colorNode);
-				}
+				computeColorNode = gcnew ComputeColor(baseColor);
 			}
-			else if (hasBaseValue)
-			{
-				auto floatNode = gcnew MaterialFloatNode(baseValue);
-				floatNode->AutoAssignKey = false;
-				floatNode->IsReducible = false;
-				if (textureType == aiTextureType_OPACITY)
-				{
-					floatNode->Key = MaterialKeys::TransparencyValue;
-					finalMaterial->AddColorNode(MaterialParameters::TransparencyMap, "transparencyMap", floatNode);
-				}
-				else if (textureType == aiTextureType_SHININESS)
-				{
-					floatNode->Key = MaterialKeys::SpecularPower;
-					finalMaterial->AddColorNode(MaterialParameters::SpecularPowerMap, "specularPower", floatNode);
-				}
-			}
+			//else if (hasBaseValue)
+			//{
+			//	computeColorNode = gcnew MaterialFloatComputeNode(baseValue);
+			//}
 		}
 		else
 		{
-			int textureCount = 0;
-			auto albedoNode = GenerateOneTextureTypeLayers(pMat, textureType, textureCount, finalMaterial);
-			if (albedoNode != nullptr)
+			computeColorNode = GenerateOneTextureTypeLayers(pMat, textureType, textureCount, finalMaterial);
+		}
+
+		if (computeColorNode == nullptr)
+		{
+			return;
+		}
+		
+		if (textureType == aiTextureType_DIFFUSE)
+		{
+			if (pMat->GetTextureCount(aiTextureType_LIGHTMAP) > 0)
 			{
-				if (textureType == aiTextureType_DIFFUSE)
-				{
-					if (pMat->GetTextureCount(aiTextureType_LIGHTMAP) > 0)
-					{
-						auto lightMap = GenerateOneTextureTypeLayers(pMat, aiTextureType_LIGHTMAP, textureCount, finalMaterial);
-						if (lightMap != nullptr)
-							albedoNode = gcnew MaterialBinaryNode(albedoNode, lightMap, MaterialBinaryOperand::Add);
-					}
-					finalMaterial->AddColorNode(MaterialParameters::AlbedoDiffuse, "diffuse", albedoNode);
-				}
-				else if (textureType == aiTextureType_SPECULAR)
-				{
-					finalMaterial->AddColorNode(MaterialParameters::AlbedoSpecular, "specular", albedoNode);
-				}
-				else if (textureType == aiTextureType_NORMALS)
-				{
-					finalMaterial->AddColorNode(MaterialParameters::NormalMap, "normalMap", albedoNode);
-				}
-				else if (textureType == aiTextureType_DISPLACEMENT)
-				{
-					finalMaterial->AddColorNode(MaterialParameters::DisplacementMap, "displacementMap", albedoNode);
-				}
-				else if (textureType == aiTextureType_AMBIENT)
-				{
-					finalMaterial->AddColorNode(MaterialParameters::AmbientMap, "ambient", albedoNode);
-				}
-				else if (textureType == aiTextureType_OPACITY)
-				{
-					finalMaterial->AddColorNode(MaterialParameters::TransparencyMap, "transparencyMap", albedoNode);
-				}
-				else if (textureType == aiTextureType_SHININESS)
-				{
-					finalMaterial->AddColorNode(MaterialParameters::SpecularPowerMap, "specularPower", albedoNode);
-				}
-				else if (textureType == aiTextureType_EMISSIVE)
-				{
-					finalMaterial->AddColorNode(MaterialParameters::EmissiveMap, "emissive", albedoNode);
-				}
-				else if (textureType == aiTextureType_HEIGHT)
-				{
-					finalMaterial->AddColorNode(MaterialParameters::BumpMap, "bumpMap", albedoNode);
-				}
-				else if (textureType == aiTextureType_REFLECTION)
-				{
-					finalMaterial->AddColorNode(MaterialParameters::ReflectionMap, "reflectionMap", albedoNode);
-				}
+				auto lightMap = GenerateOneTextureTypeLayers(pMat, aiTextureType_LIGHTMAP, textureCount, finalMaterial);
+				if (lightMap != nullptr)
+					computeColorNode = gcnew ComputeBinaryColor(computeColorNode, lightMap, BinaryOperator::Add);
 			}
+
+			finalMaterial->Attributes->Diffuse = gcnew MaterialDiffuseMapFeature(computeColorNode);
+
+			// TODO TEMP: Set a default diffuse model
+			finalMaterial->Attributes->DiffuseModel = gcnew MaterialDiffuseLambertModelFeature();
+		}
+		else if (textureType == aiTextureType_SPECULAR)
+		{
+			auto specularFeature = gcnew MaterialSpecularMapFeature();
+			specularFeature->SpecularMap = computeColorNode;
+			finalMaterial->Attributes->Specular = specularFeature;
+
+			// TODO TEMP: Set a default specular model
+			auto specularModel = gcnew MaterialSpecularMicrofacetModelFeature();
+			specularModel->Fresnel = gcnew MaterialSpecularMicrofacetFresnelSchlick();
+			specularModel->Visibility = gcnew MaterialSpecularMicrofacetVisibilityImplicit();
+			specularModel->NormalDistribution = gcnew MaterialSpecularMicrofacetNormalDistributionBlinnPhong();
+			finalMaterial->Attributes->SpecularModel = specularModel;
+		}
+		else if (textureType == aiTextureType_EMISSIVE)
+		{
+			// TODO: Add support
+		}
+		else if (textureType == aiTextureType_AMBIENT)
+		{
+			// TODO: Add support
+		}
+		else if (textureType == aiTextureType_REFLECTION)
+		{
+			// TODO: Add support
+		}
+		if (textureType == aiTextureType_OPACITY)
+		{
+			// TODO: Add support
+		}
+		else if (textureType == aiTextureType_SHININESS)
+		{
+			// TODO: Add support
+		}
+		if (textureType == aiTextureType_SPECULAR)
+		{
+			// TODO: Add support
+		}
+		else if (textureType == aiTextureType_NORMALS)
+		{
+			finalMaterial->Attributes->Surface = gcnew MaterialNormalMapFeature(computeColorNode);
+		}
+		else if (textureType == aiTextureType_DISPLACEMENT)
+		{
+			// TODO: Add support
+		}
+		else if (textureType == aiTextureType_SHININESS)
+		{
+			// TODO: Add support
+		}
+		else if (textureType == aiTextureType_HEIGHT)
+		{
+			// TODO: Add support
 		}
 	}
 	
-	MaterialDescription^ ProcessMeshMaterial(aiMaterial* pMaterial)
+	MaterialAsset^ ProcessMeshMaterial(aiMaterial* pMaterial)
 	{
-		auto finalMaterial = gcnew MaterialDescription();
+		auto finalMaterial = gcnew MaterialAsset();
 
 		// Set material specular components
 		float specIntensity;
@@ -1009,52 +913,53 @@ private:
 		{
 			if (specIntensity > 0)
 			{
-				auto specularIntensityMap = gcnew MaterialFloatNode(specIntensity);
-				specularIntensityMap->Key = MaterialKeys::SpecularIntensity;
-				specularIntensityMap->AutoAssignKey = false;
-				specularIntensityMap->IsReducible = false;
-				finalMaterial->AddColorNode(MaterialParameters::SpecularIntensityMap, "specularIntensity", specularIntensityMap);
+				// TODO: Add Specular Intensity
+				//auto specularIntensityMap = gcnew MaterialFloatComputeColor(specIntensity);
+				//specularIntensityMap->Key = MaterialKeys::SpecularIntensity;
+				//specularIntensityMap->AutoAssignKey = false;
+				//specularIntensityMap->IsReducible = false;
+				//finalMaterial->AddColorNode(MaterialParameters::SpecularIntensityMap, "specularIntensity", specularIntensityMap);
 			}
 		}
 
-		// ---------------------------------------------------------------------------------
-        // Iterate on all custom Paradox Properties and add them to the mesh.
-        // Key must be in the format: Paradox_KeyName
-        // ---------------------------------------------------------------------------------
-		for(unsigned int i = 0; i<pMaterial->mNumProperties; ++i)
-		{
-			auto pProp = pMaterial->mProperties[i];
-			auto propertyName = aiStringToString(pProp->mKey);
-            if (propertyName->StartsWith("PX_")) 
-			{
-                int index = propertyName->IndexOf('_');
-                propertyName = propertyName->Substring(index);
-                propertyName = propertyName->Replace('_','.');
-                // TODO Paradox Change name 
-                propertyName = gcnew String("SiliconStudio.Paradox.Effects") + propertyName;
+		//// ---------------------------------------------------------------------------------
+  //      // Iterate on all custom Paradox Properties and add them to the mesh.
+  //      // Key must be in the format: Paradox_KeyName
+  //      // ---------------------------------------------------------------------------------
+		//for(unsigned int i = 0; i<pMaterial->mNumProperties; ++i)
+		//{
+		//	auto pProp = pMaterial->mProperties[i];
+		//	auto propertyName = aiStringToString(pProp->mKey);
+  //          if (propertyName->StartsWith("PX_")) 
+		//	{
+  //              int index = propertyName->IndexOf('_');
+  //              propertyName = propertyName->Substring(index);
+  //              propertyName = propertyName->Replace('_','.');
+  //              // TODO Paradox Change name 
+  //              propertyName = gcnew String("SiliconStudio.Paradox.Rendering") + propertyName;
 
-				switch (pProp->mDataLength)
-				{
-                    case sizeof(double):
-                        {
-							auto value = *((double*)pProp->mData);
-							ParameterKey<float>^ key = gcnew ParameterKey<float>(propertyName, 1);
-                            finalMaterial->SetParameter(key, (float)value);
-                        }
-                        break;
-                    case 3*sizeof(double):
-                        {
-                            auto value = (double*)pProp->mData;
-                            ParameterKey<Vector3>^ key = gcnew ParameterKey<Vector3>(propertyName, 1);
-                            finalMaterial->SetParameter(key, Vector3((float)value[0], (float)value[1], (float)value[2]));
-                        }
-                        break;
-                    default:
-                        Console::WriteLine("Warning, Type for property [{0}] is not supported", propertyName);
-                        break;
-                }
-            }
-		}
+		//		switch (pProp->mDataLength)
+		//		{
+  //                  case sizeof(double):
+  //                      {
+		//					auto value = *((double*)pProp->mData);
+//							ParameterKey<float>^ key = gcnew ParameterKey<float>(propertyName, 1);
+  //                          finalMaterial->SetParameter(key, (float)value);
+  //                      }
+  //                      break;
+  //                  case 3*sizeof(double):
+  //                      {
+  //                          auto value = (double*)pProp->mData;
+//                            ParameterKey<Vector3>^ key = gcnew ParameterKey<Vector3>(propertyName, 1);
+  //                          finalMaterial->SetParameter(key, Vector3((float)value[0], (float)value[1], (float)value[2]));
+  //                      }
+  //                      break;
+  //                  default:
+  //                      Console::WriteLine("Warning, Type for property [{0}] is not supported", propertyName);
+  //                      break;
+  //              }
+  //          }
+		//}
 
 		// Build the material Diffuse, Specular, NormalMap and DisplacementColor surfaces.
 		aiColor3D color;
@@ -1104,7 +1009,7 @@ private:
 		hasSpecPower = (AI_SUCCESS == pMaterial->Get(AI_MATKEY_SHININESS, specPower) && specPower > 0);
 		if(pMaterial->Get(AI_MATKEY_OPACITY, opacity) == AI_SUCCESS && opacity < 1.0)
 		{
-			finalMaterial->SetParameter(MaterialParameters::UseTransparent, true);
+			finalMaterial->Parameters->Set(MaterialKeys::HasTransparency, true);
 			hasOpacity = true;
 		}
 
@@ -1319,11 +1224,11 @@ private:
 		return textureNames;
 	}
 
-	Dictionary<String^, MaterialDescription^>^ ExtractMaterials(const aiScene *scene, std::map<aiMaterial*, std::string>& materialNames)
+	Dictionary<String^, MaterialAsset^>^ ExtractMaterials(const aiScene *scene, std::map<aiMaterial*, std::string>& materialNames)
 	{
 		GenerateMaterialNames(scene, materialNames);
 		
-		auto materials = gcnew Dictionary<String^, MaterialDescription^>();
+		auto materials = gcnew Dictionary<String^, MaterialAsset^>();
 		for (uint32_t i = 0; i < scene->mNumMaterials; i++)
 		{
 			std::map<std::string, int> dict;
@@ -1350,95 +1255,6 @@ private:
 		}
 
 		return nullptr;
-	}
-
-	List<CameraInfo^>^ ExtractCameras(const aiScene* scene, std::map<aiNode*, std::string>& nodeNames)
-	{
-		auto allCameras = gcnew List<CameraInfo^>();
-		for (uint32_t cameraIndex = 0; cameraIndex < scene->mNumCameras; ++cameraIndex)
-		{
-			auto assimpCam = scene->mCameras[cameraIndex];
-
-			// In Assimp the cameras are part of the node hierarchy,
-			// but unfortunatelly the camera property structures have no direct reference to their corresponding hierarchy node.
-			// This correspondance can only be found by evaluating the correspondance between the camera node and property names.
-			auto camName = std::string(assimpCam->mName.C_Str());
-			bool foundNode = false;
-			bool foundTargetNode = false;
-			for (std::map<aiNode*, std::string>::iterator iter = nodeNames.begin(); iter != nodeNames.end(); ++iter)
-			{
-				if (camName == iter->second)
-				{
-					foundNode = true;
-					break;
-				}
-			}
-			if (!foundNode)
-				continue; // TODO: log error/warning
-
-			auto cameraInfo = gcnew CameraInfo();
-			cameraInfo->NodeName = gcnew String(assimpCam->mName.C_Str());
-			cameraInfo->TargetNodeName = cameraInfo->NodeName + ".Target";
-
-			// Build the camera attribute data
-			auto camData = gcnew CameraComponentData();
-			camData->NearPlane = assimpCam->mClipPlaneNear;
-			camData->FarPlane = assimpCam->mClipPlaneFar;
-			camData->AspectRatio = assimpCam->mAspect;
-			camData->VerticalFieldOfView = assimpCam->mHorizontalFOV / assimpCam->mAspect;
-			// TODO: handle mPosition
-			
-			cameraInfo->Data = camData;
-			allCameras->Add(cameraInfo);
-		}
-		return allCameras;
-	}
-
-	List<LightInfo^>^ ExtractLights(const aiScene* scene, std::map<aiNode*, std::string>& nodeNames)
-	{
-		auto allLights = gcnew List<LightInfo^>();
-		for (uint32_t lightIndex = 0; lightIndex < scene->mNumLights; ++lightIndex)
-		{
-			auto assimpLight = scene->mLights[lightIndex];
-
-			// In Assimp the lights are part of the node hierarchy,
-			// but unfortunatelly the light property structures have no direct reference to their corresponding hierarchy node.
-			// This correspondance can only be found by evaluating the correspondance between the light node and property names.
-			auto lightName = std::string(assimpLight->mName.C_Str());
-			bool foundNode = false;
-			bool foundTargetNode = false;
-			for (std::map<aiNode*, std::string>::iterator iter = nodeNames.begin(); iter != nodeNames.end(); ++iter)
-			{
-				if (lightName == iter->second)
-				{
-					foundNode = true;
-					break;
-				}
-			}
-			if (!foundNode)
-				continue; // TODO: log error/warning
-
-			auto lightInfo = gcnew LightInfo();
-			lightInfo->NodeName = gcnew String(assimpLight->mName.C_Str()); // TODO: check that the node exists
-
-			// Build the light attribute data
-			auto lightData = gcnew LightComponentData();
-			lightData->LightDirection = Vector3(assimpLight->mDirection.x, assimpLight->mDirection.y, assimpLight->mDirection.z);
-			lightData->Type = aiLightTypeToPdxLightType(assimpLight->mType, lightInfo->NodeName, Logger);
-
-			// --- Temporary --- TODO expand LightData members and fill them properly 
-			lightData->Color = aiColor3ToColor3(assimpLight->mColorDiffuse);
-			lightData->Deferred = lightData->Type == LightType::Point;
-			lightData->Intensity = 1.f;
-			lightData->DecayStart = 1.f;
-			// --- End Temporary ---
-
-			lightData->Layers = RenderLayers::RenderLayerAll;
-
-			lightInfo->Data = lightData;
-			allLights->Add(lightInfo);
-		}
-		return allLights;
 	}
 
 	List<MeshParameters^>^ ExtractModel(const aiScene* scene, std::map<aiMesh*, std::string>& meshNames, std::map<aiMaterial*, std::string>& materialNames, std::map<aiNode*, std::string>& nodeNames)
@@ -1474,9 +1290,9 @@ private:
 		return animationList;
 	}
 	
-	ModelData^ ConvertAssimpScene(const aiScene *scene)
+	Model^ ConvertAssimpScene(const aiScene *scene)
 	{
-		modelData = gcnew ModelData();
+		modelData = gcnew Model();
 		modelData->Hierarchy = gcnew ModelViewHierarchyDefinition();
 
 		std::map<aiMesh*, std::string> meshNames;
@@ -1500,9 +1316,10 @@ private:
 
 				for (std::vector<int>::iterator nodeIndexPtr = meshIndexToNodeIndex[i]->begin(); nodeIndexPtr != meshIndexToNodeIndex[i]->end(); ++nodeIndexPtr)
 				{
-					auto nodeMeshData = gcnew MeshData();
+					auto nodeMeshData = gcnew Mesh();
 					nodeMeshData->Draw = meshInfo->Draw;
 					nodeMeshData->Name = meshInfo->Name;
+					nodeMeshData->MaterialIndex = meshInfo->MaterialIndex;
 					nodeMeshData->NodeIndex = *nodeIndexPtr;
 
 					if (meshInfo->Bones != nullptr)
@@ -1512,13 +1329,12 @@ private:
 					}
 					if (meshInfo->HasSkinningPosition || meshInfo->HasSkinningNormal || meshInfo->TotalClusterCount > 0)
 					{
-						nodeMeshData->Parameters = gcnew ParameterCollectionData();
 						if (meshInfo->HasSkinningPosition)
-							nodeMeshData->Parameters->Set(MaterialParameters::HasSkinningPosition, true);
+							nodeMeshData->Parameters->Set(MaterialKeys::HasSkinningPosition, true);
 						if (meshInfo->HasSkinningNormal)
-							nodeMeshData->Parameters->Set(MaterialParameters::HasSkinningNormal, true);
+							nodeMeshData->Parameters->Set(MaterialKeys::HasSkinningNormal, true);
 						if (meshInfo->TotalClusterCount > 0)
-							nodeMeshData->Parameters->Set(MaterialParameters::SkinningBones, meshInfo->TotalClusterCount);
+							nodeMeshData->Parameters->Set(MaterialKeys::SkinningBones, meshInfo->TotalClusterCount);
 					}
 					modelData->Meshes->Add(nodeMeshData);
 				}
@@ -1535,14 +1351,6 @@ private:
 		// embedded texture - only to log the warning for now
 		for (unsigned int i = 0; i < scene->mNumTextures; ++i)
             ExtractEmbededTexture(scene->mTextures[i]);
-
-		// cameras - left out
-		//for (unsigned int i = 0; i < scene->mNumCameras; ++i)
-		//	ProcessCamera(scene->mCameras[i]);
-		
-		// lights - left out
-		//for (unsigned int i = 0; i < scene->mNumLights; ++i)
-		//	ProcessLight(scene->mLights[i]);
 
 		return modelData;
 	}
@@ -1608,33 +1416,8 @@ public:
 			entityInfo->TextureDependencies = ExtractTextureDependencies(scene);
 			entityInfo->Materials = ExtractMaterials(scene, materialNames);
 			entityInfo->Models = ExtractModel(scene, meshNames, materialNames, nodeNames);
-			entityInfo->Lights = ExtractLights(scene, nodeNames);
-			entityInfo->Cameras = ExtractCameras(scene, nodeNames);
 			entityInfo->Nodes = ExtractNodeHierarchy(scene, nodeNames);
 			entityInfo->AnimationNodes = ExtractAnimations(scene, animationNames);
-			entityInfo->UpAxis = GetUpAxis(scene->mRootNode);
-
-			// patch lights count
-			int numPointLights = 0;
-			int numSpotLights = 0;
-			int numDirectionalLights = 0;
-			for (int i = 0; i < entityInfo->Lights->Count; ++i)
-			{
-				auto lightType = entityInfo->Lights[i]->Data->Type;
-				if (lightType == LightType::Point)
-					++numPointLights;
-				else if (lightType == LightType::Directional)
-					++numDirectionalLights;
-				else if (lightType == LightType::Spot)
-					++numSpotLights;
-			}
-
-			for (int i = 0; i < entityInfo->Models->Count; ++i)
-			{
-				entityInfo->Models[i]->Parameters->Add(LightingKeys::MaxPointLights, numPointLights);
-				entityInfo->Models[i]->Parameters->Add(LightingKeys::MaxDirectionalLights, numDirectionalLights);
-				entityInfo->Models[i]->Parameters->Add(LightingKeys::MaxSpotLights, numSpotLights);
-			}
 			
 			return entityInfo;
 		}
@@ -1644,7 +1427,7 @@ public:
 		}
 	}
 
-	ModelData^ Convert(String^ inputFilename, String^ outputFilename)
+	Model^ Convert(String^ inputFilename, String^ outputFilename)
 	{
 		// the importer is kept here since it owns the scene object.
 		Assimp::Importer importer;

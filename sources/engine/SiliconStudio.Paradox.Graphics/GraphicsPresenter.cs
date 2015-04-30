@@ -47,6 +47,8 @@ namespace SiliconStudio.Paradox.Graphics
             GraphicsDevice = device.RootDevice;
             Description = presentationParameters.Clone();
 
+            ProcessPresentationParameters();
+
             DefaultViewport = new Viewport(0, 0, Description.BackBufferWidth, Description.BackBufferHeight);
 
             // Creates a default DepthStencilBuffer.
@@ -158,6 +160,10 @@ namespace SiliconStudio.Paradox.Graphics
         /// Called when [recreated].
         /// </summary>
         public virtual void OnRecreated()
+        {
+        }
+
+        protected virtual void ProcessPresentationParameters()
         {
         }
 

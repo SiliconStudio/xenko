@@ -23,7 +23,7 @@ namespace SiliconStudio.Assets
     /// A package managing assets.
     /// </summary>
     [DataContract("Package")]
-    [AssetFileExtension(PackageFileExtension)]
+    [AssetDescription(PackageFileExtension)]
     [DebuggerDisplay("Id: {Id}, Name: {Meta.Name}, Version: {Meta.Version}, Assets [{Assets.Count}]")]
     public sealed class Package : Asset, IFileSynchronizable
     {
@@ -477,6 +477,9 @@ namespace SiliconStudio.Assets
                 }
 
                 Assets.IsDirty = false;
+
+                // Save properties like the Paradox version used
+                PackageSessionHelper.SaveProperties(this);
             }
             finally
             {
@@ -765,6 +768,12 @@ namespace SiliconStudio.Assets
                         if (assembly == null)
                         {
                             log.Error("Unable to load assembly reference [{0}]", assemblyPath);
+                        }
+
+                        if (assembly != null)
+                        {
+                            // Register assembly in the registry
+                            AssemblyRegistry.Register(assembly, AssemblyCommonCategories.Assets);
                         }
                     }
                     catch (Exception ex)

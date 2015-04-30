@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<DOCUMENT Type="Advanced Installer" CreateVersion="11.4" version="11.5" Modules="professional" RootPath="." Language="en" Id="{31B836A5-580B-4BE9-AF21-23C8E4375253}">
+<DOCUMENT Type="Advanced Installer" CreateVersion="11.4" version="11.6.3" Modules="professional" RootPath="." Language="en" Id="{31B836A5-580B-4BE9-AF21-23C8E4375253}">
   <COMPONENT cid="caphyon.advinst.msicomp.MsiPropsComponent">
     <ROW Property="AI_BITMAP_DISPLAY_MODE" Value="0"/>
     <ROW Property="AI_FINDEXE_TITLE" Value="Select the installation package for [|ProductName]" ValueLocId="AI.Property.FindExeTitle"/>
@@ -15,10 +15,10 @@
     <ROW Property="CTRLS" Value="2"/>
     <ROW Property="DialogBitmap" Value="dialog" MultiBuildValue="DefaultBuild:DialogBitmap.jpg" Type="1" MsiKey="DialogBitmap"/>
     <ROW Property="Manufacturer" Value="Silicon Studio Corp"/>
-    <ROW Property="ProductCode" Value="1033:{6BC88234-A372-47C6-A610-9ACD77BAB4CC} " Type="16"/>
+    <ROW Property="ProductCode" Value="1033:{22E7BF2A-6968-42F9-868D-17E2691A941F} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="Paradox"/>
-    <ROW Property="ProductVersion" Value="1.0.4" Type="32"/>
+    <ROW Property="ProductVersion" Value="1.0.5" Type="32"/>
     <ROW Property="RUNAPPLICATION" Value="1" Type="4"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND;AI_SETUPEXEPATH;SETUPEXEDIR"/>
     <ROW Property="UpgradeCode" Value="{3C879519-55B7-4E68-914F-4D568FFA3A41}"/>
@@ -60,7 +60,7 @@
     <ROW RemoveFile="_" Options="3"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
-    <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="0" Languages="en" InstallationType="4" CabsLocation="1" PackageType="1" FilesInsideExe="true" ExeIconPath="insticon.ico" ExtractionFolder="[AppDataFolder][|Manufacturer]\[|ProductName] [|ProductVersion]\install" ExtUI="true" UseLargeSchema="true" ExeName="ParadoxSetup"/>
+    <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="0" Languages="en" InstallationType="4" CabsLocation="1" PackageType="1" FilesInsideExe="true" ExeIconPath="insticon.ico" ExtractionFolder="[AppDataFolder][|Manufacturer]\[|ProductName] [|ProductVersion]\install" ExtUI="true" UseLargeSchema="true" ExeName="ParadoxSetup" MsiPackageType="AI_ALL"/>
     <ATTRIBUTE name="CurrentBuild" value="DefaultBuild"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.DictionaryComponent">
@@ -186,9 +186,11 @@
     <ROW Action="AI_RESTORE_LOCATION" Type="65" Source="aicustact.dll" Target="RestoreLocation"/>
     <ROW Action="AI_ResolveKnownFolders" Type="1" Source="aicustact.dll" Target="AI_ResolveKnownFolders"/>
     <ROW Action="AI_SETMIXINSTLOCATION" Type="1" Source="aicustact.dll" Target="MixedAllUsersInstallLocation"/>
+    <ROW Action="AI_SETPROGRAMFILES" Type="51" Source="AI_ProgramFiles" Target="[ProgramFilesFolder]"/>
+    <ROW Action="AI_SETPROGRAMFILES64" Type="51" Source="AI_ProgramFiles" Target="[ProgramFiles64Folder]"/>
     <ROW Action="AI_SHOW_LOG" Type="65" Source="aicustact.dll" Target="LaunchLogFile" WithoutSeq="true"/>
     <ROW Action="AI_STORE_LOCATION" Type="51" Source="ARPINSTALLLOCATION" Target="[APPDIR]"/>
-    <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[AI_UserProgramFiles][ProductName]"/>
+    <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[AI_ProgramFiles][Manufacturer]\[ProductName]"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
   </COMPONENT>
@@ -201,7 +203,7 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
     <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>
-    <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="749"/>
+    <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="747"/>
     <ROW Action="AI_STORE_LOCATION" Condition="(Not Installed) OR REINSTALL" Sequence="1501"/>
     <ROW Action="AI_PREPARE_UPGRADE" Condition="AI_UPGRADE=&quot;No&quot; AND (Not Installed)" Sequence="1399"/>
     <ROW Action="AI_ResolveKnownFolders" Sequence="51"/>
@@ -222,19 +224,23 @@
     <ROW Action="AI_ExtractFiles" Sequence="3998" Builds="DefaultBuild"/>
     <ROW Action="AI_DATA_SETTER" Sequence="3997"/>
     <ROW Action="AI_EstimateExtractFiles" Sequence="3999" Builds="DefaultBuild"/>
-    <ROW Action="AI_SETMIXINSTLOCATION" Sequence="748"/>
+    <ROW Action="AI_SETMIXINSTLOCATION" Sequence="746"/>
+    <ROW Action="AI_SETPROGRAMFILES64" Condition="VersionNT64" Sequence="748"/>
+    <ROW Action="AI_SETPROGRAMFILES" Condition="NOT VersionNT64" Sequence="749"/>
     <ROW Action="AI_AiRemoveFilesImmediate" Sequence="3499"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
     <ROW Action="ExecuteAction" Sequence="1295" SeqType="0" MsiKey="ExecuteAction"/>
-    <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="749"/>
+    <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="747"/>
     <ROW Action="AI_ResolveKnownFolders" Sequence="52"/>
     <ROW Action="AI_DpiContentScale" Sequence="51"/>
     <ROW Action="AI_BACKUP_AI_SETUPEXEPATH" Sequence="99"/>
     <ROW Action="AI_RESTORE_AI_SETUPEXEPATH" Condition="AI_SETUPEXEPATH_ORIGINAL" Sequence="102"/>
     <ROW Action="AI_AppSearchEx" Sequence="101"/>
     <ROW Action="AI_FinishActions" Condition="AI_INSTALL AND AiSkipExitDlg" Sequence="1296"/>
-    <ROW Action="AI_SETMIXINSTLOCATION" Sequence="748"/>
+    <ROW Action="AI_SETMIXINSTLOCATION" Sequence="746"/>
+    <ROW Action="AI_SETPROGRAMFILES64" Condition="VersionNT64" Sequence="748"/>
+    <ROW Action="AI_SETPROGRAMFILES" Condition="NOT VersionNT64" Sequence="749"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiLaunchConditionsComponent">
     <ROW Condition="( Version9X OR ( NOT VersionNT64 ) OR ( VersionNT64 AND ((VersionNT64 &lt;&gt; 502) OR (((VersionNT64 = 502) AND (ServicePackLevel &gt;= 1)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 502) OR (((VersionNT64 = 502) AND (ServicePackLevel &lt;&gt; 1)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 502) OR (((VersionNT64 = 502) AND (ServicePackLevel &lt;&gt; 2)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 502) OR ((VersionNT64 = 502) AND ((MsiNTProductType = 1) OR (ServicePackLevel &gt;= 1)))) AND ((VersionNT64 &lt;&gt; 502) OR ((VersionNT64 = 502) AND ((MsiNTProductType = 1) OR (ServicePackLevel &lt;&gt; 1)))) AND ((VersionNT64 &lt;&gt; 502) OR ((VersionNT64 = 502) AND ((MsiNTProductType = 1) OR (ServicePackLevel &lt;&gt; 2)))) ) )" Description="[ProductName] cannot be installed on the following Windows versions: [WindowsTypeNT64Display]" DescriptionLocId="AI.LaunchCondition.NoSpecificNT64" IsPredefined="true" Builds="DefaultBuild"/>
@@ -275,21 +281,17 @@
     <ROW UpgradeCode="[|UpgradeCode]" VersionMin="[|ProductVersion]" Attributes="2" ActionProperty="AI_NEWERPRODUCTFOUND"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.PreReqComponent">
-    <ROW PrereqKey="C67108D39D05435F9BE6B977F2CCED25" DisplayName="Visual C++ Redistributable for Visual Studio 2012 x86" VersionMin="11.0" SetupFileUrl="http://download.microsoft.com/download/1/6/B/16B06F60-3B20-4FF2-B699-5E9B7962F9AE/VSU_4/vcredist_x86.exe" Location="1" ExactSize="6554576" Operator="1" Options="m" MD5="7f52a19ecaf7db3c163dd164be3e592e" TargetName="Visual C++ Redistributable for Visual Studio 2012?vcredist_x86.exe"/>
-    <ROW PrereqKey="CA62D813A4E74FA2AAE86A7D7B7B1493" DisplayName="Visual C++ Redistributable for Visual Studio 2013 x64" VersionMin="12.0" SetupFileUrl="http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe" Location="1" ExactSize="7188536" WinNTVersions="Windows 9x/ME/NT/2000/XP/Vista/Windows 7/Windows 8 x86/Windows 8.1 x86" Operator="1" NoUiComLine="/q /norestart" Options="xm" MD5="c7187ac06dafd0628587f86742945601" TargetName="Visual C++ Redistributable for Visual Studio 2013?vcredist_x64.exe"/>
-    <ROW PrereqKey="CB585686_DAA3_4384_BDDF_08ABA631E9F3_" DisplayName="Visual C++ 2010 SP1 x86 (MFC Security Update)" VersionMin="10.0" SetupFileUrl="http://download.microsoft.com/download/1/6/5/165255E7-1014-4D0A-B094-B6A430A6BFFC/vcredist_x86.exe" Location="1" ExactSize="8990552" WinNTVersions="Windows 2000, Windows 2000 Service Pack 1, Windows 2000 Service Pack 2, Windows 2000 Service Pack 3, Windows 2000 Service Pack 4" Operator="1" NoUiComLine="/q /norestart" MD5="1801436936e64598bab5b87b37dc7f87" TargetName="Visual C++ 2010 SP1?vcredist_x86.exe"/>
-    <ROW PrereqKey="D564007E3BBE4F85950A09B470A7CA65" DisplayName="Visual C++ Redistributable for Visual Studio 2013 x86" VersionMin="12.0" SetupFileUrl="http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe" Location="1" ExactSize="6498200" WinNTVersions="Windows 2000, Windows 2000 Service Pack 1, Windows 2000 Service Pack 2, Windows 2000 Service Pack 3, Windows 2000 Service Pack 4" Operator="1" NoUiComLine="/q /norestart" Options="m" MD5="99e3d99d8ed70ac88f59e31757ed3d62" TargetName="Visual C++ Redistributable for Visual Studio 2013?vcredist_x86.exe"/>
-    <ROW PrereqKey="E275424811B28D95B40CAB85CC" DisplayName=".NET Framework 4.5.2" SetupFileUrl="http://download.microsoft.com/download/E/2/1/E21644B5-2DF2-47C2-91BD-63C560427900/NDP452-KB2901907-x86-x64-AllOS-ENU.exe" Location="1" ExactSize="69999448" WinNTVersions="Windows 2000, Windows 2000 Service Pack 1, Windows 2000 Service Pack 2, Windows 2000 Service Pack 3, Windows 2000 Service Pack 4, Windows XP x86, Windows XP x86 Service Pack 1, Windows XP x86 Service Pack 2, Windows XP x86 Service Pack 3, Windows Server 2003 x86, Windows Server 2003 x86 Service Pack 1, Windows Server 2003 x86 Service Pack 2" WinNT64Versions="Windows XP x64, Windows XP x64 Service Pack 1, Windows XP x64 Service Pack 2, Windows Server 2003 x64, Windows Server 2003 x64 Service Pack 1, Windows Server 2003 x64 Service Pack 2" Operator="1" Options="xm" MD5="ee01fc4110c73a8e5efc7cabda0f5ff7" TargetName=".NET Framework 4.5.2?NDP452-KB2901907-x86-x64-AllOS-ENU.exe"/>
+    <ROW PrereqKey="CA62D813A4E74FA2AAE86A7D7B7B1493" DisplayName="Visual C++ Redistributable for Visual Studio 2013 x64" VersionMin="12.0" SetupFileUrl="http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe" Location="1" ExactSize="0" WinNTVersions="Windows 9x/ME/NT/2000/XP/Vista/Windows 7/Windows 8 x86/Windows 8.1 x86" Operator="1" NoUiComLine="/q /norestart" Options="xm" TargetName="Visual C++ Redistributable for Visual Studio 2013?vcredist_x64.exe"/>
+    <ROW PrereqKey="D564007E3BBE4F85950A09B470A7CA65" DisplayName="Visual C++ Redistributable for Visual Studio 2013 x86" VersionMin="12.0" SetupFileUrl="http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe" Location="1" ExactSize="0" WinNTVersions="Windows 2000, Windows 2000 Service Pack 1, Windows 2000 Service Pack 2, Windows 2000 Service Pack 3, Windows 2000 Service Pack 4" Operator="1" NoUiComLine="/q /norestart" Options="m" TargetName="Visual C++ Redistributable for Visual Studio 2013?vcredist_x86.exe"/>
+    <ROW PrereqKey="E275424811B28D95B40CAB85CC" DisplayName=".NET Framework 4.5.2" SetupFileUrl="http://download.microsoft.com/download/E/2/1/E21644B5-2DF2-47C2-91BD-63C560427900/NDP452-KB2901907-x86-x64-AllOS-ENU.exe" Location="1" ExactSize="0" WinNTVersions="Windows 2000, Windows 2000 Service Pack 1, Windows 2000 Service Pack 2, Windows 2000 Service Pack 3, Windows 2000 Service Pack 4, Windows XP x86, Windows XP x86 Service Pack 1, Windows XP x86 Service Pack 2, Windows XP x86 Service Pack 3, Windows Server 2003 x86, Windows Server 2003 x86 Service Pack 1, Windows Server 2003 x86 Service Pack 2" WinNT64Versions="Windows XP x64, Windows XP x64 Service Pack 1, Windows XP x64 Service Pack 2, Windows Server 2003 x64, Windows Server 2003 x64 Service Pack 1, Windows Server 2003 x64 Service Pack 2" Operator="1" Options="xm" TargetName=".NET Framework 4.5.2?NDP452-KB2901907-x86-x64-AllOS-ENU.exe"/>
     <ROW PrereqKey="MicrosoftDirectXf" DisplayName="Microsoft® DirectX for Windows®" VersionMin="4.9.0.904" SetupFileUrl="DirectX11\DXSETUP.exe" Location="0" ExactSize="0" WinNTVersions="Windows 2000, Windows 2000 Service Pack 1, Windows 2000 Service Pack 2, Windows 2000 Service Pack 3, Windows 2000 Service Pack 4, Windows XP x86, Windows XP x86 Service Pack 1, Windows XP x86 Service Pack 2, Windows XP x86 Service Pack 3, Windows Server 2003 x86, Windows Server 2003 x86 Service Pack 1, Windows Server 2003 x86 Service Pack 2" WinNT64Versions="Windows XP x64, Windows XP x64 Service Pack 1, Windows XP x64 Service Pack 2, Windows Server 2003 x64, Windows Server 2003 x64 Service Pack 1, Windows Server 2003 x64 Service Pack 2" Operator="0" ComLine="/SILENT" BasicUiComLine="/SILENT" NoUiComLine="/SILENT" TargetName="DXSETUP.exe" AdditionalFiles="DSETUP.dll|dsetup32.dll|dxdllreg_x86.cab|dxupdate.cab|Jun2010_D3DCompiler_43_x64.cab|Jun2010_D3DCompiler_43_x86.cab|Jun2010_XAudio_x64.cab|Jun2010_XAudio_x86.cab|Feb2010_X3DAudio_x64.cab|Feb2010_X3DAudio_x86.cab|APR2007_xinput_x64.cab|APR2007_xinput_x86.cab"/>
     <ROW PrereqKey="MicrosoftPortableL" DisplayName="Microsoft Portable Library Multi-Targeting Pack Language Pack - enu" VersionMin="12.0.30501.00" SetupFileUrl="PortableLibrary\PortableLibrary_DTPLP.msi" Location="0" ExactSize="0" Operator="1" ComLine="EXTUI=1" Options="m" TargetName="PortableLibrary_DTPLP.msi" AdditionalFiles="portablelibrary_dtplp_sfx.cab"/>
     <ROW PrereqKey="MicrosoftPortableL_1" DisplayName="Microsoft Portable Library Multi-Targeting Pack" VersionMin="12.0.30501.00" SetupFileUrl="PortableLibrary\PortableLibrary_DTP.msi" Location="0" ExactSize="0" Operator="1" ComLine="EXTUI=1" Options="m" TargetName="PortableLibrary_DTP.msi" AdditionalFiles="portablelibrary_dtp_sfx.cab"/>
-    <ROW PrereqKey="RequiredApplication" DisplayName="MSBuild 2013" SetupFileUrl="http://download.microsoft.com/download/9/B/B/9BB1309E-1A8F-4A47-A6C5-ECF76672A3B3/BuildTools_Full.exe" Location="1" ExactSize="18441488" Operator="1" Options="m" MD5="dd815057acbcb95010bff643cf4354e4" TargetName="msbuild2013-BuildTools_Full.exe"/>
-    <ATTRIBUTE name="PrereqsOrder" value="E275424811B28D95B40CAB85CC MicrosoftDirectXf CB585686_DAA3_4384_BDDF_08ABA631E9F3_ C67108D39D05435F9BE6B977F2CCED25 RequiredApplication MicrosoftPortableL_1 MicrosoftPortableL D564007E3BBE4F85950A09B470A7CA65 CA62D813A4E74FA2AAE86A7D7B7B1493"/>
+    <ROW PrereqKey="RequiredApplication" DisplayName="MSBuild 2013" SetupFileUrl="http://download.microsoft.com/download/9/B/B/9BB1309E-1A8F-4A47-A6C5-ECF76672A3B3/BuildTools_Full.exe" Location="1" ExactSize="0" Operator="1" Options="m" TargetName="msbuild2013-BuildTools_Full.exe"/>
+    <ATTRIBUTE name="PrereqsOrder" value="E275424811B28D95B40CAB85CC MicrosoftDirectXf RequiredApplication MicrosoftPortableL_1 MicrosoftPortableL D564007E3BBE4F85950A09B470A7CA65 CA62D813A4E74FA2AAE86A7D7B7B1493"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.PreReqSearchComponent">
-    <ROW SearchKey="C67108D39D05435F9BE6B977F2CCED25Version" Prereq="C67108D39D05435F9BE6B977F2CCED25" SearchType="2" SearchString="HKLM\SOFTWARE\Microsoft\DevDiv\VC\Servicing\11.0\RuntimeMinimum\Version" VerMin="11.0.61030" Order="1" Property="PreReqSearch_C67108D39D05435F9BE6B977F2CCED25"/>
     <ROW SearchKey="CA62D813A4E74FA2AAE86A7D7B7B1493Version" Prereq="CA62D813A4E74FA2AAE86A7D7B7B1493" SearchType="2" SearchString="HKLM\SOFTWARE\Microsoft\DevDiv\VC\Servicing\12.0\RuntimeMinimum\Version" VerMin="12.0.21005" Order="1" Property="PreReqSearch_CA62D813A4E74FA2AAE86A7D7B7B1493"/>
-    <ROW SearchKey="CB585686_DAA3_4384_BDDF_08ABA631E9F3_Version" Prereq="CB585686_DAA3_4384_BDDF_08ABA631E9F3_" SearchType="2" SearchString="HKLM\SOFTWARE\Microsoft\DevDiv\VC\Servicing\10.0\red\x86\1033\Version" VerMin="40219.325" Order="1" Property="PreReqSearch_CB585686_DAA3_4384_BDDF_08ABA631E9F3_"/>
     <ROW SearchKey="D564007E3BBE4F85950A09B470A7CA65Version" Prereq="D564007E3BBE4F85950A09B470A7CA65" SearchType="2" SearchString="HKLM\SOFTWARE\Microsoft\DevDiv\VC\Servicing\12.0\RuntimeMinimum\Version" VerMin="12.0.21005" Order="1" Property="PreReqSearch_D564007E3BBE4F85950A09B470A7CA65"/>
     <ROW SearchKey="E275424811B28D95B40CAB85CCRelease" Prereq="E275424811B28D95B40CAB85CC" SearchType="9" SearchString="HKLM\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\Release" RefContent="G378674" Order="1" Property="PreReqSearch_E275424811B28D95B40CAB85CC"/>
     <ROW SearchKey="SystemFolderd3dcompiler_43.dll" Prereq="MicrosoftDirectXf" SearchType="0" SearchString="[SystemFolder]d3dcompiler_43.dll" VerMin="9.29.952.3111" Order="2" Property="PreReqSearch_4"/>

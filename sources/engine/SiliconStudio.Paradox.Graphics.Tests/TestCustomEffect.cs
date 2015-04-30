@@ -3,12 +3,13 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Games;
+using SiliconStudio.Paradox.Graphics.Internals;
 
 namespace SiliconStudio.Paradox.Graphics.Tests
 {
-    public static partial class MyCustomShaderKeys
+    public static class MyCustomShaderKeys
     {
         public static readonly ParameterKey<Vector4> ColorFactor2 = ParameterKeys.New<Vector4>();
     }
@@ -23,6 +24,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         private float switchEffectLevel;
 
+        private EffectParameterCollectionGroup parameterCollection;
 
         public TestCustomEffect()
         {
@@ -63,11 +65,11 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             effectParameters.Set(MyCustomShaderKeys.ColorFactor2, (Vector4)Color.Red);
             effectParameters.Set(CustomShaderKeys.SwitchEffectLevel, switchEffectLevel);
             effectParameters.Set(TexturingKeys.Texture0, UVTexture);
-            // TODO: Add switch Effect to test and capture frames
-            //switchEffectLevel++;
-            dynamicEffectCompiler.Update(effectInstance);
+            switchEffectLevel++; // TODO: Add switch Effect to test and capture frames
+            dynamicEffectCompiler.Update(effectInstance, null);
+            parameterCollection = new EffectParameterCollectionGroup(GraphicsDevice, effectInstance.Effect, new[] { effectParameters });
 
-            GraphicsDevice.DrawQuad(effectInstance.Effect, effectParameters);
+            GraphicsDevice.DrawQuad(effectInstance.Effect, parameterCollection);
         }
 
         public static void Main()

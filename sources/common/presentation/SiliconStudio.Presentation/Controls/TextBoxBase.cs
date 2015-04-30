@@ -353,7 +353,7 @@ namespace SiliconStudio.Presentation.Controls
 
         private static void OnLostFocusActionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var input = (TextBox)d;
+            var input = (TextBoxBase)d;
             if (e.Property == ValidateOnLostFocusProperty && (bool)e.NewValue)
             {
                 input.SetCurrentValue(CancelOnLostFocusProperty, false);

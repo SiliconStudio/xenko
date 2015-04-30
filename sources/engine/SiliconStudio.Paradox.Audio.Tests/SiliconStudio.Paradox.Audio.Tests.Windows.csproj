@@ -21,6 +21,7 @@
     <!-- Force msbuild to check to rebuild this assembly instead of letting VS IDE guess -->
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	<SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
   </PropertyGroup>
   <!--Import Local Pre Settings for the solution being loaded -->
   <Import Project="$(SolutionDir)$(SolutionName).PreSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PreSettings.Local.targets')" />
@@ -85,12 +86,12 @@
       <Name>SiliconStudio.Paradox.Input</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders.Compiler\SiliconStudio.Paradox.Shaders.Compiler.csproj">
+    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'Android'" Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders.Compiler\SiliconStudio.Paradox.Shaders.Compiler.csproj">
       <Project>{E8B3553F-A79F-4E50-B75B-ACEE771C320C}</Project>
       <Name>SiliconStudio.Paradox.Shaders.Compiler</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders.Parser\SiliconStudio.Paradox.Shaders.Parser.csproj">
+    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'Android'" Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders.Parser\SiliconStudio.Paradox.Shaders.Parser.csproj">
       <Project>{14A47447-2A24-4ECD-B24D-6571499DCD4C}</Project>
       <Name>SiliconStudio.Paradox.Shaders.Parser</Name>
       <Private>False</Private>
@@ -115,7 +116,7 @@
       <Name>SiliconStudio.Paradox.Graphics</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\common\shaders\SiliconStudio.Shaders\SiliconStudio.Shaders.csproj">
+    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'Android'" Include="..\..\..\sources\common\shaders\SiliconStudio.Shaders\SiliconStudio.Shaders.csproj">
       <Project>{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}</Project>
       <Name>SiliconStudio.Shaders</Name>
       <Private>False</Private>

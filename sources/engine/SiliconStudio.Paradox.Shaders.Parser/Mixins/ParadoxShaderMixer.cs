@@ -43,7 +43,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <summary>
         /// the extern modules
         /// </summary>
-        private Dictionary<Variable, List<ModuleMixin>> CompositionsPerVariable;
+        private CompositionDictionary CompositionsPerVariable;
 
         /// <summary>
         /// List of all the method Declaration
@@ -84,7 +84,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// or
         /// context
         /// </exception>
-        public ParadoxShaderMixer(ModuleMixin moduleMixin, LoggerResult log, Dictionary<string, ModuleMixin> context, Dictionary<Variable, List<ModuleMixin>> compositionsPerVariable, CloneContext cloneContext = null)
+        public ParadoxShaderMixer(ModuleMixin moduleMixin, LoggerResult log, Dictionary<string, ModuleMixin> context, CompositionDictionary compositionsPerVariable, CloneContext cloneContext = null)
         {
             if (moduleMixin == null)
                 throw new ArgumentNullException("moduleMixin");
@@ -104,9 +104,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             if (compositionsPerVariable != null)
                 CompositionsPerVariable = compositionsPerVariable;
             else
-                CompositionsPerVariable = new Dictionary<Variable, List<ModuleMixin>>();
+                CompositionsPerVariable = new CompositionDictionary();
 
-            var mixinsToAnalyze = new Stack<ModuleMixin>(CompositionsPerVariable.SelectMany(x => x.Value));
+            var mixinsToAnalyze = new Stack<ModuleMixin>(CompositionsPerVariable.Values.SelectMany(x => x));
             mixinsToAnalyze.Push(mainModuleMixin);
 
             while (mixinsToAnalyze.Count > 0)
@@ -129,7 +129,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             mainModuleMixin.StaticReferences.RegenKeys();
             mainModuleMixin.StageInitReferences.RegenKeys();
 
-            foreach (var externMix in CompositionsPerVariable.SelectMany(externMixes => externMixes.Value))
+            foreach (var externMix in CompositionsPerVariable.Values.SelectMany(externMixes => externMixes))
             {
                 externMix.ClassReferences.RegenKeys();
                 externMix.ExternReferences.RegenKeys();
@@ -183,9 +183,17 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             {
                 if (!CompositionsPerVariable.ContainsKey(externVar.Key))
                 {
-                    var newComp = externVar.Value.DeepClone(defaultCloneContext);
-                    mixinsToAnalyze.Push(newComp);
-                    CompositionsPerVariable.Add(externVar.Key, new List<ModuleMixin> { newComp });
+                    if (externVar.Key.Type is ArrayType)
+                    {
+                        // Empty compositions for ArrayType
+                        CompositionsPerVariable.Add(externVar.Key, new List<ModuleMixin>());
+                    }
+                    else
+                    {
+                        var newComp = externVar.Value.DeepClone(defaultCloneContext);
+                        mixinsToAnalyze.Push(newComp);
+                        CompositionsPerVariable.Add(externVar.Key, new List<ModuleMixin> { newComp });
+                    }
                 }
             }
             foreach (var dep in nextMixin.InheritanceList)
@@ -233,9 +241,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         {
             RedoSematicAnalysis();
             CreateReferencesStructures(mainModuleMixin);
-            foreach (var compositions in CompositionsPerVariable)
+            foreach (var compositions in CompositionsPerVariable.Values)
             {
-                foreach (var comp in compositions.Value)
+                foreach (var comp in compositions)
                     CreateReferencesStructures(comp);
             }
         }
@@ -378,9 +386,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// </summary>
         private void MergeReferences()
         {
-            foreach (var externMixes in CompositionsPerVariable)
+            foreach (var externMixes in CompositionsPerVariable.Values)
             {
-                foreach (var externMix in externMixes.Value)
+                foreach (var externMix in externMixes)
                     mainModuleMixin.ClassReferences.Merge(externMix.ClassReferences);
             }
 
@@ -658,9 +666,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             var topMixin = mainModuleMixin == mixin || mainModuleMixin.InheritanceList.Any(x => x == mixin) ? mainModuleMixin : null;
             if (topMixin == null)
             {
-                foreach (var externMixes in CompositionsPerVariable)
+                foreach (var externMixes in CompositionsPerVariable.Values)
                 {
-                    foreach (var externMix in externMixes.Value)
+                    foreach (var externMix in externMixes)
                     {
                         topMixin = externMix == mixin || externMix.InheritanceList.Any(x => x == mixin) ? externMix : null;
                         if (topMixin != null)
@@ -992,13 +1000,13 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             ProcessExternReferences(mainModuleMixin);
 
             AddStageVariables(mainModuleMixin);
-            foreach (var externMix in CompositionsPerVariable.SelectMany(externMixes => externMixes.Value))
+            foreach (var externMix in CompositionsPerVariable.Values.SelectMany(externMixes => externMixes))
                 InferStageVariables(externMix);
 
             ProcessStageInitReferences(mainModuleMixin);
-            CompositionsPerVariable.SelectMany(externMixes => externMixes.Value).ToList().ForEach(ProcessStageInitReferences);
+            CompositionsPerVariable.Values.SelectMany(externMixes => externMixes).ToList().ForEach(ProcessStageInitReferences);
             
-            foreach (var externMix in CompositionsPerVariable.SelectMany(externMixes => externMixes.Value))
+            foreach (var externMix in CompositionsPerVariable.Values.SelectMany(externMixes => externMixes))
             {
                 foreach (var variable in externMix.StaticReferences.VariablesReferences)
                 {
@@ -1197,12 +1205,20 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         {
             MixedShader = new ShaderClassType(mainModuleMixin.MixinName);
 
+            // add constants
+            var constants = mainModuleMixin.ClassReferences.VariablesReferences.Select(x => x.Key).Where(x => x.Qualifiers.Contains(StorageQualifier.Const)).ToList();
+            MixedShader.Members.AddRange(constants);
+            
             // Add structures, typedefs
             foreach (var mixin in MixinInheritance.Where(x => x.OccurenceId == 1))
                 MixedShader.Members.AddRange(mixin.ParsingInfo.Typedefs);
             foreach (var mixin in MixinInheritance.Where(x => x.OccurenceId == 1))
                 MixedShader.Members.AddRange(mixin.ParsingInfo.StructureDefinitions);
-            
+
+            var sortedNodes = SortNodes(MixedShader.Members);
+            MixedShader.Members.Clear();
+            MixedShader.Members.AddRange(sortedNodes);
+
             // Create constant buffer
             GroupByConstantBuffer();
             
@@ -1220,11 +1236,42 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
             // deal with foreach statements
             ExpandForEachStatements(mainModuleMixin);
-            foreach (var externMix in CompositionsPerVariable.SelectMany(x => x.Value))
-                ExpandForEachStatements(externMix);
+            foreach (var externMixList in CompositionsPerVariable.Values)
+            {
+                foreach (var externMix in externMixList)
+                    ExpandForEachStatements(externMix);
+            }
             
             // remove useless variables
             RemoveUselessVariables();
+        }
+
+        private List<Node> SortNodes(List<Node> nodes)
+        {
+            var weights = new Dictionary<Node, int>();
+            foreach (var node in nodes)
+            {
+                var weight = -1;
+                var classSource = node.GetTag(ParadoxTags.ShaderScope) as ModuleMixin;
+                if (classSource == null)
+                    throw new Exception("Node has no class source");
+
+                for (var i = 0; i < MixinInheritance.Count; ++i)
+                {
+                    if (MixinInheritance[i] == classSource)
+                    {
+                        weight = i;
+                        break;
+                    }
+                }
+
+                if (weight == -1)
+                    throw new Exception("constant mixin not found");
+
+                weights.Add(node, weight);
+            }
+
+            return nodes.OrderBy(x => weights[x]).ToList();
         }
 
         /// <summary>
@@ -1276,7 +1323,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <returns>true/false</returns>
         private bool IsOutOfCBufferVariable(Variable variable)
         {
-            return variable.Type is SamplerType || variable.Type is SamplerStateType || variable.Type is TextureType || variable.Type is StateType || variable.Type.ResolveType() is ObjectType || variable.Qualifiers.Contains(StorageQualifier.Const);
+            return variable.Type is SamplerType || variable.Type is SamplerStateType || variable.Type is TextureType || variable.Type is StateType || variable.Type.ResolveType() is ObjectType;
         }
 
         /// <summary>
@@ -1286,7 +1333,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <returns>true/false</returns>
         private bool KeepVariableInCBuffer(Variable variable)
         {
-            return !(variable.Qualifiers.Contains(ParadoxStorageQualifier.Extern) || variable.Qualifiers.Contains(ParadoxStorageQualifier.Stream) || variable.Qualifiers.Contains(ParadoxStorageQualifier.PatchStream) || IsOutOfCBufferVariable(variable));
+            return !(variable.Qualifiers.Contains(ParadoxStorageQualifier.Extern) || variable.Qualifiers.Contains(ParadoxStorageQualifier.Stream) || variable.Qualifiers.Contains(ParadoxStorageQualifier.PatchStream) || IsOutOfCBufferVariable(variable) || variable.Qualifiers.Contains(StorageQualifier.Const));
         }
 
         // Group everything by constant buffers
@@ -1315,6 +1362,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 MixedShader.Members.Add(globalBuffer);
             }
 
+            // add textures, samplers etc.
             MixedShader.Members.AddRange(mainModuleMixin.ClassReferences.VariablesReferences.Select(x => x.Key).Where(IsOutOfCBufferVariable));
         }
 

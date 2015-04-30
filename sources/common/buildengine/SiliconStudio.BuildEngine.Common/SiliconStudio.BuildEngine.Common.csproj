@@ -33,6 +33,7 @@
     <Compile Include="AnonymousBuildStepProvider.cs" />
     <Compile Include="AssemblyHash.cs" />
     <Compile Include="BuildResultCode.cs" />
+    <Compile Include="BuildStepExtensions.cs" />
     <Compile Include="BuildThreadMonitor.cs" />
     <Compile Include="CommandDependsOnAttribute.cs" />
     <Compile Include="BuildStepLogger.cs" />
@@ -121,12 +122,12 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="x64\SQLite.Interop.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <!--<Content Include="x64\SQLite.Interop.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="x86\SQLite.Interop.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>-->
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

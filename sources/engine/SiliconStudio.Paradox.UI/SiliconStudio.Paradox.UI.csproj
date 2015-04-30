@@ -47,16 +47,10 @@
     <Compile Include="Controls\ModalElement.cs" />
     <Compile Include="Controls\ScrollBar.cs" />
     <Compile Include="Controls\Slider.cs" />
-    <Compile Include="Data\UIData.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>UIData.pdxdata</DependentUpon>
-    </Compile>
-    <Compile Include="Data\UIImageGroupData.cs" />
     <Compile Include="IScrollAnchorInfo.cs" />
     <Compile Include="IScrollInfo.cs" />
     <Compile Include="KeyEventArgs.cs" />
+    <Compile Include="LayoutingContext.cs" />
     <Compile Include="MouseOverState.cs" />
     <Compile Include="Panels\Grid.cs" />
     <Compile Include="Panels\GridBase.cs" />
@@ -113,7 +107,6 @@
     <Compile Include="StripDefinition.cs" />
     <Compile Include="StripDefinitionCollection.cs" />
     <Compile Include="StripType.cs" />
-    <Compile Include="TextureExtensions.cs" />
     <Compile Include="Thickness.cs" />
     <Compile Include="ToggleState.cs" />
     <Compile Include="TouchAction.cs" />
@@ -168,10 +161,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Data\UIData.pdxdata">
-      <Generator>ParadoxDataCodeGenerator</Generator>
-      <LastGenOutput>UIData.cs</LastGenOutput>
-    </None>
     <None Include="en.lproj\Localizable.strings" />
     <None Include="ja.lproj\Localizable.strings" />
     <None Include="DefaultDesigns.tt">

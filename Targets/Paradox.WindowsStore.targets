@@ -18,9 +18,6 @@
     <SiliconStudioCPU Condition="'$(Platform)' == 'x64'">x64</SiliconStudioCPU>
     <SiliconStudioCPU Condition="'$(Platform)' == 'ARM'">ARM</SiliconStudioCPU>
     
-    <!-- Assembly processor is currently unsupported on Windows Store executables -->
-    <SiliconStudioAssemblyProcessor Condition="'$(SiliconStudioIsExecutable)' == 'true'">false</SiliconStudioAssemblyProcessor>
-
     <!-- Use OutputPath to define AppxPackage directory -->
     <AppxPackageDir>$(OutputPath)\$(AppxPackageDirName)\</AppxPackageDir>
     <AppxPackageTestDir>$(AppxPackageDir)Test\</AppxPackageTestDir>

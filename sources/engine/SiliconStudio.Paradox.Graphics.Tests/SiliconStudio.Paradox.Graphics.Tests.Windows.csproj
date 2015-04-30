@@ -17,6 +17,7 @@
     <SiliconStudioBuildProfile>Windows</SiliconStudioBuildProfile>
     <SiliconStudioPackageGuid>{04ed1618-1a06-4a69-ac34-1006a978af11}</SiliconStudioPackageGuid>
     <SiliconStudioParadoxDir>$(MSBuildThisFileDirectory)..\..\..</SiliconStudioParadoxDir>
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
     <SiliconStudioParadoxGraphicsApi Condition="'$(SiliconStudioParadoxGraphicsApi)' == ''">Direct3D11</SiliconStudioParadoxGraphicsApi>
     <!-- Force msbuild to check to rebuild this assembly instead of letting VS IDE guess -->
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
@@ -36,7 +37,7 @@
     <IntermediateOutputPath>obj\Windows\Debug\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -49,7 +50,7 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Paradox.Graphics.Tests.TestCubemapDisplay</StartupObject>
+    <StartupObject>SiliconStudio.Paradox.Graphics.Tests.TestMultipleRenderTargets</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
@@ -122,10 +123,6 @@
       <Name>SiliconStudio.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.csproj">
-      <Project>{0342c3e7-4a38-46b4-a8ec-e728d50085d3}</Project>
-      <Name>SiliconStudio.Paradox.Effects</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.Games\SiliconStudio.Paradox.Games.csproj">
       <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
       <Name>SiliconStudio.Paradox.Games</Name>
@@ -144,6 +141,42 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\ComputeShaderTestEffect.cs">
+      <DependentUpon>ComputeShaderTestEffect.pdxfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Assets\HammersleyTest.cs">
+      <DependentUpon>HammersleyTest.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Assets\MultipleRenderTargetsEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MultipleRenderTargetsEffect.pdxfx</DependentUpon>
+    </Compile>
+    <Compile Include="Assets\MultipleRenderTargetsEffectShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MultipleRenderTargetsEffectShader.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Assets\SpriteEffectWithGamma.cs">
+      <DependentUpon>SpriteEffectWithGamma.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Assets\ComputeShaderTest.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeShaderTest.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Assets\CustomEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -168,17 +201,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CustomShader.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Compiler\CubemapEffect.cs">
+    <Compile Include="Assets\CubemapSprite.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>CubemapEffect.pdxfx</DependentUpon>
-    </Compile>
-    <Compile Include="Compiler\MultipleRenderTargetsEffect.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>MultipleRenderTargetsEffect.pdxfx</DependentUpon>
+      <DependentUpon>CubemapSprite.pdxsl</DependentUpon>
     </Compile>
     <Compile Label="Paradox.DoNotSync" Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Compiler\MultiTexturesSpriteEffect.cs">
@@ -223,18 +250,21 @@
     <Compile Include="Regression\TestMultipleTextures.cs" />
     <Compile Include="Regression\TestSimpleTexture.cs" />
     <Compile Include="TestBitmapSpriteFont.cs" />
-    <Compile Include="TestCubemapDeferred.cs" />
-    <Compile Include="TestCubemapDisplay.cs" />
-    <Compile Include="TestCubemapRendering.cs" />
     <Compile Include="TestDynamicSpriteFont.cs" />
     <Compile Include="TestDynamicSpriteFontJapanese.cs" />
     <Compile Include="TestDynamicSpriteFontVarious.cs" />
     <Compile Include="TestExternSpriteFont.cs" />
     <Compile Include="TestFontManager.cs" />
     <Compile Include="TestGraphicsResourceAllocator.cs" />
+    <Compile Include="TestHammersley.cs" />
     <Compile Include="TestImageEffect.cs" />
     <Compile Include="TestImageLoad.cs" />
+    <Compile Include="TestLambertPrefilteringSHPass2.cs" />
+    <Compile Include="TestLambertPrefilteringSH.cs" />
+    <Compile Include="TestComputeShader.cs" />
     <Compile Include="TestMultipleRenderTargets.cs" />
+    <Compile Include="TestRadiancePrefilteringGGX.cs" />
+    <Compile Include="TestScene.cs" />
     <Compile Include="TestSprite.cs" />
     <Compile Include="TestSpriteBatchResolution.cs" />
     <Compile Include="TestSpriteBatchToTexture.cs" />
@@ -253,6 +283,30 @@
     <Compile Include="TestTexture.cs" />
     <Compile Include="TestGraphicsApiCheck.cs" />
     <Compile Include="TestTextureSampling.cs" />
+    <None Include="Assets\ComputeShaderTestEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeShaderTestEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\HammersleyTest.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>HammersleyTest.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\MultipleRenderTargetsEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MultipleRenderTargetsEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\MultipleRenderTargetsEffectShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MultipleRenderTargetsEffectShader.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\SpriteEffectWithGamma.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>SpriteEffectWithGamma.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\ComputeShaderTest.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeShaderTest.cs</LastGenOutput>
+    </None>
     <None Include="Assets\CustomEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CustomEffect.cs</LastGenOutput>
@@ -269,13 +323,9 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CustomShader.cs</LastGenOutput>
     </None>
-    <None Include="Compiler\CubemapEffect.pdxfx">
+    <None Include="Assets\CubemapSprite.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>CubemapEffect.cs</LastGenOutput>
-    </None>
-    <None Include="Compiler\MultipleRenderTargetsEffect.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>MultipleRenderTargetsEffect.cs</LastGenOutput>
+      <LastGenOutput>CubemapSprite.cs</LastGenOutput>
     </None>
     <None Include="Compiler\MultiTexturesSpriteEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>

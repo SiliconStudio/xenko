@@ -6,22 +6,19 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.Animations;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Regression;
 using SiliconStudio.Paradox.Input;
+using SiliconStudio.Paradox.Rendering.Sprites;
 
 namespace SiliconStudio.Paradox.Engine.Tests
 {
     [TestFixture]
-    public class SpriteTestGame : GraphicsTestBase
+    public class SpriteTestGame : EngineTestBase
     {
-        private SpriteGroup ballSprite1;
-
-        private SpriteGroup ballSprite2;
+        private Texture ballSprite1;
+        private Texture ballSprite2;
 
         private Entity ball;
 
@@ -29,7 +26,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
         private Vector2 areaSize;
 
-        private TransformationComponent transfoComponent;
+        private TransformComponent transfoComponent;
 
         private Vector2 ballSpeed = new Vector2(-300, 200);
 
@@ -52,49 +49,40 @@ namespace SiliconStudio.Paradox.Engine.Tests
             
             // sets the virtual resolution
             areaSize = new Vector2(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height);
-            VirtualResolution = new Vector3(areaSize.X, areaSize.Y, 1000);
 
             // Creates the camera
-            var cameraComponent = new CameraComponent { UseProjectionMatrix = true, ProjectionMatrix = SpriteBatch.CalculateDefaultProjection(new Vector3(areaSize, 200))};
-            var camera = new Entity("Camera") { cameraComponent };
+            CameraComponent.UseCustomProjectionMatrix = true;
+            CameraComponent.ProjectionMatrix = SpriteBatch.CalculateDefaultProjection(new Vector3(areaSize, 200));
 
-            // Create Main pass
-            var mainPipeline = RenderSystem.Pipeline;
-            mainPipeline.Renderers.Add(new CameraSetter(Services) { Camera = cameraComponent });
-            mainPipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.LightBlue });
-            mainPipeline.Renderers.Add(new SpriteRenderer(Services));
-            
             // Load assets
             groundSprites = Asset.Load<SpriteGroup>("GroundSprite");
-            ballSprite1 = Asset.Load<SpriteGroup>("BallSprite1");
-            ballSprite2 = Asset.Load<SpriteGroup>("BallSprite2");
+            ballSprite1 = Asset.Load<Texture>("Sphere1");
+            ballSprite2 = Asset.Load<Texture>("Sphere2");
             ball = Asset.Load<Entity>("Ball");
 
             // create fore/background entities
             foreground = new Entity();
             background = new Entity();
-            foreground.Add(new SpriteComponent { SpriteGroup = groundSprites, CurrentFrame = 1 });
-            background.Add(new SpriteComponent { SpriteGroup = groundSprites, CurrentFrame = 0 });
-            
-            Entities.Add(camera);
-            Entities.Add(ball);
-            Entities.Add(foreground);
-            Entities.Add(background);
+            foreground.Add(new SpriteComponent { SpriteProvider = new SpriteFromSpriteGroup { SpriteGroup = groundSprites }, CurrentFrame = 1 });
+            background.Add(new SpriteComponent { SpriteProvider = new SpriteFromSpriteGroup { SpriteGroup = groundSprites }, CurrentFrame = 0 });
+
+            Scene.AddChild(ball);
+            Scene.AddChild(foreground);
+            Scene.AddChild(background);
 
             spriteComponent = ball.Get(SpriteComponent.Key);
-            transfoComponent = ball.Get(TransformationComponent.Key);
+            transfoComponent = ball.Get(TransformComponent.Key);
 
-            transfoComponent.Translation.X = areaSize.X / 2;
-            transfoComponent.Translation.Y = areaSize.Y / 2;
+            transfoComponent.Position.X = areaSize.X / 2;
+            transfoComponent.Position.Y = areaSize.Y / 2;
 
-            var backgroundSpriteRegion = background.Get(SpriteComponent.Key).SpriteGroup.Images[0].Region;
-            var decorationScalings = new Vector3(areaSize.X / backgroundSpriteRegion.Width, areaSize.Y / backgroundSpriteRegion.Height, 1);
-            background.Get(TransformationComponent.Key).Scaling = decorationScalings;
-            foreground.Get(TransformationComponent.Key).Scaling = decorationScalings;
-            background.Get(TransformationComponent.Key).Translation = new Vector3(0, 0, -1);
-            foreground.Get(TransformationComponent.Key).Translation = new Vector3(0, areaSize.Y, 1);
+            var decorationScalings = new Vector3(areaSize.X, areaSize.Y, 1);
+            background.Get(TransformComponent.Key).Scale = decorationScalings;
+            foreground.Get(TransformComponent.Key).Scale = decorationScalings;
+            background.Get(TransformComponent.Key).Position = new Vector3(0, 0, -1);
+            foreground.Get(TransformComponent.Key).Position = new Vector3(0, areaSize.Y, 1);
 
-            SpriteAnimation.Play(spriteComponent, 0, spriteComponent.SpriteGroup.Images.Count-1, AnimationRepeatMode.LoopInfinite, 30);
+            SpriteAnimation.Play(spriteComponent, 0, spriteComponent.SpriteProvider.SpritesCount-1, AnimationRepeatMode.LoopInfinite, 30);
         }
 
         protected override void RegisterTests()
@@ -104,7 +92,12 @@ namespace SiliconStudio.Paradox.Engine.Tests
             FrameGameSystem.DrawOrder = -1;
             FrameGameSystem.Draw(() => SpriteAnimation.Stop(spriteComponent)).TakeScreenshot();
             FrameGameSystem.Update(() => SetFrameAndUpdateBall(20, 15)).TakeScreenshot();
-            FrameGameSystem.Update(() => spriteComponent.SpriteGroup = ballSprite2).TakeScreenshot();
+            FrameGameSystem.Update(() => SetSpriteImage(ballSprite2)).TakeScreenshot();
+        }
+
+        private void SetSpriteImage(Texture texture)
+        {
+            spriteComponent.SpriteProvider = new SpriteFromTexture { Texture = texture, IsTransparent = true };
         }
 
         protected override void Update(GameTime time)
@@ -115,9 +108,9 @@ namespace SiliconStudio.Paradox.Engine.Tests
                 UpdateBall((float)time.Elapsed.TotalSeconds);
 
             if (Input.IsKeyPressed(Keys.D1))
-                spriteComponent.SpriteGroup = ballSprite1;
+                SetSpriteImage(ballSprite1);
             if (Input.IsKeyPressed(Keys.D2))
-                spriteComponent.SpriteGroup = ballSprite2;
+                SetSpriteImage(ballSprite2);
 
             if (Input.IsKeyDown(Keys.Space))
                 spriteComponent.CurrentFrame = 0;
@@ -139,12 +132,12 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
             transfoComponent.RotationEulerXYZ = new Vector3(0,0, transfoComponent.RotationEulerXYZ.Z + deltaRotation);
 
-            var sprite = spriteComponent.SpriteGroup.Images[spriteComponent.CurrentFrame];
+            var sprite = spriteComponent.SpriteProvider.GetSprite(spriteComponent.CurrentFrame);
             var spriteSize = new Vector2(sprite.Region.Width, sprite.Region.Height);
 
             for (int i = 0; i < 2; i++)
             {
-                var nextPosition = transfoComponent.Translation[i] + totalSeconds * ballSpeed[i];
+                var nextPosition = transfoComponent.Position[i] + totalSeconds * ballSpeed[i];
 
                 var infBound = sprite.Center[i];
                 var supBound = areaSize[i] - (spriteSize[i] - sprite.Center[i]);
@@ -159,7 +152,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
                         nextPosition = infBound + (infBound - nextPosition);
                 }
 
-                transfoComponent.Translation[i] = nextPosition;
+                transfoComponent.Position[i] = nextPosition;
 
             }
         }

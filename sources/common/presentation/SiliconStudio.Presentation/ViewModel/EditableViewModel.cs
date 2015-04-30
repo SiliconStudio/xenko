@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 
 using SiliconStudio.ActionStack;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Services;
 using SiliconStudio.Presentation.ViewModel.ActionStack;
 
@@ -28,6 +29,7 @@ namespace SiliconStudio.Presentation.ViewModel
     public abstract class EditableViewModel : DispatcherViewModel
     {
         private readonly Dictionary<string, object> preEditValues = new Dictionary<string, object>();
+        private readonly HashSet<string> uncancellableChanges = new HashSet<string>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EditableViewModel"/> class.
@@ -36,7 +38,8 @@ namespace SiliconStudio.Presentation.ViewModel
         protected EditableViewModel(IViewModelServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            ActionStack = serviceProvider.Get<ITransactionalActionStack>();
+            if (serviceProvider.TryGet<ITransactionalActionStack>() == null)
+                throw new ArgumentException("The given IViewModelServiceProvider instance does not contain an ITransactionalActionStack service.");
         }
         
         /// <summary>
@@ -48,7 +51,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <summary>
         /// Gets the transactional action stack used by this view model.
         /// </summary>
-        public ITransactionalActionStack ActionStack { get; private set; }
+        public ITransactionalActionStack ActionStack { get { return ServiceProvider.Get<ITransactionalActionStack>(); } }
 
         /// <summary>
         /// Registers the given collection to create <see cref="CollectionChangedViewModelActionItem"/> in the action stack when it is modified.
@@ -124,8 +127,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <returns><c>True</c> if the field was modified and events were raised, <c>False</c> if the new value was equal to the old one and nothing was done.</returns>
         protected bool SetValueUncancellable<T>(ref T field, T value, Action updateAction, params string[] propertyNames)
         {
-            ActionStack.BeginTransaction();
-
+            propertyNames.ForEach(x => uncancellableChanges.Add(x));
             try
             {
                 var result = SetValue(ref field, value, updateAction, propertyNames);
@@ -133,7 +135,7 @@ namespace SiliconStudio.Presentation.ViewModel
             }
             finally
             {
-                ActionStack.DiscardTransaction();
+                propertyNames.ForEach(x => uncancellableChanges.Remove(x));
             }
         }
 
@@ -220,8 +222,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <returns><c>True</c> if the update was done and events were raised, <c>False</c> if <see cref="hasChangedFunction"/> is not <c>null</c> and returned false.</returns>
         protected virtual bool SetValueUncancellable(Func<bool> hasChangedFunction, Action updateAction, params string[] propertyNames)
         {
-            ActionStack.BeginTransaction();
-
+            propertyNames.ForEach(x => uncancellableChanges.Add(x));
             try
             {
                 var result = SetValue(hasChangedFunction, updateAction, propertyNames);
@@ -229,7 +230,7 @@ namespace SiliconStudio.Presentation.ViewModel
             }
             finally
             {
-                ActionStack.DiscardTransaction();
+                propertyNames.ForEach(x => uncancellableChanges.Remove(x));
             }
         }
 
@@ -241,11 +242,19 @@ namespace SiliconStudio.Presentation.ViewModel
 
             if (EqualityComparer<T>.Default.Equals(field, value) == false)
             {
-                string concatPropertyName = string.Join(", ", propertyNames.Select(s => string.Format("'{0}'", s)));
-                using (ActionStack.BeginEndTransaction("Updated " + concatPropertyName))
+                string concatPropertyName = string.Join(", ", propertyNames.Where(x => !uncancellableChanges.Contains(x)).Select(s => string.Format("'{0}'", s)));
+                if (concatPropertyName.Length > 0)
                 {
-                    return base.SetValue(ref field, value, updateAction, propertyNames);
+                    ActionStack.BeginTransaction();
                 }
+
+                var result = base.SetValue(ref field, value, updateAction, propertyNames);
+                
+                if (concatPropertyName.Length > 0)
+                {
+                    ActionStack.EndTransaction("Updated " + concatPropertyName);
+                }
+                return result;
             }
             return false;
         }
@@ -258,10 +267,21 @@ namespace SiliconStudio.Presentation.ViewModel
 
             if (hasChangedFunction == null || hasChangedFunction())
             {
-                string concatPropertyName = string.Join(", ", propertyNames.Select(s => string.Format("'{0}'", s)));
-                using (ActionStack.BeginEndTransaction("Updated " + concatPropertyName))
+                string concatPropertyName = string.Join(", ", propertyNames.Where(x => !uncancellableChanges.Contains(x)).Select(s => string.Format("'{0}'", s)));
+                if (concatPropertyName.Length > 0)
                 {
-                    return base.SetValue(hasChangedFunction, updateAction, propertyNames);
+                    if (concatPropertyName.Length > 0)
+                    {
+                        ActionStack.BeginTransaction();
+                    }
+
+                    var result = base.SetValue(hasChangedFunction, updateAction, propertyNames);
+
+                    if (concatPropertyName.Length > 0)
+                    {
+                        ActionStack.EndTransaction("Updated " + concatPropertyName);
+                    }
+                    return result;
                 }
             }
             return false;
@@ -291,7 +311,7 @@ namespace SiliconStudio.Presentation.ViewModel
             {
                 string displayName = string.Format("Updated '{0}'", propertyName);
                 object preEditValue;
-                if (preEditValues.TryGetValue(propertyName, out preEditValue))
+                if (preEditValues.TryGetValue(propertyName, out preEditValue) && !uncancellableChanges.Contains(propertyName))
                 {
                     var actionItem = CreatePropertyChangeActionItem(displayName, propertyName, preEditValue);
                     ActionStack.Add(actionItem);

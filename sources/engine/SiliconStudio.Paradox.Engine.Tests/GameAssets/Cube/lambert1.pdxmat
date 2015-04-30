@@ -1,0 +1,30 @@
+!MaterialAsset
+Id: ed1bbd82-0078-4d58-9544-ff7e47697d77
+Tags: []
+Attributes:
+    Diffuse: !MaterialDiffuseMapFeature
+        DiffuseMap: !ComputeTextureColor
+            Texture: 388c59e4-a742-44c1-9940-30cbe60a62ea:Cube/cube_Untitled
+            Scale: {X: 1, Y: 1}
+            Offset: {X: 0, Y: 0}
+    DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+    Overrides:
+        UVScale: {X: 1, Y: 1}
+Layers: []
+Parameters: {}
+~Base:
+    Location: --import--
+    Asset: !MaterialAsset
+        Id: 00000000-0000-0000-0000-000000000000
+        Tags: []
+        Attributes:
+            Diffuse: !MaterialDiffuseMapFeature
+                DiffuseMap: !ComputeTextureColor
+                    Texture: f6728c9b-2d0d-4dfb-89eb-983e8f7a8831:Cube/Untitled
+                    Scale: {X: 1, Y: 1}
+                    Offset: {X: 0, Y: 0}
+            DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+            Overrides:
+                UVScale: {X: 1, Y: 1}
+        Layers: []
+        Parameters: {}

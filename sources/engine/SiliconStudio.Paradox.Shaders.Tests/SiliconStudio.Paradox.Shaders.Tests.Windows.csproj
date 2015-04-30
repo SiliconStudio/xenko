@@ -20,6 +20,7 @@
     <!-- Force msbuild to check to rebuild this assembly instead of letting VS IDE guess -->
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <SiliconStudioOpenSourceSign>false</SiliconStudioOpenSourceSign>
   </PropertyGroup>
   <!--Import Local Pre Settings for the solution being loaded -->
   <Import Project="$(SolutionDir)$(SolutionName).PreSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PreSettings.Local.targets')" />
@@ -102,6 +103,22 @@
       <Name>SiliconStudio.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\assets\SiliconStudio.Assets\SiliconStudio.Assets.csproj">
+      <Project>{1E54A9A2-4439-4444-AE57-6D2ED3C0DC47}</Project>
+      <Name>SiliconStudio.Assets</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
+      <Project>{66581DAD-70AD-4475-AE47-C6C0DF1EC5E2}</Project>
+      <Name>SiliconStudio.Core.Design</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Paradox.Assets\SiliconStudio.Paradox.Assets.csproj">
+      <Project>{39ae9c77-e94b-404f-8768-b6261b3c1e0e}</Project>
+      <Name>SiliconStudio.Paradox.Assets</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Paradox.Engine\SiliconStudio.Paradox.Engine.csproj">
+      <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
+      <Name>SiliconStudio.Paradox.Engine</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj">
       <Project>{fb06c76a-6bb7-40be-9afa-fec13b045fb5}</Project>
       <Name>SiliconStudio.Paradox.Graphics</Name>
@@ -129,6 +146,12 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ToGlslEffect.pdxfx</DependentUpon>
+    </Compile>
+    <Compile Include="GameAssets\Compiler\TestStream.cs">
+      <DependentUpon>TestStream.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="GameAssets\Compiler\ToGlslShader.cs">
       <AutoGen>True</AutoGen>
@@ -654,7 +677,6 @@
     <Compile Include="TestShaderLoading.cs" />
     <Compile Include="TestShaderMixer.cs" />
     <Compile Include="TestShaderMixer2.cs" />
-    <Compile Include="TestShaderParsing.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Label="Paradox.DoNotSync" Include="Properties\AssemblyInfo.cs" />
@@ -671,6 +693,10 @@
     <None Include="GameAssets\Compiler\ToGlslEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ToGlslEffect.cs</LastGenOutput>
+    </None>
+    <None Include="GameAssets\Compiler\TestStream.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>TestStream.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Compiler\ToGlslShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

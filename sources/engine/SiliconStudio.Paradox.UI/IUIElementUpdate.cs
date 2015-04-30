@@ -28,11 +28,5 @@ namespace SiliconStudio.Paradox.UI
         /// </summary>
         /// <param name="elementBias">The depth bias value for the current element computed by the parent</param>
         void UpdateElementState(int elementBias);
-        
-        /// <summary>
-        /// Recursively update the reference to the <see cref="UISystem"/> managing the <see cref="UIElement"/>.
-        /// </summary>
-        /// <param name="system"></param>
-        void UpdateUISystemReference(UISystem system);
     }
 }

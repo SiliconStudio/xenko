@@ -23,6 +23,11 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         private readonly Dictionary<string, ShaderSourceWithHash> loadedShaderSources = new Dictionary<string, ShaderSourceWithHash>();
         private readonly Dictionary<string, string> classNameToPath = new Dictionary<string, string>();
 
+        /// <summary>
+        /// The file provider used to load shader sources.
+        /// </summary>
+        private readonly IVirtualFileProvider fileProvider;
+
         private const string DefaultEffectFileExtension = ".pdxsl";
 
         /// <summary>
@@ -44,12 +49,22 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         public bool UseFileSystem { get; set; }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="ShaderSourceManager" /> class.
+        /// </summary>
+        /// <param name="fileProvider">The file provider to use for loading shader sources.</param>
+        public ShaderSourceManager(IVirtualFileProvider fileProvider)
+        {
+            this.fileProvider = fileProvider;
+            LookupDirectoryList = new List<string>();
+            UrlToFilePath = new Dictionary<string, string>();
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ShaderSourceManager"/> class.
         /// </summary>
         public ShaderSourceManager()
+            : this(AssetManager.FileProvider)
         {
-            LookupDirectoryList = new List<string>();
-            UrlToFilePath = new Dictionary<string, string>();
         }
 
         /// <summary>
@@ -89,6 +104,16 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         public ObjectId GetShaderSourceHash(string type)
         {
             return LoadShaderSource(type).Hash;
+        }
+
+        public static ShaderSourceWithHash CreateShaderSourceWithHash(string type, string source)
+        {
+            return new ShaderSourceWithHash()
+            {
+                Path = type,
+                Source = source,
+                Hash = CalculateHashFromSource(source)
+            };
         }
 
         /// <summary>
@@ -178,6 +203,11 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             }
         }
 
+        private static ObjectId CalculateHashFromSource(string source)
+        {
+            return ObjectId.FromBytes(Encoding.UTF8.GetBytes(source));
+        }
+
         /// <summary>
         /// Determines whether a class with the specified type name exists.
         /// </summary>
@@ -237,14 +267,14 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             }
             else
             {
-                return AssetManager.FileProvider.FileExists(path);
+                return fileProvider.FileExists(path);
             }
             return false;
         }
 
         private Stream OpenStream(string path)
         {
-            return UseFileSystem ? File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read) : AssetManager.FileProvider.OpenStream(path, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read);
+            return UseFileSystem ? File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read) : fileProvider.OpenStream(path, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read);
         }
 
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
@@ -284,8 +314,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
             return null;
         }
-
-
 
         public struct ShaderSourceWithHash
         {

@@ -27,7 +27,7 @@ namespace SiliconStudio.Assets.Compiler
 
         public Vector3 UpAxis = Vector3.UnitY;
 
-        public Vector3 FrontAxis = -Vector3.UnitZ;
+        public Vector3 FrontAxis = Vector3.UnitZ;
     }
 
     /// <summary>

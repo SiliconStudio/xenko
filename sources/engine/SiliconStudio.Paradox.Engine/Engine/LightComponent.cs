@@ -1,178 +1,59 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using System.ComponentModel;
 
-using SiliconStudio.Core.Serialization.Converters;
-using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.EntityModel;
+using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Engine.Design;
+using SiliconStudio.Paradox.Rendering.Gizmos;
+using SiliconStudio.Paradox.Rendering.Lights;
 
 namespace SiliconStudio.Paradox.Engine
 {
-    [DataContract("ShadowMapFilterType")]
-    public enum ShadowMapFilterType
-    {
-        Nearest = 0,
-        PercentageCloserFiltering = 1,
-        Variance = 2,
-    }
-
     /// <summary>
     /// Add a light to an <see cref="Entity"/>, that will be used during rendering.
     /// </summary>
-    [DataConverter(AutoGenerate = true)]
     [DataContract("LightComponent")]
+    [Display(120, "Light")]
+    [GizmoEntity(GizmoEntityNames.LightGizmoEntityQualifiedName)]
+    [DefaultEntityComponentRenderer(typeof(LightComponentRenderer), -10)]
+    [DefaultEntityComponentProcessor(typeof(LightProcessor))]
     public sealed class LightComponent : EntityComponent
     {
         public static PropertyKey<LightComponent> Key = new PropertyKey<LightComponent>("Key", typeof(LightComponent));
 
+        /// <summary>
+        /// The default direction of a light vector is (x,y,z) = (0,0,-1)
+        /// </summary>
+        public static readonly Vector3 DefaultDirection = new Vector3(0, 0, -1);
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LightComponent"/> class.
+        /// </summary>
         public LightComponent()
         {
+            Type = new LightDirectional();
             Intensity = 1.0f;
-            ShadowMapFilterType = ShadowMapFilterType.Nearest;
-            Enabled = true;
-            Deferred = false;
-            Layers = RenderLayers.RenderLayerAll;
-            SpotBeamAngle = 0;
-            SpotFieldAngle = 0;
-            ShadowMap = false;
-            ShadowMapMaxSize = 512;
-            ShadowMapMinSize = 512;
-            ShadowMapCascadeCount = 1;
-            ShadowNearDistance = 1.0f;
-            ShadowFarDistance = 100000.0f;
-            BleedingFactor = 0.0f;
-            MinVariance = 0.0f;
+            CullingMask = EntityGroupMask.All;
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the light is enabled.
+        /// Gets or sets the type of the light.
         /// </summary>
-        [DataMemberConvert]
-        [DefaultValue(true)]
-        public bool Enabled { get; set; }
-
-        /// <summary>Gets or sets a value indicating whether the light is deferred (if available).</summary>
-        /// <value>true if light is deferred, false if not.</value>
-        [DataMemberConvert]
-        public bool Deferred { get; set; }
-
-        /// <summary>
-        /// Gets or sets the light type.
-        /// </summary>
-        /// <value>
-        /// The type.
-        /// </value>
-        [DataMemberConvert]
-        public LightType Type { get; set; }
-
-        /// <summary>
-        /// Gets or sets the light color.
-        /// </summary>
-        /// <value>
-        /// The color.
-        /// </value>
-        [DataMemberConvert]
-        public Color3 Color { get; set; }
+        /// <value>The type of the light.</value>
+        [DataMember(10)]
+        [NotNull]
+        [Display("Light", AlwaysExpand = true)]
+        public ILight Type { get; set; }
 
         /// <summary>
         /// Gets or sets the light intensity.
         /// </summary>
-        /// <value>
-        /// The light intensity.
-        /// </value>
-        [DataMemberConvert]
+        /// <value>The light intensity.</value>
+        [DataMember(30)]
         [DefaultValue(1.0f)]
         public float Intensity { get; set; }
-
-        /// <summary>
-        /// Gets or sets the decay start.
-        /// </summary>
-        /// <value>
-        /// The decay start.
-        /// </value>
-        [DataMemberConvert]
-        public float DecayStart { get; set; }
-
-        /// <summary>Gets or sets the light direction.</summary>
-        /// <value>The light direction.</value>
-        [DataMemberConvert]
-        public Vector3 LightDirection { get; set; }
-
-        /// <summary>Gets or sets the beam angle of the spot light.</summary>
-        /// <value>The beam angle of the spot (in degrees between 0 and 90).</value>
-        [DataMemberConvert]
-        [DefaultValue(0)]
-        public float SpotBeamAngle { get; set; }
-
-        /// <summary>Gets or sets the spot field angle of the spot light.</summary>
-        /// <value>The spot field angle of the spot (in degrees between 0 and 90).</value>
-        [DataMemberConvert]
-        [DefaultValue(0)]
-        public float SpotFieldAngle { get; set; }
-
-        /// <summary>Gets or Sets a value indicating if the light cast shadows.</summary>
-        /// <value>True if the ligh generates a shadowmap, false otherwise.</value>
-        [DataMemberConvert]
-        [DefaultValue(false)]
-        public bool ShadowMap { get; set; }
-
-        /// <summary>Gets or Sets the maximium size (in pixel) of one cascade of the shadow map.</summary>
-        /// <value>The maximum size of the shadow map.</value>
-        [DataMemberConvert]
-        [DefaultValue(512)]
-        public int ShadowMapMaxSize { get; set; }
-
-        /// <summary>Gets or Sets the minimum size (in pixel) of one cascade of the shadow map.</summary>
-        /// <value>The minimum size of the shadow map.</value>
-        [DataMemberConvert]
-        [DefaultValue(512)]
-        public int ShadowMapMinSize { get; set; }
-
-        /// <summary>Gets or Sets the number of cascades for this shadow.</summary>
-        /// <value>The number of cascades for this shadow.</value>
-        [DataMemberConvert]
-        [DefaultValue(1)]
-        public int ShadowMapCascadeCount { get; set; }
-
-        /// <summary>Gets or Sets the near plane distance of the shadow.</summary>
-        /// <value>The near plane distance of the shadow.</value>
-        [DataMemberConvert]
-        [DefaultValue(1.0f)]
-        public float ShadowNearDistance { get; set; }
-
-        /// <summary>Gets or Sets the far plane distance of the shadow.</summary>
-        /// <value>The far plane distance of the shadow.</value>
-        [DataMemberConvert]
-        [DefaultValue(100000.0f)]
-        public float ShadowFarDistance { get; set; }
-
-        /// <summary>
-        /// Gets or sets the shadow map filtering.
-        /// </summary>
-        /// <value>The filter type.</value>
-        [DataMemberConvert]
-        [DefaultValue(ShadowMapFilterType.Nearest)]
-        public ShadowMapFilterType ShadowMapFilterType { get; set; }
-
-        /// <summary>
-        /// Gets or sets the bleeding factor of the variance shadow map.
-        /// </summary>
-        /// <value>The bleeding factor.</value>
-        [DataMemberConvert]
-        [DefaultValue(0.0f)]
-        public float BleedingFactor { get; set; }
-
-        /// <summary>
-        /// Gets or sets the minimal value of the variance of the variance shadow map.
-        /// </summary>
-        /// <value>The minimal variance.</value>
-        [DataMemberConvert]
-        [DefaultValue(0.0f)]
-        public float MinVariance { get; set; }
 
         /// <summary>
         /// Get or sets the layers that the light influences
@@ -180,13 +61,90 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The layer mask.
         /// </value>
-        [DataMemberConvert]
-        [DefaultValue(RenderLayers.RenderLayerAll)]
-        public RenderLayers Layers { get; set; }
+        [DataMember(40)]
+        [DefaultValue(EntityGroupMask.All)]
+        public EntityGroupMask CullingMask { get; set; }
 
-        public override PropertyKey DefaultKey
+        /// <summary>
+        /// Gets the light position in World-Space (computed by the <see cref="LightProcessor"/>) (readonly field). See remarks.
+        /// </summary>
+        /// <value>The position.</value>
+        /// <remarks>This property should only be used inside a renderer and not from a script as it is updated after scripts</remarks>
+        [DataMemberIgnore]
+        public Vector3 Position;
+
+        /// <summary>
+        /// Gets the light direction in World-Space (computed by the <see cref="LightProcessor"/>) (readonly field).
+        /// </summary>
+        /// <value>The direction.</value>
+        /// <remarks>This property should only be used inside a renderer and not from a script as it is updated after scripts</remarks>
+        [DataMemberIgnore]
+        public Vector3 Direction;
+
+        [DataMemberIgnore]
+        public Color3 Color;
+
+        /// <summary>
+        /// The bounding box of this light in WS after the <see cref="LightProcessor"/> has been applied (readonly field).
+        /// </summary>
+        [DataMemberIgnore]
+        public BoundingBox BoundingBox;
+
+        /// <summary>
+        /// The bounding box extents of this light in WS after the <see cref="LightProcessor"/> has been applied (readonly field).
+        /// </summary>
+        [DataMemberIgnore]
+        public BoundingBoxExt BoundingBoxExt;
+
+        /// <summary>
+        /// The determines whether this instance has a valid bounding box (readonly field).
+        /// </summary>
+        [DataMemberIgnore]
+        public bool HasBoundingBox;
+
+        /// <summary>
+        /// Updates this instance( <see cref="Position"/>, <see cref="Direction"/>, <see cref="HasBoundingBox"/>, <see cref="BoundingBox"/>, <see cref="BoundingBoxExt"/>
+        /// </summary>
+        public bool Update()
         {
-            get { return Key; }
+            if (Type == null || !Enabled || !Type.Update(this))
+            {
+                return false;
+            }
+
+            // Compute light direction and position
+            Vector3 lightDirection;
+            var lightDir = DefaultDirection;
+            Vector3.TransformNormal(ref lightDir, ref Entity.Transform.WorldMatrix, out lightDirection);
+            lightDirection.Normalize();
+
+            Position = Entity.Transform.Position;
+            Direction = lightDirection;
+
+            // Color
+            var colorLight = Type as IColorLight;
+            Color = (colorLight != null) ? colorLight.ComputeColor(Intensity) : new Color3();
+
+            // Compute bounding boxes
+            HasBoundingBox = false;
+            BoundingBox = new BoundingBox();
+            BoundingBoxExt = new BoundingBoxExt();
+
+            var directLight = Type as IDirectLight;
+            if (directLight != null && directLight.HasBoundingBox)
+            {
+                // Computes the bounding boxes
+                BoundingBox = directLight.ComputeBounds(Position, Direction);
+                BoundingBoxExt = new BoundingBoxExt(BoundingBox);
+            }
+
+            return true;
+        }
+
+
+        public override PropertyKey GetDefaultKey()
+        {
+            return Key;
         }
     }
 }

@@ -1,0 +1,24 @@
+!MaterialAsset
+Id: cc7836ee-28a3-4a94-bf68-f24516109ef5
+Tags: []
+Attributes:
+    Tessellation: !MaterialTessellationFlatFeature
+        TriangleSize: 13.8027306
+        AdjacentEdgeAverage: false
+    Displacement: !MaterialDisplacementMapFeature
+        DisplacementMap: !ComputeTextureScalar
+            Texture: 51144a89-25ee-4065-9f5b-34f57c7640a6:BasicDisplacementMap
+            Scale: {X: 1, Y: 1}
+            Offset: {X: 0, Y: 0}
+        Intensity: !ComputeFloat
+            Value: 10
+        ScaleAndBias: false
+        Stage: Domain
+    Diffuse: !MaterialDiffuseMapFeature
+        DiffuseMap: !ComputeColor
+            Value: {R: 0.1621179, G: 0.6315, B: 0.07104376, A: 1}
+    DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+    Overrides:
+        UVScale: {X: 1, Y: 1}
+Layers: []
+Parameters: {}

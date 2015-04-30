@@ -1,10 +1,11 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 
 namespace SiliconStudio.Paradox.Physics
 {
-    public class Constraint : IDisposable
+    public class Constraint : IDisposable, IRelative
     {
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -85,8 +86,11 @@ namespace SiliconStudio.Paradox.Physics
             }
         }
 
-        internal PhysicsEngine Engine;
-
         internal BulletSharp.TypedConstraint InternalConstraint;
+
+        /// <summary>
+        /// Gets the Simulation where this Constraint is being processed
+        /// </summary>
+        public Simulation Simulation { get; internal set; }
     }
 }

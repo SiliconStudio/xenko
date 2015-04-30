@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Graphics.Internals;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -17,6 +18,7 @@ namespace SiliconStudio.Paradox.Graphics
         private static readonly List<short[]> PrimiteTypeToIndices = new List<short[]>(4);
 
         private readonly Effect uiSeparateAlphaEffect;
+        private readonly EffectParameterCollectionGroup uiSeparateAlphaParameterCollectionGroup;
 
         private bool separateAlphaEffectBinded;
 
@@ -77,47 +79,47 @@ namespace SiliconStudio.Paradox.Graphics
             // cube
             count = 0;
             indices = PrimiteTypeToIndices[(int)PrimitiveType.Cube];
-            indices[count++] = 0; //back
-            indices[count++] = 2;
-            indices[count++] = 1;
+            indices[count++] = 0; //front
             indices[count++] = 1;
             indices[count++] = 2;
-            indices[count++] = 3;
-
-            indices[count++] = 5; // right
-            indices[count++] = 1;
-            indices[count++] = 7;
             indices[count++] = 1;
             indices[count++] = 3;
-            indices[count++] = 7;
-
-            indices[count++] = 4; // front
-            indices[count++] = 5;
-            indices[count++] = 6;
-            indices[count++] = 5;
-            indices[count++] = 7;
-            indices[count++] = 6;
-
-            indices[count++] = 0; // left
-            indices[count++] = 4;
-            indices[count++] = 2;
-            indices[count++] = 4;
-            indices[count++] = 6;
             indices[count++] = 2;
 
-            indices[count++] = 0; // top 
-            indices[count++] = 1;
-            indices[count++] = 4;
-            indices[count++] = 1;
+            indices[count++] = 1; // right
             indices[count++] = 5;
+            indices[count++] = 7;
+            indices[count++] = 1;
+            indices[count++] = 7;
+            indices[count++] = 3;
+
+            indices[count++] = 5; // back
             indices[count++] = 4;
+            indices[count++] = 6;
+            indices[count++] = 5;
+            indices[count++] = 6;
+            indices[count++] = 7;
+
+            indices[count++] = 4; // left
+            indices[count++] = 0;
+            indices[count++] = 2;
+            indices[count++] = 4;
+            indices[count++] = 2;
+            indices[count++] = 6;
+
+            indices[count++] = 1; // top 
+            indices[count++] = 0;
+            indices[count++] = 4;
+            indices[count++] = 1;
+            indices[count++] = 4;
+            indices[count++] = 5;
 
             indices[count++] = 2; // bottom 
-            indices[count++] = 6;
-            indices[count++] = 3;
             indices[count++] = 3;
             indices[count++] = 6;
-            indices[count  ] = 7;
+            indices[count++] = 3;
+            indices[count++] = 7;
+            indices[count  ] = 6;
 
             // reverse cube
             var cubeIndices = PrimiteTypeToIndices[(int)PrimitiveType.Cube];
@@ -141,9 +143,10 @@ namespace SiliconStudio.Paradox.Graphics
         {
             // Create the two ui effects
             uiSeparateAlphaEffect = new Effect(GraphicsDevice, UIEffectSeparateAlpha.Bytecode) {Name = "SeparatedAlphaBatchEffect"};
+            uiSeparateAlphaParameterCollectionGroup = new EffectParameterCollectionGroup(device, uiSeparateAlphaEffect, new[] { Parameters });
             
             // Create a 1x1 pixel white texture
-            whiteTexture = Texture.New2D(GraphicsDevice, 1, 1, PixelFormat.R8G8B8A8_UNorm, new Byte[] { 255, 255, 255, 255 });
+            whiteTexture = GraphicsDevice.GetSharedWhiteTexture();
         }
 
         /// <summary>
@@ -174,7 +177,7 @@ namespace SiliconStudio.Paradox.Graphics
             separateAlphaEffectBinded = false;
             viewProjectionMatrix = viewProjection;
 
-            Begin(null, SpriteSortMode.BackToFront, blendState, samplerState, depthStencilState, rasterizerState, stencilValue);
+            Begin(null, null, SpriteSortMode.BackToFront, blendState, samplerState, depthStencilState, rasterizerState, stencilValue);
         }
 
         /// <summary>
@@ -311,7 +314,7 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 End();
                 separateAlphaEffectBinded = !separateAlphaEffectBinded;
-                Begin(separateAlphaEffectBinded? uiSeparateAlphaEffect: null, SortMode, BlendState, SamplerState, DepthStencilState, RasterizerState, StencilReferenceValue);
+                Begin(separateAlphaEffectBinded? uiSeparateAlphaEffect: null, separateAlphaEffectBinded ? uiSeparateAlphaParameterCollectionGroup : null, SortMode, BlendState, SamplerState, DepthStencilState, RasterizerState, StencilReferenceValue);
             }
 
             // Calculate the information needed to draw.
@@ -548,6 +551,7 @@ namespace SiliconStudio.Paradox.Graphics
 
         private unsafe void CalculateRectangleVertices(UIImageDrawInfo* drawInfo, VertexPositionColorTextureSwizzle* vertex)
         {
+            // TODO this should be replaced by the size of the render target.
             var backBufferHalfWidth = GraphicsDevice.BackBuffer.ViewWidth / 2;
             var backBufferHalfHeight = GraphicsDevice.BackBuffer.ViewHeight / 2;
 

@@ -128,7 +128,7 @@ namespace SiliconStudio.Paradox.UI
         private float depth = float.NaN;
         private HorizontalAlignment horizontalAlignment = HorizontalAlignment.Stretch;
         private VerticalAlignment verticalAlignment = VerticalAlignment.Stretch;
-        private DepthAlignment depthAlignment = DepthAlignment.Back;
+        private DepthAlignment depthAlignment = DepthAlignment.Center;
         private float maximumWidth = float.PositiveInfinity;
         private float maximumHeight = float.PositiveInfinity;
         private float maximumDepth = float.PositiveInfinity;
@@ -137,10 +137,8 @@ namespace SiliconStudio.Paradox.UI
         private float minimumDepth;
         private Matrix localMatrix = Matrix.Identity;
         private MouseOverState mouseOverState;
-
-        // Cached element renderer
-        internal Renderers.ElementRenderer ElementRenderer;
-
+        private LayoutingContext layoutingContext;
+        
         internal bool HierarchyDisablePicking;
         internal Vector3 RenderSizeInternal;
         internal Matrix WorldMatrixInternal;
@@ -251,20 +249,28 @@ namespace SiliconStudio.Paradox.UI
         /// </summary>
         public int DrawLayerNumber { get; set; }
 
-        /// <summary>
-        /// The instance of <see cref="UISystem"/> managing this <see cref="UIElement"/>.
-        /// </summary>
-        internal protected UISystem UISystem { get; set; }
-
         internal bool ForceNextMeasure = true;
         internal bool ForceNextArrange = true;
 
         /// <summary>
         /// The ratio between the element real size on the screen and the element virtual size.
         /// </summary>
-        internal protected Vector2 RealSizeVirtualResolutionRatio
+        internal protected LayoutingContext LayoutingContext
         {
-            get { return UISystem.BackBufferVirtualResolutionRatio; } // TODO should we take in account the world matrix here? -> may generate to many font size in case of zoom animations
+            get { return layoutingContext; }
+            set
+            {
+                if (value == null)
+                    return;
+
+                if (layoutingContext != null && layoutingContext.Equals(value))
+                    return;
+
+                ForceMeasure();
+                layoutingContext = value;
+                foreach (var child in VisualChildren)
+                    child.LayoutingContext = value;
+            }
         }
 
         /// <summary>
@@ -1124,8 +1130,8 @@ namespace SiliconStudio.Paradox.UI
 
             if (parent != null)
             {
+                child.LayoutingContext = parent.layoutingContext;
                 parent.VisualChildrenCollection.Add(child);
-                ((IUIElementUpdate)child).UpdateUISystemReference(parent.UISystem);
             }
         }
 
@@ -1210,13 +1216,6 @@ namespace SiliconStudio.Paradox.UI
             MaxChildrenDepthBias = currentElementDepthBias;
         }
 
-        void IUIElementUpdate.UpdateUISystemReference(UISystem system)
-        {
-            OnUISystemChanged(system);
-            foreach (var children in VisualChildrenCollection)
-                ((IUIElementUpdate)children).UpdateUISystemReference(system);
-        }
-
         #endregion
 
         /// <summary>
@@ -1252,16 +1251,6 @@ namespace SiliconStudio.Paradox.UI
                 LocalMatrixChanged = false;
                 ArrangeChanged = false;
             }
-        }
-
-        /// <summary>
-        /// Function called when the <see cref="UISystem"/> in charge of the <see cref="UIElement"/> changed.
-        /// This function can be override in children classes.
-        /// </summary>
-        /// <param name="system">The new UI system in charge of the element.</param>
-        protected virtual void OnUISystemChanged(UISystem system)
-        {
-            UISystem = system;
         }
 
         /// <summary>
@@ -1303,7 +1292,7 @@ namespace SiliconStudio.Paradox.UI
             var usedSpaceWithThickness = CalculateSizeWithThickness(ref usedSpaceWithoutThickness, ref thickness);
 
             // set offset for left and stretch alignments
-            var offsets = new Vector3(thickness.Left, thickness.Top, thickness.Back);
+            var offsets = new Vector3(thickness.Left, thickness.Top, thickness.Front);
 
             // align the element horizontally
             switch (HorizontalAlignment)
@@ -1333,7 +1322,7 @@ namespace SiliconStudio.Paradox.UI
                 case DepthAlignment.Center:
                     offsets.Z += (providedSpace.Z - usedSpaceWithThickness.Z) / 2;
                     break;
-                case DepthAlignment.Front:
+                case DepthAlignment.Back:
                     offsets.Z += providedSpace.Z - usedSpaceWithThickness.Z;
                     break;
             }

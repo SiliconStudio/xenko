@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Build file used to build Paradox and package it from the command line
+Build file used to build Paradox and package it from the command line.
+Example of use: 
+"C:\Program Files (x86)\MSBuild\12.0\Bin\MSBuild" Paradox.build /t:PackageLauncher
 -->
 <Project ToolsVersion="12.0" DefaultTarget="Help" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
@@ -12,9 +14,9 @@ Build file used to build Paradox and package it from the command line
     <BuildProperties Condition="'$(SiliconStudioSign)' != ''">$(BuildProperties);SiliconStudioSign=$(SiliconStudioSign)</BuildProperties>
     <BuildProperties Condition="'$(SiliconStudioOfficialBuild)' != ''">$(BuildProperties);SiliconStudioOfficialBuild=$(SiliconStudioOfficialBuild)</BuildProperties>
     <ILRepackPath>$(ParadoxRootBin)ILRepack.exe</ILRepackPath>
-    <NuGetPath>$(ParadoxRootBin)NuGet.exe</NuGetPath>
+    <NuGetPath>$(MSBuildThisFileDirectory).nuget\NuGet.exe</NuGetPath>
     <SiliconStudioStoreUrl>https://store.paradox3d.net</SiliconStudioStoreUrl>
-    <AdvancedInstallerPath>$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 11.5\bin\x86\advinst.exe</AdvancedInstallerPath>
+    <AdvancedInstallerPath Condition="'$(AdvancedInstallerPath)' == '' And Exists('$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 11.6.3\bin\x86\advinst.exe')">$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 11.6.3\bin\x86\advinst.exe</AdvancedInstallerPath>
   </PropertyGroup>
 
   <UsingTask TaskName="SiliconStudio.Assets.PackageArchiveTask" AssemblyFile="$(ParadoxRootBin)SiliconStudio.Assets.dll" />
@@ -28,11 +30,11 @@ Build file used to build Paradox and package it from the command line
   -->
   <Target Name="Package">
     <ItemGroup>
-        <FilesToDelete Include="$(MSBuildThisFileDirectory)Paradox*.nupkg"/>
+        <FilesToDeletePackage Include="$(MSBuildThisFileDirectory)Paradox*.nupkg"/>
     </ItemGroup>    
     
-    <Delete Files="@(FilesToDelete)"/>
-    <PackageArchiveTask File="$(ParadoxPackage)"/>
+    <Delete Files="@(FilesToDeletePackage)"/>
+    <PackageArchiveTask File="$(ParadoxPackage)" SpecialVersion="$(ParadoxPackageSpecialVersion)"/>
   </Target>
 
   <!--
@@ -40,16 +42,32 @@ Build file used to build Paradox and package it from the command line
   -->
   <Target Name="PackageLauncher">
     <ItemGroup>
-      <FilesToDelete Include="$(MSBuildThisFileDirectory)SiliconStudio.LauncherApp*.nupkg"/>
+      <FilesToDeleteLauncher Include="$(MSBuildThisFileDirectory)SiliconStudio.LauncherApp*.nupkg"/>
     </ItemGroup>
 
-    <Delete Files="@(FilesToDelete)"/>
+    <Delete Files="@(FilesToDeleteLauncher)"/>
 
     <MSBuild Targets="10-Assets\SiliconStudio_LauncherApp" Projects="$(ParadoxSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
-    <Exec Command='"$(ILRepackPath)" SiliconStudio.LauncherApp.exe Nuget.exe /out:Paradox.exe' WorkingDirectory="$(ParadoxRoot)sources\install\SiliconStudio.LauncherApp\bin\Release"/>
+    <Exec Command='"$(ILRepackPath)" SiliconStudio.LauncherApp.exe Nuget.Core.dll /out:Paradox.exe' WorkingDirectory="$(ParadoxRoot)sources\install\SiliconStudio.LauncherApp\bin\Release"/>
     <Exec Command='"$(NuGetPath)" pack "$(ParadoxRoot)sources\install\SiliconStudio.LauncherApp\SiliconStudio.LauncherApp.nuspec" -BasePath "$(ParadoxRoot)sources\install\SiliconStudio.LauncherApp\bin\Release"' />
   </Target>
 
+  <!--
+  VSIX Paradox plugin
+  Don't forget to build for VS2013 by using MSBuild 12.0, 
+  or if you're using a newer version of MSBuild, pass the flag /p:VisualStudioVersion=12.0 when calling MSBuild in the command line.
+  -->
+  <Target Name="VSIXPlugin">
+    <ItemGroup>
+      <FilesToDeleteVSIX Include="$(MSBuildThisFileDirectory)SiliconStudio.Paradox.VisualStudio.Package.*.nupkg"/>
+    </ItemGroup>
+
+    <Delete Files="@(FilesToDeleteVSIX)"/>
+
+    <MSBuild Targets="91-VisualStudio\SiliconStudio_Paradox_VisualStudio_Package" Projects="$(ParadoxSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+    <Exec Command='"$(NuGetPath)" pack "$(ParadoxRoot)sources\tools\SiliconStudio.Paradox.VisualStudio.Package\SiliconStudio.Paradox.VisualStudio.Package.nuspec" -BasePath "$(ParadoxRoot)Bin\Windows-Direct3D11"' />
+  </Target>  
+  
   <!--
   Package Installer: ParadoxSetup.exe
   -->
@@ -66,6 +84,7 @@ Build file used to build Paradox and package it from the command line
     <CallTarget Targets="Build"/>
     <CallTarget Targets="Package"/>
     <CallTarget Targets="PackageInstaller"/>
+	<CallTarget Targets="VSIXPlugin"/>
   </Target>
   
   <!--
@@ -73,43 +92,43 @@ Build file used to build Paradox and package it from the command line
   -->
   <Target Name="Publish">
     <Error Condition="'$(SiliconStudioStoreApiKey)' == ''" Text="Missing env variable SiliconStudioStoreApiKey"/>
-    <Exec Command='"$(NuGetPath)" push *.nupkg -ApiKey $(SiliconStudioStoreApiKey) -Source $(SiliconStudioStoreUrl) "'/>
+    <Exec Command='"$(NuGetPath)" push Paradox*.nupkg -ApiKey $(SiliconStudioStoreApiKey) -Source $(SiliconStudioStoreUrl) "'/>
   </Target>
 
   <!--
   Build Paradox: Windows, Android, iOS, Windows Store, Windows Phone
   -->
-  <Target Name="Build">
+  <Target Name="Clean">
     <Exec Command="RMDIR /Q /S $(ParadoxRoot)\Bin"/>
-    <CallTarget Targets="CopyParadoxKey" Condition="'$(SiliconStudioSign)' == 'true'"/>
-    <CallTarget Targets="BuildWindows"/>
-    <CallTarget Targets="BuildAndroid"/>
-    <CallTarget Targets="BuildiOS"/>
-    <CallTarget Targets="BuildWindowsStore"/>
-    <CallTarget Targets="BuildWindowsPhone"/>
   </Target>
   
+  <Target Name="Build" DependsOnTargets="Clean;BuildWindows;BuildEditorShaders;BuildAndroid;BuildiOS;BuildWindowsStore;BuildWindowsPhone"/>
+  
   <Target Name="CopyParadoxKey">
-    <Copy Condition="Exists('$(LOCALAPPDATA)\SiliconStudio\ParadoxBuildKey\paradox.snk')" SourceFiles="$(LOCALAPPDATA)\SiliconStudio\ParadoxBuildKey\paradox.snk" DestinationFolder="$(MSBuildThisFileDirectory)"/>
+    <Copy Condition="'$(SiliconStudioSign)' == 'true' And Exists('$(LOCALAPPDATA)\SiliconStudio\ParadoxBuildKey\paradox.snk')" SourceFiles="$(LOCALAPPDATA)\SiliconStudio\ParadoxBuildKey\paradox.snk" DestinationFolder="$(MSBuildThisFileDirectory)"/>
   </Target>
 
-  <Target Name="BuildWindows">
+  <Target Name="BuildEditorShaders">
+    <Exec Command="$(ParadoxRoot)sources\editor\SiliconStudio.Paradox.Assets.Presentation\EditorPackage\generate-editor-package.bat" WorkingDirectory="$(ParadoxRoot)sources\editor\SiliconStudio.Paradox.Assets.Presentation\EditorPackage"/>
+  </Target>
+
+  <Target Name="BuildWindows" DependsOnTargets="CopyParadoxKey">
     <MSBuild Targets="Clean;Build" Projects="$(ParadoxSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
   </Target>
 
-  <Target Name="BuildAndroid">
+  <Target Name="BuildAndroid" DependsOnTargets="CopyParadoxKey">
     <MSBuild Targets="Clean;Build" Projects="$(ParadoxSolution).Android.sln" Properties="$(BuildProperties);Platform=Android"/>
   </Target>
 
-  <Target Name="BuildiOS">
+  <Target Name="BuildiOS" DependsOnTargets="CopyParadoxKey">
     <MSBuild Targets="Clean;Build" Projects="$(ParadoxSolution).iOS.sln" Properties="$(BuildProperties);Platform=iPhone"/>
   </Target>
   
-  <Target Name="BuildWindowsStore">
+  <Target Name="BuildWindowsStore" DependsOnTargets="CopyParadoxKey">
     <MSBuild Targets="Clean;Build" Projects="$(ParadoxSolution).WindowsStore.sln" Properties="$(BuildProperties);Platform=WindowsStore"/>
   </Target>
 
-  <Target Name="BuildWindowsPhone">
+  <Target Name="BuildWindowsPhone" DependsOnTargets="CopyParadoxKey">
     <MSBuild Targets="Clean;Build" Projects="$(ParadoxSolution).WindowsPhone.sln" Properties="$(BuildProperties);Platform=WindowsPhone"/>
   </Target>
 </Project>

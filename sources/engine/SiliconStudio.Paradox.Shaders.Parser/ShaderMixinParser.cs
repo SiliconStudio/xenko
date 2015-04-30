@@ -4,11 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using System.Security.Policy;
-
+using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Shaders.Parser.Ast;
 using SiliconStudio.Paradox.Shaders.Parser.Mixins;
 using SiliconStudio.Paradox.Shaders.Parser.Performance;
+using SiliconStudio.Paradox.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Analysis.Hlsl;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
@@ -59,9 +60,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderMixinParser"/> class.
         /// </summary>
-        public ShaderMixinParser()
+        public ShaderMixinParser(IVirtualFileProvider fileProvider)
         {
-            SourceManager = new ShaderSourceManager();
+            SourceManager = new ShaderSourceManager(fileProvider);
             var shaderLoader = new ShaderLoader(SourceManager);
             
             if (shaderLibrary == null)
@@ -83,7 +84,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser
         /// <param name="modifiedShaders">The modified shaders.</param>
         public void DeleteObsoleteCache(HashSet<string> modifiedShaders)
         {
-            shaderLibrary.DeleteObsoleteCache(modifiedShaders);
+            lock (shaderLibrary)
+            {
+                shaderLibrary.DeleteObsoleteCache(modifiedShaders);
+            }
         }
         public bool AllowNonInstantiatedGenerics
         {
@@ -137,6 +141,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
 
                 var ast = moduleMixinInfo.MixinAst;
                 var shaderClassSource = moduleMixinInfo.ShaderSource as ShaderClassSource;
+                // If we have a ShaderClassSource and it is not an inline one, then we can store the hash sources
                 if (ast != null && shaderClassSource != null)
                 {
                     parsingResult.HashSources[shaderClassSource.ClassName] = ast.SourceHash;
@@ -208,9 +213,23 @@ namespace SiliconStudio.Paradox.Shaders.Parser
             // ----------------------------------------------------------
             // Perform Shader Mixer
             // ----------------------------------------------------------
-            var externDict = new Dictionary<Variable, List<ModuleMixin>>();
-            var finalModuleList = BuildCompositionsDictionary(shaderMixinSource, externDict, context, mixCloneContext);
+            var externDict = new CompositionDictionary();
+            var finalModuleList = BuildCompositionsDictionary(shaderMixinSource, externDict, context, mixCloneContext, parsingResult);
             //PerformanceLogger.Stop(PerformanceStage.DeepClone);
+
+            if (parsingResult.HasErrors)
+                return parsingResult;
+
+            // look for stage compositions and add the links between variables and compositions when necessary
+            var extraExternDict = new Dictionary<Variable, List<ModuleMixin>>();
+            foreach (var item in externDict)
+            {
+                if (item.Key.Qualifiers.Contains(ParadoxStorageQualifier.Stage))
+                    FullLinkStageCompositions(item.Key, item.Value, externDict, extraExternDict, parsingResult);
+            }
+            foreach (var item in extraExternDict)
+                externDict.Add(item.Key, item.Value);
+
             var mixinDictionary = BuildMixinDictionary(finalModuleList);
 
             if (finalModuleList != null)
@@ -226,6 +245,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                     return parsingResult;
 
                 var finalShader = mixer.GetMixedShader();
+
+                // Simplifies the shader by removing dead code
+                var simplifier = new ExpressionSimplifierVisitor();
+                simplifier.Run(finalShader);
 
                 parsingResult.Reflection = new EffectReflection();
                 var pdxShaderLinker = new ShaderLinker(parsingResult);
@@ -294,7 +317,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
         /// <param name="compilationContext">the compilation context</param>
         /// <param name="cloneContext">The clone context.</param>
         /// <returns>a list of all the needed mixins</returns>
-        private List<ModuleMixin> BuildCompositionsDictionary(ShaderSource shaderSource, Dictionary<Variable, List<ModuleMixin>> dictionary, ShaderCompilationContext compilationContext, CloneContext cloneContext)
+        private static List<ModuleMixin> BuildCompositionsDictionary(ShaderSource shaderSource, CompositionDictionary dictionary, ShaderCompilationContext compilationContext, CloneContext cloneContext, LoggerResult log)
         {
             if (shaderSource is ShaderMixinSource)
             {
@@ -311,10 +334,14 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                     //look for the key
                     var foundVars = finalModule.FindAllVariablesByName(composition.Key).Where(value => value.Variable.Qualifiers.Contains(ParadoxStorageQualifier.Compose)).ToList();
 
-                    if (foundVars.Count > 0)
+                    if (foundVars.Count > 1)
+                    {
+                        log.Error(ParadoxMessageCode.ErrorAmbiguousComposition, new SourceSpan(), composition.Key);
+                    }
+                    else if (foundVars.Count > 0)
                     {
                         Variable foundVar = foundVars[0].Variable;
-                        var moduleMixins = BuildCompositionsDictionary(composition.Value, dictionary, compilationContext, cloneContext);
+                        var moduleMixins = BuildCompositionsDictionary(composition.Value, dictionary, compilationContext, cloneContext, log);
                         if (moduleMixins == null)
                             return null;
 
@@ -322,7 +349,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                     }
                     else
                     {
-                        // TODO: log an error?
+                        // No matching variable was found
+                        // TODO: log a message?
                     }
                 }
                 return new List<ModuleMixin> { finalModule };
@@ -346,7 +374,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                 var compositionArray = new List<ModuleMixin>();
                 foreach (var shader in shaderArraySource.Values)
                 {
-                    var mixin = BuildCompositionsDictionary(shader, dictionary, compilationContext, cloneContext);
+                    var mixin = BuildCompositionsDictionary(shader, dictionary, compilationContext, cloneContext, log);
                     if (mixin == null)
                         return null;
                     compositionArray.AddRange(mixin);
@@ -355,6 +383,59 @@ namespace SiliconStudio.Paradox.Shaders.Parser
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Link all the stage compositions in case it is referenced at several places.
+        /// </summary>
+        /// <param name="variable">The variable of the composition.</param>
+        /// <param name="composition">The composition.</param>
+        /// <param name="dictionary">The already registered compositions.</param>
+        /// <param name="extraDictionary">The new compositions.</param>
+        /// <param name="log">The logger.</param>
+        private static void FullLinkStageCompositions(Variable variable, List<ModuleMixin> composition, CompositionDictionary dictionary, Dictionary<Variable, List<ModuleMixin>> extraDictionary, LoggerResult log)
+        {
+            var mixin = variable.GetTag(ParadoxTags.ShaderScope) as ModuleMixin;
+            if (mixin != null)
+            {
+                var className = mixin.MixinName;
+                foreach (var item in dictionary)
+                {
+                    if (item.Key == variable)
+                        continue;
+
+                    foreach (var module in item.Value)
+                    {
+                        if (module.MixinName == className || module.InheritanceList.Any(x => x.MixinName == className))
+                        {
+                            // add reference
+                            var foundVars = module.FindAllVariablesByName(variable.Name).Where(value => value.Variable.Qualifiers.Contains(ParadoxStorageQualifier.Compose)).ToList();;
+                            if (foundVars.Count > 1)
+                            {
+                                log.Error(ParadoxMessageCode.ErrorAmbiguousComposition, new SourceSpan(), variable.Name);
+                            }
+                            else if (foundVars.Count > 0)
+                            {
+                                // if there is already a filled composition, it means that the ShaderMixinSource filled the composition information at two different places
+                                // TODO: verify that
+                                var foundVar = foundVars[0].Variable;
+                                List<ModuleMixin> previousList;
+                                if (dictionary.TryGetValue(foundVar, out previousList))
+                                {
+                                    previousList.AddRange(composition); 
+                                }
+                                else
+                                    extraDictionary.Add(foundVars[0].Variable, composition);
+                            }
+                            else
+                            {
+                                // No matching variable was found
+                                // TODO: log a message?
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>

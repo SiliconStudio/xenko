@@ -5,7 +5,8 @@ using System;
 using System.Runtime.InteropServices;
 using System.Text;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Graphics.Internals;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -42,7 +43,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="bufferElementCount">The maximum number element that can be batched in one time.</param>
         /// <param name="batchCapacity">The batch capacity default to 64.</param>
         public SpriteBatch(GraphicsDevice graphicsDevice, int bufferElementCount = 1024, int batchCapacity = 64)
-            : base(graphicsDevice, Bytecode, StaticQuadBufferInfo.CreateQuadBufferInfo("SpriteBatch.VertexIndexBuffer", bufferElementCount, batchCapacity), VertexPositionColorTextureSwizzle.Layout)
+            : base(graphicsDevice, Bytecode, StaticQuadBufferInfo.CreateQuadBufferInfo("SpriteBatch.VertexIndexBuffer", true, bufferElementCount, batchCapacity), VertexPositionColorTextureSwizzle.Layout)
         {
             DefaultDepth = 200f;
         }
@@ -100,55 +101,58 @@ namespace SiliconStudio.Paradox.Graphics
         /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil and rasterizer state objects, plus a custom effect. Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, DepthStencilState.Default, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp). Passing a null effect selects the default SpriteBatch Class shader.
         /// </summary>
         /// <param name="sortMode">The sprite drawing order to use for the batch session</param>
-        /// <param name="effect">The effect to use for the batch session</param>
         /// <param name="blendState">The blending state to use for the batch session</param>
         /// <param name="samplerState">The sampling state to use for the batch session</param>
         /// <param name="depthStencilState">The depth stencil state to use for the batch session</param>
         /// <param name="rasterizerState">The rasterizer state to use for the batch session</param>
+        /// <param name="effect">The effect to use for the batch session</param>
+        /// <param name="parameterCollectionGroup">The parameter collection group.</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference for the batch session</param>
-        public void Begin(SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null, int stencilValue = 0)
+        public void Begin(SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null, EffectParameterCollectionGroup parameterCollectionGroup = null, int stencilValue = 0)
         {
             UpdateDefaultProjectionMatrix();
-            Begin(defaultViewMatrix, defaultProjectionMatrix, sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, stencilValue);
+            Begin(defaultViewMatrix, defaultProjectionMatrix, sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, parameterCollectionGroup, stencilValue);
         }
 
         /// <summary>
-        /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil, rasterizer state objects, plus a custom effect and a 2D transformation matrix. Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, DepthStencilState.Default, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp). Passing a null effect selects the default SpriteBatch Class shader. 
+        /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil, rasterizer state objects, plus a custom effect and a 2D transformation matrix. Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, DepthStencilState.Default, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp). Passing a null effect selects the default SpriteBatch Class shader.
         /// </summary>
-        /// <param name="sortMode">The sprite drawing order to use for the batch session</param>
-        /// <param name="effect">The effect to use for the batch session</param>
-        /// <param name="blendState">The blending state to use for the batch session</param>
-        /// <param name="samplerState">The sampling state to use for the batch session</param>
-        /// <param name="depthStencilState">The depth stencil state to use for the batch session</param>
-        /// <param name="rasterizerState">The rasterizer state to use for the batch session</param>
-        /// <param name="stencilValue">The value of the stencil buffer to take as reference for the batch session</param>
         /// <param name="viewMatrix">The view matrix to use for the batch session</param>
-        public void Begin(Matrix viewMatrix, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null, int stencilValue = 0)
-        {
-            UpdateDefaultProjectionMatrix();
-            Begin(viewMatrix, defaultProjectionMatrix, sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, stencilValue);
-        }
-
-        /// <summary>
-        /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil, rasterizer state objects, plus a custom effect and a 2D transformation matrix. Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, DepthStencilState.Default, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp). Passing a null effect selects the default SpriteBatch Class shader. 
-        /// </summary>
         /// <param name="sortMode">The sprite drawing order to use for the batch session</param>
-        /// <param name="effect">The effect to use for the batch session</param>
         /// <param name="blendState">The blending state to use for the batch session</param>
         /// <param name="samplerState">The sampling state to use for the batch session</param>
         /// <param name="depthStencilState">The depth stencil state to use for the batch session</param>
         /// <param name="rasterizerState">The rasterizer state to use for the batch session</param>
+        /// <param name="effect">The effect to use for the batch session</param>
+        /// <param name="parameterCollectionGroup">The parameter collection group.</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference for the batch session</param>
+        public void Begin(Matrix viewMatrix, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null, EffectParameterCollectionGroup parameterCollectionGroup = null, int stencilValue = 0)
+        {
+            UpdateDefaultProjectionMatrix();
+            Begin(viewMatrix, defaultProjectionMatrix, sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, parameterCollectionGroup, stencilValue);
+        }
+
+        /// <summary>
+        /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil, rasterizer state objects, plus a custom effect and a 2D transformation matrix. Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, DepthStencilState.Default, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp). Passing a null effect selects the default SpriteBatch Class shader.
+        /// </summary>
         /// <param name="viewMatrix">The view matrix to use for the batch session</param>
         /// <param name="projectionMatrix">The projection matrix to use for the batch session</param>
-        public void Begin(Matrix viewMatrix, Matrix projectionMatrix, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null, int stencilValue = 0)
+        /// <param name="sortMode">The sprite drawing order to use for the batch session</param>
+        /// <param name="blendState">The blending state to use for the batch session</param>
+        /// <param name="samplerState">The sampling state to use for the batch session</param>
+        /// <param name="depthStencilState">The depth stencil state to use for the batch session</param>
+        /// <param name="rasterizerState">The rasterizer state to use for the batch session</param>
+        /// <param name="effect">The effect to use for the batch session</param>
+        /// <param name="parameterCollectionGroup">The parameter collection group.</param>
+        /// <param name="stencilValue">The value of the stencil buffer to take as reference for the batch session</param>
+        public void Begin(Matrix viewMatrix, Matrix projectionMatrix, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null, EffectParameterCollectionGroup parameterCollectionGroup = null, int stencilValue = 0)
         {
             CheckEndHasBeenCalled("begin");
 
             userViewMatrix = viewMatrix;
             userProjectionMatrix = projectionMatrix;
 
-            Begin(effect, sortMode, blendState, samplerState, depthStencilState, rasterizerState, stencilValue);
+            Begin(effect, parameterCollectionGroup, sortMode, blendState, samplerState, depthStencilState, rasterizerState, stencilValue);
         }
 
         /// <summary>

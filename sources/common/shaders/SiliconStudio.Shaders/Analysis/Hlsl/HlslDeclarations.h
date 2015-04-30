@@ -32,6 +32,8 @@
 // SampleLevel (DirectX HLSL Texture Object)
 // http://msdn.microsoft.com/en-us/library/bb509699%28v=VS.85%29.aspx
 
+void GroupMemoryBarrierWithGroupSync();
+
 class __Texture1D<T> {
 	// SM 4.0
 	float CalculateLevelOfDetail( sampler_state s, float1 x);
@@ -45,8 +47,8 @@ class __Texture1D<T> {
 	float4 Sample(sampler_state S, float Location, int Offset);
 	float4 SampleBias(sampler_state S, float Location, float Bias);
 	float4 SampleBias(sampler_state S, float Location, float Bias, int Offset);
-	uint SampleCmp(sampler_state S, float Location, float Bias);
-	uint SampleCmp(sampler_state S, float Location, float Bias, int Offset);
+	float SampleCmp(sampler_state S, float Location, float Bias);
+	float SampleCmp(sampler_state S, float Location, float Bias, int Offset);
 	float4 SampleGrad(sampler_state S, float Location, float DDX, float DDY);
 	float4 SampleGrad(sampler_state S, float Location, float DDX, float DDY, int Offset);
 	float4 SampleLevel( sampler_state S, float Location, float LOD);
@@ -71,8 +73,8 @@ class __Texture1DArray<T> {
 	float4 Sample(sampler_state S, float2 Location, int Offset);
 	float4 SampleBias(sampler_state S, float2 Location, float Bias);
 	float4 SampleBias(sampler_state S, float2 Location, float Bias, int Offset);
-	uint SampleCmp(sampler_state S, float2 Location, float Bias);
-	uint SampleCmp(sampler_state S, float2 Location, float Bias, int Offset);
+	float SampleCmp(sampler_state S, float2 Location, float Bias);
+	float SampleCmp(sampler_state S, float2 Location, float Bias, int Offset);
 	float4 SampleGrad(sampler_state S, float2 Location, float DDX, float DDY);
 	float4 SampleGrad(sampler_state S, float2 Location, float DDX, float DDY, int Offset);
 	float4 SampleLevel( sampler_state S, float2 Location, float LOD);
@@ -80,7 +82,7 @@ class __Texture1DArray<T> {
 
 	// SM 5.0
 	T mips.operator[][](in  uint mipSlice,in  uint2 pos);	
-	
+
     T operator[](in  uint2 pos);
 };
 
@@ -99,8 +101,8 @@ class __Texture2D<T> {
 	float4 Sample(sampler_state S, float2 Location, int2 Offset);
 	float4 SampleBias(sampler_state S, float2 Location, float Bias);
 	float4 SampleBias(sampler_state S, float2 Location, float Bias, int2 Offset);
-	uint SampleCmp(sampler_state S, float2 Location, float Bias);
-	uint SampleCmp(sampler_state S, float2 Location, float Bias, int2 Offset);
+	float SampleCmp(sampler_state S, float2 Location, float Bias);
+	float SampleCmp(sampler_state S, float2 Location, float Bias, int2 Offset);
 	float4 SampleGrad(sampler_state S, float2 Location, float2 DDX, float2 DDY);
 	float4 SampleGrad(sampler_state S, float2 Location, float2 DDX, float2 DDY, int2 Offset);
 	float4 SampleLevel( sampler_state S, float2 Location, float LOD);
@@ -113,6 +115,21 @@ class __Texture2D<T> {
 	  in  int2 offset
 	);	
 	
+	T GatherRed(
+		in  sampler s,
+		in  float2 location
+		);
+
+	T GatherGreen(
+		in  sampler s,
+		in  float2 location
+		);
+
+	T GatherBlue(
+		in  sampler s,
+		in  float2 location
+		);
+
 	T GatherRed(
 	  in  sampler s,
 	  in  float2 location,
@@ -192,8 +209,8 @@ class __Texture2DArray<T> {
 	float4 Sample(sampler_state S, float3 Location, int2 Offset);
 	float4 SampleBias(sampler_state S, float3 Location, float Bias);
 	float4 SampleBias(sampler_state S, float3 Location, float Bias, int2 Offset);
-	uint SampleCmp(sampler_state S, float3 Location, float Bias);
-	uint SampleCmp(sampler_state S, float3 Location, float Bias, int2 Offset);
+	float SampleCmp(sampler_state S, float3 Location, float Bias);
+	float SampleCmp(sampler_state S, float3 Location, float Bias, int2 Offset);
 	float4 SampleGrad(sampler_state S, float3 Location, float2 DDX, float2 DDY);
 	float4 SampleGrad(sampler_state S, float3 Location, float2 DDX, float2 DDY, int2 Offset);
 	float4 SampleLevel( sampler_state S, float3 Location, float LOD);
@@ -284,8 +301,8 @@ class __Texture3D<T> {
 	float4 Sample(sampler_state S, float3 Location, int3 Offset);
 	float4 SampleBias(sampler_state S, float3 Location, float Bias);
 	float4 SampleBias(sampler_state S, float3 Location, float Bias, int3 Offset);
-	uint SampleCmp(sampler_state S, float3 Location, float Bias);
-	uint SampleCmp(sampler_state S, float3 Location, float Bias, int3 Offset);
+	float SampleCmp(sampler_state S, float3 Location, float Bias);
+	float SampleCmp(sampler_state S, float3 Location, float Bias, int3 Offset);
 	float4 SampleGrad(sampler_state S, float3 Location, float3 DDX, float3 DDY);
 	float4 SampleGrad(sampler_state S, float3 Location, float3 DDX, float3 DDY, int3 Offset);
 	float4 SampleLevel( sampler_state S, float3 Location, float LOD);
@@ -307,7 +324,7 @@ class __TextureCube<T> {
 	void GetDimensions( out float Width, out float Height);
 	float4 Sample(sampler_state S, float3 Location);
 	float4 SampleBias(sampler_state S, float3 Location, float Bias);
-	uint SampleCmp(sampler_state S, float3 Location, float Bias);
+	float SampleCmp(sampler_state S, float3 Location, float Bias);
 	float4 SampleGrad(sampler_state S, float3 Location, float3 DDX, float3 DDY);
 	float4 SampleLevel( sampler_state S, float3 Location, float LOD);
 };
@@ -322,8 +339,8 @@ class __TextureCubeArray<T> {
 	void GetDimensions( out float Width, out float Height, out float Elements);
 	float4 Sample(sampler_state S, float4 Location);
 	float4 SampleBias(sampler_state S, float4 Location, float Bias);
-	uint SampleCmp(sampler_state S, float4 Location, float Bias);
-	uint SampleCmp(sampler_state S, float4 Location, float Bias, int3 Offset);
+	float SampleCmp(sampler_state S, float4 Location, float Bias);
+	float SampleCmp(sampler_state S, float4 Location, float Bias, int3 Offset);
 	float4 SampleGrad(sampler_state S, float4 Location, float3 DDX, float3 DDY);
 	float4 SampleLevel( sampler_state S, float4 Location, float LOD);
 };

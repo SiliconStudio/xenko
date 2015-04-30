@@ -3,13 +3,13 @@
 using System;
 using System.IO;
 
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     /// <summary>
     /// Plugin used to render to a GBuffer from a MainPlugin.

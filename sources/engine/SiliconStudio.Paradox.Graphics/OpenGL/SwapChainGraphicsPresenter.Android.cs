@@ -3,6 +3,7 @@
 #if SILICONSTUDIO_PLATFORM_ANDROID
 using System;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Mathematics;
 using OpenTK;
 using OpenTK.Platform.Android;
 
@@ -15,9 +16,12 @@ namespace SiliconStudio.Paradox.Graphics
 
         public SwapChainGraphicsPresenter(GraphicsDevice device, PresentationParameters presentationParameters) : base(device, presentationParameters)
         {
-            device.InitDefaultRenderTarget(presentationParameters);
-            backBuffer = device.DefaultRenderTarget;
-            DepthStencilBuffer = device.windowProvidedDepthTexture;
+            device.InitDefaultRenderTarget(Description);
+            //backBuffer = device.DefaultRenderTarget;
+            // TODO: Review Depth buffer creation for both Android and iOS
+            //DepthStencilBuffer = device.windowProvidedDepthTexture;
+
+            backBuffer = Texture.New2D(device, Description.BackBufferWidth, Description.BackBufferHeight, presentationParameters.BackBufferFormat, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
         }
 
         public override Texture BackBuffer
@@ -42,14 +46,40 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
+        protected override void ProcessPresentationParameters()
+        {
+            // Use aspect ratio of device
+            var androidGameView = (AndroidGameView)Description.DeviceWindowHandle.NativeHandle;
+            var panelWidth = androidGameView.Size.Width;
+            var panelHeight = androidGameView.Size.Height;
+            var panelRatio = (float)panelWidth / panelHeight;
+
+            var desiredWidth = Description.BackBufferWidth;
+            var desiredHeight = Description.BackBufferHeight;
+
+            if (panelRatio >= 1.0f) // Landscape => use height as base
+            {
+                Description.BackBufferHeight = (int)(desiredWidth / panelRatio);
+            }
+            else // Portrait => use width as base
+            {
+                Description.BackBufferWidth = (int)(desiredHeight * panelRatio);
+            }
+        }
+
         public override void Present()
         {
             GraphicsDevice.Begin();
 
+            var androidGameView = (AndroidGameView)Description.DeviceWindowHandle.NativeHandle;
+            GraphicsDevice.windowProvidedRenderTexture.InternalSetSize(androidGameView.Width, androidGameView.Height);
+
             // If we made a fake render target to avoid OpenGL limitations on window-provided back buffer, let's copy the rendering result to it
-            if (GraphicsDevice.DefaultRenderTarget != GraphicsDevice.windowProvidedRenderTexture)
-                GraphicsDevice.Copy(GraphicsDevice.DefaultRenderTarget, GraphicsDevice.windowProvidedRenderTexture);
-            var graphicsContext = ((AndroidGameView)Description.DeviceWindowHandle.NativeHandle).GraphicsContext;
+            if (backBuffer != GraphicsDevice.windowProvidedRenderTexture)
+                GraphicsDevice.CopyScaler2D(backBuffer, GraphicsDevice.windowProvidedRenderTexture,
+                    new Rectangle(0, 0, backBuffer.Width, backBuffer.Height),
+                    new Rectangle(0, 0, GraphicsDevice.windowProvidedRenderTexture.Width, GraphicsDevice.windowProvidedRenderTexture.Height), false);
+            var graphicsContext = androidGameView.GraphicsContext;
 
             ((AndroidGraphicsContext)graphicsContext).Swap();
 
@@ -65,9 +95,10 @@ namespace SiliconStudio.Paradox.Graphics
             ReleaseCurrentDepthStencilBuffer();
         }
 
-        protected override void CreateDepthStencilBuffer()
-        {
-        }
+        // TODO: Review Depth buffer creation for both Android and iOS
+        //protected override void CreateDepthStencilBuffer()
+        //{
+        //}
     }
 }
 #endif

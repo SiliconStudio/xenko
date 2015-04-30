@@ -37,8 +37,13 @@
     <Compile Include="Adorners\HighlightBorderAdorner.cs" />
     <Compile Include="Adorners\HighlightAdornerState.cs" />
     <Compile Include="Behaviors\BehaviorProperties.cs" />
+    <Compile Include="Behaviors\BindableSelectedItemsBehavior.cs" />
+    <Compile Include="Behaviors\BindCurrentToolTipStringBehavior.cs" />
+    <Compile Include="Behaviors\ChangeCursorOnSliderThumbBehavior.cs" />
     <Compile Include="Behaviors\CloseWindowBehavior.cs" />
     <Compile Include="Behaviors\DoubleClickCloseWindowBehavior.cs" />
+    <Compile Include="Behaviors\ListBoxBindableSelectedItemsBehavior.cs" />
+    <Compile Include="Behaviors\MenuItemCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\NumericTextBoxTransactionalRepeatButtonsBehavior.cs" />
     <Compile Include="Behaviors\OnEventBehavior.cs" />
     <Compile Include="Behaviors\OnEventSetPropertyBehavior.cs" />
@@ -53,12 +58,18 @@
     <Compile Include="Commands\SystemCommand.cs" />
     <Compile Include="Commands\SystemCommands.cs" />
     <Compile Include="Controls\FilteringComboBox.cs" />
+    <Compile Include="Controls\Int2Editor.cs" />
+    <Compile Include="Controls\Int3Editor.cs" />
+    <Compile Include="Controls\Int4Editor.cs" />
     <Compile Include="Controls\MatrixEditor.cs" />
     <Compile Include="Controls\PropertyView.cs" />
     <Compile Include="Controls\PropertyViewItem.cs" />
     <Compile Include="Controls\PropertyViewItemEventArgs.cs" />
+    <Compile Include="Controls\RectangleEditor.cs" />
+    <Compile Include="Controls\RectangleFEditor.cs" />
     <Compile Include="Controls\RotationEditor.cs" />
     <Compile Include="Controls\TextBoxBase.cs" />
+    <Compile Include="Controls\VectorEditor.cs" />
     <Compile Include="Core\AnonymousComparer.cs" />
     <Compile Include="Core\AnonymousEqualityComparer.cs" />
     <Compile Include="Behaviors\CharInputBehavior.cs" />
@@ -82,8 +93,11 @@
     <Compile Include="Core\BindingProxy.cs" />
     <Compile Include="Core\DependencyPropertyWatcher.cs" />
     <Compile Include="Core\Utils.cs" />
+    <Compile Include="Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="ValueConverters\MaxNum.cs" />
     <Compile Include="ValueConverters\MinNum.cs" />
+    <Compile Include="ViewModel\ActionStack\AnonymousViewModelActionItem.cs" />
     <Compile Include="ViewModel\IViewModelServiceProvider.cs" />
     <Compile Include="ViewModel\ViewModelServiceProvider.cs" />
     <Compile Include="View\DefaultTemplateProvider.cs" />
@@ -211,7 +225,7 @@
     <Compile Include="ViewModel\ActionStack\ActionItemViewModel.cs" />
     <Compile Include="ViewModel\ActionStack\CollectionChangedViewModelActionItem.cs" />
     <Compile Include="ViewModel\DirtiableEditableViewModel.cs" />
-    <Compile Include="ViewModel\DirtinessChangedEventArgs.cs" />
+    <Compile Include="ViewModel\DirtinessUpdatedEventArgs.cs" />
     <Compile Include="ViewModel\DispatcherViewModel.cs" />
     <Compile Include="ViewModel\EditableViewModel.cs" />
     <Compile Include="ViewModel\IDirtiableViewModel.cs" />
@@ -279,6 +293,9 @@
     <Resource Include="Resources\Images\maximize_window.png" />
     <Resource Include="Resources\Images\minimize_window.png" />
     <Resource Include="Resources\Images\restore_window.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\gear--pencil.png" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

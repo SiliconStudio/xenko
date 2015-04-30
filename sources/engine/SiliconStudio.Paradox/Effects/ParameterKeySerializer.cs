@@ -4,7 +4,7 @@ using System;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     public class ParameterKeySerializer<T> : DataSerializer<ParameterKey<T>>
     {

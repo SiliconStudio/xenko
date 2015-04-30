@@ -132,7 +132,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             ImageTester.ImageTestResultConnection.DeviceName += "_" + GraphicsDevice.Adapter.Description;
 #endif
 
-            Script.Add(RegisterTestsInternal);
+            Script.AddTask(RegisterTestsInternal);
         }
 
         private Task RegisterTestsInternal()

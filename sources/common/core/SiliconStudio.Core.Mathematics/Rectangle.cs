@@ -28,16 +28,17 @@ using System.Runtime.InteropServices;
 namespace SiliconStudio.Core.Mathematics
 {
     /// <summary>
-    /// Structure using the same layout than <see cref="System.Drawing.Rectangle"/> 
+    /// A rectangle structure defining X,Y,Width,Height.
     /// </summary>
-    [DataContract]
+    [DataContract("Rectangle")]
+    [DataStyle(DataStyle.Compact)]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Rectangle : IEquatable<Rectangle>
     {
-        private int _left;
-        private int _top;
-        private int _right;
-        private int _bottom;
+        private int x;
+        private int y;
+        private int width;
+        private int height;
 
         /// <summary>
         /// An empty rectangle.
@@ -58,10 +59,10 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="height">The height.</param>
         public Rectangle(int x, int y, int width, int height)
         {
-            _left = x;
-            _top = y;
-            _right = x + width;
-            _bottom = y + height;
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
         }
 
         /// <summary>
@@ -71,8 +72,8 @@ namespace SiliconStudio.Core.Mathematics
         [DataMemberIgnore]
         public int Left
         {
-            get { return _left; }
-            set { _left = value; }
+            get { return x; }
+            set { x = value; }
         }
 
         /// <summary>
@@ -82,8 +83,8 @@ namespace SiliconStudio.Core.Mathematics
         [DataMemberIgnore]
         public int Top
         {
-            get { return _top; }
-            set { _top = value; }
+            get { return y; }
+            set { y = value; }
         }
 
         /// <summary>
@@ -93,8 +94,7 @@ namespace SiliconStudio.Core.Mathematics
         [DataMemberIgnore]
         public int Right
         {
-            get { return _right; }
-            set { _right = value; }
+            get { return x + width; }
         }
 
         /// <summary>
@@ -104,8 +104,7 @@ namespace SiliconStudio.Core.Mathematics
         [DataMemberIgnore]
         public int Bottom
         {
-            get { return _bottom; }
-            set { _bottom = value; }
+            get { return y + height; }
         }
 
         /// <summary>
@@ -117,12 +116,11 @@ namespace SiliconStudio.Core.Mathematics
         {
             get
             {
-                return _left;
+                return x;
             }
             set
             {
-                _right = value + Width;
-                _left = value;
+                x = value;
             }
         }
 
@@ -135,12 +133,11 @@ namespace SiliconStudio.Core.Mathematics
         {
             get
             {
-                return _top;
+                return y;
             }
             set
             {
-                _bottom = value + Height;
-                _top = value;
+                y = value;
             }
         }
 
@@ -151,8 +148,14 @@ namespace SiliconStudio.Core.Mathematics
         [DataMember(2)]
         public int Width
         {
-            get { return _right - _left; }
-            set { _right = _left + value; }
+            get
+            {
+                return width;
+            }
+            set
+            {
+                width = value;
+            }
         }
 
         /// <summary>
@@ -162,8 +165,8 @@ namespace SiliconStudio.Core.Mathematics
         [DataMember(3)]
         public int Height
         {
-            get { return _bottom - _top; }
-            set { _bottom = _top + value; }
+            get { return height; }
+            set { height = value; }
         }
 
         /// <summary>
@@ -237,25 +240,25 @@ namespace SiliconStudio.Core.Mathematics
         /// Gets the position of the top-left corner of the rectangle.
         /// </summary>
         /// <value>The top-left corner of the rectangle.</value>
-        public Point TopLeft { get { return new Point(_left, _top); } }
+        public Point TopLeft { get { return new Point(Left, Top); } }
 
         /// <summary>
         /// Gets the position of the top-right corner of the rectangle.
         /// </summary>
         /// <value>The top-right corner of the rectangle.</value>
-        public Point TopRight { get { return new Point(_right, _top); } }
+        public Point TopRight { get { return new Point(Right, Top); } }
 
         /// <summary>
         /// Gets the position of the bottom-left corner of the rectangle.
         /// </summary>
         /// <value>The bottom-left corner of the rectangle.</value>
-        public Point BottomLeft { get { return new Point(_left, _bottom); } }
+        public Point BottomLeft { get { return new Point(Left, Bottom); } }
 
         /// <summary>
         /// Gets the position of the bottom-right corner of the rectangle.
         /// </summary>
         /// <value>The bottom-right corner of the rectangle.</value>
-        public Point BottomRight { get { return new Point(_right, _bottom); } }
+        public Point BottomRight { get { return new Point(Right, Bottom); } }
 
         /// <summary>Changes the position of the rectangle.</summary>
         /// <param name="amount">The values to adjust the position of the rectangle by.</param>
@@ -327,21 +330,21 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Checks, if specified point is inside <see cref="SharpDX.Rectangle"/>.
+        /// Checks, if specified point is inside <see cref="Rectangle"/>.
         /// </summary>
         /// <param name="x">X point coordinate.</param>
         /// <param name="y">Y point coordinate.</param>
-        /// <returns><c>true</c> if point is inside <see cref="SharpDX.Rectangle"/>, otherwise <c>false</c>.</returns>
+        /// <returns><c>true</c> if point is inside <see cref="Rectangle"/>, otherwise <c>false</c>.</returns>
         public bool Contains(float x, float y)
         {
-            return (x >= _left && x <= _right && y >= _top && y <= _bottom);
+            return (x >= this.x && x <= Right && y >= this.y && y <= Bottom);
         }
 
         /// <summary>
-        /// Checks, if specified <see cref="SharpDX.Vector2"/> is inside <see cref="SharpDX.Rectangle"/>.
+        /// Checks, if specified <see cref="Vector2"/> is inside <see cref="Rectangle"/>.
         /// </summary>
-        /// <param name="vector2D">Coordinate <see cref="SharpDX.Vector2"/>.</param>
-        /// <returns><c>true</c> if <see cref="SharpDX.Vector2"/> is inside <see cref="SharpDX.Rectangle"/>, otherwise <c>false</c>.</returns>
+        /// <param name="vector2D">Coordinate <see cref="Vector2"/>.</param>
+        /// <returns><c>true</c> if <see cref="Vector2"/> is inside <see cref="Rectangle"/>, otherwise <c>false</c>.</returns>
         public bool Contains(Vector2 vector2D)
         {
             return Contains(vector2D.X, vector2D.Y);
@@ -442,15 +445,15 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="SharpDX.Rectangle"/> is equal to this instance.
+        /// Determines whether the specified <see cref="Rectangle"/> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <see cref="SharpDX.Rectangle"/> to compare with this instance.</param>
+        /// <param name="other">The <see cref="Rectangle"/> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref="SharpDX.Rectangle"/> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <see cref="Rectangle"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         public bool Equals(Rectangle other)
         {
-            return other._left == _left && other._top == _top && other._right == _right && other._bottom == _bottom;
+            return other.x == this.x && other.y == this.y && other.width == width && other.height == height;
         }
 
         /// <summary>
@@ -463,10 +466,10 @@ namespace SiliconStudio.Core.Mathematics
         {
             unchecked
             {
-                int result = _left;
-                result = (result * 397) ^ _top;
-                result = (result * 397) ^ _right;
-                result = (result * 397) ^ _bottom;
+                int result = x;
+                result = (result * 397) ^ y;
+                result = (result * 397) ^ width;
+                result = (result * 397) ^ height;
                 return result;
             }
         }
@@ -502,12 +505,6 @@ namespace SiliconStudio.Core.Mathematics
         public static implicit operator RectangleF(Rectangle value)
         {
             return new RectangleF(value.X, value.Y, value.Width, value.Height);
-        }
-
-        internal void MakeXYAndWidthHeight()
-        {
-            _right = (_right - _left);
-            _bottom = (_bottom - _top);
         }
         
         public override string ToString()

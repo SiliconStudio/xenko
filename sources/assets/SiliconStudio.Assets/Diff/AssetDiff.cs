@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SharpDiff;
 using SiliconStudio.Assets.Visitors;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets.Diff
@@ -83,6 +84,13 @@ namespace SiliconStudio.Assets.Diff
             {
                 return computed;
             }
+
+            // If asset implement IDiffResolver, run callback
+            if (baseAsset is IDiffResolver)
+            {
+                ((IDiffResolver)baseAsset).BeforeDiff(baseAsset, asset1, asset2);
+            }
+
             var baseNodes = DataVisitNodeBuilder.Run(TypeDescriptorFactory.Default, baseAsset);
             var asset1Nodes = DataVisitNodeBuilder.Run(TypeDescriptorFactory.Default, asset1);
             var asset2Nodes = DataVisitNodeBuilder.Run(TypeDescriptorFactory.Default, asset2);
@@ -163,9 +171,7 @@ namespace SiliconStudio.Assets.Diff
 
             diff3.InstanceType = type;
 
-            // A comparable type doesn't have any members, is not a collection or dictionary or array.
-            bool isComparableType = !hasMembers && !CollectionDescriptor.IsCollection(type) && !DictionaryDescriptor.IsDictionary(type) && !type.IsArray;
-            if (isComparableType)
+            if (IsComparableType(hasMembers, type))
             {
                 DiffValue(diff3, ref baseNodeDesc, ref asset1NodeDesc, ref asset2NodeDesc);
                 return diff3;
@@ -190,8 +196,32 @@ namespace SiliconStudio.Assets.Diff
             return diff3;
         }
 
+        private static bool IsComparableType(bool hasMembers, Type type)
+        {
+            // A comparable type doesn't have any members, is not a collection or dictionary or array.
+            bool isComparableType = !hasMembers && !CollectionDescriptor.IsCollection(type) && !DictionaryDescriptor.IsDictionary(type) && !type.IsArray;
+            return isComparableType;
+        }
+
         private static void DiffValue(Diff3Node diff3, ref NodeDescription baseNodeDesc, ref NodeDescription asset1NodeDesc, ref NodeDescription asset2NodeDesc)
         {
+            var node = diff3.Asset1Node ?? diff3.Asset2Node ?? diff3.BaseNode;
+            var dataVisitMember = node as DataVisitMember;
+            if (dataVisitMember != null)
+            {
+                var specificAssetAttribute = dataVisitMember.MemberDescriptor.GetCustomAttributes<DiffUseSpecificAssetAttribute>(true).FirstOrDefault();
+                if (specificAssetAttribute != null)
+                {
+                    if (specificAssetAttribute is DiffUseAsset1Attribute)
+                        diff3.ChangeType = Diff3ChangeType.MergeFromAsset1;
+                    else if (specificAssetAttribute is DiffUseAsset2Attribute)
+                        diff3.ChangeType = Diff3ChangeType.MergeFromAsset2;
+                    else
+                        throw new InvalidOperationException();
+                    return;
+                }
+            }
+
             var baseAsset1Equals = Equals(baseNodeDesc.Instance, asset1NodeDesc.Instance);
             var baseAsset2Equals = Equals(baseNodeDesc.Instance, asset2NodeDesc.Instance);
             var asset1And2Equals = Equals(asset1NodeDesc.Instance, asset2NodeDesc.Instance);
@@ -222,12 +252,52 @@ namespace SiliconStudio.Assets.Diff
 
         private void DiffCollection(Diff3Node diff3, DataVisitNode baseNode, DataVisitNode asset1Node, DataVisitNode asset2Node)
         {
+            diff3.Type = Diff3NodeType.Collection;
+
             var baseItems = baseNode != null ? baseNode.Items ?? EmptyNodes : EmptyNodes;
             var asset1Items = asset1Node != null ? asset1Node.Items ?? EmptyNodes : EmptyNodes;
             var asset2Items = asset2Node != null ? asset2Node.Items ?? EmptyNodes : EmptyNodes;
-            
-            equalityComparer.Reset();
-            var changes = Diff3.Compare(baseItems, asset1Items, asset2Items, equalityComparer);
+
+            var itemEqualityComparer = equalityComparer;
+
+            var node = diff3.Asset1Node ?? diff3.Asset2Node ?? diff3.BaseNode;
+
+            IEnumerable<Diff3Change> changes;
+            bool recurseDiff = false;
+
+            // Find an item in any of the list
+            var firstItem = baseItems.FirstOrDefault() ?? asset1Items.FirstOrDefault() ?? asset2Items.FirstOrDefault();
+
+            // If we have a DiffUseAsset1Attribute, list of Asset1Node becomes authoritative.
+            var dataVisitMember = node as DataVisitMember;
+            var specificAssetAttribute = dataVisitMember != null ? dataVisitMember.MemberDescriptor.GetCustomAttributes<DiffUseSpecificAssetAttribute>(true).FirstOrDefault() : null;
+            if (specificAssetAttribute != null)
+            {
+                var isFromAsset2 = specificAssetAttribute is DiffUseAsset2Attribute;
+                var diffChange = isFromAsset2
+                    ? new Diff3Change { ChangeType = SharpDiff.Diff3ChangeType.MergeFrom2, From2 = new Span(0, asset2Items.Count - 1) }
+                    : new Diff3Change { ChangeType = SharpDiff.Diff3ChangeType.MergeFrom1, From1 = new Span(0, asset1Items.Count - 1) };
+
+                changes = new[] { diffChange };
+
+                // TODO: Try to merge back data of matching nodes
+            }
+            else if (firstItem != null && typeof(IDiffKey).IsAssignableFrom(firstItem.InstanceType))
+            {
+                // If item implement IDataDiffKey, we will use that as equality key
+                changes = Diff3.Compare(
+                    baseItems.Select(x => ((IDiffKey)x.Instance).GetDiffKey()).ToList(),
+                    asset1Items.Select(x => ((IDiffKey)x.Instance).GetDiffKey()).ToList(),
+                    asset2Items.Select(x => ((IDiffKey)x.Instance).GetDiffKey()).ToList());
+                recurseDiff = true;
+            }
+            else
+            {
+                // Otherwise, do a full node comparison
+                itemEqualityComparer.Reset();
+                changes = Diff3.Compare(baseItems, asset1Items, asset2Items, itemEqualityComparer);
+            }
+
             foreach (var change in changes)
             {
                 switch (change.ChangeType)
@@ -235,8 +305,10 @@ namespace SiliconStudio.Assets.Diff
                     case SharpDiff.Diff3ChangeType.Equal:
                         for (int i = 0; i < change.Base.Length; i++)
                         {
-                            var diff3Node = new Diff3Node(baseItems[change.Base.From + i], asset1Items[change.From1.From + i], asset2Items[change.From2.From + i]) { ChangeType = Diff3ChangeType.None };
-                            AddItem(diff3, diff3Node);
+                            var diff3Node = recurseDiff
+                                ? DiffNode(baseItems[change.Base.From + i], asset1Items[change.From1.From + i], asset2Items[change.From2.From + i])
+                                : new Diff3Node(baseItems[change.Base.From + i], asset1Items[change.From1.From + i], asset2Items[change.From2.From + i]) { ChangeType = Diff3ChangeType.None };
+                            AddItem(diff3, diff3Node, change.From1.From != 0);
                         }
                         break;
 
@@ -244,7 +316,7 @@ namespace SiliconStudio.Assets.Diff
                         for (int i = 0; i < change.From1.Length; i++)
                         {
                             var diff3Node = new Diff3Node(null, asset1Items[change.From1.From + i], null) { ChangeType = Diff3ChangeType.MergeFromAsset1 };
-                            AddItem(diff3, diff3Node);
+                            AddItem(diff3, diff3Node, change.From1.From != 0);
                         }
                         break;
 
@@ -252,15 +324,17 @@ namespace SiliconStudio.Assets.Diff
                         for (int i = 0; i < change.From2.Length; i++)
                         {
                             var diff3Node = new Diff3Node(null, null, asset2Items[change.From2.From + i]) { ChangeType = Diff3ChangeType.MergeFromAsset2 };
-                            AddItem(diff3, diff3Node);
+                            AddItem(diff3, diff3Node, true);
                         }
                         break;
 
                     case SharpDiff.Diff3ChangeType.MergeFrom1And2:
                         for (int i = 0; i < change.From2.Length; i++)
                         {
-                            var diff3Node = new Diff3Node(null, asset1Items[change.From1.From + i], asset2Items[change.From2.From + i]) { ChangeType = Diff3ChangeType.MergeFromAsset1And2 };
-                            AddItem(diff3, diff3Node);
+                            var diff3Node = recurseDiff
+                                ? DiffNode(null, asset1Items[change.From1.From + i], asset2Items[change.From2.From + i])
+                                : new Diff3Node(null, asset1Items[change.From1.From + i], asset2Items[change.From2.From + i]) { ChangeType = Diff3ChangeType.MergeFromAsset1And2 };
+                            AddItem(diff3, diff3Node, change.From1.From != 0);
                         }
                         break;
 
@@ -303,25 +377,20 @@ namespace SiliconStudio.Assets.Diff
                             var asset1Item = GetSafeFromList(asset1Items, ref from1Index, ref change.From1);
                             var asset2Item = GetSafeFromList(asset2Items, ref from2Index, ref change.From2);
 
-                            var diff3Node = tryResolveConflict ? 
+                            var diff3Node = tryResolveConflict || recurseDiff ? 
                                 DiffNode(baseItem, asset1Item, asset2Item) :
                                 new Diff3Node(baseItem, asset1Item, asset2Item) { ChangeType = Diff3ChangeType.Conflict };
-                            AddItem(diff3, diff3Node);
+                            AddItem(diff3, diff3Node, true);
                         }
                         break;
                 }
             }
 
-            // Order by descending index
-            if (diff3.Items != null)
+            // Any missing item? (we can detect this only at the end)
+            var newItemCount = diff3.Items != null ? diff3.Items.Count : 0;
+            if (asset1Items.Count != newItemCount)
             {
-                diff3.Items.Sort((left, right) =>
-                {
-                    int leftAsset1Index = left.Asset1Node != null ? ((DataVisitListItem)left.Asset1Node).Index : -1;
-                    int rightAsset1Index = right.Asset1Node != null ? ((DataVisitListItem)right.Asset1Node).Index : -1;
-
-                    return rightAsset1Index.CompareTo(leftAsset1Index);
-                });
+                diff3.ChangeType = Diff3ChangeType.Children;
             }
         }
 
@@ -341,6 +410,8 @@ namespace SiliconStudio.Assets.Diff
 
         private void DiffDictionary(Diff3Node diff3, DataVisitNode baseNode, DataVisitNode asset1Node, DataVisitNode asset2Node)
         {
+            diff3.Type = Diff3NodeType.Dictionary;
+
             var baseItems = baseNode != null ? baseNode.Items : null;
             var asset1Items = asset1Node != null ? asset1Node.Items : null;
             var asset2Items = asset2Node != null ? asset2Node.Items : null;
@@ -398,9 +469,19 @@ namespace SiliconStudio.Assets.Diff
                 }
                 else
                 {
+                    //   a        a      null   MergeFrom2 (removed)
                     //   a        b      null   Conflict
                     //  null      b      null   MergeFrom1 (unchanged)
-                    diffValue = new Diff3Node(valueNode.Base, valueNode.Asset1, null) { ChangeType = valueNode.Base == null ? Diff3ChangeType.MergeFromAsset1 : Diff3ChangeType.Conflict };
+                    var changeType = Diff3ChangeType.MergeFromAsset1;
+                    if (valueNode.Base != null)
+                    {
+                        var diffNode = DiffNode(valueNode.Base, valueNode.Asset1, valueNode.Base);
+                        changeType = diffNode.FindDifferences().Any()
+                            ? Diff3ChangeType.Conflict
+                            : Diff3ChangeType.MergeFromAsset2;
+                    }
+
+                    diffValue = new Diff3Node(valueNode.Base, valueNode.Asset1, null) { ChangeType = changeType };
                 }
 
                 AddItem(diff3, diffValue);
@@ -476,17 +557,18 @@ namespace SiliconStudio.Assets.Diff
         /// <param name="thisObject">The this object.</param>
         /// <param name="item">The item.</param>
         /// <exception cref="System.ArgumentNullException">item</exception>
-        private static void AddItem(Diff3Node thisObject, Diff3Node item)
+        private static void AddItem(Diff3Node thisObject, Diff3Node item, bool hasChildrenChanged = false)
         {
             if (item == null) throw new ArgumentNullException("item");
             if (thisObject.Items == null)
                 thisObject.Items = new List<Diff3Node>();
 
             item.Parent = thisObject;
-            if (item.ChangeType != Diff3ChangeType.None)
+            if (item.ChangeType != Diff3ChangeType.None || hasChildrenChanged)
             {
                 thisObject.ChangeType = Diff3ChangeType.Children;
             }
+            item.Index = thisObject.Items.Count;
             thisObject.Items.Add(item);
         }
 
@@ -553,7 +635,8 @@ namespace SiliconStudio.Assets.Diff
                     return result;
                 }
 
-                var diff3 = diffManager.DiffNode(x, y, null);
+                var diff3 = diffManager.DiffNode(x, y, x);
+
                 result = !diff3.FindDifferences().Any();
                 equalityCache.Add(key, result);
                 return result;
@@ -561,7 +644,19 @@ namespace SiliconStudio.Assets.Diff
 
             public int GetHashCode(DataVisitNode obj)
             {
-                return obj == null ? 0 : obj.GetHashCode();
+                int hashCode = 0;
+
+                foreach (var node in obj.Children(x => true))
+                {
+                    if (node.HasItems)
+                        hashCode = hashCode * 17 + node.Items.Count;
+                    else if (node.HasMembers)
+                        hashCode = hashCode * 11 + node.Members.Count;
+                    else if (IsComparableType(false, node.InstanceType) && node.InstanceType.IsPrimitive && node.Instance != null) // Ignore non-primitive types, to be safe (GetHashCode doesn't do deep comparison)
+                        hashCode = hashCode * 13 + node.Instance.GetHashCode();
+                }
+
+                return hashCode;
             }
 
             private struct KeyComparison : IEquatable<KeyComparison>

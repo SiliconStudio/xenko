@@ -1,24 +1,43 @@
-!Entity
-Id: 0b4f06b5-01ff-4959-8d5d-74bbce5e33be
+!EntityAsset
+Id: 62b6f5f6-089a-47ef-9bc8-7abafffeb7de
 Tags: []
-Data:
-    Name: factory
-    Components:
-        ModelComponent.Key: !ModelComponentData
-            DrawOrder: 0
-            Enabled: true
-            Model: 6b50839d-cf0f-4703-8077-bf036b340ccd:factory_model
-            Parameters: null
+Source: ../../../data/tests/Factory/factory.fbx
+SourceHash: d2f423dd854ddffde648997a5284b01c
+Hierarchy:
+    RootEntity: 7dc47f54-ccac-4ece-ba59-3a4a835cde42
+    Entities:
+        -   Name: factory
+            Components:
+                ModelComponent.Key:
+                    Model: 3e977733-a289-412b-9eeb-cacf1aa8bca7:factory Model
+                    Materials: []
+                    DrawOrder: 0
+                    Parameters: {}
+                TransformComponent.Key:
+                    Position: {X: 0, Y: 0, Z: 0}
+                    Rotation: {W: 1, X: 0, Y: 0, Z: 0}
+                    Scale: {X: 1, Y: 1, Z: 1}
+                    Children: []
+            Id: 7dc47f54-ccac-4ece-ba59-3a4a835cde42
 ~Base:
     Location: --import--
-    Asset: !Entity
+    Asset: !EntityAsset
         Id: 00000000-0000-0000-0000-000000000000
         Tags: []
-        Data:
-            Name: factory
-            Components:
-                ModelComponent.Key: !ModelComponentData
-                    DrawOrder: 0
-                    Enabled: true
-                    Model: 6b50839d-cf0f-4703-8077-bf036b340ccd:factory_model
-                    Parameters: null
+        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
+        Hierarchy:
+            RootEntity: 7dc47f54-ccac-4ece-ba59-3a4a835cde42
+            Entities:
+                -   Name: Entity
+                    Components:
+                        ModelComponent.Key:
+                            Model: 3e977733-a289-412b-9eeb-cacf1aa8bca7:factory Model
+                            Materials: []
+                            DrawOrder: 0
+                            Parameters: {}
+                        TransformComponent.Key:
+                            Position: {X: 0, Y: 0, Z: 0}
+                            Rotation: {W: 1, X: 0, Y: 0, Z: 0}
+                            Scale: {X: 1, Y: 1, Z: 1}
+                            Children: []
+                    Id: 7dc47f54-ccac-4ece-ba59-3a4a835cde42

@@ -16,25 +16,21 @@
     <Compile Include="AnimationAsset.cs" />
     <Compile Include="AnimationAssetCompiler.cs" />
     <Compile Include="AssimpAssetImporter.cs" />
-    <Compile Include="EntityAsset.cs" />
-    <Compile Include="EntityAssetCompiler.cs" />
     <Compile Include="FbxAssetImporter.cs" />
-    <Compile Include="EntityCompilerParametersGenerator.cs" />
     <Compile Include="ImportAssimpCommand.cs" />
     <Compile Include="ImportFbxCommand.cs" />
     <Compile Include="ImportModelCommand.cs" />
-    <Compile Include="MeshMaterialParameters.cs" />
     <Compile Include="ModelAsset.cs" />
     <Compile Include="ModelAssetCompiler.cs" />
     <Compile Include="ModelAssetImporter.cs" />
+    <Compile Include="ModelMaterial.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="NodeInformation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="SharpYaml, Version=1.0.2.26673, Culture=neutral, PublicKeyToken=1ced8108e942bc02, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="SharpYaml">
       <HintPath>..\..\common\deps\SharpYaml\SharpYaml.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -84,6 +80,10 @@
       <Project>{c121a566-555e-42b9-9b0a-1696529a9088}</Project>
       <Name>SiliconStudio.Paradox.Engine</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Paradox.Games\SiliconStudio.Paradox.Games.csproj">
+      <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
+      <Name>SiliconStudio.Paradox.Games</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj">
       <Project>{fb06c76a-6bb7-40be-9afa-fec13b045fb5}</Project>
       <Name>SiliconStudio.Paradox.Graphics</Name>
@@ -96,6 +96,9 @@
       <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
       <Name>SiliconStudio.Paradox</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Analysis\" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public ScrollingTextTest()
         {
-            CurrentVersion = 2;
+            CurrentVersion = 4;
         }
 
         protected override async Task LoadContent()
@@ -57,7 +57,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
                 BackgroundImage = new UIImage(Asset.Load<Texture>("DumbWhite"))
             };
 
-            UI.RootElement = decorator;
+            UIComponent.RootElement = decorator;
         }
 
         protected override void Update(GameTime gameTime)

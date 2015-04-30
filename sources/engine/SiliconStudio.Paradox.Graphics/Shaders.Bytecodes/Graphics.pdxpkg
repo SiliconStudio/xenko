@@ -11,4 +11,4 @@ Profiles:
     -   Name: Windows
         Platform: Windows
         Properties:
-            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+            GameSettingsAsset.DefaultGraphicsProfile: Level_9_1

@@ -14,11 +14,24 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
             {
                 // Force generation of serializers (complex types, etc...)
                 // Check complex type definitions
-                CecilSerializerContext.SerializableTypeInfo serializableTypeInfo;
-                if (!context.SerializableTypes.TryGetSerializableTypeInfo(type, false, out serializableTypeInfo)
-                    && !context.SerializableTypes.TryGetSerializableTypeInfo(type, true, out serializableTypeInfo))
+                ProcessType(context, type);
+            }
+        }
+
+        private static void ProcessType(CecilSerializerContext context, TypeDefinition type)
+        {
+            CecilSerializerContext.SerializableTypeInfo serializableTypeInfo;
+            if (!context.SerializableTypes.TryGetSerializableTypeInfo(type, false, out serializableTypeInfo)
+                && !context.SerializableTypes.TryGetSerializableTypeInfo(type, true, out serializableTypeInfo))
+            {
+                context.FindSerializerInfo(type, false);
+            }
+
+            if (type.HasNestedTypes)
+            {
+                foreach (var nestedType in type.NestedTypes)
                 {
-                    context.FindSerializerInfo(type, false);
+                    ProcessType(context, nestedType);
                 }
             }
         }

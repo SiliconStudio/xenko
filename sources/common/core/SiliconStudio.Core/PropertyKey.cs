@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Core

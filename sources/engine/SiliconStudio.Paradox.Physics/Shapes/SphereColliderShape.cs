@@ -1,7 +1,9 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -17,8 +19,6 @@ namespace SiliconStudio.Paradox.Physics
             Type = ColliderShapeTypes.Sphere;
             Is2D = is2D;
 
-            Radius = radius;
-
             var shape = new BulletSharp.SphereShape(radius);
 
             if (Is2D)
@@ -30,17 +30,12 @@ namespace SiliconStudio.Paradox.Physics
                 InternalShape = shape;
             }
 
-            if (!PhysicsEngine.Singleton.CreateDebugPrimitives) return;
-            DebugPrimitive = GeometricPrimitive.Sphere.New(PhysicsEngine.Singleton.DebugGraphicsDevice);
-            DebugPrimitiveScaling = Matrix.Scaling(radius * 2 * 1.01f);
+            DebugPrimitiveMatrix = Is2D ? Matrix.Scaling(new Vector3(radius * 2 * 1.01f, radius * 2 * 1.01f, 1.0f)) : Matrix.Scaling(radius * 2 * 1.01f);
         }
 
-        /// <summary>
-        /// Gets the radius.
-        /// </summary>
-        /// <value>
-        /// The radius.
-        /// </value>
-        public float Radius { get; private set; }
+        public override GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
+        {
+            return GeometricPrimitive.Sphere.New(device);
+        }
     }
 }

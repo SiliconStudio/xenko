@@ -4,11 +4,13 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Physics
 {
     [ContentSerializer(typeof(DataContentSerializer<ConvexHullColliderShapeDesc>))]
     [DataContract("ConvexHullColliderShapeDesc")]
+    [Display(50, "ConvexHullColliderShape")]
     public class ConvexHullColliderShapeDesc : IColliderShapeDesc
     {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
@@ -27,13 +29,19 @@ namespace SiliconStudio.Paradox.Physics
         /// Model asset from where the engine will derive the convex hull.
         /// </userdoc>
         [DataMember(30)]
-        public Core.Serialization.ContentReference<Effects.Data.ModelData> Model;
+        public Model Model;
 
         /// <userdoc>
         /// If this is checked the following parameters are totally ignored, as only a simple convex hull of the whole model will be generated.
         /// </userdoc>
         [DataMember(40)]
         public bool SimpleWrap = true;
+
+        /// <userdoc>
+        /// The scaling of the generated convex hull.
+        /// </userdoc>
+        [DataMember(45)] 
+        public Vector3 Scaling = Vector3.One;
 
         /// <userdoc>
         /// Control how many sub convex hulls will be created, more depth will result in a more complex decomposition.

@@ -10,4 +10,4 @@ using System.Runtime.CompilerServices;
 #pragma warning disable 436 // SiliconStudio.PublicKeys is defined in multiple assemblies
 
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Shaders.Parser.Serializers" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Shaders.Tests" + SiliconStudio.PublicKeys.Default)]
+//[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Shaders.Tests" + SiliconStudio.PublicKeys.Default)]

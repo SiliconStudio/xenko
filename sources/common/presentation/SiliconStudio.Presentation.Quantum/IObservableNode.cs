@@ -2,11 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows.Input;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public interface IObservableNode
+    public interface IObservableNode : INotifyPropertyChanging, INotifyPropertyChanged
     {
         /// <summary>
         /// Gets the <see cref="ObservableViewModel"/> that owns this node.
@@ -86,7 +87,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets additional data associated to this content. This can be used when the content itself does not contain enough information to be used as a view model.
         /// </summary>
-        IDictionary<string, object> AssociatedData { get; }
+        IReadOnlyDictionary<string, object> AssociatedData { get; }
 
         /// <summary>
         /// Gets the order number of this node in its parent.
@@ -107,6 +108,11 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets the number of <see cref="IObservableNode"/> in the <see cref="Children"/> collection that are visible according to their <see cref="IsVisible"/> property.
         /// </summary>
         int VisibleChildrenCount { get; }
+
+        /// <summary>
+        /// Raised when the <see cref="Value"/> property has changed.
+        /// </summary>
+        event EventHandler<EventArgs> ValueChanged;
 
         /// <summary>
         /// Raised when the <see cref="IsVisible"/> property has changed.

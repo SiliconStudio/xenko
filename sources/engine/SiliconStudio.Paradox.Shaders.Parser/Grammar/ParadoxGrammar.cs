@@ -1,5 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
+
 using Irony.Parsing;
 
 using SiliconStudio.Paradox.Shaders.Parser.Ast;
@@ -14,8 +17,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Grammar
     {
         protected readonly NonTerminal semantic_type = T("semantic_type", CreateSemanticTypeAst);
         protected readonly NonTerminal link_type = T("link_type", CreateLinkTypeAst);
+        protected readonly NonTerminal member_name = T("member_name", CreateStreamNameAst);
         protected readonly NonTerminal var_type = T("var_type", CreateVarTypeAst);
-        protected readonly NonTerminal streams_type = T("streams_type", CreateTypeFromTokenAst<StreamsType>);
+        protected readonly NonTerminal streams_type = T("streams_type", CreateStreamsType);
         protected readonly NonTerminal foreach_statement = T("foreach_statement", CreateForEachStatementAst);
         protected readonly NonTerminal foreach_params_statement = T("foreach_params_statement", CreateForEachParamsStatementAst);
         protected readonly NonTerminal class_type = T("class_type", CreateClassTypeAst); // TODO: look if really needed
@@ -55,6 +59,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Grammar
 
             link_type.Rule = Keyword("LinkType");
             type.Rule |= link_type;
+
+            member_name.Rule = Keyword("MemberName");
+            type.Rule |= member_name;
 
             var_type.Rule = Keyword("var");
             object_type.Rule |= var_type;

@@ -6,6 +6,7 @@ using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Assets.Textures
@@ -14,10 +15,13 @@ namespace SiliconStudio.Paradox.Assets.Textures
     /// Describes a texture asset.
     /// </summary>
     [DataContract("Texture")]
-    [AssetFileExtension(FileExtension)]
+    [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(TextureAssetCompiler))]
-    [ThumbnailCompiler(PreviewerCompilerNames.TextureThumbnailCompilerQualifiedName)]
-    [AssetDescription("Texture", "A texture", true)]
+    [ThumbnailCompiler(PreviewerCompilerNames.TextureThumbnailCompilerQualifiedName, true, Priority = -10000)]
+    [Display(105, "Texture", "A texture")]
+    [CategoryOrder(10, "Size")]
+    [CategoryOrder(20, "Format")]
+    [CategoryOrder(30, "Transparency")]
     public sealed class TextureAsset : AssetImport
     {
         /// <summary>
@@ -42,7 +46,8 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// </userdoc>
         [DataMember(20)]
         [DefaultValue(100.0f)]
-        [StepRange(0, 10000, 1, 10)]
+        [DataMemberRange(0, 10000, 1, 10)]
+        [Display(null, null, "Size")]
         public float Width { get; set; }
 
         /// <summary>
@@ -54,7 +59,8 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// </userdoc>
         [DataMember(30)]
         [DefaultValue(100.0f)]
-        [StepRange(0, 10000, 1, 10)]
+        [DataMemberRange(0, 10000, 1, 10)]
+        [Display(null, null, "Size")]
         public float Height { get; set; }
 
         /// <summary>
@@ -71,6 +77,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// </userdoc>
         [DataMember(40)]
         [DefaultValue(true)]
+        [Display(null, null, "Size")]
         public bool IsSizeInPercentage { get; set; }
 
         /// <summary>
@@ -82,6 +89,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// </userdoc>
         [DataMember(43)]
         [DefaultValue(false)]
+        [Display(null, null, "Transparency")]
         public bool ColorKeyEnabled { get; set; }
 
         /// <summary>
@@ -92,6 +100,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// If ColorKeyEnabled is true, All pixels of the color set to this property are replaced with transparent black.
         /// </userdoc>
         [DataMember(45)]
+        [Display(null, null, "Transparency")]
         public Color ColorKeyColor { get; set; }
 
         /// <summary>
@@ -103,7 +112,21 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// </userdoc>
         [DataMember(50)]
         [DefaultValue(TextureFormat.Compressed)]
+        [Display(null, null, "Format")]
         public TextureFormat Format { get; set; }
+
+        /// <summary>
+        /// Gets or sets the hint to indicate the type of texture. See remarks.
+        /// </summary>
+        /// <value>The hint.</value>
+        /// <remarks>This hint helps the texture compressor to select the appropriate format based on the HW Level and 
+        /// platform.</remarks>
+        /// <userdoc>A hint to indicate the usage/type of texture. This hint helps the texture compressor to select the 
+        /// appropriate format based on the HW Level and platform.</userdoc>
+        [DataMember(51)]
+        [DefaultValue(TextureHint.Color)]
+        [Display(null, null, "Format")]
+        public TextureHint Hint { get; set; }
 
         /// <summary>
         /// Gets or sets the alpha format.
@@ -114,6 +137,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// </userdoc>
         [DataMember(55)]
         [DefaultValue(AlphaFormat.None)]
+        [Display(null, null, "Transparency")]
         public AlphaFormat Alpha { get; set; }
 
         /// <summary>
@@ -125,7 +149,20 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// </userdoc>
         [DataMember(60)]
         [DefaultValue(true)]
+        [Display(null, null, "Format")]
         public bool GenerateMipmaps { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value indicating whether the output texture is encoded into the standard RGB color space.
+        /// </summary>
+        /// <userdoc>
+        /// If checked, the input image is considered as an sRGB image. This should be default for colored texture
+        /// with a HDR/gamma correct rendering.
+        /// </userdoc>
+        [DataMember(70)]
+        [DefaultValue(false)]
+        [Display("sRGB", null, "Format")]
+        public bool SRgb { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to convert the texture in premultiply alpha.
@@ -134,8 +171,9 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// <userdoc>
         /// If checked, The color values will be pre-multiplied by the alpha value.
         /// </userdoc>
-        [DataMember(70)]
+        [DataMember(80)]
         [DefaultValue(true)]
+        [Display(null, null, "Transparency")]
         public bool PremultiplyAlpha { get; set; }
 
         public override void SetDefaults()
@@ -143,6 +181,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
             Width = 100.0f;
             Height = 100.0f;
             Format = TextureFormat.Compressed;
+            Hint = TextureHint.Color;
             Alpha = AlphaFormat.None;
             ColorKeyColor = new Color(255, 0, 255);
             ColorKeyEnabled = false;

@@ -3,7 +3,8 @@
 using System;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Converters;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.UI
@@ -11,7 +12,8 @@ namespace SiliconStudio.Paradox.UI
     /// <summary>
     /// Class holding all the data required to define an UI image.
     /// </summary>
-    [DataConverter(AutoGenerate = true, ContentReference = true)]
+    [ContentSerializer(typeof(DataContentSerializer<UIImage>))]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<UIImage>), Profile = "Asset")]
     public class UIImage : ImageFragment
     {
         internal Vector4 BordersInternal;
@@ -75,7 +77,6 @@ namespace SiliconStudio.Paradox.UI
         /// Gets or sets size of the unstretchable borders of source image in pixels.
         /// </summary>
         /// <remarks>Borders size are ordered as follows X->Left, Y->Right, Z ->Top, W -> Bottom.</remarks>
-        [DataMemberConvert]
         public Vector4 Borders
         {
             get { return BordersInternal; }

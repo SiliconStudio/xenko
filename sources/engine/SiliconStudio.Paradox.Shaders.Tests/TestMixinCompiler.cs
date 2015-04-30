@@ -1,13 +1,24 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
+
 using NUnit.Framework;
 
+using SiliconStudio.Assets;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Assets.Materials;
+using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Rendering.Materials;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders.Compiler;
 using SiliconStudio.Paradox.Shaders.Parser.Mixins;
@@ -20,6 +31,97 @@ namespace SiliconStudio.Paradox.Shaders.Tests
     [TestFixture]
     public partial class TestMixinCompiler
     {
+        /// <summary>
+        /// Tests mixin and compose keys with compilation.
+        /// </summary>
+        [Test]
+        public void TestMaterial()
+        {
+            var compiler = new EffectCompiler { UseFileSystem = true };
+            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Graphics\Shaders");
+            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Engine\Shaders");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Core");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Lights");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Materials");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Shadows");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\ComputeColor");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Skinning");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Shading");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Transformation");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Utils");
+            var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.Direct3D11 };
+
+            var layers = new MaterialBlendLayers();
+            layers.Add(new MaterialBlendLayer
+            {
+                BlendMap = new ComputeFloat(0.5f),
+                Material =  AttachedReferenceManager.CreateSerializableVersion<Material>(Guid.Empty, "fake")
+            });
+
+            var materialAsset = new MaterialAsset
+            {
+                Attributes = new MaterialAttributes()
+                {
+                    Diffuse = new MaterialDiffuseMapFeature()
+                    {
+                        DiffuseMap = new ComputeColor(Color4.White)
+                    },
+                    DiffuseModel = new MaterialDiffuseLambertModelFeature()
+                },
+                Layers = layers
+            };
+
+            var fakeAsset = new MaterialAsset
+            {
+                Attributes = new MaterialAttributes()
+                {
+                    Diffuse = new MaterialDiffuseMapFeature()
+                    {
+                        DiffuseMap = new ComputeColor(Color.Blue)
+                    },
+                }
+            };
+
+            var context = new MaterialGeneratorContext { FindAsset = reference => fakeAsset };
+            var result = MaterialGenerator.Generate(new MaterialDescriptor { Attributes = materialAsset.Attributes, Layers = materialAsset.Layers }, context);
+
+            compilerParameters.Set(MaterialKeys.PixelStageSurfaceShaders, result.Material.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders));
+            var directionalLightGroup = new ShaderClassSource("LightDirectionalGroup", 1);
+            compilerParameters.Set(LightingKeys.DirectLightGroups, new List<ShaderSource> { directionalLightGroup });
+            //compilerParameters.Set(LightingKeys.CastShadows, false);
+            //compilerParameters.Set(MaterialParameters.HasSkinningPosition, true);
+            //compilerParameters.Set(MaterialParameters.HasSkinningNormal, true);
+            compilerParameters.Set(MaterialKeys.HasNormalMap, true);
+
+            var results = compiler.Compile(new ShaderMixinGeneratorSource("ParadoxEffectBase"), compilerParameters);
+
+            Assert.IsFalse(results.HasErrors);
+        }
+
+
+        [Test]
+        public void TestStream()
+        {
+            var compiler = new EffectCompiler { UseFileSystem = true };
+            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Shaders.Tests\GameAssets\Compiler");
+            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Graphics\Shaders");
+            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Engine\Shaders");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Core");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Lights");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Materials");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Shadows");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\ComputeColor");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Skinning");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Shading");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Transformation");
+            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Utils");
+            var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.Direct3D11 };
+            var results = compiler.Compile(new ShaderClassSource("TestStream"), compilerParameters);
+
+            Assert.IsFalse(results.HasErrors);
+        }
+
+
         /// <summary>
         /// Tests mixin and compose keys with compilation.
         /// </summary>
@@ -43,9 +145,12 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
             Assert.IsFalse(results.HasErrors);
 
-            Assert.NotNull(results.MainBytecode.Reflection.ConstantBuffers);
-            Assert.AreEqual(1, results.MainBytecode.Reflection.ConstantBuffers.Count);
-            var cbuffer = results.MainBytecode.Reflection.ConstantBuffers[0];
+            var mainBytecode = results.Bytecode.WaitForResult();
+            Assert.IsFalse(mainBytecode.CompilationLog.HasErrors);
+
+            Assert.NotNull(mainBytecode.Bytecode.Reflection.ConstantBuffers);
+            Assert.AreEqual(1, mainBytecode.Bytecode.Reflection.ConstantBuffers.Count);
+            var cbuffer = mainBytecode.Bytecode.Reflection.ConstantBuffers[0];
 
             Assert.NotNull(cbuffer.Members);
             Assert.AreEqual(2, cbuffer.Members.Length);
@@ -89,18 +194,15 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
             // Test this with a new database completely clean
             TestNoClean(out results01, out results02);
-            Assert.That(results01.Bytecodes.Count, Is.EqualTo(results02.Bytecodes.Count));
-            Assert.That(results01.MainBytecode, Is.EqualTo(results02.MainBytecode));
+            Assert.That(results01.Bytecode, Is.EqualTo(results02.Bytecode));
 
             // Test with the database with already the bytecode generated by previous step
             CompilerResults results11;
             CompilerResults results12;
             TestNoClean(out results11, out results12);
-            Assert.That(results11.Bytecodes.Count, Is.EqualTo(results12.Bytecodes.Count));
-            Assert.That(results11.MainBytecode, Is.EqualTo(results12.MainBytecode));
+            Assert.That(results11.Bytecode, Is.EqualTo(results12.Bytecode));
 
             // Check previous result
-            Assert.That(results01.Bytecodes.Count, Is.EqualTo(results11.Bytecodes.Count));
             //Assert.That(results01.MainBytecode.Time, Is.EqualTo(results11.MainBytecode.Time)); -> crash, MainBytecode == null
         }
 

@@ -2,206 +2,86 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Presentation.Controls
 {
-    public class Vector3Editor : Control
+    public class Vector3Editor : VectorEditor<Vector3>
     {
-        private bool interlock;
-        private bool templateApplied;
-        private DependencyProperty initializingProperty;
-
-        /// <summary>
-        /// Identifies the <see cref="Vector"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty VectorProperty = DependencyProperty.Register("Vector", typeof(Vector3), typeof(Vector3Editor), new FrameworkPropertyMetadata(default(Vector3), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnVectorPropertyChanged, null, false, UpdateSourceTrigger.Explicit));
-
         /// <summary>
         /// Identifies the <see cref="X"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty XProperty = DependencyProperty.Register("X", typeof(float), typeof(Vector3Editor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnCartesianPropertyChanged));
+        public static readonly DependencyProperty XProperty = DependencyProperty.Register("X", typeof(float), typeof(Vector3Editor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="Y"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty YProperty = DependencyProperty.Register("Y", typeof(float), typeof(Vector3Editor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnCartesianPropertyChanged));
+        public static readonly DependencyProperty YProperty = DependencyProperty.Register("Y", typeof(float), typeof(Vector3Editor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="Z"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ZProperty = DependencyProperty.Register("Z", typeof(float), typeof(Vector3Editor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnCartesianPropertyChanged));
+        public static readonly DependencyProperty ZProperty = DependencyProperty.Register("Z", typeof(float), typeof(Vector3Editor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="Length"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty LengthProperty = DependencyProperty.Register("Length", typeof(float), typeof(Vector3Editor), new FrameworkPropertyMetadata(0.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnPolarPropertyChanged, CoerceLengthValue));
+        public static readonly DependencyProperty LengthProperty = DependencyProperty.Register("Length", typeof(float), typeof(Vector3Editor), new FrameworkPropertyMetadata(0.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceLengthValue));
 
         /// <summary>
-        /// The <see cref="Vector3"/> associated to this control.
-        /// </summary>
-        public Vector3 Vector { get { return (Vector3)GetValue(VectorProperty); } set { SetValue(VectorProperty, value); } }
-
-        /// <summary>
-        /// The X component (in Cartesian coordinate system) of the <see cref="Vector3"/> associated to this control.
+        /// Gets or sets the X component (in Cartesian coordinate system) of the <see cref="Vector3"/> associated to this control.
         /// </summary>
         public float X { get { return (float)GetValue(XProperty); } set { SetValue(XProperty, value); } }
 
         /// <summary>
-        /// The Y component (in Cartesian coordinate system) of the <see cref="Vector3"/> associated to this control.
+        /// Gets or sets the Y component (in Cartesian coordinate system) of the <see cref="Vector3"/> associated to this control.
         /// </summary>
         public float Y { get { return (float)GetValue(YProperty); } set { SetValue(YProperty, value); } }
 
         /// <summary>
-        /// The Y component (in Cartesian coordinate system) of the <see cref="Vector3"/> associated to this control.
+        /// Gets or sets the Z component (in Cartesian coordinate system) of the <see cref="Vector3"/> associated to this control.
         /// </summary>
         public float Z { get { return (float)GetValue(ZProperty); } set { SetValue(ZProperty, value); } }
 
         /// <summary>
-        /// The length (in polar coordinate system) of the <see cref="Vector3"/> associated to this control.
+        /// Gets or sets the length (in polar coordinate system) of the <see cref="Vector3"/> associated to this control.
         /// </summary>
         public float Length { get { return (float)GetValue(LengthProperty); } set { SetValue(LengthProperty, value); } }
 
         /// <inheritdoc/>
-        public override void OnApplyTemplate()
+        protected override void UpdateComponentsFromValue(Vector3 value)
         {
-            templateApplied = false;
-            base.OnApplyTemplate();
-            templateApplied = true;
+            SetCurrentValue(XProperty, value.X);
+            SetCurrentValue(YProperty, value.Y);
+            SetCurrentValue(ZProperty, value.Z);
+            SetCurrentValue(LengthProperty, value.Length());
         }
 
-        /// <summary>
-        /// Raised when the <see cref="Vector"/> property is modified.
-        /// </summary>
-        private void OnVectorValueChanged()
+        /// <inheritdoc/>
+        protected override Vector3 UpdateValueFromComponent(DependencyProperty property)
         {
-            bool isInitializing = !templateApplied && initializingProperty == null;
-            if (isInitializing)
-                initializingProperty = VectorProperty;
-            
-            if (!interlock)
+            if (property == LengthProperty)
             {
-                interlock = true;
-                SetCurrentValue(XProperty, Vector.X);
-                SetCurrentValue(YProperty, Vector.Y);
-                SetCurrentValue(ZProperty, Vector.Z);
-                SetCurrentValue(LengthProperty, Vector.Length());
-                interlock = false;
+                var newValue = Value;
+                newValue.Normalize();
+                newValue *= Length;
+                return newValue;
             }
+            if (property == XProperty)
+                return new Vector3(X, Value.Y, Value.Z);
+            if (property == YProperty)
+                return new Vector3(Value.X, Y, Value.Z);
+            if (property == ZProperty)
+                return new Vector3(Value.X, Value.Y, Z);
 
-            UpdateBinding(VectorProperty);
-            if (isInitializing)
-                initializingProperty = null;
+            throw new ArgumentException("Property unsupported by method UpdateValueFromComponent.");
         }
 
-        /// <summary>
-        /// Raised when the <see cref="X"/>, <see cref="Y"/> or <see cref="Z"/> properties are modified.
-        /// </summary>
-        /// <param name="e">The dependency property that has changed.</param>
-        private void OnCartesianValueChanged(DependencyPropertyChangedEventArgs e)
+        /// <inheritdoc/>
+        protected override Vector3 UpateValueFromFloat(float value)
         {
-            bool isInitializing = !templateApplied && initializingProperty == null;
-            if (isInitializing)
-                initializingProperty = e.Property;
-            
-            if (!interlock)
-            {
-                interlock = true;
-                if (e.Property == XProperty)
-                    Vector = new Vector3((float)e.NewValue, Vector.Y, Vector.Z);
-                else if (e.Property == YProperty)
-                    Vector = new Vector3(Vector.X, (float)e.NewValue, Vector.Z);
-                else if (e.Property == ZProperty)
-                    Vector = new Vector3(Vector.X, Vector.Y, (float)e.NewValue);
-                else
-                    throw new ArgumentException("Property unsupported by method OnCartesianPropertyChanged.");
-
-                SetCurrentValue(LengthProperty, Vector.Length());
-                interlock = false;
-            }
-
-            UpdateBinding(e.Property);
-            if (isInitializing)
-                initializingProperty = null;
-        }
-
-        /// <summary>
-        /// Raised when the <see cref="Length"/> property is modified.
-        /// </summary>
-        /// <param name="e">The dependency property that has changed.</param>
-        private void OnLengthValueChanged(DependencyPropertyChangedEventArgs e)
-        {
-            bool isInitializing = !templateApplied && initializingProperty == null;
-            if (isInitializing)
-                initializingProperty = LengthProperty;
-            
-            if (!interlock)
-            {
-                interlock = true;
-                var vector = Vector;
-                vector.Normalize();
-                vector *= Length;
-                Vector = vector;
-                SetCurrentValue(XProperty, Vector.X);
-                SetCurrentValue(YProperty, Vector.Y);
-                SetCurrentValue(ZProperty, Vector.Z);
-                interlock = false;
-            }
-
-            UpdateBinding(e.Property);
-            if (isInitializing)
-                initializingProperty = null;
-        }
-
-        /// <summary>
-        /// Updates the binding of the given dependency property.
-        /// </summary>
-        /// <param name="dependencyProperty">The dependency property.</param>
-        private void UpdateBinding(DependencyProperty dependencyProperty)
-        {
-            if (dependencyProperty != initializingProperty)
-            {
-                BindingExpression expression = GetBindingExpression(dependencyProperty);
-                if (expression != null)
-                    expression.UpdateSource();
-            }
-        }
-
-        /// <summary>
-        /// Raised by <see cref="VectorProperty"/> when the <see cref="Vector"/> dependency property is modified.
-        /// </summary>
-        /// <param name="sender">The dependency object where the event handler is attached.</param>
-        /// <param name="e">The event data.</param>
-        private static void OnVectorPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            var editor = (Vector3Editor)sender;
-            editor.OnVectorValueChanged();
-        }
-
-        /// <summary>
-        /// Raised by <see cref="XProperty"/>, <see cref="YProperty"/> or <see cref="ZProperty"/> when respectively
-        /// the <see cref="X"/>, <see cref="Y"/> or <see cref="Z"/> dependency property is modified.
-        /// </summary>
-        /// <param name="sender">The dependency object where the event handler is attached.</param>
-        /// <param name="e">The event data.</param>
-        private static void OnCartesianPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            var editor = (Vector3Editor)sender;
-            editor.OnCartesianValueChanged(e);
-        }
-
-        /// <summary>
-        /// Raised by <see cref="LengthProperty"/> when the <see cref="Length"/> dependency property is modified.
-        /// </summary>
-        /// <param name="sender">The dependency object where the event handler is attached.</param>
-        /// <param name="e">The event data.</param>
-        private static void OnPolarPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            var editor = (Vector3Editor)sender;
-            editor.OnLengthValueChanged(e);
+            return new Vector3(value);
         }
 
         /// <summary>
@@ -209,6 +89,7 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         private static object CoerceLengthValue(DependencyObject sender, object baseValue)
         {
+            baseValue = CoerceComponentValue(sender, baseValue);
             return Math.Max(0.0f, (float)baseValue);
         }
     }

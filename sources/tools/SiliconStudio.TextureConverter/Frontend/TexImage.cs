@@ -20,7 +20,7 @@ namespace SiliconStudio.TextureConverter
         public int Depth { get; internal set; }
         public int RowPitch { get; internal set; }
         public int SlicePitch { get; internal set; }
-        public SiliconStudio.Paradox.Graphics.PixelFormat Format { get; internal set; }
+        public Paradox.Graphics.PixelFormat Format { get; internal set; }
 
         // Texture infos
         public int ArraySize { get; internal set; }
@@ -350,6 +350,21 @@ namespace SiliconStudio.TextureConverter
         public override string ToString()
         {
             return "Image - Dimension:" + Dimension + " - Format:" + Format + " - " + Width + " x " + Height + " x " + Depth + " - MipmapCount:" + MipmapCount + " - ArraySize:" + ArraySize + " - SubImageArray Length:" + SubImageArray.Length;
+        }
+
+        public bool IsPowerOfTwo()
+        {
+            return IsPowerOfTwo(Width) && IsPowerOfTwo(Height);
+        }
+
+        /// <summary>
+        /// Returns true if the provided int is a power of 2.
+        /// </summary>
+        /// <param name="x">the int value to test</param>
+        /// <returns>true if power of two</returns>
+        public static bool IsPowerOfTwo(int x)
+        {
+            return (x & (x - 1)) == 0;
         }
     }
 }

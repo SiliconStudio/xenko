@@ -3,6 +3,12 @@
   <PropertyGroup>
     <SiliconStudioPlatform>Windows</SiliconStudioPlatform>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
   <Import Project="..\..\targets\Paradox.PreSettings.targets" />
   <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
@@ -72,6 +78,10 @@
       <Name>SiliconStudio.Paradox.Assets</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Engine\SiliconStudio.Paradox.Engine.csproj">
+      <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
+      <Name>SiliconStudio.Paradox.Engine</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj">
       <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
       <Name>SiliconStudio.Paradox.Graphics</Name>
@@ -96,16 +106,14 @@
       <Name>SiliconStudio.Paradox</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.csproj">
-      <Project>{0342c3e7-4a38-46b4-a8ec-e728d50085d3}</Project>
-      <Name>SiliconStudio.Paradox.Effects</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Assets\SiliconStudio.Assets.csproj">
       <Project>{1e54a9a2-4439-4444-ae57-6d2ed3c0dc47}</Project>
       <Name>SiliconStudio.Assets</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
