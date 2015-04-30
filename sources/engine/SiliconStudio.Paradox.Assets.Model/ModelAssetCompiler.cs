@@ -9,8 +9,8 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Data;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Rendering.Data;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Assets.Model

@@ -12,7 +12,7 @@ using OpenTK.Graphics;
 using OpenTK.Platform;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Paradox.Graphics.OpenGL;
 using Color4 = SiliconStudio.Core.Mathematics.Color4;
@@ -172,8 +172,8 @@ namespace SiliconStudio.Paradox.Graphics
         private int indexElementSize;
         private IntPtr indexBufferOffset;
         private bool flipRenderTarget = false;
-        private FrontFaceDirection currentFrontFace = FrontFaceDirection.Ccw;
-        private FrontFaceDirection boundFrontFace = FrontFaceDirection.Ccw;
+        private FrontFaceDirection currentFrontFace = FrontFaceDirection.Cw;
+        private FrontFaceDirection boundFrontFace = FrontFaceDirection.Cw;
 
 #if SILICONSTUDIO_PLATFORM_ANDROID
         [DllImport("libEGL.dll", EntryPoint = "eglGetCurrentContext")]
@@ -232,22 +232,6 @@ namespace SiliconStudio.Paradox.Graphics
 
                 // TODO implement GraphicsDeviceStatus for OpenGL
                 return GraphicsDeviceStatus.Normal;
-            }
-        }
-
-        /// <summary>
-        /// Gets the first viewport.
-        /// </summary>
-        /// <value>The first viewport.</value>
-        public Viewport Viewport
-        {
-            get
-            {
-#if DEBUG
-                EnsureContextActive();
-#endif
-
-                return _currentViewports[0];
             }
         }
 
@@ -488,13 +472,15 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
         }
 
-        public void ClearState()
+        private void ClearStateImpl()
         {
 #if DEBUG
             EnsureContextActive();
 #endif
             UnbindVertexArrayObject();
             currentVertexArrayObject = null;
+
+            SetDefaultStates();
 
             // Clear sampler states
             for (int i = 0; i < samplerStates.Length; ++i)
@@ -1155,17 +1141,6 @@ namespace SiliconStudio.Paradox.Graphics
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 if (buffer.StagingData != IntPtr.Zero)
                 {
-                    // TODO: Temporarily accept NoOverwrite as a discard
-                    // Shouldn't do that, but for now it fix a big perf issue due to SpriteBatch use
-                    //if (buffer.ResourceId != 0 && mapMode == MapMode.WriteDiscard)
-                    //{
-                    //    // Notify OpenGL ES driver that previous data can be discarded by setting a new empty buffer
-                    //    UnbindVertexArrayObject();
-                    //    GL.BindBuffer(buffer.bufferTarget, buffer.ResourceId);
-                    //    GL.BufferData(buffer.bufferTarget, (IntPtr)buffer.Description.SizeInBytes, IntPtr.Zero, buffer.bufferUsageHint);
-                    //    GL.BindBuffer(buffer.bufferTarget, 0);
-                    //}
-
                     // Specific case for constant buffers
                     return new MappedResource(resource, subResourceIndex, new DataBox { DataPointer = buffer.StagingData + offsetInBytes, SlicePitch = 0, RowPitch = 0 }, offsetInBytes,
                         lengthInBytes);
@@ -1426,11 +1401,14 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
         }
 
-        public void SetBlendState(BlendState blendState)
+        private void SetBlendStateImpl(BlendState blendState, Color4 blendFactor, int multiSampleMask = -1)
         {
 #if DEBUG
             EnsureContextActive();
 #endif
+
+            if (multiSampleMask != -1)
+                throw new NotImplementedException();
 
             if (blendState == null)
                 blendState = BlendStates.Default;
@@ -1440,28 +1418,8 @@ namespace SiliconStudio.Paradox.Graphics
                 blendState.Apply(boundBlendState ?? BlendStates.Default);
                 boundBlendState = blendState;
             }
-        }
 
-        public void SetBlendState(BlendState blendState, Color blendFactor, int multiSampleMask = -1)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-            if (multiSampleMask != -1)
-                throw new NotImplementedException();
-
-            SetBlendState(blendState);
             GL.BlendColor(blendFactor.R, blendFactor.G, blendFactor.B, blendFactor.A);
-        }
-
-        public void SetBlendState(BlendState blendState, Color blendFactor, uint multiSampleMask = 0xFFFFFFFF)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-            SetBlendState(blendState, blendFactor, unchecked((int)multiSampleMask));
         }
 
         /// <summary>
@@ -1492,7 +1450,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-        public void SetDepthStencilState(DepthStencilState depthStencilState, int stencilReference = 0)
+        private void SetDepthStencilStateImpl(DepthStencilState depthStencilState, int stencilReference = 0)
         {
 #if DEBUG
             EnsureContextActive();
@@ -1510,7 +1468,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-        public void SetRasterizerState(RasterizerState rasterizerState)
+        private void SetRasterizerStateImpl(RasterizerState rasterizerState)
         {
 #if DEBUG
             EnsureContextActive();
@@ -1526,20 +1484,10 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-        /// <summary>
-        /// Sets a new depth stencil buffer and render target to this GraphicsDevice.
-        /// </summary>
-        /// <param name="depthStencilBuffer">The depth stencil buffer.</param>
-        /// <param name="renderTarget">The render target.</param>
-        public void SetDepthAndRenderTarget(Texture depthStencilBuffer, Texture renderTarget)
-        {
-            SetDepthAndRenderTargets(depthStencilBuffer, (renderTarget == null) ? null : new[] { renderTarget });
-        }
-
-        public void SetDepthAndRenderTargets(Texture depthStencilBuffer, params Texture[] renderTargets)
+        private void SetDepthAndRenderTargetsImpl(Texture depthStencilBuffer, params Texture[] renderTargets)
         {
             var renderTargetsLength = 0;
-            if (renderTargets != null && renderTargets.Length > 0)
+            if (renderTargets != null && renderTargets.Length > 0 && renderTargets[0] != null)
             {
                 renderTargetsLength = renderTargets.Length;
                 // ensure size is coherent
@@ -1552,7 +1500,7 @@ namespace SiliconStudio.Paradox.Graphics
                 }
                 for (int i = 1; i < renderTargets.Length; ++i)
                 {
-                    if (expectedWidth != renderTargets[i].Width || expectedHeight != renderTargets[i].Height)
+                    if (renderTargets[i] != null && (expectedWidth != renderTargets[i].Width || expectedHeight != renderTargets[i].Height))
                         throw new Exception("Render targets do nt have the same size");
                 }
             }
@@ -1609,10 +1557,7 @@ namespace SiliconStudio.Paradox.Graphics
             return true;
         }
 
-        /// <summary>
-        /// Unbinds all depth-stencil buffer and render targets from the output-merger stage.
-        /// </summary>
-        public void ResetTargets()
+        private void ResetTargetsImpl()
         {
             for (int i = 0; i < boundRenderTargets.Length; ++i)
                 boundRenderTargets[i] = null;
@@ -1826,29 +1771,18 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-
-        /// <summary>
-        ///     Gets or sets the 1st viewport.
-        /// </summary>
-        /// <value>The viewport.</value>
-        public void SetViewport(Viewport value)
-        {
-#if DEBUG
-            EnsureContextActive();
-#endif
-
-            _currentViewports[0] = value;
-            UpdateViewport(value);
-        }
-
-        public void SetViewport(int index, Viewport value)
+        private void SetViewportImpl(int index, Viewport value)
         {
 #if DEBUG
             EnsureContextActive();
 #endif
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-            throw new NotImplementedException();
+            if (index != 0)
+                throw new NotImplementedException("MRT on OpenGL ES");
+
+            _currentViewports[0] = value;
+            UpdateViewport(value);
 #else
             if (index >= _currentViewports.Length)
                 throw new IndexOutOfRangeException("The viewport index is higher than the number of available viewports.");
@@ -2218,6 +2152,17 @@ namespace SiliconStudio.Paradox.Graphics
             OpenGLUtils.GetGLVersion(requestedGraphicsProfile, out versionMajor, out versionMinor);
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_PLATFORM_ANDROID
+            // if the retrieved version of OpenGL does not correspond to the one used for initialization, we should fix it.
+            var glVersion = gameWindow.ContextRenderingApi == GLVersion.ES2 ? 2 : 3;
+            if (glVersion != versionMajor)
+            {
+                versionMajor = glVersion;
+                versionMinor = 0;
+            }
+#elif SILICONSTUDIO_PLATFORM_IOS
+            // TODO: correct OpenGL version on iOS too?
+#endif
             IsOpenGLES2 = (versionMajor < 3);
             creationFlags |= GraphicsContextFlags.Embedded;
 #endif

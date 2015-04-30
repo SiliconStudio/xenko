@@ -7,6 +7,7 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Presentation.Core;
+using SiliconStudio.Presentation.ViewModel.ActionStack;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
@@ -77,6 +78,11 @@ namespace SiliconStudio.Presentation.Quantum
                     DisplayName = DisplayNameProvider();
                 }
             }
+        }
+
+        protected void RegisterValueChangedAction(string path, ViewModelActionItem actionItem)
+        {
+            Owner.RegisterAction(path, actionItem);
         }
 
         private void SetName(string nodeName)

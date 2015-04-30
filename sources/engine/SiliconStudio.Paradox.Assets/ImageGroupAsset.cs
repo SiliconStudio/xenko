@@ -28,6 +28,7 @@ namespace SiliconStudio.Paradox.Assets
         /// The color that should be made transparent in all images of the group.
         /// </userdoc>
         [DataMember(20)]
+        [Display(category: "Parameters")]
         public Color ColorKeyColor { get; set; }
 
         /// <summary>
@@ -39,6 +40,7 @@ namespace SiliconStudio.Paradox.Assets
         /// </userdoc>
         [DataMember(30)]
         [DefaultValue(false)]
+        [Display(category: "Parameters")]
         public bool ColorKeyEnabled { get; set; }
 
         /// <summary>
@@ -50,6 +52,7 @@ namespace SiliconStudio.Paradox.Assets
         /// </userdoc>
         [DataMember(40)]
         [DefaultValue(TextureFormat.Compressed)]
+        [Display(category: "Parameters")]
         public TextureFormat Format { get; set; }
 
         /// <summary>
@@ -61,6 +64,7 @@ namespace SiliconStudio.Paradox.Assets
         /// </userdoc>
         [DataMember(50)]
         [DefaultValue(AlphaFormat.Interpolated)]
+        [Display(category: "Parameters")]
         public AlphaFormat Alpha { get; set; }
 
         /// <summary>
@@ -72,6 +76,7 @@ namespace SiliconStudio.Paradox.Assets
         /// </userdoc>
         [DataMember(60)]
         [DefaultValue(false)]
+        [Display(category: "Parameters")]
         public bool GenerateMipmaps { get; set; }
 
         /// <summary>
@@ -84,6 +89,7 @@ namespace SiliconStudio.Paradox.Assets
         /// </userdoc>
         [DataMember(70)]
         [DefaultValue(true)]
+        [Display(category: "Parameters")]
         public bool PremultiplyAlpha { get; set; }
 
         public override void SetDefaults()
@@ -120,6 +126,7 @@ namespace SiliconStudio.Paradox.Assets
         /// The list of images of the group to import.
         /// </userdoc>
         [DataMember(10)]
+        [Category]
         public List<TImage> Images { get; set; }
         
         public override void SetDefaults()

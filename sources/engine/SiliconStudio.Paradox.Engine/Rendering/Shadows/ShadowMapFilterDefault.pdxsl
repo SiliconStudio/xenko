@@ -1,0 +1,19 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Paradox.Rendering.Shadows
+{
+    /// <summary>
+    /// Performs default filtering: no filtering.
+    /// </summary>
+    class ShadowMapFilterDefault : ShadowMapFilterBase
+    {
+        /// <summary>
+        /// Calculate the shadow factor based on the shadow map texture, the position, a sampler
+        /// </summary>
+        float FilterShadow(float2 position, float positionDepth)
+        {
+            // TODO: Use SampleCmpLevelZero instead
+            return ShadowMapTexture.SampleLevel(LinearBorderSampler, position, 0).r < positionDepth ? 0 : 1;
+        }
+    };
+}

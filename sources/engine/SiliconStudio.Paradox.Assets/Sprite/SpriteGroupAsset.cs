@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
     [AssetCompiler(typeof(SpriteGroupCompiler))]
     [ObjectFactory(typeof(SpriteGroupFactory))]
     [ThumbnailCompiler(PreviewerCompilerNames.SpriteGroupThumbnailCompilerQualifiedName, true)]
-    [Display("Sprite Group", "A group of sprites")]
+    [Display(160, "Sprite Group", "A group of sprites")]
     public sealed class SpriteGroupAsset : ImageGroupAsset<SpriteInfo>
     {
         /// <summary>

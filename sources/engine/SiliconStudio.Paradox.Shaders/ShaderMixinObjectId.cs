@@ -7,8 +7,8 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Data;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Rendering.Data;
 using SiliconStudio.Paradox.Shaders.Compiler;
 
 namespace SiliconStudio.Paradox.Shaders

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Shaders.Tests
 {

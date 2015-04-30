@@ -125,9 +125,9 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
             return (ParadoxCommandsProxy)domain.CreateInstanceFromAndUnwrap(typeof(ParadoxCommandsProxy).Assembly.Location, typeof(ParadoxCommandsProxy).FullName);
         }
 
-        public void Initialize()
+        public void Initialize(string dumb)
         {
-            remote.Initialize();
+            remote.Initialize(ParadoxSdkDir);
         }
 
         public bool ShouldReload()

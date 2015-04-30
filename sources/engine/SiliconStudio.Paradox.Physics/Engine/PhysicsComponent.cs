@@ -4,9 +4,11 @@
 
 using System.Collections.Generic;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.Engine.Design;
+using SiliconStudio.Paradox.Physics;
+using SiliconStudio.Paradox.Rendering.Gizmos;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Paradox.Engine
 {
     [DataContract("PhysicsComponent")]
     [Display(30, "Physics")]

@@ -4,10 +4,10 @@ using System;
 using System.Collections.Generic;
 
 using NUnit.Framework;
-
-using SiliconStudio.Paradox.DataModel;
+using SiliconStudio.Paradox.Animations;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Rendering.Sprites;
 
 namespace SiliconStudio.Paradox.Engine.Tests
 {

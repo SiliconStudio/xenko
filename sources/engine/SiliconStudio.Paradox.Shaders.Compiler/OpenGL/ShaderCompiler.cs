@@ -247,10 +247,21 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
 
             var realShaderSource = glslShaderCode.ToString();
 
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             // optimize shader
-            var optShaderSource = RunOptimizer(shaderBytecodeResult, realShaderSource, isOpenGLES, isOpenGLES3, pipelineStage == PipelineStage.Vertex);
-            if (!String.IsNullOrEmpty(optShaderSource))
-                realShaderSource = optShaderSource;
+            try
+            {
+                var optShaderSource = RunOptimizer(shaderBytecodeResult, realShaderSource, isOpenGLES, isOpenGLES3, pipelineStage == PipelineStage.Vertex);
+                if (!String.IsNullOrEmpty(optShaderSource))
+                    realShaderSource = optShaderSource;
+            }
+            catch (Exception e)
+            {
+                shaderBytecodeResult.Warning("Could not run GLSL optimizer:\n{0}", e.Message);
+            }
+#else
+            shaderBytecodeResult.Warning("GLSL optimized has not been executed because it is currently not supported on this platform.");
+#endif
 
             return realShaderSource;
         }

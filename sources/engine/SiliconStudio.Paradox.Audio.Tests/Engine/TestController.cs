@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using NUnit.Framework;
 
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics.Regression;
 
 namespace SiliconStudio.Paradox.Audio.Tests.Engine

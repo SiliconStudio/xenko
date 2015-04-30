@@ -2,8 +2,8 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Paradox.Assets.Materials;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering.Materials;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Assets.Model
 {

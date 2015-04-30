@@ -10,12 +10,12 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Paradox.Assets.Entities;
 using SiliconStudio.Paradox.Assets.Materials;
-using SiliconStudio.Paradox.Assets.Model.Analysis;
+using SiliconStudio.Paradox.Rendering.Materials;
 using SiliconStudio.Paradox.Assets.Textures;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Importer.Common;
 
 namespace SiliconStudio.Paradox.Assets.Model
@@ -135,7 +135,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 
             rootEntityData.Name = entityUrl;
             // Use modelUrl.Path to get the url without the extension
-            rootEntityData.Add(ModelComponent.Key, new ModelComponent { Model = AttachedReferenceManager.CreateSerializableVersion<Effects.Model>(modelItem.Id, modelItem.Location) });
+            rootEntityData.Add(ModelComponent.Key, new ModelComponent { Model = AttachedReferenceManager.CreateSerializableVersion<Rendering.Model>(modelItem.Id, modelItem.Location) });
 
             var assetReference = new AssetItem(entityUrl, asset);
             assetReferences.Add(assetReference);
@@ -246,7 +246,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             //        {
             //            if (foundTextureDiffuse != foundTextureTransparent)
             //            {
-            //                var alphaMixNode = new MaterialBinaryComputeNode(diffuseNode, transparentNode, BinaryOperand.SubstituteAlpha);
+            //                var alphaMixNode = new MaterialBinaryComputeNode(diffuseNode, transparentNode, BinaryOperator.SubstituteAlpha);
             //                material.AddColorNode(MaterialParameters.AlbedoDiffuse, "pdx_diffuseWithAlpha", alphaMixNode);
             //            }
             //        }
@@ -268,7 +268,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             //            material.Nodes.Remove(diffuseName);
 
             //            // add the new one
-            //            var opaqueNode = new MaterialBinaryComputeNode(diffuseNode, null, BinaryOperand.Opaque);
+            //            var opaqueNode = new MaterialBinaryComputeNode(diffuseNode, null, BinaryOperator.Opaque);
             //            material.AddColorNode(MaterialParameters.AlbedoDiffuse, "pdx_diffuseOpaque", opaqueNode);
             //        }
             //    }

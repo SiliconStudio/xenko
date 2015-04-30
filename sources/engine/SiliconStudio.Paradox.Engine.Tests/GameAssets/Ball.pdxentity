@@ -7,7 +7,7 @@ Hierarchy:
         -   Name: Root
             Components:
                 SpriteComponent.Key:
-                    SpriteProvider: !SiliconStudio.Paradox.Engine.SpriteFromTexture,SiliconStudio.Paradox.Engine
+                    SpriteProvider: !SpriteFromTexture
                         Texture: 39070e2f-ef25-4600-86f8-309c7081b6bb:Sphere1
                         Center: {X: 0, Y: 0}
                     Color: {R: 255, G: 255, B: 255, A: 255}

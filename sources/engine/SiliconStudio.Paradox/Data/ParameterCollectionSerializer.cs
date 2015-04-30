@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Effects.Data
+namespace SiliconStudio.Paradox.Rendering.Data
 {
     [DataSerializerGlobal(null, typeof(Dictionary<ParameterKey, object>))]
     public partial class ParameterCollectionSerializer : ClassDataSerializer<ParameterCollection>

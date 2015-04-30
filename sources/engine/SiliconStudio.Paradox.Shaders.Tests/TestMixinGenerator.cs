@@ -6,7 +6,7 @@ using System.Linq;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Shaders.Tests
 {

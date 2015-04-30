@@ -84,7 +84,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser
         /// <param name="modifiedShaders">The modified shaders.</param>
         public void DeleteObsoleteCache(HashSet<string> modifiedShaders)
         {
-            shaderLibrary.DeleteObsoleteCache(modifiedShaders);
+            lock (shaderLibrary)
+            {
+                shaderLibrary.DeleteObsoleteCache(modifiedShaders);
+            }
         }
         public bool AllowNonInstantiatedGenerics
         {

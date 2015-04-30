@@ -3,18 +3,14 @@
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Assets.Materials;
-using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Images;
-using SiliconStudio.Paradox.Effects.Lights;
-using SiliconStudio.Paradox.Effects.ProceduralModels;
+using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
+using SiliconStudio.Paradox.Rendering.Images;
+using SiliconStudio.Paradox.Rendering.Lights;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Engine.Graphics;
-using SiliconStudio.Paradox.Engine.Graphics.Composers;
-using SiliconStudio.Paradox.Engine.Graphics.Materials;
-using SiliconStudio.Paradox.Engine.Graphics.ProceduralModels;
-using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Rendering.Composers;
+using SiliconStudio.Paradox.Rendering.Materials;
+using SiliconStudio.Paradox.Rendering.ProceduralModels;
 using SiliconStudio.Paradox.Games;
 
 namespace SiliconStudio.Paradox.Graphics.Tests

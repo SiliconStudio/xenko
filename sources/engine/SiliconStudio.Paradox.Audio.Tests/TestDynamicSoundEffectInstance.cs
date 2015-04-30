@@ -10,6 +10,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Audio.Wave;
+using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Audio.Tests
 {

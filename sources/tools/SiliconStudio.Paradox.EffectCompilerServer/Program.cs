@@ -8,9 +8,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Paradox.Assets.Effect;
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Engine.Network;
 using SiliconStudio.Paradox.Shaders.Compiler;
+using SiliconStudio.Paradox.Shaders.Compiler.Internals;
 
 namespace SiliconStudio.Paradox.EffectCompilerServer
 {

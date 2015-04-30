@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
     [AssetCompiler(typeof(SpriteFontAssetCompiler))]
     [ThumbnailCompiler(PreviewerCompilerNames.FontThumbnailCompilerQualifiedName, true)]
     [ObjectFactory(typeof(SpriteFontFactory))]
-    [Display("Sprite Font", "A sprite containing a rendered font")]
+    [Display(140, "Sprite Font", "A sprite containing a rendered font")]
     [CategoryOrder(10, "Font")]
     [CategoryOrder(20, "Characters")]
     [CategoryOrder(30, "Rendering")]

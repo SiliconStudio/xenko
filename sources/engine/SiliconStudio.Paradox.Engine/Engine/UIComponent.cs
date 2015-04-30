@@ -2,11 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.ComponentModel;
-
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine.Graphics;
-using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.Engine.Design;
+using SiliconStudio.Paradox.Engine.Processors;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.UI;
 
 namespace SiliconStudio.Paradox.Engine

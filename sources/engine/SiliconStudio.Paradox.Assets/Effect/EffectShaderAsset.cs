@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
     [DataContract("EffectShader")]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(EffectShaderAssetCompiler))]
-    [Display("Effect Shader", "An effect shader")]
+    [Display(90, "Effect Shader", "An effect shader")]
     public sealed class EffectShaderAsset : SourceCodeAsset
     {
         /// <summary>

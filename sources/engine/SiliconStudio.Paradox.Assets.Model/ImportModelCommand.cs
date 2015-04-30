@@ -9,13 +9,13 @@ using SiliconStudio.Assets;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Assets.Materials;
-using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Data;
+using SiliconStudio.Paradox.Rendering.Materials;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Rendering.Data;
 using SiliconStudio.Paradox.Extensions;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Paradox.Animations;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.Data;
 using SiliconStudio.Paradox.Shaders;
@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 {
     public abstract class ImportModelCommand : SingleFileImportCommand
     {
-        private delegate bool SameGroup(Effects.Model model, Mesh baseMesh, Mesh newMesh);
+        private delegate bool SameGroup(Rendering.Model model, Mesh baseMesh, Mesh newMesh);
 
         /// <inheritdoc/>
         public override IEnumerable<Tuple<string, string>> TagList { get { yield return Tuple.Create("Texture", "Value of the TextureTag property"); } }
@@ -56,6 +56,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             TextureTag = "fbx-texture";
             TextureTagSymbol = RegisterTag("Texture", () => TextureTag);
             AnimationRepeatMode = AnimationRepeatMode.LoopInfinite;
+            ScaleImport = 1.0f;
         }
 
         private string ContextAsString
@@ -403,7 +404,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <param name="meshList">The list of mesh groups.</param>
         /// <param name="sameGroupDelegate">The test delegate.</param>
         /// <returns>The new list of mesh groups.</returns>
-        private List<GroupList<int, Mesh>> RefineGroups(Effects.Model model, List<GroupList<int, Mesh>> meshList, SameGroup sameGroupDelegate)
+        private List<GroupList<int, Mesh>> RefineGroups(Rendering.Model model, List<GroupList<int, Mesh>> meshList, SameGroup sameGroupDelegate)
         {
             var finalGroups = new List<GroupList<int, Mesh>>();
             foreach (var meshGroup in meshList)
@@ -443,7 +444,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <param name="meshes">The meshes and their node index.</param>
         /// <param name="finalLists">List of mergeable meshes and their root node.</param>
         /// <returns>A list of mergeable meshes in progress.</returns>
-        private Dictionary<int, List<Mesh>> GroupFromIndex(Effects.Model model, int index, HashSet<int> nodeBlackList, List<Mesh> meshes, List<GroupList<int, Mesh>> finalLists)
+        private Dictionary<int, List<Mesh>> GroupFromIndex(Rendering.Model model, int index, HashSet<int> nodeBlackList, List<Mesh> meshes, List<GroupList<int, Mesh>> finalLists)
         {
             var children = GetChildren(model.Hierarchy.Nodes, index);
             
@@ -529,7 +530,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             return result;
         }
 
-        protected abstract Effects.Model LoadModel(ICommandContext commandContext, AssetManager assetManager);
+        protected abstract Rendering.Model LoadModel(ICommandContext commandContext, AssetManager assetManager);
 
         protected abstract AnimationClip LoadAnimation(ICommandContext commandContext, AssetManager assetManager);
 
@@ -575,7 +576,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <param name="newMesh">The mesh to compare.</param>
         /// <param name="extra">Unused parameter.</param>
         /// <returns>True if all the parameters are the same, false otherwise.</returns>
-        private static bool CompareParameters(Effects.Model model, Mesh baseMesh, Mesh newMesh)
+        private static bool CompareParameters(Rendering.Model model, Mesh baseMesh, Mesh newMesh)
         {
             var localParams = baseMesh.Parameters;
             if (localParams == null && newMesh.Parameters == null)
@@ -592,7 +593,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <param name="newMesh">The mesh to compare.</param>
         /// <param name="extra">Unused parameter.</param>
         /// <returns>True if the options are the same, false otherwise.</returns>
-        private static bool CompareShadowOptions(Effects.Model model, Mesh baseMesh, Mesh newMesh)
+        private static bool CompareShadowOptions(Rendering.Model model, Mesh baseMesh, Mesh newMesh)
         {
             // TODO: Check is Model the same for the two mesh?
             var material1 = model.Materials.GetItemOrNull(baseMesh.MaterialIndex);

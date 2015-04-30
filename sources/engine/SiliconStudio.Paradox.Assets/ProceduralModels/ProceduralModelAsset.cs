@@ -12,8 +12,8 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Engine.Graphics.ProceduralModels;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Rendering.ProceduralModels;
 
 namespace SiliconStudio.Paradox.Assets.ProceduralModels
 {
@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
     [AssetDescription(FileExtension)]
     [ThumbnailCompiler(PreviewerCompilerNames.ProceduralModelThumbnailCompilerQualifiedName, true)]
     [AssetCompiler(typeof(ProceduralModelAssetCompiler))]
-    [Display("Procedural Model", "A procedural model")]
+    [Display(185, "Procedural Model", "A procedural model")]
     [AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
     public sealed class ProceduralModelAsset : Asset, IModelAsset
     {
@@ -40,6 +40,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
         public ProceduralModelAsset()
         {
             Type = new CubeProceduralModel();
+            SerializedVersion = AssetFormatVersion;
         }
 
         /// <summary>

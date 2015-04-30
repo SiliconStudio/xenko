@@ -9,9 +9,9 @@ Hierarchy:
         -   Name: factory
             Components:
                 ModelComponent.Key:
-                    DrawOrder: 0
-                    Materials: []
                     Model: 3e977733-a289-412b-9eeb-cacf1aa8bca7:factory Model
+                    Materials: []
+                    DrawOrder: 0
                     Parameters: {}
                 TransformComponent.Key:
                     Position: {X: 0, Y: 0, Z: 0}
@@ -31,9 +31,9 @@ Hierarchy:
                 -   Name: Entity
                     Components:
                         ModelComponent.Key:
-                            DrawOrder: 0
-                            Materials: []
                             Model: 3e977733-a289-412b-9eeb-cacf1aa8bca7:factory Model
+                            Materials: []
+                            DrawOrder: 0
                             Parameters: {}
                         TransformComponent.Key:
                             Position: {X: 0, Y: 0, Z: 0}

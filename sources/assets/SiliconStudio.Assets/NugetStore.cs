@@ -25,16 +25,15 @@ namespace SiliconStudio.Assets
 
         private const string MainPackageKey = "mainPackage";
 
+        private const string VsixPluginKey = "vsixPlugin";
+
         private const string DefaultTargets = @"Targets\SiliconStudio.Common.targets";
 
         public const string DefaultGamePackagesDirectory = "GamePackages";
 
         public const string DefaultConfig = "store.config";
 
-        /// <summary>
-        /// Used to lookup for Vsix
-        /// </summary>
-        private const string DefaultBinDirectory = "Bin";
+        public const string OverrideConfig = "store.local.config";
 
         private readonly PhysicalFileSystem rootFileSystem;
         private readonly ISettings settings;
@@ -46,19 +45,30 @@ namespace SiliconStudio.Assets
         private readonly PackageManager manager;
         private ILogger logger;
 
-        public NugetStore(string rootDirectory, string configFile = DefaultConfig)
+        public NugetStore(string rootDirectory, string configFile = DefaultConfig, string overrideFile = OverrideConfig)
         {
             if (rootDirectory == null) throw new ArgumentNullException("rootDirectory");
             if (configFile == null) throw new ArgumentNullException("configFile");
+            if (overrideFile == null) throw new ArgumentNullException("overrideFile");
 
-            var configFilePath = Path.Combine(rootDirectory, configFile);
+            // First try the override file with custom settings
+            var configFileName = overrideFile;
+            var configFilePath = Path.Combine(rootDirectory, configFileName);
+
             if (!File.Exists(configFilePath))
             {
-                throw new ArgumentException(String.Format("Invalid installation. Configuration file [{0}] not found", configFile), "configFile");
+                // Override file does not exist, fallback to default config file
+                configFileName = configFile;
+                configFilePath = Path.Combine(rootDirectory, configFileName);
+
+                if (!File.Exists(configFilePath))
+                {
+                    throw new ArgumentException(String.Format("Invalid installation. Configuration file [{0}] not found", configFile), "configFile");
+                }
             }
 
             rootFileSystem = new PhysicalFileSystem(rootDirectory);
-            settings = NuGet.Settings.LoadDefaultSettings(rootFileSystem, configFile, null);
+            settings = NuGet.Settings.LoadDefaultSettings(rootFileSystem, configFileName, null);
 
             string installPath = settings.GetRepositoryPath();
             packagesFileSystem = new PhysicalFileSystem(installPath);
@@ -75,6 +85,12 @@ namespace SiliconStudio.Assets
             if (string.IsNullOrWhiteSpace(MainPackageId))
             {
                 throw new InvalidOperationException(string.Format("Invalid configuration. Expecting [{0}] in config", MainPackageKey));
+            }
+
+            VSIXPluginId = Settings.GetConfigValue(VsixPluginKey);
+            if (string.IsNullOrWhiteSpace(VSIXPluginId))
+            {
+                throw new InvalidOperationException(string.Format("Invalid configuration. Expecting [{0}] in config", VsixPluginKey));
             }
 
             RepositoryPath = Settings.GetConfigValue(RepositoryPathKey);
@@ -96,6 +112,8 @@ namespace SiliconStudio.Assets
         }
 
         public string MainPackageId { get; private set; }
+
+        public string VSIXPluginId { get; private set; }
 
         public string RepositoryPath { get; private set; }
 
@@ -169,7 +187,7 @@ namespace SiliconStudio.Assets
                 UpdateTargetsInternal();
 
                 // Install vsix
-                InstallVsix(GetLatestPackageInstalled(packageId));
+                ////InstallVsix(GetLatestPackageInstalled(packageId));
             }
         }
 
@@ -184,6 +202,17 @@ namespace SiliconStudio.Assets
 
                 // Install vsix
                 InstallVsix(GetLatestPackageInstalled(package.Id));
+            }
+        }
+
+        public void UninstallPackage(IPackage package)
+        {
+            using (GetLocalRepositoryLocker())
+            {
+                Manager.UninstallPackage(package);
+
+                // Every time a new package is installed, we are updating the common targets
+                UpdateTargetsInternal();
             }
         }
 
@@ -241,6 +270,12 @@ namespace SiliconStudio.Assets
             var packages = GetRootPackagesInDependencyOrder();
             foreach (var package in packages)
             {
+
+                if (package.Tags != null && package.Tags.Contains("internal"))
+                {
+                    continue; // We don't want to polute the Common.targets file with internal packages
+                }
+
                 var packageVar = GetPackageVersionVariable(package.Id);
                 var packageTarget = String.Format(@"$(MSBuildThisFileDirectory)..\{0}\{1}.{2}\Targets\{1}.targets", RepositoryPath, package.Id, "$(" + packageVar + ")");
 
@@ -252,15 +287,39 @@ namespace SiliconStudio.Assets
                 // Add common properties
                 var packageVarSaved = packageVar + "Saved";
                 var packageVarInvalid = packageVar + "Invalid";
+                var packageVarRevision = packageVar + "Revision";
 
                 // <SiliconStudioPackageParadoxVersionSaved>$(SiliconStudioPackageParadoxVersion)</SiliconStudioPackageParadoxVersionSaved>
                 commonPropertyGroup.AddProperty(packageVarSaved, "$(" + packageVar + ")");
+
+                // List all the correspondances: Major.minor -> latest installed explicit version
+
+                // Get all the related versions of the same package also installed, and order by Major.Minor
+                var allMajorVersions = LocalRepository.FindPackagesById(package.Id).GroupBy(p => p.Version.Version.Major, p => p);
+                foreach (var major in allMajorVersions)
+                {
+                    var majorVersion = major.Key;
+                    var minorPkg = major.GroupBy(p => p.Version.Version.Minor, p => p);
+                    foreach (var minor in minorPkg)
+                    {
+                        var latestPackage = minor.First();
+                        // <SiliconStudioPackageParadoxVersionRevision Condition="'$(SiliconStudioPackageParadoxVersion)' == '0.5'">0.5.0-alpha09</SiliconStudioPackageParadoxVersionRevision>
+                        var revisionVersionProperty = commonPropertyGroup.AddProperty(packageVarRevision, latestPackage.Version.ToString());
+                        revisionVersionProperty.Condition = "'$(" + packageVar + ")' == '" + majorVersion + "." + minor.Key + "'";
+                    }
+                }
+
+                // Replace the version Major.minor by the full revision name
+                // <SiliconStudioPackageParadoxVersion>$(SiliconStudioPackageParadoxVersionRevision)</SiliconStudioPackageParadoxVersion>
+                commonPropertyGroup.AddProperty(packageVar, "$(" + packageVarRevision + ")");
 
                 // <SiliconStudioPackageParadoxVersionInvalid Condition="'$(SiliconStudioPackageParadoxVersion)' == '' or !Exists('..\Packages\Paradox.$(SiliconStudioPackageParadoxVersion)\Targets\Paradox.targets')">true</SiliconStudioPackageParadoxVersionInvalid>
                 commonPropertyGroup.AddProperty(packageVarInvalid, "true").Condition = "'$(" + packageVar + ")' == '' or !" + importElement.Condition;
 
                 // <SiliconStudioPackageParadoxVersion Condition="'$(SiliconStudioPackageParadoxVersionInvalid)' == 'true'">1.0.0-alpha01</SiliconStudioPackageParadoxVersion>
-                var invalidProperty = commonPropertyGroup.AddProperty(packageVar, package.Version.ToString());
+                // Special case: if major version 1.0 still exists, use it as default (new projects should be created with props file)
+                var defaultPackageVersion = LocalRepository.FindPackagesById(package.Id).Select(x => x.Version).FirstOrDefault(x => x.Version.Major == 1 && x.Version.Minor == 0) ?? package.Version;
+                var invalidProperty = commonPropertyGroup.AddProperty(packageVar, defaultPackageVersion.ToString());
                 invalidProperty.Condition = "'$(" + packageVarInvalid + ")' == 'true'";
 
                 // Add in CheckPackages target
@@ -325,7 +384,7 @@ namespace SiliconStudio.Assets
             packages.Remove(packageToTrack);
         }
 
-        private void InstallVsix(IPackage package)
+        public void InstallVsix(IPackage package)
         {
             if (package == null)
             {
@@ -344,7 +403,7 @@ namespace SiliconStudio.Assets
                 return;
             }
 
-            var files = Directory.EnumerateFiles(Path.Combine(packageDirectory, DefaultBinDirectory), "*.vsix", SearchOption.AllDirectories);
+            var files = Directory.EnumerateFiles(packageDirectory, "*.vsix", SearchOption.AllDirectories);
             foreach (var file in files)
             {
                 InstallVsix(vsixInstallerPath, file);

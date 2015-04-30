@@ -1,11 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using SiliconStudio.Core;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Presentation.ViewModel.ActionStack;
 using SiliconStudio.Quantum;
@@ -458,7 +456,8 @@ namespace SiliconStudio.Presentation.Quantum
                     OnValueChanged();
                     if (parent != null)
                         ((ObservableNode)Parent).NotifyPropertyChanged(Name);
-                    Owner.RegisterAction(Path, CreateValueChangedActionItem(previousValue, value));
+
+                    RegisterValueChangedAction(Path, CreateValueChangedActionItem(previousValue, value));
                 }
             }
         }

@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.ServiceModel;
+using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Debugger.Target
 {

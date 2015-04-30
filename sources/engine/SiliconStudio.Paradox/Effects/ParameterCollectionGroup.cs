@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     /// <summary>
     /// Describes the expected parameters when using a <see cref="ParameterCollectionGroup"/>.

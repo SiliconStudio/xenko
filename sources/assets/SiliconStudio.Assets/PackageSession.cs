@@ -329,6 +329,15 @@ namespace SiliconStudio.Assets
                     var analysisResults = analysis.Run();
                     analysisResults.CopyTo(sessionResult);
 
+                    // Run custom package session analysis
+                    foreach (var type in AssetRegistry.RegisteredPackageSessionAnalysisTypes)
+                    {
+                        var pkgAnalysis = (PackageSessionAnalysisBase)Activator.CreateInstance(type);
+                        pkgAnalysis.Session = session;
+                        var results = pkgAnalysis.Run();
+                        results.CopyTo(sessionResult);
+                    }
+
                     // Output the session only if there is no cancellation
                     if (!cancelToken.HasValue || !cancelToken.Value.IsCancellationRequested)
                     {

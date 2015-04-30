@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
     /// </summary>
     public class ShaderMixinCodeGen : ShaderKeyGeneratorBase//ShaderWriter
     {
-        private const string DefaultNameSpace = "SiliconStudio.Paradox.Effects";
+        private const string DefaultNameSpace = "SiliconStudio.Paradox.Rendering";
 
         private const string BlockContextTag = "BlockContextTag";
         private readonly LoggerResult logging;
@@ -121,7 +121,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
             WriteLine("using System;");
             WriteLine("using SiliconStudio.Core;");
-            WriteLine("using SiliconStudio.Paradox.Effects;");
+            WriteLine("using SiliconStudio.Paradox.Rendering;");
             WriteLine("using SiliconStudio.Paradox.Graphics;");
             WriteLine("using SiliconStudio.Paradox.Shaders;");
             WriteLine("using SiliconStudio.Core.Mathematics;");
@@ -239,7 +239,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             // A discard will be transformed to 'return'
             if (keywordExpression.Name.Text == "discard")
             {
-                Write("return");
+                WriteLinkLine(keywordExpression);
+                WriteLine("context.Discard();");
             }
             else
             {

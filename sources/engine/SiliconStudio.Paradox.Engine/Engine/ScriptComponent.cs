@@ -1,9 +1,7 @@
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Paradox.Engine.Design;
 
 namespace SiliconStudio.Paradox.Engine
 {
@@ -11,7 +9,7 @@ namespace SiliconStudio.Paradox.Engine
     /// Script component.
     /// </summary>
     [DataContract("ScriptComponent")]
-    [Display(20, "Scripts")]
+    [Display("Scripts")]
     public sealed class ScriptComponent : EntityComponent
     {
         public static PropertyKey<ScriptComponent> Key = new PropertyKey<ScriptComponent>("Key", typeof(ScriptComponent));
@@ -43,6 +41,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The scripts.
         /// </value>
+        [Display("Script", AlwaysExpand = true)]
         public TrackingCollection<Script> Scripts { get; private set; }
 
         /// <inheritdoc/>

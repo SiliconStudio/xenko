@@ -8,8 +8,8 @@ using SharpYaml.Serialization.Serializers;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Assets.Materials;
-using SiliconStudio.Paradox.Assets.Materials.ComputeColors;
+using SiliconStudio.Paradox.Rendering.Materials;
+using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
 
 using ITypeDescriptor = SharpYaml.Serialization.ITypeDescriptor;
 

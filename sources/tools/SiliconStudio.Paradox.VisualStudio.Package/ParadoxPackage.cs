@@ -191,7 +191,7 @@ namespace SiliconStudio.Paradox.VisualStudio
                 {
                     try
                     {
-                        ParadoxCommandsProxy.GetProxy().Initialize();
+                        ParadoxCommandsProxy.GetProxy().Initialize(null);
                     }
                     catch (Exception ex)
                     {

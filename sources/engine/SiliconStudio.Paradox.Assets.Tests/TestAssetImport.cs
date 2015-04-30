@@ -9,8 +9,8 @@ using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Paradox.Assets.Materials;
-using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
+using SiliconStudio.Paradox.Rendering.Materials;
+using SiliconStudio.Paradox.Rendering.Materials.Processor.Visitors;
 using SiliconStudio.Paradox.Assets.Model;
 using SiliconStudio.Paradox.Assets.Textures;
 

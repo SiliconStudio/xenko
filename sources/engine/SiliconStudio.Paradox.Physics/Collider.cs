@@ -4,7 +4,7 @@
 using System;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Physics
 {

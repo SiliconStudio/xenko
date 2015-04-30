@@ -191,7 +191,7 @@
     <ClCompile Include="AnimationConverter.h" />
     <ClCompile Include="AssemblyInfo.h" />
     <ClCompile Include="SceneMapping.h" />
-    <ClCompile Include="MeshConverter.h" />
+    <ClCompile Include="MeshConverter.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

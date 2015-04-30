@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using SharpYaml.Serialization;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Diff;
 
 using SiliconStudio.Assets.Compiler;
@@ -30,6 +31,7 @@ namespace SiliconStudio.Assets
         private static readonly Dictionary<Type, string> RegisteredDefaultAssetExtension = new Dictionary<Type, string>();
         private static readonly Dictionary<Type, bool> RegisteredDynamicThumbnails = new Dictionary<Type, bool>();
         private static readonly HashSet<Type> AssetTypes = new HashSet<Type>();
+        internal static readonly HashSet<Type> RegisteredPackageSessionAnalysisTypes = new HashSet<Type>();
 
         private static readonly Dictionary<Guid, IAssetImporter> RegisteredImportersInternal = new Dictionary<Guid, IAssetImporter>();
         private static readonly Dictionary<Type, int> RegisteredFormatVersions = new Dictionary<Type, int>();
@@ -199,10 +201,10 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Returns an array of asset types that have a description.
+        /// Returns an array of asset types that are non-abstract and public.
         /// </summary>
         /// <returns>An array of <see cref="Type"/> elements.</returns>
-        public static Type[] GetDescribedTypes()
+        public static Type[] GetPublicTypes()
         {
             return AssetTypes.ToArray();
         }
@@ -397,6 +399,10 @@ namespace SiliconStudio.Assets
                     }
                 }
 
+                if (typeof(PackageSessionAnalysisBase).IsAssignableFrom(type) && type.GetConstructor(new Type[0]) != null )
+                {
+                    RegisteredPackageSessionAnalysisTypes.Add(type);
+                }
 
                 // Only process Asset types
                 var assetType = type;
@@ -406,7 +412,7 @@ namespace SiliconStudio.Assets
                 }
 
                 // Store in a list all asset types loaded
-                if (assetType.IsPublic)
+                if (assetType.IsPublic && !assetType.IsAbstract)
                 {
                     AssetTypes.Add(assetType);
                 }

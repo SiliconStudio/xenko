@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects.Data;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering.Data;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     /// <summary>
     /// TODO: Update summary.

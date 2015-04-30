@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Assets
 
         public static GraphicsProfile GetGraphicsProfile(this AssetCompilerContext context)
         {
-            return context.Properties.Get(ParadoxConfig.GraphicsProfile);
+            return context.Properties.Get(GameSettingsAsset.DefaultGraphicsProfile);
         }
     }
 }

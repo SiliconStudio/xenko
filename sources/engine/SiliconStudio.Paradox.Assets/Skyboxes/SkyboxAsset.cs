@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
     [AssetDescription(FileExtension)]
     //[ThumbnailCompiler(PreviewerCompilerNames.MaterialThumbnailCompilerQualifiedName, true)]
     [AssetCompiler(typeof(SkyboxAssetCompiler))]
-    [Display("Skybox", "A skybox asset")]
+    [Display(100, "Skybox", "A skybox asset")]
     public sealed class SkyboxAsset : Asset
     {
         /// <summary>

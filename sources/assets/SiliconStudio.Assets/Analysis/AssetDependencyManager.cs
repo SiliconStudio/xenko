@@ -1454,23 +1454,23 @@ namespace SiliconStudio.Assets.Analysis
         /// </summary>
         private class DependenciesCollector : AssetVisitorBase, IDependenciesCollector
         {
-            private AssetDependencies dependecies;
+            private AssetDependencies dependencies;
 
             public IEnumerable<IContentLink> GetDependencies(AssetItem item)
             {
-                dependecies = new AssetDependencies(item);
+                dependencies = new AssetDependencies(item);
 
-                Visit(item);
+                Visit(item.Asset);
                 
                 // composition inheritances
                 var assetComposer = item.Asset as IAssetComposer;
                 if (assetComposer != null)
                 {
                     foreach (var compositionBase in assetComposer.GetCompositionBases())
-                        dependecies.AddBrokenLinkOut(compositionBase, ContentLinkType.CompositionInheritance);
+                        dependencies.AddBrokenLinkOut(compositionBase, ContentLinkType.CompositionInheritance);
                 }
 
-                return dependecies.BrokenLinksOut;
+                return dependencies.BrokenLinksOut;
             }
 
             public override void VisitObject(object obj, ObjectDescriptor descriptor, bool visitMembers)
@@ -1492,7 +1492,7 @@ namespace SiliconStudio.Assets.Analysis
                     if (isBase && ((AssetBase)reference).IsRootImport)
                         return;
 
-                    dependecies.AddBrokenLinkOut(reference, (isBase ? ContentLinkType.Inheritance: 0) | ContentLinkType.Reference);
+                    dependencies.AddBrokenLinkOut(reference, (isBase ? ContentLinkType.Inheritance: 0) | ContentLinkType.Reference);
                 }
                 else
                 {

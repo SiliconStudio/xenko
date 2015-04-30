@@ -12,12 +12,17 @@ Meta:
 LocalDependencies: []
 Profiles:
     -   Name: Shared
+        Platform: Shared
         InheritProfiles: []
         AssetFolders:
             -   Path: AudioAssets
                 RawImports: []
         OutputGroupDirectories: {}
-        Properties: {}
+        Properties:
+            GameSettingsAsset.BackBufferHeight: 720
+            GameSettingsAsset.BackBufferWidth: 1280
+            GameSettingsAsset.DefaultGraphicsProfile: Level_10_0
+            GameSettingsAsset.DefaultScene: 6df0e4b8-ed18-4c60-8a5d-43e5d0a97ba6:MainScene
         ProjectReferences:
             -   Id: 7af4b563-aad3-42ff-b91e-84b9d34d904a
                 Location: SiliconStudio.Paradox.Audio.Tests.Windows.csproj
@@ -28,7 +33,7 @@ Profiles:
         AssetFolders: []
         OutputGroupDirectories: {}
         Properties:
-            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+            GameSettingsAsset.DefaultGraphicsProfile: Level_9_1
         ProjectReferences:
             -   Id: 7af4b563-aad3-42ff-b91e-84b9d34d904a
                 Location: SiliconStudio.Paradox.Audio.Tests.Windows.csproj
@@ -39,7 +44,7 @@ Profiles:
         AssetFolders: []
         OutputGroupDirectories: {}
         Properties:
-            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+            GameSettingsAsset.DefaultGraphicsProfile: Level_9_1
         ProjectReferences:
             -   Id: 7af4b563-aad3-42ff-b91e-84b9d34d904a
                 Location: SiliconStudio.Paradox.Audio.Tests.Android.csproj
@@ -50,7 +55,7 @@ Profiles:
         AssetFolders: []
         OutputGroupDirectories: {}
         Properties:
-            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+            GameSettingsAsset.DefaultGraphicsProfile: Level_9_1
         ProjectReferences:
             -   Id: 7af4b563-aad3-42ff-b91e-84b9d34d904a
                 Location: SiliconStudio.Paradox.Audio.Tests.iOS.csproj

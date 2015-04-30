@@ -24,6 +24,7 @@
     <Reference Include="Xamarin.Android.NUnitLite" Label="Paradox.DoNotSync" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Compile Include="TestObjectIdBuilder.cs" />
     <Compile Include="TestPriorityLinkedQueue.cs" />
     <Compile Include="MemoryFileProvider.cs" />
     <Compile Include="Module.cs" />

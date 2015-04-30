@@ -8,13 +8,10 @@ using NUnit.Framework;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Lights;
-using SiliconStudio.Paradox.Effects.ProceduralModels;
-using SiliconStudio.Paradox.Engine.Graphics;
-using SiliconStudio.Paradox.Engine.Graphics.ProceduralModels;
-using SiliconStudio.Paradox.Engine.Graphics.Tessellation;
-using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.Rendering.Lights;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Rendering.ProceduralModels;
+using SiliconStudio.Paradox.Rendering.Tessellation;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Input;

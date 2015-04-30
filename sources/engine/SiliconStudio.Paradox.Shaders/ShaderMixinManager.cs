@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Shaders
 {
@@ -112,7 +112,14 @@ namespace SiliconStudio.Paradox.Shaders
             // TODO cache mixin context and avoid to recreate one (check if if thread concurrency could occur here)
             var mixinTree = new ShaderMixinSource() { Name = pdxfxEffectName };
             var context = new ShaderMixinContext(mixinTree, properties, builders) { ChildEffectName = childEffectName };
-            builder.Generate(mixinTree, context);
+            try
+            {
+                builder.Generate(mixinTree, context);
+            }
+            catch (ShaderMixinDiscardException discard)
+            {
+                // We don't rethrow as this exception is on purpose to early exit/escape from a shader mixin
+            }
             return mixinTree;
         }
 

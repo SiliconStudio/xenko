@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(TextureAssetCompiler))]
     [ThumbnailCompiler(PreviewerCompilerNames.TextureThumbnailCompilerQualifiedName, true, Priority = -10000)]
-    [Display("Texture", "A texture")]
+    [Display(105, "Texture", "A texture")]
     [CategoryOrder(10, "Size")]
     [CategoryOrder(20, "Format")]
     [CategoryOrder(30, "Transparency")]

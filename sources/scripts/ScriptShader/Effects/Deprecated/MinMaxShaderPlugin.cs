@@ -3,7 +3,7 @@
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     /// <summary>
     /// Light Shaft plugin.

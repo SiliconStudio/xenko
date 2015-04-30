@@ -7,9 +7,8 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Threading;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Threading;
 
 namespace SiliconStudio.Paradox.Physics
 {

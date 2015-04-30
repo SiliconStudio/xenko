@@ -1,0 +1,16 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Paradox.Rendering.Skyboxes
+{
+    /// <summary>
+    /// Sample class to sample a skybox.
+    /// </summary>
+    class ComputeSkyboxCubeMapColor<LinkType TTexture> : IComputeEnvironmentColor, Texturing, DynamicTextureCube<TTexture>
+    {
+        override float4 Compute(float3 direction)
+        {
+            return CubeMap.Sample(LinearSampler, direction);
+        }
+    };
+}

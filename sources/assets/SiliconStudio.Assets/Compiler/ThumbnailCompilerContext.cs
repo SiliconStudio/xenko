@@ -3,7 +3,7 @@
 using System;
 using System.IO;
 using System.Threading;
-
+using System.Threading.Tasks;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Storage;
 
@@ -38,7 +38,7 @@ namespace SiliconStudio.Assets.Compiler
         /// <summary>
         /// The array of data representing the thumbnail to display when a thumbnail build failed.
         /// </summary>
-        public Byte[] BuildFailedThumbnail;
+        public Task<Byte[]> BuildFailedThumbnail;
 
         /// <summary>
         /// The event raised when a thumbnail has finished to build.
@@ -81,7 +81,7 @@ namespace SiliconStudio.Assets.Compiler
                     }
                     else if (BuildFailedThumbnail != null)
                     {
-                        thumbnailBuiltArgs.ThumbnailStream = new MemoryStream(BuildFailedThumbnail);
+                        thumbnailBuiltArgs.ThumbnailStream = new MemoryStream(BuildFailedThumbnail.Result);
                     }
                     handler(assetItem, thumbnailBuiltArgs);
                 }

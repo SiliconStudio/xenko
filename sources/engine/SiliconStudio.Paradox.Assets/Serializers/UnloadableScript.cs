@@ -4,6 +4,7 @@ using SharpYaml.Events;
 using SiliconStudio.Core;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Assets.Serializers
 {
@@ -12,6 +13,7 @@ namespace SiliconStudio.Paradox.Assets.Serializers
     /// Yaml representation is kept as is, so that it can be properly saved again.
     /// </summary>
     [DataSerializerGlobal(typeof(InvariantObjectCloneSerializer<UnloadableScript>), Profile = "AssetClone")]
+    [Display("Error: unable to load this script")]
     class UnloadableScript : Script
     {
         [DataMemberIgnore]

@@ -5,7 +5,7 @@ using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     public class PostEffectPlugin : RenderPassPlugin
     {

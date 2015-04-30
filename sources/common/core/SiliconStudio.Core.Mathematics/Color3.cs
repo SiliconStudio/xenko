@@ -98,9 +98,9 @@ namespace SiliconStudio.Core.Mathematics
         /// The alpha component is ignored.</param>
         public Color3(int rgb)
         {
-            R = ((rgb >> 16) & 255) / 255.0f;
+            B = ((rgb >> 16) & 255) / 255.0f;
             G = ((rgb >> 8) & 255) / 255.0f;
-            B = (rgb & 255) / 255.0f;
+            R = (rgb & 255) / 255.0f;
         }
 
         /// <summary>
@@ -110,9 +110,9 @@ namespace SiliconStudio.Core.Mathematics
         /// The alpha component is ignored.</param>
         public Color3(uint rgb)
         {
-            R = ((rgb >> 16) & 255) / 255.0f;
+            B = ((rgb >> 16) & 255) / 255.0f;
             G = ((rgb >> 8) & 255) / 255.0f;
-            B = (rgb & 255) / 255.0f;
+            R = (rgb & 255) / 255.0f;
         }
 
         /// <summary>

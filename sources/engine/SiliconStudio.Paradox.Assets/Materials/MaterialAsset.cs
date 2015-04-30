@@ -4,15 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Engine.Graphics.Materials;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Rendering.Materials;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -24,7 +23,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
     [ThumbnailCompiler(PreviewerCompilerNames.MaterialThumbnailCompilerQualifiedName, true, Priority = -5000)]
     [AssetCompiler(typeof(MaterialAssetCompiler))]
     [ObjectFactory(typeof(MaterialFactory))]
-    [Display("Material", "A material")]
+    [Display(115, "Material", "A material")]
     public sealed class MaterialAsset : Asset, IMaterialDescriptor, IAssetCompileTimeDependencies
     {
         /// <summary>
@@ -64,6 +63,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DefaultValue(null)]
         [DataMember(20)]
         [NotNull]
+        [Category]
         public MaterialBlendLayers Layers { get; set; }
 
         /// <summary>

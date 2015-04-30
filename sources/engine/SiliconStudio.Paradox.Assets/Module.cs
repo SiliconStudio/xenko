@@ -6,9 +6,9 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Templates;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Skyboxes;
-using SiliconStudio.Paradox.Engine.Graphics.Skyboxes;
+using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Rendering.Skyboxes;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 

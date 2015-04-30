@@ -1,0 +1,32 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Paradox.Rendering.Lights
+{
+    /// <summary>
+    /// Defines a group of directional lights
+    /// </summary>
+    class LightDirectionalGroup<int TMaxLightCount> : DirectLightGroup, NormalStream
+    {
+        cbuffer PerObject
+        {
+            float3 LightDirectionsWS[TMaxLightCount] = null;
+            [Color]
+            float3 LightColor[TMaxLightCount] = null;
+        }
+
+        override int GetMaxLightCount()
+        {
+            return TMaxLightCount;
+        }
+
+        /// <summary>
+        /// Compute the light color/direction for the specified index within this group
+        /// </summary>
+        override void PrepareDirectLightCore(int lightIndex)
+        {
+            streams.lightColor = LightColor[lightIndex];
+            // TODO: Add support for disk based Directional light
+            streams.lightDirectionWS = -LightDirectionsWS[lightIndex];
+        }
+    };
+}

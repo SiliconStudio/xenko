@@ -3,7 +3,7 @@
 
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Engine.Graphics.Materials;
+using SiliconStudio.Paradox.Rendering.Materials;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {

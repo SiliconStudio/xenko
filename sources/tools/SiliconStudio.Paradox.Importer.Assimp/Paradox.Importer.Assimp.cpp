@@ -22,15 +22,12 @@ using namespace SiliconStudio::Core::Serialization;
 using namespace SiliconStudio::Core::Serialization::Assets;
 using namespace SiliconStudio::Core::Serialization::Contents;
 using namespace SiliconStudio::Paradox::Assets::Materials;
-using namespace SiliconStudio::Paradox::Effects::Materials;
-using namespace SiliconStudio::Paradox::Assets::Materials::ComputeColors;
+using namespace SiliconStudio::Paradox::Rendering;
+using namespace SiliconStudio::Paradox::Rendering::Materials;
+using namespace SiliconStudio::Paradox::Rendering::Materials::ComputeColors;
 using namespace SiliconStudio::Paradox::AssimpNet;
-using namespace SiliconStudio::Paradox::DataModel;
+using namespace SiliconStudio::Paradox::Animations;
 using namespace SiliconStudio::Paradox::Engine;
-using namespace SiliconStudio::Paradox::Engine::Graphics::Materials;
-using namespace SiliconStudio::Paradox::EntityModel;
-using namespace SiliconStudio::Paradox::Effects;
-using namespace SiliconStudio::Paradox::Effects::Data;
 using namespace SiliconStudio::Paradox::Extensions;
 using namespace SiliconStudio::Paradox::Graphics;
 using namespace SiliconStudio::Paradox::Graphics::Data;
@@ -724,20 +721,20 @@ private:
 			{
 				auto realTop = (AssimpNet::Material::StackOperation^) top;
 				AssimpNet::Material::Operation op = realTop->operation;
-				auto binNode = gcnew ComputeBinaryColor(nullptr, nullptr, BinaryOperand::Add);
+				auto binNode = gcnew ComputeBinaryColor(nullptr, nullptr, BinaryOperator::Add);
 
 				switch (op)
 				{
 					case AssimpNet::Material::Operation::Add3ds:
 					case AssimpNet::Material::Operation::AddMaya:
-						binNode->Operand = BinaryOperand::Add; //BinaryOperand::Add3ds;
+						binNode->Operator = BinaryOperator::Add; //BinaryOperator::Add3ds;
 						break;
 					case AssimpNet::Material::Operation::Multiply3ds:
 					case AssimpNet::Material::Operation::MultiplyMaya:
-						binNode->Operand = BinaryOperand::Multiply;
+						binNode->Operator = BinaryOperator::Multiply;
 						break;
 					default:
-						binNode->Operand = BinaryOperand::Add;
+						binNode->Operator = BinaryOperator::Add;
 						break;
 				}
 
@@ -768,12 +765,12 @@ private:
 				
 				
 				auto factorComposition = gcnew ComputeFloat4(Vector4(strength, strength, strength, strengthAlpha));
-				curComposition = gcnew ComputeBinaryColor(curComposition, factorComposition, BinaryOperand::Multiply);
+				curComposition = gcnew ComputeBinaryColor(curComposition, factorComposition, BinaryOperator::Multiply);
 			}
 			else if (alpha != 1.f && type != AssimpNet::Material::StackType::Color)
 			{
 				auto factorComposition = gcnew ComputeFloat4(Vector4(1.0f, 1.0f, 1.0f, alpha));
-				curComposition = gcnew ComputeBinaryColor(curComposition, factorComposition, BinaryOperand::Multiply);
+				curComposition = gcnew ComputeBinaryColor(curComposition, factorComposition, BinaryOperator::Multiply);
 			}
 
 			if (isRootElement)
@@ -843,7 +840,7 @@ private:
 			{
 				auto lightMap = GenerateOneTextureTypeLayers(pMat, aiTextureType_LIGHTMAP, textureCount, finalMaterial);
 				if (lightMap != nullptr)
-					computeColorNode = gcnew ComputeBinaryColor(computeColorNode, lightMap, BinaryOperand::Add);
+					computeColorNode = gcnew ComputeBinaryColor(computeColorNode, lightMap, BinaryOperator::Add);
 			}
 
 			finalMaterial->Attributes->Diffuse = gcnew MaterialDiffuseMapFeature(computeColorNode);
@@ -939,7 +936,7 @@ private:
   //              propertyName = propertyName->Substring(index);
   //              propertyName = propertyName->Replace('_','.');
   //              // TODO Paradox Change name 
-  //              propertyName = gcnew String("SiliconStudio.Paradox.Effects") + propertyName;
+  //              propertyName = gcnew String("SiliconStudio.Paradox.Rendering") + propertyName;
 
 		//		switch (pProp->mDataLength)
 		//		{

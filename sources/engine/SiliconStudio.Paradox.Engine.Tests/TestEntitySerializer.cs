@@ -8,7 +8,6 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Engine.Tests
 {

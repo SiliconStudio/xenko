@@ -2,12 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Shaders
 {
@@ -81,6 +80,11 @@ namespace SiliconStudio.Paradox.Shaders
             {
                 return currentMixinSourceTree;
             }
+        }
+
+        public void Discard()
+        {
+            throw new ShaderMixinDiscardException();
         }
 
         /// <summary>
@@ -279,19 +283,6 @@ namespace SiliconStudio.Paradox.Shaders
         }
 
         /// <summary>
-        /// Mixins a <see cref="ShaderMixinSource" /> into the specified mixin tree.
-        /// </summary>
-        /// <param name="mixinTree">The mixin tree.</param>
-        /// <param name="shaderMixinSource">The shader mixin source.</param>
-        public void Mixin(ShaderMixinSource mixinTree, ShaderMixinSource shaderMixinSource)
-        {
-            if (shaderMixinSource != null)
-            {
-                mixinTree.CloneFrom(shaderMixinSource);
-            }
-        }
-
-        /// <summary>
         /// Mixins a <see cref="ShaderMixinSource"/> into the specified mixin tree.
         /// </summary>
         /// <param name="mixinTree">The mixin tree.</param>
@@ -303,9 +294,10 @@ namespace SiliconStudio.Paradox.Shaders
                 return;
             }
 
-            if (shaderSource is ShaderMixinSource)
+            var shaderMixinSource = shaderSource as ShaderMixinSource;
+            if (shaderMixinSource != null)
             {
-                Mixin(mixinTree, (ShaderMixinSource)shaderSource);
+                mixinTree.CloneFrom(shaderMixinSource);
             }
             else if (shaderSource is ShaderClassSource)
             {
@@ -318,6 +310,12 @@ namespace SiliconStudio.Paradox.Shaders
             else
             {
                 throw new InvalidOperationException("ShaderSource [{0}] is not supported (Only ShaderMixinSource and ShaderClassSource)".ToFormat(shaderSource.GetType()));
+            }
+
+            // If we are mixin a shader source that has an attached discard, don't proceed further
+            if (shaderSource.Discard)
+            {
+                Discard();
             }
         }
     }

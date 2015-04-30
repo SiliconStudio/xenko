@@ -2,14 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-
-using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Paradox.Shaders.Compiler;
 using SiliconStudio.Paradox.Shaders.Parser.Ast;
 using SiliconStudio.Paradox.Shaders.Parser.Mixins;
-using SiliconStudio.Shaders.Utility;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {

@@ -3,8 +3,6 @@
 
 using System;
 
-using SiliconStudio.Paradox.EntityModel;
-
 namespace SiliconStudio.Paradox.Engine
 {
     /// <summary>

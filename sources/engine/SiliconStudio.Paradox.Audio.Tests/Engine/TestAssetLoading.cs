@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using NUnit.Framework;
+using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Audio.Tests.Engine
 {

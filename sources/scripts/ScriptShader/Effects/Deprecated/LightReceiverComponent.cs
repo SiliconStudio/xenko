@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Serialization.Converters;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;

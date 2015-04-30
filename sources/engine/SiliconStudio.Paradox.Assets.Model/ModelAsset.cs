@@ -12,7 +12,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Assets.ProceduralModels;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Assets.Model
 {
@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Assets.Model
     [AssetDescription(FileExtension, false)]
     [AssetCompiler(typeof(ModelAssetCompiler))]
     [ThumbnailCompiler(PreviewerCompilerNames.ModelThumbnailCompilerQualifiedName, true, Priority = 10000)]
-    [Display("Model", "A 3D model")]
+    [Display(190, "Model", "A 3D model")]
     [AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
     public sealed class ModelAsset : AssetImportTracked, IModelAsset
     {
@@ -37,7 +37,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         public ModelAsset()
         {
             SerializedVersion = AssetFormatVersion;
-            ScaleImport = 0.01f;
+            ScaleImport = 1.0f;
             Materials = new List<ModelMaterial>();
             Nodes = new List<NodeInformation>();
             SetDefaults();
@@ -49,7 +49,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <value>The scale import.</value>
         /// <userdoc>The scale applied when importing a model.</userdoc>
         [DataMember(10)]
-        [DefaultValue(0.01f)]
+        [DefaultValue(1.0f)]
         public float ScaleImport { get; set; }
 
         /// <summary>

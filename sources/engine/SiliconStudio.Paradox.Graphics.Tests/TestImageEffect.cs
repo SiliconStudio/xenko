@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Images;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Rendering.Images;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Input;
 
@@ -98,7 +98,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         /// <summary>
         /// Run the test
         /// </summary>
-        [Test]
+        [Test, Ignore]
         public void RunImageEffect()
         {
             RunGameTest(new TestImageEffect());

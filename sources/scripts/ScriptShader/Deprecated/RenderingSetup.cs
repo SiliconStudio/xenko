@@ -4,16 +4,15 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using SiliconStudio.Paradox.Engine.Xaml;
-using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Xaml;
 using SiliconStudio.Paradox;
 using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Rendering;
 #if PARADOX_YEBIS
-using SiliconStudio.Paradox.Effects.Yebis;
+using SiliconStudio.Paradox.Rendering.Yebis;
 #endif
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Configuration;

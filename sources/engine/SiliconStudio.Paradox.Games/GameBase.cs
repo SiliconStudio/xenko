@@ -51,7 +51,7 @@ namespace SiliconStudio.Paradox.Games
         private ProfilingState profilingDraw;
         private TimeSpan singleFrameUpdateTime;
         private IGraphicsDeviceService graphicsDeviceService;
-        private IGraphicsDeviceManager graphicsDeviceManager;
+        protected IGraphicsDeviceManager graphicsDeviceManager;
         private ResumeManager resumeManager;
         private bool isEndRunRequired;
         private bool isExiting;
@@ -439,6 +439,8 @@ namespace SiliconStudio.Paradox.Games
             // Gets the GameWindow Context
             Context = gameContext ?? new GameContext();
 
+            PrepareRun();
+
             try
             {
                 // TODO temporary workaround as the engine doesn't support yet resize
@@ -469,6 +471,10 @@ namespace SiliconStudio.Paradox.Games
                     IsRunning = false;
                 }
             }
+        }
+
+        internal protected virtual void PrepareRun()
+        {
         }
 
         /// <summary>
@@ -502,6 +508,10 @@ namespace SiliconStudio.Paradox.Games
                 }
 
                 // Update the timer
+                if (updateTime.FrameCount < 2) //-> delay timer reset after first draw to avoid important gap in game time space
+                {
+                    timer.Reset();
+                }
                 timer.Tick();
 
                 // Update the playTimer timer

@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Graphics
 
         public SwapChainGraphicsPresenter(GraphicsDevice device, PresentationParameters presentationParameters) : base(device, presentationParameters)
         {
-            device.InitDefaultRenderTarget(presentationParameters);
+            device.InitDefaultRenderTarget(Description);
             //backBuffer = device.DefaultRenderTarget;
             // TODO: Review Depth buffer creation for both Android and iOS
             //DepthStencilBuffer = device.windowProvidedDepthTexture;
@@ -46,6 +46,27 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
+        protected override void ProcessPresentationParameters()
+        {
+            // Use aspect ratio of device
+            var androidGameView = (AndroidGameView)Description.DeviceWindowHandle.NativeHandle;
+            var panelWidth = androidGameView.Size.Width;
+            var panelHeight = androidGameView.Size.Height;
+            var panelRatio = (float)panelWidth / panelHeight;
+
+            var desiredWidth = Description.BackBufferWidth;
+            var desiredHeight = Description.BackBufferHeight;
+
+            if (panelRatio >= 1.0f) // Landscape => use height as base
+            {
+                Description.BackBufferHeight = (int)(desiredWidth / panelRatio);
+            }
+            else // Portrait => use width as base
+            {
+                Description.BackBufferWidth = (int)(desiredHeight * panelRatio);
+            }
+        }
+
         public override void Present()
         {
             GraphicsDevice.Begin();
@@ -57,7 +78,7 @@ namespace SiliconStudio.Paradox.Graphics
             if (backBuffer != GraphicsDevice.windowProvidedRenderTexture)
                 GraphicsDevice.CopyScaler2D(backBuffer, GraphicsDevice.windowProvidedRenderTexture,
                     new Rectangle(0, 0, backBuffer.Width, backBuffer.Height),
-                    new Rectangle(0, 0, GraphicsDevice.windowProvidedRenderTexture.Width, GraphicsDevice.windowProvidedRenderTexture.Height), true);
+                    new Rectangle(0, 0, GraphicsDevice.windowProvidedRenderTexture.Width, GraphicsDevice.windowProvidedRenderTexture.Height), false);
             var graphicsContext = androidGameView.GraphicsContext;
 
             ((AndroidGraphicsContext)graphicsContext).Swap();

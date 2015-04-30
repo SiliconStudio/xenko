@@ -1,16 +1,13 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
 using System.ComponentModel;
-
-using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Lights;
-using SiliconStudio.Paradox.Engine.Graphics;
-using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Engine.Design;
+using SiliconStudio.Paradox.Engine.Processors;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Engine
 {
@@ -72,10 +69,10 @@ namespace SiliconStudio.Paradox.Engine
         }
 
         /// <summary>
-        /// Gets the materials; non-null ones will override materials from <see cref="Effects.Model.Materials"/> (same slots should be used).
+        /// Gets the materials; non-null ones will override materials from <see cref="SiliconStudio.Paradox.Rendering.Model.Materials"/> (same slots should be used).
         /// </summary>
         /// <value>
-        /// The materials overriding <see cref="Effects.Model.Materials"/> ones.
+        /// The materials overriding <see cref="SiliconStudio.Paradox.Rendering.Model.Materials"/> ones.
         /// </value>
         [DataMember(20)]
         public List<Material> Materials
@@ -170,8 +167,8 @@ namespace SiliconStudio.Paradox.Engine
 
             // Update the bounding sphere / bounding box in world space
             var meshes = Model.Meshes;
-            var modelBoundingSphere = new BoundingSphere();
-            var modelBoundingBox = new BoundingBox();
+            var modelBoundingSphere = BoundingSphere.Empty;
+            var modelBoundingBox = BoundingBox.Empty;
             bool hasBoundingBox = false;
             Matrix world;
             foreach (var mesh in meshes)

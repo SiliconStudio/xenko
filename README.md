@@ -7,6 +7,12 @@ This is the source code for Paradox Game Engine (http://paradox3d.net/).
 
 * [Licensing and Contributions](LICENSE.md)
 
+## Community
+
+* Chat with the community at [![Join the chat at https://gitter.im/SiliconStudio/paradox](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/SiliconStudio/paradox?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+* Ask and answer questions on our QA website: http://answers.paradox3d.net/
+* Discuss on our forums: http://forums.paradox3d.net/
+
 ## Documentation
 
 * [Build Instructions](doc/GettingStarted.md)

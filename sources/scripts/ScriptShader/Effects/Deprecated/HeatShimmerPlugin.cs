@@ -4,15 +4,15 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Effects.Data;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering.Data;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Shaders;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     /// <summary>
     /// Light Shaft plugin.

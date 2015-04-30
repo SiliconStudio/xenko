@@ -8,9 +8,8 @@ using namespace System::IO;
 using namespace System::Collections::Generic;
 using namespace System::Runtime::InteropServices;
 using namespace SiliconStudio::Core::Diagnostics;
-using namespace SiliconStudio::Paradox::DataModel;
-using namespace SiliconStudio::Paradox::EntityModel;
-using namespace SiliconStudio::Paradox::Effects;
+using namespace SiliconStudio::Paradox::Animations;
+using namespace SiliconStudio::Paradox::Rendering;
 using namespace SiliconStudio::Paradox::Engine;
 using namespace SiliconStudio::Core::Mathematics;
 
@@ -30,7 +29,7 @@ namespace SiliconStudio {
 
 					Matrix convertMatrix;
 					Matrix inverseConvertMatrix;
-					Matrix inverseTransposeConvertMatrix;
+					Matrix normalConvertMatrix;
 				public:
 					/// <summary>
 					/// Initializes a new instance of the <see cref="NodeMapping"/> class.
@@ -80,11 +79,19 @@ namespace SiliconStudio {
 						}
 					}
 
+					property Matrix MatrixModifier
+					{
+						Matrix get()
+						{
+							return convertMatrix;
+						}
+					}
+
 					/// <summary>
 					/// Finds the index of the FBX node in the <see cref="ModelNodeDefinition"/> from a FBX node.
 					/// </summary>
 					/// <param name="node">The node.</param>
-					/// <returns>SiliconStudio.Paradox.Effects.ModelNodeDefinition.</returns>
+					/// <returns>SiliconStudio.Paradox.Rendering.ModelNodeDefinition.</returns>
 					int FindNodeIndex(FbxNode* node)
 					{
 						int nodeIndex;
@@ -101,7 +108,7 @@ namespace SiliconStudio {
 					/// Finds a <see cref="ModelNodeDefinition"/> from a FBX node.
 					/// </summary>
 					/// <param name="node">The node.</param>
-					/// <returns>SiliconStudio.Paradox.Effects.ModelNodeDefinition.</returns>
+					/// <returns>SiliconStudio.Paradox.Rendering.ModelNodeDefinition.</returns>
 					ModelNodeDefinition FindNode(FbxNode* node)
 					{
 						int nodeIndex;
@@ -113,24 +120,29 @@ namespace SiliconStudio {
 						return nodes[nodeIndex];
 					}
 
-					Matrix ConvertMatrix(FbxAMatrix& _m) {
+					Matrix ConvertMatrixFromFbx(FbxAMatrix& _m) 
+					{
 						auto m = FBXMatrixToMatrix(_m);
+						return ConvertMatrix(m);
+					}
+
+					Matrix ConvertMatrix(Matrix& m) 
+					{
 						return inverseConvertMatrix * m * convertMatrix;
 					}
 
-					Vector3 ConvertPoint(const FbxVector4& _p)
+					Vector3 ConvertPointFromFbx(const FbxVector4& _p)
 					{
 						auto position = FbxDouble4ToVector4(_p);
 						position.W = 1.0f;
 						return (Vector3)Vector4::Transform(position, convertMatrix);
 					}
 
-					Vector3 ConvertNormal(const FbxVector4& _p)
+					Vector3 ConvertNormalFromFbx(const FbxVector4& _p)
 					{
 						auto normal = (Vector3)FbxDouble4ToVector4(_p);
-						return Vector3::TransformNormal(normal, inverseTransposeConvertMatrix);
+						return Vector3::TransformNormal(normal, normalConvertMatrix);
 					}
-
 				private:
 					static void GetNodes(FbxNode* pNode, std::vector<FbxNode*>& nodes)
 					{
@@ -209,13 +221,19 @@ namespace SiliconStudio {
 						auto fromMatrix = BuildAxisSystemMatrix(axisSystem);
 						fromMatrix.Invert();
 
+						// We make sure scaleImport is never zero
+						if (scaleImport == 0.0f)
+						{
+							scaleImport = 1.0f;
+						}
+
 						// Finds unit conversion ratio to ScaleImport (usually 0.01 so 1 meter). GetScaleFactor() is in cm.
-						auto scaleToMeters = (float)unitSystem.GetScaleFactor() * scaleImport;
+						auto scaleToMeters = (float)unitSystem.GetScaleFactor() * scaleImport * 0.01f;
 
 						// Builds conversion matrices.
 						convertMatrix = Matrix::Scaling(scaleToMeters) * fromMatrix;
 						inverseConvertMatrix = Matrix::Invert(convertMatrix);
-						inverseTransposeConvertMatrix = Matrix::Transpose(inverseConvertMatrix);
+						normalConvertMatrix = Matrix::Transpose(Matrix::Invert(fromMatrix));
 					}
 
 					static Matrix BuildAxisSystemMatrix(const FbxAxisSystem& axisSystem) {
