@@ -33,6 +33,14 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         [Display("Material")]
         public MaterialInstance MaterialInstance { get; private set; }
 
+        public void SetMaterial(string name, Material material)
+        {
+            if (name == "Material")
+            {
+                MaterialInstance.Material = material;
+            }
+        }
+
         /// <inheritdoc/>
         [DataMemberIgnore]
         public IEnumerable<KeyValuePair<string, MaterialInstance>> MaterialInstances { get { yield return new KeyValuePair<string, MaterialInstance>("Material", MaterialInstance); } }
