@@ -5,8 +5,13 @@ Release date: 2015/##/##
 #### New Features
 
 #### Enhancements
+- Studio: Scene editor opens in Lighting mode when opening a scene that has some light components.
+- Studio: More primitives and new icons in the Material preview.
 
 #### Issues fixed
+- Studio: In some cases, the materials in the scene editor were not properly refreshed after making a change in the related assets.
+- Studio: ".jpeg" is now a valid extension for the texture importer.
+- Studio: Putting an empty string in the Source or CharacterSet property of the Sprite Font does not cause errors anymore ([#210](https://github.com/SiliconStudio/paradox/issues/210))
 
 #### Breaking changes
 
