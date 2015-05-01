@@ -65,7 +65,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
                 var assetClone = (SpriteFontAsset)AssetCloner.Clone(asset);
                 var assetDirectory = assetAbsolutePath.GetParent();
                 assetClone.Source = !string.IsNullOrEmpty(asset.Source) ? UPath.Combine(assetDirectory, asset.Source): null;
-                assetClone.CharacterSet = asset.CharacterSet != null ? UPath.Combine(assetDirectory, asset.CharacterSet): null;
+                assetClone.CharacterSet = !string.IsNullOrEmpty(asset.CharacterSet) ? UPath.Combine(assetDirectory, asset.CharacterSet): null;
 
                 result.BuildSteps = new AssetBuildStep(AssetItem) { new StaticFontCommand(urlInStorage, assetClone) };
             }

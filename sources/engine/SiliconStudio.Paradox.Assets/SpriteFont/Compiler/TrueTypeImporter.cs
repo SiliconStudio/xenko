@@ -53,7 +53,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
             var factory = new Factory();
 
             // try to get the font face from the source file if not null
-            FontFace fontFace = options.Source != null ? GetFontFaceFromSource(factory, options) : GetFontFaceFromSystemFonts(factory, options);
+            FontFace fontFace = !string.IsNullOrEmpty(options.Source) ? GetFontFaceFromSource(factory, options) : GetFontFaceFromSystemFonts(factory, options);
             
             var fontMetrics = fontFace.Metrics;
 
