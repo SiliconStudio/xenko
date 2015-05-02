@@ -73,6 +73,7 @@
 // contributors exclude the implied warranties of merchantability, fitness for a
 // particular purpose and non-infringement.
 
+using System;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
@@ -120,7 +121,20 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
                 // Create the primitive object.
                 return new GeometricPrimitive(device, New(size, toLeftHanded));
             }
-            
+
+            /// <summary>
+            /// Creates a cube with six faces each one pointing in a different direction.
+            /// </summary>
+            /// <param name="device">The device.</param>
+            /// <param name="size">The size.</param>
+            /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
+            /// <returns>A cube.</returns>
+            public static GeometricPrimitive New(GraphicsDevice device, Vector3 size, bool toLeftHanded = false)
+            {
+                // Create the primitive object.
+                return new GeometricPrimitive(device, New(size, toLeftHanded));
+            }
+
             /// <summary>
             /// Creates a cube with six faces each one pointing in a different direction.
             /// </summary>
@@ -128,6 +142,17 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
             /// <returns>A cube.</returns>
             public static GeometricMeshData<VertexPositionNormalTexture> New(float size = 1.0f, bool toLeftHanded = false)
+            {
+                return New(new Vector3(size), toLeftHanded);
+            }
+
+            /// <summary>
+            /// Creates a cube with six faces each one pointing in a different direction.
+            /// </summary>
+            /// <param name="size">The size.</param>
+            /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
+            /// <returns>A cube.</returns>
+            public static GeometricMeshData<VertexPositionNormalTexture> New(Vector3 size, bool toLeftHanded = false)
             {
                 var vertices = new VertexPositionNormalTexture[CubeFaceCount * 4];
                 var indices = new int[CubeFaceCount * 6];
