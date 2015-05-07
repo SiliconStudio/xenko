@@ -1,3 +1,31 @@
+### Version 1.1.1-beta
+
+Release date: 2015/##/##
+
+#### New Features
+
+#### Enhancements
+- Studio: Scene editor opens in Lighting mode when opening a scene that has some light components.
+- Studio: More primitives and new icons in the Material preview.
+
+#### Issues fixed
+- Studio: In some cases, the materials in the scene editor were not properly refreshed after making a change in the related assets.
+- Studio: ".jpeg" is now a valid extension for the texture importer.
+- Studio: Putting an empty string in the Source or CharacterSet property of the Sprite Font does not cause errors anymore ([#210](https://github.com/SiliconStudio/paradox/issues/210))
+
+#### Breaking changes
+
+#### Known Issues
+- Platforms: Shaders can’t compile due to lack of a proper workflow on other platforms than Windows Desktop  (this will be fixed soon)
+- Platforms: Android and iOS platforms are currently not properly supported (this will be fixed soon).
+- Platforms: iOS x64 is not yet supported (this will be added soon)
+- Assets: Reimporting a Model asset (i.e. FBX) might have issues when merging materials
+- Assets: ModelAsset scaling and orientation works only for .FBX, not other formats supported by Assimp library
+- Studio: Scripts are not automatically reloaded by the editor. Closing and re-opening it is needed in order to see new scripts.
+- Studio: Renaming default scene won’t properly update reference. Please set again the reference in project properties.
+- Studio: DDS images cannot be viewed in the Sprite editor
+- Studio: Collections in assets properties cannot be edited nor displayed in multi-selection
+
 ### Version 1.1.0-beta
 
 Release date: 2015/04/28

@@ -4,6 +4,7 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
 
@@ -21,7 +22,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// </summary>
         public CubeProceduralModel()
         {
-            Size = 1.0f;
+            Size = Vector3.One;
         }
 
         /// <summary>
@@ -29,8 +30,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// </summary>
         /// <value>The size.</value>
         [DataMember(10)]
-        [DefaultValue(1.0f)]
-        public float Size { get; set; }
+        public Vector3 Size { get; set; }
 
         protected override GeometricMeshData<VertexPositionNormalTexture> CreatePrimitiveMeshData()
         {
