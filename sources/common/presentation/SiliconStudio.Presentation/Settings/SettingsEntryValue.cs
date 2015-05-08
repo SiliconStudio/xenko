@@ -1,5 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.Globalization;
+
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Presentation.Settings
@@ -25,7 +28,7 @@ namespace SiliconStudio.Presentation.Settings
         /// <inheritdoc/>
         internal override object GetSerializableValue()
         {
-            return Value != null ? Value.ToString() : null;
+            return Value != null ? string.Format(CultureInfo.InvariantCulture, "{0}", Value) : null;
         }
     }
 }

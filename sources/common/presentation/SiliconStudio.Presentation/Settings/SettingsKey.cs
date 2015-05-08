@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.ComponentModel;
+using System.Globalization;
 
 using SiliconStudio.Core.IO;
 
@@ -118,10 +119,11 @@ namespace SiliconStudio.Presentation.Settings
             T result;
             try
             {
-                var converter = TypeDescriptor.GetConverter(typeof(T));
+                TypeConverter converter = TypeDescriptor.GetConverter(typeof(T));
                 if (converter.CanConvertFrom(obj != null ? obj.GetType() : typeof(object)))
                 {
-                    result = (T)converter.ConvertFrom(obj);
+                    // ReSharper disable once AssignNullToNotNullAttribute - It's fine to pass null here.
+                    result = (T)converter.ConvertFrom(null, CultureInfo.InvariantCulture, obj);
                 }
                 else
                 {

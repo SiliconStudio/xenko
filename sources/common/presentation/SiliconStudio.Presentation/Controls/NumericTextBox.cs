@@ -515,14 +515,7 @@ namespace SiliconStudio.Presentation.Controls
             double value;
             try
             {
-                try
-                {
-                    value = double.Parse(Text);
-                }
-                catch (Exception)
-                {
-                    value = double.Parse(Text, CultureInfo.InvariantCulture);
-                }
+                value = double.Parse(Text, CultureInfo.InvariantCulture);
             }
             catch (Exception)
             {
@@ -542,14 +535,8 @@ namespace SiliconStudio.Presentation.Controls
             double value;
             try
             {
-                try
-                {
-                    value = double.Parse(baseValue);
-                }
-                catch (Exception)
-                {
-                    value = double.Parse(baseValue, CultureInfo.InvariantCulture);
-                }
+                value = double.Parse(baseValue, CultureInfo.InvariantCulture);
+
                 if (value > Maximum)
                 {
                     value = Maximum;
