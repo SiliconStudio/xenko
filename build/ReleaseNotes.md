@@ -7,6 +7,7 @@ Release date: 2015/##/##
 #### Enhancements
 - Studio: Scene editor opens in Lighting mode when opening a scene that has some light components.
 - Studio: More primitives and new icons in the Material preview.
+- Studio: Entities can now be drag/dropped in component and entity properties of the property grid.
 
 #### Issues fixed
 - Studio: Fix issues related to non-english locales (numeric inputs and settings save/load) ([#211](https://github.com/SiliconStudio/paradox/issues/211))
