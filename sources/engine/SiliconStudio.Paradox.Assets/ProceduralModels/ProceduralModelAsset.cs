@@ -25,10 +25,10 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
     [ThumbnailCompiler(PreviewerCompilerNames.ProceduralModelThumbnailCompilerQualifiedName, true)]
     [AssetCompiler(typeof(ProceduralModelAssetCompiler))]
     [Display(185, "Procedural Model", "A procedural model")]
-    [AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
+    [AssetFormatVersion(2)]
+    [AssetUpgrader(0, 1, 2, typeof(Upgrader))]
     public sealed class ProceduralModelAsset : Asset, IModelAsset
     {
-        const int AssetFormatVersion = 2;
         /// <summary>
         /// The default file extension used by the <see cref="ProceduralModelAsset"/>.
         /// </summary>
@@ -58,7 +58,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
 
         class Upgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(ILogger log, dynamic asset)
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
             {
                 // Introduction of MaterialInstance
                 var material = asset.Type.Material;
@@ -85,7 +85,6 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
                         asset.Type.Size = vecSize;
                     }
                 }
-                SetSerializableVersion(asset, AssetFormatVersion);
             }
         }
     }

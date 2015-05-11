@@ -15,7 +15,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.VisualStudio;
 using SiliconStudio.Core.Yaml;
-using AttributeRegistry = SiliconStudio.Core.Reflection.AttributeRegistry;
+
 using IObjectFactory = SiliconStudio.Core.Reflection.IObjectFactory;
 
 namespace SiliconStudio.Assets
@@ -34,9 +34,9 @@ namespace SiliconStudio.Assets
         internal static readonly HashSet<Type> RegisteredPackageSessionAnalysisTypes = new HashSet<Type>();
 
         private static readonly Dictionary<Guid, IAssetImporter> RegisteredImportersInternal = new Dictionary<Guid, IAssetImporter>();
-        private static readonly Dictionary<Type, int> RegisteredFormatVersions = new Dictionary<Type, int>();
+        private static readonly Dictionary<Type, Tuple<int, int>> RegisteredFormatVersions = new Dictionary<Type, Tuple<int, int>>();
         private static readonly HashSet<Type> RegisteredInternalAssetTypes = new HashSet<Type>();
-        private static readonly Dictionary<Type, Type[]> RegisteredFormatVersionUpdaterTypes = new Dictionary<Type, Type[]>();
+        private static readonly Dictionary<Type, AssetUpgraderCollection> RegisteredAssetUpgraders = new Dictionary<Type, AssetUpgraderCollection>();
         private static readonly Dictionary<string, List<IAssetImporter>> RegisterImportExtensions = new Dictionary<string, List<IAssetImporter>>(StringComparer.InvariantCultureIgnoreCase);
         private static readonly HashSet<string> RegisteredAssetFileExtensions = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
         internal static readonly HashSet<Assembly> RegisteredAssemblies = new HashSet<Assembly>();
@@ -147,25 +147,38 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="assetType">The asset type.</param>
         /// <returns>The current format version of this asset.</returns>
-        public static int GetFormatVersion(Type assetType)
+        public static int GetCurrentFormatVersion(Type assetType)
         {
             AssertAssetType(assetType);
-            int version;
+            Tuple<int, int> version;
             RegisteredFormatVersions.TryGetValue(assetType, out version);
-            return version;
+            return version != null ? version.Item2 : 0;
         }
 
         /// <summary>
-        /// Gets the current format version of an asset.
+        /// Gets the minimal upgradable format version of an asset.
         /// </summary>
         /// <param name="assetType">The asset type.</param>
         /// <returns>The current format version of this asset.</returns>
-        public static Type[] GetFormatVersionUpdaterTypes(Type assetType)
+        public static int GetMinimalFormatVersion(Type assetType)
         {
             AssertAssetType(assetType);
-            Type[] updaters;
-            RegisteredFormatVersionUpdaterTypes.TryGetValue(assetType, out updaters);
-            return updaters;
+            Tuple<int, int> version;
+            RegisteredFormatVersions.TryGetValue(assetType, out version);
+            return version != null ? version.Item1 : 0;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="AssetUpgraderCollection"/> of an asset type, if available.
+        /// </summary>
+        /// <param name="assetType">The asset type.</param>
+        /// <returns>The <see cref="AssetUpgraderCollection"/> of an asset type if available, or <c>null</c> otherwise.</returns>
+        public static AssetUpgraderCollection GetAssetUpgraders(Type assetType)
+        {
+            AssertAssetType(assetType);
+            AssetUpgraderCollection upgraders;
+            RegisteredAssetUpgraders.TryGetValue(assetType, out upgraders);
+            return upgraders;
         }
 
         /// <summary>
@@ -444,11 +457,26 @@ namespace SiliconStudio.Assets
                     }
                 }
 
+                // Asset format version
                 var assetFormatVersion = assetType.GetCustomAttribute<AssetFormatVersionAttribute>();
-                if (assetFormatVersion != null)
+                int formatVersion = assetFormatVersion != null ? assetFormatVersion.Version : 0;
+                int minVersion = assetFormatVersion != null ? assetFormatVersion.MinUpgradableVersion : 0;
+                RegisteredFormatVersions.Add(assetType, Tuple.Create(minVersion, formatVersion));
+
+                // Asset upgraders
+                var assetUpgraders = assetType.GetCustomAttributes<AssetUpgraderAttribute>();
+                AssetUpgraderCollection upgraderCollection = null;
+                foreach (var upgrader in assetUpgraders)
                 {
-                    RegisteredFormatVersions.Add(assetType, assetFormatVersion.Version);
-                    RegisteredFormatVersionUpdaterTypes.Add(assetType, assetFormatVersion.AssetUpdaterTypes);
+                    if (upgraderCollection == null)
+                        upgraderCollection = new AssetUpgraderCollection(assetType, formatVersion);
+
+                    upgraderCollection.RegisterUpgrader(upgrader.AssetUpgraderType, upgrader.StartMinVersion, upgrader.StartMaxVersion, upgrader.TargetVersion);
+                }
+                if (upgraderCollection != null)
+                {
+                    upgraderCollection.Validate(minVersion);
+                    RegisteredAssetUpgraders.Add(assetType, upgraderCollection);
                 }
 
                 // Asset factory
@@ -483,7 +511,7 @@ namespace SiliconStudio.Assets
             }
         }
 
-        private static void AssertAssetType(Type assetType)
+        internal static void AssertAssetType(Type assetType)
         {
             if (assetType == null)
                 throw new ArgumentNullException("assetType");
