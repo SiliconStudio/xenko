@@ -312,6 +312,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Debug
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.EffectCompilerServer", "..\sources\tools\SiliconStudio.Paradox.EffectCompilerServer\SiliconStudio.Paradox.EffectCompilerServer.csproj", "{77E2FCC0-4CA6-436C-BE6F-9418CB807D45}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.NugetPackageRewriter", "..\sources\tools\SiliconStudio.NugetPackageRewriter\SiliconStudio.NugetPackageRewriter.csproj", "{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AppStore|Any CPU = AppStore|Any CPU
@@ -1920,6 +1922,30 @@ Global
 		{77E2FCC0-4CA6-436C-BE6F-9418CB807D45}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{77E2FCC0-4CA6-436C-BE6F-9418CB807D45}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
 		{77E2FCC0-4CA6-436C-BE6F-9418CB807D45}.Testing|Win32.ActiveCfg = Release|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.AppStore|Win32.ActiveCfg = Release|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.AppStore|Win32.Build.0 = Release|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.Debug|Win32.Build.0 = Debug|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.Release|Win32.ActiveCfg = Release|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.Release|Win32.Build.0 = Release|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.Testing|Any CPU.ActiveCfg = Release|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.Testing|Any CPU.Build.0 = Release|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.Testing|Win32.ActiveCfg = Release|Any CPU
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.Testing|Win32.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2011,5 +2037,6 @@ Global
 		{FDF801D9-90CC-4CBD-9F53-7F32F7EDF4F1} = {860946E4-CC77-4FDA-A4FD-3DB2A502A696}
 		{73AA8A18-15C4-405B-BBF4-5D41C1CE44AD} = {4C142567-C42B-40F5-B092-798882190209}
 		{77E2FCC0-4CA6-436C-BE6F-9418CB807D45} = {1AE1AC60-5D2F-4CA7-AE20-888F44551185}
+		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65} = {860946E4-CC77-4FDA-A4FD-3DB2A502A696}
 	EndGlobalSection
 EndGlobal
