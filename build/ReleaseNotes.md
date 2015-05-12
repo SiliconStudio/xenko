@@ -10,12 +10,12 @@ Release date: 2015/##/##
 - Studio: Entities can now be drag/dropped in component and entity properties of the property grid.
 
 #### Issues fixed
+- Studio: Allows DX10 device as well to display scene -- note that it won't work for scene containing skybox since it requires compute shader 5.0 for prefiltering, i.e. Material sample ([#212](https://github.com/SiliconStudio/paradox/issues/212))
+- Studio: Scene loading was stuck in a deadlock on single-core and dual-core CPUs ([#215](https://github.com/SiliconStudio/paradox/issues/215))
 - Studio: Fix issues related to non-english locales (numeric inputs and settings save/load) ([#211](https://github.com/SiliconStudio/paradox/issues/211))
 - Studio: In some cases, the materials in the scene editor were not properly refreshed after making a change in the related assets.
 - Studio: ".jpeg" is now a valid extension for the texture importer.
 - Studio: Putting an empty string in the Source or CharacterSet property of the Sprite Font does not cause errors anymore ([#210](https://github.com/SiliconStudio/paradox/issues/210))
-
-#### Breaking changes
 
 #### Known Issues
 - Platforms: Shaders can’t compile due to lack of a proper workflow on other platforms than Windows Desktop  (this will be fixed soon)
