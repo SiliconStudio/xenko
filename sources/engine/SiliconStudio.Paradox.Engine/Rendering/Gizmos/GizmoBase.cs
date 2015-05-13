@@ -2,6 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Threading.Tasks;
+
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Graphics;
@@ -153,10 +155,10 @@ namespace SiliconStudio.Paradox.Rendering.Gizmos
             }
         }
 
-        public virtual void Update(GizmoContext context)
+        public virtual Task Update(GizmoContext context)
         {
             if (SceneEntity == null || RootEntity == null)
-                return;
+                return Task.FromResult(0);
 
             var scale = context.SceneUnit;
             var transformMatrix = SceneEntity.Transform.WorldMatrix;
@@ -165,6 +167,7 @@ namespace SiliconStudio.Paradox.Rendering.Gizmos
             transformMatrix.Row3 *= scale / transformMatrix.Row3.Length();
             RootEntity.Transform.LocalMatrix = transformMatrix;
             RootEntity.Transform.UseTRS = false;
+            return Task.FromResult(0);
         }
 
         public virtual void PrepareDraw(RenderContext context)
