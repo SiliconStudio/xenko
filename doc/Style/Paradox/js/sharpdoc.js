@@ -303,23 +303,25 @@ function hightLightTopic(topicId, keepState, event) {
         event.preventDefault();
     }
 
-    $('mainFrame').set('load', {evalScripts: false});
-    $('mainFrame').load("html/" + escape(topicId) + ".htm");
-    $('mainFrame').get('load').onSuccess = function(e) {
-      InstallCodeTabs();
-      // Syntax Highlighter should reprocess new code blocks
-      SyntaxHighlighter.highlight();
-
-      // Scroll to top
-      $('main_content').scrollTo(0);
-
-      // If there was an anchor, keep it
-      if (anchor)
-      {
-          var baseUrl = window.location.href.split('#')[0];
-          window.location.replace( baseUrl + anchor );
-      }
-    };
+    if (keepState !== true) {
+        $('mainFrame').set('load', {evalScripts: false});
+        $('mainFrame').load("html/" + escape(topicId) + ".htm");
+        $('mainFrame').get('load').onSuccess = function(e) {
+          InstallCodeTabs();
+          // Syntax Highlighter should reprocess new code blocks
+          SyntaxHighlighter.highlight();
+    
+          // Scroll to top
+          $('main_content').scrollTo(0);
+    
+          // If there was an anchor, keep it
+          if (anchor)
+          {
+              var baseUrl = window.location.href.split('#')[0];
+              window.location.replace( baseUrl + anchor );
+          }
+        };
+    }
     
     var newHightlight = $_(topicId + '_toc');
     if (newHightlight == null)

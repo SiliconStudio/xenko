@@ -29,10 +29,11 @@
 <%
     if (Request.QueryString["page"] != null)
     {
-      var page = HttpUtility.UrlEncode(Request.QueryString["page"]) + ".htm";
-      if (!page.Contains("\\") && !page.Contains("/") && System.IO.File.Exists(Server.MapPath(page)))
+      var page = HttpUtility.UrlEncode(Request.QueryString["page"]);
+      var pageUrl = "html/" + page + ".htm";
+      if (!page.Contains(@"\") && !page.Contains(@"/") && System.IO.File.Exists(Server.MapPath(pageUrl)))
       {
-        Response.WriteFile(page);
+        Response.WriteFile(pageUrl);
       }
       else
       {
