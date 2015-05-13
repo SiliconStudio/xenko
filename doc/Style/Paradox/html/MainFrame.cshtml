@@ -31,7 +31,7 @@
     {
       var page = HttpUtility.UrlEncode(Request.QueryString["page"]);
       var pageUrl = "html/" + page + ".htm";
-      if (!page.Contains(@"\") && !page.Contains(@"/") && System.IO.File.Exists(Server.MapPath(pageUrl)))
+      if (!page.Contains("\\") && !page.Contains("/") && System.IO.File.Exists(Server.MapPath(pageUrl)))
       {
         Response.WriteFile(pageUrl);
       }
