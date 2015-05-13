@@ -29,7 +29,7 @@
     <topic id="Paradox" page-id="main_topics" name="Main Topics" webdoc="confluence:PDXDOC/Main+Topics" inline="true"/>
     
     <!-- Special topic X:ClassLibrary to include generated class library references. No filename to setup as it is generated -->
-    <topic id="X:ClassLibraryReference" page-id="api" name="Class Library Reference" index="100" on-url="true"/>
+    <topic id="X:ClassLibraryReference" page-id="api" name="Class Library Reference" async-load="true" index="100" on-url="true"/>
 
     <topic id="X:KnownIssues" page-id="known-issues" name="Known Issues" webdoc="confluence:PDXDOC/Known+Issues" />
 
