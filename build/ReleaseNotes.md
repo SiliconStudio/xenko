@@ -1,6 +1,6 @@
 ### Version 1.1.1-beta
 
-Release date: 2015/05/13
+Release date: 2015/05/14
 
 #### New Features
 
