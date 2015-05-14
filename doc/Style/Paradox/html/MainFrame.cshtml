@@ -27,7 +27,6 @@
 @Import("TocBody")
 <div id='mainFrame' class='mainFrame' name='mainFrame'>
 <%
-    var page = Request.QueryString["page"] != null ? HttpUtility.UrlEncode(Request.QueryString["page"]) : "main";
     var pageUrl = "html/" + page + ".htm";
     if (!page.Contains("\\") && !page.Contains("/") && System.IO.File.Exists(Server.MapPath(pageUrl)))
     {
