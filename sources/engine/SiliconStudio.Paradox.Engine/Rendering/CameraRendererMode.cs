@@ -15,6 +15,7 @@ namespace SiliconStudio.Paradox.Rendering
     /// <summary>
     /// Defines the type of rendering (Forward, Deferred...etc.)
     /// </summary>
+    [DataContract("CameraRendererMode")]
     public abstract class CameraRendererMode : RendererBase
     {
         // TODO: Where should we put this key?
