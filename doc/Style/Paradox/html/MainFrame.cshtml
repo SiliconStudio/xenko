@@ -27,19 +27,16 @@
 @Import("TocBody")
 <div id='mainFrame' class='mainFrame' name='mainFrame'>
 <%
-    if (Request.QueryString["page"] != null)
+    var page = Request.QueryString["page"] != null ? HttpUtility.UrlEncode(Request.QueryString["page"]) : "main";
+    var pageUrl = "html/" + page + ".htm";
+    if (!page.Contains("\\") && !page.Contains("/") && System.IO.File.Exists(Server.MapPath(pageUrl)))
     {
-      var page = HttpUtility.UrlEncode(Request.QueryString["page"]);
-      var pageUrl = "html/" + page + ".htm";
-      if (!page.Contains("\\") && !page.Contains("/") && System.IO.File.Exists(Server.MapPath(pageUrl)))
-      {
-        Response.WriteFile(pageUrl);
-      }
-      else
-      {
-        Response.Write("Could not find page.");
-        Response.StatusCode = 404;
-      }
+      Response.WriteFile(pageUrl);
+    }
+    else
+    {
+      Response.Write("Could not find page.");
+      Response.StatusCode = 404;
     }
 %>
 </div>
