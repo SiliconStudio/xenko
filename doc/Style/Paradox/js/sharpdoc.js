@@ -25,6 +25,9 @@
 // splitPaneToggleId: id to the splitPane toggle collapse-expand button
 // splitPaneResizerId: id to the resizer grip
 
+// If a search happened, we can't use AJAX anymore to make results disappear. As a result, hightLightTopic() will open new URL as external
+searchMode = false;
+
 function supports_local_storage() {
     try {
         return 'localStorage' in window && window['localStorage'] !== null && window.localStorage['getItem'] !== null;
@@ -290,7 +293,7 @@ function hightLightTopic(topicId, keepState, event) {
     var anchor = anchorIndex != -1 ? topicId.substring(anchorIndex) : null;
     topicId = anchorIndex != -1 ? topicId.substring(0, anchorIndex) : topicId;
     
-    if (topicId == "external")
+    if (topicId == "external" || searchMode)
         return;
     
     var oldHighlight = $$_('.highlight');
