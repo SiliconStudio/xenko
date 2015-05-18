@@ -35,7 +35,7 @@ namespace SiliconStudio.Presentation.Services
         /// </summary>
         /// <param name="callback">The asynchronous function to execute in the dispatcher thread.</param>
         /// <returns>A task corresponding to the asynchronous execution of the given function.</returns>
-        Task InvokeAsync(Func<Task> callback);
+        Task InvokeAsync(Action callback);
 
         /// <summary>
         /// Executes the given asynchronous function in the dispatcher thread. This method will run asynchronously and return immediately.
@@ -43,7 +43,7 @@ namespace SiliconStudio.Presentation.Services
         /// <typeparam name="TResult">The type of result returned by the task.</typeparam>
         /// <param name="callback">The asynchronous function to execute in the dispatcher thread.</param>
         /// <returns>A task corresponding to the asynchronous execution of the given task.</returns>
-        Task<TResult> InvokeAsync<TResult>(Func<Task<TResult>> callback);
+        Task<TResult> InvokeAsync<TResult>(Func<TResult> callback);
 
         /// <summary>
         /// Verifies that the current thread is the dispatcher thread.

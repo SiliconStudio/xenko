@@ -2,6 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Threading.Tasks;
+
 using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Rendering.Gizmos
@@ -44,7 +46,7 @@ namespace SiliconStudio.Paradox.Rendering.Gizmos
         /// Update the gizmo state.
         /// </summary>
         /// <param name="context">The gizmo context</param>
-        void Update(GizmoContext context);
+        Task Update(GizmoContext context);
 
         /// <summary>
         /// Prepare the gizmo the coming draw.
