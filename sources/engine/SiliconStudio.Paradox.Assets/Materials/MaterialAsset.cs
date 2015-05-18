@@ -8,10 +8,12 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Rendering.Materials;
+using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
@@ -94,6 +96,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
                     Attributes = ObjectFactory.NewInstance<MaterialAttributes>(),
                     Layers = ObjectFactory.NewInstance<MaterialBlendLayers>(),
                 };
+                newMaterial.Attributes.Diffuse = new MaterialDiffuseMapFeature
+                {
+                    DiffuseMap = new ComputeColor
+                    {
+                        Value = new Color4(0.98f, 0.9f, 0.7f, 1.0f)
+                    }
+                };
+                newMaterial.Attributes.DiffuseModel = new MaterialDiffuseLambertModelFeature();
                 return newMaterial;
             }
         }
