@@ -1,8 +1,15 @@
+### Version 1.1.2-beta
+
+Release date: 2015/05/15
+
+#### Issues fixed
+- Import: Fixed import of models with material names containing punctuation.
+- Studio: Fixed a potential crash when opening a session.
+- Studio: Fixed drag'n'drop from the Asset view.
+
 ### Version 1.1.1-beta
 
-Release date: 2015/##/##
-
-#### New Features
+Release date: 2015/05/14
 
 #### Enhancements
 - Studio: Scene editor opens in Lighting mode when opening a scene that has some light components.

@@ -24,8 +24,28 @@
 *@
 @model SharpDoc.TemplateContext
 @using SharpDoc.Model
-<div id='mainFrame' class='mainFrame' name='mainFrame'></div>
+@Import("TocBody")
+<gcse:searchresults linktarget="_parent"></gcse:searchresults>
+<div id='mainFrame' class='mainFrame' name='mainFrame'>
+<%
+    var pageUrl = "html/" + page + ".htm";
+    if (!page.Contains("\\") && !page.Contains("/") && System.IO.File.Exists(Server.MapPath(pageUrl)))
+    {
+      Response.WriteFile(pageUrl);
+    }
+    else
+    {
+      Response.Write("Could not find page.");
+      Response.StatusCode = 404;
+    }
+%>
+</div>
 
 <script type="text/javascript" language="JavaScript">
     loadContent("@Model.RootTopic.PageId", "@Param.FileExt");
+    @foreach (var topic in @Model.EnumerateTopicAsyncLoad(Model.RootTopic))
+    {
+        @:$('@String.Format("{0}_SubTopics", topic.PageId)').load("@String.Format("html/{0}_toc{1}", topic.PageId, @Param.FileExt)");
+        @:$('@String.Format("{0}_SubTopics", topic.PageId)').get("load").onSuccess = function () { loadContent("@Model.RootTopic.PageId", "@Param.FileExt"); };
+    }
 </script>
