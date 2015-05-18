@@ -21,6 +21,8 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// <param name="model">A model instance to fill with procedural content.</param>
         void Generate(IServiceRegistry services, Model model);
 
+        void SetMaterial(string name, Material material);
+
         /// <summary>
         /// Gets the collection of material instances used by this <see cref="IProceduralModel"/>/
         /// </summary>

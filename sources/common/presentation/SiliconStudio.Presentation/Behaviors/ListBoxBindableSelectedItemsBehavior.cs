@@ -55,8 +55,6 @@ namespace SiliconStudio.Presentation.Behaviors
         /// <param name="dataItem">The item to scroll to.</param>
         protected override void ScrollIntoView(object dataItem)
         {
-            base.ScrollIntoView(dataItem);
-
             AssociatedObject.ScrollIntoView(dataItem);
         }
     }

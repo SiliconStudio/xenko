@@ -26,9 +26,10 @@ namespace SiliconStudio.Assets.Analysis
                     continue;
                 }
 
-                UPath newLocation;
+                UPath newLocation = null;
 
                 var uFile = currentLocation as UFile;
+                var uDirectory = currentLocation as UDirectory;
                 if (!string.IsNullOrEmpty(uFile))
                 {
                     var previousLocationOnDisk = UPath.Combine(fileDirectory, uFile);
@@ -36,16 +37,13 @@ namespace SiliconStudio.Assets.Analysis
                     // If UseRelativeForUFile is used, then turn 
                     newLocation = parameters.ConvertUPathTo == UPathType.Relative ? previousLocationOnDisk.MakeRelative(fileDirectory) : previousLocationOnDisk;
                 }
-                else
+                else if (!string.IsNullOrEmpty(uDirectory))
                 {
-                    var uDirectory = (UDirectory)currentLocation;
-
                     var previousDirectoryOnDisk = UPath.Combine(fileDirectory, uDirectory);
 
                     // If UseRelativeForUFile is used, then turn 
                     newLocation = parameters.ConvertUPathTo == UPathType.Relative ? previousDirectoryOnDisk.MakeRelative(fileDirectory) : previousDirectoryOnDisk;
                 }
-
                 // Only update location that are actually different
                 if (currentLocation != newLocation)
                 {

@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
     public class TextureImporter : AssetImporterBase
     {
         // Supported file extensions for this importer
-        public const string FileExtensions = ".dds,.jpg,.png,.gif,.bmp,.tga,.psd";
+        public const string FileExtensions = ".dds,.jpg,.jpeg,.png,.gif,.bmp,.tga,.psd";
 
         private static readonly Guid uid = new Guid("a60986f3-a594-4278-bd9d-68ea172f0558");
         public override Guid Id

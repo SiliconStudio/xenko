@@ -330,7 +330,7 @@ namespace SiliconStudio.Assets
                     analysisResults.CopyTo(sessionResult);
 
                     // Run custom package session analysis
-                    foreach (var type in AssetRegistry.RegisteredPackageSessionAnalysisTypes)
+                    foreach (var type in AssetRegistry.GetPackageSessionAnalysisTypes())
                     {
                         var pkgAnalysis = (PackageSessionAnalysisBase)Activator.CreateInstance(type);
                         pkgAnalysis.Session = session;

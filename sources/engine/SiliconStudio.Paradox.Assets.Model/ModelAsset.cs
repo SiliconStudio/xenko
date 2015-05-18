@@ -21,11 +21,10 @@ namespace SiliconStudio.Paradox.Assets.Model
     [AssetCompiler(typeof(ModelAssetCompiler))]
     [ThumbnailCompiler(PreviewerCompilerNames.ModelThumbnailCompilerQualifiedName, true, Priority = 10000)]
     [Display(190, "Model", "A 3D model")]
-    [AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
+    [AssetFormatVersion(2)]
+    [AssetUpgrader(0, 1, 2, typeof(Upgrader))]
     public sealed class ModelAsset : AssetImportTracked, IModelAsset
     {
-        public const int AssetFormatVersion = 2;
-
         /// <summary>
         /// The default file extension used by the <see cref="ModelAsset"/>.
         /// </summary>
@@ -155,10 +154,9 @@ namespace SiliconStudio.Paradox.Assets.Model
                 Nodes.Clear();
         }
 
-
         class Upgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(ILogger log, dynamic asset)
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
             {
                 foreach (var modelMaterial in asset.Materials)
                 {
@@ -170,7 +168,6 @@ namespace SiliconStudio.Paradox.Assets.Model
                         modelMaterial.Material = DynamicYamlEmpty.Default;
                     }
                 }
-                SetSerializableVersion(asset, AssetFormatVersion);
             }
         }
     }

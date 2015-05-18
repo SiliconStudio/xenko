@@ -223,6 +223,8 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
             CharacterRegions = new List<CharacterRegion>();
             LineGapFactor = 1.0f;
             LineGapBaseLineFactor = 1.0f;
+            Source = new UFile("");
+            CharacterSet = new UFile("");
         }
 
         /// <summary>

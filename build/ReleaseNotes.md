@@ -1,3 +1,40 @@
+### Version 1.1.2-beta
+
+Release date: 2015/05/15
+
+#### Issues fixed
+- Import: Fixed import of models with material names containing punctuation.
+- Studio: Fixed a potential crash when opening a session.
+- Studio: Fixed drag'n'drop from the Asset view.
+
+### Version 1.1.1-beta
+
+Release date: 2015/05/14
+
+#### Enhancements
+- Studio: Scene editor opens in Lighting mode when opening a scene that has some light components.
+- Studio: More primitives and new icons in the Material preview.
+- Studio: Entities can now be drag/dropped in component and entity properties of the property grid.
+
+#### Issues fixed
+- Studio: Allows DX10 device as well to display scene -- note that it won't work for scene containing skybox since it requires compute shader 5.0 for prefiltering, i.e. Material sample ([#212](https://github.com/SiliconStudio/paradox/issues/212))
+- Studio: Scene loading was stuck in a deadlock on single-core and dual-core CPUs ([#215](https://github.com/SiliconStudio/paradox/issues/215))
+- Studio: Fix issues related to non-english locales (numeric inputs and settings save/load) ([#211](https://github.com/SiliconStudio/paradox/issues/211))
+- Studio: In some cases, the materials in the scene editor were not properly refreshed after making a change in the related assets.
+- Studio: ".jpeg" is now a valid extension for the texture importer.
+- Studio: Putting an empty string in the Source or CharacterSet property of the Sprite Font does not cause errors anymore ([#210](https://github.com/SiliconStudio/paradox/issues/210))
+
+#### Known Issues
+- Platforms: Shaders can’t compile due to lack of a proper workflow on other platforms than Windows Desktop  (this will be fixed soon)
+- Platforms: Android and iOS platforms are currently not properly supported (this will be fixed soon).
+- Platforms: iOS x64 is not yet supported (this will be added soon)
+- Assets: Reimporting a Model asset (i.e. FBX) might have issues when merging materials
+- Assets: ModelAsset scaling and orientation works only for .FBX, not other formats supported by Assimp library
+- Studio: Scripts are not automatically reloaded by the editor. Closing and re-opening it is needed in order to see new scripts.
+- Studio: Renaming default scene won’t properly update reference. Please set again the reference in project properties.
+- Studio: DDS images cannot be viewed in the Sprite editor
+- Studio: Collections in assets properties cannot be edited nor displayed in multi-selection
+
 ### Version 1.1.0-beta
 
 Release date: 2015/04/28

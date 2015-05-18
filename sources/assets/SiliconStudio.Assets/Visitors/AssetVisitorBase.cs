@@ -16,7 +16,7 @@ namespace SiliconStudio.Assets.Visitors
         protected AssetVisitorBase(ITypeDescriptorFactory typeDescriptorFactory) : base(typeDescriptorFactory)
         {
             // Add automatically registered custom data visitors
-            CustomVisitors.AddRange(AssetRegistry.RegisteredDataVisitNodes);
+            CustomVisitors.AddRange(AssetRegistry.GetDataVisitNodes());
         }
     }
 }

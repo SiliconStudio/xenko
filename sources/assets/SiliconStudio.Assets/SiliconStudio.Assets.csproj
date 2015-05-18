@@ -80,7 +80,9 @@
     <Compile Include="AssetToImportMerge.cs" />
     <Compile Include="AssetToImportByImporter.cs" />
     <Compile Include="AssetUpdater.cs" />
+    <Compile Include="AssetUpgraderAttribute.cs" />
     <Compile Include="AssetUpgraderBase.cs" />
+    <Compile Include="AssetUpgraderCollection.cs" />
     <Compile Include="Bundle.cs" />
     <Compile Include="BundleCollection.cs" />
     <Compile Include="Compiler\AssetBuildStep.cs" />

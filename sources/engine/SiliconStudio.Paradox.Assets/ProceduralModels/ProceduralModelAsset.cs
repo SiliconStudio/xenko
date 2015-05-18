@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
-
+using SharpYaml;
 using SharpYaml.Serialization;
 
 using SiliconStudio.Assets;
@@ -25,10 +25,10 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
     [ThumbnailCompiler(PreviewerCompilerNames.ProceduralModelThumbnailCompilerQualifiedName, true)]
     [AssetCompiler(typeof(ProceduralModelAssetCompiler))]
     [Display(185, "Procedural Model", "A procedural model")]
-    [AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
+    [AssetFormatVersion(2)]
+    [AssetUpgrader(0, 1, 2, typeof(Upgrader))]
     public sealed class ProceduralModelAsset : Asset, IModelAsset
     {
-        const int AssetFormatVersion = 1;
         /// <summary>
         /// The default file extension used by the <see cref="ProceduralModelAsset"/>.
         /// </summary>
@@ -58,13 +58,33 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
 
         class Upgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(ILogger log, dynamic asset)
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
             {
+                // Introduction of MaterialInstance
                 var material = asset.Type.Material;
-                asset.Type.MaterialInstance = new YamlMappingNode();
-                asset.Type.MaterialInstance.Material = material;
-                asset.Type.Material = DynamicYamlEmpty.Default;
-                SetSerializableVersion(asset, AssetFormatVersion);
+                if (material != null)
+                {
+                    asset.Type.MaterialInstance = new YamlMappingNode();
+                    asset.Type.MaterialInstance.Material = material;
+                    asset.Type.Material = DynamicYamlEmpty.Default;
+                }
+                var type = asset.Type.Node as YamlMappingNode;
+                if (type != null && type.Tag == "!CubeProceduralModel")
+                {
+                    // Size changed from scalar to vector3
+                    var size = asset.Type.Size as DynamicYamlScalar;
+                    if (size != null)
+                    {
+                        var vecSize = new YamlMappingNode
+                        {
+                            { new YamlScalarNode("X"), new YamlScalarNode(size.Node.Value) },
+                            { new YamlScalarNode("Y"), new YamlScalarNode(size.Node.Value) },
+                            { new YamlScalarNode("Z"), new YamlScalarNode(size.Node.Value) }
+                        };
+                        vecSize.Style = YamlStyle.Flow;
+                        asset.Type.Size = vecSize;
+                    }
+                }
             }
         }
     }

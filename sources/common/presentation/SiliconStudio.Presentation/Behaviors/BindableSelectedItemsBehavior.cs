@@ -28,7 +28,7 @@ namespace SiliconStudio.Presentation.Behaviors
     /// that contains a selected items collection in the framework.
     /// </summary>
     /// <typeparam name="T">The type of control that is associated with this behavior.</typeparam>
-    public class BindableSelectedItemsBehavior<T> : Behavior<T> where T : Control
+    public abstract class BindableSelectedItemsBehavior<T> : Behavior<T> where T : Control
     {
         private bool updatingCollection;
         
@@ -86,10 +86,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// Scrolls the items control to make the given item visible. This method should be overriden in implementations of this behavior.
         /// </summary>
         /// <param name="dataItem">The item to include</param>
-        protected virtual void ScrollIntoView(object dataItem)
-        {
-            // TODO: make this method abstract.
-        }
+        protected abstract void ScrollIntoView(object dataItem);
         
         /// <summary>
         /// Notifies that the collection of selected items has changed in the control. Updates the collection of selected items in the view model.
@@ -164,14 +161,13 @@ namespace SiliconStudio.Presentation.Behaviors
                 newList.CollectionChanged += behavior.CollectionSelectionChanged;
                 if (behavior.AssociatedObject != null)
                 {
-
                     object[] currentlySelectedItems = behavior.SelectedItemsInAssociatedObject.Cast<object>().ToArray();
-                    foreach (var currentlySelectedItem in currentlySelectedItems.Where(x => !newList.Contains(x)))
+                    foreach (var currentlySelectedItem in currentlySelectedItems.Where(x => !newList.Contains(x)).ToList())
                     {
                         behavior.SelectedItemsInAssociatedObject.Remove(currentlySelectedItem);
                     }
 
-                    foreach (var newlySelectedItem in newList.Where(x => !behavior.SelectedItemsInAssociatedObject.Contains(x)))
+                    foreach (var newlySelectedItem in newList.Where(x => !behavior.SelectedItemsInAssociatedObject.Contains(x)).ToList())
                     {
                         behavior.SelectedItemsInAssociatedObject.Add(newlySelectedItem);
                     }

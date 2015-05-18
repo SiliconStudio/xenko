@@ -25,6 +25,9 @@
 // splitPaneToggleId: id to the splitPane toggle collapse-expand button
 // splitPaneResizerId: id to the resizer grip
 
+// If a search happened, we can't use AJAX anymore to make results disappear. As a result, hightLightTopic() will open new URL as external
+searchMode = false;
+
 function supports_local_storage() {
     try {
         return 'localStorage' in window && window['localStorage'] !== null && window.localStorage['getItem'] !== null;
@@ -290,7 +293,7 @@ function hightLightTopic(topicId, keepState, event) {
     var anchor = anchorIndex != -1 ? topicId.substring(anchorIndex) : null;
     topicId = anchorIndex != -1 ? topicId.substring(0, anchorIndex) : topicId;
     
-    if (topicId == "external")
+    if (topicId == "external" || searchMode)
         return;
     
     var oldHighlight = $$_('.highlight');
@@ -298,34 +301,39 @@ function hightLightTopic(topicId, keepState, event) {
         old.removeClass('highlight');
     });
 
-    var newHightlight = $_(topicId + '_toc');
-    newHightlight.addClass('highlight');
-    newHightlight.addClass('highlighting');
-    openToc(topicId);
-    
     if (event) {
         event.stopImmediatePropagation();
         event.preventDefault();
     }
 
-    $('mainFrame').set('load', {evalScripts: false});
-    $('mainFrame').load(escape(topicId) + ".htm");
-    $('mainFrame').get('load').onSuccess = function(e) {
-      InstallCodeTabs();
-      // Syntax Highlighter should reprocess new code blocks
-      SyntaxHighlighter.highlight();
-
-      // Scroll to top
-      $('main_content').scrollTo(0);
-
-      // If there was an anchor, keep it
-      if (anchor)
-      {
-          var baseUrl = window.location.href.split('#')[0];
-          window.location.replace( baseUrl + anchor );
-      }
-    };
+    if (keepState !== true) {
+        $('mainFrame').set('load', {evalScripts: false});
+        $('mainFrame').load("html/" + escape(topicId) + ".htm");
+        $('mainFrame').get('load').onSuccess = function(e) {
+          InstallCodeTabs();
+          // Syntax Highlighter should reprocess new code blocks
+          SyntaxHighlighter.highlight();
     
+          // Scroll to top
+          $('main_content').scrollTo(0);
+    
+          // If there was an anchor, keep it
+          if (anchor)
+          {
+              var baseUrl = window.location.href.split('#')[0];
+              window.location.replace( baseUrl + anchor );
+          }
+        };
+    }
+    
+    var newHightlight = $_(topicId + '_toc');
+    if (newHightlight == null)
+        return;
+
+    newHightlight.addClass('highlight');
+    newHightlight.addClass('highlighting');
+    openToc(topicId);
+
     if (!keepState)
         history.pushState(fullTopicId, "", "?page=" + fullTopicId);
     else
