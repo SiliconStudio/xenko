@@ -2101,10 +2101,6 @@
     <Compile Include="Engine\Design\EntityComponentRendererType.cs" />
     <Compile Include="Engine\EntityGroupMask.cs" />
     <Compile Include="Engine\EntityGroupMaskExtensions.cs" />
-    <Compile Include="Rendering\Gizmos\GizmoBase.cs" />
-    <Compile Include="Rendering\Gizmos\GizmoContext.cs" />
-    <Compile Include="Rendering\Gizmos\GizmoEntityAttribute.cs" />
-    <Compile Include="Rendering\Gizmos\GizmoEntityNames.cs" />
     <Compile Include="Extensions\SimpleExtensions.cs" />
     <Compile Include="Extensions\MergeExtensions.cs" />
     <Compile Include="Extensions\SplitExtensions.cs" />
@@ -2162,7 +2158,6 @@
     <Compile Include="Engine\Design\CloneEntityComponentSerializer.cs" />
     <Compile Include="Engine\EntityExtensions.cs" />
     <Compile Include="Engine\Design\EntityHierarchyData.cs" />
-    <Compile Include="Rendering\Gizmos\IGizmo.cs" />
     <Compile Include="Engine\Design\GameSettings.cs" />
     <Compile Include="Engine\Scene.cs" />
     <Compile Include="Rendering\SceneChildRenderer.cs" />
@@ -3371,6 +3366,7 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Rendering\Gizmos\" />
     <Folder Include="Rendering\Lights\obsolete\" />
     <Folder Include="Rendering\Shadows\obsolete\" />
   </ItemGroup>

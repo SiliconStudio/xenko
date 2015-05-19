@@ -8,7 +8,6 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine.Design;
 using SiliconStudio.Paradox.Engine.Processors;
 using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Gizmos;
 
 namespace SiliconStudio.Paradox.Engine
 {
@@ -17,7 +16,6 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("CameraComponent")]
     [Display(130, "Camera")]
-    [GizmoEntity(GizmoEntityNames.CameraGizmoEntityQualifiedName)]
     [DefaultEntityComponentRenderer(typeof(CameraComponentRenderer), -1000)]
     public sealed class CameraComponent : EntityComponent
     {
