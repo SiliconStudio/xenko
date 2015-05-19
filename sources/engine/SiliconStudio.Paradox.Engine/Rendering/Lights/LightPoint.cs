@@ -30,6 +30,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         /// Gets or sets the radius of influence of this light.
         /// </summary>
         /// <value>The range.</value>
+        [DataMember(10)]
         [DefaultValue(1.0f)]
         public float Radius{ get; set; }
 
