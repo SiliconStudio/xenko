@@ -25,13 +25,6 @@
   </Class>
   <Class Name="SiliconStudio.Paradox.Rendering.Images.Bloom" Collapsed="true">
     <Position X="4.5" Y="7.25" Width="1.5" />
-    <AssociationLine Name="afterimage" Type="SiliconStudio.Paradox.Rendering.Images.Afterimage" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="4.938" Y="7.941" />
-        <Point X="4.938" Y="8.846" />
-        <Point X="6" Y="8.846" />
-      </Path>
-    </AssociationLine>
     <AssociationLine Name="blur" Type="SiliconStudio.Paradox.Rendering.Images.GaussianBlur" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="4.688" Y="7.941" />
@@ -39,13 +32,20 @@
         <Point X="6" Y="10.062" />
       </Path>
     </AssociationLine>
+    <AssociationLine Name="afterimage" Type="SiliconStudio.Paradox.Rendering.Images.Afterimage" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4.938" Y="7.941" />
+        <Point X="4.938" Y="8.846" />
+        <Point X="6" Y="8.846" />
+      </Path>
+    </AssociationLine>
     <TypeIdentifier>
       <HashCode>gFALAAAAAAACAAAAIgAAAACCAAQAAAAAEAAAQMAAAAA=</HashCode>
       <FileName>Rendering\Images\Bloom\Bloom.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Field Name="afterimage" />
       <Field Name="blur" />
+      <Field Name="afterimage" />
     </ShowAsAssociation>
   </Class>
   <Class Name="SiliconStudio.Paradox.Rendering.Images.BrightFilter" Collapsed="true">
@@ -72,14 +72,6 @@
       <Compartment Name="Properties" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
-    <NestedTypes>
-      <Struct Name="SiliconStudio.Paradox.Rendering.Images.ColorTransformGroup.ParameterCompositeKey" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>Rendering\Images\ColorTransforms\ColorTransformGroup.cs</NewMemberFileName>
-        </TypeIdentifier>
-        <Lollipop Position="0.2" />
-      </Struct>
-    </NestedTypes>
     <TypeIdentifier>
       <HashCode>gAAAAIAAAARAAACgAAgACgIAAoIAgCIAEAAEAAQAAAA=</HashCode>
       <FileName>Rendering\Images\ColorTransforms\ColorTransformGroup.cs</FileName>
@@ -111,13 +103,6 @@
   </Class>
   <Class Name="SiliconStudio.Paradox.Rendering.Images.DepthOfField" Collapsed="true">
     <Position X="4.5" Y="11.25" Width="1.5" />
-    <NestedTypes>
-      <Class Name="SiliconStudio.Paradox.Rendering.Images.DepthOfField.CoCLevelConfig" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>Rendering\Images\DepthOfField\DepthOfField.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Class>
-    </NestedTypes>
     <AssociationLine Name="cocMapBlur" Type="SiliconStudio.Paradox.Rendering.Images.CoCMapBlur" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="4.75" Y="11.941" />
@@ -201,32 +186,11 @@
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
-    <AssociationLine Name="Antialiasing" Type="SiliconStudio.Paradox.Rendering.Images.IScreenSpaceAntiAliasingEffect" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="luminanceEffect" Type="SiliconStudio.Paradox.Rendering.Images.LuminanceEffect" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="3.188" Y="2.691" />
-        <Point X="3.188" Y="3.846" />
-        <Point X="4" Y="3.846" />
-      </Path>
-    </AssociationLine>
-    <AssociationLine Name="Bloom" Type="SiliconStudio.Paradox.Rendering.Images.Bloom" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="2.25" Y="2.691" />
-        <Point X="2.25" Y="7.596" />
-        <Point X="4.5" Y="7.596" />
-      </Path>
-    </AssociationLine>
-    <AssociationLine Name="BrightFilter" Type="SiliconStudio.Paradox.Rendering.Images.BrightFilter" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="2.562" Y="2.691" />
-        <Point X="2.562" Y="6.346" />
-        <Point X="4.5" Y="6.346" />
-      </Path>
-    </AssociationLine>
-    <AssociationLine Name="ColorTransforms" Type="SiliconStudio.Paradox.Rendering.Images.ColorTransformGroup" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="1.25" Y="2.691" />
-        <Point X="1.25" Y="19.346" />
-        <Point X="4.25" Y="19.346" />
+        <Point X="2.938" Y="2.691" />
+        <Point X="2.938" Y="5.346" />
+        <Point X="4.5" Y="5.346" />
       </Path>
     </AssociationLine>
     <AssociationLine Name="DepthOfField" Type="SiliconStudio.Paradox.Rendering.Images.DepthOfField" FixedFromPoint="true" FixedToPoint="true">
@@ -236,11 +200,18 @@
         <Point X="4.5" Y="11.596" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="LensFlare" Type="SiliconStudio.Paradox.Rendering.Images.LensFlare" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="BrightFilter" Type="SiliconStudio.Paradox.Rendering.Images.BrightFilter" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="1.75" Y="2.691" />
-        <Point X="1.75" Y="17.096" />
-        <Point X="4.5" Y="17.096" />
+        <Point X="2.562" Y="2.691" />
+        <Point X="2.562" Y="6.346" />
+        <Point X="4.5" Y="6.346" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Bloom" Type="SiliconStudio.Paradox.Rendering.Images.Bloom" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2.25" Y="2.691" />
+        <Point X="2.25" Y="7.596" />
+        <Point X="4.5" Y="7.596" />
       </Path>
     </AssociationLine>
     <AssociationLine Name="LightStreak" Type="SiliconStudio.Paradox.Rendering.Images.LightStreak" FixedFromPoint="true" FixedToPoint="true">
@@ -250,11 +221,25 @@
         <Point X="4.5" Y="18.346" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="luminanceEffect" Type="SiliconStudio.Paradox.Rendering.Images.LuminanceEffect" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="LensFlare" Type="SiliconStudio.Paradox.Rendering.Images.LensFlare" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="2.938" Y="2.691" />
-        <Point X="2.938" Y="5.346" />
-        <Point X="4.5" Y="5.346" />
+        <Point X="1.75" Y="2.691" />
+        <Point X="1.75" Y="17.096" />
+        <Point X="4.5" Y="17.096" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="ColorTransforms" Type="SiliconStudio.Paradox.Rendering.Images.ColorTransformGroup" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="1.25" Y="2.691" />
+        <Point X="1.25" Y="19.346" />
+        <Point X="4.25" Y="19.346" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Antialiasing" Type="SiliconStudio.Paradox.Rendering.Images.IScreenSpaceAntiAliasingEffect" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.188" Y="2.691" />
+        <Point X="3.188" Y="3.596" />
+        <Point X="4" Y="3.596" />
       </Path>
     </AssociationLine>
     <TypeIdentifier>
@@ -263,13 +248,13 @@
     </TypeIdentifier>
     <ShowAsAssociation>
       <Field Name="luminanceEffect" />
-      <Property Name="Antialiasing" />
-      <Property Name="Bloom" />
-      <Property Name="BrightFilter" />
-      <Property Name="ColorTransforms" />
       <Property Name="DepthOfField" />
-      <Property Name="LensFlare" />
+      <Property Name="BrightFilter" />
+      <Property Name="Bloom" />
       <Property Name="LightStreak" />
+      <Property Name="LensFlare" />
+      <Property Name="ColorTransforms" />
+      <Property Name="Antialiasing" />
     </ShowAsAssociation>
     <Lollipop Position="0.2" />
   </Class>
@@ -289,10 +274,6 @@
   </Class>
   <Class Name="SiliconStudio.Paradox.Rendering.Images.FilmGrain" Collapsed="true">
     <Position X="8.75" Y="20.5" Width="1.5" />
-    <Members>
-      <Method Name="FilmGrain" Hidden="true" />
-      <Field Name="time" Hidden="true" />
-    </Members>
     <TypeIdentifier>
       <HashCode>AAABAACAAAAAAAAAAAAAAASAAAAAAAAAAAAAACAAAAA=</HashCode>
       <FileName>Rendering\Images\ColorTransforms\Noise\FilmGrain.cs</FileName>
@@ -316,9 +297,6 @@
   </Class>
   <Class Name="SiliconStudio.Paradox.Rendering.Images.Vignetting" Collapsed="true">
     <Position X="6.75" Y="20.5" Width="1.5" />
-    <Members>
-      <Method Name="Vignetting" Hidden="true" />
-    </Members>
     <TypeIdentifier>
       <HashCode>AAAIAACAAAAAAAAAAAAAAACAAAAAAAAAAAAAgAAAAAA=</HashCode>
       <FileName>Rendering\Images\ColorTransforms\Vignetting\Vignetting.cs</FileName>
@@ -464,7 +442,7 @@
     </TypeIdentifier>
   </Interface>
   <Interface Name="SiliconStudio.Paradox.Rendering.Images.IScreenSpaceAntiAliasingEffect" Collapsed="true">
-    <Position X="4" Y="3.5" Width="2.5" />
+    <Position X="4" Y="3.25" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Rendering\Images\AntiAliasing\IScreenSpaceAntiAliasingEffect.cs</FileName>
