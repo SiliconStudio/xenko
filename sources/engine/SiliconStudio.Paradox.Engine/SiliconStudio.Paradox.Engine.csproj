@@ -2617,6 +2617,7 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadingColor.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\Images\ImageEffects.cd" />
     <None Include="Rendering\Images\AntiAliasing\FXAAShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>FXAAShader.cs</LastGenOutput>
@@ -2905,6 +2906,7 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LightSkyboxEffect.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\Materials\ComputeColors\ComputeColors.cd" />
     <None Include="Rendering\Materials\IMaterialSurfaceDomain.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>IMaterialSurfaceDomain.cs</LastGenOutput>
@@ -2921,6 +2923,7 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialDomainStream.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\Materials\Materials.cd" />
     <None Include="Rendering\Materials\MaterialStreamAdditiveBlend.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialStreamAdditiveBlend.cs</LastGenOutput>
@@ -3145,6 +3148,8 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CameraCube.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\Composers\SceneGraphicsCompositor.cd" />
+    <None Include="Rendering\ProceduralModels\ProceduralModels.cd" />
     <None Include="Rendering\Shadows\ShadowGroup.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowGroup.cs</LastGenOutput>
