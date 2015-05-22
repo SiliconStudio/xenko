@@ -374,6 +374,9 @@ namespace SiliconStudio.Core.IO
 
             // Precache everything in a MemoryStream
             var length = (int)(fileSize - stream.Position);
+            if (length == 0)
+                return;
+
             var bufferToRead = new byte[length];
             stream.Read(bufferToRead, 0, length);
             var memoryStream = new MemoryStream(bufferToRead);

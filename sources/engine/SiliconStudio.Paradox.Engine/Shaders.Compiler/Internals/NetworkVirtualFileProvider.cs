@@ -1,7 +1,5 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
-
 using System;
 using System.IO;
 using SiliconStudio.Core.IO;
@@ -58,7 +56,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.Internals
                     var stream = await VirtualFileSystem.OpenStreamAsync(packet.Url, VirtualFileMode.Open, VirtualFileAccess.Read);
                     var data = new byte[stream.Length];
                     await stream.ReadAsync(data, 0, data.Length);
-                    stream.Close();
+                    stream.Dispose();
                     socketContext.Send(new DownloadFileAnswer { StreamId = packet.StreamId, Data = data });
                 });
 
@@ -67,7 +65,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.Internals
                 {
                     var stream = await VirtualFileSystem.OpenStreamAsync(packet.Url, VirtualFileMode.Create, VirtualFileAccess.Write);
                     await stream.WriteAsync(packet.Data, 0, packet.Data.Length);
-                    stream.Close();
+                    stream.Dispose();
                 });
 
             socketContext.AddPacketHandler<FileExistsQuery>(
@@ -125,4 +123,3 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.Internals
         }
     }
 }
-#endif

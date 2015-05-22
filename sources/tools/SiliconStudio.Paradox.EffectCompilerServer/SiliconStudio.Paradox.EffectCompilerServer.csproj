@@ -15,12 +15,16 @@
     <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
     <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Options">
       <HintPath>$(SiliconStudioDependenciesDir)Mono.Options\Mono.Options.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -28,14 +32,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\shared\Process\AndroidDeviceEnumerator.cs">
+      <Link>AndroidDeviceEnumerator.cs</Link>
+    </Compile>
     <Compile Include="..\..\shared\Process\ProcessOutputs.cs">
       <Link>ProcessOutputs.cs</Link>
     </Compile>
     <Compile Include="..\..\shared\Process\ShellHelper.cs">
       <Link>ShellHelper.cs</Link>
     </Compile>
+    <Compile Include="ConnectedDevice.cs" />
+    <Compile Include="Program.WindowsPhone.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Program.Android.cs" />
+    <Compile Include="Program.iOS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ShaderCompilerHost.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\assets\SiliconStudio.Assets\SiliconStudio.Assets.csproj">

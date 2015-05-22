@@ -2,100 +2,142 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Net;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using SiliconStudio.Core.IO;
-using SiliconStudio.Paradox.Assets.Effect;
-using SiliconStudio.Paradox.Engine.Network;
-using SiliconStudio.Paradox.Shaders.Compiler;
-using SiliconStudio.Paradox.Shaders.Compiler.Internals;
+using Mono.Options;
 
 namespace SiliconStudio.Paradox.EffectCompilerServer
 {
-    class Program
+    partial class Program
     {
-        static void Main(string[] args)
+        private static int LocalPort = 1244;
+        private static string IpOverUsbParadoxName = "ParadoxEffectCompilerServer";
+
+        static int Main(string[] args)
         {
-            // Setup adb port forward
-            // TODO: Currently hardcoded
-            ShellHelper.RunProcessAndGetOutput(@"adb", @"forward tcp:1244 tcp:1244");
+            var exeName = Path.GetFileName(Assembly.GetExecutingAssembly().Location);
+            var showHelp = false;
+            var windowsPhonePortMapping = false;
+            int exitCode = 0;
 
-            var shaderCompilerServer = new ShaderCompilerHost();
+            var p = new OptionSet
+                {
+                    "Copyright (C) 2011-2015 Silicon Studio Corporation. All Rights Reserved",
+                    "Effect Compiler Server - Version: "
+                    +
+                    String.Format(
+                        "{0}.{1}.{2}",
+                        typeof(Program).Assembly.GetName().Version.Major,
+                        typeof(Program).Assembly.GetName().Version.Minor,
+                        typeof(Program).Assembly.GetName().Version.Build) + string.Empty,
+                    string.Format("Usage: {0} command [options]*", exeName),
+                    string.Empty,
+                    "=== Options ===",
+                    string.Empty,
+                    { "h|help", "Show this message and exit", v => showHelp = v != null },
+                    { "register-windowsphone-portmapping", "Register Windows Phone IpOverUsb port mapping", v => windowsPhonePortMapping = true },
+                };
 
-            // Wait and process messages
-            // TODO: Rearrange how thread/async is done
-            // TODO: We should support both client and server mode for socket connection
-            while (true)
+            try
             {
-                shaderCompilerServer.TryConnect(1244).Wait();
+                var commandArgs = p.Parse(args);
+                if (showHelp)
+                {
+                    p.WriteOptionDescriptions(Console.Out);
+                    return 0;
+                }
+
+                // Make sure path exists
+                if (commandArgs.Count > 0)
+                    throw new OptionException("This command expect no additional arguments", "");
+
+                if (windowsPhonePortMapping)
+                {
+                    RegisterWindowsPhonePortMapping();
+                    return 0;
+                }
+
+                var shaderCompilerServer = new ShaderCompilerHost();
+
+                // Start server mode
+                shaderCompilerServer.Listen(LocalPort);
+
+                // Start Android management thread
+                new Thread(() => TrackAndroidDevices(shaderCompilerServer)).Start();
+
+                // Start iOS management thread
+                //TrackiOSDevices(shaderCompilerServer);
+
+                // Start Windows Phone management thread
+                new Thread(() => TrackWindowsPhoneDevice(shaderCompilerServer)).Start();
+
+                // Forbid process to terminate (unless ctrl+c)
+                while (true) Console.Read();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("{0}: {1}", exeName, e);
+                if (e is OptionException)
+                    p.WriteOptionDescriptions(Console.Out);
+                exitCode = 1;
+            }
+
+            return exitCode;
+        }
+
+        private static void ManageDevices<T>(string deviceType, Dictionary<T, string> enumeratedDevices, Dictionary<T, ConnectedDevice> currentDevices, Action<ConnectedDevice> connectDevice)
+        {
+            // Stop tasks used by disconnected devices
+            foreach (var oldDevice in currentDevices.ToArray())
+            {
+                if (enumeratedDevices.ContainsKey(oldDevice.Key))
+                    continue;
+
+                oldDevice.Value.DeviceDisconnected = true;
+                currentDevices.Remove(oldDevice.Key);
+
+                Console.WriteLine("{0} Device removed: {1} ({2})", deviceType, oldDevice.Value.Name, oldDevice.Key);
+            }
+
+            // Start new devices
+            int startLocalPort = 1245;
+            foreach (var androidDevice in enumeratedDevices)
+            {
+                if (currentDevices.ContainsKey(androidDevice.Key))
+                    continue;
+
+                var connectedDevice = new ConnectedDevice
+                {
+                    Key = androidDevice.Key,
+                    Name = androidDevice.Value,
+                    Type = deviceType,
+                };
+                currentDevices.Add(androidDevice.Key, connectedDevice);
+
+                connectDevice(connectedDevice);
             }
         }
-    }
 
-    /// <summary>
-    /// Shader compiler host (over network)
-    /// </summary>
-    public class ShaderCompilerHost
-    {
-        private SocketContext socketContext;
-        private TaskCompletionSource<bool> clientConnectedTCS;
-
-        public Task TryConnect(int port)
+        private static async Task LaunchPersistentClient(ConnectedDevice connectedDevice, ShaderCompilerHost shaderCompilerServer, string address, int localPort)
         {
-            socketContext = new SocketContext();
-            clientConnectedTCS = new TaskCompletionSource<bool>();
-
-            socketContext.Connected = (clientSocketContext) =>
+            while (!connectedDevice.DeviceDisconnected)
             {
-                // Create an effect compiler per connection
-                var effectCompiler = new EffectCompiler();
+                try
+                {
+                    await shaderCompilerServer.TryConnect(address, localPort);
+                }
+                catch (Exception)
+                {
+                    // Mute exceptions and try to connect again
+                    // TODO: Mute connection only, not message loop?
+                }
 
-                var tempFilename = Path.GetTempFileName();
-                var fileStream = new FileStream(tempFilename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
-
-                // TODO: Properly close the file, and choose where to copy/move it?
-                var recordedEffectCompile = new EffectLogStore(fileStream);
-
-                // TODO: This should come from an "init" packet
-                effectCompiler.SourceDirectories.Add(EffectCompilerBase.DefaultSourceShaderFolder);
-
-                // Make a VFS that will access remotely the DatabaseFileProvider
-                // TODO: Is that how we really want to do that in the future?
-                var networkVFS = new NetworkVirtualFileProvider(clientSocketContext, "/asset");
-                VirtualFileSystem.RegisterProvider(networkVFS);
-                effectCompiler.FileProvider = networkVFS;
-
-                clientSocketContext.AddPacketHandler<ShaderCompilerRequest>((packet) => ShaderCompilerRequestHandler(clientSocketContext, recordedEffectCompile, effectCompiler, packet));
-
-                clientConnectedTCS.TrySetResult(true);
-            };
-
-            // Wait for a connection to be possible on adb forwarded port
-            var clientDone = socketContext.StartClient(IPAddress.Loopback, port);
-
-            return clientDone;
-        }
-
-        private async void ShaderCompilerRequestHandler(SocketContext clientSocketContext, EffectLogStore recordedEffectCompile, EffectCompiler effectCompiler, ShaderCompilerRequest shaderCompilerRequest)
-        {
-            // Wait for a client to be connected
-            await clientConnectedTCS.Task;
-
-            // Yield so that this socket can continue its message loop to answer to shader file request.
-            await Task.Yield();
-
-            Console.WriteLine("Compiling shader");
-
-            // A shader has been requested, compile it (asynchronously)!
-            var precompiledEffectShaderPass = await effectCompiler.Compile(shaderCompilerRequest.MixinTree, null).AwaitResult();
-
-            // Record compilation to asset file (only if parent)
-            recordedEffectCompile[new EffectCompileRequest(shaderCompilerRequest.MixinTree.Name, shaderCompilerRequest.MixinTree.UsedParameters)] = true;
-            
-            // Send compiled shader
-            clientSocketContext.Send(new ShaderCompilerAnswer { StreamId = shaderCompilerRequest.StreamId, EffectBytecode = precompiledEffectShaderPass.Bytecode });
+                await Task.Delay(200);
+            }
         }
     }
 }

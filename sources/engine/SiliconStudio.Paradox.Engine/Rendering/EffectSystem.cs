@@ -158,6 +158,12 @@ namespace SiliconStudio.Paradox.Rendering
 #if SILICONSTUDIO_PARADOX_EFFECT_COMPILER
             var effectCompiler = new Shaders.Compiler.EffectCompiler();
             effectCompiler.SourceDirectories.Add(EffectCompilerBase.DefaultSourceShaderFolder);
+#elif SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_WINDOWS_PHONE || SILICONSTUDIO_PLATFORM_IOS
+            var effectCompiler = new EffectCompilerRemote();
+            EffectCompilerRemote.Listen(1245);
+#elif SILICONSTUDIO_PLATFORM_WINDOWS_STORE
+            var effectCompiler = new EffectCompilerRemote();
+            EffectCompilerRemote.Connect("127.0.0.1", 1244);
 #else
             var effectCompiler = new NullEffectCompiler();
 #endif

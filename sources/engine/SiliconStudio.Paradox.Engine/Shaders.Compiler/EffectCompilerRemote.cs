@@ -1,7 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
 using System.Collections.Generic;
+using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
@@ -22,14 +23,27 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             set {}
         }
 
-        public EffectCompilerRemote()
+        public static void Connect(string address, int port)
         {
-            // TODO: Handle multiple effect compiler remote?
-            // TODO: Hardcoded for android forward case
+            // TODO: Delay connection until actually needed
+            // TODO: Display a log message
+            // TODO: Try both to connect to server and client at the same time?
             if (shaderCompilerTarget == null)
             {
                 shaderCompilerTarget = new ShaderCompilerTarget();
-                shaderCompilerConnected = shaderCompilerTarget.Connect(1244);
+                shaderCompilerConnected = shaderCompilerTarget.Connect(false, address, port);
+            }
+        }
+
+        public static void Listen(int port)
+        {
+            // TODO: Delay connection until actually needed
+            // TODO: Display a log message
+            // TODO: Try both to connect to server and client at the same time?
+            if (shaderCompilerTarget == null)
+            {
+                shaderCompilerTarget = new ShaderCompilerTarget();
+                shaderCompilerConnected = shaderCompilerTarget.Connect(true, null, port);
             }
         }
 
@@ -64,6 +78,9 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
     public class ShaderCompilerRequest : SocketMessage
     {
         public ShaderMixinSource MixinTree { get; set; }
+        
+        // MixinTree.UsedParameters is DataMemberIgnore, so transmit it manually
+        public ShaderMixinParameters UsedParameters { get; set; }
     }
 
     public class ShaderCompilerAnswer : SocketMessage
@@ -72,22 +89,28 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         public EffectBytecode EffectBytecode { get; set; }
     }
 
-    public class ShaderCompilerTarget
+    class ShaderCompilerTarget
     {
-        private SocketContext socketContext = new SocketContext();
         private TaskCompletionSource<SocketContext> socketContextClientTCS = new TaskCompletionSource<SocketContext>();
+        private bool initialized = false;
 
-        public Task Connect(int port)
+        public Task Connect(bool server, string address, int port)
         {
+            var socketContext = new SocketContext();
             socketContext.Connected = context =>
             {
                 // Register network VFS
                 NetworkVirtualFileProvider.RegisterServer(context);
 
                 socketContextClientTCS.TrySetResult(context);
+
+                Task.Run(() => context.MessageLoop());
             };
 
-            socketContext.StartServer(port);
+            if (server)
+                socketContext.StartServer(port, true);
+            else
+                socketContext.StartClient(address, port);
 
             // Wait for server to connect to us (as a Task)
             return socketContextClientTCS.Task;
@@ -100,6 +123,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             var shaderCompilerAnswer = (ShaderCompilerAnswer)await socketContextClient.SendReceiveAsync(new ShaderCompilerRequest
             {
                 MixinTree = mixinTree,
+                UsedParameters = mixinTree.UsedParameters,
             });
 
             // TODO: Get LoggerResult as well
@@ -107,4 +131,3 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         }
     }
 }
-#endif
