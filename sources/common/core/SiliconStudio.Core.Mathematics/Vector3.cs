@@ -1446,6 +1446,18 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Divides a numerator by a vector.
+        /// </summary>
+        /// <param name="numerator">The numerator.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>The scaled vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 operator /(float numerator, Vector3 value)
+        {
+            return new Vector3(numerator / value.X, numerator / value.Y, numerator / value.Z);
+        }
+
+        /// <summary>
         /// Scales a vector by the given value.
         /// </summary>
         /// <param name="value">The vector to scale.</param>
