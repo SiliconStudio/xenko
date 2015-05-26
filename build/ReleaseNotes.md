@@ -7,8 +7,10 @@ Release date: 2015/##/##
 #### Enhancements
 - Studio: Allow to fetch a referenced entity from the property grid in the scene editor.
 - Studio: Entities can be duplicated by dragging a transformation gizmo while maintaining ctrl key down.
+- Studio: More option to manage gizmos display in the scene editor
 
 #### Issues fixed
+- Studio: Adding a Child scene component was crashing the scene editor.
 
 #### Breaking changes
 
