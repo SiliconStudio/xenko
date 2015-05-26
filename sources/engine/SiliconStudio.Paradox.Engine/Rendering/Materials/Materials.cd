@@ -6,6 +6,34 @@
       <Method Name="MaterialAttributes" Hidden="true" />
       <Method Name="Visit" Hidden="true" />
     </Members>
+    <AssociationLine Name="Tessellation" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialTessellationFeature" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2.438" Y="4.812" />
+        <Point X="2.438" Y="11.596" />
+        <Point X="3.5" Y="11.596" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Displacement" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialDisplacementFeature" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2.562" Y="4.812" />
+        <Point X="2.562" Y="10.096" />
+        <Point X="3.5" Y="10.096" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Surface" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialSurfaceFeature" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2.812" Y="4.812" />
+        <Point X="2.812" Y="7.096" />
+        <Point X="3.5" Y="7.096" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="MicroSurface" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialMicroSurfaceFeature" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2.688" Y="4.812" />
+        <Point X="2.688" Y="8.596" />
+        <Point X="3.5" Y="8.596" />
+      </Path>
+    </AssociationLine>
     <AssociationLine Name="Diffuse" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialDiffuseFeature" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="2.312" Y="4.812" />
@@ -18,41 +46,6 @@
         <Point X="2.062" Y="4.812" />
         <Point X="2.062" Y="19.096" />
         <Point X="3.5" Y="19.096" />
-      </Path>
-    </AssociationLine>
-    <AssociationLine Name="Displacement" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialDisplacementFeature" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="2.562" Y="4.812" />
-        <Point X="2.562" Y="10.096" />
-        <Point X="3.5" Y="10.096" />
-      </Path>
-    </AssociationLine>
-    <AssociationLine Name="Emissive" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialEmissiveFeature" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="1.938" Y="4.812" />
-        <Point X="1.938" Y="20.596" />
-        <Point X="3.5" Y="20.596" />
-      </Path>
-    </AssociationLine>
-    <AssociationLine Name="MicroSurface" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialMicroSurfaceFeature" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="2.688" Y="4.812" />
-        <Point X="2.688" Y="8.596" />
-        <Point X="3.5" Y="8.596" />
-      </Path>
-    </AssociationLine>
-    <AssociationLine Name="Occlusion" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialOcclusionFeature" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="1.688" Y="4.812" />
-        <Point X="1.688" Y="23.596" />
-        <Point X="3.25" Y="23.596" />
-      </Path>
-    </AssociationLine>
-    <AssociationLine Name="Overrides" Type="SiliconStudio.Paradox.Rendering.Materials.MaterialOverrides" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="3" Y="4.75" />
-        <Point X="4" Y="4.75" />
-        <Point X="4" Y="5.5" />
       </Path>
     </AssociationLine>
     <AssociationLine Name="Specular" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialSpecularFeature" FixedFromPoint="true" FixedToPoint="true">
@@ -69,18 +62,18 @@
         <Point X="3.25" Y="22.346" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="Surface" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialSurfaceFeature" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="Occlusion" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialOcclusionFeature" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="2.812" Y="4.812" />
-        <Point X="2.812" Y="7.096" />
-        <Point X="3.5" Y="7.096" />
+        <Point X="1.688" Y="4.812" />
+        <Point X="1.688" Y="23.596" />
+        <Point X="3.25" Y="23.596" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="Tessellation" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialTessellationFeature" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="Emissive" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialEmissiveFeature" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="2.438" Y="4.812" />
-        <Point X="2.438" Y="11.596" />
-        <Point X="3.5" Y="11.596" />
+        <Point X="1.938" Y="4.812" />
+        <Point X="1.938" Y="20.596" />
+        <Point X="3.5" Y="20.596" />
       </Path>
     </AssociationLine>
     <AssociationLine Name="Transparency" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialTransparencyFeature" FixedFromPoint="true" FixedToPoint="true">
@@ -90,23 +83,30 @@
         <Point X="3.25" Y="25.096" />
       </Path>
     </AssociationLine>
+    <AssociationLine Name="Overrides" Type="SiliconStudio.Paradox.Rendering.Materials.MaterialOverrides" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3" Y="4.75" />
+        <Point X="4" Y="4.75" />
+        <Point X="4" Y="5.5" />
+      </Path>
+    </AssociationLine>
     <TypeIdentifier>
       <HashCode>BEAACABAAQgAAAQAAgAAAAAEAACgAAAAAAAAACABAAA=</HashCode>
       <FileName>Rendering\Materials\MaterialAttributes.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
+      <Property Name="Tessellation" />
+      <Property Name="Displacement" />
+      <Property Name="Surface" />
+      <Property Name="MicroSurface" />
       <Property Name="Diffuse" />
       <Property Name="DiffuseModel" />
-      <Property Name="Displacement" />
-      <Property Name="Emissive" />
-      <Property Name="MicroSurface" />
-      <Property Name="Occlusion" />
-      <Property Name="Overrides" />
       <Property Name="Specular" />
       <Property Name="SpecularModel" />
-      <Property Name="Surface" />
-      <Property Name="Tessellation" />
+      <Property Name="Occlusion" />
+      <Property Name="Emissive" />
       <Property Name="Transparency" />
+      <Property Name="Overrides" />
     </ShowAsAssociation>
     <Lollipop Position="0.2" />
   </Class>
@@ -123,6 +123,9 @@
   </Class>
   <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialBlendLayers" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="8.5" Y="4.25" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Rendering\Materials\MaterialBlendLayers.cs</FileName>
@@ -230,18 +233,18 @@
       <Compartment Name="Properties" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
-    <AssociationLine Name="NormalDistribution" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialSpecularMicrofacetNormalDistributionFunction" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="13.938" Y="22.562" />
-        <Point X="13.938" Y="25.096" />
-        <Point X="15.25" Y="25.096" />
-      </Path>
-    </AssociationLine>
     <AssociationLine Name="Visibility" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialSpecularMicrofacetVisibilityFunction" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="13.625" Y="22.562" />
         <Point X="13.625" Y="27.346" />
         <Point X="15.25" Y="27.346" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="NormalDistribution" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialSpecularMicrofacetNormalDistributionFunction" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="13.938" Y="22.562" />
+        <Point X="13.938" Y="25.096" />
+        <Point X="15.25" Y="25.096" />
       </Path>
     </AssociationLine>
     <TypeIdentifier>
@@ -250,8 +253,8 @@
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="Fresnel" />
-      <Property Name="NormalDistribution" />
       <Property Name="Visibility" />
+      <Property Name="NormalDistribution" />
     </ShowAsAssociation>
     <Lollipop Position="0.2" />
   </Class>
@@ -388,6 +391,18 @@
       <FileName>Rendering\Material.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialDescriptor" Collapsed="true">
+    <Position X="5" Y="4.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAQAAAAAAAEAAAAAAAAAAA=</HashCode>
+      <FileName>Rendering\Materials\MaterialDescriptor.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Attributes" />
+      <Property Name="Layers" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
   <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialAttributes" Collapsed="true">
     <Position X="1" Y="3" Width="2" />
     <InheritanceLine Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialFeature" FixedToPoint="true">
@@ -406,27 +421,17 @@
     </TypeIdentifier>
   </Interface>
   <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialDescriptor" Collapsed="true">
-    <Position X="5" Y="4" Width="2" />
+    <Position X="5" Y="3" Width="2" />
     <InheritanceLine Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialShaderGenerator" FixedFromPoint="true">
       <Path>
         <Point X="6" Y="1.062" />
-        <Point X="6" Y="4" />
+        <Point X="6" Y="3" />
       </Path>
     </InheritanceLine>
-    <AssociationLine Name="Attributes" Type="SiliconStudio.Paradox.Rendering.Materials.MaterialAttributes" FixedToPoint="true">
-      <Path>
-        <Point X="5" Y="4.438" />
-        <Point X="3" Y="4.438" />
-      </Path>
-    </AssociationLine>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAEAAAAAAAAAAA=</HashCode>
       <FileName>Rendering\Materials\IMaterialDescriptor.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Attributes" />
-      <Property Name="Layers" />
-    </ShowAsAssociation>
   </Interface>
   <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialDiffuseFeature" Collapsed="true">
     <Position X="3.5" Y="14" Width="2.25" />
@@ -476,8 +481,8 @@
     <Position X="11.5" Y="1.5" Width="1.75" />
     <InheritanceLine Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialShaderGenerator" FixedFromPoint="true">
       <Path>
-        <Point X="6.25" Y="1.062" />
-        <Point X="6.25" Y="1.312" />
+        <Point X="6.312" Y="1.062" />
+        <Point X="6.312" Y="1.312" />
         <Point X="12.375" Y="1.312" />
         <Point X="12.375" Y="1.5" />
       </Path>
@@ -525,7 +530,7 @@
     </TypeIdentifier>
   </Interface>
   <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialShaderGenerator" Collapsed="true">
-    <Position X="5.25" Y="0.5" Width="2" />
+    <Position X="5" Y="0.5" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Rendering\Materials\IMaterialShaderGenerator.cs</FileName>

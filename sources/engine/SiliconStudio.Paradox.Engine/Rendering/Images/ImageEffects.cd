@@ -319,8 +319,11 @@
       <FileName>Rendering\Images\ColorTransforms\ToneMap\ToneMapCommonOperator.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Images.ToneMapHejlDawsonOperator">
+  <Class Name="SiliconStudio.Paradox.Rendering.Images.ToneMapHejlDawsonOperator" Collapsed="true">
     <Position X="5" Y="24" Width="2.25" />
+    <Members>
+      <Method Name="ToneMapHejlDawsonOperator" Hidden="true" />
+    </Members>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Rendering\Images\ColorTransforms\ToneMap\ToneMapHejlDawsonOperator.cs</FileName>
