@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("TransformComponent")]
     [DataSerializerGlobal(null, typeof(TrackingCollection<TransformComponent>))]
-    [Display(10, "Transform")]
+    [Display(0, "Transform")]
     public sealed class TransformComponent : EntityComponent //, IEnumerable<TransformComponent> Check why this is not working
     {
         public readonly static PropertyKey<TransformComponent> Key = new PropertyKey<TransformComponent>("Key", typeof(TransformComponent),
