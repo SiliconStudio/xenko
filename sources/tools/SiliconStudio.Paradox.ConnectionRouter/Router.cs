@@ -51,6 +51,8 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                     // Routing
                     var routerMessage = (RouterMessage)await clientSocketContext.ReadStream.Read7BitEncodedInt();
 
+                    Log.Info("Client {0}:{1} connected, with message {2}", clientSocketContext.RemoteAddress, clientSocketContext.RemotePort, routerMessage);
+
                     switch (routerMessage)
                     {
                         case RouterMessage.ServiceProvideServer:
@@ -74,10 +76,10 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                 }
                 catch (Exception e)
                 {
-                    clientSocketContext.Dispose();
                     // TODO: Ideally, separate socket-related error messages (disconnection) from real errors
                     // Unfortunately, it seems WinRT returns Exception, so it seems we can't filter with SocketException/IOException only?
-                    Log.Info("Client disconnected with exception: {0}", e.Message);
+                    Log.Info("Client {0}:{1} disconnected with exception: {2}", clientSocketContext.RemoteAddress, clientSocketContext.RemotePort, e.Message);
+                    clientSocketContext.Dispose();
                 }
             };
 

@@ -34,6 +34,16 @@ namespace SiliconStudio.Paradox.Engine.Network
             get { return socket.WriteStream; }
         }
 
+        public string RemoteAddress
+        {
+            get { return socket.RemoteAddress; }
+        }
+
+        public int RemotePort
+        {
+            get { return socket.RemotePort; }
+        }
+
         // Called on a succesfull connection
         public Action<SocketContext> Connected;
 
