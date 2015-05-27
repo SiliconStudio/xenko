@@ -91,36 +91,50 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
     class ShaderCompilerTarget
     {
-        private TaskCompletionSource<SocketContext> socketContextClientTCS = new TaskCompletionSource<SocketContext>();
+        private TaskCompletionSource<SocketMessageLoop> socketMessageLoopTCS = new TaskCompletionSource<SocketMessageLoop>();
         private bool initialized = false;
 
         public Task Connect(bool server, string address, int port)
         {
             var socketContext = new SocketContext();
-            socketContext.Connected = context =>
+            socketContext.Connected = async context =>
             {
+                // TODO: Negotiate connection for shader compiler server for our current framework version
+                //context.socket
+                await context.WriteStream.Write7BitEncodedInt((int)ClientRouterMessage.RequestServer);
+                await context.WriteStream.WriteStringAsync(string.Format("/{0}/SiliconStudio.Paradox.EffectCompilerServer.exe", ParadoxVersion.CurrentAsText));
+                await context.WriteStream.FlushAsync();
+
+                var result = (ClientRouterMessage)await context.ReadStream.Read7BitEncodedInt();
+                if (result != ClientRouterMessage.ServerStarted)
+                {
+                    return;
+                }
+
+                var socketMessageLoop = new SocketMessageLoop(context, false);
+
                 // Register network VFS
-                NetworkVirtualFileProvider.RegisterServer(context);
+                NetworkVirtualFileProvider.RegisterServer(socketMessageLoop);
 
-                socketContextClientTCS.TrySetResult(context);
+                socketMessageLoopTCS.TrySetResult(socketMessageLoop);
 
-                Task.Run(() => context.MessageLoop());
+                Task.Run(() => socketMessageLoop.MessageLoop());
             };
 
             if (server)
-                socketContext.StartServer(port, true);
+                Task.Run(() => socketContext.StartServer(port, true));
             else
-                socketContext.StartClient(address, port);
+                Task.Run(() => socketContext.StartClient(address, port));
 
             // Wait for server to connect to us (as a Task)
-            return socketContextClientTCS.Task;
+            return socketMessageLoopTCS.Task;
         }
 
         public async Task<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, CompilerParameters compilerParameters)
         {
-            var socketContextClient = await socketContextClientTCS.Task;
+            var socketMessageLoop = await socketMessageLoopTCS.Task;
 
-            var shaderCompilerAnswer = (ShaderCompilerAnswer)await socketContextClient.SendReceiveAsync(new ShaderCompilerRequest
+            var shaderCompilerAnswer = (ShaderCompilerAnswer)await socketMessageLoop.SendReceiveAsync(new ShaderCompilerRequest
             {
                 MixinTree = mixinTree,
                 UsedParameters = mixinTree.UsedParameters,

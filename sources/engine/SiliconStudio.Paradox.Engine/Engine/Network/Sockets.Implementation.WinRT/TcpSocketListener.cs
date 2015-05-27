@@ -18,6 +18,16 @@ namespace Sockets.Plugin
     {
         private StreamSocketListener _backingStreamSocketListener;
         private CancellationTokenSource _listenCanceller;
+        private readonly int _bufferSize;
+
+        public TcpSocketListener()
+        {
+        }
+
+        public TcpSocketListener(int bufferSize)
+        {
+            _bufferSize = bufferSize;
+        }
 
         /// <summary>
         ///     Fired when a new TCP connection has been received.
@@ -43,7 +53,7 @@ namespace Sockets.Plugin
             _backingStreamSocketListener.ConnectionReceived += (sender, args) =>
             {
                 var nativeSocket = args.Socket;
-                var wrappedSocket = new TcpSocketClient(nativeSocket);
+                var wrappedSocket = new TcpSocketClient(nativeSocket, _bufferSize);
 
                 var eventArgs = new TcpSocketListenerConnectEventArgs(wrappedSocket);
                 if (ConnectionReceived != null)

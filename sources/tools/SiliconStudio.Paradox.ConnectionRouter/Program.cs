@@ -2,37 +2,45 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using Mono.Options;
+using SiliconStudio.Core.Diagnostics;
 
-namespace SiliconStudio.Paradox.EffectCompilerServer
+namespace SiliconStudio.Paradox.ConnectionRouter
 {
     partial class Program
     {
         private static int LocalPort = 1244;
+        private static string IpOverUsbParadoxName = "ParadoxRouterServer";
 
         static int Main(string[] args)
         {
             var exeName = Path.GetFileName(Assembly.GetExecutingAssembly().Location);
             var showHelp = false;
+            var windowsPhonePortMapping = false;
             int exitCode = 0;
 
             var p = new OptionSet
                 {
                     "Copyright (C) 2011-2015 Silicon Studio Corporation. All Rights Reserved",
-                    "Paradox Effect Compiler Server - Version: "
+                    "Paradox Router Server - Version: "
                     +
                     String.Format(
                         "{0}.{1}.{2}",
                         typeof(Program).Assembly.GetName().Version.Major,
                         typeof(Program).Assembly.GetName().Version.Minor,
                         typeof(Program).Assembly.GetName().Version.Build) + string.Empty,
-                    string.Format("Usage: {0}", exeName),
+                    string.Format("Usage: {0} command [options]*", exeName),
                     string.Empty,
                     "=== Options ===",
                     string.Empty,
                     { "h|help", "Show this message and exit", v => showHelp = v != null },
+                    { "register-windowsphone-portmapping", "Register Windows Phone IpOverUsb port mapping", v => windowsPhonePortMapping = true },
                 };
 
             try
@@ -48,8 +56,35 @@ namespace SiliconStudio.Paradox.EffectCompilerServer
                 if (commandArgs.Count > 0)
                     throw new OptionException("This command expect no additional arguments", "");
 
-                var effectCompilerServer = new EffectCompilerServer();
-                effectCompilerServer.TryConnect("127.0.0.1", 1244);
+                if (windowsPhonePortMapping)
+                {
+                    WindowsPhoneTracker.RegisterWindowsPhonePortMapping();
+                    return 0;
+                }
+
+                // Enable console logging
+                var consoleLogListener = new ConsoleLogListener { LogMode = ConsoleLogMode.Always };
+                GlobalLogger.GlobalMessageLogged += consoleLogListener;
+
+                if (!RouterHelper.RouterMutex.WaitOne(TimeSpan.Zero, true))
+                {
+                    Console.WriteLine("Another instance of Paradox Router is already running");
+                    return -1;
+                }
+
+                var router = new Router();
+
+                // Start server mode
+                router.Listen(LocalPort);
+
+                // Start Android management thread
+                new Thread(() => AndroidTracker.TrackDevices(router)).Start();
+
+                // Start iOS management thread
+                //iOSTracker.TrackDevices(router);
+
+                // Start Windows Phone management thread
+                new Thread(() => WindowsPhoneTracker.TrackDevices(router)).Start();
 
                 // Forbid process to terminate (unless ctrl+c)
                 while (true) Console.Read();

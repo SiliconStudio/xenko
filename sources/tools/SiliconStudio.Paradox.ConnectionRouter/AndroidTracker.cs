@@ -5,12 +5,18 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Diagnostics;
 
-namespace SiliconStudio.Paradox.EffectCompilerServer
+namespace SiliconStudio.Paradox.ConnectionRouter
 {
-    partial class Program
+    /// <summary>
+    /// Track android devices (with adb.exe) and establish port mapping.
+    /// </summary>
+    static class AndroidTracker
     {
-        private static void TrackAndroidDevices(ShaderCompilerHost shaderCompilerServer)
+        private static readonly Logger Log = GlobalLogger.GetLogger("AndroidTracker");
+
+        public static void TrackDevices(Router router)
         {
             var currentAndroidDevices = new Dictionary<string, ConnectedDevice>();
 
@@ -27,10 +33,11 @@ namespace SiliconStudio.Paradox.EffectCompilerServer
                     newAndroidDevices.Add(device.Serial, string.Format("{0} ({1})", device.Name, device.Serial));
                 }
 
-                ManageDevices("Android", newAndroidDevices, currentAndroidDevices, (connectedDevice) =>
+                DeviceHelper.UpdateDevices(Log, newAndroidDevices, currentAndroidDevices, (connectedDevice) =>
                 {
                     // First, try adb reverse port mapping (supported on newest adb+device)
                     // This is the best solution, as nothing specific needs to be done.
+                    // NOTE: disabled for now, as it's difficult to know what to try first from the device itself.
                     //var output = ShellHelper.RunProcessAndGetOutput(@"adb", string.Format(@"-s {0} reverse tcp:{1} tcp:{2}", newAndroidDevice, LocalPort, LocalPort));
                     //if (output.ExitCode == 0)
                     //    continue;
@@ -47,7 +54,7 @@ namespace SiliconStudio.Paradox.EffectCompilerServer
                         if (output.ExitCode == 0)
                         {
                             localPort = testedLocalPort;
-                            Console.WriteLine("{0} Device connected: {1}; successfully mapped port {2}:{3}", connectedDevice.Type, connectedDevice.Name, testedLocalPort, remotePort);
+                            Log.Info("Device connected: {0}; successfully mapped port {1}:{2}", connectedDevice.Name, testedLocalPort, remotePort);
                             break;
                         }
                     }
@@ -55,12 +62,12 @@ namespace SiliconStudio.Paradox.EffectCompilerServer
                     if (localPort == 0)
                     {
                         int lastTestedLocalPort = startLocalPort;
-                        Console.WriteLine("{0} Device connected: {1}; error when mapping port [{2}-{3}]:{4}", connectedDevice.Type, connectedDevice.Name, firstTestedLocalPort, lastTestedLocalPort - 1, remotePort);
+                        Log.Info("Device connected: {0}; error when mapping port [{1}-{2}]:{3}", connectedDevice.Name, firstTestedLocalPort, lastTestedLocalPort - 1, remotePort);
                         return;
                     }
 
                     // Launch a client thread that will automatically tries to connect to this port
-                    Task.Run(() => LaunchPersistentClient(connectedDevice, shaderCompilerServer, "localhost", localPort));
+                    Task.Run(() => DeviceHelper.LaunchPersistentClient(connectedDevice, router, "localhost", localPort));
                 });
 
                 Thread.Sleep(1000); // Detect new devices every 1000 msec

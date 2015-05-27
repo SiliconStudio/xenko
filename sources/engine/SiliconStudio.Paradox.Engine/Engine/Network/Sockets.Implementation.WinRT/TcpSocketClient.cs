@@ -24,6 +24,7 @@ namespace Sockets.Plugin
         private SocketProtectionLevel _secureSocketProtectionLevel = SocketProtectionLevel.Tls10;
 #endif               
         private readonly StreamSocket _backingStreamSocket;
+        private readonly int _bufferSize;
 
         /// <summary>
         ///     Default constructor for <code>TcpSocketClient</code>.
@@ -33,9 +34,19 @@ namespace Sockets.Plugin
             _backingStreamSocket = new StreamSocket();
         }
 
-        internal TcpSocketClient(StreamSocket nativeSocket)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TcpSocketClient"/> class.
+        /// </summary>
+        /// <param name="bufferSize">Size of the buffer for the write stream.</param>
+        public TcpSocketClient(int bufferSize) : this()
+        {
+            _bufferSize = bufferSize;
+        }
+
+        internal TcpSocketClient(StreamSocket nativeSocket, int bufferSize)
         {
             _backingStreamSocket = nativeSocket;
+            _bufferSize = bufferSize;
         }
 
         /// <summary>
@@ -67,7 +78,7 @@ namespace Sockets.Plugin
         /// </summary>
         public Stream ReadStream
         {
-            get { return _backingStreamSocket.InputStream.AsStreamForRead(); }
+            get { return _backingStreamSocket.InputStream.AsStreamForRead(_bufferSize); }
         }
 
         /// <summary>
@@ -75,7 +86,7 @@ namespace Sockets.Plugin
         /// </summary>
         public Stream WriteStream
         {
-            get { return _backingStreamSocket.OutputStream.AsStreamForWrite(); }
+            get { return _backingStreamSocket.OutputStream.AsStreamForWrite(_bufferSize); }
         }
 
         /// <summary>

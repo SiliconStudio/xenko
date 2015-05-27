@@ -36,11 +36,11 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.Internals
 
     public class NetworkVirtualFileProvider : VirtualFileProviderBase
     {
-        private SocketContext socketContext;
+        private SocketMessageLoop socketMessageLoop;
 
-        public NetworkVirtualFileProvider(SocketContext socketContext, string remoteUrl) : base(null)
+        public NetworkVirtualFileProvider(SocketMessageLoop socketMessageLoop, string remoteUrl) : base(null)
         {
-            this.socketContext = socketContext;
+            this.socketMessageLoop = socketMessageLoop;
             RemoteUrl = remoteUrl;
             if (!RemoteUrl.EndsWith(VirtualFileSystem.DirectorySeparatorChar.ToString()))
                 RemoteUrl += VirtualFileSystem.DirectorySeparatorChar;
@@ -48,19 +48,19 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.Internals
 
         public string RemoteUrl { get; private set; }
 
-        public static void RegisterServer(SocketContext socketContext)
+        public static void RegisterServer(SocketMessageLoop socketMessageLoop)
         {
-            socketContext.AddPacketHandler<DownloadFileQuery>(
+            socketMessageLoop.AddPacketHandler<DownloadFileQuery>(
                 async (packet) =>
                 {
                     var stream = await VirtualFileSystem.OpenStreamAsync(packet.Url, VirtualFileMode.Open, VirtualFileAccess.Read);
                     var data = new byte[stream.Length];
                     await stream.ReadAsync(data, 0, data.Length);
                     stream.Dispose();
-                    socketContext.Send(new DownloadFileAnswer { StreamId = packet.StreamId, Data = data });
+                    socketMessageLoop.Send(new DownloadFileAnswer { StreamId = packet.StreamId, Data = data });
                 });
 
-            socketContext.AddPacketHandler<UploadFilePacket>(
+            socketMessageLoop.AddPacketHandler<UploadFilePacket>(
                 async (packet) =>
                 {
                     var stream = await VirtualFileSystem.OpenStreamAsync(packet.Url, VirtualFileMode.Create, VirtualFileAccess.Write);
@@ -68,11 +68,11 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.Internals
                     stream.Dispose();
                 });
 
-            socketContext.AddPacketHandler<FileExistsQuery>(
+            socketMessageLoop.AddPacketHandler<FileExistsQuery>(
                 async (packet) =>
                     {
                         var fileExists = await VirtualFileSystem.FileExistsAsync(packet.Url);
-                        socketContext.Send(new FileExistsAnswer { StreamId = packet.StreamId, FileExists = fileExists });
+                        socketMessageLoop.Send(new FileExistsAnswer { StreamId = packet.StreamId, FileExists = fileExists });
                     });
         }
 
@@ -86,9 +86,9 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.Internals
             switch (access)
             {
                 case VirtualFileAccess.Write:
-                    return new NetworkWriteStream(socketContext, RemoteUrl + url);
+                    return new NetworkWriteStream(socketMessageLoop, RemoteUrl + url);
                 case VirtualFileAccess.Read:
-                    var downloadFileAnswer = (DownloadFileAnswer)socketContext.SendReceiveAsync(new DownloadFileQuery { Url = RemoteUrl + url }).Result;
+                    var downloadFileAnswer = (DownloadFileAnswer)socketMessageLoop.SendReceiveAsync(new DownloadFileQuery { Url = RemoteUrl + url }).Result;
                     return new MemoryStream(downloadFileAnswer.Data);
                 default:
                     throw new NotSupportedException();
@@ -97,27 +97,27 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.Internals
 
         public override bool FileExists(string url)
         {
-            var fileExistsAnswer = (FileExistsAnswer)socketContext.SendReceiveAsync(new FileExistsQuery { Url = RemoteUrl + url }).Result;
+            var fileExistsAnswer = (FileExistsAnswer)socketMessageLoop.SendReceiveAsync(new FileExistsQuery { Url = RemoteUrl + url }).Result;
             return fileExistsAnswer.FileExists;
         }
 
         internal class NetworkWriteStream : VirtualFileStream
         {
             private string url;
-            private SocketContext socketContext;
+            private SocketMessageLoop socketMessageLoop;
             private MemoryStream memoryStream;
 
-            public NetworkWriteStream(SocketContext socketContext, string url)
+            public NetworkWriteStream(SocketMessageLoop socketMessageLoop, string url)
                 : base(new MemoryStream())
             {
                 this.memoryStream = (MemoryStream)InternalStream;
                 this.url = url;
-                this.socketContext = socketContext;
+                this.socketMessageLoop = socketMessageLoop;
             }
 
             protected override void Dispose(bool disposing)
             {
-                socketContext.Send(new UploadFilePacket { Url = url, Data = memoryStream.ToArray() });
+                socketMessageLoop.Send(new UploadFilePacket { Url = url, Data = memoryStream.ToArray() });
                 base.Dispose(disposing);
             }
         }
