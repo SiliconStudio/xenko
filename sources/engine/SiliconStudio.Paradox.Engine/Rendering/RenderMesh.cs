@@ -105,6 +105,9 @@ namespace SiliconStudio.Paradox.Rendering
                 parameters.Set(ModelComponentPickingShaderKeys.ModelComponentId, new Color4(RenderModel.ModelComponent.Id));
                 parameters.Set(ModelComponentPickingShaderKeys.MeshId, new Color4(Mesh.NodeIndex));
                 parameters.Set(ModelComponentPickingShaderKeys.MaterialId, new Color4(Mesh.MaterialIndex));
+
+                // Don't use the materials blend state on picking targets
+                parameters.Set(Effect.BlendStateKey, null);
             }
 
             if (material != null && material.TessellationMethod != ParadoxTessellationMethod.None)
