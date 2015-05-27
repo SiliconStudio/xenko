@@ -11,6 +11,8 @@ Release date: 2015/##/##
 
 #### Issues fixed
 - Studio: Adding a Child scene component was crashing the scene editor.
+- Engine: Fixed lights not being positioned releative to their parents.
+- Engine: Fixed wrong lighting after disabling and reenabling light components.
 
 #### Breaking changes
 
