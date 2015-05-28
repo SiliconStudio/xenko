@@ -328,7 +328,8 @@ namespace SiliconStudio.Paradox.Rendering.Lights
                 var lightRenderer = activeRenderer.LightRenderer;
                 var lightCollection = activeRenderer.LightGroup.FindLightCollectionByGroup(group);
 
-                int lightMaxCount = Math.Min(lightCollection.Count, lightRenderer.LightMaxCount);
+                var lightCount = lightCollection == null ? 0 : lightCollection.Count;
+                int lightMaxCount = Math.Min(lightCount, lightRenderer.LightMaxCount);
                 var lightRendererId = lightRenderer.LightRendererId;
                 var allocCountForNewLightType = lightRenderer.AllocateLightMaxCount ? (byte)lightRenderer.LightMaxCount : (byte)1;
 
@@ -357,7 +358,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
                 {
                     ILightShadowMapRenderer currentShadowRenderer = null;
 
-                    for (int i = 0; i < lightCollection.Count; i++)
+                    for (int i = 0; i < lightCount; i++)
                     {
                         var light = lightCollection[i];
                         var directLight = (IDirectLight)light.Type;
