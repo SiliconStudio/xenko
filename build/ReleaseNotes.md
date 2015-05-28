@@ -15,6 +15,7 @@ Release date: 2015/##/##
 - Engine: Fixed lights not being positioned releative to their parents.
 - Engine: Fixed wrong lighting after disabling and reenabling light components.
 - Engine: Fixed an exception when an object was not in the culling groups of any lights.
+- Shaders: Directional shadow maps were requiring Shader Model 5.0. ([#222](https://github.com/SiliconStudio/paradox/issues/222)).
 
 #### Breaking changes
 
