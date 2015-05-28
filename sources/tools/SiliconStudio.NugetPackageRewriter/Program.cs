@@ -64,7 +64,7 @@ namespace SiliconStudio.NugetPackageRewriter
                         if (nupkgSuffix != null)
                         {
                             var outputFile = inputFile.Replace("-beta", nupkgSuffix);
-                            var filesToUpdates = new[] { "Paradox.nuspec", "Paradox.pdxpkg" };
+                            var filesToUpdates = new[] { "Paradox.nuspec" };
 
                             Console.WriteLine("Rename {0} into {1}", inputFile, outputFile);
                             File.Copy(inputFile, outputFile, true);
