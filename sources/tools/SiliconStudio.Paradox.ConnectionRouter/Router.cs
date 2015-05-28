@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Net.Sockets;
+using System.Runtime.ExceptionServices;
+using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Paradox.Engine.Network;
@@ -17,15 +17,13 @@ namespace SiliconStudio.Paradox.ConnectionRouter
     {
         private static readonly Logger Log = GlobalLogger.GetLogger("Router");
 
-        private Dictionary<string, TaskCompletionSource<SocketContext>> registeredServices = new Dictionary<string, TaskCompletionSource<SocketContext>>();
-        private Dictionary<Guid, TaskCompletionSource<SocketContext>> pendingServers = new Dictionary<Guid, TaskCompletionSource<SocketContext>>();
+        private Dictionary<string, TaskCompletionSource<SimpleSocket>> registeredServices = new Dictionary<string, TaskCompletionSource<SimpleSocket>>();
+        private Dictionary<Guid, TaskCompletionSource<SimpleSocket>> pendingServers = new Dictionary<Guid, TaskCompletionSource<SimpleSocket>>();
 
         public void Listen(int port)
         {
-            // TODO: Asynchronously initialize Irony grammars to improve first compilation request performance?
-
             var socketContext = CreateSocketContext();
-            socketContext.StartServer(port, false);
+            Task.Run(() => socketContext.StartServer(port, false));
         }
 
         /// <summary>
@@ -41,9 +39,9 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             await socketContext.StartClient(address, port);
         }
 
-        private SocketContext CreateSocketContext()
+        private SimpleSocket CreateSocketContext()
         {
-            var socketContext = new SocketContext();
+            var socketContext = new SimpleSocket();
             socketContext.Connected = async (clientSocketContext) =>
             {
                 try
@@ -90,22 +88,22 @@ namespace SiliconStudio.Paradox.ConnectionRouter
         /// Handles ClientRequestServer messages.
         /// It will try to find a matching service (spawn it if not started yet), and ask it to establish a new "server" connection back to us.
         /// </summary>
-        /// <param name="clientSocketContext">The client socket context.</param>
+        /// <param name="clientSocket">The client socket context.</param>
         /// <returns></returns>
-        private async Task HandleMessageClientRequestServer(SocketContext clientSocketContext)
+        private async Task HandleMessageClientRequestServer(SimpleSocket clientSocket)
         {
             // Check for an existing server
             // TODO: Proper Url parsing (query string)
-            var url = await clientSocketContext.ReadStream.ReadStringAsync();
+            var url = await clientSocket.ReadStream.ReadStringAsync();
 
             // Find a matching server
-            TaskCompletionSource<SocketContext> serviceTCS;
+            TaskCompletionSource<SimpleSocket> serviceTCS;
 
             lock (registeredServices)
             {
                 if (!registeredServices.TryGetValue(url, out serviceTCS))
                 {
-                    serviceTCS = new TaskCompletionSource<SocketContext>();
+                    serviceTCS = new TaskCompletionSource<SimpleSocket>();
                     registeredServices.Add(url, serviceTCS);
                 }
 
@@ -115,7 +113,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                     if (urlSegments.Length != 2)
                     {
                         Log.Error("{0} action URL {1} is invalid", RouterMessage.ClientRequestServer, url);
-                        clientSocketContext.Dispose();
+                        clientSocket.Dispose();
                         return;
                     }
 
@@ -126,16 +124,12 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                     if (paradoxSdkDir == null)
                     {
                         Log.Error("{0} action URL {1} references uninstalled Paradox", RouterMessage.ClientRequestServer, url);
-                        clientSocketContext.Dispose();
+                        clientSocket.Dispose();
                         return;
                     }
 
                     var servicePath = Path.Combine(paradoxSdkDir, @"Bin\Windows-Direct3D11", serviceExe);
-                    var process = Process.Start(servicePath);
-
-                    // Let's tie lifetime of spawned process to ours
-                    // TODO: Move that in a better namespace
-                    new GameStudio.Plugin.Debugging.AttachedChildProcessJob(process);
+                    RunServiceProcessAndLog(servicePath);
                 }
             }
 
@@ -143,7 +137,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
 
             // Generate connection Guid
             var guid = Guid.NewGuid();
-            var serverSocketTCS = new TaskCompletionSource<SocketContext>();
+            var serverSocketTCS = new TaskCompletionSource<SimpleSocket>();
             lock (pendingServers)
             {
                 pendingServers.Add(guid, serverSocketTCS);
@@ -154,79 +148,133 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             await service.WriteStream.WriteGuidAsync(guid);
             await service.WriteStream.FlushAsync();
 
-            // Wait for such a server to be available
-            var serverSocketContext = await serverSocketTCS.Task;
+            // Should answer within 2 sec
+            var ct = new CancellationTokenSource(2000);
+            ct.Token.Register(() => serverSocketTCS.TrySetException(new TimeoutException("Server could not connect back in time")));
+
+            SimpleSocket serverSocket = null;
+            ExceptionDispatchInfo serverSocketCapturedException = null;
+
+            try
+            {
+                // Wait for such a server to be available
+                serverSocket = await serverSocketTCS.Task;
+            }
+            catch (Exception e)
+            {
+                // We can't do await to send result to server in catch clause, so let's throw it right after
+                serverSocketCapturedException = ExceptionDispatchInfo.Capture(e);
+            }
+
+            if (serverSocketCapturedException != null)
+            {
+                try
+                {
+                    // Notify client that there was an error
+                    await clientSocket.WriteStream.Write7BitEncodedInt((int)RouterMessage.ClientServerStarted);
+                    await clientSocket.WriteStream.Write7BitEncodedInt(1); // error code Failure
+                    await clientSocket.WriteStream.WriteStringAsync(serverSocketCapturedException.SourceException.Message);
+                    await clientSocket.WriteStream.FlushAsync();
+                }
+                finally
+                {
+                    serverSocketCapturedException.Throw();
+                }
+            }
 
             try
             {
                 // Notify client that we've found a server for it
-                await clientSocketContext.WriteStream.Write7BitEncodedInt((int)RouterMessage.ClientServerStarted);
-                await clientSocketContext.WriteStream.FlushAsync();
+                await clientSocket.WriteStream.Write7BitEncodedInt((int)RouterMessage.ClientServerStarted);
+                await clientSocket.WriteStream.Write7BitEncodedInt(0); // error code OK
+                await clientSocket.WriteStream.FlushAsync();
 
                 // Let's forward clientSocketContext and serverSocketContext
                 await await Task.WhenAny(
-                    ForwardSocket(clientSocketContext, serverSocketContext),
-                    ForwardSocket(serverSocketContext, clientSocketContext));
+                    ForwardSocket(clientSocket, serverSocket),
+                    ForwardSocket(serverSocket, clientSocket));
             }
             catch
             {
-                serverSocketContext.Dispose();
+                serverSocket.Dispose();
                 throw;
             }
+        }
+
+        private static Process RunServiceProcessAndLog(string servicePath)
+        {
+            var process = ShellHelper.RunProcess(servicePath, string.Empty);
+
+            // Create log and notify start
+            var logModule = string.Format("{0}:{1}", Path.GetFileNameWithoutExtension(servicePath), process.Id);
+            var logger = GlobalLogger.GetLogger(logModule);
+            logger.Info("Process started");
+
+            process.OutputDataReceived += (_, args) => logger.Info(args.Data);
+            process.ErrorDataReceived += (_, args) => logger.Error(args.Data);
+            process.Exited += (_, args) => logger.Info("Process exited");
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+
+            // Let's tie lifetime of spawned process to ours
+            // TODO: Move that in a better namespace? (currently a shared file)
+            new GameStudio.Plugin.Debugging.AttachedChildProcessJob(process);
+
+            return process;
         }
 
         /// <summary>
         /// Handles ServerStarted messages. It happens when service opened a new "server" connection back to us.
         /// </summary>
-        /// <param name="clientSocketContext">The client socket context.</param>
+        /// <param name="clientSocket">The client socket context.</param>
         /// <returns></returns>
-        private async Task HandleMessageServerStarted(SocketContext clientSocketContext)
+        private async Task HandleMessageServerStarted(SimpleSocket clientSocket)
         {
-            var guid = await clientSocketContext.ReadStream.ReadGuidAsync();
+            var guid = await clientSocket.ReadStream.ReadGuidAsync();
 
             // Notify any waiter that a server with given GUID is available
-            TaskCompletionSource<SocketContext> serverSocketTCS;
+            TaskCompletionSource<SimpleSocket> serverSocketTCS;
             lock (pendingServers)
             {
                 if (!pendingServers.TryGetValue(guid, out serverSocketTCS))
                 {
                     Log.Error("Could not find a matching server Guid");
-                    clientSocketContext.Dispose();
+                    clientSocket.Dispose();
                     return;
                 }
 
                 pendingServers.Remove(guid);
             }
 
-            serverSocketTCS.TrySetResult(clientSocketContext);
+            serverSocketTCS.TrySetResult(clientSocket);
         }
 
         /// <summary>
         /// Handles ServiceProvideServer messages. It allows service to publicize what "server" they can instantiate.
         /// </summary>
-        /// <param name="clientSocketContext">The client socket context.</param>
+        /// <param name="clientSocket">The client socket context.</param>
         /// <returns></returns>
-        private async Task HandleMessageServiceProvideServer(SocketContext clientSocketContext)
+        private async Task HandleMessageServiceProvideServer(SimpleSocket clientSocket)
         {
-            var url = await clientSocketContext.ReadStream.ReadStringAsync();
-            TaskCompletionSource<SocketContext> service;
+            var url = await clientSocket.ReadStream.ReadStringAsync();
+            TaskCompletionSource<SimpleSocket> service;
 
             lock (registeredServices)
             {
                 if (!registeredServices.TryGetValue(url, out service))
                 {
-                    service = new TaskCompletionSource<SocketContext>();
+                    service = new TaskCompletionSource<SimpleSocket>();
                     registeredServices.Add(url, service);
                 }
 
-                service.TrySetResult(clientSocketContext);
+                service.TrySetResult(clientSocket);
             }
 
             // TODO: Handle server disconnections
             //clientSocketContext.Disconnected += 
         }
 
-        private async Task ForwardSocket(SocketContext source, SocketContext target)
+        private async Task ForwardSocket(SimpleSocket source, SimpleSocket target)
         {
             var buffer = new byte[1024];
             while (true)

@@ -7,22 +7,25 @@ using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Paradox.Engine.Network
 {
-    public class SocketMessageLoop
+    /// <summary>
+    /// High-level layer that can be used on top of <see cref="SimpleSocket"/> to send and receive objects using serialization.
+    /// </summary>
+    public class SocketMessageLayer
     {
-        private SocketContext context;
+        private SimpleSocket context;
         private bool isServer;
 
         private SemaphoreSlim sendLock = new SemaphoreSlim(1);
         private readonly Dictionary<int, TaskCompletionSource<SocketMessage>> packetCompletionTasks = new Dictionary<int, TaskCompletionSource<SocketMessage>>();
         private Dictionary<Type, Tuple<Action<object>, bool>> packetHandlers = new Dictionary<Type, Tuple<Action<object>, bool>>();
 
-        public SocketMessageLoop(SocketContext context, bool isServer)
+        public SocketMessageLayer(SimpleSocket context, bool isServer)
         {
             this.context = context;
             this.isServer = isServer;
         }
 
-        public SocketContext Context
+        public SimpleSocket Context
         {
             get { return context; }
         }
@@ -118,7 +121,7 @@ namespace SiliconStudio.Paradox.Engine.Network
             }
             catch (Exception)
             {
-                context.DisposeSocket();
+                context.Dispose();
                 throw;
             }
         }

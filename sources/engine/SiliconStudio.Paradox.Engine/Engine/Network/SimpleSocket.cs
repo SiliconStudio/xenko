@@ -13,13 +13,13 @@ using System.Collections;
 namespace SiliconStudio.Paradox.Engine.Network
 {
     /// <summary>
-    /// Manages socket connection and low-level communication.
-    /// High-level communication is supposed to happen in <see cref="SocketMessageLoop"/>.
+    /// Manages socket connection+ack and low-level communication.
+    /// High-level communication is supposed to happen in <see cref="SocketMessageLayer"/>.
     /// </summary>
-    public class SocketContext : IDisposable
+    public class SimpleSocket : IDisposable
     {
-        private const int ServerMagicAck = 0x35AABBCC;
-        private const int ClientMagicAck = 0x24BB35CC;
+        private const uint ServerMagicAck = 0x35AABBCC;
+        private const uint ClientMagicAck = 0x24BB35CC;
 
         private TcpSocketClient socket;
         private bool isConnected;
@@ -45,11 +45,12 @@ namespace SiliconStudio.Paradox.Engine.Network
         }
 
         // Called on a succesfull connection
-        public Action<SocketContext> Connected;
+        public Action<SimpleSocket> Connected;
 
         // Called if there is a socket failure (after ack handshake)
-        public Action<SocketContext> Disconnected;
+        public Action<SimpleSocket> Disconnected;
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             DisposeSocket();
@@ -57,14 +58,12 @@ namespace SiliconStudio.Paradox.Engine.Network
 
         public async Task StartServer(int port, bool singleConnection)
         {
-            //var ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-            //var localEP = new IPEndPoint(ipHostInfo.AddressList[0], 11000);
+            // Create TCP listener
             var listener = new TcpSocketListener(2048);
-            //listener.NoDelay = true;
 
             listener.ConnectionReceived = async (sender, args) =>
             {
-                var clientSocketContext = new SocketContext();
+                var clientSocketContext = new SimpleSocket();
 
                 try
                 {
@@ -74,12 +73,9 @@ namespace SiliconStudio.Paradox.Engine.Network
 
                     clientSocketContext.SetSocket((TcpSocketClient)args.SocketClient);
 
-                    // Do an ack
-                    await clientSocketContext.socket.WriteStream.WriteInt32Async(ServerMagicAck);
-                    await clientSocketContext.socket.WriteStream.FlushAsync();
-                    var ack = await clientSocketContext.socket.ReadStream.ReadInt32Async();
-                    if (ack != ClientMagicAck)
-                        throw new InvalidOperationException("Invalid ack");
+                    // Do an ack with magic packet (necessary so that we know it's not a dead connection,
+                    // it sometimes happen when doing port forwarding because service don't refuse connection right away but only fails when sending data)
+                    await SendAndReceiveAck(socket, ServerMagicAck, ClientMagicAck);
 
                     if (Connected != null)
                         Connected(clientSocketContext);
@@ -98,6 +94,7 @@ namespace SiliconStudio.Paradox.Engine.Network
 
         public async Task StartClient(string address, int port)
         {
+            // Create TCP client
             var socket = new TcpSocketClient(2048);
 
             try
@@ -107,12 +104,9 @@ namespace SiliconStudio.Paradox.Engine.Network
                 SetSocket(socket);
                 //socket.NoDelay = true;
 
-                // Do an ack
-                await socket.WriteStream.WriteInt32Async(ClientMagicAck);
-                await socket.WriteStream.FlushAsync();
-                var ack = await socket.ReadStream.ReadInt32Async();
-                if (ack != ServerMagicAck)
-                    throw new InvalidOperationException("Invalid ack");
+                // Do an ack with magic packet (necessary so that we know it's not a dead connection,
+                // it sometimes happen when doing port forwarding because service don't refuse connection right away but only fails when sending data)
+                await SendAndReceiveAck(socket, ClientMagicAck, ServerMagicAck);
 
                 if (Connected != null)
                     Connected(this);
@@ -125,13 +119,22 @@ namespace SiliconStudio.Paradox.Engine.Network
                 throw;
             }
         }
-        
-        void SetSocket(TcpSocketClient socket)
+
+        private static async Task SendAndReceiveAck(TcpSocketClient socket, uint sentAck, uint expectedAck)
+        {
+            await socket.WriteStream.WriteInt32Async((int)sentAck);
+            await socket.WriteStream.FlushAsync();
+            var ack = (uint)await socket.ReadStream.ReadInt32Async();
+            if (ack != expectedAck)
+                throw new InvalidOperationException("Invalid ack");
+        }
+
+        private void SetSocket(TcpSocketClient socket)
         {
             this.socket = socket;
         }
 
-        internal void DisposeSocket()
+        private void DisposeSocket()
         {
             if (this.socket != null)
             {

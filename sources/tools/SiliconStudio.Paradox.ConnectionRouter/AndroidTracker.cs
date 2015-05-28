@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             var currentAndroidDevices = new Dictionary<string, ConnectedDevice>();
 
             // Start new devices
-            int startLocalPort = 51153;
+            int startLocalPort = 51153; // Use ports in the dynamic port range
 
             // Wait and process android device changes events
             while (true)
@@ -49,6 +49,9 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                     for (int i = 0; i < 4; ++i)
                     {
                         int testedLocalPort = startLocalPort++;
+                        if (startLocalPort >= 65536) // Make sure we stay in the range of dynamic ports: 49152-65535
+                            startLocalPort = 49152;
+
                         var output = ShellHelper.RunProcessAndGetOutput(@"adb", string.Format(@"-s {0} forward tcp:{1} tcp:{2}", connectedDevice.Key, startLocalPort, remotePort));
 
                         if (output.ExitCode == 0)

@@ -17,14 +17,15 @@ namespace SiliconStudio.Paradox.EffectCompilerServer
     {
         public EffectCompilerServer() : base(string.Format("/{0}/SiliconStudio.Paradox.EffectCompilerServer.exe", ParadoxVersion.CurrentAsText))
         {
+            // TODO: Asynchronously initialize Irony grammars to improve first compilation request performance?a
         }
 
-        protected override void RunServer(SocketContext clientSocketContext)
+        protected override void RunServer(SimpleSocket clientSocket)
         {
             // Create an effect compiler per connection
             var effectCompiler = new EffectCompiler();
 
-            var socketMessageLoop = new SocketMessageLoop(clientSocketContext, true);
+            var socketMessageLoop = new SocketMessageLayer(clientSocket, true);
 
             Console.WriteLine("Client connected");
 
@@ -48,7 +49,7 @@ namespace SiliconStudio.Paradox.EffectCompilerServer
             Task.Run(() => socketMessageLoop.MessageLoop());
         }
 
-        private static async Task ShaderCompilerRequestHandler(SocketMessageLoop socketMessageLoop, EffectLogStore recordedEffectCompile, EffectCompiler effectCompiler, ShaderCompilerRequest shaderCompilerRequest)
+        private static async Task ShaderCompilerRequestHandler(SocketMessageLayer socketMessageLayer, EffectLogStore recordedEffectCompile, EffectCompiler effectCompiler, ShaderCompilerRequest shaderCompilerRequest)
         {
             // Yield so that this socket can continue its message loop to answer to shader file request.
             await Task.Yield();
@@ -65,7 +66,7 @@ namespace SiliconStudio.Paradox.EffectCompilerServer
             recordedEffectCompile[new EffectCompileRequest(shaderCompilerRequest.MixinTree.Name, shaderCompilerRequest.MixinTree.UsedParameters)] = true;
             
             // Send compiled shader
-            socketMessageLoop.Send(new ShaderCompilerAnswer { StreamId = shaderCompilerRequest.StreamId, EffectBytecode = precompiledEffectShaderPass.Bytecode });
+            socketMessageLayer.Send(new ShaderCompilerAnswer { StreamId = shaderCompilerRequest.StreamId, EffectBytecode = precompiledEffectShaderPass.Bytecode });
         }
     }
 }

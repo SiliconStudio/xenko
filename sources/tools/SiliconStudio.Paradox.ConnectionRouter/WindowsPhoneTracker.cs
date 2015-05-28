@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Security.Principal;
 using System.ServiceProcess;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Win32;
 using SiliconStudio.Core.Diagnostics;
@@ -98,6 +99,8 @@ namespace SiliconStudio.Paradox.ConnectionRouter
 
                     Task.Run(() => DeviceHelper.LaunchPersistentClient(connectedDevice, router, "localhost", localPort));
                 });
+
+                Thread.Sleep(1000); // Detect new devices every 1000 msec
             }
         }
 

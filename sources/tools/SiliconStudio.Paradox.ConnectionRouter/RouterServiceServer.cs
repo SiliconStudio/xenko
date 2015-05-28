@@ -32,9 +32,9 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             await socketContext.StartClient(address, port);
         }
 
-        private SocketContext CreateSocketContext()
+        private SimpleSocket CreateSocketContext()
         {
-            var socketContext = new SocketContext();
+            var socketContext = new SimpleSocket();
             socketContext.Connected = async (clientSocketContext) =>
             {
                 // Register service server
@@ -53,7 +53,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                             var guid = await clientSocketContext.ReadStream.ReadGuidAsync();
 
                             // Spawn actual server
-                            var realServerSocketContext = new SocketContext();
+                            var realServerSocketContext = new SimpleSocket();
                             realServerSocketContext.Connected = async (clientSocketContext2) =>
                             {
                                 // Write connection string
@@ -77,6 +77,6 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             return socketContext;
         }
 
-        protected abstract void RunServer(SocketContext clientSocketContext);
+        protected abstract void RunServer(SimpleSocket clientSocket);
     }
 }

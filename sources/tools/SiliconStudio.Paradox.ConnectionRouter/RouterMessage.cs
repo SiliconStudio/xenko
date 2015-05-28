@@ -5,7 +5,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
     public enum RouterMessage
     {
         ClientRequestServer = ClientRouterMessage.RequestServer, // ClientRequestServer <string:url>
-        ClientServerStarted = ClientRouterMessage.ServerStarted, // ClientServerStarted <int:errorcode> <string:message>
+        ClientServerStarted = ClientRouterMessage.ServerStarted, // ClientServerStarted <varint:errorcode> <string:message optional(if errorcode != 0)>
 
         ServerStarted = 0x00000100, // ServerStarted <guid:token>
 
