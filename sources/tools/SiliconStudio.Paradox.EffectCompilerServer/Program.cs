@@ -5,13 +5,12 @@ using System;
 using System.IO;
 using System.Reflection;
 using Mono.Options;
+using SiliconStudio.Paradox.Engine.Network;
 
 namespace SiliconStudio.Paradox.EffectCompilerServer
 {
-    partial class Program
+    class Program
     {
-        private static int LocalPort = 1244;
-
         static int Main(string[] args)
         {
             var exeName = Path.GetFileName(Assembly.GetExecutingAssembly().Location);
@@ -49,7 +48,7 @@ namespace SiliconStudio.Paradox.EffectCompilerServer
                     throw new OptionException("This command expect no additional arguments", "");
 
                 var effectCompilerServer = new EffectCompilerServer();
-                effectCompilerServer.TryConnect("127.0.0.1", 1244);
+                effectCompilerServer.TryConnect("127.0.0.1", RouterClient.DefaultPort);
 
                 // Forbid process to terminate (unless ctrl+c)
                 while (true) Console.Read();

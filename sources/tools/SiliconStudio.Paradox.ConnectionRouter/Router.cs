@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -96,75 +97,33 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             // TODO: Proper Url parsing (query string)
             var url = await clientSocket.ReadStream.ReadStringAsync();
 
-            // Find a matching server
-            TaskCompletionSource<SimpleSocket> serviceTCS;
-
-            lock (registeredServices)
-            {
-                if (!registeredServices.TryGetValue(url, out serviceTCS))
-                {
-                    serviceTCS = new TaskCompletionSource<SimpleSocket>();
-                    registeredServices.Add(url, serviceTCS);
-                }
-
-                if (!serviceTCS.Task.IsCompleted)
-                {
-                    var urlSegments = url.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-                    if (urlSegments.Length != 2)
-                    {
-                        Log.Error("{0} action URL {1} is invalid", RouterMessage.ClientRequestServer, url);
-                        clientSocket.Dispose();
-                        return;
-                    }
-
-                    var paradoxVersion = urlSegments[0].Trim('/');
-                    var serviceExe = urlSegments[1];
-
-                    var paradoxSdkDir = RouterHelper.FindParadoxSdkDir(paradoxVersion);
-                    if (paradoxSdkDir == null)
-                    {
-                        Log.Error("{0} action URL {1} references uninstalled Paradox", RouterMessage.ClientRequestServer, url);
-                        clientSocket.Dispose();
-                        return;
-                    }
-
-                    var servicePath = Path.Combine(paradoxSdkDir, @"Bin\Windows-Direct3D11", serviceExe);
-                    RunServiceProcessAndLog(servicePath);
-                }
-            }
-
-            var service = await serviceTCS.Task;
-
-            // Generate connection Guid
-            var guid = Guid.NewGuid();
-            var serverSocketTCS = new TaskCompletionSource<SimpleSocket>();
-            lock (pendingServers)
-            {
-                pendingServers.Add(guid, serverSocketTCS);
-            }
-
-            // Notify service that we want it to establish back a new connection to us for this client
-            await service.WriteStream.Write7BitEncodedInt((int)RouterMessage.ServiceRequestServer);
-            await service.WriteStream.WriteGuidAsync(guid);
-            await service.WriteStream.FlushAsync();
-
-            // Should answer within 2 sec
-            var ct = new CancellationTokenSource(2000);
-            ct.Token.Register(() => serverSocketTCS.TrySetException(new TimeoutException("Server could not connect back in time")));
+            var urlSegments = url.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            if (urlSegments.Length == 0)
+                throw new InvalidOperationException("No URL Segments");
 
             SimpleSocket serverSocket = null;
             ExceptionDispatchInfo serverSocketCapturedException = null;
 
             try
             {
-                // Wait for such a server to be available
-                serverSocket = await serverSocketTCS.Task;
+                // For now, we handle only "service" URL
+                switch (urlSegments[0])
+                {
+                    case "service":
+                    {
+                        // From the URL, start service (if not started yet) and ask it to provide a server
+                        serverSocket = await SpawnServerFromService(url);
+                        break;
+                    }
+                    default:
+                        throw new InvalidOperationException("This type of URL is not supported");
+                }
             }
             catch (Exception e)
             {
-                // We can't do await to send result to server in catch clause, so let's throw it right after
                 serverSocketCapturedException = ExceptionDispatchInfo.Capture(e);
             }
+
 
             if (serverSocketCapturedException != null)
             {
@@ -201,6 +160,81 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             }
         }
 
+        private void ParseUrl(string url, out string[] segments, out string parameters)
+        {
+            // Ideally we would like to reuse Uri (or some other similar code), but it doesn't work without a Host
+            var parameterIndex = url.IndexOf('?');
+            parameters = parameterIndex != -1 ? url.Substring(parameterIndex + 1) : null;
+
+            var urlWithoutParameters = parameterIndex != -1 ? url.Substring(0, parameterIndex) : url;
+
+            segments = urlWithoutParameters.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        private async Task<SimpleSocket> SpawnServerFromService(string url)
+        {
+            string[] urlSegments;
+            string urlParameters;
+            ParseUrl(url, out urlSegments, out urlParameters);
+
+            // Find a matching server
+            TaskCompletionSource<SimpleSocket> serviceTCS;
+
+            lock (registeredServices)
+            {
+                if (!registeredServices.TryGetValue(url, out serviceTCS))
+                {
+                    serviceTCS = new TaskCompletionSource<SimpleSocket>();
+                    registeredServices.Add(url, serviceTCS);
+                }
+
+                if (!serviceTCS.Task.IsCompleted)
+                {
+                    if (urlSegments.Length < 3)
+                    {
+                        Log.Error("{0} action URL {1} is invalid", RouterMessage.ClientRequestServer, url);
+                        throw new InvalidOperationException();
+                    }
+
+                    var paradoxVersion = urlSegments[1];
+                    var serviceExe = urlSegments[2];
+
+                    var paradoxSdkDir = RouterHelper.FindParadoxSdkDir(paradoxVersion);
+                    if (paradoxSdkDir == null)
+                    {
+                        Log.Error("{0} action URL {1} references a Paradox version which is not installed", RouterMessage.ClientRequestServer, url);
+                        throw new InvalidOperationException();
+                    }
+
+                    var servicePath = Path.Combine(paradoxSdkDir, @"Bin\Windows-Direct3D11", serviceExe);
+                    RunServiceProcessAndLog(servicePath);
+                }
+            }
+
+            var service = await serviceTCS.Task;
+
+            // Generate connection Guid
+            var guid = Guid.NewGuid();
+            var serverSocketTCS = new TaskCompletionSource<SimpleSocket>();
+            lock (pendingServers)
+            {
+                pendingServers.Add(guid, serverSocketTCS);
+            }
+
+            // Notify service that we want it to establish back a new connection to us for this client
+            await service.WriteStream.Write7BitEncodedInt((int)RouterMessage.ServiceRequestServer);
+            await service.WriteStream.WriteStringAsync(url);
+            await service.WriteStream.WriteGuidAsync(guid);
+            await service.WriteStream.FlushAsync();
+
+            // Should answer within 2 sec
+            var ct = new CancellationTokenSource(2000);
+            ct.Token.Register(() => serverSocketTCS.TrySetException(new TimeoutException("Server could not connect back in time")));
+
+            // Wait for such a server to be available
+            return await serverSocketTCS.Task;
+        }
+
         private static Process RunServiceProcessAndLog(string servicePath)
         {
             var process = ShellHelper.RunProcess(servicePath, string.Empty);
@@ -231,6 +265,8 @@ namespace SiliconStudio.Paradox.ConnectionRouter
         private async Task HandleMessageServerStarted(SimpleSocket clientSocket)
         {
             var guid = await clientSocket.ReadStream.ReadGuidAsync();
+            var errorCode = await clientSocket.ReadStream.Read7BitEncodedInt();
+            var errorMessage = (errorCode != 0) ? await clientSocket.ReadStream.ReadStringAsync() : null;
 
             // Notify any waiter that a server with given GUID is available
             TaskCompletionSource<SimpleSocket> serverSocketTCS;
@@ -246,7 +282,10 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                 pendingServers.Remove(guid);
             }
 
-            serverSocketTCS.TrySetResult(clientSocket);
+            if (errorCode != 0)
+                serverSocketTCS.TrySetException(new Exception(errorMessage));
+            else
+                serverSocketTCS.TrySetResult(clientSocket);
         }
 
         /// <summary>

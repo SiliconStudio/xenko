@@ -75,7 +75,7 @@ namespace SiliconStudio.Paradox.Engine.Network
 
                     // Do an ack with magic packet (necessary so that we know it's not a dead connection,
                     // it sometimes happen when doing port forwarding because service don't refuse connection right away but only fails when sending data)
-                    await SendAndReceiveAck(socket, ServerMagicAck, ClientMagicAck);
+                    await SendAndReceiveAck(clientSocketContext.socket, ServerMagicAck, ClientMagicAck);
 
                     if (Connected != null)
                         Connected(clientSocketContext);

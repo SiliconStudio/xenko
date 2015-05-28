@@ -15,13 +15,17 @@ namespace SiliconStudio.Paradox.EffectCompilerServer
     /// </summary>
     public class EffectCompilerServer : RouterServiceServer
     {
-        public EffectCompilerServer() : base(string.Format("/{0}/SiliconStudio.Paradox.EffectCompilerServer.exe", ParadoxVersion.CurrentAsText))
+        public EffectCompilerServer() : base(string.Format("/service/{0}/SiliconStudio.Paradox.EffectCompilerServer.exe", ParadoxVersion.CurrentAsText))
         {
             // TODO: Asynchronously initialize Irony grammars to improve first compilation request performance?a
         }
 
-        protected override void RunServer(SimpleSocket clientSocket)
+        /// <inheritdoc/>
+        protected override async void HandleClient(SimpleSocket clientSocket, string url)
         {
+            // We accept everything
+            await AcceptConnection(clientSocket);
+
             // Create an effect compiler per connection
             var effectCompiler = new EffectCompiler();
 
@@ -51,7 +55,8 @@ namespace SiliconStudio.Paradox.EffectCompilerServer
 
         private static async Task ShaderCompilerRequestHandler(SocketMessageLayer socketMessageLayer, EffectLogStore recordedEffectCompile, EffectCompiler effectCompiler, ShaderCompilerRequest shaderCompilerRequest)
         {
-            // Yield so that this socket can continue its message loop to answer to shader file request.
+            // Yield so that this socket can continue its message loop to answer to shader file request
+            // TODO: maybe not necessary anymore with RouterServiceServer?
             await Task.Yield();
 
             Console.WriteLine("Compiling shader");

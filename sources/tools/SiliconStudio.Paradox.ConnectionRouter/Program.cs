@@ -10,12 +10,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Mono.Options;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Paradox.Engine.Network;
 
 namespace SiliconStudio.Paradox.ConnectionRouter
 {
     partial class Program
     {
-        private static int LocalPort = 1244;
         private static string IpOverUsbParadoxName = "ParadoxRouterServer";
 
         static int Main(string[] args)
@@ -75,7 +75,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                 var router = new Router();
 
                 // Start server mode
-                router.Listen(LocalPort);
+                router.Listen(RouterClient.DefaultPort);
 
                 // Start Android management thread
                 new Thread(() => AndroidTracker.TrackDevices(router)).Start();

@@ -9,11 +9,15 @@ namespace SiliconStudio.Paradox.ConnectionRouter
         private string address;
         private int port;
 
-        private string url;
+        private readonly string serverUrl;
 
-        protected RouterServiceServer(string url)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RouterServiceServer"/> class.
+        /// </summary>
+        /// <param name="serverUrl">The URL this service will be advertised as.</param>
+        protected RouterServiceServer(string serverUrl)
         {
-            this.url = url;
+            this.serverUrl = serverUrl;
         }
 
         /// <summary>
@@ -39,7 +43,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             {
                 // Register service server
                 await socketContext.WriteStream.Write7BitEncodedInt((int)RouterMessage.ServiceProvideServer);
-                await socketContext.WriteStream.WriteStringAsync(url);
+                await socketContext.WriteStream.WriteStringAsync(serverUrl);
                 await socketContext.WriteStream.FlushAsync();
 
                 while (true)
@@ -50,6 +54,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                     {
                         case RouterMessage.ServiceRequestServer:
                         {
+                            var requestedUrl = await clientSocketContext.ReadStream.ReadStringAsync();
                             var guid = await clientSocketContext.ReadStream.ReadGuidAsync();
 
                             // Spawn actual server
@@ -59,11 +64,12 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                                 // Write connection string
                                 await clientSocketContext2.WriteStream.Write7BitEncodedInt((int)RouterMessage.ServerStarted);
                                 await clientSocketContext2.WriteStream.WriteGuidAsync(guid);
-                                await clientSocketContext2.WriteStream.FlushAsync();
 
                                 // Delegate next steps to actual server
-                                RunServer(clientSocketContext2);
+                                HandleClient(clientSocketContext2, requestedUrl);
                             };
+
+                            // Start connection
                             await realServerSocketContext.StartClient(address, port);
                             break;
                         }
@@ -77,6 +83,37 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             return socketContext;
         }
 
-        protected abstract void RunServer(SimpleSocket clientSocket);
+        /// <summary>
+        /// Called when a new client connection has been established.
+        /// Before writing anything to the stream, HandleClient is responsible for either calling <see cref="AcceptConnection"/> or <see cref="RefuseConnection"/>.
+        /// </summary>
+        /// <param name="clientSocket">The client socket.</param>
+        /// <param name="url">The requested URL.</param>
+        protected abstract void HandleClient(SimpleSocket clientSocket, string url);
+
+        /// <summary>
+        /// Let router knows that we want to continue with that connection.
+        /// </summary>
+        /// <param name="clientSocket">The client socket.</param>
+        /// <returns></returns>
+        protected async Task AcceptConnection(SimpleSocket clientSocket)
+        {
+            await clientSocket.WriteStream.Write7BitEncodedInt(0); // error code OK
+            await clientSocket.WriteStream.FlushAsync();
+        }
+
+        /// <summary>
+        /// Let router knows we refuse the connection, and why.
+        /// </summary>
+        /// <param name="clientSocket">The client socket.</param>
+        /// <param name="errorCode">The error code.</param>
+        /// <param name="errorMessage">The error message.</param>
+        /// <returns></returns>
+        protected async Task RefuseConnection(SimpleSocket clientSocket, int errorCode, string errorMessage)
+        {
+            await clientSocket.WriteStream.Write7BitEncodedInt(errorCode);
+            await clientSocket.WriteStream.WriteStringAsync(errorMessage);
+            await clientSocket.WriteStream.FlushAsync();
+        }
     }
 }

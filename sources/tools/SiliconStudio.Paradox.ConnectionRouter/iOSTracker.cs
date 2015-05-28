@@ -1,5 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using SiliconStudio.Paradox.Engine.Network;
+
 namespace SiliconStudio.Paradox.ConnectionRouter
 {
     static class iOSTracker
@@ -9,7 +12,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             var connectedDevice = new ConnectedDevice();
             
             // TODO: How to control remote server IP/port?
-            DeviceHelper.LaunchPersistentClient(connectedDevice, router, "macosx-host", 1245);
+            DeviceHelper.LaunchPersistentClient(connectedDevice, router, "macosx-host", RouterClient.DefaultListenPort);
         }
     }
 }

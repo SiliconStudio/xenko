@@ -85,7 +85,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
         public async Task Connect()
         {
-            var socketContext = await RouterClient.RequestServer(string.Format("/{0}/SiliconStudio.Paradox.EffectCompilerServer.exe", ParadoxVersion.CurrentAsText));
+            var socketContext = await RouterClient.RequestServer(string.Format("/service/{0}/SiliconStudio.Paradox.EffectCompilerServer.exe", ParadoxVersion.CurrentAsText));
 
             var socketMessageLoop = new SocketMessageLayer(socketContext, false);
 

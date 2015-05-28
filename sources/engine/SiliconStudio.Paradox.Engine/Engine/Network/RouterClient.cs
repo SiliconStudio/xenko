@@ -6,6 +6,16 @@ namespace SiliconStudio.Paradox.Engine.Network
     public class RouterClient
     {
         /// <summary>
+        /// The default port to connect to router server.
+        /// </summary>
+        public static readonly int DefaultPort = 1244;
+
+        /// <summary>
+        /// The default port to listen for connection from router.
+        /// </summary>
+        public static readonly int DefaultListenPort = 1245;
+
+        /// <summary>
         /// Starts a service.
         /// </summary>
         /// <returns></returns>
@@ -67,9 +77,9 @@ namespace SiliconStudio.Paradox.Engine.Network
                     try
                     {
                         if (PlatformIsPortForward)
-                            await socketContext.StartServer(1245, true);
+                            await socketContext.StartServer(DefaultListenPort, true);
                         else
-                            await socketContext.StartClient("127.0.0.1", 1244);
+                            await socketContext.StartClient("127.0.0.1", DefaultPort);
                     }
                     catch (Exception)
                     {

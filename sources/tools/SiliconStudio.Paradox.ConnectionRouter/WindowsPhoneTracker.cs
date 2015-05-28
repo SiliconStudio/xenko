@@ -14,6 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Win32;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Paradox.Engine.Network;
 
 namespace SiliconStudio.Paradox.ConnectionRouter
 {
@@ -138,7 +139,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                     ipOverUsbParadox.SetValue("LocalAddress", "127.0.0.1");
                     ipOverUsbParadox.SetValue("LocalPort", 40153);
                     ipOverUsbParadox.SetValue("DestinationAddress", "127.0.0.1");
-                    ipOverUsbParadox.SetValue("DestinationPort", 1245);
+                    ipOverUsbParadox.SetValue("DestinationPort", RouterClient.DefaultListenPort);
                 }
             }
 

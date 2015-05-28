@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Paradox.Engine.Network;
 
 namespace SiliconStudio.Paradox.ConnectionRouter
 {
@@ -45,19 +46,18 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                     // Setup adb port forward (tries up to 5 times for open ports)
                     int localPort = 0;
                     int firstTestedLocalPort = startLocalPort;
-                    int remotePort = 1245;
                     for (int i = 0; i < 4; ++i)
                     {
                         int testedLocalPort = startLocalPort++;
                         if (startLocalPort >= 65536) // Make sure we stay in the range of dynamic ports: 49152-65535
                             startLocalPort = 49152;
 
-                        var output = ShellHelper.RunProcessAndGetOutput(@"adb", string.Format(@"-s {0} forward tcp:{1} tcp:{2}", connectedDevice.Key, startLocalPort, remotePort));
+                        var output = ShellHelper.RunProcessAndGetOutput(@"adb", string.Format(@"-s {0} forward tcp:{1} tcp:{2}", connectedDevice.Key, startLocalPort, RouterClient.DefaultListenPort));
 
                         if (output.ExitCode == 0)
                         {
                             localPort = testedLocalPort;
-                            Log.Info("Device connected: {0}; successfully mapped port {1}:{2}", connectedDevice.Name, testedLocalPort, remotePort);
+                            Log.Info("Device connected: {0}; successfully mapped port {1}:{2}", connectedDevice.Name, testedLocalPort, RouterClient.DefaultListenPort);
                             break;
                         }
                     }
@@ -65,7 +65,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                     if (localPort == 0)
                     {
                         int lastTestedLocalPort = startLocalPort;
-                        Log.Info("Device connected: {0}; error when mapping port [{1}-{2}]:{3}", connectedDevice.Name, firstTestedLocalPort, lastTestedLocalPort - 1, remotePort);
+                        Log.Info("Device connected: {0}; error when mapping port [{1}-{2}]:{3}", connectedDevice.Name, firstTestedLocalPort, lastTestedLocalPort - 1, RouterClient.DefaultListenPort);
                         return;
                     }
 
