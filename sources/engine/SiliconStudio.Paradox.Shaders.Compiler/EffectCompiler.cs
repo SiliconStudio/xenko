@@ -120,6 +120,10 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     throw new NotSupportedException();
             }
 
+            // Generate profile-specific macros
+            var profile = usedParameters.Get(CompilerParameters.GraphicsProfileKey);
+            shaderMixinSource.AddMacro("SILICONSTUDIO_PARADOX_GRAPHICS_PROFILE", (int)profile);
+
             var parsingResult = GetMixinParser().Parse(shaderMixinSource, shaderMixinSource.Macros.ToArray());
 
             // Copy log from parser results to output
