@@ -131,7 +131,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="VertexHelper.cs" />
-    <Compile Include="WorkingSpace.cs" />
+    <Compile Include="TransformationSpace.cs" />
     <Compile Include="Font\FontAntiAliasMode.cs" />
     <Compile Include="Font\FontStyleExtensions.cs" />
     <Compile Include="GeometricPrimitives\GeometricPrimitive.Cone.cs" />

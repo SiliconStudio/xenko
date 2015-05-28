@@ -6,13 +6,11 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Engine.Design;
 using SiliconStudio.Paradox.Physics;
-using SiliconStudio.Paradox.Rendering.Gizmos;
 
 namespace SiliconStudio.Paradox.Engine
 {
     [DataContract("PhysicsComponent")]
     [Display(30, "Physics")]
-    [GizmoEntity(GizmoEntityNames.PhysicsGizmoEntityQualifiedName)]
     [DefaultEntityComponentProcessor(typeof(PhysicsProcessor))]
     public sealed class PhysicsComponent : EntityComponent
     {

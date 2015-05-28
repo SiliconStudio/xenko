@@ -128,6 +128,19 @@ namespace SiliconStudio.Presentation.Behaviors
             }
         }
 
+        protected void ControlSelectionCleared()
+        {
+            if (BindableSelectedItemsControl.DisableBindings)
+                return;
+
+            if (SelectedItems != null)
+            {
+                updatingCollection = true;
+                SelectedItems.Clear();
+                updatingCollection = false;
+            }
+        }
+
         /// <summary>
         /// Ensures that the <see cref="SelectedItemsInAssociatedObject"/> collection has been set.
         /// </summary>

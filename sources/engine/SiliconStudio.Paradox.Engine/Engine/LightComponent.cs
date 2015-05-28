@@ -6,7 +6,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine.Design;
-using SiliconStudio.Paradox.Rendering.Gizmos;
 using SiliconStudio.Paradox.Rendering.Lights;
 
 namespace SiliconStudio.Paradox.Engine
@@ -16,7 +15,6 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("LightComponent")]
     [Display(120, "Light")]
-    [GizmoEntity(GizmoEntityNames.LightGizmoEntityQualifiedName)]
     [DefaultEntityComponentRenderer(typeof(LightComponentRenderer), -10)]
     [DefaultEntityComponentProcessor(typeof(LightProcessor))]
     public sealed class LightComponent : EntityComponent
@@ -118,7 +116,7 @@ namespace SiliconStudio.Paradox.Engine
             Vector3.TransformNormal(ref lightDir, ref Entity.Transform.WorldMatrix, out lightDirection);
             lightDirection.Normalize();
 
-            Position = Entity.Transform.Position;
+            Position = Entity.Transform.WorldMatrix.TranslationVector;
             Direction = lightDirection;
 
             // Color

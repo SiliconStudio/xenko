@@ -328,7 +328,8 @@ namespace SiliconStudio.Paradox.Rendering.Lights
                 var lightRenderer = activeRenderer.LightRenderer;
                 var lightCollection = activeRenderer.LightGroup.FindLightCollectionByGroup(group);
 
-                int lightMaxCount = Math.Min(lightCollection.Count, lightRenderer.LightMaxCount);
+                var lightCount = lightCollection == null ? 0 : lightCollection.Count;
+                int lightMaxCount = Math.Min(lightCount, lightRenderer.LightMaxCount);
                 var lightRendererId = lightRenderer.LightRendererId;
                 var allocCountForNewLightType = lightRenderer.AllocateLightMaxCount ? (byte)lightRenderer.LightMaxCount : (byte)1;
 
@@ -357,7 +358,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
                 {
                     ILightShadowMapRenderer currentShadowRenderer = null;
 
-                    for (int i = 0; i < lightCollection.Count; i++)
+                    for (int i = 0; i < lightCount; i++)
                     {
                         var light = lightCollection[i];
                         var directLight = (IDirectLight)light.Type;
@@ -427,34 +428,32 @@ namespace SiliconStudio.Paradox.Rendering.Lights
                 }
             }
 
-            // If we have lights, find or create an existing shaders/parameters permutation
-            if (environmentLightsPerModel.Count > 0 || directLightsPerModel.Count > 0)
+            // Find or create an existing shaders/parameters permutation
+
+            // Build the keys for Shaders and Parameters permutations
+            ObjectId shaderKeyId;
+            ObjectId parametersKeyId;
+            shaderKeyIdBuilder.ComputeHash(out shaderKeyId);
+            parametersKeyIdBuilder.ComputeHash(out parametersKeyId);
+
+            // Calculate the shader parameters just once
+            // If we don't have already this permutation, use it
+            LightShaderPermutationEntry newLightShaderPermutationEntry;
+            if (!shaderEntries.TryGetValue(shaderKeyId, out newLightShaderPermutationEntry))
             {
-                // Build the keys for Shaders and Parameters permutations
-                ObjectId shaderKeyId;
-                ObjectId parametersKeyId;
-                shaderKeyIdBuilder.ComputeHash(out shaderKeyId);
-                parametersKeyIdBuilder.ComputeHash(out parametersKeyId);
-
-                // Calculate the shader parameters just once
-                // If we don't have already this permutation, use it
-                LightShaderPermutationEntry newLightShaderPermutationEntry;
-                if (!shaderEntries.TryGetValue(shaderKeyId, out newLightShaderPermutationEntry))
-                {
-                    newLightShaderPermutationEntry = CreateShaderPermutationEntry();
-                    shaderEntries.Add(shaderKeyId, newLightShaderPermutationEntry);
-                }
-
-                LightParametersPermutationEntry newShaderEntryParameters;
-                // Calculate the shader parameters just once per light combination and for this rendering pass
-                if (!lightParameterEntries.TryGetValue(parametersKeyId, out newShaderEntryParameters))
-                {
-                    newShaderEntryParameters = CreateParametersPermutationEntry(newLightShaderPermutationEntry);
-                    lightParameterEntries.Add(parametersKeyId, newShaderEntryParameters);
-                }
-
-                modelToLights.Add(model, new RenderModelLights(newLightShaderPermutationEntry, newShaderEntryParameters));
+                newLightShaderPermutationEntry = CreateShaderPermutationEntry();
+                shaderEntries.Add(shaderKeyId, newLightShaderPermutationEntry);
             }
+
+            LightParametersPermutationEntry newShaderEntryParameters;
+            // Calculate the shader parameters just once per light combination and for this rendering pass
+            if (!lightParameterEntries.TryGetValue(parametersKeyId, out newShaderEntryParameters))
+            {
+                newShaderEntryParameters = CreateParametersPermutationEntry(newLightShaderPermutationEntry);
+                lightParameterEntries.Add(parametersKeyId, newShaderEntryParameters);
+            }
+
+            modelToLights.Add(model, new RenderModelLights(newLightShaderPermutationEntry, newShaderEntryParameters));
 
             return true;
         }

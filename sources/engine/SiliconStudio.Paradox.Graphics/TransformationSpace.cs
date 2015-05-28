@@ -6,7 +6,7 @@ namespace SiliconStudio.Paradox.Graphics
     /// <summary>
     /// Represents the different working spaces during rendering
     /// </summary>
-    public enum WorkingSpace
+    public enum TransformationSpace
     {
         /// <summary>
         /// The absolute world space.

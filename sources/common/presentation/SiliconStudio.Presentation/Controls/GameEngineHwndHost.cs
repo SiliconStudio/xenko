@@ -33,6 +33,8 @@ namespace SiliconStudio.Presentation.Controls
         public GameEngineHwndHost(IntPtr childHandle)
         {
             this.childHandle = childHandle;
+            MinWidth = 32;
+            MinHeight = 32;
         }
 
         /// <inheritdoc/>

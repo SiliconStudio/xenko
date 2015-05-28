@@ -8,7 +8,7 @@ using SiliconStudio.Paradox.Engine.Processors;
 namespace SiliconStudio.Paradox.Engine
 {
     [DataContract("ModelNodeLinkComponent")]
-    [Display("Model Node Link")]
+    [Display(15, "Model Node Link")]
     [DefaultEntityComponentProcessor(typeof(ModelNodeLinkProcessor))]
     public sealed class ModelNodeLinkComponent : EntityComponent
     {
