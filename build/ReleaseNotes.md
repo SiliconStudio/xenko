@@ -15,6 +15,7 @@ Release date: 2015/##/##
 - Engine: Fixed lights not being positioned releative to their parents.
 - Engine: Fixed wrong lighting after disabling and reenabling light components.
 - Engine: Fixed an exception when an object was not in the culling groups of any lights.
+- Engine: Ambient occlusion maps now ignore UV scaling overrides as intended.
 
 #### Breaking changes
 
