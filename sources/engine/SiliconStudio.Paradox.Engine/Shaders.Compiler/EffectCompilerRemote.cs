@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             if (shaderCompilerTarget == null)
             {
                 shaderCompilerTarget = new ShaderCompilerTarget();
-                shaderCompilerConnected = shaderCompilerTarget.Connect();
+                shaderCompilerConnected = Task.Run(async () => await shaderCompilerTarget.Connect());
             }
         }
 
