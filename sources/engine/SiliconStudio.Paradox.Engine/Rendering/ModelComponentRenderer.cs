@@ -7,6 +7,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Rendering.Materials;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Processors;
@@ -211,12 +212,17 @@ namespace SiliconStudio.Paradox.Rendering
 
                 var meshes = PrepareModelForRendering(context, renderModel);
 
+                var sceneCameraRenderer = context.Tags.Get(SceneCameraRenderer.Current);
+                var rasterizerState = sceneCameraRenderer != null ? sceneCameraRenderer.Mode.GetDefaultRasterizerState(meshes.IsGeomertyInverted) : null;
+                
                 foreach (var renderMesh in meshes)
                 {
                     if (!renderMesh.Enabled)
                     {
                         continue;
                     }
+
+                    renderMesh.Parameters.Set(Effect.RasterizerStateKey, rasterizerState);
 
                     // Project the position
                     // TODO: This could be done in a SIMD batch, but we need to figure-out how to plugin in with RenderMesh object
@@ -318,7 +324,7 @@ namespace SiliconStudio.Paradox.Rendering
             }
         }
 
-        private List<RenderMesh> PrepareModelForRendering(RenderContext context, RenderModel renderModel)
+        private RenderMeshCollection PrepareModelForRendering(RenderContext context, RenderModel renderModel)
         {
             // Create the list of RenderMesh objects
             var renderMeshes = renderModel.RenderMeshesList[modelRenderSlot];
