@@ -33,10 +33,6 @@ using System.Threading;
 using TaskEx = System.Threading.Tasks.Task;
 #endif
 
-#if SILICONSTUDIO_PLATFORM_IOS
-using MonoTouch;
-#endif
-
 namespace SiliconStudio.Core
 {
     /// <summary>
@@ -55,7 +51,7 @@ namespace SiliconStudio.Core
 #elif SILICONSTUDIO_PLATFORM_ANDROID
         private const string MemcpyDll = "libc.so";
 #elif SILICONSTUDIO_PLATFORM_IOS
-        private const string MemcpyDll = Constants.SystemLibrary;
+        private const string MemcpyDll = ObjCRuntime.Constants.SystemLibrary;
 #else
 #   error Unsupported platform
 #endif

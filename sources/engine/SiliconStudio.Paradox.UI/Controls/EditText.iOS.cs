@@ -4,8 +4,8 @@
 
 using System;
 using System.Drawing;
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
+using Foundation;
+using UIKit;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.UI.Events;
 
@@ -92,10 +92,10 @@ namespace SiliconStudio.Paradox.UI.Controls
 
             var viewFrame = gameContext.GameView.Frame;
 
-            barView.Frame = new RectangleF(0, 0, viewFrame.Width, barHeight);
-            overlayView.Frame = new RectangleF(viewFrame.X, viewFrame.Y, 2 * viewFrame.Width, viewFrame.Height); // if we don't over-set width background can be seen during rotation...
-            textField.Frame = new RectangleF(spaceX, spaceY, viewFrame.Width - buttonWidth - 3*spaceX, buttonHeight);
-            doneButton.Frame = new RectangleF(viewFrame.Width - buttonWidth - spaceX, spaceY, buttonWidth, buttonHeight);
+            barView.Frame = new RectangleF(0, 0, (int)viewFrame.Width, barHeight);
+            overlayView.Frame = new RectangleF((int)viewFrame.X, (int)viewFrame.Y, 2 * (int)viewFrame.Width, (int)viewFrame.Height); // if we don't over-set width background can be seen during rotation...
+            textField.Frame = new RectangleF(spaceX, spaceY, (int)viewFrame.Width - buttonWidth - 3 * spaceX, buttonHeight);
+            doneButton.Frame = new RectangleF((int)viewFrame.Width - buttonWidth - spaceX, spaceY, buttonWidth, buttonHeight);
         }
 
         private static void TextFieldOnEditingDidEnd(object sender, EventArgs eventArgs)
@@ -213,8 +213,8 @@ namespace SiliconStudio.Paradox.UI.Controls
             if (attachedTextField == null)
                 return;
 
-            selectionStart = attachedTextField.GetOffsetFromPosition(attachedTextField.BeginningOfDocument, attachedTextField.SelectedTextRange.Start);
-            selectionStop = attachedTextField.GetOffsetFromPosition(attachedTextField.BeginningOfDocument, attachedTextField.SelectedTextRange.End);
+            selectionStart = (int)attachedTextField.GetOffsetFromPosition(attachedTextField.BeginningOfDocument, attachedTextField.SelectedTextRange.Start);
+            selectionStop = (int)attachedTextField.GetOffsetFromPosition(attachedTextField.BeginningOfDocument, attachedTextField.SelectedTextRange.End);
         }
 
         private void UpdateTextToEditImpl()

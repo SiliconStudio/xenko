@@ -10,6 +10,7 @@
     <RootNamespace>SiliconStudio.Paradox.Graphics.Regression</RootNamespace>
     <AssemblyName>SiliconStudio.Paradox.Graphics.Regression</AssemblyName>
     <ParadoxBuildTags>*</ParadoxBuildTags>
+    <DefineConstants>$(DefineConstants);XAMCORE_2_0</DefineConstants>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <!-- Force msbuild to check to rebuild this assembly instead of letting VS IDE guess -->

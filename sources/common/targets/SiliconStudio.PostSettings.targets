@@ -21,7 +21,7 @@
         </When>
         <When Condition=" '$(SiliconStudioPlatform)' == 'iOS'">
           <ItemGroup>
-            <Reference Include="monotouch" />
+            <Reference Include="Xamarin.iOS" />
           </ItemGroup>
         </When>
       </Choose>

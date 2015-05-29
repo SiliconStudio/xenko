@@ -7,14 +7,16 @@ Release date: 2015/##/##
 #### Enhancements
 - Studio: Allow to fetch a referenced entity from the property grid in the scene editor.
 - Studio: Entities can be duplicated by dragging a transformation gizmo while maintaining ctrl key down.
-- Studio: More option to manage gizmos display in the scene editor
+- Studio: More option to manage gizmos display in the scene editor.
+- Studio: Store some settings in an .user file along with the .pdxpkg file.
 
 #### Issues fixed
 - Studio: Adding a Child scene component was crashing the scene editor.
 - Studio: Entities with transparent materials could not be selected.
-- Engine: Fixed lights not being positioned releative to their parents.
+- Engine: Fixed lights not being positioned relative to their parents.
 - Engine: Fixed wrong lighting after disabling and reenabling light components.
 - Engine: Fixed an exception when an object was not in the culling groups of any lights.
+- Engine: Ambient occlusion maps now ignore UV scaling overrides as intended.
 
 #### Breaking changes
 

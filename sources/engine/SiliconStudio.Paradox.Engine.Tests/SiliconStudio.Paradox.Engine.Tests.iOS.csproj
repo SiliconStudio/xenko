@@ -8,7 +8,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{A8F8D125-7A22-489F-99BC-9A02F545A17F}</ProjectGuid>
-    <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
@@ -111,7 +111,7 @@
     <StartupObject>SiliconStudio.Tests.Application</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="monotouch" Label="Paradox.DoNotSync" />
+    <Reference Include="Xamarin.iOS" Label="Paradox.DoNotSync" />
   </ItemGroup>
   <ItemGroup>
     <None Label="Paradox.DoNotSync" Include="Info.plist" />
@@ -236,7 +236,7 @@
   <ItemGroup>
     <BundleResource Include="Resources\Icon-60%402x.png" Label="Paradox.DoNotSync" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="$(SiliconStudioPackageProps)" Condition="Exists('$(SiliconStudioPackageProps)')" />
   <Import Project="$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets" Condition="Exists('$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets')" />
   <Target Name="EnsureSiliconStudioParadoxInstalled" BeforeTargets="PrepareForBuild">

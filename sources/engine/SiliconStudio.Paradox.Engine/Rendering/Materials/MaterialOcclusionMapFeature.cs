@@ -84,7 +84,14 @@ namespace SiliconStudio.Paradox.Rendering.Materials
 
         public void Visit(MaterialGeneratorContext context)
         {
+            // Exclude ambient occlusion from uv-scale overrides
+            var revertOverrides = new MaterialOverrides();
+            revertOverrides.UVScale = 1.0f / context.CurrentOverrides.UVScale;
+
+            context.PushOverrides(revertOverrides);
             context.SetStream(OcclusionStream.Stream, AmbientOcclusionMap, MaterialKeys.AmbientOcclusionMap, MaterialKeys.AmbientOcclusionValue, Color.White);
+            context.PopOverrides();
+
             context.SetStream("matAmbientOcclusionDirectLightingFactor", DirectLightingFactor, null, MaterialKeys.AmbientOcclusionDirectLightingFactorValue);
 
             if (CavityMap != null)

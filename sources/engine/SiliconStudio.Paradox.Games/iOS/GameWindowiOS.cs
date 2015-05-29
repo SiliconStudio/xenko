@@ -5,7 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using OpenTK.Platform.iPhoneOS;
-using MonoTouch.OpenGLES;
+using OpenGLES;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.OpenGL;
 using Rectangle = SiliconStudio.Core.Mathematics.Rectangle;
@@ -86,7 +86,7 @@ namespace SiliconStudio.Paradox.Games
             if (!contextAvailable)
                 throw new Exception("Graphics context could not be created.");
 
-            gameForm.LayerColorFormat = MonoTouch.OpenGLES.EAGLColorFormat.RGBA8;
+            gameForm.LayerColorFormat = EAGLColorFormat.RGBA8;
             //gameForm.LayerRetainsBacking = false;
 
             // Setup the initial size of the window

@@ -3,9 +3,9 @@
 #if SILICONSTUDIO_PLATFORM_IOS
 
 using System;
-using MonoTouch.AVFoundation;
-using MonoTouch.AudioToolbox;
-using MonoTouch.Foundation;
+using AVFoundation;
+using AudioToolbox;
+using Foundation;
 
 namespace SiliconStudio.Paradox.Audio
 {
@@ -205,7 +205,7 @@ namespace SiliconStudio.Paradox.Audio
 
             if (audioPlayer != null)
             {
-                var settings = audioPlayer.Settings;
+                var settings = audioPlayer.SoundSetting;
 
                 if (settings.NumberChannels > 2)
                 {

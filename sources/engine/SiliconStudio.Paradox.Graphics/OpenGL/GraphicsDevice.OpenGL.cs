@@ -2068,7 +2068,7 @@ namespace SiliconStudio.Paradox.Graphics
 #if SILICONSTUDIO_PLATFORM_IOS
             // Seems like iPhoneOSGraphicsContext.MakeCurrent(null) doesn't remove current context
             // Let's do it manually
-            MonoTouch.OpenGLES.EAGLContext.SetCurrentContext(null);
+            OpenGLES.EAGLContext.SetCurrentContext(null);
 #endif
         }
 
@@ -2200,8 +2200,8 @@ namespace SiliconStudio.Paradox.Graphics
 
             graphicsContextEglPtr = EglGetCurrentContext();
 #elif SILICONSTUDIO_PLATFORM_IOS
-            var asyncContext = new MonoTouch.OpenGLES.EAGLContext(IsOpenGLES2 ? MonoTouch.OpenGLES.EAGLRenderingAPI.OpenGLES2 : MonoTouch.OpenGLES.EAGLRenderingAPI.OpenGLES3, gameWindow.EAGLContext.ShareGroup);
-            MonoTouch.OpenGLES.EAGLContext.SetCurrentContext(asyncContext);
+            var asyncContext = new OpenGLES.EAGLContext(IsOpenGLES2 ? OpenGLES.EAGLRenderingAPI.OpenGLES2 : OpenGLES.EAGLRenderingAPI.OpenGLES3, gameWindow.EAGLContext.ShareGroup);
+            OpenGLES.EAGLContext.SetCurrentContext(asyncContext);
             deviceCreationContext = new OpenTK.Graphics.GraphicsContext(new OpenTK.ContextHandle(asyncContext.Handle), null, graphicsContext, versionMajor, versionMinor, creationFlags);
             deviceCreationWindowInfo = windowInfo;
             gameWindow.MakeCurrent();

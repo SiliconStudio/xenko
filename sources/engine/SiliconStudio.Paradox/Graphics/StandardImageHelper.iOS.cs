@@ -5,9 +5,9 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
-using MonoTouch.CoreGraphics;
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
+using CoreGraphics;
+using Foundation;
+using UIKit;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.Graphics
@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Graphics
             using (var imagedata = NSData.FromBytes(pSource, (uint) size))
             using (var cgImage = new UIImage(imagedata).CGImage)
             {
-                var image = Image.New2D(cgImage.Width, cgImage.Height, 1, PixelFormat.R8G8B8A8_UNorm, 1, cgImage.BytesPerRow);
+                var image = Image.New2D((int)cgImage.Width, (int)cgImage.Height, 1, PixelFormat.R8G8B8A8_UNorm, 1, (int)cgImage.BytesPerRow);
 
                 using (var context = new CGBitmapContext(image.PixelBuffer[0].DataPointer, cgImage.Width, cgImage.Height, 8, cgImage.Width*4, cgImage.ColorSpace, CGBitmapFlags.PremultipliedLast))
                 {
