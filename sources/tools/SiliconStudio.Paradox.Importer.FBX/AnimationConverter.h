@@ -284,20 +284,15 @@ namespace SiliconStudio {
 						auto oneFrame = FbxTime::GetOneFrameValue(scene->GetGlobalSettings().GetTimeMode());
 
 						// Step1: Pregenerate curve with discontinuities
-						int index = 0;
-						bool discontinuity = false;
-
 						int currentKeyIndices[4];
 						int currentEvaluationIndices[4];
 						bool isConstant[4];
-						bool hasDiscontinuity[4];
 
 						for (int i = 0; i < numCurves; ++i)
 						{
 							currentKeyIndices[i] = 0;
 							currentEvaluationIndices[i] = 0;
 							isConstant[i] = false;
-							hasDiscontinuity[i] = false;
 						}
 
 						//float values[4];
