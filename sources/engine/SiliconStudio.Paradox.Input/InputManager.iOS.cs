@@ -3,9 +3,9 @@
 #if SILICONSTUDIO_PLATFORM_IOS
 
 using System;
-using System.Drawing;
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
+using CoreGraphics;
+using UIKit;
+using Foundation;
 using OpenTK.Platform.iPhoneOS;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -44,8 +44,8 @@ namespace SiliconStudio.Paradox.Input
 
         private void OnResize(object sender, EventArgs eventArgs)
         {
-            ControlHeight = view.Frame.Height;
-            ControlWidth = view.Frame.Width;
+            ControlHeight = (float)view.Frame.Height;
+            ControlWidth = (float)view.Frame.Width;
         }
 
         private void HandleTouches(NSSet touchesSet)
@@ -57,7 +57,7 @@ namespace SiliconStudio.Paradox.Input
                 foreach (var uitouch in touches)
                 {
                     var id = uitouch.Handle.ToInt32();
-                    var position = NormalizeScreenPosition(PointFToVector2(uitouch.LocationInView(view)));
+                    var position = NormalizeScreenPosition(CGPointToVector2(uitouch.LocationInView(view)));
 
                     HandlePointerEvents(id, position, GetState(uitouch));
                 }
@@ -82,9 +82,9 @@ namespace SiliconStudio.Paradox.Input
             throw new ArgumentException("Got an invalid Touch event in GetState");
         }
 
-        private Vector2 PointFToVector2(PointF point)
+        private Vector2 CGPointToVector2(CGPoint point)
         {
-            return new Vector2(point.X, point.Y);
+            return new Vector2((float)point.X, (float)point.Y);
         }
 
         public override bool MultiTouchEnabled

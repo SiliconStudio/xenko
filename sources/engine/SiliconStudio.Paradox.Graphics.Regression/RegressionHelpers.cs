@@ -64,7 +64,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
 #elif SILICONSTUDIO_PLATFORM_IOS
             result.Platform = "iOS";
             result.DeviceName = iOSDeviceType.Version.ToString();
-            result.Serial = MonoTouch.UIKit.UIDevice.CurrentDevice.Name;
+            result.Serial = UIKit.UIDevice.CurrentDevice.Name;
 #elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
 #if SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
             result.Platform = "WindowsPhone";

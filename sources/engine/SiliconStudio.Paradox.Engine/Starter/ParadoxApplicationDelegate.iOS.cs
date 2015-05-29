@@ -3,10 +3,10 @@
 #if SILICONSTUDIO_PLATFORM_IOS
 using System;
 using System.Drawing;
-using MonoTouch.CoreAnimation;
-using MonoTouch.Foundation;
-using MonoTouch.ObjCRuntime;
-using MonoTouch.UIKit;
+using CoreAnimation;
+using Foundation;
+using ObjCRuntime;
+using UIKit;
 using OpenTK.Graphics.ES30;
 using OpenTK.Platform.iPhoneOS;
 using SiliconStudio.Paradox.Engine;
@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Starter
             MainWindow = new UIWindow(bounds);
 
             // create the paradox game view 
-            var paradoxGameView = new iOSParadoxView(bounds) {ContentScaleFactor = UIScreen.MainScreen.Scale};
+            var paradoxGameView = new iOSParadoxView((RectangleF)bounds) {ContentScaleFactor = UIScreen.MainScreen.Scale};
 
             // create the view controller used to display the paradox game
             var paradoxGameController = new ParadoxGameController { View = paradoxGameView };
