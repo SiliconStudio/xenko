@@ -1,6 +1,7 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using SiliconStudio.Core.Collections;
+
+using System.Collections.Generic;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Physics
@@ -8,9 +9,11 @@ namespace SiliconStudio.Paradox.Physics
     public class RigidBody : Collider
     {
         internal delegate void GetWorldTransformDelegate(out Matrix transform);
+
         internal GetWorldTransformDelegate GetWorldTransformCallback;
 
         internal delegate void SetWorldTransformDelegate(Matrix transform);
+
         internal SetWorldTransformDelegate SetWorldTransformCallback;
 
         internal ParadoxMotionState MotionState;
@@ -18,7 +21,7 @@ namespace SiliconStudio.Paradox.Physics
         internal RigidBody(ColliderShape collider)
             : base(collider)
         {
-            LinkedConstraints = new FastList<Constraint>();
+            LinkedConstraints = new List<Constraint>();
             MotionState = new ParadoxMotionState(this);
         }
 
@@ -32,7 +35,8 @@ namespace SiliconStudio.Paradox.Physics
             base.Dispose();
         }
 
-        float mass;
+        private float mass;
+
         /// <summary>
         /// Gets or sets the mass.
         /// </summary>
@@ -100,6 +104,39 @@ namespace SiliconStudio.Paradox.Physics
         {
             get { return InternalRigidBody.Gravity; }
             set { InternalRigidBody.Gravity = value; }
+        }
+
+        /// <summary>
+        /// If you want to override gravity using the Gravity property setter, first set this value to true
+        /// </summary>
+        /// <value>
+        /// If this body should override the main simulation gravity or not
+        /// </value>
+        public bool OverrideGravity
+        {
+            get
+            {
+                return (InternalRigidBody.Flags.HasFlag(BulletSharp.RigidBodyFlags.DisableWorldGravity));
+            }
+            set
+            {
+                if (value)
+                {
+                    if (!InternalRigidBody.Flags.HasFlag(BulletSharp.RigidBodyFlags.DisableWorldGravity))
+                    {
+                        // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
+                        InternalRigidBody.Flags |= BulletSharp.RigidBodyFlags.DisableWorldGravity;
+                    }
+                }
+                else
+                {
+                    if (InternalRigidBody.Flags.HasFlag(BulletSharp.RigidBodyFlags.DisableWorldGravity))
+                    {
+                        // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
+                        InternalRigidBody.Flags ^= BulletSharp.RigidBodyFlags.DisableWorldGravity;
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -249,10 +286,12 @@ namespace SiliconStudio.Paradox.Physics
                         if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.StaticObject)) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.StaticObject;
                         else if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.KinematicObject)) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.KinematicObject;
                         break;
+
                     case RigidBodyTypes.Static:
                         if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.KinematicObject)) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.KinematicObject;
                         InternalRigidBody.CollisionFlags |= BulletSharp.CollisionFlags.StaticObject;
                         break;
+
                     case RigidBodyTypes.Kinematic:
                         if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.StaticObject)) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.StaticObject;
                         InternalRigidBody.CollisionFlags |= BulletSharp.CollisionFlags.KinematicObject;
@@ -267,7 +306,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <value>
         /// The linked constraints.
         /// </value>
-        public FastList<Constraint> LinkedConstraints { get; private set; }
+        public List<Constraint> LinkedConstraints { get; private set; }
 
         internal BulletSharp.RigidBody InternalRigidBody;
     }

@@ -355,11 +355,11 @@ namespace SiliconStudio.TextureConverter.DxtWrapper
     [StructLayout(LayoutKind.Sequential)]
     internal struct TexMetadata
     {
-        public int width;
-        public int height;     // Should be 1 for 1D textures
-        public int depth;      // Should be 1 for 1D or 2D textures
-        public int arraySize;  // For cubemap, this is a multiple of 6
-        public int mipLevels;
+        private IntPtr width;
+        private IntPtr height;     // Should be 1 for 1D textures
+        private IntPtr depth;      // Should be 1 for 1D or 2D textures
+        private IntPtr arraySize;  // For cubemap, this is a multiple of 6
+        private IntPtr mipLevels;
         public TEX_MISC_FLAG miscFlags;
         public int miscFlags2;
         public DXGI_FORMAT format;
@@ -367,49 +367,103 @@ namespace SiliconStudio.TextureConverter.DxtWrapper
 
         public TexMetadata(int width, int height, int depth, int arraySize, int mipLevels, TEX_MISC_FLAG miscFlags, int miscFlags2, DXGI_FORMAT format, TEX_DIMENSION dimension)
         {
-            this.width = width;
-            this.height = height;
-            this.depth = depth;
-            this.arraySize = arraySize;
-            this.mipLevels = mipLevels;
+            this.width = (IntPtr)width;
+            this.height = (IntPtr)height;
+            this.depth = (IntPtr)depth;
+            this.arraySize = (IntPtr)arraySize;
+            this.mipLevels = (IntPtr)mipLevels;
             this.miscFlags = miscFlags;
             this.miscFlags2 = miscFlags2;
             this.format = format;
             this.dimension = dimension;
         }
 
+        public int Width
+        {
+            get { return (int)width; }
+            set { width = (IntPtr)value; }
+        }
+
+        public int Height
+        {
+            get { return (int)height; }
+            set { height = (IntPtr)value; }
+        }
+
+        public int Depth
+        {
+            get { return (int)depth; }
+            set { depth = (IntPtr)value; }
+        }
+
+        public int ArraySize
+        {
+            get { return (int)arraySize; }
+            set { arraySize = (IntPtr)value; }
+        }
+
+        public int MipLevels
+        {
+            get { return (int)mipLevels; }
+            set { mipLevels = (IntPtr)value; }
+        }
+
         public override String ToString()
         {
-            return "width:" + width + "\nheight:" + height + "\ndepth:" + depth + "\narraySize:" + arraySize + "\nmipLevels:" + mipLevels + "\nmiscFlags:" + miscFlags + "\nformat:" + format + "\ndimension:" + dimension;
+            return "width:" + Width + "\nheight:" + Height + "\ndepth:" + Depth + "\narraySize:" + ArraySize + "\nmipLevels:" + MipLevels + "\nmiscFlags:" + miscFlags + "\nformat:" + format + "\ndimension:" + dimension;
         }
     }
 
     /// <summary>
     /// C# Equivalent of the DirectXTex structure Image
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    internal struct Image
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct DxtImage
     {
-        public int width;
-        public int height;
+        private IntPtr width;
+        private IntPtr height;
         public DXGI_FORMAT format;
-        public int rowPitch;
-        public int slicePitch;
+        private IntPtr rowPitch;
+        private IntPtr slicePitch;
         public IntPtr pixels;
 
-        public Image(int width, int height, DXGI_FORMAT format, int rowPitch, int slicePitch, IntPtr pixels)
+        public DxtImage(int width, int height, DXGI_FORMAT format, int rowPitch, int slicePitch, IntPtr pixels)
         {
-            this.width = width;
-            this.height = height;
+            this.width = (IntPtr)width;
+            this.height = (IntPtr)height;
             this.format = format;
-            this.rowPitch = rowPitch;
-            this.slicePitch = slicePitch;
+            this.rowPitch = (IntPtr)rowPitch;
+            this.slicePitch = (IntPtr)slicePitch;
             this.pixels = pixels;
+        }
+
+        public int Width
+        {
+            get { return (int)width; }
+            set { width = (IntPtr)value; }
+        }
+
+        public int Height
+        {
+            get { return (int)height; }
+            set { height = (IntPtr)value; }
+        }
+
+        public int RowPitch
+        {
+            get { return (int)rowPitch; }
+            set { rowPitch = (IntPtr)value; }
+        }
+
+        public int SlicePitch
+        {
+            get { return (int)slicePitch; }
+            set { slicePitch = (IntPtr)value; }
         }
 
         public override String ToString()
         {
-            return "width:" + width + "\nheight:" + height + "\nformat:" + format + "\nrowPitch:" + rowPitch + "\nslicePitch:" + slicePitch + "\npixels:" + pixels;
+            return "width:" + Width + "\nheight:" + Height + "\nformat:" + format + "\nrowPitch:" + RowPitch + "\nslicePitch:" + SlicePitch + "\npixels:" + pixels;
         }
     }
 
@@ -428,49 +482,49 @@ namespace SiliconStudio.TextureConverter.DxtWrapper
         private extern static bool dxtIsCompressed(DXGI_FORMAT fmt);
 
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
-        private extern static uint dxtConvert(ref Image srcImage, DXGI_FORMAT format, TEX_FILTER_FLAGS filter, float threshold, IntPtr cImage);
+        private extern static uint dxtConvert(ref DxtImage srcImage, DXGI_FORMAT format, TEX_FILTER_FLAGS filter, float threshold, IntPtr cImage);
 
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
-        private extern static uint dxtConvertArray(Image[] srcImages, int nimages, ref TexMetadata metadata, DXGI_FORMAT format, TEX_FILTER_FLAGS filter, float threshold, IntPtr cImages);
+        private extern static uint dxtConvertArray(DxtImage[] srcImages, int nimages, ref TexMetadata metadata, DXGI_FORMAT format, TEX_FILTER_FLAGS filter, float threshold, IntPtr cImages);
 
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
-        private extern static uint dxtCompress(ref Image srcImage, DXGI_FORMAT format, TEX_COMPRESS_FLAGS compress, float alphaRef, IntPtr cImage);
+        private extern static uint dxtCompress(ref DxtImage srcImage, DXGI_FORMAT format, TEX_COMPRESS_FLAGS compress, float alphaRef, IntPtr cImage);
 
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
-        private extern static uint dxtCompressArray(Image[] srcImages, int nimages, ref TexMetadata metadata, DXGI_FORMAT format, TEX_COMPRESS_FLAGS compress, float alphaRef, IntPtr cImages);
+        private extern static uint dxtCompressArray(DxtImage[] srcImages, int nimages, ref TexMetadata metadata, DXGI_FORMAT format, TEX_COMPRESS_FLAGS compress, float alphaRef, IntPtr cImages);
 
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
-        private extern static uint dxtDecompress(ref Image cImage, DXGI_FORMAT format, IntPtr image);
+        private extern static uint dxtDecompress(ref DxtImage cImage, DXGI_FORMAT format, IntPtr image);
 
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
-        private extern static uint dxtDecompressArray(Image[] cImages, int nimages, ref TexMetadata metadata, DXGI_FORMAT format, IntPtr images);
+        private extern static uint dxtDecompressArray(DxtImage[] cImages, int nimages, ref TexMetadata metadata, DXGI_FORMAT format, IntPtr images);
 
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
-        private extern static uint dxtSaveToDDSFile(ref Image image, DDS_FLAGS flags, string szFile);
+        private extern static uint dxtSaveToDDSFile(ref DxtImage dxtImage, DDS_FLAGS flags, string szFile);
 
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
-        private extern static uint dxtSaveToDDSFileArray(Image[] images, int nimages, ref TexMetadata metadata, DDS_FLAGS flags, string szFile);
+        private extern static uint dxtSaveToDDSFileArray(DxtImage[] dxtImages, int nimages, ref TexMetadata metadata, DDS_FLAGS flags, string szFile);
 
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
-        private extern static uint dxtGenerateMipMaps(ref Image baseImage, TEX_FILTER_FLAGS filter, int levels, IntPtr mipChain, bool allow1D);
+        private extern static uint dxtGenerateMipMaps(ref DxtImage baseImage, TEX_FILTER_FLAGS filter, int levels, IntPtr mipChain, bool allow1D);
 
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
-        private extern static uint dxtGenerateMipMapsArray(Image[] srcImages, int nimages, ref TexMetadata metadata, TEX_FILTER_FLAGS filter, int levels, IntPtr mipChain);
+        private extern static uint dxtGenerateMipMapsArray(DxtImage[] srcImages, int nimages, ref TexMetadata metadata, TEX_FILTER_FLAGS filter, int levels, IntPtr mipChain);
 
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
-        private extern static uint dxtGenerateMipMaps3D(ref Image baseImage, int depth, TEX_FILTER_FLAGS filter, int levels, IntPtr mipChain);
+        private extern static uint dxtGenerateMipMaps3D(ref DxtImage baseImage, int depth, TEX_FILTER_FLAGS filter, int levels, IntPtr mipChain);
 
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
-        private extern static uint dxtGenerateMipMaps3DArray(Image[] srcImages, int nimages, ref TexMetadata metadata, TEX_FILTER_FLAGS filter, int levels, IntPtr mipChain );
+        private extern static uint dxtGenerateMipMaps3DArray(DxtImage[] srcImages, int nimages, ref TexMetadata metadata, TEX_FILTER_FLAGS filter, int levels, IntPtr mipChain );
 
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
-        private extern static uint dxtResize(Image[] srcImages, int nimages, ref TexMetadata metadata, int width, int height, TEX_FILTER_FLAGS filter, IntPtr result);
+        private extern static uint dxtResize(DxtImage[] srcImages, int nimages, ref TexMetadata metadata, int width, int height, TEX_FILTER_FLAGS filter, IntPtr result);
 
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
-        private extern static uint dxtComputeNormalMap(Image[] srcImages, int nimages, ref TexMetadata metadata, CNMAP_FLAGS flags, float amplitude, DXGI_FORMAT format, IntPtr normalMaps );
+        private extern static uint dxtComputeNormalMap(DxtImage[] srcImages, int nimages, ref TexMetadata metadata, CNMAP_FLAGS flags, float amplitude, DXGI_FORMAT format, IntPtr normalMaps );
 
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
-        private extern static uint dxtPremultiplyAlpha(Image[] srcImages, int nimages, ref TexMetadata metadata, TEX_PREMULTIPLY_ALPHA_FLAGS flags, IntPtr result);
+        private extern static uint dxtPremultiplyAlpha(DxtImage[] srcImages, int nimages, ref TexMetadata metadata, TEX_PREMULTIPLY_ALPHA_FLAGS flags, IntPtr result);
 
         public static void ComputePitch(DXGI_FORMAT fmt, int width, int height, out int rowPitch, out int slicePitch, CP_FLAGS flags)
         {
@@ -482,14 +536,14 @@ namespace SiliconStudio.TextureConverter.DxtWrapper
             return HandleHRESULT(dxtLoadDDSFile(filePath, flags, out metadata, image.ptr));
         }
 
-        public static HRESULT SaveToDDSFile(ref Image image, DDS_FLAGS flags, string szFile)
+        public static HRESULT SaveToDDSFile(ref DxtImage dxtImage, DDS_FLAGS flags, string szFile)
         {
-            return HandleHRESULT(dxtSaveToDDSFile(ref image, flags, szFile));
+            return HandleHRESULT(dxtSaveToDDSFile(ref dxtImage, flags, szFile));
         }
 
-        public static HRESULT SaveToDDSFile(Image[] images, int nimages, ref TexMetadata metadata, DDS_FLAGS flags, string szFile)
+        public static HRESULT SaveToDDSFile(DxtImage[] dxtImages, int nimages, ref TexMetadata metadata, DDS_FLAGS flags, string szFile)
         {
-            return HandleHRESULT(dxtSaveToDDSFileArray(images, nimages, ref metadata, flags, szFile));
+            return HandleHRESULT(dxtSaveToDDSFileArray(dxtImages, nimages, ref metadata, flags, szFile));
         }
 
         public static bool IsCompressed(DXGI_FORMAT fmt)
@@ -497,67 +551,67 @@ namespace SiliconStudio.TextureConverter.DxtWrapper
             return dxtIsCompressed(fmt);
         }
 
-        public static HRESULT Convert(ref Image srcImage, DXGI_FORMAT format, TEX_FILTER_FLAGS filter, float threshold, ScratchImage cImage)
+        public static HRESULT Convert(ref DxtImage srcImage, DXGI_FORMAT format, TEX_FILTER_FLAGS filter, float threshold, ScratchImage cImage)
         {
             return HandleHRESULT(dxtConvert(ref srcImage, format, filter, threshold, cImage.ptr));
         }
 
-        public static HRESULT Convert(Image[] srcImages, int nimages, ref TexMetadata metadata, DXGI_FORMAT format, TEX_FILTER_FLAGS filter, float threshold, ScratchImage cImages)
+        public static HRESULT Convert(DxtImage[] srcImages, int nimages, ref TexMetadata metadata, DXGI_FORMAT format, TEX_FILTER_FLAGS filter, float threshold, ScratchImage cImages)
         {
             return HandleHRESULT(dxtConvertArray(srcImages, nimages, ref metadata, format, filter, threshold, cImages.ptr));
         }
 
-        public static HRESULT Compress(ref Image srcImage, DXGI_FORMAT format, TEX_COMPRESS_FLAGS compress, float alphaRef, ScratchImage cImage)
+        public static HRESULT Compress(ref DxtImage srcImage, DXGI_FORMAT format, TEX_COMPRESS_FLAGS compress, float alphaRef, ScratchImage cImage)
         {
             return HandleHRESULT(dxtCompress(ref srcImage, format, compress, alphaRef, cImage.ptr));
         }
 
-        public static HRESULT Compress(Image[] srcImages, int nimages, ref TexMetadata metadata, DXGI_FORMAT format, TEX_COMPRESS_FLAGS compress, float alphaRef, ScratchImage cImages)
+        public static HRESULT Compress(DxtImage[] srcImages, int nimages, ref TexMetadata metadata, DXGI_FORMAT format, TEX_COMPRESS_FLAGS compress, float alphaRef, ScratchImage cImages)
         {
             return HandleHRESULT(dxtCompressArray(srcImages, nimages, ref metadata, format, compress, alphaRef, cImages.ptr));
         }
 
-        public static HRESULT Decompress(ref Image cImage, DXGI_FORMAT format, ScratchImage image)
+        public static HRESULT Decompress(ref DxtImage cImage, DXGI_FORMAT format, ScratchImage image)
         {
             return HandleHRESULT(dxtDecompress(ref cImage, format, image.ptr));
         }
 
-        public static HRESULT Decompress(Image[] cImages, int nimages, ref TexMetadata metadata, DXGI_FORMAT format, ScratchImage images)
+        public static HRESULT Decompress(DxtImage[] cImages, int nimages, ref TexMetadata metadata, DXGI_FORMAT format, ScratchImage images)
         {
             return HandleHRESULT(dxtDecompressArray(cImages, nimages, ref metadata, format, images.ptr));
         }
 
-        public static HRESULT GenerateMipMaps(ref Image baseImage, TEX_FILTER_FLAGS filter, int levels, ScratchImage mipChain, bool allow1D = false)
+        public static HRESULT GenerateMipMaps(ref DxtImage baseImage, TEX_FILTER_FLAGS filter, int levels, ScratchImage mipChain, bool allow1D = false)
         {
             return HandleHRESULT(dxtGenerateMipMaps(ref baseImage, filter, levels, mipChain.ptr, allow1D));
         }
 
-        public static HRESULT GenerateMipMaps(Image[] srcImages, int nimages, ref TexMetadata metadata, TEX_FILTER_FLAGS filter, int levels, ScratchImage mipChain)
+        public static HRESULT GenerateMipMaps(DxtImage[] srcImages, int nimages, ref TexMetadata metadata, TEX_FILTER_FLAGS filter, int levels, ScratchImage mipChain)
         {
             return HandleHRESULT(dxtGenerateMipMapsArray(srcImages, nimages, ref metadata, filter, levels, mipChain.ptr));
         }
 
-        public static HRESULT GenerateMipMaps3D(ref Image baseImage, int depth, TEX_FILTER_FLAGS filter, int levels, ScratchImage mipChain)
+        public static HRESULT GenerateMipMaps3D(ref DxtImage baseImage, int depth, TEX_FILTER_FLAGS filter, int levels, ScratchImage mipChain)
         {
             return HandleHRESULT(dxtGenerateMipMaps3D(ref baseImage, depth, filter, levels, mipChain.ptr));
         }
 
-        public static HRESULT GenerateMipMaps3D(Image[] srcImages, int nimages, ref TexMetadata metadata, TEX_FILTER_FLAGS filter, int levels, ScratchImage mipChain)
+        public static HRESULT GenerateMipMaps3D(DxtImage[] srcImages, int nimages, ref TexMetadata metadata, TEX_FILTER_FLAGS filter, int levels, ScratchImage mipChain)
         {
             return HandleHRESULT(dxtGenerateMipMaps3DArray(srcImages, nimages, ref metadata, filter, levels, mipChain.ptr));
         }
 
-        public static HRESULT Resize(Image[] srcImages, int nimages, ref TexMetadata metadata, int width, int height, TEX_FILTER_FLAGS filter, ScratchImage result)
+        public static HRESULT Resize(DxtImage[] srcImages, int nimages, ref TexMetadata metadata, int width, int height, TEX_FILTER_FLAGS filter, ScratchImage result)
         {
             return HandleHRESULT(dxtResize(srcImages, nimages, ref metadata, width, height, filter, result.ptr));
         }
 
-        public static HRESULT ComputeNormalMap(Image[] srcImages, int nimages, ref TexMetadata metadata, CNMAP_FLAGS flags, float amplitude, DXGI_FORMAT format, ScratchImage normalMaps)
+        public static HRESULT ComputeNormalMap(DxtImage[] srcImages, int nimages, ref TexMetadata metadata, CNMAP_FLAGS flags, float amplitude, DXGI_FORMAT format, ScratchImage normalMaps)
         {
             return HandleHRESULT(dxtComputeNormalMap(srcImages, nimages, ref metadata, flags, amplitude, format, normalMaps.ptr));
         }
 
-        public static HRESULT PremultiplyAlpha(Image[] srcImages, int nimages, ref TexMetadata metadata, TEX_PREMULTIPLY_ALPHA_FLAGS flags, ScratchImage result)
+        public static HRESULT PremultiplyAlpha(DxtImage[] srcImages, int nimages, ref TexMetadata metadata, TEX_PREMULTIPLY_ALPHA_FLAGS flags, ScratchImage result)
         {
             return HandleHRESULT(dxtPremultiplyAlpha(srcImages, nimages, ref metadata, flags, result.ptr));
         }
@@ -612,16 +666,16 @@ namespace SiliconStudio.TextureConverter.DxtWrapper
         private extern static uint dxtInitializeCube(IntPtr img, DXGI_FORMAT fmt,  int width,  int height,  int nCubes,  int mipLevels );
 
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
-        private extern static uint dxtInitializeFromImage(IntPtr img, out Image srcImage, bool allow1D);
+        private extern static uint dxtInitializeFromImage(IntPtr img, out DxtImage srcImage, bool allow1D);
 
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
-        private extern static uint dxtInitializeArrayFromImages(IntPtr img, Image[] images, int nImages, bool allow1D );
+        private extern static uint dxtInitializeArrayFromImages(IntPtr img, DxtImage[] dxtImages, int nImages, bool allow1D );
 
 	    [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
-        private extern static uint dxtInitializeCubeFromImages(IntPtr img, Image[] images, int nImages);
+        private extern static uint dxtInitializeCubeFromImages(IntPtr img, DxtImage[] dxtImages, int nImages);
 
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
-        private extern static uint dxtInitialize3DFromImages(IntPtr img, Image[] images, int depth);
+        private extern static uint dxtInitialize3DFromImages(IntPtr img, DxtImage[] dxtImages, int depth);
 
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
         private extern static void dxtRelease(IntPtr img);
@@ -685,24 +739,24 @@ namespace SiliconStudio.TextureConverter.DxtWrapper
             return Utilities.HandleHRESULT(dxtInitializeCube(ptr, fmt, width, height, nCubes, mipLevels));
         }
 
-        public HRESULT InitializeFromImage(out Image srcImage, bool allow1D = false)
+        public HRESULT InitializeFromImage(out DxtImage srcImage, bool allow1D = false)
         {
             return Utilities.HandleHRESULT(dxtInitializeFromImage(ptr, out srcImage, allow1D));
         }
 
-        public HRESULT InitializeFromImages(Image[] images, int nImages, bool allow1D = false)
+        public HRESULT InitializeFromImages(DxtImage[] dxtImages, int nImages, bool allow1D = false)
         {
-            return Utilities.HandleHRESULT(dxtInitializeArrayFromImages(ptr, images, nImages, allow1D));
+            return Utilities.HandleHRESULT(dxtInitializeArrayFromImages(ptr, dxtImages, nImages, allow1D));
         }
 
-        public HRESULT InitializeCubeFromImages(Image[] images, int nImages)
+        public HRESULT InitializeCubeFromImages(DxtImage[] dxtImages, int nImages)
         {
-            return Utilities.HandleHRESULT(dxtInitializeCubeFromImages(ptr, images, nImages));
+            return Utilities.HandleHRESULT(dxtInitializeCubeFromImages(ptr, dxtImages, nImages));
         }
 
-        public HRESULT Initialize3DFromImages(Image[] images, int depth)
+        public HRESULT Initialize3DFromImages(DxtImage[] dxtImages, int depth)
         {
-            return Utilities.HandleHRESULT(dxtInitialize3DFromImages(ptr, images, depth));
+            return Utilities.HandleHRESULT(dxtInitialize3DFromImages(ptr, dxtImages, depth));
         }
 
         public void Release()
@@ -735,25 +789,25 @@ namespace SiliconStudio.TextureConverter.DxtWrapper
             get { return dxtGetImageCount(ptr); }
         }
 
-        public Image GetImage(int mip, int item, int slice)
+        public DxtImage GetImage(int mip, int item, int slice)
         {
-            return (Image)Marshal.PtrToStructure(dxtGetImage(ptr, mip, item, slice), typeof(Image));
+            return (DxtImage)Marshal.PtrToStructure(dxtGetImage(ptr, mip, item, slice), typeof(DxtImage));
         }
 
-        public Image[] GetImages()
+        public DxtImage[] GetImages()
         {
             IntPtr imagesPtr = dxtGetImages(ptr);
             int imagenb =  imageCount;
 
-            Image[] images = new Image[imagenb];
+            DxtImage[] dxtImages = new DxtImage[imagenb];
 
 
             for(int i=0;i<imagenb;++i)
             {
-                images[i] = (Image)Marshal.PtrToStructure(imagesPtr + i * Marshal.SizeOf(images[0]), typeof(Image));
+                dxtImages[i] = (DxtImage)Marshal.PtrToStructure(imagesPtr + i * Marshal.SizeOf(dxtImages[0]), typeof(DxtImage));
             }
 
-            return images;
+            return dxtImages;
         }
 
     }

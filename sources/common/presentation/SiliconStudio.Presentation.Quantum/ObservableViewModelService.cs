@@ -1,9 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
-
-using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Presentation.Quantum
 {
@@ -12,8 +9,6 @@ namespace SiliconStudio.Presentation.Quantum
     /// </summary>
     public class ObservableViewModelService
     {
-        private readonly List<Action<IObservableNode, IDictionary<string, object>>> associatedDataProviders = new List<Action<IObservableNode, IDictionary<string, object>>>();
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ObservableViewModelService"/> class.
         /// </summary>
@@ -30,46 +25,52 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (viewModelProvider == null) throw new ArgumentNullException("viewModelProvider");
             ViewModelProvider = viewModelProvider;
+            ObservableNodeFactory = ObservableViewModel.DefaultObservableNodeFactory;
         }
+
+        /// <summary>
+        /// Gets or sets the observable node factory.
+        /// </summary>
+        public CreateNodeDelegate ObservableNodeFactory { get; set; }
 
         /// <summary>
         /// Gets or sets a method that retrieves the currently active <see cref="ObservableViewModel"/>. This method is used to get the current observable
         /// view model matching a Quantum object when using undo/redo features, since observable objects can be destroyed and recreated frequently.
         /// </summary>
-        public Func<ObservableViewModelIdentifier, ObservableViewModel> ViewModelProvider { get; set; }
+        public Func<ObservableViewModelIdentifier, ObservableViewModel> ViewModelProvider { get; private set; }
 
         /// <summary>
-        /// Register a method that will associate additional data to an instance of <see cref="IObservableNode"/>.
+        /// Raised when a node is initialized, either during the construction of the <see cref="ObservableViewModel"/> or during the refresh of a
+        /// node that has been modified. This event is raised once for each modified <see cref="SingleObservableNode"/> and their recursive children.
         /// </summary>
-        /// <param name="provider">The method that will associate additional data to an instance of <see cref="IObservableNode"/>.</param>
-        public void RegisterAssociatedDataProvider(Action<IObservableNode, IDictionary<string, object>> provider)
+        /// <remarks>
+        /// This event is intended to allow to customize nodes (by adding associated data, altering hierarchy, etc.). Subscribers should
+        /// not retain any refrence to the given node since they can be destroyed and recreated arbitrarily.
+        /// </remarks>
+        public event EventHandler<NodeInitializedEventArgs> NodeInitialized;
+
+        /// <summary>
+        /// Attempts to resolve the given path on the observable view model corresponding to the given identifier. Returns <c>null</c>
+        /// if it fails. This method does not throw exceptions.
+        /// </summary>
+        /// <param name="identifier">The identifier of the observable view model to resolve.</param>
+        /// <param name="observableNodePath">The path of the node to resolve.</param>
+        /// <returns>A reference to the <see cref="ObservableNode"/> corresponding to the given path of the given view model if available, <c>nulll</c> otherwise.</returns>
+        public ObservableNode ResolveObservableNode(ObservableViewModelIdentifier identifier, string observableNodePath)
         {
-            associatedDataProviders.Add(provider);
+            var observableViewModel = ViewModelProvider != null ? ViewModelProvider(identifier) : null;
+            return observableViewModel != null ? observableViewModel.ResolveObservableNode(observableNodePath) as ObservableNode : null;
         }
 
         /// <summary>
-        /// Unregister a previoulsy registered method that was associating additional data to an instance of <see cref="IObservableNode"/>.
+        /// Raise the <see cref="NodeInitialized"/> event.
         /// </summary>
-        /// <param name="provider">The previoulsy registered method that was associating additional additional data to an instance of <see cref="IObservableNode"/>.</param>
-        public void UnregisterAssociatedDataProvider(Action<IObservableNode, IDictionary<string, object>> provider)
+        /// <param name="node">The node that has been modified.</param>
+        internal void NotifyNodeInitialized(SingleObservableNode node)
         {
-            associatedDataProviders.Remove(provider);
-        }
-
-        internal IDictionary<string, object> RequestAssociatedData(IObservableNode node, bool updatingData)
-        {
-            var mergedResult = new Dictionary<string, object>();
-            foreach (var provider in associatedDataProviders)
-            {
-                var data = new Dictionary<string, object>();
-                provider(node, data);
-                // We use the Add method the first time to prevent unspotted key collision.
-                if (updatingData)
-                    data.ForEach(x => mergedResult.Add(x.Key, x.Value));
-                else
-                    data.ForEach(x => mergedResult[x.Key] = x.Value);
-            }
-            return mergedResult;
+            var handler = NodeInitialized;
+            if (handler != null)
+                handler(this, new NodeInitializedEventArgs(node));
         }
     }
 }

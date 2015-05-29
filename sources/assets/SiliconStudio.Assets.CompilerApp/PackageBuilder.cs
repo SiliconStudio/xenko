@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.IO;
 using System.Linq;
 using System.ServiceModel;
 
@@ -9,7 +8,6 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.MicroThreading;
@@ -54,7 +52,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
         private static void PrepareDatabases()
         {
-            AssetManager.GetFileProvider = () => IndexFileCommand.DatabaseFileProvider.Value;
+            AssetManager.GetFileProvider = () => IndexFileCommand.DatabaseFileProvider;
         }
 
         private BuildResultCode BuildMaster()
@@ -66,7 +64,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
             // When the current platform is not on windows, we need to make sure that all plugins are build, so we
             // setup auto-compile when loading the session
-            var sessionLoadParameters = new PackageLoadParameters()
+            var sessionLoadParameters = new PackageLoadParameters
                 {
                     AutoCompileProjects = builderOptions.Platform != PlatformType.Windows || builderOptions.ProjectConfiguration != "Debug", // Avoid compiling if Windows|Debug
                     ExtraCompileProperties = builderOptions.ExtraCompileProperties,
@@ -86,6 +84,7 @@ namespace SiliconStudio.Assets.CompilerApp
             var package = projectSession.LocalPackages.First();
 
             // Check build profile
+            var sharedProfile = package.Profiles.FindSharedProfile();
             var buildProfile = package.Profiles.FirstOrDefault(pair => pair.Name == builderOptions.BuildProfile);
             if (buildProfile == null)
             {
@@ -98,7 +97,7 @@ namespace SiliconStudio.Assets.CompilerApp
             var outputDirectory = builderOptions.OutputDirectory;
 
             // Builds the project
-            var assetBuilder = new PackageAssetsCompiler(projectSession);
+            var assetBuilder = new PackageCompiler();
             assetBuilder.AssetCompiled += RegisterBuildStepProcessedHandler;
 
             // Create context
@@ -107,8 +106,17 @@ namespace SiliconStudio.Assets.CompilerApp
                 Package = package,
                 Platform = builderOptions.Platform
             };
-            // If a build profile is available, output the properties
-            context.Properties.Set(SiliconStudio.Paradox.Assets.ParadoxConfig.GraphicsPlatform, builderOptions.GraphicsPlatform.HasValue ? builderOptions.GraphicsPlatform.Value : builderOptions.GetDefaultGraphicsPlatform());
+
+            // Copy properties from shared profiles to context properties
+            if (sharedProfile != null)
+            {
+                foreach (var propertyValue in sharedProfile.Properties)
+                    context.Properties.Set(propertyValue.Key, propertyValue.Value);
+            }
+
+            context.Properties.Set(Paradox.Assets.ParadoxConfig.GraphicsPlatform, builderOptions.GraphicsPlatform.HasValue ? builderOptions.GraphicsPlatform.Value : builderOptions.GetDefaultGraphicsPlatform());
+
+            // Copy properties from build profile
             foreach (var propertyValue in buildProfile.Properties)
             {
                 context.Properties.Set(propertyValue.Key, propertyValue.Value);
@@ -147,7 +155,7 @@ namespace SiliconStudio.Assets.CompilerApp
             if (e.Result.BuildSteps == null)
                 return;
 
-            foreach (var buildStep in e.Result.BuildSteps.SelectDeep(x => x is EnumerableBuildStep && ((EnumerableBuildStep)x).Steps != null ? ((EnumerableBuildStep)x).Steps : Enumerable.Empty<BuildStep>()))
+            foreach (var buildStep in e.Result.BuildSteps.EnumerateRecursively())
             {
                 buildStep.Tag = e.Asset;
                 buildStep.StepProcessed += BuildStepProcessed;
@@ -164,7 +172,7 @@ namespace SiliconStudio.Assets.CompilerApp
             {
                 foreach (var message in stepLogger.Messages.Where(x => x.LogMessage.IsAtLeast(LogMessageType.Warning)))
                 {
-                    var assetMessage = new AssetLogMessage(project, assetRef, message.LogMessage.Type, AssetMessageCode.InternalCompilerError, assetRef.Location, message.LogMessage.Text)
+                    var assetMessage = new AssetLogMessage(project, assetRef, message.LogMessage.Type, AssetMessageCode.CompilationMessage, assetRef.Location, message.LogMessage.Text)
                     {
                         Exception = message.LogMessage is LogMessage ? ((LogMessage)message.LogMessage).Exception : null
                     };
@@ -244,7 +252,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
                 Builder.SetupBuildPath(buildPath);
 
-                Logger logger = builderOptions.Logger;
+                var logger = builderOptions.Logger;
                 MicroThread microthread = scheduler.Add(async () =>
                     {
                         // Deserialize command and parameters
@@ -256,7 +264,7 @@ namespace SiliconStudio.Assets.CompilerApp
                         var builderContext = new BuilderContext(buildPath, buildProfile, inputHashes, parameters, 0, null);
 
                         var commandContext = new RemoteCommandContext(processBuilderRemote, command, builderContext, logger);
-                        IndexFileCommand.MountDatabases(commandContext);
+                        IndexFileCommand.MountDatabase(commandContext.GetOutputObjectsGroups());
                         command.PreCommand(commandContext);
                         status = await command.DoCommand(commandContext);
                         command.PostCommand(commandContext, status);

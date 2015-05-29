@@ -8,7 +8,7 @@ using NUnit.Framework;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Paradox.Shaders.Compiler;
@@ -166,7 +166,7 @@ namespace SiliconStudio.Paradox.Graphics
                 compiler.SourceDirectories.Add("assets/shaders");
                 var compilerCache = new EffectCompilerCache(compiler);
 
-                var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.OpenGLES20 };
+                var compilerParameters = new CompilerParameters { Platform = GraphicsPlatform.OpenGLES };
 
                 var compilerResults = compilerCache.Compile(new ShaderMixinSource("ToGlslEffect"), compilerParameters);
                 Assert.That(compilerResults.HasErrors, Is.False);

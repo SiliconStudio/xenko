@@ -1,11 +1,11 @@
 !Texture
-Id: 0bf1fa66-aeb4-413f-af15-83ad32058c2d
+Id: d6330082-6ae6-474b-8f0d-28f7bc4f3c4a
 Tags: []
 Source: ../../../data/tests/round.bmp
 ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
-ColorKeyColor: {R: 0, G: 0, B: 0, A: 255}
 ColorKeyEnabled: true
-Format: TrueColor
+ColorKeyColor: {R: 0, G: 0, B: 0, A: 255}
+Format: Color32Bits
 Alpha: Explicit
 GenerateMipmaps: false
 ~Base:

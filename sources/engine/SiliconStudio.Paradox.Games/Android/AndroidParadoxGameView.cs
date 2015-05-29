@@ -3,6 +3,7 @@
 #if SILICONSTUDIO_PLATFORM_ANDROID
 using System;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Graphics.OpenGL;
 using Android.Content;
 using OpenTK.Graphics;
 using OpenTK.Platform.Android;
@@ -17,6 +18,7 @@ namespace SiliconStudio.Paradox.Games.Android
         {
             RequestedBackBufferFormat = PixelFormat.R8G8B8A8_UNorm;
             RequestedDepthStencilFormat = PixelFormat.D24_UNorm_S8_UInt;
+            RequestedGraphicsProfile =  new [] { GraphicsProfile.Level_10_0, GraphicsProfile.Level_9_1 };
         }
 
         /// <summary>
@@ -34,6 +36,14 @@ namespace SiliconStudio.Paradox.Games.Android
         /// The requested depth stencil format.
         /// </value>
         public PixelFormat RequestedDepthStencilFormat { get; set; }
+
+        /// <summary>
+        /// Gets or Sets the requested graphics profiles.
+        /// </summary>
+        /// <value>
+        /// The requested graphics profiles.
+        /// </value>
+        public GraphicsProfile[] RequestedGraphicsProfile { get; set; }
         
         public override void Pause()
         {
@@ -46,9 +56,6 @@ namespace SiliconStudio.Paradox.Games.Android
 
         protected override void CreateFrameBuffer()
         {
-            // Request OpenGL ES 2.0
-            ContextRenderingApi = GLVersion.ES2;
-
             int requestedDepth = 0;
             int requestedStencil = 0;
             ColorFormat requestedColorFormat = 32;
@@ -92,23 +99,43 @@ namespace SiliconStudio.Paradox.Games.Android
                     throw new NotSupportedException("RequestedDepthStencilFormat");
             }
 
+            // Some devices only allow D16_S8, let's try it as well
+            // D24 and D32 are supported on OpenGL ES 3 devices
+            var requestedDepthFallback = requestedDepth > 16 ? 16 : requestedDepth;
+
+            foreach (var version in OpenGLUtils.GetGLVersions(RequestedGraphicsProfile))
+            {
+                if (TryCreateFrameBuffer(MajorVersionToGLVersion(version), requestedColorFormat, requestedDepth, requestedStencil)
+                    || TryCreateFrameBuffer(MajorVersionToGLVersion(version), requestedColorFormat, requestedDepthFallback, requestedStencil))
+                    return;
+            }
+
+            throw new Exception("Unable to create a graphics context on the device. Maybe you should lower the preferred GraphicsProfile.");
+        }
+
+        private bool TryCreateFrameBuffer(GLVersion version, ColorFormat requestedColorFormat, int requestedDepth, int requestedStencil)
+        {
             try
             {
+                ContextRenderingApi = version;
                 GraphicsMode = new GraphicsMode(requestedColorFormat, requestedDepth, requestedStencil);
                 base.CreateFrameBuffer();
-                return;
+                return true;
             }
             catch (Exception)
             {
+                base.DestroyFrameBuffer(); // Destroy to prevent side effects on future calls to CreateFrameBuffer
+                return false;
                 // TODO: PDX-364: Log some warning message: "Could not create appropriate graphics mode"
             }
+        }
 
-            // Some devices only allow D16_S8, let's try it as well
-            if (requestedDepth > 16)
-                requestedDepth = 16;
-
-            GraphicsMode = new GraphicsMode(requestedColorFormat, requestedDepth, requestedStencil);
-            base.CreateFrameBuffer();
+        private static GLVersion MajorVersionToGLVersion(int major)
+        {
+            if (major >= 3)
+                return GLVersion.ES3;
+            else
+                return GLVersion.ES2;
         }
     }
 }

@@ -9,7 +9,6 @@ using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Audio.Tests.Engine
 {
@@ -44,10 +43,10 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             rootSubEntity2 = new Entity { Name = "Root sub entity 2" };
             compEntities = new List<Entity> { new Entity { Name = "Comp entity 1" }, new Entity { Name = "Comp entity 2" } };
 
-            rootSubEntity1.Transformation.Parent = rootEntity.Transformation;
-            rootSubEntity2.Transformation.Parent = rootEntity.Transformation;
-            compEntities[0].Transformation.Parent = rootSubEntity1.Transformation;
-            compEntities[1].Transformation.Parent = rootSubEntity2.Transformation;
+            rootSubEntity1.Transform.Parent = rootEntity.Transform;
+            rootSubEntity2.Transform.Parent = rootEntity.Transform;
+            compEntities[0].Transform.Parent = rootSubEntity1.Transform;
+            compEntities[1].Transform.Parent = rootSubEntity2.Transform;
         }
 
         /// <summary>
@@ -81,7 +80,7 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
         /// <param name="game"></param>
         private void AddRootEntityToEntitySystem(Game game)
         {
-            game.Entities.Add(rootEntity);
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); // game.Entities.Add(rootEntity);
         }
 
         /// <summary>
@@ -169,34 +168,35 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             AddSoundEffectToEmitterComponents(game);
             AddRootEntityToEntitySystem(game);
 
-            var matchingEntities = game.Entities.Processors.OfType<AudioEmitterProcessor>().First().MatchingEntitiesForDebug;
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            //var matchingEntities = game.Entities.Processors.OfType<AudioEmitterProcessor>().First().MatchingEntitiesForDebug;
 
-            // check that there are initially not SoundEffectInstance created.
-            CheckSoundEffectExistance(new HashSet<AudioListenerComponent> (), matchingEntities);
+            //// check that there are initially not SoundEffectInstance created.
+            //CheckSoundEffectExistance(new HashSet<AudioListenerComponent> (), matchingEntities);
 
-            // add one listener
-            game.Audio.AddListener(listComps[0]);
+            //// add one listener
+            //game.Audio.AddListener(listComps[0]);
 
-            // check that there is now one SoundEffectInstance for each SoundController
-            CheckSoundEffectExistance(new HashSet<AudioListenerComponent> { listComps[0] }, matchingEntities);
+            //// check that there is now one SoundEffectInstance for each SoundController
+            //CheckSoundEffectExistance(new HashSet<AudioListenerComponent> { listComps[0] }, matchingEntities);
 
-            // add another listener
-            game.Audio.AddListener(listComps[1]);
+            //// add another listener
+            //game.Audio.AddListener(listComps[1]);
 
-            // check that there is now two SoundEffectInstance for each SoundController
-            CheckSoundEffectExistance(new HashSet<AudioListenerComponent> (listComps), matchingEntities);
+            //// check that there is now two SoundEffectInstance for each SoundController
+            //CheckSoundEffectExistance(new HashSet<AudioListenerComponent> (listComps), matchingEntities);
 
-            // remove one listener
-            game.Audio.RemoveListener(listComps[1]);
+            //// remove one listener
+            //game.Audio.RemoveListener(listComps[1]);
 
-            // check that there is now only one SoundEffectInstance for each SoundController left
-            CheckSoundEffectExistance(new HashSet<AudioListenerComponent> { listComps[0] }, matchingEntities);
+            //// check that there is now only one SoundEffectInstance for each SoundController left
+            //CheckSoundEffectExistance(new HashSet<AudioListenerComponent> { listComps[0] }, matchingEntities);
 
-            // remove the other listener
-            game.Audio.RemoveListener(listComps[0]);
+            //// remove the other listener
+            //game.Audio.RemoveListener(listComps[0]);
 
-            // check that there is no SoundEffectInstance left
-            CheckSoundEffectExistance(new HashSet<AudioListenerComponent>(), matchingEntities);
+            //// check that there is no SoundEffectInstance left
+            //CheckSoundEffectExistance(new HashSet<AudioListenerComponent>(), matchingEntities);
         }
 
 
@@ -223,21 +223,22 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             emitComps[2].AttachSoundEffect(game.Asset.Load<SoundEffect>("EffectToneA"));
             var extraEntity = new Entity();
             extraEntity.Add(emitComps[2]);
-            
-            var matchingEntities = game.Entities.Processors.OfType<AudioEmitterProcessor>().First().MatchingEntitiesForDebug;
 
-            // check that initially there is no problems.
-            CheckSoundEffectExistance(matchingEntities);
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer");
+            //var matchingEntities = game.Entities.Processors.OfType<AudioEmitterProcessor>().First().MatchingEntitiesForDebug;
 
-            // and an entity and check that the soundEffectInstances have been created.
-            compEntities.Add(extraEntity);
-            game.Entities.Add(extraEntity);
-            CheckSoundEffectExistance(matchingEntities);
+            //// check that initially there is no problems.
+            //CheckSoundEffectExistance(matchingEntities);
 
-            // remove the entity and check that it is removed from the matchingComp list.
-            compEntities.Remove(extraEntity);
-            game.Entities.Remove(extraEntity);
-            CheckSoundEffectExistance(matchingEntities);
+            //// and an entity and check that the soundEffectInstances have been created.
+            //compEntities.Add(extraEntity);
+            //game.Entities.Add(extraEntity);
+            //CheckSoundEffectExistance(matchingEntities);
+
+            //// remove the entity and check that it is removed from the matchingComp list.
+            //compEntities.Remove(extraEntity);
+            //game.Entities.Remove(extraEntity);
+            //CheckSoundEffectExistance(matchingEntities);
         }
 
         /// <summary>
@@ -259,33 +260,34 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             AddRootEntityToEntitySystem(game);
             AddListenersToAudioSystem(game);
 
-            var matchingEntities = game.Entities.Processors.OfType<AudioEmitterProcessor>().First().MatchingEntitiesForDebug;
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            //var matchingEntities = game.Entities.Processors.OfType<AudioEmitterProcessor>().First().MatchingEntitiesForDebug;
 
-            CheckSoundEffectExistance(matchingEntities);
+            //CheckSoundEffectExistance(matchingEntities);
 
-            var sound1 = game.Asset.Load<SoundEffect>("EffectToneA");
-            var sound2 = game.Asset.Load<SoundEffect>("EffectFishLamp");
-            var sound3 = game.Asset.Load<SoundEffect>("EffectBip");
+            //var sound1 = game.Asset.Load<SoundEffect>("EffectToneA");
+            //var sound2 = game.Asset.Load<SoundEffect>("EffectFishLamp");
+            //var sound3 = game.Asset.Load<SoundEffect>("EffectBip");
 
-            // attach new Soundeffects and check the SoundEffectInstance creation.
-            emitComps[0].AttachSoundEffect(sound1);
-            CheckSoundEffectExistance(matchingEntities);
+            //// attach new Soundeffects and check the SoundEffectInstance creation.
+            //emitComps[0].AttachSoundEffect(sound1);
+            //CheckSoundEffectExistance(matchingEntities);
 
-            emitComps[1].AttachSoundEffect(sound2);
-            CheckSoundEffectExistance(matchingEntities);
+            //emitComps[1].AttachSoundEffect(sound2);
+            //CheckSoundEffectExistance(matchingEntities);
 
-            emitComps[0].AttachSoundEffect(sound3);
-            CheckSoundEffectExistance(matchingEntities);
+            //emitComps[0].AttachSoundEffect(sound3);
+            //CheckSoundEffectExistance(matchingEntities);
             
-            // detach SoundEffect and check that the controllers have been deleted.
-            emitComps[0].DetachSoundEffect(sound1);
-            CheckSoundEffectExistance(matchingEntities);
+            //// detach SoundEffect and check that the controllers have been deleted.
+            //emitComps[0].DetachSoundEffect(sound1);
+            //CheckSoundEffectExistance(matchingEntities);
 
-            emitComps[1].DetachSoundEffect(sound2);
-            CheckSoundEffectExistance(matchingEntities);
+            //emitComps[1].DetachSoundEffect(sound2);
+            //CheckSoundEffectExistance(matchingEntities);
 
-            emitComps[0].DetachSoundEffect(sound3);
-            CheckSoundEffectExistance(matchingEntities);
+            //emitComps[0].DetachSoundEffect(sound3);
+            //CheckSoundEffectExistance(matchingEntities);
         }
 
         /// <summary>
@@ -320,11 +322,11 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
         /// <param name="loopCountSum"></param>
         private void EntityPositionAndEmitterbfrUpdate(Game game, int loopCount, int loopCountSum)
         {
-            rootSubEntity1.Transformation.Translation += new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
-            rootSubEntity2.Transformation.Translation += 2*new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            rootSubEntity1.Transform.Position += new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            rootSubEntity2.Transform.Position += 2*new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
 
-            compEntities[0].Transformation.Translation += new Vector3(loopCount+1, 2 * loopCount+1, 3 * loopCount+1);
-            compEntities[1].Transformation.Translation -= new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            compEntities[0].Transform.Position += new Vector3(loopCount+1, 2 * loopCount+1, 3 * loopCount+1);
+            compEntities[1].Transform.Position -= new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
 
             emitComps[0].DistanceScale = loopCount;
             emitComps[0].DopplerScale = 2 * loopCount;
@@ -386,65 +388,66 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
 
         private void TestEmitterUpdateValuesAtfUpdate(Game game, int loopCount, int loopCountSum)
         {
-            var matchingEntities = game.Entities.Processors.OfType<AudioEmitterProcessor>().First().MatchingEntitiesForDebug;
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            //var matchingEntities = game.Entities.Processors.OfType<AudioEmitterProcessor>().First().MatchingEntitiesForDebug;
             
-            var dataComp1 = matchingEntities[compEntities[0]];
-            var dataComp2 = matchingEntities[compEntities[1]];
+            //var dataComp1 = matchingEntities[compEntities[0]];
+            //var dataComp2 = matchingEntities[compEntities[1]];
 
-            // check that AudioEmitters position is always valid. (this is required to ensure that the velocity is valid from the first update).
-            Assert.AreEqual(2 * new Vector3(loopCountSum, 2 * loopCountSum, 3 * loopCountSum) + (loopCount + 1) * Vector3.One, dataComp1.AudioEmitter.Position, "Position of the emitter 1 is not correct");
-            Assert.AreEqual(new Vector3(loopCountSum, 2 * loopCountSum, 3 * loopCountSum), dataComp2.AudioEmitter.Position, "Position of the emitter 2 is not correct");
+            //// check that AudioEmitters position is always valid. (this is required to ensure that the velocity is valid from the first update).
+            //Assert.AreEqual(2 * new Vector3(loopCountSum, 2 * loopCountSum, 3 * loopCountSum) + (loopCount + 1) * Vector3.One, dataComp1.AudioEmitter.Position, "Position of the emitter 1 is not correct");
+            //Assert.AreEqual(new Vector3(loopCountSum, 2 * loopCountSum, 3 * loopCountSum), dataComp2.AudioEmitter.Position, "Position of the emitter 2 is not correct");
 
-            if (loopCount == 0)
-            {
-                soundController0WentToStopState = false;
-                soundController2WentToStopState = false;
+            //if (loopCount == 0)
+            //{
+            //    soundController0WentToStopState = false;
+            //    soundController2WentToStopState = false;
 
-                // check that initially AudioEmitter should not be updated.
-                foreach (var data in matchingEntities.Values)
-                    Assert.IsFalse(data.AudioEmitterComponent.ShouldBeProcessed, "Initial value of ShouldBeProcessed is not correct at loop turn"+loopCount);
+            //    // check that initially AudioEmitter should not be updated.
+            //    foreach (var data in matchingEntities.Values)
+            //        Assert.IsFalse(data.AudioEmitterComponent.ShouldBeProcessed, "Initial value of ShouldBeProcessed is not correct at loop turn"+loopCount);
 
-                soundControllers[0].Play();
-            }
-            else if (loopCount == 1)
-            {
-                // check that emitter 1 is updated but not emitter 2
-                CheckEmittersValues(true, false, matchingEntities, loopCount);
+            //    soundControllers[0].Play();
+            //}
+            //else if (loopCount == 1)
+            //{
+            //    // check that emitter 1 is updated but not emitter 2
+            //    CheckEmittersValues(true, false, matchingEntities, loopCount);
 
-                soundControllers[2].Play();
-            }
-            else if(soundControllers[0].PlayState == SoundPlayState.Playing)
-            {
-                // check that both emitters are updated.
-                CheckEmittersValues(true, true, matchingEntities, loopCount);
-            }
-            else if (!soundController0WentToStopState)
-            {
-                // transition state of controller 1 from play to stop 
-                // since PlayState is updated asynchronously via callbacks, 
-                // PlayState may have changed between the Update and this function calls
-                // that is why we wait for next loop turn to perform the new test.
-                soundController0WentToStopState = true;
-            }
-            else if (soundControllers[2].PlayState == SoundPlayState.Playing)
-            {
-                // check that emitter 2 is still updated but not emitter1 anymore.
-                CheckEmittersValues(false, true, matchingEntities, loopCount);
-            }
-            else if (!soundController2WentToStopState)
-            {
-                // transition state of controller 2 from play to stop 
-                // since PlayState is updated asynchronously via callbacks, 
-                // PlayState may have changed between the Update and this function calls
-                // that is why we wait for next loop turn to perform the new test.
-                soundController2WentToStopState = true;
-            }
-            else
-            {
-                // check that both emitter are not updated anymore.
-                CheckEmittersValues(false, false, matchingEntities, loopCount);
-                game.Exit();
-            }
+            //    soundControllers[2].Play();
+            //}
+            //else if(soundControllers[0].PlayState == SoundPlayState.Playing)
+            //{
+            //    // check that both emitters are updated.
+            //    CheckEmittersValues(true, true, matchingEntities, loopCount);
+            //}
+            //else if (!soundController0WentToStopState)
+            //{
+            //    // transition state of controller 1 from play to stop 
+            //    // since PlayState is updated asynchronously via callbacks, 
+            //    // PlayState may have changed between the Update and this function calls
+            //    // that is why we wait for next loop turn to perform the new test.
+            //    soundController0WentToStopState = true;
+            //}
+            //else if (soundControllers[2].PlayState == SoundPlayState.Playing)
+            //{
+            //    // check that emitter 2 is still updated but not emitter1 anymore.
+            //    CheckEmittersValues(false, true, matchingEntities, loopCount);
+            //}
+            //else if (!soundController2WentToStopState)
+            //{
+            //    // transition state of controller 2 from play to stop 
+            //    // since PlayState is updated asynchronously via callbacks, 
+            //    // PlayState may have changed between the Update and this function calls
+            //    // that is why we wait for next loop turn to perform the new test.
+            //    soundController2WentToStopState = true;
+            //}
+            //else
+            //{
+            //    // check that both emitter are not updated anymore.
+            //    CheckEmittersValues(false, false, matchingEntities, loopCount);
+            //    game.Exit();
+            //}
         }
 
         /// <summary>
@@ -458,33 +461,34 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
 
         private void TestMulteListenerUpdate(Game game, int loopCount, int loopCountSum)
         {
-            var matchingEntities = game.Entities.Processors.OfType<AudioEmitterProcessor>().First().MatchingEntitiesForDebug;
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            //var matchingEntities = game.Entities.Processors.OfType<AudioEmitterProcessor>().First().MatchingEntitiesForDebug;
 
-            var dataComp1 = matchingEntities[compEntities[0]];
+            //var dataComp1 = matchingEntities[compEntities[0]];
 
-            if (loopCount == 0)
-            {
-                soundControllers[0].Play();
-            }
-            else if (loopCount < 10)
-            {
-                // check that the two instances are correctly create and playing
-                var tupple1 = Tuple.Create(listComps[0], soundControllers[0]);
-                var tupple2 = Tuple.Create(listComps[1], soundControllers[0]);
+            //if (loopCount == 0)
+            //{
+            //    soundControllers[0].Play();
+            //}
+            //else if (loopCount < 10)
+            //{
+            //    // check that the two instances are correctly create and playing
+            //    var tupple1 = Tuple.Create(listComps[0], soundControllers[0]);
+            //    var tupple2 = Tuple.Create(listComps[1], soundControllers[0]);
                 
-                Assert.IsTrue(dataComp1.ListenerControllerToSoundInstance.ContainsKey(tupple1));
-                Assert.IsTrue(dataComp1.ListenerControllerToSoundInstance.ContainsKey(tupple2));
+            //    Assert.IsTrue(dataComp1.ListenerControllerToSoundInstance.ContainsKey(tupple1));
+            //    Assert.IsTrue(dataComp1.ListenerControllerToSoundInstance.ContainsKey(tupple2));
 
-                var instance1 = dataComp1.ListenerControllerToSoundInstance[tupple1];
-                var instance2 = dataComp1.ListenerControllerToSoundInstance[tupple2];
+            //    var instance1 = dataComp1.ListenerControllerToSoundInstance[tupple1];
+            //    var instance2 = dataComp1.ListenerControllerToSoundInstance[tupple2];
 
-                Assert.AreEqual(SoundPlayState.Playing, instance1.PlayState);
-                Assert.AreEqual(SoundPlayState.Playing, instance2.PlayState);
-            }
-            else
-            {
-                game.Exit();
-            }
+            //    Assert.AreEqual(SoundPlayState.Playing, instance1.PlayState);
+            //    Assert.AreEqual(SoundPlayState.Playing, instance2.PlayState);
+            //}
+            //else
+            //{
+            //    game.Exit();
+            //}
         }
     }
 }

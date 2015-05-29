@@ -76,8 +76,8 @@
     <ParadoxGraphicsApiDefines>$(ParadoxGraphicsApiDefines);PARADOX_YEBIS</ParadoxGraphicsApiDefines>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
-    <ParadoxGraphicsApiDefines>$(ParadoxGraphicsApiDefines);PARADOX_EFFECT_COMPILER</ParadoxGraphicsApiDefines>
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'Android' ">
+    <ParadoxGraphicsApiDefines>$(ParadoxGraphicsApiDefines);SILICONSTUDIO_PARADOX_EFFECT_COMPILER</ParadoxGraphicsApiDefines>
     <ParadoxEffectCompiler>true</ParadoxEffectCompiler>
   </PropertyGroup>
 

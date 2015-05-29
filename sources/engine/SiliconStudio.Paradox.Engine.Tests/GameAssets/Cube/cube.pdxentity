@@ -1,24 +1,43 @@
-!Entity
-Id: e2a6651c-003c-47c3-a792-0b7473f05190
+!EntityAsset
+Id: b4f01ff9-58fa-4ba4-9cfc-08e34a05fedd
 Tags: []
-Data:
-    Name: cube
-    Components:
-        ModelComponent.Key: !ModelComponentData
-            DrawOrder: 0
-            Enabled: true
-            Model: 5e417f79-0561-42a6-bd6c-248665a3e4f8:Cube/cube_model
-            Parameters: null
+Source: ../../../data/tests/cube/cube.fbx
+SourceHash: 2471e6b1be7106f3e68cf790e9306164
+Hierarchy:
+    RootEntity: ab9f664d-8214-4a8d-9114-37d68a1408ae
+    Entities:
+        -   Name: cube
+            Components:
+                ModelComponent.Key:
+                    Model: fdd84cdb-1e11-4cb8-a5eb-8bba7f2fe729:Cube/cube Model
+                    Materials: []
+                    DrawOrder: 0
+                    Parameters: {}
+                TransformComponent.Key:
+                    Position: {X: 0, Y: 0, Z: 0}
+                    Rotation: {W: 1, X: 0, Y: 0, Z: 0}
+                    Scale: {X: 1, Y: 1, Z: 1}
+                    Children: []
+            Id: ab9f664d-8214-4a8d-9114-37d68a1408ae
 ~Base:
     Location: --import--
-    Asset: !Entity
+    Asset: !EntityAsset
         Id: 00000000-0000-0000-0000-000000000000
         Tags: []
-        Data:
-            Name: cube
-            Components:
-                ModelComponent.Key: !ModelComponentData
-                    DrawOrder: 0
-                    Enabled: true
-                    Model: 5e417f79-0561-42a6-bd6c-248665a3e4f8:cube_model
-                    Parameters: null
+        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
+        Hierarchy:
+            RootEntity: ab9f664d-8214-4a8d-9114-37d68a1408ae
+            Entities:
+                -   Name: Entity
+                    Components:
+                        ModelComponent.Key:
+                            Model: ab23ed01-165f-4b9a-ab4b-203f08804955:cube Model
+                            Materials: []
+                            DrawOrder: 0
+                            Parameters: {}
+                        TransformComponent.Key:
+                            Position: {X: 0, Y: 0, Z: 0}
+                            Rotation: {W: 1, X: 0, Y: 0, Z: 0}
+                            Scale: {X: 1, Y: 1, Z: 1}
+                            Children: []
+                    Id: ab9f664d-8214-4a8d-9114-37d68a1408ae

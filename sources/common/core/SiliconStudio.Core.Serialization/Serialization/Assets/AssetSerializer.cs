@@ -18,8 +18,8 @@ namespace SiliconStudio.Core.Serialization.Assets
 
         public AssetSerializer()
         {
-            LowLevelSerializerSelector = SerializerSelector.Default;
-            LowLevelSerializerSelectorWithReuse = SerializerSelector.DefaultWithReuse;
+            LowLevelSerializerSelector = SerializerSelector.Asset;
+            LowLevelSerializerSelectorWithReuse = SerializerSelector.AssetWithReuse;
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace SiliconStudio.Core.Serialization.Assets
                 // Process serializer attributes of objectType
                 foreach (var contentSerializer in GetSerializers(objectType))
                 {
-                    if (contentSerializer.ActualType.GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo()) && (storageType == null || contentSerializer.SerializationType == storageType))
+                    if (objectType.GetTypeInfo().IsAssignableFrom(contentSerializer.ActualType.GetTypeInfo()) && (storageType == null || contentSerializer.SerializationType == storageType))
                         return contentSerializer;
                 }
 
@@ -78,7 +78,7 @@ namespace SiliconStudio.Core.Serialization.Assets
                 {
                     foreach (var contentSerializer in GetSerializers(storageType))
                     {
-                        if (contentSerializer.ActualType.GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo()) && contentSerializer.SerializationType == storageType)
+                        if (objectType.GetTypeInfo().IsAssignableFrom(contentSerializer.ActualType.GetTypeInfo()) && contentSerializer.SerializationType == storageType)
                             return contentSerializer;
                     }
                 }

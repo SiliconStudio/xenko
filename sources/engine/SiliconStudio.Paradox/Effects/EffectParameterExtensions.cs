@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     /// <summary>
     /// Various extension methods to quickly get and set values in EffectVariable.
@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Effects
     {
         public static void RegisterParameter(this ParameterCollection parameterCollection, ParameterKey parameterKey, bool addDependencies = true)
         {
-            var metaData = parameterKey.Metadatas.OfType<ParameterKeyMetadata>().FirstOrDefault();
+            var metaData = parameterKey.Metadatas.OfType<ParameterKeyValueMetadata>().FirstOrDefault();
             
             if (metaData == null)
                 throw new ArgumentException("ParameterKey must be declared with metadata", "parameterKey");

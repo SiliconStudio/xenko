@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Shaders.Ast;
+using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Parser;
 using SiliconStudio.Shaders.Utility;
 using SiliconStudio.Shaders.Visitor;
@@ -172,6 +173,14 @@ namespace SiliconStudio.Shaders.Analysis
             else if (targetType is MatrixType)
             {
                 type = new VectorType((ScalarType)((MatrixType)targetType).Type.ResolveType(), ((MatrixType)targetType).ColumnCount);
+            }
+            else if (targetType is ClassType)
+            {
+                // This is for buffers<type>, especially in compute shaders
+                // TODO: check all the cases
+                var classType = (ClassType)targetType;
+                if (classType.GenericArguments.Count > 0)
+                    type = classType.GenericArguments[0];
             }
 
             indexerExpression.TypeInference.TargetType = type;
@@ -549,7 +558,7 @@ namespace SiliconStudio.Shaders.Analysis
 
             // If member reference is used from method invocation expression, let the method invocation resolve the type
             if (!(ParentNode is MethodInvocationExpression) && memberReference.TypeInference.TargetType == null)
-                Error(MessageCode.ErrorNoTypeReferenceMember, memberReference.Span, memberReference);
+                Warning(MessageCode.WarningNoTypeReferenceMember, memberReference.Span, memberReference);
         }
 
         /// <summary>

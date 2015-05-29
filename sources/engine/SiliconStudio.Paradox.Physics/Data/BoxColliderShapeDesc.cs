@@ -6,6 +6,7 @@ namespace SiliconStudio.Paradox.Physics
 {
     [ContentSerializer(typeof(DataContentSerializer<BoxColliderShapeDesc>))]
     [DataContract("BoxColliderShapeDesc")]
+    [Display(50, "BoxColliderShape")]
     public class BoxColliderShapeDesc : IColliderShapeDesc
     {
         /// <userdoc>
@@ -15,9 +16,15 @@ namespace SiliconStudio.Paradox.Physics
         public Vector3 LocalOffset;
 
         /// <userdoc>
-        /// Half Extent size of the box.
+        /// The local rotation of the collider shape.
         /// </userdoc>
         [DataMember(20)]
-        public Vector3 HalfExtents;
+        public Quaternion LocalRotation = Quaternion.Identity;
+
+        /// <userdoc>
+        /// Half Extent size of the box.
+        /// </userdoc>
+        [DataMember(30)] 
+        public Vector3 HalfExtents = Vector3.One;
     }
 }

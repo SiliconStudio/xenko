@@ -1,10 +1,19 @@
-!Entity
-Id: 6753ba3f-3c79-46ec-bd65-bebc2a7f8d70
+!EntityAsset
+Id: 6099b1f9-8f3f-4c90-9e84-87d97775d592
 Tags: []
-Data:
-    Name: null
-    Components:
-        SpriteComponent.Key: !SpriteComponentData
-            Color: {R: 255, G: 255, B: 255, A: 255}
-            SpriteEffect: None
-            SpriteGroupInternal: 5d8ecea5-50f2-49c1-8fe8-16e67dd65ab0:BallSprite1
+Hierarchy:
+    RootEntity: 947b2581-a75a-4903-8ffb-66daad57bc10
+    Entities:
+        -   Name: Root
+            Components:
+                SpriteComponent.Key:
+                    SpriteProvider: !SpriteFromTexture
+                        Texture: 39070e2f-ef25-4600-86f8-309c7081b6bb:Sphere1
+                        Center: {X: 0, Y: 0}
+                    Color: {R: 255, G: 255, B: 255, A: 255}
+                TransformComponent.Key:
+                    Position: {X: 0, Y: 0, Z: 0}
+                    Rotation: {W: 1, X: 0, Y: 0, Z: 0}
+                    Scale: {X: 150, Y: 150, Z: 1}
+                    Children: []
+            Id: 947b2581-a75a-4903-8ffb-66daad57bc10

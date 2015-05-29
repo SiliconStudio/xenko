@@ -3,7 +3,7 @@ using System.Linq;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     public class WireframeShaderPlugin : ShaderPlugin<RenderPassPlugin>
     {

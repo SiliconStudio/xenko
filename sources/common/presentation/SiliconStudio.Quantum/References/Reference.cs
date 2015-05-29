@@ -3,7 +3,7 @@
 using System;
 using System.Collections;
 
-using SiliconStudio.Core;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Quantum.References
 {
@@ -23,11 +23,10 @@ namespace SiliconStudio.Quantum.References
             ++creatingReference;
 
             IReference reference;
-            var enumerableValue = objectValue as IEnumerable;
-
-            if (enumerableValue != null && index == NotInCollection)
+            var isCollection = HasCollectionReference(objectValue != null ? objectValue.GetType() : objectType);
+            if (objectValue != null && isCollection && index == NotInCollection)
             {
-                reference = new ReferenceEnumerable(enumerableValue, objectType, index);
+                reference = new ReferenceEnumerable((IEnumerable)objectValue, objectType, index);
             }
             else
             {
@@ -39,9 +38,15 @@ namespace SiliconStudio.Quantum.References
             return reference;
         }
 
+        private static bool HasCollectionReference(Type type)
+        {
+            return type.IsArray || CollectionDescriptor.IsCollection(type) || DictionaryDescriptor.IsDictionary(type);
+        }
+
+
         internal static Type GetReferenceType(object objectValue, object index)
         {
-            return objectValue is IEnumerable && index == NotInCollection ? typeof(ReferenceEnumerable) : typeof(ObjectReference);
+            return objectValue != null && HasCollectionReference(objectValue.GetType()) && index == NotInCollection ? typeof(ReferenceEnumerable) : typeof(ObjectReference);
         }
 
         internal static void CheckReferenceCreationSafeGuard()

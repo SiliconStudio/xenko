@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     {
         public ImageRotatedTest()
         {
-            CurrentVersion = 4;
+            CurrentVersion = 5;
         }
 
         protected override void RegisterTests()
@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             grid.Children.Add(img1);
             grid.Children.Add(img2);
 
-            UI.RootElement = grid;
+            UIComponent.RootElement = grid;
         }
 
         [Test]

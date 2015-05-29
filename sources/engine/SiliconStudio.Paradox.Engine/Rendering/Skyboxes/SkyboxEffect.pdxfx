@@ -1,0 +1,23 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using SiliconStudio.Paradox.Rendering.Data;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Rendering.Materials;
+
+namespace SiliconStudio.Paradox.Rendering.Skyboxes
+{
+    /// <summary>
+    /// Skybox Effect
+    /// </summary>
+    partial shader SkyboxEffect
+    {
+        using params SkyboxKeys;
+
+        mixin SkyboxShader;
+
+        if (SkyboxKeys.Shader != null)
+        {
+            mixin compose skyboxColor = SkyboxKeys.Shader;
+        }
+    };
+}

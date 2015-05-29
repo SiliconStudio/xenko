@@ -6,6 +6,7 @@ namespace SiliconStudio.Paradox.Physics
 {
     [ContentSerializer(typeof(DataContentSerializer<CylinderColliderShapeDesc>))]
     [DataContract("CylinderColliderShapeDesc")]
+    [Display(50, "CylinderColliderShape")]
     public class CylinderColliderShapeDesc : IColliderShapeDesc
     {
         /// <userdoc>
@@ -15,15 +16,21 @@ namespace SiliconStudio.Paradox.Physics
         public Vector3 LocalOffset;
 
         /// <userdoc>
-        /// Half Extent size of the cylinder.
+        /// The local rotation of the collider shape.
         /// </userdoc>
         [DataMember(20)]
-        public Vector3 HalfExtents;
+        public Quaternion LocalRotation = Quaternion.Identity;
+
+        /// <userdoc>
+        /// Half Extent size of the cylinder.
+        /// </userdoc>
+        [DataMember(30)] 
+        public Vector3 HalfExtents = Vector3.One;
 
         /// <userdoc>
         /// The up axis of the cylinder, this must be either (1,0,0),(0,1,0),(0,0,1).
         /// </userdoc>
-        [DataMember(30)]
+        [DataMember(40)]
         public Vector3 UpAxis = Vector3.UnitY;
     }
 }

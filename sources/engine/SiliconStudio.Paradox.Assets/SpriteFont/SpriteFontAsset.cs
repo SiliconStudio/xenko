@@ -1,13 +1,16 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Graphics.Font;
 
 namespace SiliconStudio.Paradox.Assets.SpriteFont
@@ -16,11 +19,14 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
     /// Description of a font.
     /// </summary>
     [DataContract("SpriteFont")]
-    [AssetFileExtension(FileExtension)]
+    [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(SpriteFontAssetCompiler))]
-    [ThumbnailCompiler(PreviewerCompilerNames.FontThumbnailCompilerQualifiedName)]
-    [AssetFactory(typeof(SpriteFontFactory))]
-    [AssetDescription("Sprite Font", "A sprite containing a rendered font", true)]
+    [ThumbnailCompiler(PreviewerCompilerNames.FontThumbnailCompilerQualifiedName, true)]
+    [ObjectFactory(typeof(SpriteFontFactory))]
+    [Display(140, "Sprite Font", "A sprite containing a rendered font")]
+    [CategoryOrder(10, "Font")]
+    [CategoryOrder(20, "Characters")]
+    [CategoryOrder(30, "Rendering")]
     public class SpriteFontAsset : Asset
     {
         /// <summary>
@@ -37,6 +43,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// The path to the file containing the font data to use.
         /// </userdoc>
         [DataMember(10)]
+        [Display(null, null, "Font")]
         public UFile Source { get; set; }
 
         /// <summary>
@@ -46,6 +53,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// The name of the font family to use. Only the fonts installed on the system can be used here.
         /// </userdoc>
         [DataMember(20)]
+        [Display(null, null, "Font")]
         public string FontName { get; set; }
 
         /// <summary>
@@ -55,7 +63,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// The size of the font (in points) for static fonts, the default size for dynamic fonts. This property is ignored when the font source is a bitmap.
         /// </userdoc>
         [DataMember(30)]
-        [StepRangeAttribute(1, 500, 1, 10)]
+        [Display(null, null, "Font")]
         public float Size { get; set; }
         
         /// <summary>
@@ -65,6 +73,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// The style of the font (regular / bold / italic). Note that this property is ignored is the desired style is not available in the font's source file.
         /// </userdoc>
         [DataMember(40)]
+        [Display(null, null, "Font")]
         public FontStyle Style { get; set; }
 
         /// <summary>
@@ -75,6 +84,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// Note that it is not possible to resize at execution time a font that is not dynamic.
         /// </userdoc>
         [DataMember(50)]
+        [Display(null, null, "Font")]
         public bool IsDynamic { get; set; }
 
         /// <summary>
@@ -85,6 +95,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// The fallback character to use when a given character is not available in the font file data.
         /// </userdoc>
         [DataMember(60)]
+        [Display(null, null, "Characters")]
         public char DefaultCharacter { get; set; }
         
         /// <summary>
@@ -94,6 +105,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// The path to a file containing the characters to import from the font source file. This property is ignored when 'IsDynamic' is checked.
         /// </userdoc>
         [DataMember(70)]
+        [Display(null, null, "Characters")]
         public UFile CharacterSet { get; set; }
 
         /// <summary>
@@ -104,6 +116,8 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// Note that this property only represents an alternative way of indicating character to import, the result is the same as using the 'CharacterSet' property.
         /// </userdoc>
         [DataMember(80)]
+        [Category]
+        [Display(null, null, "Characters")]
         public List<CharacterRegion> CharacterRegions { get; set; }
 
         /// <summary>
@@ -114,6 +128,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// </userdoc>
         [DataMember(100)]
         [DefaultValue(FontTextureFormat.Rgba32)]
+        [Display(null, null, "Rendering")]
         public FontTextureFormat Format { get; set; }
 
         /// <summary>
@@ -123,6 +138,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// The type of anti-aliasing to use when rendering the font. 
         /// </userdoc>
         [DataMember(110)]
+        [Display(null, null, "Rendering")]
         public FontAntiAliasMode AntiAlias { get; set; }
 
         /// <summary>
@@ -133,6 +149,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// Check this property if you prefer to use interpolative alpha blending when rendering the font.
         /// </userdoc>
         [DataMember(120)]
+        [Display(null, null, "Rendering")]
         public bool NoPremultiply { get; set; }
 
         /// <summary>
@@ -142,7 +159,8 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// The extra spacing to add between characters in pixels. Zero is default spacing, negative closer together, positive further apart.
         /// </userdoc>
         [DataMember(130)]
-        [StepRangeAttribute(-500, 500, 1, 10)]
+        [DataMemberRange(-500, 500, 1, 10)]
+        [Display(null, null, "Rendering")]
         public float Spacing { get; set; }
 
         /// <summary>
@@ -152,7 +170,8 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// The extra interline space to add at each return of line (in pixels). Zero is default spacing, negative closer together, positive further apart.
         /// </userdoc>
         [DataMember(140)]
-        [StepRangeAttribute(-500, 500, 1, 10)]
+        [DataMemberRange(-500, 500, 1, 10)]
+        [Display(null, null, "Rendering")]
         public float LineSpacing { get; set; }
 
         /// <summary>
@@ -164,7 +183,8 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// </userdoc>
         [DataMember(150)]
         [DefaultValue(1.0f)]
-        [StepRangeAttribute(-500, 500, 1, 10)]
+        [DataMemberRange(-500, 500, 1, 10)]
+        [Display(null, null, "Rendering")]
         public float LineGapFactor { get; set; }
 
         /// <summary>
@@ -182,7 +202,8 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// </userdoc>
         [DataMember(160)]
         [DefaultValue(1.0f)]
-        [StepRangeAttribute(-500, 500, 1, 10)]
+        [DataMemberRange(-500, 500, 1, 10)]
+        [Display(null, null, "Rendering")]
         public float LineGapBaseLineFactor { get; set; }
 
         /// <summary>
@@ -192,6 +213,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// If checked, kerning information is imported from the font. (NOT SUPPORTED YET)
         /// </userdoc>
         [DataMember(170)]
+        [Display(null, null, "Rendering")]
         public bool UseKerning { get; set; }
 
         public SpriteFontAsset()
@@ -201,6 +223,8 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
             CharacterRegions = new List<CharacterRegion>();
             LineGapFactor = 1.0f;
             LineGapBaseLineFactor = 1.0f;
+            Source = new UFile("");
+            CharacterSet = new UFile("");
         }
 
         /// <summary>
@@ -222,9 +246,9 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
 
         internal string SafeCharacterSet { get { return CharacterSet ?? ""; } }
         
-        private class SpriteFontFactory : IAssetFactory
+        private class SpriteFontFactory : IObjectFactory
         {
-            public Asset New()
+            public object New(Type type)
             {
                 return Default();
             }

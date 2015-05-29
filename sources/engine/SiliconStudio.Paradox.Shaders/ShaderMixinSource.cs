@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Shaders
     /// <summary>
     /// A mixin performing a combination of <see cref="ShaderClassSource"/> and other mixins.
     /// </summary>
-    [DataContract]
+    [DataContract("ShaderMixinSource")]
     public sealed class ShaderMixinSource : ShaderSource, IEquatable<ShaderMixinSource>
     {
         /// <summary>
@@ -23,7 +23,17 @@ namespace SiliconStudio.Paradox.Shaders
             Mixins = new List<ShaderClassSource>();
             Compositions = new Core.Collections.SortedList<string, ShaderSource>();
             Macros = new List<ShaderMacro>();
+            UsedParameters = new ShaderMixinParameters();
         }
+
+        /// <summary>
+        /// Gets or sets the name of the pdxfx effect linked to this node.
+        /// </summary>
+        /// <value>The name of the pdxfx effect.</value>
+        public string Name { get; set; }
+
+        [DataMemberIgnore]
+        public ShaderMixinSource Parent { get; set; }
 
         /// <summary>
         /// Gets or sets the name of this mixin source (if this ShaderMixinSource was generated from a <see cref="ShaderMixinGeneratorSource"/>,
@@ -51,6 +61,13 @@ namespace SiliconStudio.Paradox.Shaders
         public Core.Collections.SortedList<string, ShaderSource> Compositions { get; set; }
 
         /// <summary>
+        /// Gets the used parameters for this mixin tree.
+        /// </summary>
+        /// <value>The used parameters.</value>
+        [DataMemberIgnore]
+        public ShaderMixinParameters UsedParameters { get; set; }
+
+        /// <summary>
         /// Adds a composition to this mixin.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -64,8 +81,9 @@ namespace SiliconStudio.Paradox.Shaders
         /// Adds a composition to this mixin.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="shaderSource">The shader source element.</param>
-        public void AddCompositionToArray(string name, ShaderSource shaderSourceElement)
+        /// <param name="shaderSourceElement">The shader source element.</param>
+        /// <returns>Returns the index of the composition in the array.</returns>
+        public int AddCompositionToArray(string name, ShaderSource shaderSourceElement)
         {
             ShaderSource shaderSource;
             if (!Compositions.TryGetValue(name, out shaderSource))
@@ -73,6 +91,7 @@ namespace SiliconStudio.Paradox.Shaders
 
             var shaderArraySource = (ShaderArraySource)shaderSource;
             shaderArraySource.Add(shaderSourceElement);
+            return shaderArraySource.Values.Count - 1;
         }
 
         /// <summary>
@@ -171,9 +190,11 @@ namespace SiliconStudio.Paradox.Shaders
         {
             var result = new StringBuilder();
 
+            result.Append("mixin");
+
             if (Mixins != null && Mixins.Count > 0)
             {
-                result.Append(" : ");
+                result.Append(" ");
                 for (int i = 0; i < Mixins.Count; i++)
                 {
                     if (i > 0)

@@ -29,7 +29,7 @@ namespace SiliconStudio.BuildEngine
         public DynamicBuilder(Builder builder, IBuildStepProvider buildStepProvider, string name = null)
         {
             this.builder = builder;
-            dynamicBuildStep = new DynamicBuildStep(buildStepProvider);
+            dynamicBuildStep = new DynamicBuildStep(buildStepProvider, builder.ThreadCount);
             builderThread = new Thread(SafeAction.Wrap(BuilderThread)) { IsBackground = true };
             if (!string.IsNullOrEmpty(name))
             {

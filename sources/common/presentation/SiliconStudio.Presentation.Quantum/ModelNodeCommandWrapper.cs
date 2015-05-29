@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.ActionStack;
+using SiliconStudio.Core.Reflection;
+using SiliconStudio.Presentation.Commands;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Commands;
@@ -12,74 +14,104 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public class ModelNodeCommandWrapper : NodeCommandWrapperBase
     {
-        private readonly INodeCommand nodeCommand;
-        private readonly ObservableViewModelService service;
-        private readonly ObservableViewModelIdentifier identifier;
-        private readonly ModelNodePath nodePath;
-        private readonly ModelContainer modelContainer;
+        private class ModelNodeToken
+        {
+            public readonly UndoToken Token;
+            public readonly UndoToken AdditionalToken;
 
-        public override string Name { get { return nodeCommand.Name; } }
+            public ModelNodeToken(UndoToken token, UndoToken additionalToken)
+            {
+                Token = token;
+                AdditionalToken = additionalToken;
+            }
+        }
 
-        public override CombineMode CombineMode { get { return nodeCommand.CombineMode; } }
+        public readonly ModelNodePath NodePath;
+        protected readonly ModelContainer ModelContainer;
+        protected readonly ObservableViewModelService Service;
+        protected readonly ObservableViewModelIdentifier Identifier;
 
-        public ModelNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, string observableNodePath, ObservableViewModelIdentifier identifier, ModelNodePath nodePath, ModelContainer modelContainer, IEnumerable<IDirtiableViewModel> dirtiables)
+        public ModelNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, string observableNodePath, ObservableViewModel owner, ModelNodePath nodePath, IEnumerable<IDirtiableViewModel> dirtiables)
             : base(serviceProvider, dirtiables)
         {
             if (nodeCommand == null) throw new ArgumentNullException("nodeCommand");
-            if (modelContainer == null) throw new ArgumentNullException("modelContainer");
-            this.identifier = identifier;
-            this.nodePath = nodePath;
-            this.modelContainer = modelContainer;
-            this.nodeCommand = nodeCommand;
-            service = serviceProvider.Get<ObservableViewModelService>();
+            if (owner == null) throw new ArgumentNullException("owner");
+            NodePath = nodePath;
+            // Note: the owner should not be stored in the command because we want it to be garbage collectable
+            Identifier = owner.Identifier;
+            ModelContainer = owner.ModelContainer;
+            NodeCommand = nodeCommand;
+            Service = serviceProvider.Get<ObservableViewModelService>();
             ObservableNodePath = observableNodePath;
         }
 
-        internal IModelNode GetCommandRootNode()
-        {
-            return nodePath.RootNode;
-        }
+        public override string Name { get { return NodeCommand.Name; } }
+
+        public override CombineMode CombineMode { get { return NodeCommand.CombineMode; } }
+
+        public virtual CancellableCommand AdditionalCommand { get; set; }
+        
+        public INodeCommand NodeCommand { get; private set; }
 
         protected override UndoToken Redo(object parameter, bool creatingActionItem)
         {
             UndoToken token;
-            var viewModelNode = nodePath.GetNode();
-            if (viewModelNode == null)
+            object index;
+            var modelNode = NodePath.GetSourceNode(out index);
+            if (modelNode == null)
                 throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
 
-            var newValue = nodeCommand.Invoke(viewModelNode.Content.Value, viewModelNode.Content.Descriptor, parameter, out token);
-            Refresh(viewModelNode, newValue);
-            return token;
+            var currentValue = modelNode.GetValue(index);
+            var newValue = NodeCommand.Invoke(currentValue, parameter, out token);
+            modelNode.SetValue(newValue, index);
+            Refresh(modelNode, index);
+
+            var additionalToken = new UndoToken();
+            if (AdditionalCommand != null)
+            {
+                additionalToken = AdditionalCommand.ExecuteCommand(null, false);
+            }
+            return new UndoToken(token.CanUndo, new ModelNodeToken(token, additionalToken));
         }
 
         protected override void Undo(object parameter, UndoToken token)
         {
-            var viewModelNode = nodePath.GetNode();
-            if (viewModelNode == null)
-                throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
+            object index;
+            var modelNode = NodePath.GetSourceNode(out index);
+            if (modelNode == null)
+                throw new InvalidOperationException("Unable to retrieve the node on which to apply the undo operation.");
 
-            var newValue = nodeCommand.Undo(viewModelNode.Content.Value, viewModelNode.Content.Descriptor, token);
-            Refresh(viewModelNode, newValue);
+            var modelNodeToken = (ModelNodeToken)token.TokenValue;
+            var currentValue = modelNode.GetValue(index);
+            var newValue = NodeCommand.Undo(currentValue, modelNodeToken.Token);
+            modelNode.SetValue(newValue, index);
+            Refresh(modelNode, index);
+
+            if (AdditionalCommand != null)
+            {
+                AdditionalCommand.UndoCommand(null, modelNodeToken.AdditionalToken);
+            }
         }
 
-        private void Refresh(IModelNode modelNode, object newValue)
+        /// <summary>
+        /// Refreshes the <see cref="ObservableNode"/> corresponding to the given <see cref="IModelNode"/>, if an <see cref="ObservableViewModel"/>
+        /// is available in the current.<see cref="IViewModelServiceProvider"/>.
+        /// </summary>
+        /// <param name="modelNode">The model node to use to fetch a corresponding <see cref="ObservableNode"/>.</param>
+        /// <param name="index">The index at which the actual value to update is stored.</param>
+        protected virtual void Refresh(IModelNode modelNode, object index)
         {
-            var observableViewModel = service.ViewModelProvider(identifier);
-
             if (modelNode == null) throw new ArgumentNullException("modelNode");
-            var observableNode = observableViewModel != null ? observableViewModel.ResolveObservableModelNode(ObservableNodePath, nodePath.RootNode) : null;
-            
-            // If we have an observable node, we use it to set the new value so the UI can be notified at the same time.
-            if (observableNode != null)
-            {
-                observableNode.Value = newValue;
-                observableNode.Owner.NotifyNodeChanged(observableNode.Path);
-            }
-            else
-            {
-                modelNode.Content.Value = newValue;
-                modelContainer.UpdateReferences(modelNode);
-            }
+
+            var observableNode = Service.ResolveObservableNode(Identifier, ObservableNodePath) as ObservableModelNode;
+            // No node matches this model node
+            if (observableNode == null)
+                return;
+
+            var newValue = modelNode.GetValue(index);
+
+            observableNode.ForceSetValue(newValue);
+            observableNode.Owner.NotifyNodeChanged(observableNode.Path);
         }
     }
 }

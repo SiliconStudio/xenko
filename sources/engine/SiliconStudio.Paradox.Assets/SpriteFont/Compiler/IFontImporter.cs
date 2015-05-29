@@ -75,7 +75,6 @@
 // particular purpose and non-infringement.
 //--------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 
 namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler

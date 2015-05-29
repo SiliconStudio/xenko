@@ -4,14 +4,19 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Text;
-
+using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders.Parser;
+using SiliconStudio.Shaders.Ast;
+using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Utility;
 using Encoding = System.Text.Encoding;
 using LoggerResult = SiliconStudio.Core.Diagnostics.LoggerResult;
@@ -23,14 +28,19 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
     /// </summary>
     public class EffectCompiler : EffectCompilerBase
     {
-        private bool d3dcompilerLoaded = false;
+        private bool d3dCompilerLoaded = false;
         private static readonly Object WriterLock = new Object();
 
         private ShaderMixinParser shaderMixinParser;
 
+        private readonly object shaderMixinParserLock = new object();
+
         public List<string> SourceDirectories { get; private set; }
 
         public Dictionary<string, string> UrlToFilePath { get; private set; }
+
+        public override IVirtualFileProvider FileProvider { get; set; }
+        public bool UseFileSystem { get; set; }
 
         public EffectCompiler()
         {
@@ -39,26 +49,59 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             UrlToFilePath = new Dictionary<string, string>();
         }
 
-        #region Public methods
-
-        public override EffectBytecode Compile(ShaderMixinSource shaderMixinSource, string fullEffectName, ShaderMixinParameters compilerParameters, HashSet<string> modifiedShaders, HashSet<string> recentlyModifiedShaders, LoggerResult log)
+        public override ObjectId GetShaderSourceHash(string type)
         {
+            return GetMixinParser().SourceManager.GetShaderSourceHash(type);
+        }
+
+        /// <summary>
+        /// Remove cached files for modified shaders
+        /// </summary>
+        /// <param name="modifiedShaders"></param>
+        public override void ResetCache(HashSet<string> modifiedShaders)
+        {
+            GetMixinParser().DeleteObsoleteCache(modifiedShaders);
+        }
+
+        private ShaderMixinParser GetMixinParser()
+        {
+            lock (shaderMixinParserLock)
+            {
+                // Generate the AST from the mixin description
+                if (shaderMixinParser == null)
+                {
+                    shaderMixinParser = new ShaderMixinParser(FileProvider ?? AssetManager.FileProvider);
+                    shaderMixinParser.SourceManager.LookupDirectoryList.AddRange(SourceDirectories); // TODO: temp
+                    shaderMixinParser.SourceManager.UseFileSystem = UseFileSystem;
+                    shaderMixinParser.SourceManager.UrlToFilePath = UrlToFilePath; // TODO: temp
+                }
+                return shaderMixinParser;
+            }
+        }
+
+        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, CompilerParameters compilerParameters)
+        {
+            var log = new LoggerResult();
+
             // Load D3D compiler dll
             // Note: No lock, it's probably fine if it gets called from multiple threads at the same time.
-            if (Platform.IsWindowsDesktop && !d3dcompilerLoaded)
+            if (Platform.IsWindowsDesktop && !d3dCompilerLoaded)
             {
                 NativeLibrary.PreloadLibrary("d3dcompiler_47.dll");
-                d3dcompilerLoaded = true;
+                d3dCompilerLoaded = true;
             }
+
+            var shaderMixinSource = mixinTree;
+            var fullEffectName = mixinTree.Name;
+            var usedParameters = mixinTree.UsedParameters;
 
             // Make a copy of shaderMixinSource. Use deep clone since shaderMixinSource can be altered during compilation (e.g. macros)
             var shaderMixinSourceCopy = new ShaderMixinSource();
             shaderMixinSourceCopy.DeepCloneFrom(shaderMixinSource);
-
             shaderMixinSource = shaderMixinSourceCopy;
 
             // Generate platform-specific macros
-            var platform = compilerParameters.Get(CompilerParameters.GraphicsPlatformKey);
+            var platform = usedParameters.Get(CompilerParameters.GraphicsPlatformKey);
             switch (platform)
             {
                 case GraphicsPlatform.Direct3D11:
@@ -77,20 +120,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     throw new NotSupportedException();
             }
 
-            // Generate the AST from the mixin description
-            if (shaderMixinParser == null)
-            {
-                shaderMixinParser = new ShaderMixinParser();
-                shaderMixinParser.SourceManager.LookupDirectoryList = SourceDirectories; // TODO: temp
-                shaderMixinParser.SourceManager.UrlToFilePath = UrlToFilePath; // TODO: temp
-            }
-
-            if (recentlyModifiedShaders != null && recentlyModifiedShaders.Count > 0)
-            {
-                shaderMixinParser.DeleteObsoleteCache(GetShaderNames(recentlyModifiedShaders));
-                recentlyModifiedShaders.Clear();
-            }
-            var parsingResult = shaderMixinParser.Parse(shaderMixinSource, shaderMixinSource.Macros.ToArray(), modifiedShaders);
+            var parsingResult = GetMixinParser().Parse(shaderMixinSource, shaderMixinSource.Macros.ToArray());
 
             // Copy log from parser results to output
             CopyLogs(parsingResult, log);
@@ -98,13 +128,22 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             // Return directly if there are any errors
             if (parsingResult.HasErrors)
             {
-                return null;
+                return new EffectBytecodeCompilerResult(null, log);
             }
 
             // Convert the AST to HLSL
-            var writer = new SiliconStudio.Shaders.Writer.Hlsl.HlslWriter {EnablePreprocessorLine = false};
+            var writer = new SiliconStudio.Shaders.Writer.Hlsl.HlslWriter
+            {
+                EnablePreprocessorLine = true // Allow to output links to original pdxsl via #line pragmas
+            };
             writer.Visit(parsingResult.Shader);
             var shaderSourceText = writer.Text;
+
+            if (string.IsNullOrEmpty(shaderSourceText))
+            {
+                log.Error("No code generated for effect [{0}]", fullEffectName);
+                return new EffectBytecodeCompilerResult(null, log);
+            }
 
             // -------------------------------------------------------
             // Save shader log
@@ -117,21 +156,17 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             {
                 Directory.CreateDirectory(logDir);
             }
-            var shaderSourceFilename = Path.Combine(logDir, "shader_" + shaderId);
+            var shaderSourceFilename = Path.Combine(logDir, "shader_" +  fullEffectName.Replace('.', '_') + "_" + shaderId + ".hlsl");
             lock (WriterLock) // protect write in case the same shader is created twice
             {
+                // Write shader before generating to make sure that we are having a trace before compiling it (compiler may crash...etc.)
                 if (!File.Exists(shaderSourceFilename))
                 {
-                    var builder = new StringBuilder();
-                    builder.AppendLine("/***** Used Parameters *****");
-                    builder.Append(" * EffectName: ");
-                    builder.AppendLine(fullEffectName ?? "");
-                    WriteParameters(builder, compilerParameters, 0, false);
-                    builder.AppendLine(" ***************************/");
-                    builder.Append(shaderSourceText);
-                    File.WriteAllText(shaderSourceFilename, builder.ToString());
+                    File.WriteAllText(shaderSourceFilename, shaderSourceText);
                 }
             }
+#else
+            string shaderSourceFilename = null;
 #endif
             // -------------------------------------------------------
 
@@ -141,12 +176,41 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             IShaderCompiler compiler;
             switch (platform)
             {
+#if SILICONSTUDIO_PLATFORM_WINDOWS
                 case GraphicsPlatform.Direct3D11:
                     compiler = new Direct3D.ShaderCompiler();
                     break;
+#endif
                 case GraphicsPlatform.OpenGL:
                 case GraphicsPlatform.OpenGLES:
-                    compiler = new OpenGL.ShaderCompiler();
+                    // get the number of render target outputs
+                    var rtOutputs = 0;
+                    var psOutput = parsingResult.Shader.Declarations.OfType<StructType>().FirstOrDefault(x => x.Name.Text == "PS_OUTPUT");
+                    if (psOutput != null)
+                    {
+                        foreach (var rto in psOutput.Fields)
+                        {
+                            var sem = rto.Qualifiers.OfType<Semantic>().FirstOrDefault();
+                            if (sem != null)
+                            {
+                                // special case SV_Target
+                                if (rtOutputs == 0 && sem.Name.Text == "SV_Target")
+                                {
+                                    rtOutputs = 1;
+                                    break;
+                                }
+                                for (var i = rtOutputs; i < 8; ++i)
+                                {
+                                    if (sem.Name.Text == ("SV_Target" + i))
+                                    {
+                                        rtOutputs = i + 1;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    compiler = new OpenGL.ShaderCompiler(rtOutputs);
                     break;
                 default:
                     throw new NotSupportedException();
@@ -154,10 +218,20 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
             var shaderStageBytecodes = new List<ShaderBytecode>();
 
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+            var stageStringBuilder = new StringBuilder();
+#endif
+            // if the shader (non-compute) does not have a pixel shader, we should add it on OpenGL ES.
+            if (platform == GraphicsPlatform.OpenGLES && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Pixel) && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Compute))
+            {
+                parsingResult.EntryPoints.Add(ShaderStage.Pixel, null);
+            }
+
             foreach (var stageBinding in parsingResult.EntryPoints)
             {
                 // Compile
-                var result = compiler.Compile(shaderSourceText, stageBinding.Value, stageBinding.Key, compilerParameters, bytecode.Reflection, shaderSourceFilename);
+                // TODO: We could compile stages in different threads to improve compiler throughput?
+                var result = compiler.Compile(shaderSourceText, stageBinding.Value, stageBinding.Key, usedParameters, bytecode.Reflection, shaderSourceFilename);
                 result.CopyTo(log);
 
                 if (result.HasErrors)
@@ -168,14 +242,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 // -------------------------------------------------------
                 // Append bytecode id to shader log
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-                lock (WriterLock) // protect write in case the same shader is created twice
-                {
-                    if (File.Exists(shaderSourceFilename))
-                    {
-                        // Append at the end of the shader the bytecodes Id
-                        File.AppendAllText(shaderSourceFilename, "\n// {0} {1}".ToFormat(stageBinding.Key, result.Bytecode.Id));
-                    }
-                }
+                stageStringBuilder.AppendLine("@G    {0} => {1}".ToFormat(stageBinding.Key, result.Bytecode.Id));
 #endif
                 // -------------------------------------------------------
 
@@ -186,22 +253,81 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                     break;
             }
 
-            // Get the current time of compilation
-            bytecode.Time = DateTime.Now;
-
             // In case of Direct3D, we can safely remove reflection data as it is entirely resolved at compile time.
             if (platform == GraphicsPlatform.Direct3D11)
             {
                 CleanupReflection(bytecode.Reflection);
             }
-
             bytecode.Stages = shaderStageBytecodes.ToArray();
-            return bytecode;
+
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+            lock (WriterLock) // protect write in case the same shader is created twice
+            {
+                var builder = new StringBuilder();
+                builder.AppendLine("/**************************");
+                builder.AppendLine("***** Used Parameters *****");
+                builder.AppendLine("***************************");
+                builder.Append("@P EffectName: ");
+                builder.AppendLine(fullEffectName ?? "");
+                builder.Append(usedParameters.ToStringDetailed());
+                builder.AppendLine("***************************");
+
+                if (bytecode.Reflection.ConstantBuffers.Count > 0)
+                {
+                    builder.AppendLine("****  ConstantBuffers  ****");
+                    builder.AppendLine("***************************");
+                    foreach (var cBuffer in bytecode.Reflection.ConstantBuffers)
+                    {
+                        builder.AppendFormat("cbuffer {0} [Stage: {1}, Size: {2}]", cBuffer.Name, cBuffer.Stage, cBuffer.Size).AppendLine();
+                        foreach (var parameter in cBuffer.Members)
+                        {
+                            builder.AppendFormat("@C    {0} => {1}", parameter.Param.RawName, parameter.Param.KeyName).AppendLine();
+                        }
+                    }
+                    builder.AppendLine("***************************");
+                }
+
+                if (bytecode.Reflection.ResourceBindings.Count > 0)
+                {
+                    builder.AppendLine("******  Resources    ******");
+                    builder.AppendLine("***************************");
+                    foreach (var resource in bytecode.Reflection.ResourceBindings)
+                    {
+                        var parameter = resource.Param;
+                        builder.AppendFormat("@R    {0} => {1} [Stage: {2}, Slot: ({3}-{4})]", parameter.RawName, parameter.KeyName, resource.Stage, resource.SlotStart, resource.SlotStart + resource.SlotCount - 1).AppendLine();
+                    }
+                    builder.AppendLine("***************************");
+                }
+
+                if (bytecode.HashSources.Count > 0)
+                {
+                    builder.AppendLine("*****     Sources     *****");
+                    builder.AppendLine("***************************");
+                    foreach (var hashSource in bytecode.HashSources)
+                    {
+                        builder.AppendFormat("@S    {0} => {1}", hashSource.Key, hashSource.Value).AppendLine();
+                    }
+                    builder.AppendLine("***************************");
+                }
+
+                if (bytecode.Stages.Length > 0)
+                {
+                    builder.AppendLine("*****     Stages      *****");
+                    builder.AppendLine("***************************");
+                    builder.Append(stageStringBuilder);
+                    builder.AppendLine("***************************");
+                }
+                builder.AppendLine("*************************/");
+
+                // Re-append the shader with all informations
+                builder.Append(shaderSourceText);
+
+                File.WriteAllText(shaderSourceFilename, builder.ToString());
+            }
+#endif
+
+            return new EffectBytecodeCompilerResult(bytecode, log);
         }
-
-        #endregion
-
-        #region Private static methods
 
         private static void CopyLogs(SiliconStudio.Shaders.Utility.LoggerResult inputLog, LoggerResult outputLog)
         {
@@ -226,47 +352,6 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             outputLog.HasErrors = inputLog.HasErrors;
         }
 
-        private static void WriteParameters(StringBuilder builder, ParameterCollection parameters, int indent, bool isArray)
-        {
-            var indentation = "";
-            for (var i = 0; i < indent - 1; ++i)
-                indentation += "    ";
-            var first = true;
-            foreach (var usedParam in parameters)
-            {
-                builder.Append(" * ");
-                builder.Append(indentation);
-                if (isArray && first)
-                {
-                    builder.Append("  - ");
-                    first = false;
-                }
-                else if (indent > 0)
-                    builder.Append("    ");
-                
-                if (usedParam.Key == null)
-                    builder.Append("NullKey");
-                else
-                    builder.Append(usedParam.Key);
-                builder.Append(": ");
-                if (usedParam.Value == null)
-                    builder.AppendLine("NullValue");
-                else
-                {
-                    builder.AppendLine(usedParam.Value.ToString());
-                    if (usedParam.Value is ParameterCollection)
-                        WriteParameters(builder, usedParam.Value as ParameterCollection, indent+1, false);
-                    else if (usedParam.Value is ParameterCollection[])
-                    {
-                        var collectionArray = (ParameterCollection[])usedParam.Value;
-                        foreach (var collection in collectionArray)
-                            WriteParameters(builder, collection, indent + 1, true);
-                    }
-                        
-                }
-            }
-        }
-
         private static void CleanupReflection(EffectReflection reflection)
         {
             for (int i = reflection.ConstantBuffers.Count - 1; i >= 0; i--)
@@ -287,29 +372,5 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                 }
             }
         }
-
-        private static HashSet<string> GetShaderNames(HashSet<string> shaderPaths)
-        {
-            var shaderNames = new HashSet<string>();
-
-            foreach (var shader in shaderPaths)
-            {
-                if (String.IsNullOrEmpty(shader))
-                    continue;
-
-                var shaderNameWithExtensionParts = shader.Split('/');
-                var shaderNameWithExtension = shaderNameWithExtensionParts[shaderNameWithExtensionParts.Length - 1];
-                var shaderNameParts = shaderNameWithExtension.Split('.');
-                var shaderName = shaderNameParts[0];
-
-                shaderNames.Add(shaderName);
-            }
-            if (shaderNames.Count == 0)
-                return null;
-
-            return shaderNames;
-        }
-
-        #endregion
     }
 }

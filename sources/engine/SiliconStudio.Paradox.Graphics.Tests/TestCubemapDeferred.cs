@@ -8,9 +8,8 @@ using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Modules;
-using SiliconStudio.Paradox.Effects.Modules.Processors;
-using SiliconStudio.Paradox.Effects.Modules.Renderers;
+using SiliconStudio.Paradox.Effects.Cubemap;
+using SiliconStudio.Paradox.Effects.Renderers;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Extensions;
@@ -45,27 +44,28 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 {
                     Model = new Model()
                     {
+                        material,
                         new Mesh()
                         {
                             Draw = GeometricPrimitive.Teapot.New(GraphicsDevice).ToMeshDraw(),
-                            Material = material
+                            MaterialIndex = 0,
                         }
                     }
                 }
             };
             Entities.Add(teapotEntity);
 
-            var textureCube = Asset.Load<TextureCube>("uv_cube");
+            var textureCube = Asset.Load<Texture>("uv_cube");
             var staticCubemapEntity = new Entity()
             {
-                new CubemapSourceComponent(textureCube) { Enabled = true, InfluenceRadius = 2f, IsDynamic = false },
+                new CubemapSourceComponent(textureCube) { InfluenceRadius = 2f, IsDynamic = false },
                 new TransformationComponent() { Translation = Vector3.UnitZ }
             };
             Entities.Add(staticCubemapEntity);
 
             dynamicCubemapEntity = new Entity()
             {
-                new CubemapSourceComponent(textureCube) { Enabled = true, InfluenceRadius = 0.5f, IsDynamic = false },
+                new CubemapSourceComponent(textureCube) { InfluenceRadius = 0.5f, IsDynamic = false },
                 new TransformationComponent() { Translation = Vector3.Zero }
             };
             Entities.Add(dynamicCubemapEntity);
@@ -117,7 +117,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             // Add sthe G-buffer pass to the pipeline.
             RenderSystem.Pipeline.Renderers.Add(gbufferProcessor);
 
-            var readOnlyDepthBuffer = GraphicsDevice.DepthStencilBuffer.Texture.ToDepthStencilBuffer(true);
+            var readOnlyDepthBuffer = GraphicsDevice.DepthStencilBuffer; // TODO ToDepthStencilBuffer(true);
             IBLRenderer = new LightingIBLRenderer(Services, "CubemapIBLSpecular", readOnlyDepthBuffer);
             RenderSystem.Pipeline.Renderers.Add(IBLRenderer);
             RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services)
@@ -140,8 +140,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 // Wait next rendering frame
                 await Script.NextFrame();
 
-                teapotEntity.Transformation.Rotation = Quaternion.RotationY((float)(2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 5000.0f));
-                dynamicCubemapEntity.Transformation.Translation = new Vector3(2f * (float)Math.Sin(2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 15000.0f), 0, 0);
+                teapotEntity.Transform.Rotation = Quaternion.RotationY((float)(2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 5000.0f));
+                dynamicCubemapEntity.Transform.Translation = new Vector3(2f * (float)Math.Sin(2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 15000.0f), 0, 0);
             }
         }
 

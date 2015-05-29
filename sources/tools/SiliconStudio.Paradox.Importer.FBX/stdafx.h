@@ -11,5 +11,8 @@
 #include <set>
 #include <algorithm>
 #include <wchar.h>
+#include <algorithm>
+#include <string>
+#include <map>
 
 #include "UtilityFunctions.h"

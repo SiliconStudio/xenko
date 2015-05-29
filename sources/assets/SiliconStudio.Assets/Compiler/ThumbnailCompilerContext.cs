@@ -3,7 +3,7 @@
 using System;
 using System.IO;
 using System.Threading;
-
+using System.Threading.Tasks;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Storage;
 
@@ -38,7 +38,7 @@ namespace SiliconStudio.Assets.Compiler
         /// <summary>
         /// The array of data representing the thumbnail to display when a thumbnail build failed.
         /// </summary>
-        public Byte[] BuildFailedThumbnail;
+        public Task<Byte[]> BuildFailedThumbnail;
 
         /// <summary>
         /// The event raised when a thumbnail has finished to build.
@@ -57,6 +57,7 @@ namespace SiliconStudio.Assets.Compiler
         {
             try
             {
+                // TODO: this lock seems to be useless now, check if we can safely remove it
                 Monitor.Enter(thumbnailCounterLock);
                 var handler = ThumbnailBuilt;
                 if (handler != null)
@@ -80,7 +81,7 @@ namespace SiliconStudio.Assets.Compiler
                     }
                     else if (BuildFailedThumbnail != null)
                     {
-                        thumbnailBuiltArgs.ThumbnailStream = new MemoryStream(BuildFailedThumbnail);
+                        thumbnailBuiltArgs.ThumbnailStream = new MemoryStream(BuildFailedThumbnail.Result);
                     }
                     handler(assetItem, thumbnailBuiltArgs);
                 }

@@ -1,9 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Linq;
 
 using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Quantum.Attributes;
 
 namespace SiliconStudio.Quantum.Commands
@@ -14,16 +16,16 @@ namespace SiliconStudio.Quantum.Commands
     /// or an exception will be thrown if T could not be determinated or has no parameterless constructor.
     /// </summary>
     /// <remarks>No parameter is required when invoking this command.</remarks>
-    public class AddNewItemCommand : INodeCommand
+    public class AddNewItemCommand : NodeCommand
     {
         /// <inheritdoc/>
-        public string Name { get { return "AddNewItem"; } }
+        public override string Name { get { return "AddNewItem"; } }
 
         /// <inheritdoc/>
-        public CombineMode CombineMode { get { return CombineMode.CombineOnlyForAll; } }
+        public override CombineMode CombineMode { get { return CombineMode.DoNotCombine; } }
 
         /// <inheritdoc/>
-        public bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor)
+        public override bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor)
         {
             if (memberDescriptor != null)
             {
@@ -41,11 +43,16 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public object Invoke(object currentValue, ITypeDescriptor descriptor, object parameter, out UndoToken undoToken)
+        public override object Invoke(object currentValue, object parameter, out UndoToken undoToken)
         {
-            var collectionDescriptor = (CollectionDescriptor)descriptor;
-            if (collectionDescriptor.ElementType.IsAbstract || collectionDescriptor.ElementType.IsNullable())
+            var collectionDescriptor = (CollectionDescriptor)TypeDescriptorFactory.Default.Find(currentValue.GetType());
+            // TODO: Find a better solution for ContentSerializerAttribute that doesn't require to reference Core.Serialization (and unreference this assembly)
+            if (collectionDescriptor.ElementType.IsAbstract || collectionDescriptor.ElementType.IsNullable() || collectionDescriptor.ElementType.GetCustomAttributes(typeof(ContentSerializerAttribute), true).Any())
             {
+                // If the parameter is a type instead of an instance, try to construct an instance of this type
+                var type = parameter as Type;
+                if (type != null && type.GetConstructor(Type.EmptyTypes) != null)
+                    parameter = Activator.CreateInstance(type);
                 undoToken = new UndoToken(true, collectionDescriptor.GetCollectionCount(currentValue));
                 collectionDescriptor.Add(currentValue, parameter);
             }
@@ -56,7 +63,7 @@ namespace SiliconStudio.Quantum.Commands
             }
             else
             {
-                var newItem = Activator.CreateInstance(collectionDescriptor.ElementType);
+                var newItem = ObjectFactory.NewInstance(collectionDescriptor.ElementType);
                 undoToken = new UndoToken(true, collectionDescriptor.GetCollectionCount(currentValue));
                 collectionDescriptor.Add(currentValue, parameter ?? newItem);
             }
@@ -64,10 +71,10 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public object Undo(object currentValue, ITypeDescriptor descriptor, UndoToken undoToken)
+        public override object Undo(object currentValue, UndoToken undoToken)
         {
             var index = (int)undoToken.TokenValue;
-            var collectionDescriptor = (CollectionDescriptor)descriptor;
+            var collectionDescriptor = (CollectionDescriptor)TypeDescriptorFactory.Default.Find(currentValue.GetType());
             collectionDescriptor.RemoveAt(currentValue, index);
             return currentValue;
         }

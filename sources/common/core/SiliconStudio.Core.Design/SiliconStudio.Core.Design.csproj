@@ -37,6 +37,7 @@
     <Compile Include="Extensions\DesignExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\TaskExtensions.cs" />
+    <Compile Include="Extensions\TypeDescriptorExtensions.cs" />
     <Compile Include="IO\UDirectory.cs" />
     <Compile Include="IO\UDirectorySerializer.cs" />
     <Compile Include="IO\UFile.cs" />
@@ -65,6 +66,8 @@
     <Compile Include="Reflection\MemberDescriptiorExtensions.cs" />
     <Compile Include="Reflection\MemberPathAction.cs" />
     <Compile Include="Reflection\MemberDescriptorBase.cs" />
+    <Compile Include="Reflection\MemberPathExtensions.cs" />
+    <Compile Include="Reflection\MemberPathNode.cs" />
     <Compile Include="Reflection\NullableDescriptor.cs" />
     <Compile Include="Reflection\ObjectDescriptor.cs" />
     <Compile Include="Reflection\Override.cs" />
@@ -74,12 +77,28 @@
     <Compile Include="Reflection\MemberPath.cs" />
     <Compile Include="Reflection\ShadowAttributes.cs" />
     <Compile Include="Reflection\ShadowContainer.cs" />
+    <Compile Include="Reflection\ShadowId.cs" />
     <Compile Include="Reflection\ShadowObject.cs" />
+    <Compile Include="Reflection\ThisDescriptor.cs" />
     <Compile Include="Reflection\TypeDescriptorFactory.cs" />
     <Compile Include="Reflection\TypeExtensions.cs" />
     <Compile Include="Reflection\VisitorContext.cs" />
     <Compile Include="StringSpan.cs" />
     <Compile Include="StringSpanExtensions.cs" />
+    <Compile Include="TypeConverters\BaseConverter.cs" />
+    <Compile Include="TypeConverters\Color4Converter.cs" />
+    <Compile Include="TypeConverters\ColorConverter.cs" />
+    <Compile Include="TypeConverters\FieldPropertyDescriptor.cs" />
+    <Compile Include="TypeConverters\Half2Converter.cs" />
+    <Compile Include="TypeConverters\Half3Converter.cs" />
+    <Compile Include="TypeConverters\Half4Converter.cs" />
+    <Compile Include="TypeConverters\HalfConverter.cs" />
+    <Compile Include="TypeConverters\MatrixConverter.cs" />
+    <Compile Include="TypeConverters\NamespaceDoc.cs" />
+    <Compile Include="TypeConverters\QuaternionConverter.cs" />
+    <Compile Include="TypeConverters\Vector2Converter.cs" />
+    <Compile Include="TypeConverters\Vector3Converter.cs" />
+    <Compile Include="TypeConverters\Vector4Converter.cs" />
     <Compile Include="VisualStudio\KeyedCollectionExtensions.cs" />
     <Compile Include="VisualStudio\KnownProjectTypeGuid.cs" />
     <Compile Include="VisualStudio\Project.cs" />
@@ -108,6 +127,15 @@
     <Compile Include="Yaml\YamlSerializerFactoryAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>

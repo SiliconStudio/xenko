@@ -16,6 +16,31 @@ namespace SiliconStudio.ActionStack
     public interface ITransactionalActionStack : IActionStack
     {
         /// <summary>
+        /// Gets whether a transaction is in progress.
+        /// </summary>
+        bool TransactionInProgress { get; }
+
+        /// <summary>
+        /// Raised when a transaction is started.
+        /// </summary>
+        event EventHandler<EventArgs> TransactionStarted;
+
+        /// <summary>
+        /// Raised when a transaction has ended.
+        /// </summary>
+        event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionEnded;
+
+        /// <summary>
+        /// Raised when a transaction is cancelled.
+        /// </summary>
+        event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionCancelled;
+
+        /// <summary>
+        /// Raised when a transaction is discarded.
+        /// </summary>
+        event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionDiscarded;
+
+        /// <summary>
         /// Creates a BeginTransaction-EndTransaction subscription.
         /// Use it with a using statement to ensure balanced state integrity.
         /// </summary>
@@ -85,5 +110,11 @@ namespace SiliconStudio.ActionStack
         /// </summary>
         /// <remarks>This method will ends the transaction and discard every action item it contains.</remarks>
         void DiscardTransaction();
-    }
+
+        /// <summary>
+        /// Gets the action items in the current transaction.
+        /// </summary>
+        /// <returns>The action items in the current transaction.</returns>
+        IReadOnlyCollection<IActionItem> GetCurrentTransactions();
+}
 }

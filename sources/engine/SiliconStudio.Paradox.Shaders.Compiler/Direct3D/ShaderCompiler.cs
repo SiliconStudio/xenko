@@ -1,12 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+#if SILICONSTUDIO_PLATFORM_WINDOWS // Need SharpDX
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using SharpDX.D3DCompiler;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 using ConstantBufferType = SiliconStudio.Paradox.Shaders.ConstantBufferType;
 using ShaderBytecode = SiliconStudio.Paradox.Shaders.ShaderBytecode;
@@ -41,9 +42,11 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.Direct3D
                 // Log compilation errors
                 byteCodeResult.Error(compilationResult.Message);
             }
-            else 
+            else
             {
-                var bytecodeId = ObjectId.FromBytes(compilationResult.Bytecode.Data);
+                // As effect bytecode binary can changed when having debug infos (with d3dcompiler_47), we are calculating a bytecodeId on the stripped version
+                var rawData = compilationResult.Bytecode.Strip(StripFlags.CompilerStripDebugInformation | StripFlags.CompilerStripReflectionData);
+                var bytecodeId = ObjectId.FromBytes(rawData);
                 byteCodeResult.Bytecode = new ShaderBytecode(bytecodeId, compilationResult.Bytecode.Data) { Stage = stage };
 
                 // If compilation succeed, then we can update reflection.
@@ -377,3 +380,4 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.Direct3D
         }
     }
 }
+#endif

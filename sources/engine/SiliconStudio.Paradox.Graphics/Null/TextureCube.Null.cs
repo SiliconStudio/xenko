@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.Graphics
         {
         }
 
-        public override Texture ToTexture(ViewType viewType, int arraySlice, int mipMapSlice)
+        public override Texture ToTextureView(ViewType viewType, int arraySlice, int mipMapSlice)
         {
             throw new System.NotImplementedException();
         }

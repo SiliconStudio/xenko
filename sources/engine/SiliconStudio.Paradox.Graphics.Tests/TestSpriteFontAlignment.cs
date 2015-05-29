@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         private SpriteFont arial;
 
         private SpriteBatch spriteBatch;
-        private Texture2D colorTexture;
+        private Texture colorTexture;
 
         private const string AssetPrefix = "StaticFonts/";
 
@@ -51,7 +51,7 @@ One blank line below
 
             arial = Asset.Load<SpriteFont>(AssetPrefix + "Arial13");
 
-            colorTexture = Texture2D.New(GraphicsDevice, 1, 1, PixelFormat.R8G8B8A8_UNorm, new[] { Color.White });
+            colorTexture = Texture.New2D(GraphicsDevice, 1, 1, PixelFormat.R8G8B8A8_UNorm, new[] { Color.White });
 
             // Instantiate a SpriteBatch
             spriteBatch = new SpriteBatch(GraphicsDevice);

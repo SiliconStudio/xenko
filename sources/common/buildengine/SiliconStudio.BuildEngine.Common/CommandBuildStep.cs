@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SiliconStudio.Core.Diagnostics;
+
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.IO;
@@ -148,9 +148,6 @@ namespace SiliconStudio.BuildEngine
             {
                 using (commandResultEntries)
                 {
-                    // the command was not started because it is already up-to-date (retrieved from cache and no change in external files since last execution)
-                    executeContext.Logger.Verbose("Command {0} is up-to-date, skipping...", Command.ToString());
-
                     // Replicate triggered builds
                     Debug.Assert(SpawnedStepsList.Count == 0);
 
@@ -161,13 +158,18 @@ namespace SiliconStudio.BuildEngine
                         executeContext.ScheduleBuildStep(spawnedStep);
                     }
 
+                    // Re-output command log messages
+                    foreach (var message in matchingResult.LogMessages)
+                    {
+                        executeContext.Logger.Log(message);
+                    }
+
                     // Wait for all build steps to complete.
                     // TODO: Ideally, we should store and replicate the behavior of the command that spawned it
                     // (wait if it used ScheduleAndExecute, don't wait if it used RegisterSpawnedCommandWithoutScheduling)
                     await Task.WhenAll(SpawnedSteps.Select(x => x.ExecutedAsync()));
 
                     status = ResultStatus.NotTriggeredWasSuccessful;
-
                     RegisterCommandResult(commandResultEntries, matchingResult, status);
                 }
             }
@@ -204,14 +206,14 @@ namespace SiliconStudio.BuildEngine
 
         internal bool ShouldExecute(IExecuteContext executeContext, CommandResultEntry[] previousResultCollection, ObjectId commandHash, out CommandResultEntry matchingResult)
         {
-            IndexFileCommand.MountDatabases(executeContext);
+            IndexFileCommand.MountDatabase(executeContext.GetOutputObjectsGroups());
             try
             {
                 matchingResult = FindMatchingResult(executeContext, previousResultCollection);
             }
             finally
             {
-                IndexFileCommand.UnmountDatabases(executeContext);
+                IndexFileCommand.UnmountDatabase();
             }
 
             if (matchingResult == null || Command.ShouldForceExecution())
@@ -372,6 +374,12 @@ namespace SiliconStudio.BuildEngine
                             commandContext.RegisterOutput(outputObject.Key, outputObject.Value);
                         }
 
+                        // Register log messages
+                        foreach (var logMessage in processBuilderRemote.Result.LogMessages)
+                        {
+                            commandContext.Logger.Log(logMessage);
+                        }
+
                         // Register tags
                         foreach (var tag in processBuilderRemote.Result.TagSymbols)
                         {
@@ -400,8 +408,9 @@ namespace SiliconStudio.BuildEngine
                     {
                         status = await Command.DoCommand(commandContext);
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        executeContext.Logger.Error("Exception in command " + this + ": " + ex);
                         status = ResultStatus.Failed;
                     }
 

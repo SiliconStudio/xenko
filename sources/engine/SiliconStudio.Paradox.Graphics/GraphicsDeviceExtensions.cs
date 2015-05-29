@@ -2,8 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Graphics.Internals;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -17,27 +20,47 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <param name="device">The device.</param>
         /// <param name="effect">The effect.</param>
-        /// <param name="parameters">The parameters.</param>
+        /// <param name="effectParameterCollectionGroup">The shader parameter updater.</param>
         /// <exception cref="System.ArgumentNullException">effect</exception>
-        public static void DrawQuad(this GraphicsDevice device, Effect effect, ParameterCollection parameters = null)
+        public static void DrawQuad(this GraphicsDevice device, Effect effect, EffectParameterCollectionGroup effectParameterCollectionGroup)
         {
             if (effect == null) throw new ArgumentNullException("effect");
 
             // Apply the effect
-            if (parameters != null)
-            {
-                effect.Apply(device, parameters, false);
-            }
-            else
-            {
-                effect.Apply(device, false);
-            }
+            effect.Apply(device, effectParameterCollectionGroup, false);
 
             // Draw a full screen quad
             device.DrawQuad();
 
             // Unapply
             effect.UnbindResources(device);
+        }
+
+        /// <summary>
+        /// Resets the <see cref="BlendState"/>, <see cref="DepthStencilState"/> and <see cref="RasterizerState"/> to their 
+        /// default values.
+        /// </summary>
+        /// <param name="device">The device.</param>
+        public static void ResetStates(this GraphicsDevice device)
+        {
+            device.SetBlendState(device.BlendStates.Default);
+            device.SetDepthStencilState(device.DepthStencilStates.Default);
+            device.SetRasterizerState(device.RasterizerStates.CullBack);
+        }
+
+        public static Texture GetSharedWhiteTexture(this GraphicsDevice device)
+        {
+            return device.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, "WhiteTexture", CreateWhiteTexture);
+        }
+
+        private static Texture CreateWhiteTexture(GraphicsDevice device)
+        {
+            const int Size = 2;
+            var whiteData = new Color[Size * Size];
+            for (int i = 0; i < Size*Size; i++)
+                whiteData[i] = Color.White;
+
+            return Texture.New2D(device, Size, Size, PixelFormat.R8G8B8A8_UNorm, whiteData);
         }
     }
 }

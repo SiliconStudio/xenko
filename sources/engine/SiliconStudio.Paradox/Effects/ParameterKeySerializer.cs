@@ -4,7 +4,7 @@ using System;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     public class ParameterKeySerializer<T> : DataSerializer<ParameterKey<T>>
     {
@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Effects
                 // If parameter could not be found, create one matching this type.
                 if (obj == null)
                 {
-                    var metadata = new ParameterKeyMetadata<T>();
+                    var metadata = new ParameterKeyValueMetadata<T>();
                     obj = new ParameterKey<T>(parameterName, parameterLength, metadata);
                     ParameterKeys.Merge(obj, null, parameterName);
                 }

@@ -23,6 +23,7 @@ namespace SiliconStudio.AssemblyProcessor
         public AssemblyProcessorApp()
         {
             SearchDirectories = new List<string>();
+            SerializationProjectReferences = new List<string>();
             ModuleInitializer = true;
         }
 
@@ -44,6 +45,8 @@ namespace SiliconStudio.AssemblyProcessor
 
         public List<string> SearchDirectories { get; set; }
 
+        public List<string> SerializationProjectReferences { get; set; } 
+
         public string SignKeyFile { get; set; }
 
         public bool UseSymbols { get; set; }
@@ -62,6 +65,58 @@ namespace SiliconStudio.AssemblyProcessor
 
             try
             {
+                var assemblyResolver = CreateAssemblyResolver();
+
+                var readWriteSymbols = UseSymbols;
+                // Double check that 
+                var symbolFile = Path.ChangeExtension(inputFile, "pdb");
+                if (!File.Exists(symbolFile))
+                {
+                    readWriteSymbols = false;
+                }
+
+                var assemblyDefinition = AssemblyDefinition.ReadAssembly(inputFile, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = readWriteSymbols });
+
+                bool modified;
+                var result = Run(ref assemblyDefinition, ref readWriteSymbols, out modified);
+                if (modified || inputFile != outputFile)
+                {
+                    // Make sure output directory is created
+                    var outputDirectory = Path.GetDirectoryName(outputFile);
+                    if (!string.IsNullOrEmpty(outputDirectory) && !Directory.Exists(outputDirectory))
+                    {
+                        Directory.CreateDirectory(outputDirectory);
+                    }
+
+                    assemblyDefinition.Write(outputFile, new WriterParameters() { WriteSymbols = readWriteSymbols });
+                }
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                OnErrorAction(e.Message, e);
+                return false;
+            }
+        }
+
+        public CustomAssemblyResolver CreateAssemblyResolver()
+        {
+            var assemblyResolver = new CustomAssemblyResolver();
+            assemblyResolver.RemoveSearchDirectory(".");
+            foreach (string searchDirectory in SearchDirectories)
+                assemblyResolver.AddSearchDirectory(searchDirectory);
+            return assemblyResolver;
+        }
+
+        public bool Run(ref AssemblyDefinition assemblyDefinition, ref bool readWriteSymbols, out bool modified)
+        {
+            modified = false;
+
+            try
+            {
+                var assemblyResolver = (CustomAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver;
+
                 var processors = new List<IAssemblyDefinitionProcessor>();
 
                 // We are no longer using it so we are deactivating it for now to avoid processing
@@ -89,12 +144,12 @@ namespace SiliconStudio.AssemblyProcessor
 
                 if (SerializationAssembly)
                 {
-                    processors.Add(new SerializationProcessor(SignKeyFile));
+                    processors.Add(new SerializationProcessor(SignKeyFile, SerializationProjectReferences));
                 }
 
                 if (GenerateUserDocumentation)
                 {
-                    processors.Add(new GenerateUserDocumentationProcessor(inputFile));
+                    processors.Add(new GenerateUserDocumentationProcessor(assemblyDefinition.MainModule.FullyQualifiedName));
                 }
 
                 if (ModuleInitializer)
@@ -103,22 +158,6 @@ namespace SiliconStudio.AssemblyProcessor
                 }
 
                 processors.Add(new OpenSourceSignProcessor());
-
-                var assemblyResolver = new CustomAssemblyResolver();
-                assemblyResolver.RemoveSearchDirectory(".");
-                foreach (string searchDirectory in SearchDirectories)
-                    assemblyResolver.AddSearchDirectory(searchDirectory);
-
-
-                var readWriteSymbols = UseSymbols;
-                // Double check that 
-                var symbolFile = Path.ChangeExtension(inputFile, "pdb");
-                if (!File.Exists(symbolFile))
-                {
-                    readWriteSymbols = false;
-                }
-
-                var assemblyDefinition = AssemblyDefinition.ReadAssembly(inputFile, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = readWriteSymbols });
 
                 // Check if pdb was actually read
                 readWriteSymbols = assemblyDefinition.MainModule.HasDebugHeader;
@@ -138,8 +177,6 @@ namespace SiliconStudio.AssemblyProcessor
                 // Special handling for MonoAndroid
                 // Default frameworkFolder
                 var frameworkFolder = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\");
-
-
 
                 switch (Platform)
                 {
@@ -259,19 +296,22 @@ namespace SiliconStudio.AssemblyProcessor
                         };
                         assemblyDefinition.CustomAttributes.Add(internalsVisibleAttribute);
 
+                        var assemblyFilePath = assemblyDefinition.MainModule.FullyQualifiedName;
+                        if (string.IsNullOrEmpty(assemblyFilePath))
+                        {
+                            assemblyFilePath = Path.ChangeExtension(Path.GetTempFileName(), ".dll");
+                        }
+
                         // Save updated file
-                        assemblyDefinition.Write(inputFile, new WriterParameters() { WriteSymbols = readWriteSymbols });
+                        assemblyDefinition.Write(assemblyFilePath, new WriterParameters() { WriteSymbols = readWriteSymbols });
 
                         // Reread file (otherwise it seems Mono Cecil is buggy and generate invalid PDB)
-                        assemblyDefinition = AssemblyDefinition.ReadAssembly(inputFile, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = readWriteSymbols });
+                        assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyFilePath, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = readWriteSymbols });
 
                         // Check if pdb was actually read
                         readWriteSymbols = assemblyDefinition.MainModule.HasDebugHeader;
                     }
                 }
-
-
-                bool modified = false;
 
                 var assemblyProcessorContext = new AssemblyProcessorContext(assemblyResolver, assemblyDefinition, Platform);
 
@@ -281,7 +321,7 @@ namespace SiliconStudio.AssemblyProcessor
                 // Assembly might have been recreated (i.e. il-repack), so let's use it from now on
                 assemblyDefinition = assemblyProcessorContext.Assembly;
 
-                if (modified || inputFile != outputFile)
+                if (modified)
                 {
                     // In case assembly has been modified,
                     // add AssemblyProcessedAttribute to assembly so that it doesn't get processed again
@@ -307,17 +347,9 @@ namespace SiliconStudio.AssemblyProcessor
                     assemblyProcessedAttributeConstructor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
                     assemblyProcessedAttributeType.Methods.Add(assemblyProcessedAttributeConstructor);
 
-                    // Make sure output directory is created
-                    var outputDirectory = Path.GetDirectoryName(outputFile);
-                    if (!string.IsNullOrEmpty(outputDirectory) && !Directory.Exists(outputDirectory))
-                    {
-                        Directory.CreateDirectory(outputDirectory);
-                    }
-
                     // Add AssemblyProcessedAttribute to assembly
                     assemblyDefinition.MainModule.Types.Add(assemblyProcessedAttributeType);
                     assemblyDefinition.CustomAttributes.Add(new CustomAttribute(assemblyProcessedAttributeConstructor));
-                    assemblyDefinition.Write(outputFile, new WriterParameters() { WriteSymbols = readWriteSymbols });
                 }
             }
             catch (Exception e)

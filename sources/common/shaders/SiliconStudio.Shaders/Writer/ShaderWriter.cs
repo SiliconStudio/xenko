@@ -15,7 +15,7 @@ namespace SiliconStudio.Shaders.Writer
     public class ShaderWriter : ShaderVisitor
     {
         private bool isInVariableGroup;
-        private bool isVisitingMethodDeclaration;
+        private bool isVisitingVariableInlines;
 
         private int lineCount;
         
@@ -89,6 +89,22 @@ namespace SiliconStudio.Shaders.Writer
         ///   The string builder.
         /// </value>
         private StringBuilder StringBuilder { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is visiting variable inlines.
+        /// </summary>
+        /// <value><c>true</c> if this instance is visiting variable inlines; otherwise, <c>false</c>.</value>
+        public bool IsVisitingVariableInlines
+        {
+            get
+            {
+                return isVisitingVariableInlines;
+            }
+            set
+            {
+                isVisitingVariableInlines = value;
+            }
+        }
 
         protected Stack<bool> IsDeclaratingVariable = new Stack<bool>();
 
@@ -860,7 +876,7 @@ namespace SiliconStudio.Shaders.Writer
         /// </returns>
         protected virtual ShaderWriter WriteMethodDeclaration(MethodDeclaration methodDeclaration)
         {
-            isVisitingMethodDeclaration = true;
+            isVisitingVariableInlines = true;
 
             // Pre Attributes
             Write(methodDeclaration.Attributes, true);
@@ -891,7 +907,7 @@ namespace SiliconStudio.Shaders.Writer
             // Post Attributes
             Write(methodDeclaration.Attributes, false);
 
-            isVisitingMethodDeclaration = false;
+            isVisitingVariableInlines = false;
             return this;
         }
 
@@ -1008,7 +1024,7 @@ namespace SiliconStudio.Shaders.Writer
             // A variable can be a parameter or a grouped variable.
             // If this is a parameter and we are visiting a method declaration, don't output the ";"
             // If we are inside a group variable, don't output ";" as the upper level will add "," to separate variables.
-            if (!isInVariableGroup && !isVisitingMethodDeclaration)
+            if (!isInVariableGroup && !isVisitingVariableInlines)
                 WriteLine(";");
 
         }

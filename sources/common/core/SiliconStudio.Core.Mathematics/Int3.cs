@@ -685,6 +685,16 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Performs an explicit conversion from <see cref="Int3"/> to <see cref="Vector3"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator Vector3(Int3 value)
+        {
+            return new Vector3(value.X, value.Y, value.Z);
+        }
+
+        /// <summary>
         /// Performs an explicit conversion from <see cref="Int3"/> to <see cref="Vector4"/>.
         /// </summary>
         /// <param name="value">The value.</param>

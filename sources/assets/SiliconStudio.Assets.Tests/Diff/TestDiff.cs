@@ -8,6 +8,7 @@ using NUnit.Framework;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 
@@ -24,7 +25,7 @@ namespace SiliconStudio.Assets.Tests.Diff
         public static readonly PropertyKey<DiffComponent> ComponentKey1 = new PropertyKey<DiffComponent>("ComponentKey1", typeof(TestDiff));
 
         [DataContract("TestDiffAsset")]
-        [AssetFileExtension(".pdxdiff")]
+        [AssetDescription(".pdxdiff")]
         public class TestDiffAsset : Asset
         {
             public TestDiffAsset()
@@ -56,11 +57,16 @@ namespace SiliconStudio.Assets.Tests.Diff
             [DataMember(1)]
             public Vector4 Position { get; set; }
 
+            [DataMember(2)]
+            public List<Vector4> Positions { get; set; }
+
             public bool Equals(DiffComponent other)
             {
                 if (ReferenceEquals(null, other)) return false;
                 if (ReferenceEquals(this, other)) return true;
-                return string.Equals(Name, other.Name) && Position.Equals(other.Position);
+                return string.Equals(Name, other.Name)
+                    && Position.Equals(other.Position)
+                    && ArrayExtensions.ArraysEqual(Positions, other.Positions);
             }
 
             public override bool Equals(object obj)
@@ -75,7 +81,7 @@ namespace SiliconStudio.Assets.Tests.Diff
             {
                 unchecked
                 {
-                    return ((Name != null ? Name.GetHashCode() : 0)*397) ^ Position.GetHashCode();
+                    return ((Name != null ? Name.GetHashCode() : 0)*397) ^ Position.GetHashCode() ^ (Positions != null ? ArrayExtensions.ComputeHash(Positions) : 0);
                 }
             }
 
@@ -96,7 +102,7 @@ namespace SiliconStudio.Assets.Tests.Diff
             var diff = NewTestDiff();
             var diff3 = diff.Compute();
 
-            var totalNodes = diff3.FindDifferences().ToList();
+            var totalNodes = diff3.FindLeafDifferences().ToList();
             Assert.AreEqual(0, totalNodes.Count);
         }
 
@@ -108,7 +114,7 @@ namespace SiliconStudio.Assets.Tests.Diff
             ((TestDiffAsset)diff.Asset1).Parameters.Set(ComponentKey, new DiffComponent() { Name = "comp1", Position = Vector4.UnitY });
             var diff3 = diff.Compute();
 
-            var nodes = diff3.FindDifferences().ToList();
+            var nodes = diff3.FindLeafDifferences().ToList();
             
             // 3 changes
             // + 1 for Asset1.Value and  
@@ -141,7 +147,7 @@ namespace SiliconStudio.Assets.Tests.Diff
             ((TestDiffAsset)diff.Asset2).Parameters.Set(ComponentKey, new DiffComponent() { Name = "comp1", Position = Vector4.UnitY });
             var diff3 = diff.Compute();
 
-            var nodes = diff3.FindDifferences().ToList();
+            var nodes = diff3.FindLeafDifferences().ToList();
 
             // 3 changes
             // + 1 for Asset1.Value and  
@@ -176,7 +182,7 @@ namespace SiliconStudio.Assets.Tests.Diff
             ((TestDiffAsset)diff.Asset2).Parameters.Set(ComponentKey, new DiffComponent() { Name = "comp1", Position = Vector4.UnitY });
             var diff3 = diff.Compute();
 
-            var nodes = diff3.FindDifferences().ToList();
+            var nodes = diff3.FindLeafDifferences().ToList();
 
             // 3 conflicts changes
             // + 1 for Asset1.Value and  
@@ -211,7 +217,30 @@ namespace SiliconStudio.Assets.Tests.Diff
         }
 
         [Test]
-        public void MegreWithNoConflict()
+        public void MergeList()
+        {
+            var diff = NewTestDiff();
+
+            var baseAsset = ((TestDiffAsset)diff.BaseAsset);
+            var asset1 = ((TestDiffAsset)diff.Asset1);
+            var asset2 = ((TestDiffAsset)diff.Asset2);
+
+            baseAsset.Components.Add(new DiffComponent { Name = "comp1" });
+            asset1.Components.Add(new DiffComponent { Name = "comp1" });
+            asset2.Components.Add(new DiffComponent { Name = "comp1" });
+
+            asset1.Components.Add(new DiffComponent { Name = "comp2" });
+
+            var result = AssetMerge.Merge(diff.BaseAsset, diff.Asset1, diff.Asset2, AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1);
+            Assert.IsFalse(result.HasErrors);
+            var asset = (TestDiffAsset)result.Asset;
+            Assert.IsNotNull(asset);
+
+            Assert.AreEqual(2, asset.Components.Count);
+        }
+
+        [Test]
+        public void MergeWithNoConflict()
         {
             var diff = NewTestDiff();
 
@@ -221,7 +250,7 @@ namespace SiliconStudio.Assets.Tests.Diff
             asset1.Value = 2;
             asset1.Parameters.Set(ComponentKey, new DiffComponent() { Name = "comp1", Position = Vector4.UnitZ });
             asset2.Value = 3;
-            asset2.Parameters.Set(ComponentKey, new DiffComponent() { Name = "comp1", Position = Vector4.UnitY });
+            asset2.Parameters.Set(ComponentKey, new DiffComponent() { Name = "comp1", Position = Vector4.UnitY, Positions = new List<Vector4> { Vector4.UnitW } });
 
             // -----------------------------------
             // First merge
@@ -234,7 +263,7 @@ namespace SiliconStudio.Assets.Tests.Diff
             // Check merge value: Value is changing (base: 1, v1: 2, v2: 3) but we are assuming that v1 is the actual value
             Assert.AreEqual(2, asset.Value);
             Assert.IsTrue(asset.Parameters.ContainsKey(ComponentKey));
-            Assert.AreEqual(new DiffComponent() { Name = "comp1", Position = new Vector4(0, 1, 1, 0) }, asset.Parameters[ComponentKey]);  // <= Merge of UnitZ and UnitY => (0, 1, 1, 0)
+            Assert.AreEqual(new DiffComponent() { Name = "comp1", Position = new Vector4(0, 1, 1, 0), Positions = new List<Vector4> { Vector4.UnitW } }, asset.Parameters[ComponentKey]);  // <= Merge of UnitZ and UnitY => (0, 1, 1, 0)
 
             // -----------------------------------
             // 2nd merge : Add a new key and a new item in Asset2
@@ -252,7 +281,7 @@ namespace SiliconStudio.Assets.Tests.Diff
             Assert.AreEqual(2, asset.Value);
             Assert.IsTrue(asset.Parameters.ContainsKey(ComponentKey));
             Assert.IsTrue(asset.Parameters.ContainsKey(ComponentKey1));
-            Assert.AreEqual(new DiffComponent() { Name = "comp1", Position = new Vector4(0, 1, 1, 0) }, asset.Parameters[ComponentKey]);  // <= Merge of UnitZ and UnitY => (0, 1, 1, 0)
+            Assert.AreEqual(new DiffComponent() { Name = "comp1", Position = new Vector4(0, 1, 1, 0), Positions = new List<Vector4> { Vector4.UnitW } }, asset.Parameters[ComponentKey]);  // <= Merge of UnitZ and UnitY => (0, 1, 1, 0)
             Assert.AreEqual(new DiffComponent() { Name = "newKeyFrom2", Position = Vector4.UnitW }, asset.Parameters[ComponentKey1]);
             Assert.AreEqual(1, asset.Components.Count);
             Assert.AreEqual(new DiffComponent() { Name = "newFrom2", Position = Vector4.UnitX }, asset.Components[0]);
@@ -265,7 +294,7 @@ namespace SiliconStudio.Assets.Tests.Diff
             ((TestDiffAsset)diff.Asset1).Components.Add(new DiffComponent() { Name = "item1", Position = Vector4.UnitX });
             var diff3 = diff.Compute();
 
-            var nodes = diff3.FindDifferences().ToList();
+            var nodes = diff3.FindLeafDifferences().ToList();
 
             // 1 change MergeFromAsset1
             Assert.AreEqual(1, nodes.Count);
@@ -287,24 +316,18 @@ namespace SiliconStudio.Assets.Tests.Diff
             ((TestDiffAsset)diff.Asset2).Components.Add(new DiffComponent() { Name = "item1", Position = Vector4.UnitX });
             var diff3 = diff.Compute();
 
-            var nodes = diff3.FindDifferences().ToList();
+            var nodes = diff3.FindLeafDifferences().ToList();
 
-            // 2 change MergeFromAsset1:
-            //  DiffComponent.X => from 1 to 0
-            //  DiffComponent.Y => from 0 to 1
-            Assert.AreEqual(2, nodes.Count);
+            // 1 change MergeFromAsset1:
+            //  DiffComponent
+            Assert.AreEqual(1, nodes.Count);
 
             // Check that change type is from asset1
             Assert.AreEqual(Diff3ChangeType.MergeFromAsset1, nodes[0].ChangeType);
-            Assert.AreEqual(Diff3ChangeType.MergeFromAsset1, nodes[1].ChangeType);
 
-            Assert.IsInstanceOf(typeof(DataVisitMember), nodes[0].Asset1Node);
-            var member1 = (DataVisitMember)nodes[0].Asset1Node;
-            Assert.AreEqual("X", member1.MemberDescriptor.Name);
-
-            Assert.IsInstanceOf(typeof(DataVisitMember), nodes[1].Asset1Node);
-            var member2 = (DataVisitMember)nodes[1].Asset1Node;
-            Assert.AreEqual("Y", member2.MemberDescriptor.Name);
+            Assert.IsInstanceOf(typeof(DataVisitListItem), nodes[0].Asset1Node);
+            var item1 = (DataVisitListItem)nodes[0].Asset1Node;
+            Assert.AreEqual(0, item1.Index);
         }
 
         [Test]
@@ -316,7 +339,7 @@ namespace SiliconStudio.Assets.Tests.Diff
             ((TestDiffAsset)diff.Asset2).Components.Add(new DiffComponent() { Name = "item1", Position = new Vector4(3, 0, 0, 0) });
             var diff3 = diff.Compute();
 
-            var nodes = diff3.FindDifferences().ToList();
+            var nodes = diff3.FindLeafDifferences().ToList();
 
             // 1 conflict 
             //  DiffComponent.X => 1, 2, 3
@@ -337,7 +360,7 @@ namespace SiliconStudio.Assets.Tests.Diff
             ((TestDiffAsset)diff.Asset1).AssetReference = new AssetReference<TestDiffAsset>(Guid.NewGuid(), new UFile("/a"));
             var diff3 = diff.Compute();
 
-            var nodes = diff3.FindDifferences().ToList();
+            var nodes = diff3.FindLeafDifferences().ToList();
 
             // 1 merge
             Assert.AreEqual(1, nodes.Count);
@@ -359,7 +382,7 @@ namespace SiliconStudio.Assets.Tests.Diff
             ((TestDiffAsset)diff.Asset2).AssetReference = new AssetReference<TestDiffAsset>(Guid.Empty, new UFile("/a"));
             var diff3 = diff.Compute();
 
-            var nodes = diff3.FindDifferences().ToList();
+            var nodes = diff3.FindLeafDifferences().ToList();
 
             // 1 merge
             Assert.AreEqual(1, nodes.Count);
@@ -374,7 +397,7 @@ namespace SiliconStudio.Assets.Tests.Diff
             ((TestDiffAsset)diff.Asset2).AssetReference = new AssetReference<TestDiffAsset>(Guid.NewGuid(), new UFile("/a"));
             diff.Reset();
             diff3 = diff.Compute();
-            nodes = diff3.FindDifferences().ToList();
+            nodes = diff3.FindLeafDifferences().ToList();
 
             // 1 conflict
             Assert.AreEqual(1, nodes.Count);

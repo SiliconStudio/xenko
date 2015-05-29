@@ -29,7 +29,7 @@
     <topic id="Paradox" page-id="main_topics" name="Main Topics" webdoc="confluence:PDXDOC/Main+Topics" inline="true"/>
     
     <!-- Special topic X:ClassLibrary to include generated class library references. No filename to setup as it is generated -->
-    <topic id="X:ClassLibraryReference" page-id="api" name="Class Library Reference" index="100" on-url="true"/>
+    <topic id="X:ClassLibraryReference" page-id="api" name="Class Library Reference" async-load="true" index="100" on-url="true"/>
 
     <topic id="X:KnownIssues" page-id="known-issues" name="Known Issues" webdoc="confluence:PDXDOC/Known+Issues" />
 
@@ -48,7 +48,6 @@
   <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Assets.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Assets.dll</source>
   <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.dll</source>
   <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.Audio.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.Audio.dll</source>
-  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.Effects.Modules.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.Effects.Modules.dll</source>
   <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.Engine.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.Engine.dll</source>
   <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.Games.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.Games.dll</source>
   <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.Shaders.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.Shaders.dll</source>

@@ -8,10 +8,15 @@ namespace SiliconStudio.Assets
     [AttributeUsage(AttributeTargets.Class)]
     public class AssetFormatVersionAttribute : Attribute
     {
-        public AssetFormatVersionAttribute(int version, params Type[] assetUpdaterTypes)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AssetFormatVersionAttribute"/> class.
+        /// </summary>
+        /// <param name="version">The current format version of this asset.</param>
+        /// <param name="minUpgradableVersion">The minimum format version that supports upgrade for this asset.</param>
+        public AssetFormatVersionAttribute(int version, int minUpgradableVersion = 0)
         {
             Version = version;
-            AssetUpdaterTypes = assetUpdaterTypes;
+            MinUpgradableVersion = minUpgradableVersion;
         }
 
         /// <summary>
@@ -20,8 +25,14 @@ namespace SiliconStudio.Assets
         /// <value>
         /// The current format version of this asset.
         /// </value>
-        public int Version { get; private set; }
+        public int Version { get; set; }
 
-        public Type[] AssetUpdaterTypes { get; private set; }
+        /// <summary>
+        /// Gets the minimum format version that supports upgrade for this asset.
+        /// </summary>
+        /// <value>
+        /// The minimum format version that supports upgrade for this asset.
+        /// </value>
+        public int MinUpgradableVersion { get; set; }
     }
 }

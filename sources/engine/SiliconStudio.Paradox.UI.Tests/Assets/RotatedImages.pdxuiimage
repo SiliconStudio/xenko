@@ -1,5 +1,5 @@
 !UIImageGroup
-Id: e606e3a1-d7b7-4572-b021-26f3abe86a87
+Id: 0d564cf9-3de7-4550-8bdd-ad29f7c57d36
 Tags: []
 Images: 
     -   Source: ../../../data/tests/ImageBorders.png
@@ -20,5 +20,5 @@ Images:
         Orientation: Rotated90
         Borders: {X: 15, Y: 30, Z: 75, W: 40}
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Format: TrueColor
+Format: Color32Bits
 Alpha: None

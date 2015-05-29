@@ -1,34 +1,30 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-
-using SharpYaml;
 using SharpYaml.Serialization;
-
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
+using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Assets.ProceduralModels;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Assets.Model
 {
     [DataContract("Model")]
-    [AssetFileExtension(FileExtension)]
+    [AssetDescription(FileExtension, false)]
     [AssetCompiler(typeof(ModelAssetCompiler))]
-    [ThumbnailCompiler(PreviewerCompilerNames.ModelThumbnailCompilerQualifiedName)]
-    [AssetFactory((Type)null)]
-    [AssetDescription("Model", "A 3D model", true)]
-    [AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
-    public sealed class ModelAsset : AssetImportTracked
+    [ThumbnailCompiler(PreviewerCompilerNames.ModelThumbnailCompilerQualifiedName, true, Priority = 10000)]
+    [Display(190, "Model", "A 3D model")]
+    [AssetFormatVersion(2)]
+    [AssetUpgrader(0, 1, 2, typeof(Upgrader))]
+    public sealed class ModelAsset : AssetImportTracked, IModelAsset
     {
-        public const int AssetFormatVersion = 1;
-
         /// <summary>
         /// The default file extension used by the <see cref="ModelAsset"/>.
         /// </summary>
@@ -39,10 +35,30 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// </summary>
         public ModelAsset()
         {
-            MeshParameters = new Dictionary<string, MeshMaterialParameters>();
+            SerializedVersion = AssetFormatVersion;
+            ScaleImport = 1.0f;
+            Materials = new List<ModelMaterial>();
             Nodes = new List<NodeInformation>();
             SetDefaults();
         }
+
+        /// <summary>
+        /// Gets or sets the scale import.
+        /// </summary>
+        /// <value>The scale import.</value>
+        /// <userdoc>The scale applied when importing a model.</userdoc>
+        [DataMember(10)]
+        [DefaultValue(1.0f)]
+        public float ScaleImport { get; set; }
+
+        /// <summary>
+        /// The materials.
+        /// </summary>
+        /// <userdoc>
+        /// The list of materials in the model.
+        /// </userdoc>
+        [DataMember(40)]
+        public List<ModelMaterial> Materials { get; private set; }
 
         /// <summary>
         /// List that stores if a node should be preserved
@@ -50,46 +66,8 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <userdoc>
         /// The nodes of the model.
         /// </userdoc>
-        [DataMember(20)]
+        [DataMember(50), DiffUseAsset2]
         public List<NodeInformation> Nodes { get; private set; }
-        
-            /// <summary>
-        /// Gets or sets the view direction to use when the importer is finding transparent polygons. Default is float3(0, 0, -1)
-        /// </summary>
-        /// <value>The view direction for transparent z sort.</value>
-        /// <userdoc>
-        /// The direction used to sort the polygons of the mesh.
-        /// </userdoc>
-        [DataMember(30)]
-        [DefaultValue(null)]
-        public Vector3? ViewDirectionForTransparentZSort { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the axis representing the up axis of the object
-        /// </summary>
-        /// <userdoc>
-        /// The up axis of the model (for editor preview only).
-        /// </userdoc>
-        [DataMember(35)]
-        public Vector3 UpAxis { get; set; }
-
-        /// <summary>
-        /// Gets or sets the axis representing the up axis of the object
-        /// </summary>
-        /// <userdoc>
-        /// The front axis of the model (for editor preview only).
-        /// </userdoc>
-        [DataMember(38)]
-        public Vector3 FrontAxis { get; set; }
-
-        /// <summary>
-        /// The mesh parameters.
-        /// </summary>
-        /// <userdoc>
-        /// The list of all the meshes in the model.
-        /// </userdoc>
-        [DataMember(40)]
-        public Dictionary<string, MeshMaterialParameters> MeshParameters { get; private set; }
 
         /// <summary>
         /// Gets or sets if the mesh will be compacted (meshes will be merged).
@@ -101,6 +79,11 @@ namespace SiliconStudio.Paradox.Assets.Model
             {
                 return Nodes.Any(x => !x.Preserve);
             }
+        }
+
+        protected override int InternalBuildOrder
+        {
+            get { return -100; } // We want Model to be scheduled early since they tend to take the longest (bad concurrency at end of build)
         }
 
         /// <summary>
@@ -118,6 +101,10 @@ namespace SiliconStudio.Paradox.Assets.Model
             }
         }
 
+        /// <inheritdoc/>
+        [DataMemberIgnore]
+        public IEnumerable<KeyValuePair<string, MaterialInstance>> MaterialInstances { get { return Materials.Select(x => new KeyValuePair<string, MaterialInstance>(x.Name, x.MaterialInstance)); } }
+        
         /// <summary>
         /// Preserve the nodes.
         /// </summary>
@@ -163,45 +150,23 @@ namespace SiliconStudio.Paradox.Assets.Model
 
         public override void SetDefaults()
         {
-            BuildOrder = 500;
-            UpAxis = Vector3.UnitY;
-            FrontAxis = Vector3.UnitZ;
             if (Nodes != null)
                 Nodes.Clear();
         }
 
         class Upgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(ILogger log, dynamic asset)
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
             {
-                foreach (var keyValue in asset.MeshParameters)
+                foreach (var modelMaterial in asset.Materials)
                 {
-                    var parameters = asset.MeshParameters[keyValue.Key].Parameters["~Items"];
-                    parameters.Node.Style = YamlStyle.Block;
-
-                    MoveToParameters(asset, parameters, keyValue.Key, "CastShadows", LightingKeys.CastShadows);
-                    MoveToParameters(asset, parameters, keyValue.Key, "ReceiveShadows", LightingKeys.ReceiveShadows);
-                    MoveToParameters(asset, parameters, keyValue.Key, "Layer", RenderingParameters.RenderLayer);
-                }
-
-                // Get the Model, and generate an Id if the previous one wasn't the empty one
-                var emptyGuid = Guid.Empty.ToString().ToLowerInvariant();
-                var id = asset.Id;
-                if (id != null && id.Node.Value != emptyGuid)
-                    asset.Id = Guid.NewGuid().ToString().ToLowerInvariant();
-
-                // Bump asset version -- make sure it is stored right after Id
-                asset.SerializedVersion = AssetFormatVersion;
-                asset.MoveChild("SerializedVersion", asset.IndexOf("Id") + 1);
-            }
-
-            public void MoveToParameters(dynamic asset, dynamic parameters, object key, string paramName, ParameterKey pk)
-            {
-                var paramValue = asset.MeshParameters[key][paramName];
-                if (paramValue != null)
-                {
-                    parameters[pk.Name] = paramValue;
-                    asset.MeshParameters[key].RemoveChild(paramName);
+                    var material = modelMaterial.Material;
+                    if (material != null)
+                    {
+                        modelMaterial.MaterialInstance = new YamlMappingNode();
+                        modelMaterial.MaterialInstance.Material = material;
+                        modelMaterial.Material = DynamicYamlEmpty.Default;
+                    }
                 }
             }
         }

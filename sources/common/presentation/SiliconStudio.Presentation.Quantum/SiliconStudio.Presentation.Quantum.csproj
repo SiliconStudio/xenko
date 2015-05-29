@@ -30,7 +30,8 @@
     <Compile Include="IObservableNode.cs" />
     <Compile Include="LCS.cs" />
     <Compile Include="NodeCommandWrapperBase.cs" />
-    <Compile Include="NodeChangedArgs.cs" />
+    <Compile Include="ObservableViewModelDirtinessUpdatedArgs.cs" />
+    <Compile Include="NodeInitializedEventArgs.cs" />
     <Compile Include="ObservableModelNode.cs" />
     <Compile Include="ObservableNode.cs" />
     <Compile Include="ObservableViewModelConsistencyException.cs" />
@@ -44,6 +45,7 @@
     <Compile Include="ModelNodeCommandWrapper.cs" />
     <Compile Include="ValueChangedActionItem.cs" />
     <Compile Include="View\ObservableNodeTemplateProvider.cs" />
+    <Compile Include="View\RangedValueTemplateProvider.cs" />
     <Compile Include="View\TypeMatchTemplateProvider.cs" />
     <Compile Include="VirtualObservableNode.cs" />
   </ItemGroup>

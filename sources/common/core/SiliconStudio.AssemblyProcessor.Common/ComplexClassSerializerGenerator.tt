@@ -51,6 +51,7 @@ foreach (var serializableItem in serializableItems) {
 	var memberName = serializableItem.MemberInfo.Name;
 	var memberVariableName = CreateMemberVariableName(serializableItem.MemberInfo);
 	var memberAccessName = (serializableItem.MemberInfo is PropertyDefinition) ? memberVariableName : "obj." + memberName;
+	var memberAssignBack = (serializableItem.MemberInfo is PropertyDefinition && serializableItem.AssignBack);
 
 	if (serializableItem.HasFixedAttribute)
 	{#>
@@ -60,10 +61,10 @@ foreach (var serializableItem in serializableItems) {
 	{
 		if (serializableItem.MemberInfo is PropertyDefinition)
 		{#>
-            <#=memberTypeName#> <#=memberVariableName#> = obj.<#=memberName#>;
+            <#=memberTypeName#> <#=memberVariableName#> = <# if (memberAssignBack) { #>mode == ArchiveMode.Serialize ? obj.<#=memberName#> : default(<#=memberTypeName#>)<#} else {#>obj.<#=memberName#><#}#>;
 <#}#>
             <#=serializableItem.MemberInfo.Name#>Serializer.Serialize(ref <#=memberAccessName#>, mode, stream);
-<#if (serializableItem.MemberInfo is PropertyDefinition && serializableItem.AssignBack)
+<#if (memberAssignBack)
 		{#>
             obj.<#=memberName#> = <#=memberVariableName#>;
 <#}

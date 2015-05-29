@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public ImageButtonTest()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 2;
         }
 
         protected override async Task LoadContent()
@@ -27,11 +27,11 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
             imageButton = new ImageButton
             {
-                PressedImage = new UIImage(Asset.Load<Texture2D>("ImageButtonPressed")),
-                NotPressedImage = new UIImage(Asset.Load<Texture2D>("ImageButtonNotPressed")),
+                PressedImage = new UIImage(Asset.Load<Texture>("ImageButtonPressed")),
+                NotPressedImage = new UIImage(Asset.Load<Texture>("ImageButtonNotPressed")),
             };
 
-            UI.RootElement = imageButton;
+            UIComponent.RootElement = imageButton;
         }
 
         protected override void RegisterTests()

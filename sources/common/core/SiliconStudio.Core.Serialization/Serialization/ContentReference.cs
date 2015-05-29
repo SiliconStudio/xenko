@@ -1,57 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Runtime.CompilerServices;
+using System.Reflection;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Serializers;
+using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Core.Serialization
 {
-    public static class UrlServices
-    {
-        private static ConditionalWeakTable<object, UrlInfo> urls = new ConditionalWeakTable<object, UrlInfo>();
-
-        public static string GetUrl(IContentData contentData)
-        {
-            return contentData.Url;
-        }
-
-        public static void SetUrl(IContentData contentData, string url)
-        {
-            contentData.Url = url;
-        }
-
-        public static string GetUrl(object obj)
-        {
-            var contentData = obj as IContentData;
-            if (contentData != null)
-                return contentData.Url;
-
-            // TODO: Allow only IReferencable and/or ICollectionHolder
-            var urlInfo = urls.GetValue(obj, x => new UrlInfo());
-            return urlInfo.Url;
-        }
-
-        public static void SetUrl(object obj, string url)
-        {
-            var contentData = obj as IContentData;
-            if (contentData != null)
-            {
-                contentData.Url = url;
-                return;
-            }
-
-            // TODO: Allow only IReferencable and/or ICollectionHolder
-            var urlInfo = urls.GetValue(obj, x => new UrlInfo());
-            urlInfo.Url = url;
-        }
-
-        class UrlInfo
-        {
-            public string Url;
-        }
-    }
-
     public abstract class ContentReference : ITypedContentReference, IEquatable<ContentReference>
     {
         internal const int NullIdentifier = -1;
@@ -102,6 +58,24 @@ namespace SiliconStudio.Core.Serialization
             if (obj.GetType() != this.GetType()) return false;
             return Equals((ContentReference)obj);
         }
+
+        /// <summary>
+        /// Creates a new reference of the specified type with given id and location.
+        /// </summary>
+        /// <param name="referenceType">Type of the reference.</param>
+        /// <param name="id">The identifier.</param>
+        /// <param name="location">The location.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">referenceType</exception>
+        /// <exception cref="System.ArgumentException">Reference must inherit from ContentReference;referenceType</exception>
+        public static ContentReference New(Type referenceType, Guid id, string location)
+        {
+            if (referenceType == null) throw new ArgumentNullException("referenceType");
+            if (!typeof(ContentReference).GetTypeInfo().IsAssignableFrom(referenceType.GetTypeInfo())) throw new ArgumentException("Reference must inherit from ContentReference", "referenceType");
+
+            return (ContentReference)Activator.CreateInstance(referenceType, id, location);
+        }
+
 
         public override int GetHashCode()
         {
@@ -183,7 +157,7 @@ namespace SiliconStudio.Core.Serialization
                 if (value == null)
                     return url;
 
-                return UrlServices.GetUrl(value);
+                return AttachedReferenceManager.GetUrl(value);
             }
             set
             {
@@ -193,7 +167,7 @@ namespace SiliconStudio.Core.Serialization
                 }
                 else
                 {
-                    UrlServices.SetUrl(this.value, value);
+                    AttachedReferenceManager.SetUrl(this.value, value);
                 }
             }
         }

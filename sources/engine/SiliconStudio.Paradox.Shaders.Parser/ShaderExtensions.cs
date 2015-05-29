@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if PARADOX_EFFECT_COMPILER
+#if SILICONSTUDIO_PARADOX_EFFECT_COMPILER
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -95,30 +95,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser
             {
                 return obj.Name.GetHashCode();
             }
-        }
-
-        /// <summary>
-        /// Gets the input or output structure.
-        /// </summary>
-        /// <param name="type">The pipeline stage.</param>
-        /// <param name="input">If set to <c>true</c> input, if set to <c>false</c> output.</param>
-        /// <returns></returns>
-        public static StructType GetStream(this Shader shader, PipelineStage type, bool input)
-        {
-            if (type == PipelineStage.Hull || type == PipelineStage.Domain)
-                throw new NotImplementedException();
-
-            foreach (var typeDecl in shader.Declarations.OfType<StructType>())
-            {
-                var stream = typeDecl.Attributes.OfType<AttributeDeclaration>().FirstOrDefault(x => x.Name == "Stream");
-                if (stream != null)
-                {
-                    if ((string)stream.Parameters[0].Value == (input ? "Input" : "Output") && (string)stream.Parameters[1].Value == type.ToString())
-                        return typeDecl;
-                }
-            }
-
-            return null;
         }
 
         public static MethodDefinition GetEntryPoint(this Shader shader, ShaderStage type)

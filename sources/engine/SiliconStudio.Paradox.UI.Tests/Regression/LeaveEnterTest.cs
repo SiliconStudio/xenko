@@ -65,7 +65,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             mainGrid.Children.Add(buttonLeftTop0);
             mainGrid.Children.Add(bottomButton);
 
-            UI.RootElement = mainGrid;
+            UIComponent.RootElement = mainGrid;
         }
 
         protected override void RegisterTests()

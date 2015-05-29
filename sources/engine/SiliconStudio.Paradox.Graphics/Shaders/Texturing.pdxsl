@@ -30,6 +30,12 @@ class Texturing
     stage TextureCube TextureCube2;
     stage TextureCube TextureCube3;
 
+    // Default texture 3D slots
+    stage Texture3D Texture3D0;
+    stage Texture3D Texture3D1;
+    stage Texture3D Texture3D2;
+    stage Texture3D Texture3D3;
+
     // Default sampler
     stage SamplerState Sampler;
 
@@ -41,6 +47,22 @@ class Texturing
     stage SamplerState LinearSampler
     {
         Filter = MIN_MAG_MIP_LINEAR;
+    };
+
+    stage SamplerState LinearBorderSampler
+    {
+        Filter = MIN_MAG_MIP_LINEAR;
+        AddressU = Border;
+        AddressV = Border;
+    };
+
+    stage SamplerComparisonState LinearClampCompareLessEqualSampler
+    {
+        Filter = COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+        AddressU = Clamp;
+        AddressV = Clamp;
+        ComparisonFunc = LessEqual;
+
     };
 
     stage SamplerState AnisotropicSampler
@@ -92,4 +114,11 @@ class Texturing
     stage stream float2 TexCoord : TEXCOORD0;
     stage stream float2 TexCoord1 : TEXCOORD1;
     stage stream float2 TexCoord2 : TEXCOORD2;
+    stage stream float2 TexCoord3 : TEXCOORD3;
+    stage stream float2 TexCoord4 : TEXCOORD4;
+    stage stream float2 TexCoord5 : TEXCOORD5;
+    stage stream float2 TexCoord6 : TEXCOORD6;
+    stage stream float2 TexCoord7 : TEXCOORD7;
+    stage stream float2 TexCoord8 : TEXCOORD8;
+    stage stream float2 TexCoord9 : TEXCOORD9;
 };

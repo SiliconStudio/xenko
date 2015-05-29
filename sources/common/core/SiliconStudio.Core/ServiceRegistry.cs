@@ -33,7 +33,7 @@ namespace SiliconStudio.Core
     /// </summary>
     public class ServiceRegistry : IServiceRegistry
     {
-        public static PropertyKey<ServiceRegistry> ServiceRegistryKey = new PropertyKey<ServiceRegistry>("ServiceRegistryKey", typeof(ServiceRegistry));
+        public static PropertyKey<IServiceRegistry> ServiceRegistryKey = new PropertyKey<IServiceRegistry>("ServiceRegistryKey", typeof(IServiceRegistry));
 
         private readonly Dictionary<Type, object> registeredService = new Dictionary<Type, object>();
 

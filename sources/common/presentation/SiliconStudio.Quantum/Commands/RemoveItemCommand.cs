@@ -8,7 +8,7 @@ using SiliconStudio.Quantum.Attributes;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public class RemoveItemCommand : INodeCommand
+    public class RemoveItemCommand : NodeCommand
     {
         private struct UndoTokenData
         {
@@ -26,14 +26,13 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public string Name { get { return "RemoveItem"; } }
+        public override string Name { get { return "RemoveItem"; } }
 
         /// <inheritdoc/>
-        public CombineMode CombineMode { get { return CombineMode.AlwaysCombine; } }
-
+        public override CombineMode CombineMode { get { return CombineMode.AlwaysCombine; } }
 
         /// <inheritdoc/>
-        public bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor)
+        public override bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor)
         {
             if (memberDescriptor != null)
             {
@@ -55,8 +54,9 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public object Invoke(object currentValue, ITypeDescriptor descriptor, object parameter, out UndoToken undoToken)
+        public override object Invoke(object currentValue, object parameter, out UndoToken undoToken)
         {
+            var descriptor = TypeDescriptorFactory.Default.Find(currentValue.GetType());
             var collectionDescriptor = descriptor as CollectionDescriptor;
             var dictionaryDescriptor = descriptor as DictionaryDescriptor;
             if (collectionDescriptor != null)
@@ -79,8 +79,9 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public object Undo(object currentValue, ITypeDescriptor descriptor, UndoToken undoToken)
+        public override object Undo(object currentValue, UndoToken undoToken)
         {
+            var descriptor = TypeDescriptorFactory.Default.Find(currentValue.GetType());
             var collectionDescriptor = descriptor as CollectionDescriptor;
             var dictionaryDescriptor = descriptor as DictionaryDescriptor;
             var undoData = (UndoTokenData)undoToken.TokenValue;

@@ -14,19 +14,18 @@ namespace SiliconStudio.Quantum.Contents
     {
         private readonly IReference reference;
 
-        protected ContentBase(Type type, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
+        protected ContentBase(ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
         {
-            if (type == null) throw new ArgumentNullException("type");
             if (descriptor == null) throw new ArgumentNullException("descriptor");
             this.reference = reference;
             Descriptor = descriptor;
-            Type = type;
             IsPrimitive = isPrimitive;
             SerializeFlags = ViewModelContentSerializeFlags.SerializeValue;
+            ShouldProcessReference = true;
         }
 
         /// <inheritdoc/>
-        public Type Type { get; set; }
+        public Type Type { get { return Descriptor.Type; } }
 
         /// <inheritdoc/>
         public abstract object Value { get; set; }
@@ -42,6 +41,9 @@ namespace SiliconStudio.Quantum.Contents
 
         /// <inheritdoc/>
         public IReference Reference { get { return reference; } }
+
+        /// <inheritdoc/>
+        public bool ShouldProcessReference { get; internal set; }
 
         /// <inheritdoc/>
         public virtual ViewModelContentState LoadState { get; set; }

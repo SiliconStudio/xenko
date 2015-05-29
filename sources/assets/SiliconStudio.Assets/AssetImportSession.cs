@@ -298,7 +298,7 @@ namespace SiliconStudio.Assets
         /// Analyze files for preparing them for the merge and import steps. This must be called first 
         /// after calling <see cref="AddFile(SiliconStudio.Core.IO.UFile,Package,SiliconStudio.Core.IO.UDirectory)"/> methods.
         /// </summary>
-        /// <returns><c>true</c> if staging was successfull otherwise. See remarks for checking errors</returns>
+        /// <returns><c>true</c> if staging was successful otherwise. See remarks for checking errors</returns>
         /// <remarks>
         /// If this method returns false, errors should be checked on each <see cref="AssetToImport"/> from the <see cref="Imports"/> list.
         /// </remarks>
@@ -428,7 +428,7 @@ namespace SiliconStudio.Assets
                         // imported into the package
                         if (toImport.SelectedItem == null || toImport.Item.Id == toImport.SelectedItem.Id)
                         {
-                            FixAssetReferences(toImport, idRemapping);
+                            FixAssetReferencesToMergeItem(toImport, idRemapping);
                             continue;
                         }
 
@@ -475,7 +475,7 @@ namespace SiliconStudio.Assets
         /// new need to update references from asset not being merged to assets that are merged back to an existing asset in 
         /// the package.
         /// </remarks>
-        private static void FixAssetReferences(AssetToImportMergeGroup toImport, Dictionary<Guid, AssetItem> idRemapping)
+        private static void FixAssetReferencesToMergeItem(AssetToImportMergeGroup toImport, Dictionary<Guid, AssetItem> idRemapping)
         {
             var asset = (toImport.SelectedItem ?? toImport.Item).Asset;
 
@@ -512,8 +512,16 @@ namespace SiliconStudio.Assets
                         // new base and on the merged result
                         if (idRemapping.TryGetValue(instance.Id, out realItem))
                         {
-                            var newReference = AssetReference.New(instance.GetType(), realItem.Id, realItem.Location);
-                            node.ReplaceValue(newReference, diff3Node => diff3Node.Asset2Node, false);
+                            IContentReference newReference;
+                            if (instance is AssetReference)
+                            {
+                                newReference = AssetReference.New(instance.GetType(), realItem.Id, realItem.Location);
+                            }
+                            else
+                            {
+                                newReference = ContentReference.New(instance.GetType(), realItem.Id, realItem.Location);
+                            }
+                            node.ReplaceValue(newReference, diff3Node => diff3Node.Asset2Node);
                         }
 
                         return Diff3ChangeType.MergeFromAsset2;
@@ -563,11 +571,10 @@ namespace SiliconStudio.Assets
             // Clears the result before appending to it
             result.Clear();
 
-            var usedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
             // Gets the list of assets merged that will be imported
+            var allImports = AllImports().ToList();
             var mergedAssets = new HashSet<Guid>();
-            foreach (var toImport in AllImports())
+            foreach (var toImport in allImports)
             {
                 if (toImport.MergedItem != null)
                 {
@@ -655,7 +662,7 @@ namespace SiliconStudio.Assets
 
                                 // Update the name just before adding to the package
                                 // to make sure that there will be no clash
-                                FixAssetLocation(item, fileToImport.Directory, assetResolver);
+                                FixAssetLocation(item, fileToImport.Directory, assetResolver, allImports);
                             }
 
                             assetPackage.Assets.Add(item);
@@ -856,15 +863,34 @@ namespace SiliconStudio.Assets
             return previousEntry;
         }
 
-        private void FixAssetLocation(AssetItem item, UDirectory targetDirectory, AssetResolver assetResolver)
+        private void FixAssetLocation(AssetItem item, UDirectory targetDirectory, AssetResolver assetResolver, IEnumerable<AssetToImportMergeGroup> assetsToImport)
         {
-            var path = new UFile(targetDirectory, item.Location.GetFileName(), null);
+            // find a possible asset location
             UFile newLocation;
+            var path = new UFile(targetDirectory, item.Location.GetFileName(), null);
             assetResolver.RegisterLocation(path, out newLocation);
+
+            // current location is valid -> nothing to do
+            if (item.Location == newLocation)
+                return;
+
+            // location changed -> we need to fix all the reference to this item
+            foreach (var referencingAsset in assetsToImport)
+            {
+                var referencesToUpdate = AssetReferenceAnalysis.Visit(referencingAsset.Item.Asset);
+                foreach (var assetReferenceLink in referencesToUpdate)
+                {
+                    var refToUpdate = assetReferenceLink.Reference as IContentReference;
+                    if (refToUpdate != null && refToUpdate.Id == item.Id)
+                    {
+                        assetReferenceLink.UpdateReference(item.Id, newLocation);
+                    }
+                }
+            }
             item.Location = newLocation;
         }
 
-        private void FreezeAssetImport(IAssetImporter importer, AssetItem assetItem, Package package)
+        private void FreezeAssetImport(IAssetImporter importer, AssetItem assetItem)
         {
             // Base guid for assets to importItem must be empty
             var baseAsset = (Asset)AssetCloner.Clone(assetItem.Asset);
@@ -890,7 +916,8 @@ namespace SiliconStudio.Assets
         private void ComputeAssetHash(CancellationToken? cancelToken = null)
         {
             sourceFileToAssets.Clear();
-            var usedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            var allImports = AllImports().ToList();
 
             // Pass 1) => Prepare imports
             // - Check for assets with same source
@@ -916,10 +943,10 @@ namespace SiliconStudio.Assets
                             var assetItem = assetToImport.Item;
 
                             // Fix asset location
-                            FixAssetLocation(assetItem, fileToImport.Directory, assetResolver);
+                            FixAssetLocation(assetItem, fileToImport.Directory, assetResolver, allImports);
 
                             // Freeze asset importItem and calculate source hash
-                            FreezeAssetImport(import.Importer, assetItem, fileToImport.Package);
+                            FreezeAssetImport(import.Importer, assetItem);
 
                             // Create mapping: assetitem => set of similar asset items
                             var assetImport = assetItem.Asset as AssetImport;

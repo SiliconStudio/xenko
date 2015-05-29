@@ -9,8 +9,8 @@ namespace SiliconStudio.Paradox.Graphics
     /// <summary>
     /// Describes a custom vertex format structure that contains position and color information. 
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VertexPositionColorTexture : IEquatable<VertexPositionColorTexture>
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    public struct VertexPositionColorTexture : IEquatable<VertexPositionColorTexture>, IVertex
     {
         /// <summary>
         /// Initializes a new <see cref="VertexPositionColorTexture"/> instance.
@@ -91,6 +91,16 @@ namespace SiliconStudio.Paradox.Graphics
         public override string ToString()
         {
             return string.Format("Position: {0}, Color: {1}, Texcoord: {2}", Position, Color, TextureCoordinate);
+        }
+
+        public VertexDeclaration GetLayout()
+        {
+            return Layout;
+        }
+
+        public void FlipWinding()
+        {
+            TextureCoordinate.X = (1.0f - TextureCoordinate.X);
         }
     }
 }

@@ -1,16 +1,13 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
-using SiliconStudio.Core.Serialization.Converters;
-using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Games;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Paradox.Animations;
+using SiliconStudio.Paradox.Engine.Design;
 
 namespace SiliconStudio.Paradox.Engine
 {
@@ -20,12 +17,15 @@ namespace SiliconStudio.Paradox.Engine
     /// <remarks>
     /// Data is stored as in http://altdevblogaday.com/2011/10/23/low-level-animation-part-2/.
     /// </remarks>
-    [DataConverter(AutoGenerate = true, ContentReference = true)]
     [DataContract("AnimationComponent")]
+    [Display(20, "Animation")]
+    [DefaultEntityComponentProcessor(typeof(AnimationProcessor))]
     public sealed class AnimationComponent : EntityComponent
     {
         private readonly Dictionary<string, AnimationClip> animations;
         private readonly TrackingCollection<PlayingAnimation> playingAnimations;
+
+        [DataMemberIgnore]
         internal AnimationBlender Blender = new AnimationBlender();
 
         public static PropertyKey<AnimationComponent> Key = new PropertyKey<AnimationComponent>("Key", typeof(AnimationComponent));
@@ -51,7 +51,6 @@ namespace SiliconStudio.Paradox.Engine
             }
         }
 
-        [DataMemberConvert]
         public Dictionary<string, AnimationClip> Animations
         {
             get { return animations; }
@@ -126,9 +125,9 @@ namespace SiliconStudio.Paradox.Engine
             get { return playingAnimations; }
         }
 
-        public override PropertyKey DefaultKey
+        public override PropertyKey GetDefaultKey()
         {
-            get { return Key; }
+            return Key;
         }
     }
 }

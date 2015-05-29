@@ -12,7 +12,7 @@ using SiliconStudio.Paradox.Graphics.Regression;
 namespace SiliconStudio.Paradox.Graphics.Tests
 {
     [TestFixture]
-    public class TestSprite : GraphicsTestBase
+    public class TestSprite : TestGameBase
     {
         private SpriteGroup spriteUv;
         private SpriteGroup spriteSphere;
@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         public TestSprite()
         {
-            CurrentVersion = 2;
+            CurrentVersion = 3;
         }
 
         protected override void RegisterTests()
@@ -53,7 +53,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
             GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
 
             spriteBatch.Begin(SpriteSortMode.Texture, GraphicsDevice.BlendStates.AlphaBlend);
 

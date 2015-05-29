@@ -53,7 +53,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
             var factory = new Factory();
 
             // try to get the font face from the source file if not null
-            FontFace fontFace = options.Source != null ? GetFontFaceFromSource(factory, options) : GetFontFaceFromSystemFonts(factory, options);
+            FontFace fontFace = !string.IsNullOrEmpty(options.Source) ? GetFontFaceFromSource(factory, options) : GetFontFaceFromSystemFonts(factory, options);
             
             var fontMetrics = fontFace.Metrics;
 
@@ -142,21 +142,8 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
 
                 using (var fontFamily = fontCollection.GetFontFamily(index))
                 {
-                    var weight = FontWeight.Regular;
-                    var style = SharpDX.DirectWrite.FontStyle.Normal;
-                    switch (options.Style)
-                    {
-                        case Paradox.Graphics.Font.FontStyle.Bold:
-                            weight = FontWeight.Bold;
-                            break;
-                        case Paradox.Graphics.Font.FontStyle.Italic:
-                            weight = FontWeight.Regular;
-                            style = SharpDX.DirectWrite.FontStyle.Italic;
-                            break;
-                        case Paradox.Graphics.Font.FontStyle.Regular:
-                            weight = FontWeight.Regular;
-                            break;
-                    }
+                    var weight = options.Style.IsBold()? FontWeight.Bold: FontWeight.Regular;
+                    var style = options.Style.IsItalic() ? SharpDX.DirectWrite.FontStyle.Italic : SharpDX.DirectWrite.FontStyle.Normal;
                     font = fontFamily.GetFirstMatchingFont(weight, FontStretch.Normal, style);
                 }
             }

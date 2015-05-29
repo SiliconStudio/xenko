@@ -4,88 +4,105 @@
 using System;
 using System.Collections.Generic;
 
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Core.Serialization.Converters;
 
 namespace SiliconStudio.Paradox.Graphics.Font
 {
     /// <summary>
     /// A dynamic font. That is a font that generate its character bitmaps at execution.
     /// </summary>
-    [ContentSerializer(typeof(DataContentConverterSerializer<DynamicSpriteFont>))]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<DynamicSpriteFont>), Profile = "Asset")]
+    [ContentSerializer(typeof(DynamicSpriteFontContentSerializer))]
+    [DataSerializer(typeof(DynamicSpriteFontSerializer))]
     internal class DynamicSpriteFont : SpriteFont
     {
         /// <summary>
         /// Input the family name of the (TrueType) font.
         /// </summary>
-        private readonly string fontName;
+        internal string FontName;
 
         /// <summary>
         /// Style for the font. 'regular', 'bold' or 'italic'. Default is 'regular
         /// </summary>
-        private readonly FontStyle style;
+        internal FontStyle Style;
 
         /// <summary>
         /// Specifies whether to use kerning information when rendering the font. Default value is false (NOT SUPPORTED YET).
         /// </summary>
-        private readonly bool useKerning;
+        internal bool UseKerning;
 
         /// <summary>
         /// The alias mode of the font
         /// </summary>
-        private readonly FontAntiAliasMode antiAlias;
+        internal FontAntiAliasMode AntiAlias;
 
         /// <summary>
         /// The character specifications cached to avoid re-allocations
         /// </summary>
         private readonly Dictionary<CharacterKey, CharacterSpecification> sizedCharacterToCharacterData = new Dictionary<CharacterKey, CharacterSpecification>();
 
+        [DataMemberIgnore]
         internal FontManager FontManager
         {
-            get { return FontSystem.FontManager; }
+            get { return FontSystem != null? FontSystem.FontManager: null; }
         }
 
+        [DataMemberIgnore]
         internal FontCacheManager FontCacheManager
         {
-            get { return FontSystem.FontCacheManager; }
+            get { return FontSystem != null? FontSystem.FontCacheManager: null; }
         }
 
+        [DataMemberIgnore]
         internal int FrameCount
         {
-            get { return FontSystem.FrameCount; }
+            get { return FontSystem != null ? FontSystem.FrameCount : 0; }
         }
 
-        public DynamicSpriteFont(FontSystem fontSystem, DynamicSpriteFontData fontData)
-            : base(fontSystem, fontData, true)
+        [DataMemberIgnore]
+        internal override FontSystem FontSystem
         {
-            // import font properties from font data
-            style = fontData.Style;
-            fontName = fontData.FontName;
-            useKerning = fontData.UseKerning;
-            antiAlias = fontData.AntiAlias;
+            set
+            {
+                if (FontSystem == value)
+                    return;
 
-            // retrieve needed info from the font
-            float relativeLineSpacing;
-            float relativeBaseOffsetY;
-            float relativeMaxWidth;
-            float relativeMaxHeight;
-            FontManager.GetFontInfo(fontData.FontName, fontData.Style, out relativeLineSpacing, out relativeBaseOffsetY, out relativeMaxWidth, out relativeMaxHeight);
+                base.FontSystem = value;
+                
+                // retrieve needed info from the font
+                float relativeLineSpacing;
+                float relativeBaseOffsetY;
+                float relativeMaxWidth;
+                float relativeMaxHeight;
+                FontManager.GetFontInfo(FontName, Style, out relativeLineSpacing, out relativeBaseOffsetY, out relativeMaxWidth, out relativeMaxHeight);
 
-            // set required base properties
-            DefaultLineSpacing = relativeLineSpacing * Size;
-            BaseOffsetY = relativeBaseOffsetY * Size;
-            Textures = FontCacheManager.Textures;
-            Swizzle = SwizzleMode.RRRR;
+                // set required base properties
+                DefaultLineSpacing = relativeLineSpacing * Size;
+                BaseOffsetY = relativeBaseOffsetY * Size;
+                Textures = FontCacheManager.Textures;
+                Swizzle = SwizzleMode.RRRR;
+            }
+        }
+
+        public DynamicSpriteFont()
+        {
+            IsDynamic = true;
         }
 
         public override bool IsCharPresent(char c)
         {
-            return FontManager.DoesFontContains(fontName, style, c);
+            return FontManager.DoesFontContains(FontName, Style, c);
         }
 
         protected override Glyph GetGlyph(char character, ref Vector2 fontSize, bool uploadGpuResources)
         {
+            // Add a safe guard to prevent the system to generate characters too big for the dynamic font cache texture
+            fontSize.X = Math.Min(fontSize.X, 1024);
+            fontSize.Y = Math.Min(fontSize.Y, 1024);
+
             // get the character data associated to the provided character and size
             var characterData = GetOrCreateCharacterData(fontSize, character);
             
@@ -125,7 +142,7 @@ namespace SiliconStudio.Paradox.Graphics.Font
             CharacterSpecification characterData;
             if (!sizedCharacterToCharacterData.TryGetValue(lookUpKey, out characterData))
             {
-                characterData = new CharacterSpecification(character, fontName, size, style, antiAlias);
+                characterData = new CharacterSpecification(character, FontName, size, Style, AntiAlias);
                 sizedCharacterToCharacterData[lookUpKey] = characterData;
             }
             return characterData;

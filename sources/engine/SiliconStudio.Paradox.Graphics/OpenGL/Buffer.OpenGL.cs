@@ -6,9 +6,12 @@ using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
+#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
 using BufferUsageHint = OpenTK.Graphics.ES30.BufferUsage;
+#endif
 #else
 using OpenTK.Graphics.OpenGL;
+using PixelFormatGl = OpenTK.Graphics.OpenGL.PixelFormat;
 #endif
 
 namespace SiliconStudio.Paradox.Graphics
@@ -21,6 +24,10 @@ namespace SiliconStudio.Paradox.Graphics
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
         // Special case: ConstantBuffer are faked with a byte array on OpenGL ES 2.0.
         internal IntPtr StagingData { get; set; }
+#else
+        internal PixelFormatGl glPixelFormat;
+        internal PixelInternalFormat internalFormat;
+        internal PixelType type;
 #endif
 
         /// <summary>
@@ -31,41 +38,73 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="bufferFlags">Type of the buffer.</param>
         /// <param name="viewFormat">The view format.</param>
         /// <param name="dataPointer">The data pointer.</param>
-        protected Buffer(GraphicsDevice device, BufferDescription description, BufferFlags bufferFlags, PixelFormat viewFormat, IntPtr dataPointer)
-            : base(device)
+        protected Buffer(GraphicsDevice device) : base(device)
         {
-            Description = description;
-            BufferFlags = bufferFlags;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Buffer" /> class.
+        /// </summary>
+        /// <param name="description">The description.</param>
+        /// <param name="viewFlags">Type of the buffer.</param>
+        /// <param name="viewFormat">The view format.</param>
+        /// <param name="dataPointer">The data pointer.</param>
+        protected Buffer InitializeFromImpl(BufferDescription description, BufferFlags viewFlags, PixelFormat viewFormat, IntPtr dataPointer)
+        {
+            bufferDescription = description;
+            ViewFlags = viewFlags;
             ViewFormat = viewFormat;
 
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+            int pixelSize;
+            bool isCompressed;
+            OpenGLConvertExtensions.ConvertPixelFormat(GraphicsDevice, viewFormat, out internalFormat, out glPixelFormat, out type, out pixelSize, out isCompressed);
+#endif
+
             Recreate(dataPointer);
+
+            return this;
         }
 
         public void Recreate(IntPtr dataPointer)
         {
-            if ((BufferFlags & BufferFlags.VertexBuffer) == BufferFlags.VertexBuffer)
+            if ((ViewFlags & BufferFlags.VertexBuffer) == BufferFlags.VertexBuffer)
             {
                 bufferTarget = BufferTarget.ArrayBuffer;
             }
-            else if ((BufferFlags & BufferFlags.IndexBuffer) == BufferFlags.IndexBuffer)
+            else if ((ViewFlags & BufferFlags.IndexBuffer) == BufferFlags.IndexBuffer)
             {
                 bufferTarget = BufferTarget.ElementArrayBuffer;
             }
+            else if ((ViewFlags & BufferFlags.UnorderedAccess) == BufferFlags.UnorderedAccess)
+            {
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                throw new NotSupportedException("GLES not support UnorderedAccess buffer");
+#else
+                bufferTarget = BufferTarget.ShaderStorageBuffer;
+#endif
+            }
 
-            if ((BufferFlags & BufferFlags.ConstantBuffer) == BufferFlags.ConstantBuffer)
+            if ((ViewFlags & BufferFlags.ConstantBuffer) == BufferFlags.ConstantBuffer)
             {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 // Special case: ConstantBuffer are faked with a byte array on OpenGL ES 2.0.
-                StagingData = Marshal.AllocHGlobal(Description.SizeInBytes);
-#else
-                bufferTarget = BufferTarget.UniformBuffer;
+                if (GraphicsDevice.IsOpenGLES2)
+                    StagingData = Marshal.AllocHGlobal(Description.SizeInBytes);
+                else
 #endif
+                {
+                    bufferTarget = BufferTarget.UniformBuffer;
+                }
             }
             else if (Description.Usage == GraphicsResourceUsage.Dynamic)
             {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                // OpenGL ES might not always support MapBuffer (TODO: Use MapBufferOES if available)
-                StagingData = Marshal.AllocHGlobal(Description.SizeInBytes);
+                if (GraphicsDevice.IsOpenGLES2)
+                {
+                    // OpenGL ES might not always support MapBuffer (TODO: Use MapBufferOES if available)
+                    StagingData = Marshal.AllocHGlobal(Description.SizeInBytes);
+                }
 #endif
             }
 
@@ -110,8 +149,9 @@ namespace SiliconStudio.Paradox.Graphics
         protected void Init(IntPtr dataPointer)
         {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-            if ((Description.BufferFlags & BufferFlags.ConstantBuffer) == BufferFlags.ConstantBuffer
-                || Description.Usage == GraphicsResourceUsage.Dynamic)
+            if (GraphicsDevice.IsOpenGLES2 
+                && ((Description.BufferFlags & BufferFlags.ConstantBuffer) == BufferFlags.ConstantBuffer
+                    || Description.Usage == GraphicsResourceUsage.Dynamic))
             {
                 if (dataPointer != IntPtr.Zero)
                 {
@@ -153,4 +193,4 @@ namespace SiliconStudio.Paradox.Graphics
         }
     }
 } 
-#endif 
+#endif

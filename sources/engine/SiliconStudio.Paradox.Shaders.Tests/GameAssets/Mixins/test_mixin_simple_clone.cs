@@ -8,35 +8,21 @@
 
 using System;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 
-
-#line 3 "D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Shaders.Tests\GameAssets\Mixins\test_mixin_simple_clone.pdxfx"
 namespace Test5
 {
-
-    #line 5
     internal static partial class ShaderMixins
     {
         internal partial class ChildClone  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-
-                #line 7
-                context.CloneProperties();
-
-                #line 7
-                mixin.Mixin.CloneFrom(mixin.Parent.Mixin);
-
-                #line 8
                 context.Mixin(mixin, "C1");
-
-                #line 9
                 context.Mixin(mixin, "C2");
             }
 
@@ -48,38 +34,19 @@ namespace Test5
             }
         }
     }
-
-    #line 12
     internal static partial class ShaderMixins
     {
         internal partial class DefaultSimpleClone  : IShaderMixinBuilder
         {
-            public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-
-                #line 14
                 context.Mixin(mixin, "A");
-
-                #line 15
                 context.Mixin(mixin, "B");
-
-                #line 16
                 context.Mixin(mixin, "C");
-
+                if (context.ChildEffectName == "Test")
                 {
-
-                    #line 18
-                    var __subMixin = new ShaderMixinSourceTree() { Name = "Test", Parent = mixin };
-                    mixin.Children.Add(__subMixin);
-
-                    #line 18
-                    context.BeginChild(__subMixin);
-
-                    #line 18
-                    context.Mixin(__subMixin, "ChildClone");
-
-                    #line 18
-                    context.EndChild();
+                    context.Mixin(mixin, "ChildClone");
+                    return;
                 }
             }
 

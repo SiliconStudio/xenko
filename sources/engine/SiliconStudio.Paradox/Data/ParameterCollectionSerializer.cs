@@ -1,19 +1,18 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
-using System.Linq;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Contents;
 
-namespace SiliconStudio.Paradox.Effects.Data
+namespace SiliconStudio.Paradox.Rendering.Data
 {
+    [DataSerializerGlobal(null, typeof(Dictionary<ParameterKey, object>))]
     public partial class ParameterCollectionSerializer : ClassDataSerializer<ParameterCollection>
     {
         public override void Serialize(ref ParameterCollection parameterCollection, ArchiveMode mode, SerializationStream stream)
         {
             if (mode == ArchiveMode.Serialize)
             {
-                var parameters = new ParameterCollectionData();
+                var parameters = new Dictionary<ParameterKey, object>();
                 foreach (var parameter in parameterCollection.InternalValues)
                 {
                     if (parameterCollection.IsValueOwner(parameter.Value))
@@ -23,12 +22,10 @@ namespace SiliconStudio.Paradox.Effects.Data
             }
             else if (mode == ArchiveMode.Deserialize)
             {
-                var parameters = stream.Read<ParameterCollectionData>();
+                var parameters = stream.Read<Dictionary<ParameterKey, object>>();
                 foreach (var parameter in parameters)
                 {
                     var parameterValue = parameter.Value;
-                    if (parameterValue is ContentReference)
-                        parameterValue = ((ContentReference)parameterValue).ObjectValue;
                     parameterCollection.SetObject(parameter.Key, parameterValue);
                 }
             }

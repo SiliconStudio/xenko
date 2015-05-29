@@ -3,7 +3,7 @@
 using System.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Shaders

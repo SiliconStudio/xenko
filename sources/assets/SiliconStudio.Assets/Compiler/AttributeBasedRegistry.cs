@@ -60,28 +60,34 @@ namespace SiliconStudio.Assets.Compiler
 
                 try
                 {
-                    var compilerType = Type.GetType(compilerAttribute.CompilerTypeName);
-                    if (compilerType == null)
-                    {
-                        log.Error("Unable to find compiler [{0}] for asset [{1}]", compilerAttribute.CompilerTypeName, type);
-                        continue;
-                    }
-
-                    var compilerInstance = Activator.CreateInstance(compilerType) as I;
-                    if (compilerInstance == null)
-                    {
-                        log.Error("Invalid compiler type [{0}], must inherit from IAssetCompiler", compilerAttribute.CompilerTypeName);
-                        continue;
-                    }
-
-                    RegisterCompiler(type, compilerInstance);
+                    ProcessAttribute(compilerAttribute, type);
                 }
                 catch (Exception ex)
                 {
-                    log.Error("Unable to instantiate compiler [{0}]", ex, compilerAttribute.CompilerTypeName);
+                    log.Error("Unable to instantiate compiler [{0}]", ex, compilerAttribute.TypeName);
                 }
             }
             registeredAssemblies.Add(assembly);
+        }
+
+        protected virtual bool ProcessAttribute(T compilerAttribute, Type type)
+        {
+            var compilerType = Type.GetType(compilerAttribute.TypeName);
+            if (compilerType == null)
+            {
+                log.Error("Unable to find compiler [{0}] for asset [{1}]", compilerAttribute.TypeName, type);
+                return false;
+            }
+
+            var compilerInstance = Activator.CreateInstance(compilerType) as I;
+            if (compilerInstance == null)
+            {
+                log.Error("Invalid compiler type [{0}], must inherit from IAssetCompiler", compilerAttribute.TypeName);
+                return false;
+            }
+
+            RegisterCompiler(type, compilerInstance);
+            return true;
         }
 
         private void AssemblyRegistered(object sender, AssemblyRegisteredEventArgs e)

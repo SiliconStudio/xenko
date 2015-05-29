@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     {
         public ImageSeparateAlphaTest()
         {
-            CurrentVersion = 4;
+            CurrentVersion = 5;
         }
 
         protected override void RegisterTests()
@@ -61,7 +61,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             grid.Children.Add(imgElt3);
             grid.Children.Add(imgElt4);
 
-            UI.RootElement = grid;
+            UIComponent.RootElement = grid;
         }
 
         [Test]

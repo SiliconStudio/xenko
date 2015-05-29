@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 
 using SiliconStudio.Core.IO;
 using SiliconStudio.Presentation.Extensions;
@@ -99,24 +98,7 @@ namespace SiliconStudio.Presentation.Settings
         /// <inheritdoc/>
         internal override object ConvertValue(object value)
         {
-            T convertedValue;
-            try
-            {
-                var converter = TypeDescriptor.GetConverter(typeof(T));
-                if (converter.CanConvertFrom(value != null ? value.GetType() : typeof(object)))
-                {
-                    convertedValue = (T)converter.ConvertFrom(value);
-                }
-                else
-                {
-                    convertedValue = (T)Convert.ChangeType(value, typeof(T));
-                }
-            }
-            catch (Exception)
-            {
-                convertedValue = DefaultValue;
-            }
-            return convertedValue;
+            return ConvertObject(value, DefaultValue);
         }
     }
 }

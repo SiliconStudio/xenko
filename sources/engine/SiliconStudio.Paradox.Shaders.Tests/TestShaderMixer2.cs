@@ -1,19 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using NUnit.Framework;
 
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Effects.Modules;
-using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders.Compiler;
 
@@ -31,13 +23,10 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         [TestFixtureSetUp]
         public void Init()
         {
-            using (var profile = Profiler.Begin(GameProfilingKeys.ObjectDatabaseInitialize))
-            {
-                // Create and mount database file system
-                var objDatabase = new ObjectDatabase("/data/db", "index", "/local/db");
-                var databaseFileProvider = new DatabaseFileProvider(objDatabase);
-                AssetManager.GetFileProvider = () => databaseFileProvider;
-            }
+            // Create and mount database file system
+            var objDatabase = new ObjectDatabase("/data/db", "index", "/local/db");
+            var databaseFileProvider = new DatabaseFileProvider(objDatabase);
+            AssetManager.GetFileProvider = () => databaseFileProvider;
 
             Compiler = new EffectCompiler();
             Compiler.SourceDirectories.Add("shaders");
@@ -58,12 +47,12 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             compMixin.AddComposition("color1", color1Mixin);
             compMixin.AddComposition("color2", color2Mixin);
 
-            var mixinSource = new ShaderMixinSource();
+            var mixinSource = new ShaderMixinSource { Name = "testRenaming", UsedParameters = MixinParameters };
             mixinSource.Mixins.Add(new ShaderClassSource("ShadingBase"));
             mixinSource.Mixins.Add(new ShaderClassSource("AlbedoFlatShading"));
             mixinSource.AddComposition("albedoDiffuse", compMixin);
 
-            var byteCode = Compiler.Compile(mixinSource, "testRenaming", MixinParameters, null, null, ResultLogger);
+            var byteCode = Compiler.Compile(mixinSource, new CompilerParameters());
             Assert.IsNotNull(byteCode);
         }
 
@@ -80,12 +69,12 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             compMixin.AddComposition("color1", color1Mixin);
             compMixin.AddComposition("color2", color2Mixin);
 
-            var mixinSource = new ShaderMixinSource();
+            var mixinSource = new ShaderMixinSource { Name = "TestRenaming2", UsedParameters = MixinParameters };
             mixinSource.Mixins.Add(new ShaderClassSource("ShadingBase"));
             mixinSource.Mixins.Add(new ShaderClassSource("AlbedoFlatShading"));
             mixinSource.AddComposition("albedoDiffuse", compMixin);
 
-            var byteCode = Compiler.Compile(mixinSource, "TestRenaming2", MixinParameters, null, null, ResultLogger);
+            var byteCode = Compiler.Compile(mixinSource, new CompilerParameters());
             Assert.IsNotNull(byteCode);
         }
 
@@ -102,7 +91,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             TestRenaming();
         }
 
-        public static void Main()
+        public static void Main4()
         {
             var testClass = new TestShaderMixer2();
             testClass.Init();

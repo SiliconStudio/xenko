@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
         }
 
-        public override Texture ToTexture(ViewType viewType, int arraySlice, int mipMapSlice)
+        public override Texture ToTextureView(ViewType viewType, int arraySlice, int mipMapSlice)
         {
             // Exists since OpenGL 4.3
             if (viewType != ViewType.Full || arraySlice != 0 || mipMapSlice != 0)

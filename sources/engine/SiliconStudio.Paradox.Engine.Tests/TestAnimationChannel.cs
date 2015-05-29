@@ -3,8 +3,7 @@
 using System;
 
 using NUnit.Framework;
-
-using SiliconStudio.Paradox.DataModel;
+using SiliconStudio.Paradox.Animations;
 
 namespace SiliconStudio.Paradox.Engine.Tests
 {
@@ -26,7 +25,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
                     if (x.Ticks == 196588)
                     {
                     }
-                    return (float)Math.Sin((double)x.Ticks / (double)CompressedTimeSpan.FromSeconds(10.0).Ticks * Math.PI * 2.0);
+                    return (float)Math.Sin(x.Ticks / (double)CompressedTimeSpan.FromSeconds(10.0).Ticks * Math.PI * 2.0);
                 };
             animationChannel.Fitting(
                 curve,

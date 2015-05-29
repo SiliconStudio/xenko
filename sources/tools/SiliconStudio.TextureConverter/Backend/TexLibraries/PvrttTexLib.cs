@@ -1,11 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Security;
 using System.IO;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.TextureConverter.PvrttWrapper;
 using SiliconStudio.TextureConverter.Requests;
 
@@ -117,7 +116,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             EPVRTColourSpace colorSpace = RetrieveNativeColorSpace(image.Format);
             EPVRTVariableType pixelType = RetrieveNativePixelType(image.Format);
             libraryData.Header = new PVRTextureHeader(format, image.Height, image.Width, image.Depth, image.MipmapCount, imageArraySize, imageFaceCount, colorSpace, pixelType);
-            
+
             int imageCount = 0;
             int depth = image.Depth;
             libraryData.Texture = new PVRTexture(libraryData.Header, IntPtr.Zero); // Initializing a new native texture, allocating memory.
@@ -164,6 +163,10 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             // Updating current instance of TexImage with the native Data
             UpdateImage(image, libraryData);
 
+            // If the data contains more than one face and mipmaps, swap them
+            if (image.Dimension == TexImage.TextureDimension.TextureCube &&  image.FaceCount > 1 && image.MipmapCount > 1)
+                TransposeFaceData(image, libraryData);
+            
             /*
              * in a 3D texture, the number of sub images will be different than for 2D : with 2D texture, you just have to multiply the mipmap levels with the array size.
              * For 3D, when generating mip map, you generate mip maps for each slice of your texture, but the depth is decreasing by half (like the width and height) at
@@ -246,7 +249,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     break;
 
                 case RequestType.Decompressing:
-                    Decompress(image, libraryData);
+                    Decompress(image, libraryData, (DecompressingRequest)request);
                     break;
 
                 case RequestType.MipMapsGeneration:
@@ -289,7 +292,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         {
             Log.Info("Loading " + request.FilePath + " ...");
 
-            PvrTextureLibraryData libraryData = new PvrTextureLibraryData();
+            var libraryData = new PvrTextureLibraryData();
             image.LibraryData[this] = libraryData;
 
             libraryData.Texture = new PVRTexture(request.FilePath);
@@ -298,10 +301,12 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             image.Width = (int)libraryData.Header.GetWidth();
             image.Height = (int)libraryData.Header.GetHeight();
             image.Depth = (int)libraryData.Header.GetDepth();
-            image.Format = RetrieveFormatFromNativeData(libraryData.Header);
+            
+            var format = RetrieveFormatFromNativeData(libraryData.Header);
+            image.Format = request.LoadAsSRgb? format.ToSRgb(): format.ToNonSRgb();
 
             int pitch, slice;
-            Tools.ComputePitch(image.Format, (int)image.Width, (int)image.Height, out pitch, out slice);
+            Tools.ComputePitch(image.Format, image.Width, image.Height, out pitch, out slice);
             image.RowPitch = pitch;
             image.SlicePitch = slice;
 
@@ -317,7 +322,6 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 image.Dimension = TexImage.TextureDimension.Texture2D;
             else
                 image.Dimension = TexImage.TextureDimension.Texture1D;
-
         }
 
 
@@ -495,14 +499,77 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             UpdateImage(image, libraryData);
         }
 
+        /// <summary>
+        /// Transposes face data since Pvrtt keeps the format of data [mipMap][face], but Paradox uses [face][mipMap]
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="libraryData"></param>
+        private void TransposeFaceData(TexImage image, PvrTextureLibraryData libraryData)
+        {
+            var destPtr = Marshal.AllocHGlobal(image.DataSize);
 
+            var targetRowSize = 0;
+
+            // Build an array of slices for each mip levels
+            var slices = new int[image.MipmapCount];
+            var aggregateSize = new int[image.MipmapCount];
+
+            var currWidth = image.Width;
+            var currHeight = image.Height;
+
+            for (var i = 0; i < image.MipmapCount; ++i)
+            {
+                int pitch, slice;
+                Tools.ComputePitch(image.Format, currWidth, currHeight, out pitch, out slice);
+
+                slices[i] = slice;
+
+                aggregateSize[i] = targetRowSize;
+                targetRowSize += slice;
+
+                currWidth /= 2;
+                currHeight /= 2;
+            }
+
+            var sourceRowOffset = 0;
+
+            for (var currMip = 0; currMip < image.MipmapCount; ++currMip)
+            {
+                var slice = slices[currMip];
+
+                for (var currFace = 0; currFace < image.FaceCount; ++currFace)
+                {
+                    var sourceOffset = sourceRowOffset + (currFace * slice);
+
+                    var destOffset = (targetRowSize * currFace) + aggregateSize[currMip];
+
+                    var source = new IntPtr(image.Data.ToInt64() + sourceOffset);
+                    var dest = new IntPtr(destPtr.ToInt64() + destOffset);
+ 
+                    Core.Utilities.CopyMemory(dest, source, slice);       
+                }
+
+                sourceRowOffset += slice * image.FaceCount;
+            }
+
+            // Copy data back to the library
+            Core.Utilities.CopyMemory(
+                                libraryData.Texture.GetDataPtr(),   // Dest
+                                destPtr,                            // Source
+                                image.DataSize);                    // Size
+
+            image.Data = libraryData.Texture.GetDataPtr();
+
+            Marshal.FreeHGlobal(destPtr);
+        }
         /// <summary>
         /// Decompresses the specified image.
         /// </summary>
         /// <param name="image">The image.</param>
         /// <param name="libraryData">The library data.</param>
-        /// <exception cref="TexLibraryException">Decompression failed!</exception>
-        public void Decompress(TexImage image, PvrTextureLibraryData libraryData)
+        /// <param name="request">The decompression request</param>
+        /// <exception cref="TextureToolsException">Decompression failed!</exception>
+        public void Decompress(TexImage image, PvrTextureLibraryData libraryData, DecompressingRequest request)
         {
             Log.Info("Decompressing texture ...");
 
@@ -512,7 +579,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 throw new TextureToolsException("Decompression failed!");
             }
 
-            image.Format = SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm;
+            image.Format = request.DecompressedFormat;
 
             int pitch,slice;
             Tools.ComputePitch(image.Format, image.Width, image.Height, out pitch, out slice);

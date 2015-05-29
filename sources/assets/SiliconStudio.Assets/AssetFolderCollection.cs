@@ -17,7 +17,7 @@ namespace SiliconStudio.Assets
     [DataContract("AssetFolderCollection")]
     [DebuggerTypeProxy(typeof(CollectionDebugView))]
     [DebuggerDisplay("Count = {Count}")]
-    public sealed class AssetFolderCollection : ICollection<AssetFolder>
+    public sealed class AssetFolderCollection : IList<AssetFolder>
     {
         private readonly List<AssetFolder> folders;
 
@@ -124,5 +124,22 @@ namespace SiliconStudio.Assets
         {
             return ((IEnumerable)folders).GetEnumerator();
         }
+
+        int IList<AssetFolder>.IndexOf(AssetFolder item)
+        {
+            return folders.IndexOf(item);
+        }
+
+        void IList<AssetFolder>.Insert(int index, AssetFolder item)
+        {
+            folders.Insert(index, item);
+        }
+
+        void IList<AssetFolder>.RemoveAt(int index)
+        {
+            folders.RemoveAt(index);
+        }
+
+        AssetFolder IList<AssetFolder>.this[int index] { get { return folders[index]; } set { folders[index] = value; } }
     }
 }

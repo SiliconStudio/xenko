@@ -11,7 +11,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SiliconStudio.Paradox.Shaders.Compiler</RootNamespace>
     <AssemblyName>SiliconStudio.Paradox.Shaders.Compiler</AssemblyName>
-    <ParadoxBuildTags>Windows</ParadoxBuildTags>
+    <ParadoxBuildTags>Windows;Android</ParadoxBuildTags>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer</SiliconStudioAssemblyProcessorOptions>
     <SiliconStudioCompilerTargetsEnable Condition=" '$(ParadoxEffectCompiler)' != 'true' ">false</SiliconStudioCompilerTargetsEnable>

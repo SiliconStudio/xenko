@@ -1,14 +1,13 @@
 !Texture
-Id: f2634500-1df8-4eb3-b413-0d3e6a2b3cc8
+Id: cce9f877-e829-48e1-9dda-a0c9bcee8b20
 Tags: []
 Source: ../../../data/tests/BorderButtonCentered.dds
-ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Format: TrueColor
 Alpha: Explicit
 ~Base:
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000
         Tags: []
+        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
         ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

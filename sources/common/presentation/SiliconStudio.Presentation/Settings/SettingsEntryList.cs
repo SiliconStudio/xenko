@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.Linq;
 
 using SiliconStudio.ActionStack;
@@ -40,7 +41,7 @@ namespace SiliconStudio.Presentation.Settings
         /// <inheritdoc/>
         internal override object GetSerializableValue()
         {
-            return new List<object>(items.Cast<object>().Select(x => x != null ? x.ToString() : null));
+            return new List<object>(items.Cast<object>().Select(x => x != null ? string.Format(CultureInfo.InvariantCulture, "{0}", x) : null));
         }
 
         private void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

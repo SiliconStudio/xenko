@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public ButtonTest()
         {
-            CurrentVersion = 3;
+            CurrentVersion = 4;
         }
 
         protected override async Task LoadContent()
@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
             button = new Button();
 
-            UI.RootElement = button;
+            UIComponent.RootElement = button;
         }
 
         protected override void RegisterTests()

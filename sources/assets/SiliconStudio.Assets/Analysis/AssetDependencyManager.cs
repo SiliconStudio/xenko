@@ -3,13 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using SiliconStudio.Assets.Visitors;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
@@ -36,15 +33,16 @@ namespace SiliconStudio.Assets.Analysis
         private readonly PackageSession session;
         internal readonly object ThisLock = new object();
         internal readonly HashSet<Package> Packages;
-        internal readonly Dictionary<Guid, AssetDependencySet> Dependencies;
-        internal readonly Dictionary<Guid, AssetDependencySet> AssetsWithMissingReferences;
-        internal readonly Dictionary<Guid, HashSet<AssetDependencySet>> MissingReferencesToParent;
+        internal readonly Dictionary<Guid, AssetDependencies> Dependencies;
+        internal readonly Dictionary<Guid, AssetDependencies> AssetsWithMissingReferences;
+        internal readonly Dictionary<Guid, HashSet<AssetDependencies>> MissingReferencesToParent;
 
         // Objects used to track directories
         internal DirectoryWatcher DirectoryWatcher;
         private readonly Dictionary<Package, string> packagePathsTracked = new Dictionary<Package, string>();
         private readonly Dictionary<Guid, HashSet<UFile>> mapAssetToInputDependencies = new Dictionary<Guid, HashSet<UFile>>();
         private readonly Dictionary<string, HashSet<Guid>> mapInputDependencyToAssets = new Dictionary<string, HashSet<Guid>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<Guid, ObjectId> mapAssetsToSource = new Dictionary<Guid, ObjectId>();
         private readonly List<FileEvent> fileEvents = new List<FileEvent>();
         private readonly List<FileEvent> fileEventsWorkingCopy = new List<FileEvent>();
         private readonly ManualResetEvent threadWatcherEvent;
@@ -79,11 +77,11 @@ namespace SiliconStudio.Assets.Analysis
             this.session = session;
             this.session.Packages.CollectionChanged += Packages_CollectionChanged;
             session.AssetDirtyChanged += Session_AssetDirtyChanged;
-            AssetsWithMissingReferences = new Dictionary<Guid, AssetDependencySet>();
-            MissingReferencesToParent = new Dictionary<Guid, HashSet<AssetDependencySet>>();
+            AssetsWithMissingReferences = new Dictionary<Guid, AssetDependencies>();
+            MissingReferencesToParent = new Dictionary<Guid, HashSet<AssetDependencies>>();
             Packages = new HashSet<Package>();
-            Dependencies = new Dictionary<Guid, AssetDependencySet>();
-            TrackingSleepTime = 1000;
+            Dependencies = new Dictionary<Guid, AssetDependencies>();
+            TrackingSleepTime = 100;
             tokenSourceForImportHash = new CancellationTokenSource();
             threadWatcherEvent = new ManualResetEvent(false);
 
@@ -236,7 +234,7 @@ namespace SiliconStudio.Assets.Analysis
         }
 
         /// <summary>
-        /// Finds the changed events that have occured, only valid if <see cref="EnableTracking"/> is set to <c>true</c>.
+        /// Finds the changed events that have occurred, only valid if <see cref="EnableTracking"/> is set to <c>true</c>.
         /// </summary>
         /// <returns>List of events.</returns>
         public IEnumerable<AssetFileChangedEvent> FindAssetFileChangedEvents()
@@ -254,34 +252,41 @@ namespace SiliconStudio.Assets.Analysis
         /// </summary>
         /// <param name="assetId">The asset identifier.</param>
         /// <returns>The dependencies or null if not found.</returns>
-        public AssetDependencySet FindDependencySet(Guid assetId)
+        public AssetDependencies FindDependencySet(Guid assetId)
         {
-            AssetDependencySet dependencySet;
+            AssetDependencies dependencies;
             lock (Initialize())
             {
-                if (Dependencies.TryGetValue(assetId, out dependencySet))
+                if (Dependencies.TryGetValue(assetId, out dependencies))
                 {
                     // Create a copy
-                    dependencySet = new AssetDependencySet(dependencySet);
+                    dependencies = new AssetDependencies(dependencies);
                 }
             }
-            return dependencySet;
+            return dependencies;
         }
 
         /// <summary>
         /// Finds the assets inheriting from the specified asset id (this is a direct inheritance, not indirect).
         /// </summary>
         /// <param name="assetId">The asset identifier.</param>
+        /// <param name="searchOptions">The types of inheritance to search for</param>
         /// <returns>A list of asset inheriting from the specified asset id.</returns>
-        public List<AssetItem> FindAssetsInheritingFrom(Guid assetId)
+        public List<AssetItem> FindAssetsInheritingFrom(Guid assetId, AssetInheritanceSearchOptions searchOptions = AssetInheritanceSearchOptions.All)
         {
             var list = new List<AssetItem>();
             lock (Initialize())
             {
-                AssetDependencySet dependencySet;
-                if (Dependencies.TryGetValue(assetId, out dependencySet))
+                ContentLinkType searchType = 0;
+                if((searchOptions & AssetInheritanceSearchOptions.Base) != 0)
+                    searchType |= ContentLinkType.Inheritance;
+                if((searchOptions & AssetInheritanceSearchOptions.Composition) != 0)
+                    searchType |= ContentLinkType.CompositionInheritance;
+
+                AssetDependencies dependencies;
+                if (Dependencies.TryGetValue(assetId, out dependencies))
                 {
-                    list.AddRange(dependencySet.Parents.Where(parent => parent.Asset.Base != null && parent.Asset.Base.Id == assetId).Select(item => item.Clone(true)));
+                    list.AddRange(dependencies.LinksIn.Where(p => (p.Type & searchType) != 0).Select(p => p.Item.Clone(true)));
                 }
             }
             return list;
@@ -333,8 +338,9 @@ namespace SiliconStudio.Assets.Analysis
         /// </summary>
         /// <param name="assetItem">The asset item.</param>
         /// <param name="dependenciesOptions">The dependencies options.</param>
+        /// <param name="visited">The list of element already visited.</param>
         /// <returns>The dependencies.</returns>
-        public AssetDependencySet ComputeDependencies(AssetItem assetItem, AssetDependencySearchOptions dependenciesOptions = AssetDependencySearchOptions.All, HashSet<Guid> visited = null)
+        public AssetDependencies ComputeDependencies(AssetItem assetItem, AssetDependencySearchOptions dependenciesOptions = AssetDependencySearchOptions.All, HashSet<Guid> visited = null)
         {
             if (assetItem == null) throw new ArgumentNullException("assetItem");
             bool recursive = (dependenciesOptions & AssetDependencySearchOptions.Recursive) != 0;
@@ -345,13 +351,13 @@ namespace SiliconStudio.Assets.Analysis
 
             lock (Initialize())
             {
-                var dependencySet = new AssetDependencySet(assetItem);
+                var dependencies = new AssetDependencies(assetItem);
 
                 int inCount = 0, outCount = 0;
 
                 if ((dependenciesOptions & AssetDependencySearchOptions.In) != 0)
                 {
-                    CollectInputReferences(dependencySet, assetItem, visited, recursive, ref inCount);
+                    CollectInputReferences(dependencies, assetItem, visited, recursive, ref inCount);
                 }
 
                 if ((dependenciesOptions & AssetDependencySearchOptions.Out) != 0)
@@ -360,12 +366,12 @@ namespace SiliconStudio.Assets.Analysis
                     {
                         visited.Clear();
                     }
-                    CollectOutputReferences(dependencySet, assetItem, visited, recursive, ref outCount);
+                    CollectOutputReferences(dependencies, assetItem, visited, recursive, ref outCount);
                 }
 
                 //Console.WriteLine("Time to compute dependencies: {0}ms in: {1} out:{2}", clock.ElapsedMilliseconds, inCount, outCount);
 
-                return dependencySet;
+                return dependencies;
             }
 
         }
@@ -407,10 +413,10 @@ namespace SiliconStudio.Assets.Analysis
         {
             lock (Initialize())
             {
-                AssetDependencySet dependencySet;
-                if (AssetsWithMissingReferences.TryGetValue(assetId, out dependencySet))
+                AssetDependencies dependencies;
+                if (AssetsWithMissingReferences.TryGetValue(assetId, out dependencies))
                 {
-                    return dependencySet.MissingReferences.ToList();
+                    return dependencies.BrokenLinksOut.Select(x => x.Element).ToList();
                 }
             }
 
@@ -457,8 +463,9 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="result">The result.</param>
         /// <param name="packageSession">The package session.</param>
         /// <param name="isRecursive">if set to <c>true</c> [is recursive].</param>
+        /// <param name="keepParents">Indicate if the parent of the provided <paramref name="result"/> should be kept or not</param>
         /// <exception cref="System.ArgumentNullException">packageSession</exception>
-        private static void CollectDynamicOutReferences(AssetDependencySet result, PackageSession packageSession, bool isRecursive, bool keepParents)
+        private static void CollectDynamicOutReferences(AssetDependencies result, PackageSession packageSession, bool isRecursive, bool keepParents)
         {
             if (packageSession == null) throw new ArgumentNullException("packageSession");
             CollectDynamicOutReferences(result, packageSession.FindAsset, isRecursive, keepParents);
@@ -470,12 +477,13 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="result">The result.</param>
         /// <param name="assetResolver">The asset resolver.</param>
         /// <param name="isRecursive">if set to <c>true</c> collects references recursively.</param>
+        /// <param name="keepParents">Indicate if the parent of the provided <paramref name="result"/> should be kept or not</param>
         /// <exception cref="System.ArgumentNullException">
         /// result
         /// or
         /// assetResolver
         /// </exception>
-        private static void CollectDynamicOutReferences(AssetDependencySet result, Func<Guid, AssetItem> assetResolver, bool isRecursive, bool keepParents)
+        private static void CollectDynamicOutReferences(AssetDependencies result, Func<Guid, AssetItem> assetResolver, bool isRecursive, bool keepParents)
         {
             if (result == null) throw new ArgumentNullException("result");
             if (assetResolver == null) throw new ArgumentNullException("assetResolver");
@@ -496,19 +504,19 @@ namespace SiliconStudio.Assets.Analysis
             {
                 var item = itemsToAnalyze.Dequeue();
 
-                foreach (var contentReference in referenceCollector.GetDependencies(item))
+                foreach (var link in referenceCollector.GetDependencies(item))
                 {
-                    if (addedReferences.Contains(contentReference.Id))
+                    if (addedReferences.Contains(link.Element.Id))
                         continue;
 
                     // marked as processed to not add it again
-                    addedReferences.Add(contentReference.Id);
+                    addedReferences.Add(link.Element.Id);
 
                     // add the location to the reference location list
-                    var nextItem = assetResolver(contentReference.Id);
+                    var nextItem = assetResolver(link.Element.Id);
                     if (nextItem != null)
                     {
-                        result.Add(nextItem);
+                        result.AddLinkOut(nextItem, link.Type, false);
 
                         // add current element to analyze list, to analyze dependencies recursively
                         if (isRecursive)
@@ -518,7 +526,7 @@ namespace SiliconStudio.Assets.Analysis
                     }
                     else
                     {
-                        result.AddMissingReference(contentReference);
+                        result.AddBrokenLinkOut(link);
                     }
                 }
 
@@ -589,17 +597,17 @@ namespace SiliconStudio.Assets.Analysis
         /// </summary>
         /// <param name="assetItem">The asset item.</param>
         /// <returns>The dependencies.</returns>
-        private AssetDependencySet CalculateDependencies(AssetItem assetItem)
+        private AssetDependencies CalculateDependencies(AssetItem assetItem)
         {
-            AssetDependencySet dependencySet;
-            if (!Dependencies.TryGetValue(assetItem.Id, out dependencySet))
+            AssetDependencies dependencies;
+            if (!Dependencies.TryGetValue(assetItem.Id, out dependencies))
             {
                 // If the asset is not followed by this instance (this could not be part of the session)
                 // We are allocating a new dependency on the fly and calculating first level dependencies
-                dependencySet = new AssetDependencySet(assetItem);
-                CollectDynamicOutReferences(dependencySet, FindAssetFromDependencyOrSession, false, false);
+                dependencies = new AssetDependencies(assetItem);
+                CollectDynamicOutReferences(dependencies, FindAssetFromDependencyOrSession, false, false);
             }
-            return dependencySet;
+            return dependencies;
         }
 
         /// <summary>
@@ -659,8 +667,8 @@ namespace SiliconStudio.Assets.Analysis
         /// This method is called when an asset needs to be tracked
         /// </summary>
         /// <param name="assetItemSource">The asset item source.</param>
-        /// <returns>AssetDependencySet.</returns>
-        private AssetDependencySet TrackAsset(AssetItem assetItemSource)
+        /// <returns>AssetDependencies.</returns>
+        private AssetDependencies TrackAsset(AssetItem assetItemSource)
         {
             return TrackAsset(assetItemSource.Id);
         }
@@ -668,12 +676,12 @@ namespace SiliconStudio.Assets.Analysis
         /// <summary>
         /// This method is called when an asset needs to be tracked
         /// </summary>
-        /// <returns>AssetDependencySet.</returns>
-        private AssetDependencySet TrackAsset(Guid assetId)
+        /// <returns>AssetDependencies.</returns>
+        private AssetDependencies TrackAsset(Guid assetId)
         {
             lock (ThisLock)
             {
-                AssetDependencySet dependencies;
+                AssetDependencies dependencies;
                 if (Dependencies.TryGetValue(assetId, out dependencies))
                     return dependencies;
 
@@ -699,7 +707,7 @@ namespace SiliconStudio.Assets.Analysis
                             SourceFolder = assetItem.SourceFolder
                         };
                 
-                dependencies = new AssetDependencySet(assetItemCloned);
+                dependencies = new AssetDependencies(assetItemCloned);
 
                 // Adds to global list
                 Dependencies.Add(assetId, dependencies);
@@ -735,140 +743,139 @@ namespace SiliconStudio.Assets.Analysis
             lock (ThisLock)
             {
                 var assetId = assetItemSource.Id;
-                AssetDependencySet dependencySet;
-                if (!Dependencies.TryGetValue(assetId, out dependencySet))
+                AssetDependencies dependencies;
+                if (!Dependencies.TryGetValue(assetId, out dependencies))
                     return;
 
                 // Remove from global list
                 Dependencies.Remove(assetId);
 
                 // Remove previous missing dependencies
-                RemoveMissingDependencies(dependencySet);
+                RemoveMissingDependencies(dependencies);
 
                 // Update [In] dependencies for children
-                foreach (var childItem in dependencySet)
+                foreach (var childItem in dependencies.LinksOut)
                 {
-                    AssetDependencySet childDependencyItem;
-                    if (Dependencies.TryGetValue(childItem.Id, out childDependencyItem))
+                    AssetDependencies childDependencyItem;
+                    if (Dependencies.TryGetValue(childItem.Item.Id, out childDependencyItem))
                     {
-                        childDependencyItem.Parents.Remove(dependencySet.Item);
+                        childDependencyItem.RemoveLinkIn(dependencies.Item);
                     }
                 }
 
                 // Update [Out] dependencies for parents
-                var missingReference = dependencySet.Item.ToReference();
-                foreach (var parentItem in dependencySet.Parents)
+                foreach (var parentDependencies in dependencies.LinksIn)
                 {
-                    var parentDependencySet = Dependencies[parentItem.Id];
-                    parentDependencySet.Remove(dependencySet.Item);
-                    parentDependencySet.AddMissingReference(missingReference);
+                    var assetDependencies = Dependencies[parentDependencies.Item.Id];
+                    var linkOut = assetDependencies.RemoveLinkOut(dependencies.Item);
+                    assetDependencies.AddBrokenLinkOut(linkOut);
 
-                    UpdateMissingDependencies(parentDependencySet);
+                    UpdateMissingDependencies(assetDependencies);
                 }
 
                 // Track asset import paths
-                UpdateAssetImportPathsTracked(dependencySet.Item, false);
+                UpdateAssetImportPathsTracked(dependencies.Item, false);
             }
 
             CheckAllDependencies();
         }
 
-        private void UpdateAssetDependencies(AssetDependencySet dependencySet)
+        private void UpdateAssetDependencies(AssetDependencies dependencies)
         {
             lock (ThisLock)
             {
                 // Track asset import paths
-                UpdateAssetImportPathsTracked(dependencySet.Item, true);
+                UpdateAssetImportPathsTracked(dependencies.Item, true);
 
                 // Remove previous missing dependencies
-                RemoveMissingDependencies(dependencySet);
+                RemoveMissingDependencies(dependencies);
 
                 // Remove [In] dependencies from previous children
-                foreach (var referenceAsset in dependencySet)
+                foreach (var referenceAsset in dependencies.LinksOut)
                 {
-                    var childDependencyItem = TrackAsset(referenceAsset);
+                    var childDependencyItem = TrackAsset(referenceAsset.Item);
                     if (childDependencyItem != null)
                     {
-                        childDependencyItem.Parents.Remove(dependencySet.Item);
+                        childDependencyItem.RemoveLinkIn(dependencies.Item);
                     }
                 }
 
-                // Recalculate [Out] depedencies
-                CollectDynamicOutReferences(dependencySet, FindAssetFromDependencyOrSession, false, true);
+                // Recalculate [Out] dependencies
+                CollectDynamicOutReferences(dependencies, FindAssetFromDependencyOrSession, false, true);
 
                 // Add [In] dependencies to new children
-                foreach (var referenceAsset in dependencySet)
+                foreach (var assetLink in dependencies.LinksOut)
                 {
-                    var childDependencyItem = TrackAsset(referenceAsset);
+                    var childDependencyItem = TrackAsset(assetLink.Item);
                     if (childDependencyItem != null)
                     {
-                        childDependencyItem.Parents.Add(dependencySet.Item);
+                        childDependencyItem.AddLinkIn(dependencies.Item, assetLink.Type, false);
                     }
                 }
 
                 // Update missing dependencies
-                UpdateMissingDependencies(dependencySet);
+                UpdateMissingDependencies(dependencies);
             }
         }
 
-        private void RemoveMissingDependencies(AssetDependencySet dependencySet)
+        private void RemoveMissingDependencies(AssetDependencies dependencies)
         {
-            if (AssetsWithMissingReferences.ContainsKey(dependencySet.Item.Id))
+            if (AssetsWithMissingReferences.ContainsKey(dependencies.Item.Id))
             {
-                AssetsWithMissingReferences.Remove(dependencySet.Item.Id);
-                foreach (var reference in dependencySet.MissingReferences)
+                AssetsWithMissingReferences.Remove(dependencies.Item.Id);
+                foreach (var assetLink in dependencies.BrokenLinksOut)
                 {
-                    var list = MissingReferencesToParent[reference.Id];
-                    list.Remove(dependencySet);
+                    var list = MissingReferencesToParent[assetLink.Element.Id];
+                    list.Remove(dependencies);
                     if (list.Count == 0)
                     {
-                        MissingReferencesToParent.Remove(reference.Id);
+                        MissingReferencesToParent.Remove(assetLink.Element.Id);
                     }
                 }
             }
         }
 
-        private void UpdateMissingDependencies(AssetDependencySet dependencySet)
+        private void UpdateMissingDependencies(AssetDependencies dependencies)
         {
-            HashSet<AssetDependencySet> parentDependencyItems;
+            HashSet<AssetDependencies> parentDependencyItems;
             // If the asset has any missing dependencies, update the fast lookup tables
-            if (dependencySet.HasMissingReferences)
+            if (dependencies.HasMissingDependencies)
             {
-                AssetsWithMissingReferences[dependencySet.Item.Id] = dependencySet;
+                AssetsWithMissingReferences[dependencies.Item.Id] = dependencies;
 
-                foreach (var reference in dependencySet.MissingReferences)
+                foreach (var assetLink in dependencies.BrokenLinksOut)
                 {
-                    if (!MissingReferencesToParent.TryGetValue(reference.Id, out parentDependencyItems))
+                    if (!MissingReferencesToParent.TryGetValue(assetLink.Element.Id, out parentDependencyItems))
                     {
-                        parentDependencyItems = new HashSet<AssetDependencySet>();
-                        MissingReferencesToParent.Add(reference.Id, parentDependencyItems);
+                        parentDependencyItems = new HashSet<AssetDependencies>();
+                        MissingReferencesToParent.Add(assetLink.Element.Id, parentDependencyItems);
                     }
 
-                    parentDependencyItems.Add(dependencySet);
+                    parentDependencyItems.Add(dependencies);
                 }
             }
 
-            var item = dependencySet.Item;
+            var item = dependencies.Item;
 
             // If the new asset was a missing reference, remove all missing references for this asset
             if (MissingReferencesToParent.TryGetValue(item.Id, out parentDependencyItems))
             {
                 MissingReferencesToParent.Remove(item.Id);
-                foreach (var dependency in parentDependencyItems)
+                foreach (var parentDependencies in parentDependencyItems)
                 {
                     // Remove missing dependency from parent
-                    dependency.RemoveMissingReference(item.Id);
+                    var oldBrokenLink = parentDependencies.RemoveBrokenLinkOut(item.Id);
 
                     // Update [Out] dependency to parent
-                    dependency.Add(item);
+                    parentDependencies.AddLinkOut(item, oldBrokenLink.Type, false);
 
                     // Update [In] dependency to current
-                    dependencySet.Parents.Add(dependency.Item);
+                    dependencies.AddLinkIn(parentDependencies.Item, oldBrokenLink.Type, false);
 
                     // Remove global cache for assets with missing references
-                    if (!dependency.HasMissingReferences)
+                    if (!parentDependencies.HasMissingDependencies)
                     {
-                        AssetsWithMissingReferences.Remove(dependency.Item.Id);
+                        AssetsWithMissingReferences.Remove(parentDependencies.Item.Id);
                     }
                 }
             }
@@ -1019,20 +1026,17 @@ namespace SiliconStudio.Assets.Analysis
             {
                 // Currently an AssetImport is linked only to a single entry, but it could have probably have multiple input dependencies in the future
                 var newInputPathDependencies = new HashSet<UFile>();
-                if (assetImport.Base != null && assetImport.Base.IsRootImport)
+                var pathToSourceRawAsset = assetImport.Source;
+                if (string.IsNullOrEmpty(pathToSourceRawAsset))
                 {
-                    var pathToSourceRawAsset = assetImport.Source;
-                    if (pathToSourceRawAsset == null)
-                    {
-                        return;
-                    }
-                    if (!pathToSourceRawAsset.IsAbsolute)
-                    {
-                        pathToSourceRawAsset = UPath.Combine(assetItem.FullPath.GetParent(), pathToSourceRawAsset);
-                    }
-
-                    newInputPathDependencies.Add(pathToSourceRawAsset);
+                    return;
                 }
+                if (!pathToSourceRawAsset.IsAbsolute)
+                {
+                    pathToSourceRawAsset = UPath.Combine(assetItem.FullPath.GetParent(), pathToSourceRawAsset);
+                }
+
+                newInputPathDependencies.Add(pathToSourceRawAsset);
 
                 HashSet<UFile> inputPaths;
                 if (mapAssetToInputDependencies.TryGetValue(assetItem.Id, out inputPaths))
@@ -1082,7 +1086,7 @@ namespace SiliconStudio.Assets.Analysis
 
         private void directoryWatcher_Modified(object sender, FileEvent e)
         {
-            // If trakcing is not enabled, don't bother to track files on disk
+            // If tracking is not enabled, don't bother to track files on disk
             if (!EnableTracking)
                 return;
 
@@ -1105,14 +1109,14 @@ namespace SiliconStudio.Assets.Analysis
 
             lock (ThisLock)
             {
-                AssetDependencySet dependencySet;
-                if (Dependencies.TryGetValue(asset.Id, out dependencySet))
+                AssetDependencies dependencies;
+                if (Dependencies.TryGetValue(asset.Id, out dependencies))
                 {
-                    dependencySet.Item.Asset = (Asset)AssetCloner.Clone(asset);
-                    UpdateAssetDependencies(dependencySet);
+                    dependencies.Item.Asset = (Asset)AssetCloner.Clone(asset);
+                    UpdateAssetDependencies(dependencies);
 
                     // Notify an asset changed
-                    OnAssetChanged(dependencySet.Item);
+                    OnAssetChanged(dependencies.Item);
                 }
                 else
                 {
@@ -1328,24 +1332,37 @@ namespace SiliconStudio.Assets.Analysis
                 }
                 foreach (var itemId in items)
                 {
-                    AssetDependencySet dependencySet;
-                    Dependencies.TryGetValue(itemId, out dependencySet);
-                    if (dependencySet == null)
+                    AssetDependencies dependencies;
+                    Dependencies.TryGetValue(itemId, out dependencies);
+                    if (dependencies == null)
                     {
                         continue;
                     }
 
-                    var item = dependencySet.Item;
+                    var item = dependencies.Item;
 
+                    bool shouldNotifyChange;
                     var assetImport = item.Asset as AssetImportTracked;
-                    if (assetImport != null && assetImport.Base != null && assetImport.Base.IsRootImport && assetImport.SourceHash != hash)
+
+                    if (assetImport != null)
+                    {
+                        shouldNotifyChange = assetImport.Base != null && assetImport.Base.IsRootImport && assetImport.SourceHash != hash;
+                    }
+                    else
+                    {
+                         ObjectId previousHash;
+                         shouldNotifyChange = !mapAssetsToSource.TryGetValue(item.Id, out previousHash) || previousHash != hash;
+                         mapAssetsToSource[item.Id] = hash;
+                    }
+
+                    if (shouldNotifyChange)
                     {
                         // If the hash is empty, the source file has been deleted
                         var changeType = (hash == ObjectId.Empty) ? AssetFileChangedType.SourceDeleted : AssetFileChangedType.SourceUpdated;
 
                         // Transmit the hash in the event as well, so that we can check again if the asset has not been updated during the async round-trip
-                        // (it happens when reimporting multiple assets at once).
-                        sourceImportFileChangedEventsToAdd.Add(new AssetFileChangedEvent(item.Package, changeType, item.Location) { AssetId = assetImport.Id, Hash = hash });
+                        // (it happens when re-importing multiple assets at once).
+                        sourceImportFileChangedEventsToAdd.Add(new AssetFileChangedEvent(item.Package, changeType, item.Location) { AssetId = item.Id, Hash = hash });
                     }
                 }
 
@@ -1357,7 +1374,7 @@ namespace SiliconStudio.Assets.Analysis
             }
         }
 
-        private void CollectInputReferences(AssetDependencySet dependencyRoot, AssetItem assetItem, HashSet<Guid> visited, bool recursive, ref int count)
+        private void CollectInputReferences(AssetDependencies dependencyRoot, AssetItem assetItem, HashSet<Guid> visited, bool recursive, ref int count)
         {
             var assetId = assetItem.Id;
             if (visited != null)
@@ -1370,23 +1387,23 @@ namespace SiliconStudio.Assets.Analysis
 
             count++;
 
-            AssetDependencySet dependencies;
+            AssetDependencies dependencies;
             Dependencies.TryGetValue(assetId, out dependencies);
             if (dependencies != null)
             {
-                foreach (var parentItem in dependencies.Parents)
+                foreach (var pair in dependencies.LinksIn)
                 {
-                    dependencyRoot.Parents.Add(parentItem.Clone(true));
+                    dependencyRoot.AddLinkIn(pair, true);
 
                     if (visited != null && recursive)
                     {
-                        CollectInputReferences(dependencyRoot, parentItem, visited, recursive, ref count);
+                        CollectInputReferences(dependencyRoot, pair.Item, visited, true, ref count);
                     }
                 }
             }
         }
 
-        private void CollectOutputReferences(AssetDependencySet dependencyRoot, AssetItem assetItem, HashSet<Guid> visited, bool recursive, ref int count)
+        private void CollectOutputReferences(AssetDependencies dependencyRoot, AssetItem assetItem, HashSet<Guid> visited, bool recursive, ref int count)
         {
             var assetId = assetItem.Id;
             if (visited != null)
@@ -1402,19 +1419,19 @@ namespace SiliconStudio.Assets.Analysis
             var dependencies = CalculateDependencies(assetItem);
 
             // Add missing references
-            foreach (var missingRef in dependencies.MissingReferences)
+            foreach (var missingRef in dependencies.BrokenLinksOut)
             {
-                dependencyRoot.AddMissingReference(missingRef);
+                dependencyRoot.AddBrokenLinkOut(missingRef);
             }
 
             // Add output references
-            foreach (var child in dependencies)
+            foreach (var child in dependencies.LinksOut)
             {
-                dependencyRoot.Add(child.Clone(true));
+                dependencyRoot.AddLinkOut(child, true);
 
                 if (visited != null && recursive)
                 {
-                    CollectOutputReferences(dependencyRoot, child, visited, recursive, ref count);
+                    CollectOutputReferences(dependencyRoot, child.Item, visited, true, ref count);
                 }
             }
         }
@@ -1429,7 +1446,7 @@ namespace SiliconStudio.Assets.Analysis
             /// </summary>
             /// <param name="item">The item we when the references of</param>
             /// <returns></returns>
-            IEnumerable<IContentReference> GetDependencies(AssetItem item);
+            IEnumerable<IContentLink> GetDependencies(AssetItem item);
         }
 
         /// <summary>
@@ -1437,30 +1454,47 @@ namespace SiliconStudio.Assets.Analysis
         /// </summary>
         private class DependenciesCollector : AssetVisitorBase, IDependenciesCollector
         {
-            private readonly HashSet<IContentReference> collectedReferences = new HashSet<IContentReference>();
+            private AssetDependencies dependencies;
 
-            public IEnumerable<IContentReference> GetDependencies(AssetItem item)
+            public IEnumerable<IContentLink> GetDependencies(AssetItem item)
             {
-                collectedReferences.Clear();
+                dependencies = new AssetDependencies(item);
 
-                Visit(item);
+                Visit(item.Asset);
+                
+                // composition inheritances
+                var assetComposer = item.Asset as IAssetComposer;
+                if (assetComposer != null)
+                {
+                    foreach (var compositionBase in assetComposer.GetCompositionBases())
+                        dependencies.AddBrokenLinkOut(compositionBase, ContentLinkType.CompositionInheritance);
+                }
 
-                return collectedReferences;
+                return dependencies.BrokenLinksOut;
             }
+
             public override void VisitObject(object obj, ObjectDescriptor descriptor, bool visitMembers)
             {
+                // references and base
                 var reference = obj as IContentReference;
+                if (reference == null)
+                {
+                    var attachedReference = AttachedReferenceManager.GetAttachedReference(obj);
+                    if (attachedReference != null && attachedReference.IsProxy)
+                        reference = new AttachedContentReference(attachedReference);
+                }
+
                 if (reference != null)
                 {
-                    // Don't record base import
-                    if (reference is AssetBase && ((AssetBase)reference).IsRootImport)
-                    {
-                        return;
-                    }
+                    var isBase = reference is AssetBase;
 
-                    collectedReferences.Add(reference);
+                    // Don't record base import
+                    if (isBase && ((AssetBase)reference).IsRootImport)
+                        return;
+
+                    dependencies.AddBrokenLinkOut(reference, (isBase ? ContentLinkType.Inheritance: 0) | ContentLinkType.Reference);
                 }
-                else // recursive visit
+                else
                 {
                     base.VisitObject(obj, descriptor, visitMembers);
                 }

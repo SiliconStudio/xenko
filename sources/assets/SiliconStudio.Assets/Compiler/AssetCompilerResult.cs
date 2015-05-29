@@ -1,5 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
+
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Diagnostics;
 
@@ -10,6 +13,8 @@ namespace SiliconStudio.Assets.Compiler
     /// </summary>
     public class AssetCompilerResult : LoggerResult
     {
+        private ListBuildStep buildSteps;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggerResult" /> class.
         /// </summary>
@@ -28,6 +33,6 @@ namespace SiliconStudio.Assets.Compiler
         /// Gets or sets the build steps generated for the build engine. This can be null if <see cref="LoggerResult.HasErrors"/> is true.
         /// </summary>
         /// <value>The build step.</value>
-        public ListBuildStep BuildSteps { get; set; }
+        public ListBuildStep BuildSteps { get { return buildSteps; } set { if (value == null) throw new ArgumentNullException("value", @"The BuildSteps property cannot be set to null"); buildSteps = value; } }
     }
 }

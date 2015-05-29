@@ -271,6 +271,10 @@ namespace SiliconStudio.Presentation.ViewModel
             }
         }
 
+        protected bool HasPropertyChangingSubscriber { get { return PropertyChanging != null; } }
+
+        protected bool HasPropertyChangedSubscriber { get { return PropertyChanged != null; } }
+        
         /// <inheritdoc/>
         public event PropertyChangingEventHandler PropertyChanging;
 

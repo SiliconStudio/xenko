@@ -28,6 +28,7 @@
 @Import("TocBody")
 
 @helper Dump(){
+@:<%@@ Page Language="C#" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" >
     <head>
@@ -46,6 +47,30 @@
 	        </div>
 	        <div id="body">
 	            <div id="toc_content" class="toc_content">
+                    <script src="http://www.google.com/jsapi" type="text/javascript"></script>
+                    <script>
+                        (function () {
+                            var cx = '005224469009134213609:qzgltnmpujo';
+                            var gcse = document.createElement('script');
+                            gcse.type = 'text/javascript';
+                            gcse.async = true;
+                            gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                                '//cse.google.com/cse.js?cx=' + cx;
+                            var s = document.getElementsByTagName('script')[0];
+                            s.parentNode.insertBefore(gcse, s);
+                        })();
+                    
+                        // Hide page content as soon as search results are available
+                        setInterval(function () {
+                            var resultInfo = $$('.gsc-resultsbox-visible');
+                            if (resultInfo.length) {
+                                $("mainFrame").empty();
+                                // If a search happened, we can't use AJAX anymore to make results disappear. As a result, hightLightTopic() will open new URL as external
+                                searchMode = true;
+                            }
+                        }, 100);
+                    </script>
+                    <gcse:searchbox></gcse:searchbox>
 	                <div class="inner">
 	                    @Helpers.TocBody.Dump()
 	                </div>

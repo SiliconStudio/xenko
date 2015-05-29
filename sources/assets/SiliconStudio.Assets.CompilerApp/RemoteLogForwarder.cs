@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ServiceModel;
 
 using SiliconStudio.Assets.Diagnostics;
+using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Assets.CompilerApp

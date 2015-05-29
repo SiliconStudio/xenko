@@ -7,7 +7,7 @@ namespace SiliconStudio.Paradox.Graphics.Internals
 {
     internal struct EffectParameterResourceBinding
     {
-        public delegate void ApplyParameterWithUpdaterDelegate(GraphicsDevice graphicsDevice, ref EffectParameterResourceData resourceBinding, ShaderParameterUpdater updater);
+        public delegate void ApplyParameterWithUpdaterDelegate(GraphicsDevice graphicsDevice, ref EffectParameterResourceData resourceBinding, EffectParameterCollectionGroup parameterCollectionGroup);
         
         public delegate void ApplyParameterFromValueDelegate(GraphicsDevice graphicsDevice, ref EffectParameterResourceData resourceBinding, object value);        
 

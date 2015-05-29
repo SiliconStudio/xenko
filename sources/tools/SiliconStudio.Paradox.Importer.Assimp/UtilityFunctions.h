@@ -4,9 +4,7 @@
 
 
 using namespace System;
-using namespace SiliconStudio::Paradox::DataModel;
-using namespace SiliconStudio::Paradox::EntityModel::Data;
-using namespace SiliconStudio::Paradox::Engine::Data;
+using namespace SiliconStudio::Paradox::Animations;
 using namespace SiliconStudio::Core::Diagnostics;
 using namespace SiliconStudio::Core::Mathematics;
 
@@ -20,7 +18,6 @@ Vector2 aiVector2ToVector2(aiVector2D vec);
 Vector3 aiVector3ToVector3(aiVector3D vec);
 Quaternion aiQuaternionToQuaternion(aiQuaterniont<float> quat);
 CompressedTimeSpan aiTimeToPdxTimeSpan(double time, double tickPerSecond);
-LightType aiLightTypeToPdxLightType(aiLightSourceType aiLightType, String^ lightName, Logger^ logger);
 
 // Others
 Vector3 QuaternionToEulerAngles(Quaternion q);

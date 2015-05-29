@@ -20,7 +20,7 @@ namespace SiliconStudio.Quantum.Contents
             get { return base.Value; }
             set
             {
-                base.Value = value;
+                SetValue(value);
                 if (BoxedStructureOwner != null)
                 {
                     if (BoxedStructureOwnerIndices != null)

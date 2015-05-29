@@ -43,6 +43,11 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="name">The name.</param>
         protected GraphicsResourceBase(GraphicsDevice device, string name) : base(name)
         {
+            AttachToGraphicsDevice(device);
+        }
+
+        internal void AttachToGraphicsDevice(GraphicsDevice device)
+        {
             GraphicsDevice = device;
 
             if (device != null)

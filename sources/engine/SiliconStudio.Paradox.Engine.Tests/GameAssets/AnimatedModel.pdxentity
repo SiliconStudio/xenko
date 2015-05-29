@@ -1,32 +1,43 @@
-!Entity
-Id: 79b77b2f-70b1-496c-83d0-3828d780795e
+!EntityAsset
+Id: b548e1bc-65ba-4a4b-8d99-09f0859fc466
 Tags: []
-Data:
-    Name: knight
-    Components:
-        ModelComponent.Key: !ModelComponentData
-            DrawOrder: 0
-            Enabled: true
-            Model: a7567f41-33f5-4253-8ddf-397f6cfacbb0:knight_model
-            Parameters:
-                Capacity: 0
-                ~Items: {}
-        AnimationComponent.Key: !AnimationComponentData
-            Animations:
-                Idle: 27999019-8210-4e22-bf08-36c0bed86b22:KnightIdle
-                Run: 05c427ea-1a26-4ffa-bff6-9d3c7dc7e85e:KnightRun
+Source: ../../../data/tests/knight/scenes/knight.fbx
+SourceHash: b0dc28bd79ba6cd2fed575b8855b52fc
+Hierarchy:
+    RootEntity: 0554f357-f330-40fa-a659-2de27786ad4c
+    Entities:
+        -   Name: knight
+            Components:
+                ModelComponent.Key:
+                    Model: 53b953af-1d02-459e-a96f-b40805964d59:knight Model
+                    Materials: []
+                    DrawOrder: 0
+                    Parameters: {}
+                TransformComponent.Key:
+                    Position: {X: 0, Y: 0, Z: 0}
+                    Rotation: {W: 1, X: 0, Y: 0, Z: 0}
+                    Scale: {X: 1, Y: 1, Z: 1}
+                    Children: []
+            Id: 0554f357-f330-40fa-a659-2de27786ad4c
 ~Base:
     Location: --import--
-    Asset: !Entity
+    Asset: !EntityAsset
         Id: 00000000-0000-0000-0000-000000000000
         Tags: []
-        Data:
-            Name: knight
-            Components:
-                ModelComponent.Key: !ModelComponentData
-                    DrawOrder: 0
-                    Enabled: true
-                    Model: a7567f41-33f5-4253-8ddf-397f6cfacbb0:knight_model
-                    Parameters:
-                        Capacity: 0
-                        ~Items: {}
+        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
+        Hierarchy:
+            RootEntity: 0554f357-f330-40fa-a659-2de27786ad4c
+            Entities:
+                -   Name: Entity
+                    Components:
+                        ModelComponent.Key:
+                            Model: 53b953af-1d02-459e-a96f-b40805964d59:knight Model
+                            Materials: []
+                            DrawOrder: 0
+                            Parameters: {}
+                        TransformComponent.Key:
+                            Position: {X: 0, Y: 0, Z: 0}
+                            Rotation: {W: 1, X: 0, Y: 0, Z: 0}
+                            Scale: {X: 1, Y: 1, Z: 1}
+                            Children: []
+                    Id: 0554f357-f330-40fa-a659-2de27786ad4c

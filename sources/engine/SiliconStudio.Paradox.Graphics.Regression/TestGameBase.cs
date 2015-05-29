@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Games;
 
 namespace SiliconStudio.Paradox.Graphics.Regression
@@ -22,6 +23,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1 };
             StopOnFrameCount = -1;
+            AutoLoadDefaultSettings = false;
         }
 
         protected override void Update(GameTime gameTime)

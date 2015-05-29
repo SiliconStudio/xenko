@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Games;
 
 namespace SiliconStudio.Paradox.Audio.Tests.Engine

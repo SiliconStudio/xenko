@@ -6,6 +6,7 @@ namespace SiliconStudio.Paradox.Physics
 {
     [ContentSerializer(typeof(DataContentSerializer<SphereColliderShapeDesc>))]
     [DataContract("SphereColliderShapeDesc")]
+    [Display(50, "SphereColliderShape")]
     public class SphereColliderShapeDesc : IColliderShapeDesc
     {
         /// <userdoc>
@@ -23,7 +24,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <userdoc>
         /// The radius of the sphere/circle.
         /// </userdoc>
-        [DataMember(30)]
-        public float Radius;
+        [DataMember(30)] 
+        public float Radius = 1.0f;
     }
 }

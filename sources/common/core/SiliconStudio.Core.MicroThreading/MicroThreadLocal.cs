@@ -87,6 +87,22 @@ namespace SiliconStudio.Core.MicroThreading
             }
         }
 
+        public bool IsValueCreated
+        {
+            get
+            {
+                var microThread = Scheduler.CurrentMicroThread;
+
+                lock (values)
+                {
+                    if (microThread == null)
+                        return valueOutOfMicrothreadSet;
+
+                    return values.ContainsKey(microThread);
+                }
+            }
+        }
+
         public void ClearValue()
         {
             var microThread = Scheduler.CurrentMicroThread;

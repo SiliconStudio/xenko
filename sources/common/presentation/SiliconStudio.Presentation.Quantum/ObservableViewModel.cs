@@ -5,13 +5,30 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
+using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
+using SiliconStudio.Presentation.Extensions;
 using SiliconStudio.Presentation.Services;
 using SiliconStudio.Presentation.ViewModel;
+using SiliconStudio.Presentation.ViewModel.ActionStack;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public class ObservableViewModel : EditableViewModel
+    /// <summary>
+    /// A factory that creates an <see cref="ObservableModelNode"/> from a set of parameters.
+    /// </summary>
+    /// <param name="viewModel">The <see cref="ObservableViewModel"/> that owns the new <see cref="ObservableModelNode"/>.</param>
+    /// <param name="baseName">The base name of this node. Can be null if <see paramref="index"/> is not. If so a name will be automatically generated from the index.</param>
+    /// <param name="isPrimitive">Indicate whether this node should be considered as a primitive node.</param>
+    /// <param name="modelNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
+    /// <param name="modelNodePath">The <see cref="ModelNodePath"/> corresponding to the given node.</param>
+    /// <param name="contentType">The type of content contained by the new <see cref="ObservableModelNode"/>.</param>
+    /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <c>null</c> must be passed otherwise</param>
+    /// <returns>A new instance of <see cref="ObservableModelNode"/> corresponding to the given parameters.</returns>
+    public delegate ObservableModelNode CreateNodeDelegate(ObservableViewModel viewModel, string baseName, bool isPrimitive, IModelNode modelNode, ModelNodePath modelNodePath, Type contentType, object index);
+
+    public class ObservableViewModel : EditableViewModel, IDisposable
     {
         public const string DefaultLoggerName = "Quantum";
         public const string HasChildPrefix = "HasChild_";
@@ -20,25 +37,32 @@ namespace SiliconStudio.Presentation.Quantum
         
         private readonly ObservableViewModelService observableViewModelService;
         private readonly ModelContainer modelContainer;
+        private readonly IEnumerable<IDirtiableViewModel> dirtiables;
+        private readonly HashSet<string> nodeChangeList = new HashSet<string>();
         private IObservableNode rootNode;
-        private bool singleNodeActionRegistered;
+        private ObservableViewModel parent;
 
         private Func<SingleObservableNode, object, string> formatSingleUpdateMessage = (node, value) => string.Format("Update '{0}'", node.Name);
         private Func<CombinedObservableNode, object, string> formatCombinedUpdateMessage = (node, value) => string.Format("Update '{0}'", node.Name);
 
-        private readonly Dictionary<ObservableModelNode, List<IDirtiableViewModel>> dirtiableViewModels = new Dictionary<ObservableModelNode, List<IDirtiableViewModel>>();
+        public static readonly CreateNodeDelegate DefaultObservableNodeFactory = DefaultCreateNode;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObservableViewModel"/> class.
         /// </summary>
         /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="ObservableViewModelService"/> to use for this view model.</param>
         /// <param name="modelContainer">A <see cref="ModelContainer"/> to use to build view model nodes.</param>
-        private ObservableViewModel(IViewModelServiceProvider serviceProvider, ModelContainer modelContainer)
+        /// <param name="dirtiables">The list of <see cref="IDirtiableViewModel"/> objects linked to this view model.</param>
+        private ObservableViewModel(IViewModelServiceProvider serviceProvider, ModelContainer modelContainer, IEnumerable<IDirtiableViewModel> dirtiables)
             : base(serviceProvider)
         {
             if (modelContainer == null) throw new ArgumentNullException("modelContainer");
+            if (dirtiables == null) throw new ArgumentNullException("dirtiables");
             this.modelContainer = modelContainer;
+            this.dirtiables = dirtiables;
+            this.dirtiables.ForEach(x => x.DirtinessUpdated += DirtinessUpdated);
             observableViewModelService = serviceProvider.Get<ObservableViewModelService>();
+            Logger = GlobalLogger.GetLogger(DefaultLoggerName);
         }
 
         /// <summary>
@@ -49,20 +73,26 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="modelNode">The root model node of the view model to generate.</param>
         /// <param name="dirtiables">The list of <see cref="IDirtiableViewModel"/> objects linked to this view model.</param>
         public ObservableViewModel(IViewModelServiceProvider serviceProvider, ModelContainer modelContainer, IModelNode modelNode, IEnumerable<IDirtiableViewModel> dirtiables)
-            : this(serviceProvider, modelContainer)
+            : this(serviceProvider, modelContainer, dirtiables.SafeArgument("dirtiables").ToList())
         {
             if (modelNode == null) throw new ArgumentNullException("modelNode");
-            var node = ObservableModelNode.Create(this, "Root", modelNode.Content.IsPrimitive, null, modelNode, new ModelNodePath(modelNode), modelNode.Content.Type, null);
+            var node = observableViewModelService.ObservableNodeFactory(this, "Root", modelNode.Content.IsPrimitive, modelNode, new ModelNodePath(modelNode), modelNode.Content.Type, null);
             Identifier = new ObservableViewModelIdentifier(node.ModelGuid);
-            dirtiableViewModels.Add(node, dirtiables.ToList());
             node.Initialize();
             RootNode = node;
             node.CheckConsistency();
         }
 
-        public static ObservableViewModel CombineViewModels(IViewModelServiceProvider serviceProvider, ModelContainer modelContainer, IEnumerable<ObservableViewModel> viewModels)
+        /// <inheritdoc/>
+        public void Dispose()
         {
-            var combinedViewModel = new ObservableViewModel(serviceProvider, modelContainer);
+            Dirtiables.ForEach(x => x.DirtinessUpdated -= DirtinessUpdated);
+        }
+
+        public static ObservableViewModel CombineViewModels(IViewModelServiceProvider serviceProvider, ModelContainer modelContainer, IReadOnlyCollection<ObservableViewModel> viewModels)
+        {
+            if (viewModels == null) throw new ArgumentNullException("viewModels");
+            var combinedViewModel = new ObservableViewModel(serviceProvider, modelContainer, viewModels.SelectMany(x => x.Dirtiables));
 
             var rootNodes = new List<ObservableModelNode>();
             foreach (var viewModel in viewModels)
@@ -70,9 +100,7 @@ namespace SiliconStudio.Presentation.Quantum
                 if (!(viewModel.RootNode is SingleObservableNode))
                     throw new ArgumentException(@"The view models to combine must contains SingleObservableNode.", "viewModels");
 
-                foreach (var dirtiableViewModel in viewModel.dirtiableViewModels)
-                    combinedViewModel.dirtiableViewModels.Add(dirtiableViewModel.Key, dirtiableViewModel.Value.ToList());
-
+                viewModel.parent = combinedViewModel;
                 var rootNode = (ObservableModelNode)viewModel.RootNode;
                 rootNodes.Add(rootNode);
             }
@@ -80,20 +108,20 @@ namespace SiliconStudio.Presentation.Quantum
             if (rootNodes.Count < 2)
                 throw new ArgumentException(@"Called CombineViewModels with a collection of view models that is either empty or containt just a single item.", "viewModels");
 
-            CombinedObservableNode rootCombinedNode = CombinedObservableNode.Create(combinedViewModel, "Root", null, typeof(object), rootNodes, null);
+            // Find best match for the root node type
+            var rootNodeType = rootNodes.First().Root.Type;
+            if (rootNodes.Skip(1).Any(x => x.Type != rootNodeType))
+                rootNodeType = typeof(object);
+
+            CombinedObservableNode rootCombinedNode = CombinedObservableNode.Create(combinedViewModel, "Root", null, rootNodeType, rootNodes, null);
             combinedViewModel.Identifier = new ObservableViewModelIdentifier(rootNodes.Select(x => x.ModelGuid));
             rootCombinedNode.Initialize();
             combinedViewModel.RootNode = rootCombinedNode;
             return combinedViewModel;
         }
 
-        internal IReadOnlyCollection<IDirtiableViewModel> GetDirtiableViewModels(ObservableModelNode node)
-        {
-            return dirtiableViewModels[(ObservableModelNode)node.Root];
-        }
-
         /// <inheritdoc/>
-        public override IEnumerable<IDirtiableViewModel> Dirtiables { get { return Enumerable.Empty<IDirtiableViewModel>(); } }
+        public override IEnumerable<IDirtiableViewModel> Dirtiables { get { return dirtiables; } }
 
         /// <summary>
         /// Gets the root node of this observable view model.
@@ -125,10 +153,19 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets the <see cref="ModelContainer"/> used to store Quantum objects.
         /// </summary>
-        internal ModelContainer ModelContainer { get { return modelContainer; } }
+        public ModelContainer ModelContainer { get { return modelContainer; } }
 
-        public event EventHandler<NodeChangedArgs> NodeChanged;
+        /// <summary>
+        /// Gets the <see cref="Logger"/> associated to this view model.
+        /// </summary>
+        public Logger Logger { get; private set; }
 
+        /// <summary>
+        /// Raised when the dirtiness of the related <see cref="Dirtiables"/> is updated after a property change.
+        /// </summary>
+        public event EventHandler<ObservableViewModelDirtinessUpdatedArgs> ViewModelDirtinessUpdated;
+
+        [Pure]
         public IObservableNode ResolveObservableNode(string path)
         {
             var members = path.Split('.');
@@ -145,78 +182,30 @@ namespace SiliconStudio.Presentation.Quantum
             return currentNode;
         }
 
-        [Pure]
-        public ObservableModelNode ResolveObservableModelNode(string path, IModelNode rootModelNode)
-        {
-            var members = path.Split('.');
-            if (members[0] != RootNode.Name)
-                return null;
-
-            var currentNode = RootNode;
-            var combinedNode = currentNode as CombinedObservableNode;
-            if (combinedNode != null)
-            {
-                currentNode = combinedNode.CombinedNodes.OfType<ObservableModelNode>().Single(x => x.MatchNode(rootModelNode));
-            }
-            foreach (var member in members.Skip(1))
-            {
-                currentNode = currentNode.Children.FirstOrDefault(x => x.Name == member);
-                if (currentNode == null)
-                    return null;
-            }
-            return (ObservableModelNode)currentNode;
-        }
-
-        private bool MatchModelRootNode(IModelNode node)
-        {
-            return RootNode is ObservableModelNode && ((ObservableModelNode)RootNode).MatchNode(node);
-        }
-
-        internal bool MatchCombinedRootNode(IModelNode node)
-        {
-            return RootNode is CombinedObservableNode && ((CombinedObservableNode)RootNode).CombinedNodes.OfType<ObservableModelNode>().Any(x => x.MatchNode(node));
-        }
-
-        internal bool MatchRootNode(IModelNode node)
-        {
-            return MatchModelRootNode(node) || MatchCombinedRootNode(node);
-        }
-
         internal void NotifyNodeChanged(string observableNodePath)
         {
-            var handler = NodeChanged;
-            if (handler != null)
-            {
-                handler(this, new NodeChangedArgs(this, observableNodePath));
-            }
+            if (parent != null)
+                parent.nodeChangeList.Add(observableNodePath);
+            else
+                nodeChangeList.Add(observableNodePath);
         }
 
-        internal void RegisterAction(string displayName, ModelNodePath nodePath, string observableNodePath, object index, IReadOnlyCollection<IDirtiableViewModel> dirtiables, object newValue, object previousValue)
+        internal void RegisterAction(string observableNodePath, ViewModelActionItem actionItem)
         {
-            singleNodeActionRegistered = true;
-            var actionItem = new ValueChangedActionItem(displayName, observableViewModelService, nodePath, observableNodePath, Identifier, index, dirtiables, modelContainer, previousValue);
-            ActionStack.Add(actionItem);
+            // This must be done before adding the action item to the stack!
             NotifyNodeChanged(observableNodePath);
+            ActionStack.Add(actionItem);
         }
 
         internal void BeginCombinedAction()
         {
             ActionStack.BeginTransaction();
-            singleNodeActionRegistered = false;
         }
 
         internal void EndCombinedAction(string displayName, string observableNodePath, object value)
         {
-            bool shouldDiscard = true;
-            foreach (var singleNode in dirtiableViewModels.Keys)
-            {
-                if (singleNode.Owner.singleNodeActionRegistered)
-                    shouldDiscard = false;
-
-                singleNode.Owner.singleNodeActionRegistered = false;
-            }
-
-            if (shouldDiscard)
+            var actions = ActionStack.GetCurrentTransactions();
+            if (actions.Count == 0)
             {
                 ActionStack.DiscardTransaction();
             }
@@ -224,6 +213,24 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 ActionStack.EndTransaction(displayName, x => new CombinedValueChangedActionItem(displayName, observableViewModelService, observableNodePath, Identifier, x));
             }
+        }
+
+        private void DirtinessUpdated(object sender, DirtinessUpdatedEventArgs e)
+        {
+            var handler = ViewModelDirtinessUpdated;
+            if (handler != null && nodeChangeList.Count > 0)
+            {
+                foreach (var nodeChange in nodeChangeList)
+                {
+                    handler(this, new ObservableViewModelDirtinessUpdatedArgs(this, nodeChange));
+                }
+            }
+            nodeChangeList.Clear();
+        }
+
+        private static ObservableModelNode DefaultCreateNode(ObservableViewModel viewModel, string baseName, bool isPrimitive, IModelNode modelNode, ModelNodePath modelNodePath, Type contentType, object index)
+        {
+            return ObservableModelNode.Create(viewModel, baseName, isPrimitive, modelNode, modelNodePath, contentType, index);
         }
     }
 }

@@ -1,19 +1,17 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.Threading.Tasks;
 
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.EntityModel;
 using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Regression;
 
 namespace SiliconStudio.Paradox.Engine.Tests
 {
     [TestFixture]
-    class TestTextureAlphaSeparation : GraphicsTestBase
+    class TestTextureAlphaSeparation : EngineTestBase
     {
         public TestTextureAlphaSeparation()
         {
@@ -27,27 +25,21 @@ namespace SiliconStudio.Paradox.Engine.Tests
             GraphicsDeviceManager.ShaderProfile = GraphicsProfile.Level_9_1;
         }
 
-        protected void LoadDices()
-        {
-            RenderPipelineFactory.CreateSimple(this, "Default", Color.Red);
-
-            var dice = Asset.Load<Entity>("Cube/cube");
-
-            var cameraComp = new CameraComponent { AspectRatio = 1, FarPlane = 100, NearPlane = 0.1f, TargetUp = -Vector3.UnitY, Target = dice, UseViewMatrix = false, VerticalFieldOfView = 1 };
-            RenderSystem.Pipeline.SetCamera(cameraComp);
-
-            var cameraEntity = new Entity { Transformation = { Translation = new Vector3(0, 0, -2) } };
-            cameraEntity.Add(cameraComp);
-
-            Entities.Add(dice);
-            Entities.Add(cameraEntity);
-        }
-
         protected override async Task LoadContent()
         {
             await base.LoadContent();
+            
+            var dice = Asset.Load<Entity>("Cube/cube");
 
-            LoadDices();
+            var cameraComp = Camera.Get<CameraComponent>();
+            cameraComp.AspectRatio = 1;
+            cameraComp.FarClipPlane = 100;
+            cameraComp.NearClipPlane = 0.1f;
+            cameraComp.UseCustomViewMatrix = true;
+            cameraComp.VerticalFieldOfView = MathUtil.GradiansToDegrees(1);
+            cameraComp.ViewMatrix = Matrix.LookAtRH(new Vector3(0, 0, -2), dice.Transform.Position, -Vector3.UnitY);
+
+            Scene.AddChild(dice);
         }
 
         protected override void RegisterTests()

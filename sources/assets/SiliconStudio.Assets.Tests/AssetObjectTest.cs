@@ -3,14 +3,17 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Assets.Tests
 {
     [DataContract("!AssetObjectTest")]
-    [AssetFileExtension(FileExtension)]
-    public class AssetObjectTest : Asset, IEquatable<AssetObjectTest>
+    [AssetDescription(FileExtension)]
+    public class AssetObjectTest : Asset, IEquatable<AssetObjectTest>, IAssetComposer
     {
         public const string FileExtension = ".pdxtest";
 
@@ -18,6 +21,9 @@ namespace SiliconStudio.Assets.Tests
 
         [DefaultValue(null)]
         public AssetReference<AssetObjectTest> Reference { get; set; }
+
+        [DefaultValue(null)]
+        public List<AssetReference<AssetObjectTest>> CompositionBases = new List<AssetReference<AssetObjectTest>>();
 
         [DefaultValue(null)]
         public UFile RawAsset { get; set; }
@@ -48,6 +54,11 @@ namespace SiliconStudio.Assets.Tests
             }
         }
 
+        public IEnumerable<IContentReference> GetCompositionBases()
+        {
+            return CompositionBases;
+        }
+
         public static bool operator ==(AssetObjectTest left, AssetObjectTest right)
         {
             return Equals(left, right);
@@ -60,7 +71,7 @@ namespace SiliconStudio.Assets.Tests
     }
 
     [DataContract("!AssetImportObjectTest")]
-    [AssetFileExtension(".pdximptest")]
+    [AssetDescription(".pdximptest")]
     public class AssetImportObjectTest : AssetImport
     {
         public AssetImportObjectTest()
@@ -75,13 +86,13 @@ namespace SiliconStudio.Assets.Tests
     }
 
     [DataContract("!AssetObjectTestRaw")]
-    [AssetFileExtension(".pdxraw")]
+    [AssetDescription(".pdxraw")]
     public class AssetObjectTestRaw : SourceCodeAsset
     {
     }
 
     [DataContract("!AssetObjectTestSub")]
-    [AssetFileExtension(".pdxtestsub")]
+    [AssetDescription(".pdxtestsub")]
     public class AssetObjectTestSub : Asset
     {
         public int Value { get; set; }

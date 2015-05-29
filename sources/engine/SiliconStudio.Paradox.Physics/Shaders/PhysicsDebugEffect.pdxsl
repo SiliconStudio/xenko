@@ -6,13 +6,13 @@ class PhysicsDebugEffect : ShaderBase
 	// streams
 	// -------------------------------------
 	stage stream float4 Position    : POSITION;
-	stage stream float2 TexCoord    : TEXCOORD0;
+	stage stream float4 TexCoord    : TEXCOORD;
 
 	// -------------------------------------
 	// uniforms
 	// -------------------------------------
 	// A general transformation matrix
-	stage float4x4    WorldViewProj;
+	stage float4x4 WorldViewProj;
 		
 	// -------------------------------------
 	// VertexShader
@@ -38,16 +38,16 @@ class PhysicsDebugEffect : ShaderBase
 		float3 g = smoothstep(df * 1.0, df * 2.0, f);
 		float c = g.x * g.y * g.z;
 
-	if(UseUv > 0.5)
+		float uvEdge = 0.0;
+		if(UseUv > 0.5 && streams.TexCoord.x < 0.02 || streams.TexCoord.y < 0.02 || streams.TexCoord.x > 0.98 || streams.TexCoord.y > 0.98)
 		{
-			float uvEdge = 0.0;
-		if(streams.TexCoord.x < 0.02 || streams.TexCoord.y < 0.02 || streams.TexCoord.x > 0.98 || streams.TexCoord.y > 0.98)
-			{
-				uvEdge = 1.0;
-			}
-
-			clip(c > 0.1f && uvEdge == 0.0 ? -1 : 1);
+			uvEdge = 1.0;
 		}
+
+        if(c > 0.1f && uvEdge == 0.0)
+        {
+            discard;
+        }
 
 		streams.ColorTarget = float4(Color.rgb, 1.0);
 	}

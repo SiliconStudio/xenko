@@ -3,7 +3,8 @@
 using System;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Converters;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.UI
@@ -11,7 +12,8 @@ namespace SiliconStudio.Paradox.UI
     /// <summary>
     /// Class holding all the data required to define an UI image.
     /// </summary>
-    [DataConverter(AutoGenerate = true, ContentReference = true)]
+    [ContentSerializer(typeof(DataContentSerializer<UIImage>))]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<UIImage>), Profile = "Asset")]
     public class UIImage : ImageFragment
     {
         internal Vector4 BordersInternal;
@@ -36,21 +38,21 @@ namespace SiliconStudio.Paradox.UI
         }
 
         /// <summary>
-        /// Create an instance of <see cref="UIImage"/> having a unique name from a single <see cref="Texture2D"/> and initialize the <see cref="Region"/> to the size of the texture.
+        /// Create an instance of <see cref="UIImage"/> having a unique name from a single <see cref="Texture"/> and initialize the <see cref="Region"/> to the size of the texture.
         /// </summary>
         /// <param name="texture">The texture to use as color</param>
-        public UIImage(Texture2D texture)
+        public UIImage(Texture texture)
             : this(Guid.NewGuid().ToString(), texture, null)
         {
         }
 
         /// <summary>
-        /// Create an instance of <see cref="UIImage"/> from a single color/alpha <see cref="Texture2D"/> and 
+        /// Create an instance of <see cref="UIImage"/> from a single color/alpha <see cref="Texture"/> and 
         /// initialize the <see cref="Region"/> to the size of the texture.
         /// </summary>
         /// <param name="imageName">The name of the UI image</param>
         /// <param name="texture">The texture to use as color</param>
-        public UIImage(string imageName, Texture2D texture)
+        public UIImage(string imageName, Texture texture)
             : this(imageName, texture, null)
         {
         }
@@ -65,7 +67,7 @@ namespace SiliconStudio.Paradox.UI
         /// <param name="alpha">The texture to use as alpha</param>
         /// <exception cref="ArgumentNullException">The provided textures cannot be null</exception>
         /// <exception cref="ArgumentException">The provided textures must have the same size</exception>
-        public UIImage(string imageName, Texture2D color, Texture2D alpha)
+        public UIImage(string imageName, Texture color, Texture alpha)
             : base(imageName, color, alpha)
         {
             UpdateIdealSize();
@@ -75,7 +77,6 @@ namespace SiliconStudio.Paradox.UI
         /// Gets or sets size of the unstretchable borders of source image in pixels.
         /// </summary>
         /// <remarks>Borders size are ordered as follows X->Left, Y->Right, Z ->Top, W -> Bottom.</remarks>
-        [DataMemberConvert]
         public Vector4 Borders
         {
             get { return BordersInternal; }

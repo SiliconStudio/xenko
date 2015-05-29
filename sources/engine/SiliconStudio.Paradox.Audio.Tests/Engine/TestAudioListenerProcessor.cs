@@ -8,7 +8,6 @@ using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
 
 namespace SiliconStudio.Paradox.Audio.Tests.Engine
 {
@@ -42,10 +41,10 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             listComp1Entity = new Entity();
             listComp2Entity = new Entity();
 
-            rootSubEntity1.Transformation.Parent = rootEntity.Transformation;
-            rootSubEntity2.Transformation.Parent = rootEntity.Transformation;
-            listComp1Entity.Transformation.Parent = rootSubEntity1.Transformation;
-            listComp2Entity.Transformation.Parent = rootSubEntity2.Transformation;
+            rootSubEntity1.Transform.Parent = rootEntity.Transform;
+            rootSubEntity2.Transform.Parent = rootEntity.Transform;
+            listComp1Entity.Transform.Parent = rootSubEntity1.Transform;
+            listComp2Entity.Transform.Parent = rootSubEntity2.Transform;
         }
 
         private void CreateAndComponentToEntities()
@@ -76,68 +75,69 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             audio.AddListener(listComp1);
             audio.AddListener(listComp2);
 
-            listComp2Entity.Transformation.RotationEulerXYZ = new Vector3((float)Math.PI/2,0,0);
+            listComp2Entity.Transform.RotationEulerXYZ = new Vector3((float)Math.PI/2,0,0);
         }
 
         private void EntityPositionUpdate(Game game, int loopCount, int loopCountSum)
         {
-            rootSubEntity1.Transformation.Translation += new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
-            rootSubEntity2.Transformation.Translation += new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            rootSubEntity1.Transform.Position += new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            rootSubEntity2.Transform.Position += new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
 
-            listComp1Entity.Transformation.Translation += new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
-            listComp2Entity.Transformation.Translation -= new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            listComp1Entity.Transform.Position += new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            listComp2Entity.Transform.Position -= new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
         }
 
         private void TestAddAudioSysThenEntitySysLoopImpl(Game game, int loopCount, int loopCountSum)
         {
-            var listenerProcessor = game.Entities.Processors.OfType<AudioListenerProcessor>().First();
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            //var listenerProcessor = game.Entities.Processors.OfType<AudioListenerProcessor>().First();
 
-            if(loopCount == 1)
-            {
-                // add the listeners entities to the entity system.
-                game.Entities.Add(rootEntity);
-                AudioListenerProcessor.AssociatedData list1Data = null;
-                AudioListenerProcessor.AssociatedData list2Data = null;
+            //if(loopCount == 1)
+            //{
+            //    // add the listeners entities to the entity system.
+            //    game.Entities.Add(rootEntity);
+            //    AudioListenerProcessor.AssociatedData list1Data = null;
+            //    AudioListenerProcessor.AssociatedData list2Data = null;
                 
-                // check that the entities are immediately present in the matching entity list after addition to the Entity system.
-                Assert.DoesNotThrow(() => list1Data = listenerProcessor.MatchingEntitiesForDebug[listComp1Entity], "Listener Component 1 entity is not present in listener processor matching entities");
-                Assert.DoesNotThrow(() => list2Data = listenerProcessor.MatchingEntitiesForDebug[listComp2Entity], "Listener Component 2 entity is not present in listener processor matching entities");
+            //    // check that the entities are immediately present in the matching entity list after addition to the Entity system.
+            //    Assert.DoesNotThrow(() => list1Data = listenerProcessor.MatchingEntitiesForDebug[listComp1Entity], "Listener Component 1 entity is not present in listener processor matching entities");
+            //    Assert.DoesNotThrow(() => list2Data = listenerProcessor.MatchingEntitiesForDebug[listComp2Entity], "Listener Component 2 entity is not present in listener processor matching entities");
                 
-                // check that the entities' position are immediately computed after addition to the Entity system.
-                Assert.AreEqual(2 * new Vector3(loopCountSum, 2 * loopCountSum, 3 * loopCountSum), list1Data.AudioListener.Position, "The Position of the listener1 is not valid at loop turn " + loopCount);
-                Assert.AreEqual(Vector3.Zero, list2Data.AudioListener.Position, "The Position of the listener2 is not valid at loop turn " + loopCount);
+            //    // check that the entities' position are immediately computed after addition to the Entity system.
+            //    Assert.AreEqual(2 * new Vector3(loopCountSum, 2 * loopCountSum, 3 * loopCountSum), list1Data.AudioListener.Position, "The Position of the listener1 is not valid at loop turn " + loopCount);
+            //    Assert.AreEqual(Vector3.Zero, list2Data.AudioListener.Position, "The Position of the listener2 is not valid at loop turn " + loopCount);
                 
-                // check that the listener components are marked for update immediately after addition to the Entity system.
-                Assert.IsTrue(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
-            }
-            else if(loopCount > 2 && loopCount < 5)
-            {
-                var list1Data = listenerProcessor.MatchingEntitiesForDebug[listComp1Entity];
-                var list2Data = listenerProcessor.MatchingEntitiesForDebug[listComp2Entity];
+            //    // check that the listener components are marked for update immediately after addition to the Entity system.
+            //    Assert.IsTrue(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
+            //}
+            //else if(loopCount > 2 && loopCount < 5)
+            //{
+            //    var list1Data = listenerProcessor.MatchingEntitiesForDebug[listComp1Entity];
+            //    var list2Data = listenerProcessor.MatchingEntitiesForDebug[listComp2Entity];
 
-                // check the values of the Positions after update
-                Assert.AreEqual(2 * new Vector3(loopCountSum, 2 * loopCountSum, 3 * loopCountSum), list1Data.AudioListener.Position, "The Position of the listener1 is not valid at loop turn " + loopCount);
-                Assert.AreEqual(Vector3.Zero, list2Data.AudioListener.Position, "The Position of the listener2 is not valid at loop turn " + loopCount);
+            //    // check the values of the Positions after update
+            //    Assert.AreEqual(2 * new Vector3(loopCountSum, 2 * loopCountSum, 3 * loopCountSum), list1Data.AudioListener.Position, "The Position of the listener1 is not valid at loop turn " + loopCount);
+            //    Assert.AreEqual(Vector3.Zero, list2Data.AudioListener.Position, "The Position of the listener2 is not valid at loop turn " + loopCount);
 
-                // check the values of the Velocities after update
-                Assert.AreEqual(2 * new Vector3(loopCount, 2*loopCount, 3*loopCount), list1Data.AudioListener.Velocity, "The velocity of the listener1 is not valid at loop turn " + loopCount);
-                Assert.AreEqual(Vector3.Zero, list2Data.AudioListener.Velocity, "The velocity of the listener2 is not valid at loop turn " + loopCount);
+            //    // check the values of the Velocities after update
+            //    Assert.AreEqual(2 * new Vector3(loopCount, 2*loopCount, 3*loopCount), list1Data.AudioListener.Velocity, "The velocity of the listener1 is not valid at loop turn " + loopCount);
+            //    Assert.AreEqual(Vector3.Zero, list2Data.AudioListener.Velocity, "The velocity of the listener2 is not valid at loop turn " + loopCount);
 
-                // check the values of the Forward vectors after update
-                Assert.IsTrue((list2Data.AudioListener.Forward - new Vector3(0, -1, 0)).Length() < 1e-7, "The forward vector of listener2 is not valid at loop turn " + loopCount);
-                Assert.AreEqual(new Vector3(0, 0, 1), list1Data.AudioListener.Forward, "The forward vector of the listener1 is not valid at loop turn " + loopCount);
+            //    // check the values of the Forward vectors after update
+            //    Assert.IsTrue((list2Data.AudioListener.Forward - new Vector3(0, -1, 0)).Length() < 1e-7, "The forward vector of listener2 is not valid at loop turn " + loopCount);
+            //    Assert.AreEqual(new Vector3(0, 0, 1), list1Data.AudioListener.Forward, "The forward vector of the listener1 is not valid at loop turn " + loopCount);
 
-                // check the values of the Up vectors after update
-                Assert.IsTrue((list2Data.AudioListener.Up - new Vector3(0, 0, 1)).Length() < 1e-7, "The Up vector of the listener2 is not valid at loop turn " + loopCount);
-                Assert.AreEqual(new Vector3(0, 1, 0), list1Data.AudioListener.Up, "The Up vector of listener1 is not valid at loop turn " + loopCount);
+            //    // check the values of the Up vectors after update
+            //    Assert.IsTrue((list2Data.AudioListener.Up - new Vector3(0, 0, 1)).Length() < 1e-7, "The Up vector of the listener2 is not valid at loop turn " + loopCount);
+            //    Assert.AreEqual(new Vector3(0, 1, 0), list1Data.AudioListener.Up, "The Up vector of listener1 is not valid at loop turn " + loopCount);
 
-                // check that component is still marked for update for next turn.
-                Assert.IsTrue(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
-            }
-            else
-            {
-                game.Exit();
-            }
+            //    // check that component is still marked for update for next turn.
+            //    Assert.IsTrue(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
+            //}
+            //else
+            //{
+            //    game.Exit();
+            //}
         }
 
         /// <summary>
@@ -154,90 +154,92 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             BuildEntityHierarchy();
             CreateAndComponentToEntities();
             
-            listComp2Entity.Transformation.RotationEulerXYZ = new Vector3((float)Math.PI / 2, 0, 0);
+            listComp2Entity.Transform.RotationEulerXYZ = new Vector3((float)Math.PI / 2, 0, 0);
 
-            game.Entities.Add(rootEntity);
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            // game.Entities.Add(rootEntity);
         }
 
         private void TestAddEntitySysThenAudioSysLoopImpl(Game game, int loopCount, int loopCountSum)
         {
             var audio = game.Audio;
-            var listenerProcessor = game.Entities.Processors.OfType<AudioListenerProcessor>().First();
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            //var listenerProcessor = game.Entities.Processors.OfType<AudioListenerProcessor>().First();
 
-            if (loopCount == 1)
-            {
-                AudioListenerProcessor.AssociatedData list1Data = null;
-                AudioListenerProcessor.AssociatedData list2Data = null;
+            //if (loopCount == 1)
+            //{
+            //    AudioListenerProcessor.AssociatedData list1Data = null;
+            //    AudioListenerProcessor.AssociatedData list2Data = null;
 
-                // check that the entities are present in the processor matching list even though they have not been added to the audio system
-                Assert.DoesNotThrow(() => list1Data = listenerProcessor.MatchingEntitiesForDebug[listComp1Entity], "Listener Component 1 entity is not present in listener processor matching entities");
-                Assert.DoesNotThrow(() => list2Data = listenerProcessor.MatchingEntitiesForDebug[listComp2Entity], "Listener Component 2 entity is not present in listener processor matching entities");
+            //    // check that the entities are present in the processor matching list even though they have not been added to the audio system
+            //    Assert.DoesNotThrow(() => list1Data = listenerProcessor.MatchingEntitiesForDebug[listComp1Entity], "Listener Component 1 entity is not present in listener processor matching entities");
+            //    Assert.DoesNotThrow(() => list2Data = listenerProcessor.MatchingEntitiesForDebug[listComp2Entity], "Listener Component 2 entity is not present in listener processor matching entities");
 
-                // check that the entities are not marked for update when they have not been added the audio System.
-                Assert.IsFalse(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
-            }
-            else if (loopCount == 2)
-            {
-                // add listener 1 to the audio system.
-                audio.AddListener(listComp1);
-                AudioListenerProcessor.AssociatedData list1Data = listenerProcessor.MatchingEntitiesForDebug[listComp1Entity];
-                AudioListenerProcessor.AssociatedData list2Data = listenerProcessor.MatchingEntitiesForDebug[listComp2Entity];
+            //    // check that the entities are not marked for update when they have not been added the audio System.
+            //    Assert.IsFalse(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
+            //}
+            //else if (loopCount == 2)
+            //{
+            //    // add listener 1 to the audio system.
+            //    audio.AddListener(listComp1);
+            //    AudioListenerProcessor.AssociatedData list1Data = listenerProcessor.MatchingEntitiesForDebug[listComp1Entity];
+            //    AudioListenerProcessor.AssociatedData list2Data = listenerProcessor.MatchingEntitiesForDebug[listComp2Entity];
 
-                // check that listener 1 is marked for update but not listener 2.
-                Assert.IsTrue(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
-                Assert.IsFalse(list2Data.ShouldBeComputed, "The value of should be computed for listener 2 is not valid at loop turn " + loopCount);
+            //    // check that listener 1 is marked for update but not listener 2.
+            //    Assert.IsTrue(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
+            //    Assert.IsFalse(list2Data.ShouldBeComputed, "The value of should be computed for listener 2 is not valid at loop turn " + loopCount);
 
-                // check that the listener 1's position is valid immediately after its addition to the audio system.
-                Assert.AreEqual(2 * new Vector3(loopCountSum, 2 * loopCountSum, 3 * loopCountSum), list1Data.AudioListener.Position, "The Position of the listener1 is not valid at loop turn " + loopCount);
-            }
-            else if (loopCount == 3)
-            {
-                // add listener 2 to the audio system.
-                audio.AddListener(listComp2);
-                AudioListenerProcessor.AssociatedData list1Data = listenerProcessor.MatchingEntitiesForDebug[listComp1Entity];
-                AudioListenerProcessor.AssociatedData list2Data = listenerProcessor.MatchingEntitiesForDebug[listComp2Entity];
+            //    // check that the listener 1's position is valid immediately after its addition to the audio system.
+            //    Assert.AreEqual(2 * new Vector3(loopCountSum, 2 * loopCountSum, 3 * loopCountSum), list1Data.AudioListener.Position, "The Position of the listener1 is not valid at loop turn " + loopCount);
+            //}
+            //else if (loopCount == 3)
+            //{
+            //    // add listener 2 to the audio system.
+            //    audio.AddListener(listComp2);
+            //    AudioListenerProcessor.AssociatedData list1Data = listenerProcessor.MatchingEntitiesForDebug[listComp1Entity];
+            //    AudioListenerProcessor.AssociatedData list2Data = listenerProcessor.MatchingEntitiesForDebug[listComp2Entity];
 
-                // check that both listeners are marked for update.
-                Assert.IsTrue(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
-                Assert.IsTrue(list2Data.ShouldBeComputed, "The value of should be computed for listener 2 is not valid at loop turn " + loopCount);
+            //    // check that both listeners are marked for update.
+            //    Assert.IsTrue(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
+            //    Assert.IsTrue(list2Data.ShouldBeComputed, "The value of should be computed for listener 2 is not valid at loop turn " + loopCount);
 
-                // check that the listener 2's position is valid directly after its addition to the system.
-                Assert.AreEqual(Vector3.Zero, list2Data.AudioListener.Position, "The Position of the listener2 is not valid at loop turn " + loopCount);
+            //    // check that the listener 2's position is valid directly after its addition to the system.
+            //    Assert.AreEqual(Vector3.Zero, list2Data.AudioListener.Position, "The Position of the listener2 is not valid at loop turn " + loopCount);
 
-                // check the listener 1's position, velocity, up and forward values have been correctly updated.
-                Assert.AreEqual(2 * new Vector3(loopCountSum, 2 * loopCountSum, 3 * loopCountSum), list1Data.AudioListener.Position, "The Position of the listener1 is not valid at loop turn " + loopCount);
-                Assert.AreEqual(2 * new Vector3(loopCount, 2 * loopCount, 3 * loopCount), list1Data.AudioListener.Velocity, "The velocity of the listener1 is not valid at loop turn " + loopCount);
-                Assert.AreEqual(new Vector3(0, 0, 1), list1Data.AudioListener.Forward, "The forward vector of the listener1 is not valid at loop turn " + loopCount);
-                Assert.AreEqual(new Vector3(0, 1, 0), list1Data.AudioListener.Up, "The Up vector of listener1 is not valid at loop turn " + loopCount);
-            }
-            else if (loopCount > 3 && loopCount < 6)
-            {
-                var list1Data = listenerProcessor.MatchingEntitiesForDebug[listComp1Entity];
-                var list2Data = listenerProcessor.MatchingEntitiesForDebug[listComp2Entity];
+            //    // check the listener 1's position, velocity, up and forward values have been correctly updated.
+            //    Assert.AreEqual(2 * new Vector3(loopCountSum, 2 * loopCountSum, 3 * loopCountSum), list1Data.AudioListener.Position, "The Position of the listener1 is not valid at loop turn " + loopCount);
+            //    Assert.AreEqual(2 * new Vector3(loopCount, 2 * loopCount, 3 * loopCount), list1Data.AudioListener.Velocity, "The velocity of the listener1 is not valid at loop turn " + loopCount);
+            //    Assert.AreEqual(new Vector3(0, 0, 1), list1Data.AudioListener.Forward, "The forward vector of the listener1 is not valid at loop turn " + loopCount);
+            //    Assert.AreEqual(new Vector3(0, 1, 0), list1Data.AudioListener.Up, "The Up vector of listener1 is not valid at loop turn " + loopCount);
+            //}
+            //else if (loopCount > 3 && loopCount < 6)
+            //{
+            //    var list1Data = listenerProcessor.MatchingEntitiesForDebug[listComp1Entity];
+            //    var list2Data = listenerProcessor.MatchingEntitiesForDebug[listComp2Entity];
 
-                // check that both listeners' position are correctly updated.
-                Assert.AreEqual(2 * new Vector3(loopCountSum, 2 * loopCountSum, 3 * loopCountSum), list1Data.AudioListener.Position, "The Position of the listener1 is not valid at loop turn " + loopCount);
-                Assert.AreEqual(Vector3.Zero, list2Data.AudioListener.Position, "The Position of the listener2 is not valid at loop turn " + loopCount);
+            //    // check that both listeners' position are correctly updated.
+            //    Assert.AreEqual(2 * new Vector3(loopCountSum, 2 * loopCountSum, 3 * loopCountSum), list1Data.AudioListener.Position, "The Position of the listener1 is not valid at loop turn " + loopCount);
+            //    Assert.AreEqual(Vector3.Zero, list2Data.AudioListener.Position, "The Position of the listener2 is not valid at loop turn " + loopCount);
 
-                // check that both listeners' velocity are correctly updated.
-                Assert.AreEqual(2 * new Vector3(loopCount, 2 * loopCount, 3 * loopCount), list1Data.AudioListener.Velocity, "The velocity of the listener1 is not valid at loop turn " + loopCount);
-                Assert.AreEqual(Vector3.Zero, list2Data.AudioListener.Velocity, "The velocity of the listener2 is not valid at loop turn " + loopCount);
+            //    // check that both listeners' velocity are correctly updated.
+            //    Assert.AreEqual(2 * new Vector3(loopCount, 2 * loopCount, 3 * loopCount), list1Data.AudioListener.Velocity, "The velocity of the listener1 is not valid at loop turn " + loopCount);
+            //    Assert.AreEqual(Vector3.Zero, list2Data.AudioListener.Velocity, "The velocity of the listener2 is not valid at loop turn " + loopCount);
 
-                // check that both listeners' up vector are correctly updated.
-                Assert.AreEqual(new Vector3(0, 1, 0), list1Data.AudioListener.Up, "The Up vector of listener1 is not valid at loop turn " + loopCount);
-                Assert.IsTrue((list2Data.AudioListener.Up - new Vector3(0, 0, 1)).Length() < 1e-7, "The Up vector of the listener2 is not valid at loop turn " + loopCount);
+            //    // check that both listeners' up vector are correctly updated.
+            //    Assert.AreEqual(new Vector3(0, 1, 0), list1Data.AudioListener.Up, "The Up vector of listener1 is not valid at loop turn " + loopCount);
+            //    Assert.IsTrue((list2Data.AudioListener.Up - new Vector3(0, 0, 1)).Length() < 1e-7, "The Up vector of the listener2 is not valid at loop turn " + loopCount);
 
-                // check that both listeners' forward vector are correctly updated.
-                Assert.AreEqual(new Vector3(0, 0, 1), list1Data.AudioListener.Forward, "The forward vector of the listener1 is not valid at loop turn " + loopCount);
-                Assert.IsTrue((list2Data.AudioListener.Forward - new Vector3(0, -1, 0)).Length() < 1e-7, "The forward vector of listener2 is not valid at loop turn " + loopCount);
+            //    // check that both listeners' forward vector are correctly updated.
+            //    Assert.AreEqual(new Vector3(0, 0, 1), list1Data.AudioListener.Forward, "The forward vector of the listener1 is not valid at loop turn " + loopCount);
+            //    Assert.IsTrue((list2Data.AudioListener.Forward - new Vector3(0, -1, 0)).Length() < 1e-7, "The forward vector of listener2 is not valid at loop turn " + loopCount);
 
-                // check that both listeners are still marked for update for next turn.
-                Assert.IsTrue(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
-            }
-            else
-            {
-                game.Exit();
-            }
+            //    // check that both listeners are still marked for update for next turn.
+            //    Assert.IsTrue(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
+            //}
+            //else
+            //{
+            //    game.Exit();
+            //}
         }
 
         /// <summary>
@@ -259,61 +261,63 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             audio.AddListener(listComp1);
             audio.AddListener(listComp2);
 
-            listComp2Entity.Transformation.RotationEulerXYZ = new Vector3((float)Math.PI / 2, 0, 0);
+            listComp2Entity.Transform.RotationEulerXYZ = new Vector3((float)Math.PI / 2, 0, 0);
 
-            game.Entities.Add(rootEntity);
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            //game.Entities.Add(rootEntity);
         }
 
         private void TestRemoveListenerFromAudioSystemLoopImpl(Game game, int loopCount, int loopCountSum)
         {
             var audio = game.Audio;
-            var listenerProcessor = game.Entities.Processors.OfType<AudioListenerProcessor>().First();
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            //var listenerProcessor = game.Entities.Processors.OfType<AudioListenerProcessor>().First();
 
-            var list1Data = listenerProcessor.MatchingEntitiesForDebug[listComp1Entity];
-            var list2Data = listenerProcessor.MatchingEntitiesForDebug[listComp2Entity];
+            //var list1Data = listenerProcessor.MatchingEntitiesForDebug[listComp1Entity];
+            //var list2Data = listenerProcessor.MatchingEntitiesForDebug[listComp2Entity];
 
-            if (loopCount == 1)
-            {
-                // check that the listeners were marked for update before removal from the audioSystem.
-                Assert.IsTrue(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
-                Assert.IsTrue(list2Data.ShouldBeComputed, "The value of should be computed for listener 2 is not valid at loop turn " + loopCount);
+            //if (loopCount == 1)
+            //{
+            //    // check that the listeners were marked for update before removal from the audioSystem.
+            //    Assert.IsTrue(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
+            //    Assert.IsTrue(list2Data.ShouldBeComputed, "The value of should be computed for listener 2 is not valid at loop turn " + loopCount);
 
-                // remove listener 1 only 
-                audio.RemoveListener(listComp1);
+            //    // remove listener 1 only 
+            //    audio.RemoveListener(listComp1);
 
-                // check that listener 1 is not marked for update but listener 2 still is.
-                Assert.IsFalse(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
-                Assert.IsTrue(list2Data.ShouldBeComputed, "The value of should be computed for listener 2 is not valid at loop turn " + loopCount);
-            }
-            else if (loopCount == 2)
-            {
-                // check that listener 1 is not marked for update but listener 2 still is after and update call
-                Assert.IsFalse(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
-                Assert.IsTrue(list2Data.ShouldBeComputed, "The value of should be computed for listener 2 is not valid at loop turn " + loopCount);
+            //    // check that listener 1 is not marked for update but listener 2 still is.
+            //    Assert.IsFalse(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
+            //    Assert.IsTrue(list2Data.ShouldBeComputed, "The value of should be computed for listener 2 is not valid at loop turn " + loopCount);
+            //}
+            //else if (loopCount == 2)
+            //{
+            //    // check that listener 1 is not marked for update but listener 2 still is after and update call
+            //    Assert.IsFalse(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
+            //    Assert.IsTrue(list2Data.ShouldBeComputed, "The value of should be computed for listener 2 is not valid at loop turn " + loopCount);
 
-                // check that the listener 1's position, velocity, up and forward vectors are not updated anymore.
-                Assert.AreNotEqual(2 * new Vector3(loopCountSum, 2 * loopCountSum, 3 * loopCountSum), list1Data.AudioListener.Position, "The Position of the listener1 is not valid at loop turn " + loopCount);
-                Assert.AreNotEqual(2 * new Vector3(loopCount, 2 * loopCount, 3 * loopCount), list1Data.AudioListener.Velocity, "The velocity of the listener1 is not valid at loop turn " + loopCount);
-                Assert.AreNotEqual(new Vector3(0, 0, 1), list1Data.AudioListener.Forward, "The forward vector of the listener1 is not valid at loop turn " + loopCount);
-                Assert.AreNotEqual(new Vector3(0, 1, 0), list1Data.AudioListener.Up, "The Up vector of listener1 is not valid at loop turn " + loopCount);
+            //    // check that the listener 1's position, velocity, up and forward vectors are not updated anymore.
+            //    Assert.AreNotEqual(2 * new Vector3(loopCountSum, 2 * loopCountSum, 3 * loopCountSum), list1Data.AudioListener.Position, "The Position of the listener1 is not valid at loop turn " + loopCount);
+            //    Assert.AreNotEqual(2 * new Vector3(loopCount, 2 * loopCount, 3 * loopCount), list1Data.AudioListener.Velocity, "The velocity of the listener1 is not valid at loop turn " + loopCount);
+            //    Assert.AreNotEqual(new Vector3(0, 0, 1), list1Data.AudioListener.Forward, "The forward vector of the listener1 is not valid at loop turn " + loopCount);
+            //    Assert.AreNotEqual(new Vector3(0, 1, 0), list1Data.AudioListener.Up, "The Up vector of listener1 is not valid at loop turn " + loopCount);
 
-                // remove listener 2
-                audio.RemoveListener(listComp2);
+            //    // remove listener 2
+            //    audio.RemoveListener(listComp2);
 
-                // check that both listener are not marked for update anymore.
-                Assert.IsFalse(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
-                Assert.IsFalse(list2Data.ShouldBeComputed, "The value of should be computed for listener 2 is not valid at loop turn " + loopCount);
-            }
-            else if (loopCount == 3)
-            {
-                // check that both listener are still marked not for update after a call to AudioSystem.Update.
-                Assert.IsFalse(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
-                Assert.IsFalse(list2Data.ShouldBeComputed, "The value of should be computed for listener 2 is not valid at loop turn " + loopCount);
-            }
-            else
-            {
-                game.Exit();
-            }
+            //    // check that both listener are not marked for update anymore.
+            //    Assert.IsFalse(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
+            //    Assert.IsFalse(list2Data.ShouldBeComputed, "The value of should be computed for listener 2 is not valid at loop turn " + loopCount);
+            //}
+            //else if (loopCount == 3)
+            //{
+            //    // check that both listener are still marked not for update after a call to AudioSystem.Update.
+            //    Assert.IsFalse(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
+            //    Assert.IsFalse(list2Data.ShouldBeComputed, "The value of should be computed for listener 2 is not valid at loop turn " + loopCount);
+            //}
+            //else
+            //{
+            //    game.Exit();
+            //}
         }
 
         /// <summary>
@@ -329,31 +333,32 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
         private void TestRemoveListenerFromEntitySystemLoopImpl(Game game, int loopCount, int loopCountSum)
         {
             var audio = game.Audio;
-            var listenerProcessor = game.Entities.Processors.OfType<AudioListenerProcessor>().First();
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            //var listenerProcessor = game.Entities.Processors.OfType<AudioListenerProcessor>().First();
 
-            var list1Data = listenerProcessor.MatchingEntitiesForDebug[listComp1Entity];
-            var list2Data = listenerProcessor.MatchingEntitiesForDebug[listComp2Entity];
+            //var list1Data = listenerProcessor.MatchingEntitiesForDebug[listComp1Entity];
+            //var list2Data = listenerProcessor.MatchingEntitiesForDebug[listComp2Entity];
 
-            // check that the listeners were initially marked for update.
-            Assert.IsTrue(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
-            Assert.IsTrue(list2Data.ShouldBeComputed, "The value of should be computed for listener 2 is not valid at loop turn " + loopCount);
+            //// check that the listeners were initially marked for update.
+            //Assert.IsTrue(list1Data.ShouldBeComputed, "The value of should be computed for listener 1 is not valid at loop turn " + loopCount);
+            //Assert.IsTrue(list2Data.ShouldBeComputed, "The value of should be computed for listener 2 is not valid at loop turn " + loopCount);
 
-            // remove the listeners from the entity system.
-            game.Entities.Remove(rootEntity);
+            //// remove the listeners from the entity system.
+            //game.Entities.Remove(rootEntity);
 
-            // check that they are not present in the processor matching list anymore.
-            Assert.IsFalse(listenerProcessor.MatchingEntitiesForDebug.ContainsKey(listComp1Entity), "The matching list of the processor still contains an entity that have been removed.");
-            Assert.IsFalse(listenerProcessor.MatchingEntitiesForDebug.ContainsKey(listComp2Entity), "The matching list of the processor still contains an entity that have been removed.");
+            //// check that they are not present in the processor matching list anymore.
+            //Assert.IsFalse(listenerProcessor.MatchingEntitiesForDebug.ContainsKey(listComp1Entity), "The matching list of the processor still contains an entity that have been removed.");
+            //Assert.IsFalse(listenerProcessor.MatchingEntitiesForDebug.ContainsKey(listComp2Entity), "The matching list of the processor still contains an entity that have been removed.");
 
-            // check that they are still present in the AudioSystem list.
-            Assert.IsTrue(audio.Listeners.ContainsKey(listComp1), "The audioSystem does not contain any more the listener component 1");
-            Assert.IsTrue(audio.Listeners.ContainsKey(listComp1), "The audioSystem does not contain any more the listener component 2");
+            //// check that they are still present in the AudioSystem list.
+            //Assert.IsTrue(audio.Listeners.ContainsKey(listComp1), "The audioSystem does not contain any more the listener component 1");
+            //Assert.IsTrue(audio.Listeners.ContainsKey(listComp1), "The audioSystem does not contain any more the listener component 2");
 
-            // check that the component associated AudioListener value has been set to null since not calculable anymore.
-            Assert.IsNull(audio.Listeners[listComp1], "The audioEmitter associated to the listener component 1 has not been set to null");
-            Assert.IsNull(audio.Listeners[listComp2], "The audioEmitter associated to the listener component 2 has not been set to null");
+            //// check that the component associated AudioListener value has been set to null since not calculable anymore.
+            //Assert.IsNull(audio.Listeners[listComp1], "The audioEmitter associated to the listener component 1 has not been set to null");
+            //Assert.IsNull(audio.Listeners[listComp2], "The audioEmitter associated to the listener component 2 has not been set to null");
 
-            game.Exit();
+            //game.Exit();
         }
         
         /// <summary>
@@ -375,7 +380,8 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
         {
             BuildEntityHierarchy();
             CreateAndComponentToEntities();
-            game.Entities.Add(rootEntity);
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            //game.Entities.Add(rootEntity);
             game.Audio.AddListener(listComp1);
             game.Audio.AddListener(listComp2);
         }
@@ -388,53 +394,54 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
         /// <param name="loopCountSum">the current loop count sum</param>
         private void UpdateEntityPositionBfrUpdate(Game game, int loopCount, int loopCountSum)
         {
-            rootSubEntity1.Transformation.Translation += new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
-            rootSubEntity2.Transformation.Translation += 2 * new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            rootSubEntity1.Transform.Position += new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            rootSubEntity2.Transform.Position += 2 * new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
 
-            listComp1Entity.Transformation.Translation += new Vector3(loopCount + 1, 2 * loopCount + 1, 3 * loopCount + 1);
-            listComp2Entity.Transformation.Translation -= new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            listComp1Entity.Transform.Position += new Vector3(loopCount + 1, 2 * loopCount + 1, 3 * loopCount + 1);
+            listComp2Entity.Transform.Position -= new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
 
             if (loopCount >= 10)
             {
-                listComp1Entity.Transformation.RotationEulerXYZ = new Vector3((float)Math.PI / 2, 0, 0);
-                listComp2Entity.Transformation.RotationEulerXYZ = new Vector3(0, (float)Math.PI / 2, 0);
+                listComp1Entity.Transform.RotationEulerXYZ = new Vector3((float)Math.PI / 2, 0, 0);
+                listComp2Entity.Transform.RotationEulerXYZ = new Vector3(0, (float)Math.PI / 2, 0);
             }
         }
 
         private void UpdateListenerTestValues(Game game, int loopCount, int loopCountSum)
         {
-            var matchingEntities = game.Entities.Processors.OfType<AudioListenerProcessor>().First().MatchingEntitiesForDebug;
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            //var matchingEntities = game.Entities.Processors.OfType<AudioListenerProcessor>().First().MatchingEntitiesForDebug;
 
-            var dataComp1 = matchingEntities[listComp1Entity];
-            var dataComp2 = matchingEntities[listComp2Entity];
+            //var dataComp1 = matchingEntities[listComp1Entity];
+            //var dataComp2 = matchingEntities[listComp2Entity];
             
-            // check that AudioEmitters position is always valid. (this is required to ensure that the velocity is valid from the first update).
-            Assert.AreEqual(2 * new Vector3(loopCountSum, 2 * loopCountSum, 3 * loopCountSum) + (loopCount + 1) * Vector3.One, dataComp1.AudioListener.Position, "Position of the listener 1 is not correct");
-            Assert.AreEqual(new Vector3(loopCountSum, 2 * loopCountSum, 3 * loopCountSum), dataComp2.AudioListener.Position, "Position of the listener 2 is not correct");
+            //// check that AudioEmitters position is always valid. (this is required to ensure that the velocity is valid from the first update).
+            //Assert.AreEqual(2 * new Vector3(loopCountSum, 2 * loopCountSum, 3 * loopCountSum) + (loopCount + 1) * Vector3.One, dataComp1.AudioListener.Position, "Position of the listener 1 is not correct");
+            //Assert.AreEqual(new Vector3(loopCountSum, 2 * loopCountSum, 3 * loopCountSum), dataComp2.AudioListener.Position, "Position of the listener 2 is not correct");
 
-            Assert.AreEqual(2 * new Vector3(loopCount, 2 * loopCount, 3 * loopCount) + Vector3.One, dataComp1.AudioListener.Velocity, "Velocity of the listener 1 is not correct");
-            Assert.AreEqual(new Vector3(loopCount, 2 * loopCount, 3 * loopCount), dataComp2.AudioListener.Velocity, "Velocity of the listener 2 is not correct");
+            //Assert.AreEqual(2 * new Vector3(loopCount, 2 * loopCount, 3 * loopCount) + Vector3.One, dataComp1.AudioListener.Velocity, "Velocity of the listener 1 is not correct");
+            //Assert.AreEqual(new Vector3(loopCount, 2 * loopCount, 3 * loopCount), dataComp2.AudioListener.Velocity, "Velocity of the listener 2 is not correct");
 
-            if (loopCount < 10)
-            {
-                Assert.AreEqual(new Vector3(0, 1, 0), dataComp1.AudioListener.Up, "Up of the listener 1 is not correct");
-                Assert.AreEqual(new Vector3(0, 1, 0), dataComp2.AudioListener.Up, "Up of the listener 2 is not correct");
+            //if (loopCount < 10)
+            //{
+            //    Assert.AreEqual(new Vector3(0, 1, 0), dataComp1.AudioListener.Up, "Up of the listener 1 is not correct");
+            //    Assert.AreEqual(new Vector3(0, 1, 0), dataComp2.AudioListener.Up, "Up of the listener 2 is not correct");
 
-                Assert.AreEqual(new Vector3(0, 0, 1), dataComp1.AudioListener.Forward, "Forward of the listener 1 is not correct");
-                Assert.AreEqual(new Vector3(0, 0, 1), dataComp2.AudioListener.Forward, "Forward of the listener 2 is not correct");
-            }
-            else if (loopCount == 10)
-            {
-                Assert.AreEqual(new Vector3(0, 0, 1), dataComp1.AudioListener.Up, "Up of the listener 1 is not correct");
-                Assert.AreEqual(new Vector3(0, 1, 0), dataComp2.AudioListener.Up, "Up of the listener 2 is not correct");
+            //    Assert.AreEqual(new Vector3(0, 0, 1), dataComp1.AudioListener.Forward, "Forward of the listener 1 is not correct");
+            //    Assert.AreEqual(new Vector3(0, 0, 1), dataComp2.AudioListener.Forward, "Forward of the listener 2 is not correct");
+            //}
+            //else if (loopCount == 10)
+            //{
+            //    Assert.AreEqual(new Vector3(0, 0, 1), dataComp1.AudioListener.Up, "Up of the listener 1 is not correct");
+            //    Assert.AreEqual(new Vector3(0, 1, 0), dataComp2.AudioListener.Up, "Up of the listener 2 is not correct");
 
-                Assert.AreEqual(new Vector3(0, -1, 0), dataComp1.AudioListener.Forward, "Forward of the listener 1 is not correct");
-                Assert.AreEqual(new Vector3(1,  0, 0), dataComp2.AudioListener.Forward, "Forward of the listener 2 is not correct");
-            }
-            else
-            {
-                game.Exit();
-            }
+            //    Assert.AreEqual(new Vector3(0, -1, 0), dataComp1.AudioListener.Forward, "Forward of the listener 1 is not correct");
+            //    Assert.AreEqual(new Vector3(1,  0, 0), dataComp2.AudioListener.Forward, "Forward of the listener 2 is not correct");
+            //}
+            //else
+            //{
+            //    game.Exit();
+            //}
         }
     }
 }

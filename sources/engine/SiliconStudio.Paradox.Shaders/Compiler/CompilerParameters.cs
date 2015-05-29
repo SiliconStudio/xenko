@@ -1,7 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.Collections.Generic;
+
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Shaders.Compiler
@@ -35,6 +38,15 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             Platform = GraphicsPlatform.Direct3D11;
             Profile = GraphicsProfile.Level_11_0;
         }
+
+        /// <summary>
+        /// Gets or sets the priority (in case this compile is scheduled in a custom async pool)
+        /// </summary>
+        /// <value>
+        /// The priority.
+        /// </value>
+        [DataMemberIgnore]
+        public int TaskPriority { get; set; }
 
         /// <summary>
         /// The shader target type

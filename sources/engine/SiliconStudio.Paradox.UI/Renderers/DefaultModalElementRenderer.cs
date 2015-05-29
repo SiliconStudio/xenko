@@ -14,25 +14,12 @@ namespace SiliconStudio.Paradox.UI.Renderers
     {
         private Matrix identity = Matrix.Identity;
 
-        private DepthStencilState noStencilNoDepth;
+        private readonly DepthStencilState noStencilNoDepth;
 
         public DefaultModalElementRenderer(IServiceRegistry services)
             : base(services)
         {
-        }
-
-        public override void Load()
-        {
-            base.Load();
-            
             noStencilNoDepth = DepthStencilState.New(GraphicsDevice, new DepthStencilStateDescription(false, false));
-        }
-
-        public override void Unload()
-        {
-            base.Unload();
-
-            noStencilNoDepth.Dispose();
         }
 
         public override void RenderColor(UIElement element, UIRenderingContext context)
@@ -42,17 +29,24 @@ namespace SiliconStudio.Paradox.UI.Renderers
             // end the current UI image batching so that the overlay is written over it with correct transparency
             Batch.End();
 
-            var uiResolution = new Vector3(Resolution.X, Resolution.Y, 0);
-            Batch.Begin(ref UI.ViewProjectionInternal, GraphicsDevice.BlendStates.AlphaBlend, noStencilNoDepth, 0);
+            var uiResolution = new Vector3(context.Resolution.X, context.Resolution.Y, 0);
+            Batch.Begin(ref context.ViewProjectionMatrix, GraphicsDevice.BlendStates.AlphaBlend, noStencilNoDepth, 0);
             Batch.DrawRectangle(ref identity, ref uiResolution, ref modalElement.OverlayColorInternal, context.DepthBias);
             Batch.End(); // ensure that overlay is written before possible next transparent element.
 
             // restart the image batch session
-            Batch.Begin(ref UI.ViewProjectionInternal, GraphicsDevice.BlendStates.AlphaBlend, KeepStencilValueState, context.StencilTestReferenceValue);
+            Batch.Begin(ref context.ViewProjectionMatrix, GraphicsDevice.BlendStates.AlphaBlend, KeepStencilValueState, context.StencilTestReferenceValue);
 
             context.DepthBias += 1;
 
             base.RenderColor(element, context);
+        }
+
+        protected override void Destroy()
+        {
+            base.Destroy();
+            
+            noStencilNoDepth.Dispose();
         }
     }
 }

@@ -4,7 +4,7 @@
 
 using System;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     /// <summary>
     /// Base class for <see cref="ParameterDynamicValue"/>.

@@ -48,10 +48,10 @@ namespace SiliconStudio.Paradox.Graphics.Internals
             graphicsResourceBase.OnRecreate();
         }
 
-        public void Update(GraphicsDevice graphicsDevice, ShaderParameterUpdater parameterUpdater)
+        public void Update(GraphicsDevice graphicsDevice, EffectParameterCollectionGroup parameterCollectionGroup)
         {
             var threadIndex = graphicsDevice.ThreadIndex;
-            bool dataChanged = constantBufferDatas[threadIndex].Update(parameterUpdater);
+            bool dataChanged = constantBufferDatas[threadIndex].Update(parameterCollectionGroup);
 
             // Check if update is really needed
             if (forceDataChanged)

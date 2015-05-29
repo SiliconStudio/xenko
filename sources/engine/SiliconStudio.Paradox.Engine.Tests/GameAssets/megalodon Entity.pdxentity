@@ -1,0 +1,19 @@
+!EntityAsset
+Id: 5a58a3b7-cd79-41a0-80b4-d78fe06a1d36
+Tags: []
+Hierarchy:
+    RootEntity: 006e5f44-b103-4c5b-85ab-323b047adc14
+    Entities:
+        -   Name: Root
+            Components:
+                ModelComponent.Key:
+                    Model: a22fce22-5505-4761-ac9d-91c74d92494c:megalodon Model
+                    Materials: []
+                    DrawOrder: 0
+                    Parameters: {}
+                TransformComponent.Key:
+                    Position: {X: 0, Y: 0, Z: 0}
+                    Rotation: {W: 1, X: 0, Y: 0, Z: 0}
+                    Scale: {X: 1, Y: 1, Z: 1}
+                    Children: []
+            Id: 006e5f44-b103-4c5b-85ab-323b047adc14

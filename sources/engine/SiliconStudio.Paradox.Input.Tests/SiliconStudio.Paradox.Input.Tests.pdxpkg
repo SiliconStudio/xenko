@@ -12,12 +12,17 @@ Meta:
 LocalDependencies: []
 Profiles:
     -   Name: Shared
+        Platform: Shared
         InheritProfiles: []
         AssetFolders:
             -   Path: GameAssets
                 RawImports: []
         OutputGroupDirectories: {}
-        Properties: {}
+        Properties:
+            GameSettingsAsset.BackBufferHeight: 720
+            GameSettingsAsset.BackBufferWidth: 1280
+            GameSettingsAsset.DefaultGraphicsProfile: Level_10_0
+            GameSettingsAsset.DefaultScene: ae4ecc1b-0b47-4c9d-ac8e-7f9720913084:MainScene
         ProjectReferences:
             -   Id: 01700344-cf44-482c-bebc-60213b0f844c
                 Location: SiliconStudio.Paradox.Input.Tests.Windows.csproj
@@ -28,7 +33,7 @@ Profiles:
         AssetFolders: []
         OutputGroupDirectories: {}
         Properties:
-            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+            GameSettingsAsset.DefaultGraphicsProfile: Level_9_1
         ProjectReferences:
             -   Id: 01700344-cf44-482c-bebc-60213b0f844c
                 Location: SiliconStudio.Paradox.Input.Tests.Windows.csproj
@@ -39,7 +44,7 @@ Profiles:
         AssetFolders: []
         OutputGroupDirectories: {}
         Properties:
-            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+            GameSettingsAsset.DefaultGraphicsProfile: Level_9_1
         ProjectReferences:
             -   Id: 01700344-cf44-482c-bebc-60213b0f844c
                 Location: SiliconStudio.Paradox.Input.Tests.Android.csproj
@@ -50,7 +55,7 @@ Profiles:
         AssetFolders: []
         OutputGroupDirectories: {}
         Properties:
-            Paradox.GraphicsProfile: !GraphicsProfile Level_9_1
+            GameSettingsAsset.DefaultGraphicsProfile: Level_9_1
         ProjectReferences:
             -   Id: 01700344-cf44-482c-bebc-60213b0f844c
                 Location: SiliconStudio.Paradox.Input.Tests.iOS.csproj

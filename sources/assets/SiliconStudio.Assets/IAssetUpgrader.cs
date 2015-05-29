@@ -5,6 +5,6 @@ namespace SiliconStudio.Assets
 {
     public interface IAssetUpgrader
     {
-        void Upgrade(ILogger log, YamlMappingNode yamlAssetNode);
+        void Upgrade(int currentVersion, int targetVersion, ILogger log, YamlMappingNode yamlAssetNode);
     }
 }

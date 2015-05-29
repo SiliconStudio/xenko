@@ -4,10 +4,10 @@ using System;
 using System.Collections.Generic;
 
 using NUnit.Framework;
-
-using SiliconStudio.Paradox.DataModel;
+using SiliconStudio.Paradox.Animations;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Rendering.Sprites;
 
 namespace SiliconStudio.Paradox.Engine.Tests
 {
@@ -212,12 +212,13 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
         private static SpriteComponent CreateSpriteComponent(int nbOfFrames)
         {
-            var sprite = new SpriteComponent { SpriteGroup = new SpriteGroup { Images = new List<Sprite>() } };
+            var spriteGroup = new SpriteGroup { Images = new List<Sprite>() };
+            var sprite = new SpriteComponent { SpriteProvider = new SpriteFromSpriteGroup { SpriteGroup = spriteGroup } };
 
             // add a few sprites
             for (int i = 0; i < nbOfFrames; i++)
             {
-                sprite.SpriteGroup.Images.Add(new Sprite(Guid.NewGuid().ToString()));
+                spriteGroup.Images.Add(new Sprite(Guid.NewGuid().ToString()));
             }
 
             return sprite;

@@ -39,6 +39,7 @@ namespace SiliconStudio.Core.Collections
 
         public FastListStruct(int capacity)
         {
+            if (capacity <= 0) throw new ArgumentOutOfRangeException("capacity", "Must be > 0");
             this.Count = 0;
             this.Items = new T[capacity];
         }

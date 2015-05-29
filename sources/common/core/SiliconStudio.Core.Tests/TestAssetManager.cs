@@ -9,25 +9,31 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Core.Serialization.Serializers;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Core.Tests
 {
     [TestFixture]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<A>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<B>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<C>), Profile = "Asset")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<D>), Profile = "Asset")]
     public class TestAssetManager
     {
-        [ContentSerializer(typeof(DataContentConverterSerializer<A>))]
+        [ContentSerializer(typeof(DataContentSerializer<A>))]
+        [DataContract]
         public class A
         {
             public int I;
         }
 
-        [ContentSerializer(typeof(DataContentConverterSerializer<B>))]
+        [ContentSerializer(typeof(DataContentSerializer<B>))]
+        [DataContract]
         public class B
         {
             public A A;
+            public int I;
         }
 
         [ContentSerializer(typeof(DataContentSerializer<C>))]
@@ -36,14 +42,15 @@ namespace SiliconStudio.Core.Tests
         {
             public int I { get; set; }
 
-            public ContentReference<C> Child { get; set; }
+            public C Child { get; set; }
 
-            public ContentReference<D> Child2 { get; set; }
+            public D Child2 { get; set; }
 
             public string Url { get; set; }
         }
 
         [ContentSerializer(typeof(D.Serializer))]
+        [DataContract]
         public class D : ComponentBase
         {
             public D(int a)
@@ -52,55 +59,13 @@ namespace SiliconStudio.Core.Tests
 
             class Serializer : ContentSerializerBase<D>
             {
-                public override void Serialize(ContentSerializerContext context, SerializationStream stream, ref D obj)
+                public override void Serialize(ContentSerializerContext context, SerializationStream stream, D obj)
                 {
                     if (context.Mode == ArchiveMode.Deserialize)
                     {
                         obj = new D(12);
                     }
                 }
-            }
-        }
-
-        [ContentSerializer(typeof(DataContentSerializer<AData>))]
-        [DataContract]
-        public class AData
-        {
-            public int I;
-        }
-
-        [ContentSerializer(typeof(DataContentSerializer<BData>))]
-        [DataContract]
-        public class BData
-        {
-            public ContentReference<AData> A;
-        }
-
-        public class ADataConverter : DataConverter<AData, A>
-        {
-            public override void ConvertFromData(ConverterContext converterContext, AData data, ref A obj)
-            {
-                obj = new A { I = data.I };
-            }
-
-            public override void ConvertToData(ConverterContext converterContext, ref AData data, A obj)
-            {
-                data = new AData { I = obj.I };
-            }
-        }
-
-        public class BDataConverter : DataConverter<BData, B>
-        {
-            public override void ConvertFromData(ConverterContext converterContext, BData data, ref B obj)
-            {
-                obj = new B();
-                converterContext.ConvertFromData(data.A, ref obj.A);
-            }
-
-            public override void ConvertToData(ConverterContext converterContext, ref BData data, B obj)
-            {
-                data = new BData();
-                converterContext.ConvertToData(ref data.A, obj.A);
             }
         }
 
@@ -156,9 +121,9 @@ namespace SiliconStudio.Core.Tests
         [Test]
         public void SimpleWithContentReferenceShared()
         {
-            var b1 = new B();
+            var b1 = new B { I = 12 };
             b1.A = new A { I = 18 };
-            var b2 = new B { A = b1.A };
+            var b2 = new B { I = 13, A = b1.A };
 
             var assetManager1 = new AssetManager();
             var assetManager2 = new AssetManager();
@@ -187,38 +152,44 @@ namespace SiliconStudio.Core.Tests
             assetManager1.Save("test", b1);
 
             // Use new asset manager
-            var b2 = assetManager2.Load<BData>("test");
+            var b2 = assetManager2.Load<B>("test");
 
             Assert.That(b2, Is.Not.EqualTo(b1));
-            Assert.That(b2.A.Value.I, Is.EqualTo(b1.A.I));
+            Assert.That(b2.A.I, Is.EqualTo(b1.A.I));
 
             // Try to load without references
-            var b3 = assetManager3.Load<BData>("test", new AssetManagerLoaderSettings { LoadContentReferences = false });
+            var b3 = assetManager3.Load<B>("test", new AssetManagerLoaderSettings { LoadContentReferences = false });
 
             Assert.That(b3, Is.Not.EqualTo(b1));
-            Assert.That(b3.A.Value, Is.Null);
-            Assert.That(b3.A.Location, Is.Not.Null);
+
+            // b3.A should be default initialized
+            Assert.That(b3.A.I, Is.EqualTo(0));
+
+            Assert.That(AttachedReferenceManager.GetUrl(b3.A), Is.Not.Null);
         }
 
         [Test]
         public void SimpleSaveData()
         {
-            var b1 = new BData();
-            b1.A = new AData { I = 18 };
+            var b1 = new B();
+            b1.A = new A { I = 18 };
 
             var assetManager1 = new AssetManager();
             var assetManager2 = new AssetManager();
 
             assetManager1.Save("test", b1);
 
-            Assert.That(b1.A.Location, Is.Not.Null);
-
-            var b2 = new BData();
-            b2.A = new ContentReference<AData>(Guid.Empty, b1.A.Location);
+            Assert.That(AttachedReferenceManager.GetUrl(b1.A), Is.Not.Null);
+            
+            var b2 = new B();
+            b2.A = new A();
+            var attachedReference = AttachedReferenceManager.GetOrCreateAttachedReference(b2.A);
+            attachedReference.Url = AttachedReferenceManager.GetUrl(b1.A);
+            attachedReference.IsProxy = true;
             assetManager1.Save("test2", b2);
-
-            var b3 = assetManager2.Load<BData>("test2");
-            Assert.That(b3.A.Value.I, Is.EqualTo(b1.A.Value.I));
+            
+            var b3 = assetManager2.Load<B>("test2");
+            Assert.That(b3.A.I, Is.EqualTo(b1.A.I));
         }
 
         [Test]
@@ -229,7 +200,7 @@ namespace SiliconStudio.Core.Tests
             c1.Child = new C { I = 32 };
             c2.Child = c1.Child;
 
-            c1.Child.Location = "cchild";
+            AttachedReferenceManager.SetUrl(c1.Child, "cchild");
 
             var assetManager1 = new AssetManager();
             var assetManager2 = new AssetManager();
@@ -260,7 +231,7 @@ namespace SiliconStudio.Core.Tests
             Assert.That(((IReferencable)c1ChildCopy).ReferenceCount, Is.EqualTo(0));
         }
 
-        [Test]
+        [Test, Ignore]
         public void LifetimeNoSimpleConstructor()
         {
             var c1 = new C { I = 18 };
@@ -273,11 +244,11 @@ namespace SiliconStudio.Core.Tests
 
             var c1Copy = assetManager2.Load<C>("c1");
             Assert.That(((IReferencable)c1Copy).ReferenceCount, Is.EqualTo(1));
-            Assert.That(((IReferencable)c1Copy.Child2.Value).ReferenceCount, Is.EqualTo(1));
+            Assert.That(((IReferencable)c1Copy.Child2).ReferenceCount, Is.EqualTo(1));
 
             assetManager2.Unload(c1Copy);
             Assert.That(((IReferencable)c1Copy).ReferenceCount, Is.EqualTo(0));
-            Assert.That(((IReferencable)c1Copy.Child2.Value).ReferenceCount, Is.EqualTo(0));
+            Assert.That(((IReferencable)c1Copy.Child2).ReferenceCount, Is.EqualTo(0));
         }
 
         [Test]
@@ -295,19 +266,11 @@ namespace SiliconStudio.Core.Tests
 
             var c1Copy = assetManager2.Load<C>("c1");
             Assert.That(((IReferencable)c1Copy).ReferenceCount, Is.EqualTo(1));
-            Assert.That(((IReferencable)c1Copy.Child.Value).ReferenceCount, Is.EqualTo(1));
+            Assert.That(((IReferencable)c1Copy.Child).ReferenceCount, Is.EqualTo(1));
 
             assetManager2.Unload(c1Copy);
             Assert.That(((IReferencable)c1Copy).ReferenceCount, Is.EqualTo(0));
-            Assert.That(((IReferencable)c1Copy.Child.Value).ReferenceCount, Is.EqualTo(0));
-        }
-
-        [ModuleInitializer]
-        internal static void Initialize()
-        {
-            // Register ADataConverter
-            ConverterContext.RegisterConverter(new ADataConverter());
-            ConverterContext.RegisterConverter(new BDataConverter());
+            Assert.That(((IReferencable)c1Copy.Child).ReferenceCount, Is.EqualTo(0));
         }
     }
 }

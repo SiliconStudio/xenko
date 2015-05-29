@@ -1,16 +1,28 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
+
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Paradox.Assets.Model
 {
     [DataContract("AdditiveAnimation")]
-    [AssetFactory(typeof(AdditiveAnimationFactory))]
-    [AssetDescription("Additive Animation", "An additive skeletal animation", false)]
+    [ObjectFactory(typeof(AdditiveAnimationFactory))]
+    [Display(175, "Additive Animation", "An additive skeletal animation")]
     public class AdditiveAnimationAsset : AnimationAsset
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AdditiveAnimationAsset"/> class.
+        /// </summary>
+        public AdditiveAnimationAsset()
+        {
+            BaseSource = new UFile("");
+        }
+
         /// <summary>
         /// Gets or sets the path to the base source animation model when using additive animation.
         /// </summary>
@@ -21,9 +33,9 @@ namespace SiliconStudio.Paradox.Assets.Model
         [DataMember(40)]
         public AdditiveAnimationBaseMode Mode { get; set; }
 
-        private class AdditiveAnimationFactory : IAssetFactory
+        private class AdditiveAnimationFactory : IObjectFactory
         {
-            public Asset New()
+            public object New(Type type)
             {
                 return new AdditiveAnimationAsset();
             }

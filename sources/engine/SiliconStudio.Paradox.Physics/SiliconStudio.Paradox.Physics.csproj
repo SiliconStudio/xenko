@@ -22,8 +22,8 @@
   <Choose>
     <When Condition="'$(SiliconStudioPlatform)' == 'Windows'">
       <ItemGroup>
-        <Content Include="..\..\..\deps\VHACD\x86\VHACD.dll">
-          <Link>%(Filename)%(Extension)</Link>
+        <Content Include="..\..\..\deps\VHACD\**\VHACD.dll">
+          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
       </ItemGroup>
@@ -49,13 +49,7 @@
     <Compile Include="Data\CapsuleColliderShapeDesc.cs" />
     <Compile Include="Data\ConvexHullColliderShapeDesc.cs" />
     <Compile Include="Data\CylinderColliderShapeDesc.cs" />
-    <Compile Include="Data\PhysicsColliderShapeDataConverter.cs" />
-    <Compile Include="Data\PhysicsElementDataConverter.cs" />
-    <Compile Include="Data\PhysicsColliderShapeData.cs" />
-    <Compile Include="Data\PhysicsColliderShapeSerializer.cs" />
-    <Compile Include="Data\PhysicsComponentData.cs" />
-    <Compile Include="Data\PhysicsComponentDataConverter.cs" />
-    <Compile Include="Data\PhysicsElementData.cs" />
+    <Compile Include="Data\IColliderShapeDesc.cs" />
     <Compile Include="Data\SphereColliderShapeDesc.cs" />
     <Compile Include="Data\StaticPlaneColliderShapeDesc.cs" />
     <Compile Include="Engine\PhysicsColliderShape.cs" />
@@ -66,6 +60,7 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="IRelative.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="ParadoxMotionState.cs" />
     <Compile Include="PhysicsDebugEffect.cs" />
@@ -89,7 +84,7 @@
     <Compile Include="Constraint.cs" />
     <Compile Include="Shapes\ConvexHullColliderShape.cs" />
     <Compile Include="Shapes\CylinderColliderShape.cs" />
-    <Compile Include="PhysicsEngine.cs" />
+    <Compile Include="Simulation.cs" />
     <Compile Include="Constraints\GearConstraint.cs" />
     <Compile Include="Constraints\Generic6DoFConstraint.cs" />
     <Compile Include="Constraints\Generic6DoFSpringConstraint.cs" />

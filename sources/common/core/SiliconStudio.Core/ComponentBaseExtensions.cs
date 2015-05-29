@@ -79,5 +79,54 @@ namespace SiliconStudio.Core
                 return thisArg;
             return container.Collector.Add(thisArg);
         }
+
+        /// <summary>
+        /// Pushes a tag to a component and restore it after using it. See remarks for usage.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="component">The component.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>PropertyTagRestore&lt;T&gt;.</returns>
+        /// <remarks>
+        /// This method is used to set save a property value from <see cref="ComponentBase.Tags"/>, set a new value
+        /// and restore it after. The returned object must be disposed once the original value must be restored.
+        /// </remarks>
+        public static PropertyTagRestore<T> PushTagAndRestore<T>(this ComponentBase component, PropertyKey<T> key, T value)
+        {
+            // TODO: Not fully satisfied with the name and the extension point (on ComponentBase). We need to review this a bit more
+            var restorer = new PropertyTagRestore<T>(component, key);
+            component.Tags.Set(key, value);
+            return restorer;
+        }
+
+        /// <summary>
+        /// Struct PropertyTagRestore
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public struct PropertyTagRestore<T> : IDisposable
+        {
+            private readonly ComponentBase container;
+
+            private readonly PropertyKey<T> key;
+
+            private readonly T previousValue;
+
+            public PropertyTagRestore(ComponentBase container, PropertyKey<T> key)
+                : this()
+            {
+                if (container == null) throw new ArgumentNullException("container");
+                if (key == null) throw new ArgumentNullException("key");
+                this.container = container;
+                this.key = key;
+                previousValue = container.Tags.Get(key);
+            }
+
+            public void Dispose()
+            {
+                // Restore the value
+                container.Tags.Set(key, previousValue);
+            }
+        }
     }
 }

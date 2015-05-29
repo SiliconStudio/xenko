@@ -31,13 +31,19 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <inheritdoc/>
         protected override void OnPropertyChanging(params string[] propertyNames)
         {
-            Dispatcher.Invoke(() => base.OnPropertyChanging(propertyNames));
+            if (HasPropertyChangingSubscriber)
+                Dispatcher.Invoke(() => base.OnPropertyChanging(propertyNames));
+            else
+                base.OnPropertyChanging(propertyNames);
         }
 
         /// <inheritdoc/>
         protected override void OnPropertyChanged(params string[] propertyNames)
         {
-            Dispatcher.Invoke(() => base.OnPropertyChanged(propertyNames));
+            if (HasPropertyChangedSubscriber)
+                Dispatcher.Invoke(() => base.OnPropertyChanged(propertyNames));
+            else
+                base.OnPropertyChanged(propertyNames);
         }
     }
 }

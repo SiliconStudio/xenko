@@ -1,6 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if PARADOX_EFFECT_COMPILER
+#if SILICONSTUDIO_PARADOX_EFFECT_COMPILER
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +12,7 @@ using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 {
-    public static class StreamOutputParser
+    internal static class StreamOutputParser
     {
         private static Regex streamOutputRegex = new Regex(@"(([0-9]*)\s*:\s*)?(\w+)(.(\w+))?");
         private static readonly string[] masks = new[] { "xyzw", "rgba", "stuv" };

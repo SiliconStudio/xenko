@@ -1,0 +1,13 @@
+!MaterialAsset
+Id: 6a238290-1a54-4690-b478-4eb4e5b7ea3a
+Tags: []
+Attributes:
+    Tessellation: !MaterialTessellationFlatFeature
+        TriangleSize: 15.1972694
+        AdjacentEdgeAverage: false
+    Diffuse: !MaterialDiffuseMapFeature
+        DiffuseMap: !ComputeColor
+            Value: {R: 0.463069767, G: 0.416126579, B: 0.55025, A: 1}
+    DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+Layers: []
+Parameters: {}

@@ -21,6 +21,7 @@ namespace SiliconStudio.Quantum
             if (containerObjectDescriptor == null) throw new ArgumentNullException("containerObjectDescriptor");
             ContainerObjectDescriptor = containerObjectDescriptor;
             MemberDescriptor = memberDescriptor;
+            ShouldProcessReference = true;
         }
 
         /// <summary>
@@ -37,5 +38,10 @@ namespace SiliconStudio.Quantum
         /// Gets or sets whether this node should be discarded (not constructed).
         /// </summary>
         public bool Discard { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the reference in this node (if existing) should be processed and expanded to a new node hierarchy.
+        /// </summary>
+        public bool ShouldProcessReference { get; set; }
     }
 }

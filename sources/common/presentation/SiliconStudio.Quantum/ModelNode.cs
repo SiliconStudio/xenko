@@ -24,7 +24,7 @@ namespace SiliconStudio.Quantum
         /// <param name="name">The name of this node.</param>
         /// <param name="content">The content of this node.</param>
         /// <param name="guid">An unique identifier for this node.</param>
-        internal ModelNode(string name, IContent content, Guid guid)
+        public ModelNode(string name, IContent content, Guid guid)
         {
             if (name == null) throw new ArgumentNullException("name");
             if (content == null) throw new ArgumentNullException("content");
@@ -32,6 +32,12 @@ namespace SiliconStudio.Quantum
             this.content = content;
             Name = name;
             Guid = guid;
+
+            var updatableContent = content as IUpdatableContent;
+            if (updatableContent != null)
+            {
+                updatableContent.RegisterOwner(this);
+            }
         }
 
         /// <inheritdoc/>
@@ -53,10 +59,19 @@ namespace SiliconStudio.Quantum
         public IReadOnlyCollection<INodeCommand> Commands { get { return commands; } }
 
         /// <summary>
+        /// Gets the flags.
+        /// </summary>
+        /// <value>
+        /// The flags.
+        /// </value>
+        public ModelNodeFlags Flags { get; set; }
+
+        /// <summary>
         /// Add a child to this node. The node must not have been sealed yet.
         /// </summary>
         /// <param name="child">The child node to add.</param>
-        public void AddChild(ModelNode child)
+        /// <param name="allowIfReference">if set to <c>false</c> throw an exception if <see cref="IContent.Reference"/> is not null.</param>
+        public void AddChild(ModelNode child, bool allowIfReference = false)
         {
             if (isSealed)
                 throw new InvalidOperationException("Unable to add a child to a ModelNode that has been sealed");
@@ -64,7 +79,7 @@ namespace SiliconStudio.Quantum
             if (child.Parent != null)
                 throw new ArgumentException(@"This node has already been registered to a different parent", "child");
 
-            if (Content.Reference != null)
+            if (Content.Reference != null && !allowIfReference)
                 throw new InvalidOperationException("A ModelNode cannot have children when its content hold a reference.");
 
             child.Parent = this;

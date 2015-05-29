@@ -34,10 +34,10 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
         private static void RegenerateDirectory(string directory)
         {
-            foreach (var pdxsl in Directory.EnumerateFiles(directory, "*.pdxsl", SearchOption.AllDirectories))
-            {
-                RebuildFile(pdxsl);
-            }
+            //foreach (var pdxsl in Directory.EnumerateFiles(directory, "*.pdxsl", SearchOption.AllDirectories))
+            //{
+            //    RebuildFile(pdxsl);
+            //}
             foreach (var pdxfx in Directory.EnumerateFiles(directory, "*.pdxfx", SearchOption.AllDirectories))
             {
                 RebuildFile(pdxfx);
@@ -59,6 +59,5 @@ namespace SiliconStudio.Paradox.Shaders.Tests
                 Console.WriteLine("Unexpected error {0}: {1}", filePath, ex);
             }
         }
-         
     }
 }

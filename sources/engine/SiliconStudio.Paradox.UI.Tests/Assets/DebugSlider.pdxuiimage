@@ -1,92 +1,52 @@
 !UIImageGroup
-Id: 63e11e45-ce13-4dc5-9c91-81d19cbd35d9
+Id: 90569fac-e17d-41a0-9fc0-e7521aa05300
 Tags: []
 Images:
     -   Source: ../../../data/tests/DebugSlider.png
         Name: Background
-        TextureRegion:
-            X: 0
-            Y: 0
-            Width: 64
-            Height: 32
+        TextureRegion: {X: 0, Y: 0, Width: 64, Height: 32}
         Borders: {X: 22, Y: 12, Z: 0, W: 0}
     -   Source: ../../../data/tests/DebugSlider.png
         Name: Foreground
-        TextureRegion:
-            X: 7
-            Y: 35
-            Width: 45
-            Height: 26
+        TextureRegion: {X: 7, Y: 35, Width: 45, Height: 26}
         Borders: {X: 14, Y: 7, Z: 0, W: 0}
     -   Source: ../../../data/tests/DebugSlider.png
         Name: Thumb
-        TextureRegion:
-            X: 58
-            Y: 33
-            Width: 2
-            Height: 30
+        TextureRegion: {X: 58, Y: 33, Width: 2, Height: 30}
         Borders: {X: 0, Y: 0, Z: 0, W: 0}
     -   Source: ../../../data/tests/DebugSlider.png
         Name: ThumbOverred
-        TextureRegion:
-            X: 61
-            Y: 33
-            Width: 2
-            Height: 30
+        TextureRegion: {X: 61, Y: 33, Width: 2, Height: 30}
         Borders: {X: 0, Y: 0, Z: 0, W: 0}
     -   Source: ../../../data/tests/DebugSlider.png
         Name: Tick
-        TextureRegion:
-            X: 55
-            Y: 53
-            Width: 2
-            Height: 10
+        TextureRegion: {X: 55, Y: 53, Width: 2, Height: 10}
         Borders: {X: 0, Y: 0, Z: 0, W: 0}
     -   Source: ../../../data/tests/DebugSlider.png
         Name: BackgroundRotated
-        TextureRegion:
-            X: 96
-            Y: 0
-            Width: 32
-            Height: 64
+        TextureRegion: {X: 96, Y: 0, Width: 32, Height: 64}
         Orientation: Rotated90
         Borders: {X: 0, Y: 0, Z: 22, W: 12}
     -   Source: ../../../data/tests/DebugSlider.png
         Name: ForegroundRotated
-        TextureRegion:
-            X: 67
-            Y: 7
-            Width: 26
-            Height: 45
+        TextureRegion: {X: 67, Y: 7, Width: 26, Height: 45}
         Orientation: Rotated90
         Borders: {X: 0, Y: 0, Z: 14, W: 7}
     -   Source: ../../../data/tests/DebugSlider.png
         Name: ThumbRotated
-        TextureRegion:
-            X: 65
-            Y: 58
-            Width: 30
-            Height: 2
+        TextureRegion: {X: 65, Y: 58, Width: 30, Height: 2}
         Orientation: Rotated90
         Borders: {X: 0, Y: 0, Z: 0, W: 0}
     -   Source: ../../../data/tests/DebugSlider.png
         Name: ThumbOverredRotated
-        TextureRegion:
-            X: 65
-            Y: 61
-            Width: 30
-            Height: 2
+        TextureRegion: {X: 65, Y: 61, Width: 30, Height: 2}
         Orientation: Rotated90
         Borders: {X: 0, Y: 0, Z: 0, W: 0}
     -   Source: ../../../data/tests/DebugSlider.png
         Name: TickRotated
-        TextureRegion:
-            X: 65
-            Y: 55
-            Width: 10
-            Height: 2
+        TextureRegion: {X: 65, Y: 55, Width: 10, Height: 2}
         Orientation: Rotated90
         Borders: {X: 0, Y: 0, Z: 0, W: 0}
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Format: TrueColor
+Format: Color32Bits
 Alpha: Explicit

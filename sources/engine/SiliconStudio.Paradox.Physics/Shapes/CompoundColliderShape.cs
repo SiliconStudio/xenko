@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Core.Collections;
 
@@ -32,9 +32,10 @@ namespace SiliconStudio.Paradox.Physics
             base.Dispose();
         }
 
-        readonly FastList<ColliderShape> colliderShapes = new FastList<ColliderShape>();
+        private readonly FastList<ColliderShape> colliderShapes = new FastList<ColliderShape>();
 
-        BulletSharp.CompoundShape internalCompoundShape;
+        private BulletSharp.CompoundShape internalCompoundShape;
+
         internal BulletSharp.CompoundShape InternalCompoundShape
         {
             get
@@ -56,7 +57,7 @@ namespace SiliconStudio.Paradox.Physics
             colliderShapes.Add(shape);
 
             InternalCompoundShape.AddChildShape(shape.PositiveCenterMatrix, shape.InternalShape);
-            
+
             shape.Parent = this;
         }
 
@@ -67,9 +68,9 @@ namespace SiliconStudio.Paradox.Physics
         public void RemoveChildShape(ColliderShape shape)
         {
             colliderShapes.Remove(shape);
-            
+
             InternalCompoundShape.RemoveChildShape(shape.InternalShape);
-            
+
             shape.Parent = null;
         }
 

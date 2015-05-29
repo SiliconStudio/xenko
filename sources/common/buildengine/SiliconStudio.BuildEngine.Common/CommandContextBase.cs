@@ -13,7 +13,7 @@ namespace SiliconStudio.BuildEngine
     {
         public Command CurrentCommand { get; private set; }
 
-        public abstract Logger Logger { get; }
+        public abstract LoggerResult Logger { get; }
 
         public BuildParameterCollection BuildParameters { get; private set; }
 
@@ -49,6 +49,14 @@ namespace SiliconStudio.BuildEngine
         public void RegisterOutput(ObjectUrl url, ObjectId hash)
         {
             ResultEntry.OutputObjects.Add(url, hash);
+        }
+
+        public void RegisterCommandLog(IEnumerable<ILogMessage> logMessages)
+        {
+            foreach (var message in logMessages)
+            {
+                ResultEntry.LogMessages.Add(message as SerializableLogMessage ?? new SerializableLogMessage((LogMessage)message));
+            }
         }
 
         public void AddTag(ObjectUrl url, TagSymbol tagSymbol)

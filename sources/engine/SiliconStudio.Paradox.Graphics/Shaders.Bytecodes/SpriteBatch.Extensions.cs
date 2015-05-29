@@ -9,11 +9,11 @@ namespace SiliconStudio.Paradox.Graphics
     {
         private static EffectBytecode bytecode = null;
 
-        private static EffectBytecode Bytecode
+        public static EffectBytecode Bytecode
         {
             get
             {
-                return bytecode ?? (bytecode = BinarySerialization.Read<EffectBytecode>(binaryBytecode));
+                return bytecode ?? (bytecode = EffectBytecode.FromBytesSafe(binaryBytecode));
             }
         }
     }

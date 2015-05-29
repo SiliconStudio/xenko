@@ -12,6 +12,7 @@ using System.Windows.Controls;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
+    [Obsolete]
     public class GridViewAutoSizeBehavior : DeferredBehaviorBase<ListView>
     {
         /// <summary>

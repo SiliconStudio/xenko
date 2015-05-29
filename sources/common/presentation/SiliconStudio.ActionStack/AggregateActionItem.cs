@@ -72,21 +72,21 @@ namespace SiliconStudio.ActionStack
         /// <inheritdoc/>
         protected override void FreezeMembers()
         {
-            foreach (var actionItem in actionItems.Where(x => x != null))
+            foreach (var actionItem in actionItems.NotNull())
                 actionItem.Freeze();
         }
 
         /// <inheritdoc/>
         protected override void UndoAction()
         {
-            foreach (var actionItem in ActionItems.Reverse().Where(x => x != null))
+            foreach (var actionItem in ActionItems.Reverse().NotNull())
                 actionItem.Undo();
         }
 
         /// <inheritdoc/>
         protected override void RedoAction()
         {
-            foreach (var actionItem in ActionItems.Where(x => x != null))
+            foreach (var actionItem in ActionItems.NotNull())
                 actionItem.Redo();
         }
     }

@@ -354,7 +354,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <param name="depthStencilBuffer">The depth stencil buffer.</param>
         /// <param name="renderTargets">The render targets.</param>
-        public void SetRenderTargets(DepthStencilBuffer depthStencilBuffer,
+        public void SetDepthAndRenderTargets(DepthStencilBuffer depthStencilBuffer,
                                               params RenderTarget[] renderTargets)
         {
             throw new NotImplementedException();

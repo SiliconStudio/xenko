@@ -6,7 +6,7 @@ using SiliconStudio.Paradox.Graphics;
 using QuickGraph;
 using QuickGraph.Algorithms;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     /// <summary>
     /// Posteffect manager.
@@ -129,7 +129,7 @@ namespace SiliconStudio.Paradox.Effects
                         // If no available resource was found, create a new one.
                         if (resource == null)
                         {
-                            resource = Texture2D.New(GraphicsDevice, textureDescription.Value).ToRenderTarget();
+                            resource = Texture.New2D(GraphicsDevice, textureDescription.Value).ToRenderTarget();
                             matchingTextureList.Add(resource);
                         }
                     }

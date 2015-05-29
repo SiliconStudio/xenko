@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.ComponentModel;
-using System.IO;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Assets
@@ -27,6 +26,15 @@ namespace SiliconStudio.Assets
         {
             Id = Guid.NewGuid();
             Tags = new TagCollection();
+            AssetFormatVersion = AssetRegistry.GetCurrentFormatVersion(GetType());
+        }
+
+        /// <summary>
+        /// Gets the build order, currently per type (replaces BuildOrder). Later, we want per asset dependencies to improve parallelism
+        /// </summary>
+        internal protected virtual int InternalBuildOrder 
+        {
+            get { return 0; }
         }
 
         /// <summary>
@@ -61,6 +69,13 @@ namespace SiliconStudio.Assets
         public int SerializedVersion { get;  set; }
 
         /// <summary>
+        /// Gets the current asset format version for this asset.
+        /// </summary>
+        /// <value>The current asset format version for this asset.</value>
+        [DataMemberIgnore]
+        public int AssetFormatVersion { get; private set; }
+
+        /// <summary>
         /// Gets or sets the base.
         /// </summary>
         /// <value>The base.</value>
@@ -75,6 +90,7 @@ namespace SiliconStudio.Assets
         [DataMember(-980)]
         [DefaultValue(0)]
         [Browsable(false)]
+        [Obsolete]
         public int BuildOrder { get; set; }
 
         /// <summary>

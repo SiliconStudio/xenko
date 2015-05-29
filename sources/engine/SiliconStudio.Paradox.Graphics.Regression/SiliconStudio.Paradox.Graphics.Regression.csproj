@@ -45,6 +45,9 @@
     </When>
     <When Condition=" '$(SiliconStudioPlatform)' == 'WindowsStore' OR '$(SiliconStudioPlatform)' == 'WindowsPhone'">
       <ItemGroup>
+        <Reference Include="nunit.framework">
+          <HintPath>$(SiliconStudioDependenciesDir)NUnitLite\Portable\nunit.framework.dll</HintPath>
+        </Reference>
         <Reference Include="nunitlite">
           <HintPath>$(SiliconStudioDependenciesDir)NUnitLite\Portable\nunitlite.dll</HintPath>
         </Reference>
@@ -140,6 +143,7 @@
     <Compile Include="FrameGameSystem.cs" />
     <Compile Include="GameTester.cs" />
     <Compile Include="GraphicsTestBase.cs" />
+    <Compile Include="GraphicsUnitTestBatch.cs" />
     <Compile Include="ImageTester.NotRuntime.cs" />
     <Compile Include="ImageTester.cs" />
     <Compile Include="iOSDeviceType.cs" />

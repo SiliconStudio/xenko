@@ -10,8 +10,8 @@ namespace SiliconStudio.Paradox.Graphics
     /// <summary>
     /// Describes a custom vertex format structure that contains position, color, texture and swizzle information. 
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VertexPositionColorTextureSwizzle : IEquatable<VertexPositionColorTextureSwizzle>
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    public struct VertexPositionColorTextureSwizzle : IEquatable<VertexPositionColorTextureSwizzle>, IVertex
     {
         /// <summary>
         /// Initializes a new <see cref="VertexPositionColorTexture"/> instance.
@@ -52,7 +52,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// Defines structure byte size.
         /// </summary>
-        public static readonly int Size = 28;
+        public static readonly int Size = 32;
 
         /// <summary>
         /// The vertex layout of this struct.
@@ -101,6 +101,16 @@ namespace SiliconStudio.Paradox.Graphics
         public override string ToString()
         {
             return string.Format("Position: {0}, Color: {1}, Texcoord: {2}, Swizzle: {3}", Position, Color, TextureCoordinate, Swizzle);
+        }
+
+        public VertexDeclaration GetLayout()
+        {
+            return Layout;
+        }
+
+        public void FlipWinding()
+        {
+            TextureCoordinate.X = (1.0f - TextureCoordinate.X);
         }
     }
 }

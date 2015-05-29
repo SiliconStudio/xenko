@@ -2,14 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D 
 using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using SharpDX;
-using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
-using SharpDX.DXGI;
 
-using SiliconStudio.Core;
+using SharpDX.Direct3D11;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -18,17 +12,25 @@ namespace SiliconStudio.Paradox.Graphics
     /// </summary>
     public abstract partial class GraphicsResource
     {
-        protected ShaderResourceView nativeShaderResourceView;
+        private ShaderResourceView shaderResourceView;
         private UnorderedAccessView unorderedAccessView;
+
+        protected bool IsDebugMode
+        {
+            get
+            {
+                return GraphicsDevice != null && GraphicsDevice.IsDebugMode;
+            }
+        }
 
         protected override void OnNameChanged()
         {
             base.OnNameChanged();
-            if (GraphicsDevice != null && GraphicsDevice.IsDebugMode)
+            if (IsDebugMode)
             {
-                if (this.nativeShaderResourceView != null)
+                if (this.shaderResourceView != null)
                 {
-                    nativeShaderResourceView.DebugName = Name == null ? null : String.Format("{0} SRV", Name);
+                    shaderResourceView.DebugName = Name == null ? null : String.Format("{0} SRV", Name);
                 }
 
                 if (this.unorderedAccessView != null)
@@ -40,24 +42,22 @@ namespace SiliconStudio.Paradox.Graphics
 
         /// <summary>
         /// Gets or sets the ShaderResourceView attached to this GraphicsResource.
-        /// Note that only Texture2D, Texture3D, RenderTarget2D, RenderTarget3D, DepthStencil are using this ShaderResourceView
+        /// Note that only Texture, Texture3D, RenderTarget2D, RenderTarget3D, DepthStencil are using this ShaderResourceView
         /// </summary>
         /// <value>The device child.</value>
         protected internal SharpDX.Direct3D11.ShaderResourceView NativeShaderResourceView
         {
             get
             {
-                return nativeShaderResourceView;
+                return shaderResourceView;
             }
             set
             {
-                Debug.Assert(nativeShaderResourceView == null);
-                nativeShaderResourceView = value;
+                shaderResourceView = value;
 
-                if (nativeShaderResourceView != null)
+                if (IsDebugMode && shaderResourceView != null)
                 {
-                    // Associate PrivateData to this DeviceResource
-                    SetDebugName(GraphicsDevice, nativeShaderResourceView, "SRV " + Name);
+                    shaderResourceView.DebugName = Name == null ? null : String.Format("{0} SRV", Name);
                 }
             }
         }
@@ -74,30 +74,19 @@ namespace SiliconStudio.Paradox.Graphics
             }
             set
             {
-                Debug.Assert(unorderedAccessView == null);
                 unorderedAccessView = value;
 
-                if (unorderedAccessView != null)
+                if (IsDebugMode && unorderedAccessView != null)
                 {
-                    // Associate PrivateData to this DeviceResource
-                    SetDebugName(GraphicsDevice, unorderedAccessView, "UAV " + Name);
+                    unorderedAccessView.DebugName = Name == null ? null : String.Format("{0} UAV", Name);
                 }
             }
         }
 
         protected override void DestroyImpl()
         {
-            if (nativeShaderResourceView != null)
-            {
-                ((IUnknown)nativeShaderResourceView).Release();
-                nativeShaderResourceView = null;
-            }
-
-            if (unorderedAccessView != null)
-            {
-                ((IUnknown)unorderedAccessView).Release();
-                unorderedAccessView = null;
-            }
+            ReleaseComObject(ref shaderResourceView);
+            ReleaseComObject(ref unorderedAccessView);
 
             base.DestroyImpl();
         }

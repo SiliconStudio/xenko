@@ -1,9 +1,11 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
+using System;
+
+using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -20,10 +22,6 @@ namespace SiliconStudio.Paradox.Physics
         {
             Type = ColliderShapeTypes.Capsule;
             Is2D = is2D;
-
-            Radius = radius;
-            Height = height;
-            UpAxis = upAxis;
 
             BulletSharp.CapsuleShape shape;
 
@@ -46,7 +44,6 @@ namespace SiliconStudio.Paradox.Physics
             }
             else //default to Y
             {
-                UpAxis = Vector3.UnitY;
                 shape = new BulletSharp.CapsuleShape(radius, height);
 
                 rotation = Matrix.Identity;
@@ -61,33 +58,12 @@ namespace SiliconStudio.Paradox.Physics
                 InternalShape = shape;
             }
 
-            if (!PhysicsEngine.Singleton.CreateDebugPrimitives) return;
-            DebugPrimitive = GeometricPrimitive.Capsule.New(PhysicsEngine.Singleton.DebugGraphicsDevice);
-            DebugPrimitiveScaling = Matrix.Scaling(new Vector3(radius * 2, h / 2, radius * 2) * 1.01f) * rotation;
+            DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(radius * 2, h / 2, Is2D ? 1.0f : radius * 2) * 1.01f) * rotation;
         }
 
-        /// <summary>
-        /// Gets the radius.
-        /// </summary>
-        /// <value>
-        /// The radius.
-        /// </value>
-        public float Radius { get; private set; }
-
-        /// <summary>
-        /// Gets the height.
-        /// </summary>
-        /// <value>
-        /// The height.
-        /// </value>
-        public float Height { get; private set; }
-
-        /// <summary>
-        /// Gets up axis.
-        /// </summary>
-        /// <value>
-        /// Up axis.
-        /// </value>
-        public Vector3 UpAxis { get; private set; }
+        public override GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
+        {
+            return GeometricPrimitive.Capsule.New(device);
+        }
     }
 }

@@ -82,7 +82,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
             libraryData.Textures = new Texture[image.SubImageArray.Length];
 
-            int bpp = (int)Tools.GetBPP(image.Format);
+            int bpp = (int)image.Format.GetBPP();
 
             for (int i = 0; i < image.SubImageArray.Length; ++i)
             {
@@ -119,7 +119,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     Compress(image, libraryData, (CompressingRequest)request);
                     break;
                 case RequestType.Decompressing:
-                    Decompress(image, libraryData);
+                    Decompress(image, libraryData, (DecompressingRequest)request);
                     break;
                 default:
                     Log.Error("DxtTexLib (DirectXTex) can't handle this request: " + request.Type);
@@ -188,14 +188,14 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             image.DisposingLibrary = this;
         }
 
-
         /// <summary>
         /// Decompresses the specified image.
         /// </summary>
         /// <param name="image">The image.</param>
         /// <param name="libraryData">The library data.</param>
-        /// <exception cref="TexLibraryException">Decompression failed</exception>
-        private void Decompress(TexImage image, AtitcTextureLibraryData libraryData)
+        /// <param name="request">The decompression request</param>
+        /// <exception cref="TextureToolsException">Decompression failed</exception>
+        private void Decompress(TexImage image, AtitcTextureLibraryData libraryData, DecompressingRequest request)
         {
             Log.Info("Decompressing texture ...");
 
@@ -206,7 +206,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             // Setting the new Texture array that will contained the uncompressed data
             for (int i = 0; i < libraryData.Textures.Length; ++i)
             {
-                Tools.ComputePitch(SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm, libraryData.Textures[i].dwWidth, libraryData.Textures[i].dwHeight, out rowPitch, out slicePitch);
+                Tools.ComputePitch(request.DecompressedFormat, libraryData.Textures[i].dwWidth, libraryData.Textures[i].dwHeight, out rowPitch, out slicePitch);
                 texOut[i] = new Texture(libraryData.Textures[i].dwWidth, libraryData.Textures[i].dwHeight, libraryData.Textures[i].dwWidth * 4, Format.ATI_TC_FORMAT_ARGB_8888, 0, IntPtr.Zero);
                 texOut[i].dwDataSize = Utilities.CalculateBufferSize(out texOut[i]);
                 totalSize += texOut[i].dwDataSize;
@@ -243,7 +243,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             libraryData.Data = image.Data;
             image.DataSize = totalSize;
             image.RowPitch = libraryData.Textures[0].dwPitch;
-            image.Format = SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm;
+            image.Format = request.DecompressedFormat;
             image.DisposingLibrary = this;
         }
 

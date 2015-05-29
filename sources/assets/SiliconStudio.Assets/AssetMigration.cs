@@ -4,7 +4,7 @@
 using System;
 using System.Globalization;
 using System.IO;
-using System.Linq;
+
 using SharpYaml;
 using SharpYaml.Events;
 using SharpYaml.Serialization;
@@ -34,7 +34,7 @@ namespace SiliconStudio.Assets
 
             // We've got a Yaml asset, let's get expected and serialized versions
             var serializedVersion = 0;
-            var expectedVersion = 0;
+            int expectedVersion;
             Type assetType;
 
             // Read from Yaml file the asset version and its type (to get expected version)
@@ -52,7 +52,7 @@ namespace SiliconStudio.Assets
                 var tagTypeRegistry = yamlSerializerSettings.TagTypeRegistry;
                 assetType = tagTypeRegistry.TypeFromTag(mappingStart.Tag);
 
-                expectedVersion = AssetRegistry.GetFormatVersion(assetType);
+                expectedVersion = AssetRegistry.GetCurrentFormatVersion(assetType);
 
                 Scalar assetKey;
                 while ((assetKey = yamlEventReader.Allow<Scalar>()) != null)
@@ -80,7 +80,7 @@ namespace SiliconStudio.Assets
             if (serializedVersion < expectedVersion)
             {
                 // Perform asset upgrade
-                log.Info("{0} needs update, from version {0} to version {1}", Path.GetFullPath(assetFullPath), serializedVersion, expectedVersion);
+                log.Verbose("{0} needs update, from version {1} to version {2}", Path.GetFullPath(assetFullPath), serializedVersion, expectedVersion);
 
                 // Load the asset as a YamlNode object
                 var input = new StringReader(File.ReadAllText(assetFullPath));
@@ -89,37 +89,37 @@ namespace SiliconStudio.Assets
                 var yamlRootNode = (YamlMappingNode)yamlStream.Documents[0].RootNode;
 
                 // Check if there is any asset updater
-                var assetUpdaterTypes = AssetRegistry.GetFormatVersionUpdaterTypes(assetType);
-                if (assetUpdaterTypes == null)
+                var assetUpgraders = AssetRegistry.GetAssetUpgraders(assetType);
+                if (assetUpgraders == null)
                 {
                     throw new InvalidOperationException(string.Format("Asset of type {0} should be updated from version {1} to {2}, but no asset migration path was found", assetType, serializedVersion, expectedVersion));
                 }
 
                 // Instantiate asset updaters
-                var assetUpgraders = assetUpdaterTypes.Select(x => (IAssetUpgrader)Activator.CreateInstance(x)).ToArray();
-
-                // TODO: Select best asset updater if more than one (need to check from what to what version they update, score, if multiple need to be chained, etc...)
-                // I think it's better to wait for some actual scenarios to implement this right the first time
-                if (assetUpgraders.Length != 1)
+                var currentVersion = serializedVersion;
+                while (currentVersion != expectedVersion)
                 {
-                    throw new InvalidOperationException(string.Format("Asset of type {0} has multiple migration paths, but selecting the right one is not implemented yet.", assetType));
+                    int targetVersion;
+                    // This will throw an exception if no upgrader is available for the given version, exiting the loop in case of error.
+                    var upgrader = assetUpgraders.GetUpgrader(currentVersion, out targetVersion);
+                    upgrader.Upgrade(currentVersion, targetVersion, log, yamlRootNode);
+                    currentVersion = targetVersion;
                 }
-
-                // Perform upgrade
-                assetUpgraders[0].Upgrade(log, yamlRootNode);
 
                 // Make sure asset is updated to latest version
                 YamlNode serializedVersionNode;
-                serializedVersion = 0;
+                var newSerializedVersion = 0;
                 if (yamlRootNode.Children.TryGetValue(new YamlScalarNode("SerializedVersion"), out serializedVersionNode))
                 {
-                    serializedVersion = Convert.ToInt32(((YamlScalarNode)serializedVersionNode).Value);
+                    newSerializedVersion = Convert.ToInt32(((YamlScalarNode)serializedVersionNode).Value);
                 }
 
-                if (serializedVersion != expectedVersion)
+                if (newSerializedVersion != expectedVersion)
                 {
-                    throw new InvalidOperationException(string.Format("Asset of type {0} was migrated, but still its new version {1} doesn't match expected version {2}.", assetType, serializedVersion, expectedVersion));
+                    throw new InvalidOperationException(string.Format("Asset of type {0} was migrated, but still its new version {1} doesn't match expected version {2}.", assetType, newSerializedVersion, expectedVersion));
                 }
+
+                log.Info("{0} updated from version {1} to version {2}", Path.GetFullPath(assetFullPath), serializedVersion, expectedVersion);
 
                 var preferredIndent = YamlSerializer.GetSerializerSettings().PreferredIndent;
 

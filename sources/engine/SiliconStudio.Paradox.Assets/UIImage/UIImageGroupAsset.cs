@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Paradox.Assets.UIImage
 {
@@ -10,11 +12,11 @@ namespace SiliconStudio.Paradox.Assets.UIImage
     /// Describes a sprite group asset.
     /// </summary>
     [DataContract("UIImageGroup")]
-    [AssetFileExtension(FileExtension)]
+    [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(UIImageGroupCompiler))]
-    [AssetFactory(typeof(UIImageGroupFactory))]
-    [ThumbnailCompiler(PreviewerCompilerNames.UIImageGroupThumbnailCompilerQualifiedName)]
-    [AssetDescription("UI Image Group", "An UI Image group", true)]
+    [ObjectFactory(typeof(UIImageGroupFactory))]
+    [ThumbnailCompiler(PreviewerCompilerNames.UIImageGroupThumbnailCompilerQualifiedName, true)]
+    [Display(150, "UI Image Group", "An UI Image group")]
     public sealed class UIImageGroupAsset : ImageGroupAsset<UIImageInfo>
     {
         /// <summary>
@@ -22,9 +24,9 @@ namespace SiliconStudio.Paradox.Assets.UIImage
         /// </summary>
         public const string FileExtension = ".pdxuiimage";
         
-        private class UIImageGroupFactory : IAssetFactory
+        private class UIImageGroupFactory : IObjectFactory
         {
-            public Asset New()
+            public object New(Type type)
             {
                 return new UIImageGroupAsset();
             }

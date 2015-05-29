@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 using SiliconStudio.Paradox.Shaders.Parser.Analysis;
@@ -10,6 +11,7 @@ using SiliconStudio.Shaders.Ast;
 
 namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 {
+    [DebuggerDisplay("ModuleMixin {MixinName}")]
     internal class ModuleMixin
     {
         #region Public members

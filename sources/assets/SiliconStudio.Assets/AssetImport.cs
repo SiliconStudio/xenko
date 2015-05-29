@@ -13,6 +13,11 @@ namespace SiliconStudio.Assets
     [DataContract]
     public abstract class AssetImport : Asset
     {
+        protected AssetImport()
+        {
+            Source = new UFile("");    
+        }
+
         /// <summary>
         /// Gets or sets the source file of this 
         /// </summary>

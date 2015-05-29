@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Graphics
             throw new NotImplementedException();
         }
 
-        public static bool IsReadOnlySupported(GraphicsDevice device)
+        public static bool IsDepthStencilReadOnlySupported(GraphicsDevice device)
         {
             throw new NotImplementedException();
         }

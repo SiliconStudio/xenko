@@ -3,7 +3,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core.IO;
@@ -98,25 +97,12 @@ namespace SiliconStudio.Assets.Analysis
 
             public List<AssetReferenceLink> References { get; set; }
 
-            public override void VisitObject(object obj, ObjectDescriptor descriptor, bool visitMembers)
-            {
-                base.VisitObject(obj, descriptor, visitMembers);
-                var reference = obj as ContentReference;
-                if (reference != null)
-                {
-                    AddLink(reference, (guid, location) =>
-                    {
-                        reference.Id = guid.HasValue ? guid.Value : reference.Id;
-                        reference.Location = location;
-                        return reference;
-                    });
-                }
-            }
-
             public override void VisitArrayItem(Array array, ArrayDescriptor descriptor, int index, object item, ITypeDescriptor itemDescriptor)
             {
                 base.VisitArrayItem(array, descriptor, index, item, itemDescriptor);
                 var assetReference = item as AssetReference;
+                var assetBase = item as AssetBase;
+                var attachedReference = item != null ? AttachedReferenceManager.GetAttachedReference(item) : null;
                 if (assetReference != null)
                 {
                     AddLink(item,
@@ -127,39 +113,45 @@ namespace SiliconStudio.Assets.Analysis
                             return newValue;
                         });
                 }
-                else
+                else if (assetBase != null)
                 {
-                    var assetBase = item as AssetBase;
-                    if (assetBase != null)
-                    {
-                        AddLink(item,
-                            (guid, location) =>
-                            {
-                                var newValue = new AssetBase(location, assetBase.Asset);
-                                array.SetValue(newValue, index);
-                                return newValue;
-                            });
-                    }
-                    else if (item is UFile)
-                    {
-                        AddLink(item,
-                            (guid, location) =>
-                            {
-                                var newValue = new UFile(location);
-                                array.SetValue(newValue, index);
-                                return newValue;
-                            });
-                    }
-                    else if (item is UDirectory)
-                    {
-                        AddLink(item,
-                            (guid, location) =>
-                            {
-                                var newValue = new UFile(location);
-                                array.SetValue(newValue, index);
-                                return newValue;
-                            });
-                    }
+                    AddLink(item,
+                        (guid, location) =>
+                        {
+                            var newValue = new AssetBase(location, assetBase.Asset);
+                            array.SetValue(newValue, index);
+                            return newValue;
+                        });
+                }
+                else if (attachedReference != null)
+                {
+                    AddLink(new AttachedContentReference(attachedReference),
+                        (guid, location) =>
+                        {
+                            object newValue = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateSerializableVersion(descriptor.ElementType, guid.Value, location) : null;
+                            array.SetValue(newValue, index);
+                            return newValue;
+                        });
+                }
+                else if (item is UFile)
+                {
+                    AddLink(item,
+                        (guid, location) =>
+                        {
+                            var newValue = new UFile(location);
+                            array.SetValue(newValue, index);
+                            return newValue;
+                        });
+                }
+                else if (item is UDirectory)
+                {
+                    AddLink(item,
+                        (guid, location) =>
+                        {
+                            var newValue = new UFile(location);
+                            array.SetValue(newValue, index);
+                            return newValue;
+                        });
                 }
             }
 
@@ -167,30 +159,33 @@ namespace SiliconStudio.Assets.Analysis
             {
                 base.VisitCollectionItem(collection, descriptor, index, item, itemDescriptor);
                 var assetReference = item as AssetReference;
+                var assetBase = item as AssetBase;
+                var attachedReference = item != null ? AttachedReferenceManager.GetAttachedReference(item) : null;
                 // TODO force support for IList in CollectionDescriptor
                 if (assetReference != null)
                 {
                     var list = (IList)collection;
                     AddLink(assetReference, (guid, location) => list[index] = AssetReference.New(descriptor.ElementType, guid.HasValue ? guid.Value : assetReference.Id, location));
                 }
-                else
+                else if (assetBase != null)
                 {
-                    var assetBase = item as AssetBase;
-                    if (assetBase != null)
-                    {
-                        var list = (IList)collection;
-                        AddLink(assetBase, (guid, location) => list[index] = new AssetBase(location, assetBase.Asset));
-                    }
-                    else if (item is UFile)
-                    {
-                        var list = (IList)collection;
-                        AddLink(item, (guid, location) => list[index] = new UFile(location));
-                    }
-                    else if (item is UDirectory)
-                    {
-                        var list = (IList)collection;
-                        AddLink(item, (guid, location) => list[index] = new UDirectory(location));
-                    }
+                    var list = (IList)collection;
+                    AddLink(assetBase, (guid, location) => list[index] = new AssetBase(location, assetBase.Asset));
+                }
+                else if (attachedReference != null)
+                {
+                    var list = (IList)collection;
+                    AddLink(new AttachedContentReference(attachedReference), (guid, location) => list[index] = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateSerializableVersion(descriptor.ElementType, guid.Value, location) : null);
+                }
+                else if (item is UFile)
+                {
+                    var list = (IList)collection;
+                    AddLink(item, (guid, location) => list[index] = new UFile(location));
+                }
+                else if (item is UDirectory)
+                {
+                    var list = (IList)collection;
+                    AddLink(item, (guid, location) => list[index] = new UDirectory(location));
                 }
             }
 
@@ -198,6 +193,8 @@ namespace SiliconStudio.Assets.Analysis
             {
                 base.VisitDictionaryKeyValue(dictionaryObj, descriptor, key, keyDescriptor, value, valueDescriptor);
                 var assetReference = value as AssetReference;
+                var assetBase = value as AssetBase;
+                var attachedReference = value != null ? AttachedReferenceManager.GetAttachedReference(value) : null;
                 if (assetReference != null)
                 {
                     AddLink(assetReference,
@@ -208,39 +205,45 @@ namespace SiliconStudio.Assets.Analysis
                             return newValue;
                         });
                 }
-                else
+                else if (assetBase != null)
                 {
-                    var assetBase = value as AssetBase;
-                    if (assetBase != null)
-                    {
-                        AddLink(assetBase,
-                            (guid, location) =>
-                            {
-                                var newValue = new AssetBase(location, assetBase.Asset);
-                                descriptor.SetValue(dictionaryObj, key, newValue);
-                                return newValue;
-                            });
-                    }
-                    else if (value is UFile)
-                    {
-                        AddLink(value,
-                            (guid, location) =>
-                            {
-                                var newValue = new UFile(location);
-                                descriptor.SetValue(dictionaryObj, key, newValue);
-                                return newValue;
-                            });
-                    }
-                    else if (value is UDirectory)
-                    {
-                        AddLink(value,
-                            (guid, location) =>
-                            {
-                                var newValue = new UDirectory(location);
-                                descriptor.SetValue(dictionaryObj, key, newValue);
-                                return newValue;
-                            });
-                    }
+                    AddLink(assetBase,
+                        (guid, location) =>
+                        {
+                            var newValue = new AssetBase(location, assetBase.Asset);
+                            descriptor.SetValue(dictionaryObj, key, newValue);
+                            return newValue;
+                        });
+                }
+                else if (attachedReference != null)
+                {
+                    AddLink(new AttachedContentReference(attachedReference),
+                        (guid, location) =>
+                        {
+                            object newValue = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateSerializableVersion(descriptor.ValueType, guid.Value, location) : null;
+                            descriptor.SetValue(dictionaryObj, key, newValue);
+                            return newValue;
+                        });
+                }
+                else if (value is UFile)
+                {
+                    AddLink(value,
+                        (guid, location) =>
+                        {
+                            var newValue = new UFile(location);
+                            descriptor.SetValue(dictionaryObj, key, newValue);
+                            return newValue;
+                        });
+                }
+                else if (value is UDirectory)
+                {
+                    AddLink(value,
+                        (guid, location) =>
+                        {
+                            var newValue = new UDirectory(location);
+                            descriptor.SetValue(dictionaryObj, key, newValue);
+                            return newValue;
+                        });
                 }
             }
 
@@ -248,6 +251,8 @@ namespace SiliconStudio.Assets.Analysis
             {
                 base.VisitObjectMember(container, containerDescriptor, member, value);
                 var assetReference = value as AssetReference;
+                var assetBase = value as AssetBase;
+                var attachedReference = value != null ? AttachedReferenceManager.GetAttachedReference(value) : null;
                 if (assetReference != null)
                 {
                     AddLink(assetReference,
@@ -258,39 +263,45 @@ namespace SiliconStudio.Assets.Analysis
                             return newValue;
                         });
                 }
-                else
+                else if (assetBase != null)
                 {
-                    var assetBase = value as AssetBase;
-                    if (assetBase != null)
-                    {
-                        AddLink(assetBase,
-                            (guid, location) =>
-                            {
-                                var newValue = new AssetBase(location, assetBase.Asset);
-                                member.Set(container, newValue);
-                                return newValue;
-                            });
-                    }
-                    else if (value is UFile)
-                    {
-                        AddLink(value,
-                            (guid, location) =>
-                            {
-                                var newValue = new UFile(location);
-                                member.Set(container, newValue);
-                                return newValue;
-                            });
-                    }
-                    else if (value is UDirectory)
-                    {
-                        AddLink(value,
-                            (guid, location) =>
-                            {
-                                var newValue = new UDirectory(location);
-                                member.Set(container, newValue);
-                                return newValue;
-                            });
-                    }
+                    AddLink(assetBase,
+                        (guid, location) =>
+                        {
+                            var newValue = new AssetBase(location, assetBase.Asset);
+                            member.Set(container, newValue);
+                            return newValue;
+                        });
+                }
+                else if (attachedReference != null)
+                {
+                    AddLink(new AttachedContentReference(attachedReference),
+                        (guid, location) =>
+                        {
+                            object newValue = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateSerializableVersion(member.Type, guid.Value, location) : null;
+                            member.Set(container, newValue);
+                            return newValue;
+                        });
+                }
+                else if (value is UFile)
+                {
+                    AddLink(value,
+                        (guid, location) =>
+                        {
+                            var newValue = new UFile(location);
+                            member.Set(container, newValue);
+                            return newValue;
+                        });
+                }
+                else if (value is UDirectory)
+                {
+                    AddLink(value,
+                        (guid, location) =>
+                        {
+                            var newValue = new UDirectory(location);
+                            member.Set(container, newValue);
+                            return newValue;
+                        });
                 }
             }
 

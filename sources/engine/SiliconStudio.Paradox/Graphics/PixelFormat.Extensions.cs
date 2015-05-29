@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -34,6 +35,7 @@ namespace SiliconStudio.Paradox.Graphics
         private static readonly int[] sizeOfInBits = new int[256];
         private static readonly bool[] compressedFormats = new bool[256];
         private static readonly bool[] srgbFormats = new bool[256];
+        private static readonly bool[] hdrFormats = new bool[256];
         private static readonly bool[] typelessFormats = new bool[256];
 
         private static int GetIndex(PixelFormat format)
@@ -147,6 +149,16 @@ namespace SiliconStudio.Paradox.Graphics
         public static bool IsSRgb(this PixelFormat fmt )
         {
             return srgbFormats[GetIndex(fmt)];
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="PixelFormat"/> is HDR (either 16 or 32bits float)
+        /// </summary>
+        /// <param name="fmt">The FMT.</param>
+        /// <returns><c>true</c> if the specified pixel format is HDR (floating point); otherwise, <c>false</c>.</returns>
+        public static bool IsHDR(this PixelFormat fmt)
+        {
+            return hdrFormats[GetIndex(fmt)];
         }
 
         /// <summary>
@@ -395,6 +407,15 @@ namespace SiliconStudio.Paradox.Graphics
                     PixelFormat.B8G8R8X8_UNorm_SRgb,
                     PixelFormat.BC7_UNorm_SRgb,
                 }, srgbFormats);
+
+            InitDefaults(new []
+            {
+                    PixelFormat.R16G16B16A16_Float,
+                    PixelFormat.R32G32B32A32_Float,
+                    PixelFormat.R16G16B16A16_Float,
+                    PixelFormat.R16G16_Float,
+                    PixelFormat.R16_Float,
+            }, hdrFormats);
 
             // Init typeless formats
             InitDefaults(new[]

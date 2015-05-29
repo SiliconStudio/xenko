@@ -29,12 +29,18 @@
   <ItemGroup>
     <Compile Include="TestMemberPath.cs" />
     <Compile Include="TestDataMemberVisitor.cs" />
+    <Compile Include="TestMemberPathBase.cs" />
     <Compile Include="TestNamingHelper.cs" />
+    <Compile Include="TestTypeConverter.cs" />
     <Compile Include="TestUPath.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
       <Name>SiliconStudio.Core</Name>

@@ -5,13 +5,13 @@ namespace Test4
     params TestParameters
     {
         int TestCount;
+        bool UseComputeColorEffect;
     };
 
     partial shader ChildParamsMixin
     {
         using params TestParameters;
 
-        mixin clone;
         TestParameters.TestCount = 1;
         if (TestParameters.TestCount == 1)
             mixin C1;

@@ -81,6 +81,11 @@ namespace SiliconStudio.Shaders.Ast
         /// </value>
         public List<Node> Parameters { get; set; }
 
+        public virtual TypeBase ToNonGenericType(SourceSpan? span = null)
+        {
+            return this;
+        }
+
         #endregion
 
         #region Public Methods

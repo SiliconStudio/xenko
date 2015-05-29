@@ -12,7 +12,7 @@ namespace SiliconStudio.Quantum.References
         private object orphanObject;
 
         /// <summary>
-        /// Initialize a new instance of the <see cref="ObjectReference"/> class using a data object. The model node can be retrieved later using <see cref="UpdateTarget"/>.
+        /// Initialize a new instance of the <see cref="ObjectReference"/> class using a data object.
         /// </summary>
         /// <remarks>This constructor should be used when the given <see cref="objectValue"/> has no mode node yet existing.</remarks>
         /// <param name="objectValue">A data object to reference. Can be null.</param>
@@ -63,40 +63,25 @@ namespace SiliconStudio.Quantum.References
         }
 
         /// <summary>
-        /// Set the <see cref="TargetNode"/> and <see cref="TargetGuid"/> to the given object.
+        /// Set the <see cref="TargetNode"/> and <see cref="TargetGuid"/> of the targeted object by retrieving it from or creating it to the given <see cref="ModelContainer"/>.
         /// </summary>
-        /// <param name="targetNode">The <see cref="IModelNode"/> this reference should point on.</param>
-        public void SetTarget(IModelNode targetNode)
+        /// <param name="modelContainer">The <see cref="ModelContainer"/> used to retrieve or create the target node.</param>
+        public IModelNode SetTarget(ModelContainer modelContainer)
         {
-            if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value)) throw new ArgumentException(@"The type of the node content does not match the type of this reference", "targetNode");
-
-            if (TargetNode != null || TargetGuid != Guid.Empty)
-                throw new InvalidOperationException("TargetNode has already been set.");
-            if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value))
-                throw new InvalidOperationException("TargetNode type does not match the reference type.");
-            TargetNode = targetNode;
-            TargetGuid = targetNode.Guid;
-        }
-
-        /// <inheritdoc/>
-        public bool UpdateTarget(ModelContainer modelContainer)
-        {
-            if (TargetNode == null)
+            if (modelContainer == null) throw new ArgumentNullException("modelContainer");
+            IModelNode targetNode = modelContainer.GetOrCreateModelNode(ObjectValue, Type);
+            if (targetNode != null)
             {
-                var guid = modelContainer.GetGuid(ObjectValue, Type);
-                if (TargetGuid != guid)
-                    throw new InvalidOperationException("The Guid of the object value is different from the current TargetGuid. The given ModelContainer may be different.");
+                if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value)) throw new InvalidOperationException(@"The type of the retrieved node content does not match the type of this reference");
 
-                if (TargetGuid != Guid.Empty)
-                {
-                    TargetNode = modelContainer.GetModelNode(TargetGuid);
-                    if (TargetNode.Content.Value != null && !Type.IsInstanceOfType(TargetNode.Content.Value))
-                        throw new InvalidOperationException("The type of the node content does not match the type of this reference");
-
-                    return TargetNode != null;
-                }
+                if (TargetNode != null || TargetGuid != Guid.Empty)
+                    throw new InvalidOperationException("TargetNode has already been set.");
+                if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value))
+                    throw new InvalidOperationException("TargetNode type does not match the reference type.");
+                TargetNode = targetNode;
+                TargetGuid = targetNode.Guid;
             }
-            return false;
+            return targetNode;
         }
 
         /// <inheritdoc/>
