@@ -271,6 +271,28 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Scales an <see cref="SiliconStudio.Core.Mathematics.Int2"/> by the given value.
+        /// </summary>
+        /// <param name="value">The <see cref="SiliconStudio.Core.Mathematics.Int2"/> to scale.</param>
+        /// <param name="scale">The amount by which to scale the <see cref="SiliconStudio.Core.Mathematics.Int2"/>.</param>
+        /// <param name="result">When the method completes, contains the scaled vector.</param>
+        public static void Multiply(ref Int2 value, float scale, out Vector2 result)
+        {
+            result = new Vector2(value.X * scale, value.Y * scale);
+        }
+
+        /// <summary>
+        /// Scales an <see cref="SiliconStudio.Core.Mathematics.Int2"/> by the given value.
+        /// </summary>
+        /// <param name="value">The <see cref="SiliconStudio.Core.Mathematics.Int2"/> to scale.</param>
+        /// <param name="scale">The amount by which to scale the <see cref="SiliconStudio.Core.Mathematics.Int2"/>.</param>
+        /// <returns>The scaled vector.</returns>
+        public static Vector2 Multiply(Int2 value, float scale)
+        {
+            return new Vector2(value.X * scale, value.Y * scale);
+        }
+
+        /// <summary>
         /// Modulates a vector with another by performing component-wise multiplication.
         /// </summary>
         /// <param name="left">The first vector to modulate.</param>
@@ -310,6 +332,28 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <returns>The scaled vector.</returns>
         public static Vector2 Divide(Vector2 value, float scale)
+        {
+            return new Vector2(value.X / scale, value.Y / scale);
+        }
+
+        /// <summary>
+        /// Scales an <see cref="SiliconStudio.Core.Mathematics.Int2"/> by the given value.
+        /// </summary>
+        /// <param name="value">The <see cref="SiliconStudio.Core.Mathematics.Int2"/> to scale.</param>
+        /// <param name="scale">The amount by which to scale the <see cref="SiliconStudio.Core.Mathematics.Int2"/>.</param>
+        /// <param name="result">When the method completes, contains the scaled vector.</param>
+        public static void Divide(ref Int2 value, float scale, out Vector2 result)
+        {
+            result = new Vector2(value.X / scale, value.Y / scale);
+        }
+
+        /// <summary>
+        /// Scales an <see cref="SiliconStudio.Core.Mathematics.Int2"/> by the given value.
+        /// </summary>
+        /// <param name="value">The <see cref="SiliconStudio.Core.Mathematics.Int2"/> to scale.</param>
+        /// <param name="scale">The amount by which to scale the <see cref="SiliconStudio.Core.Mathematics.Int2"/>.</param>
+        /// <returns>The scaled <see cref="SiliconStudio.Core.Mathematics.Int2"/>.</returns>
+        public static Vector2 Divide(Int2 value, float scale)
         {
             return new Vector2(value.X / scale, value.Y / scale);
         }

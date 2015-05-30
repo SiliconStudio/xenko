@@ -340,6 +340,28 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="value">The vector to scale.</param>
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <returns>The scaled vector.</returns>
+        public static Vector4 Multiply(Int4 value, float scale)
+        {
+            return new Vector4(value.X * scale, value.Y * scale, value.Z * scale, value.W * scale);
+        }
+
+        /// <summary>
+        /// Scales an <see cref="SiliconStudio.Core.Mathematics.Int4"/> by the given value.
+        /// </summary>
+        /// <param name="value">The <see cref="SiliconStudio.Core.Mathematics.Int4"/> to scale.</param>
+        /// <param name="scale">The amount by which to scale the <see cref="SiliconStudio.Core.Mathematics.Int4"/>.</param>
+        /// <param name="result">When the method completes, contains the scaled vector.</param>
+        public static void Multiply(ref Int4 value, float scale, out Vector4 result)
+        {
+            result = new Vector4(value.X * scale, value.Y * scale, value.Z * scale, value.W * scale);
+        }
+
+        /// <summary>
+        /// Scales an <see cref="SiliconStudio.Core.Mathematics.Int4"/> by the given value.
+        /// </summary>
+        /// <param name="value">The <see cref="SiliconStudio.Core.Mathematics.Int4"/> to scale.</param>
+        /// <param name="scale">The amount by which to scale the <see cref="SiliconStudio.Core.Mathematics.Int4"/>.</param>
+        /// <returns>The scaled vector.</returns>
         public static Vector4 Multiply(Vector4 value, float scale)
         {
             return new Vector4(value.X * scale, value.Y * scale, value.Z * scale, value.W * scale);
@@ -385,6 +407,28 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <returns>The scaled vector.</returns>
         public static Vector4 Divide(Vector4 value, float scale)
+        {
+            return new Vector4(value.X / scale, value.Y / scale, value.Z / scale, value.W / scale);
+        }
+
+        /// <summary>
+        /// Scales an <see cref="SiliconStudio.Core.Mathematics.Int4"/> by the given value.
+        /// </summary>
+        /// <param name="value">The <see cref="SiliconStudio.Core.Mathematics.Int4"/> to scale.</param>
+        /// <param name="scale">The amount by which to scale the <see cref="SiliconStudio.Core.Mathematics.Int4"/>.</param>
+        /// <param name="result">When the method completes, contains the scaled vector.</param>
+        public static void Divide(ref Int4 value, float scale, out Vector4 result)
+        {
+            result = new Vector4(value.X / scale, value.Y / scale, value.Z / scale, value.W / scale);
+        }
+
+        /// <summary>
+        /// Scales an <see cref="SiliconStudio.Core.Mathematics.Int4"/> by the given value.
+        /// </summary>
+        /// <param name="value">The <see cref="SiliconStudio.Core.Mathematics.Int4"/> to scale.</param>
+        /// <param name="scale">The amount by which to scale the <see cref="SiliconStudio.Core.Mathematics.Int4"/>.</param>
+        /// <returns>The scaled vector.</returns>
+        public static Vector4 Divide(Int4 value, float scale)
         {
             return new Vector4(value.X / scale, value.Y / scale, value.Z / scale, value.W / scale);
         }

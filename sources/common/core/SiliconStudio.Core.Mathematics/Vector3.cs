@@ -310,6 +310,30 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Scales an <see cref="SiliconStudio.Core.Mathematics.Int3"/> by the given value.
+        /// </summary>
+        /// <param name="value">The <see cref="SiliconStudio.Core.Mathematics.Int3"/> to scale.</param>
+        /// <param name="scale">The amount by which to scale the <see cref="SiliconStudio.Core.Mathematics.Int3"/>.</param>
+        /// <param name="result">When the method completes, contains the scaled vector.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Multiply(ref Int3 value, float scale, out Vector3 result)
+        {
+            result = new Vector3(value.X * scale, value.Y * scale, value.Z * scale);
+        }
+
+        /// <summary>
+        /// Scales an <see cref="SiliconStudio.Core.Mathematics.Int3"/> by the given value.
+        /// </summary>
+        /// <param name="value">The <see cref="SiliconStudio.Core.Mathematics.Int2"/> to scale.</param>
+        /// <param name="scale">The amount by which to scale the <see cref="SiliconStudio.Core.Mathematics.Int2"/>.</param>
+        /// <returns>The scaled vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 Multiply(Int3 value, float scale)
+        {
+            return new Vector3(value.X * scale, value.Y * scale, value.Z * scale);
+        }
+
+        /// <summary>
         /// Scales a vector by the given value.
         /// </summary>
         /// <param name="value">The vector to scale.</param>
@@ -365,6 +389,30 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>The scaled vector.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 Divide(Vector3 value, float scale)
+        {
+            return new Vector3(value.X / scale, value.Y / scale, value.Z / scale);
+        }
+
+        /// <summary>
+        /// Scales an <see cref="SiliconStudio.Core.Mathematics.Int3"/> by the given value.
+        /// </summary>
+        /// <param name="value">The <see cref="SiliconStudio.Core.Mathematics.Int3"/> to scale.</param>
+        /// <param name="scale">The amount by which to scale the <see cref="SiliconStudio.Core.Mathematics.Int3"/>.</param>
+        /// <param name="result">When the method completes, contains the scaled vector.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Divide(ref Int3 value, float scale, out Vector3 result)
+        {
+            result = new Vector3(value.X / scale, value.Y / scale, value.Z / scale);
+        }
+
+        /// <summary>
+        /// Scales an <see cref="SiliconStudio.Core.Mathematics.Int3"/> by the given value.
+        /// </summary>
+        /// <param name="value">The <see cref="SiliconStudio.Core.Mathematics.Int3"/> to scale.</param>
+        /// <param name="scale">The amount by which to scale the <see cref="SiliconStudio.Core.Mathematics.Int3"/>.</param>
+        /// <returns>The scaled vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 Divide(Int3 value, float scale)
         {
             return new Vector3(value.X / scale, value.Y / scale, value.Z / scale);
         }
