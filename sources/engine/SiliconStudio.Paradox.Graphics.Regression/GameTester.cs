@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Drawing;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 #if SILICONSTUDIO_PLATFORM_IOS
@@ -66,7 +65,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
 
                     // create the paradox game view 
                     var bounds = UIScreen.MainScreen.Bounds;
-                    var paradoxGameView = new Starter.ParadoxApplicationDelegate.iOSParadoxView((RectangleF)bounds) { ContentScaleFactor = UIScreen.MainScreen.Scale };
+                    var paradoxGameView = new Starter.ParadoxApplicationDelegate.iOSParadoxView((System.Drawing.RectangleF)bounds) { ContentScaleFactor = UIScreen.MainScreen.Scale };
 
                     // create the view controller used to display the paradox game
                     var paradoxGameController = new iOSGameTestController(game) { View = paradoxGameView };
