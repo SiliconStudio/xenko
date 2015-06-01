@@ -97,7 +97,9 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             // TODO: Proper Url parsing (query string)
             var url = await clientSocket.ReadStream.ReadStringAsync();
 
-            var urlSegments = url.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] urlSegments;
+            string urlParameters;
+            RouterHelper.ParseUrl(url, out urlSegments, out urlParameters);
             if (urlSegments.Length == 0)
                 throw new InvalidOperationException("No URL Segments");
 
@@ -160,32 +162,25 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             }
         }
 
-        private void ParseUrl(string url, out string[] segments, out string parameters)
+        private async Task<SimpleSocket> SpawnServerFromService(string url)
         {
             // Ideally we would like to reuse Uri (or some other similar code), but it doesn't work without a Host
             var parameterIndex = url.IndexOf('?');
-            parameters = parameterIndex != -1 ? url.Substring(parameterIndex + 1) : null;
-
             var urlWithoutParameters = parameterIndex != -1 ? url.Substring(0, parameterIndex) : url;
 
-            segments = urlWithoutParameters.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-        }
-
-        private async Task<SimpleSocket> SpawnServerFromService(string url)
-        {
             string[] urlSegments;
             string urlParameters;
-            ParseUrl(url, out urlSegments, out urlParameters);
+            RouterHelper.ParseUrl(url, out urlSegments, out urlParameters);
 
             // Find a matching server
             TaskCompletionSource<SimpleSocket> serviceTCS;
 
             lock (registeredServices)
             {
-                if (!registeredServices.TryGetValue(url, out serviceTCS))
+                if (!registeredServices.TryGetValue(urlWithoutParameters, out serviceTCS))
                 {
                     serviceTCS = new TaskCompletionSource<SimpleSocket>();
-                    registeredServices.Add(url, serviceTCS);
+                    registeredServices.Add(urlWithoutParameters, serviceTCS);
                 }
 
                 if (!serviceTCS.Task.IsCompleted)

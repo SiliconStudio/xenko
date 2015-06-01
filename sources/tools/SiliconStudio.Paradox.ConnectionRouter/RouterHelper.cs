@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -94,6 +95,22 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             {
                 return false;
             }
+        }
+
+        public static void ParseUrl(string url, out string[] segments, out string parameters)
+        {
+            // Ideally we would like to reuse Uri (or some other similar code), but it doesn't work without a Host
+            var parameterIndex = url.IndexOf('?');
+            parameters = parameterIndex != -1 ? url.Substring(parameterIndex + 1) : string.Empty;
+
+            var urlWithoutParameters = parameterIndex != -1 ? url.Substring(0, parameterIndex) : url;
+
+            segments = urlWithoutParameters.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        public static NameValueCollection ParseQueryString(string query)
+        {
+            return System.Web.HttpUtility.ParseQueryString(query);
         }
     }
 }
