@@ -222,6 +222,7 @@ namespace SiliconStudio.Paradox.Rendering
                         continue;
                     }
 
+                    // TODO: Should this be set somewhere else, since it prevents users from overriding?
                     renderMesh.Parameters.Set(Effect.RasterizerStateKey, rasterizerState);
 
                     // Project the position
