@@ -123,18 +123,22 @@ namespace SiliconStudio.Paradox.Animations
                         animationOperations.Add(AnimationOperation.NewBlend(playingAnimation.BlendOperation, currentBlend));
                 }
 
+                var modelViewHierarchy = associatedData.ModelComponent.ModelViewHierarchy;
+
                 if (animationOperations.Count > 0)
                 {
                     // Animation blending
                     animationComponent.Blender.Compute(animationOperations, ref associatedData.AnimationClipResult);
 
                     // Update animation data
-                    meshAnimation.Update(associatedData.ModelComponent.ModelViewHierarchy, associatedData.AnimationClipResult);
+                    if (modelViewHierarchy != null)
+                        meshAnimation.Update(modelViewHierarchy, associatedData.AnimationClipResult);
                 }
                 else
                 {
                     // If nothing is playing, reset to bind pose
-                    associatedData.ModelComponent.ModelViewHierarchy.ResetInitialValues();
+                    if (modelViewHierarchy != null)
+                        modelViewHierarchy.ResetInitialValues();
                 }
 
                 // Update weight animation
