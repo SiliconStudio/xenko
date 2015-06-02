@@ -27,11 +27,24 @@ namespace SiliconStudio.Paradox.Engine.Network
             await socket.WriteAsync(buffer, 0, sizeof(int));
         }
 
-        public static async Task<Int32> ReadInt32Async(this Stream socket)
+        public static async Task<int> ReadInt32Async(this Stream socket)
         {
             var buffer = new byte[sizeof(int)];
             await socket.ReadAllAsync(buffer, 0, sizeof(int));
             return BitConverter.ToInt32(buffer, 0);
+        }
+
+        public static async Task WriteInt16Async(this Stream socket, short value)
+        {
+            var buffer = BitConverter.GetBytes(value);
+            await socket.WriteAsync(buffer, 0, sizeof(short));
+        }
+
+        public static async Task<short> ReadInt16Async(this Stream socket)
+        {
+            var buffer = new byte[sizeof(short)];
+            await socket.ReadAllAsync(buffer, 0, sizeof(short));
+            return BitConverter.ToInt16(buffer, 0);
         }
 
         public static async Task Write7BitEncodedInt(this Stream socket, int value)

@@ -63,7 +63,7 @@ namespace SiliconStudio.Paradox.Engine.Network
             await sendLock.WaitAsync();
             try
             {
-                await context.WriteStream.Write7BitEncodedInt((int)memoryStream.Length);
+                await context.WriteStream.WriteInt32Async((int)memoryStream.Length);
                 await context.WriteStream.WriteAsync(memoryBuffer, 0, (int)memoryStream.Length);
                 await context.WriteStream.FlushAsync();
             }
@@ -80,7 +80,7 @@ namespace SiliconStudio.Paradox.Engine.Network
                 while (true)
                 {
                     // Get next packet size
-                    var bufferSize = await context.ReadStream.Read7BitEncodedInt();
+                    var bufferSize = await context.ReadStream.ReadInt32Async();
 
                     // Get next packet data (until complete)
                     var buffer = new byte[bufferSize];

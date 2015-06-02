@@ -18,8 +18,7 @@ namespace SiliconStudio.Paradox.Engine.Network
     /// </summary>
     public class SimpleSocket : IDisposable
     {
-        private const uint ServerMagicAck = 0x35AABBCC;
-        private const uint ClientMagicAck = 0x24BB35CC;
+        private const uint MagicAck = 0x35AABBCC;
 
         private TcpSocketClient socket;
         private bool isConnected;
@@ -75,7 +74,7 @@ namespace SiliconStudio.Paradox.Engine.Network
 
                     // Do an ack with magic packet (necessary so that we know it's not a dead connection,
                     // it sometimes happen when doing port forwarding because service don't refuse connection right away but only fails when sending data)
-                    await SendAndReceiveAck(clientSocketContext.socket, ServerMagicAck, ClientMagicAck);
+                    await SendAndReceiveAck(clientSocketContext.socket, MagicAck, MagicAck);
 
                     if (Connected != null)
                         Connected(clientSocketContext);
@@ -106,7 +105,7 @@ namespace SiliconStudio.Paradox.Engine.Network
 
                 // Do an ack with magic packet (necessary so that we know it's not a dead connection,
                 // it sometimes happen when doing port forwarding because service don't refuse connection right away but only fails when sending data)
-                await SendAndReceiveAck(socket, ClientMagicAck, ServerMagicAck);
+                await SendAndReceiveAck(socket, MagicAck, MagicAck);
 
                 if (Connected != null)
                     Connected(this);

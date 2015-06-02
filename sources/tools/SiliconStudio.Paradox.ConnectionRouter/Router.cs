@@ -48,7 +48,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                 try
                 {
                     // Routing
-                    var routerMessage = (RouterMessage)await clientSocketContext.ReadStream.Read7BitEncodedInt();
+                    var routerMessage = (RouterMessage)await clientSocketContext.ReadStream.ReadInt16Async();
 
                     Log.Info("Client {0}:{1} connected, with message {2}", clientSocketContext.RemoteAddress, clientSocketContext.RemotePort, routerMessage);
 
@@ -132,8 +132,8 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                 try
                 {
                     // Notify client that there was an error
-                    await clientSocket.WriteStream.Write7BitEncodedInt((int)RouterMessage.ClientServerStarted);
-                    await clientSocket.WriteStream.Write7BitEncodedInt(1); // error code Failure
+                    await clientSocket.WriteStream.WriteInt16Async((short)RouterMessage.ClientServerStarted);
+                    await clientSocket.WriteStream.WriteInt32Async(1); // error code Failure
                     await clientSocket.WriteStream.WriteStringAsync(serverSocketCapturedException.SourceException.Message);
                     await clientSocket.WriteStream.FlushAsync();
                 }
@@ -146,8 +146,8 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             try
             {
                 // Notify client that we've found a server for it
-                await clientSocket.WriteStream.Write7BitEncodedInt((int)RouterMessage.ClientServerStarted);
-                await clientSocket.WriteStream.Write7BitEncodedInt(0); // error code OK
+                await clientSocket.WriteStream.WriteInt16Async((short)RouterMessage.ClientServerStarted);
+                await clientSocket.WriteStream.WriteInt32Async(0); // error code OK
                 await clientSocket.WriteStream.FlushAsync();
 
                 // Let's forward clientSocketContext and serverSocketContext
@@ -217,7 +217,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             }
 
             // Notify service that we want it to establish back a new connection to us for this client
-            await service.WriteStream.Write7BitEncodedInt((int)RouterMessage.ServiceRequestServer);
+            await service.WriteStream.WriteInt16Async((short)RouterMessage.ServiceRequestServer);
             await service.WriteStream.WriteStringAsync(url);
             await service.WriteStream.WriteGuidAsync(guid);
             await service.WriteStream.FlushAsync();
@@ -260,7 +260,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
         private async Task HandleMessageServerStarted(SimpleSocket clientSocket)
         {
             var guid = await clientSocket.ReadStream.ReadGuidAsync();
-            var errorCode = await clientSocket.ReadStream.Read7BitEncodedInt();
+            var errorCode = await clientSocket.ReadStream.ReadInt32Async();
             var errorMessage = (errorCode != 0) ? await clientSocket.ReadStream.ReadStringAsync() : null;
 
             // Notify any waiter that a server with given GUID is available

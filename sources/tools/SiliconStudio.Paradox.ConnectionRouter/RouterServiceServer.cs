@@ -42,13 +42,13 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             socketContext.Connected = async (clientSocketContext) =>
             {
                 // Register service server
-                await socketContext.WriteStream.Write7BitEncodedInt((int)RouterMessage.ServiceProvideServer);
+                await socketContext.WriteStream.WriteInt16Async((short)RouterMessage.ServiceProvideServer);
                 await socketContext.WriteStream.WriteStringAsync(serverUrl);
                 await socketContext.WriteStream.FlushAsync();
 
                 while (true)
                 {
-                    var routerMessage = (RouterMessage)await socketContext.ReadStream.Read7BitEncodedInt();
+                    var routerMessage = (RouterMessage)await socketContext.ReadStream.ReadInt16Async();
 
                     switch (routerMessage)
                     {
@@ -62,7 +62,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                             realServerSocketContext.Connected = async (clientSocketContext2) =>
                             {
                                 // Write connection string
-                                await clientSocketContext2.WriteStream.Write7BitEncodedInt((int)RouterMessage.ServerStarted);
+                                await clientSocketContext2.WriteStream.WriteInt16Async((short)RouterMessage.ServerStarted);
                                 await clientSocketContext2.WriteStream.WriteGuidAsync(guid);
 
                                 // Delegate next steps to actual server
@@ -98,7 +98,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
         /// <returns></returns>
         protected async Task AcceptConnection(SimpleSocket clientSocket)
         {
-            await clientSocket.WriteStream.Write7BitEncodedInt(0); // error code OK
+            await clientSocket.WriteStream.WriteInt32Async(0); // error code OK
             await clientSocket.WriteStream.FlushAsync();
         }
 
@@ -111,7 +111,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
         /// <returns></returns>
         protected async Task RefuseConnection(SimpleSocket clientSocket, int errorCode, string errorMessage)
         {
-            await clientSocket.WriteStream.Write7BitEncodedInt(errorCode);
+            await clientSocket.WriteStream.WriteInt32Async(errorCode);
             await clientSocket.WriteStream.WriteStringAsync(errorMessage);
             await clientSocket.WriteStream.FlushAsync();
         }

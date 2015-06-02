@@ -35,17 +35,17 @@ namespace SiliconStudio.Paradox.Engine.Network
         {
             var socketContext = await InitiateConnectionToRouter();
 
-            await socketContext.WriteStream.Write7BitEncodedInt((int)ClientRouterMessage.RequestServer);
+            await socketContext.WriteStream.WriteInt16Async((short)ClientRouterMessage.RequestServer);
             await socketContext.WriteStream.WriteStringAsync(serverUrl);
             await socketContext.WriteStream.FlushAsync();
 
-            var result = (ClientRouterMessage)await socketContext.ReadStream.Read7BitEncodedInt();
+            var result = (ClientRouterMessage)await socketContext.ReadStream.ReadInt16Async();
             if (result != ClientRouterMessage.ServerStarted)
             {
                 throw new InvalidOperationException("Could not connect to server");
             }
 
-            var errorCode = await socketContext.ReadStream.Read7BitEncodedInt();
+            var errorCode = await socketContext.ReadStream.ReadInt32Async();
             if (errorCode != 0)
             {
                 var errorMessage = await socketContext.ReadStream.ReadStringAsync();
