@@ -19,7 +19,7 @@ function BuildAndInstall
    unset CFLAGS CC LDFLAGS MAIN_NAME INSTALL_DIR AR
    export AR=ar
    export CC=clang
-   export CFLAGS="-arch $ARCHI -Os -c -DPLATFORM_IOS -stdlib=libc++"
+   export CFLAGS="-arch $ARCHI -Os -g0 -c -DPLATFORM_IOS -stdlib=libc++"
    export LDFLAGS="-arch $ARCHI -static"
    export MAIN_NAME=$ASSEMBLY_NAME-$ARCHI.a
    export INSTALL_DIR=$INSTALL_DIR_IOS
