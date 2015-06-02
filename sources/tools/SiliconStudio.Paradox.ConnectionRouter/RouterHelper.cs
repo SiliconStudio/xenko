@@ -59,19 +59,26 @@ namespace SiliconStudio.Paradox.ConnectionRouter
         {
             try
             {
+                // Try to connect to router
+                FileVersionInfo runningRouterVersion = null;
+                Process runningRouterProcess = null;
+                foreach (var process in Process.GetProcessesByName("SiliconStudio.Paradox.ConnectionRouter"))
+                {
+                    try
+                    {
+                        runningRouterVersion = process.MainModule.FileVersionInfo;
+                        runningRouterProcess = process;
+                        break;
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+
                 var routerAssemblyLocation = typeof(Router).Assembly.Location;
                 var routerAssemblyExe = Path.GetFileName(routerAssemblyLocation);
 
-                if (RouterMutex.WaitOne(TimeSpan.Zero, true))
-                {
-                    RouterMutex.ReleaseMutex();
-                }
-                else
-                {
-                    // Application is already running
-                    return true;
-                }
-
+                // Find latest paradox
                 var paradoxSdkDir = FindParadoxSdkDir();
                 if (paradoxSdkDir == null)
                 {
@@ -84,9 +91,28 @@ namespace SiliconStudio.Paradox.ConnectionRouter
 
                 if (!File.Exists(routerAssemblyLocation))
                 {
+                    // Should we allow it to continue if there is an existing router? (routerVersion != null)
                     throw new FileNotFoundException("Could not find Paradox Connection Router executable");
                 }
 
+                // If already started, check if found version is better
+                if (runningRouterVersion != null)
+                {
+                    var routerAssemblyFileVersionInfo = FileVersionInfo.GetVersionInfo(routerAssemblyLocation);
+
+                    // Check that current router is at least as good as the one of latest found Paradox
+                    if (new Version(routerAssemblyFileVersionInfo.FileVersion) <= new Version(runningRouterVersion.FileVersion))
+                        return true;
+                }
+
+                // Kill previous router process (if any)
+                if (runningRouterProcess != null)
+                {
+                    runningRouterProcess.Kill();
+                    runningRouterProcess.WaitForExit();
+                }
+
+                // Start new router process
                 Process.Start(routerAssemblyFile);
 
                 return true;

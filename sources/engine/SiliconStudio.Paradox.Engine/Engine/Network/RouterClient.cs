@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SiliconStudio.Paradox.Engine.Network
@@ -71,11 +72,12 @@ namespace SiliconStudio.Paradox.Engine.Network
             Task.Run(async () =>
             {
                 // Keep trying to establish connections until no errors
-                bool hasErrors = false;
+                bool hasErrors;
                 do
                 {
                     try
                     {
+                        hasErrors = false;
                         if (PlatformIsPortForward)
                             await socketContext.StartServer(DefaultListenPort, true);
                         else
@@ -84,6 +86,11 @@ namespace SiliconStudio.Paradox.Engine.Network
                     catch (Exception)
                     {
                         hasErrors = true;
+                    }
+                    if (hasErrors)
+                    {
+                        // Wait a little bit before next try
+                        await Task.Delay(100);
                     }
                 } while (hasErrors);
             });
