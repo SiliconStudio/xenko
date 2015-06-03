@@ -19,6 +19,7 @@ Release date: 2015/##/##
 - Engine: Ambient occlusion maps now ignore UV scaling overrides as intended.
 - Engine: Models with negative scaling did not have their faces inverted.
 - Engine: Fixed an issue where cloning an entity with AnimationComponent would cause crashes.
+- Sample: Fixed Forward Lighting sample.
 
 #### Breaking changes
 
