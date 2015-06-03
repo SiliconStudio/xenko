@@ -98,6 +98,7 @@ namespace SiliconStudio.Paradox.Assets
             var sharedProfile = package.Profiles.FindSharedProfile();
             if (sharedProfile != null)
             {
+                result.PackageId = package.Id;
                 var sceneAsset = sharedProfile.Properties.Get(DefaultScene);
                 if (sceneAsset != null) result.DefaultSceneUrl = sceneAsset.Location;
                 result.DefaultBackBufferWidth = sharedProfile.Properties.Get(BackBufferWidth);
