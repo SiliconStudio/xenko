@@ -39,7 +39,6 @@ namespace SiliconStudio.Paradox.Graphics
     /// </summary>
     [DataSerializerGlobal(typeof(ReferenceSerializer<Texture>), Profile = "Asset")]
     [ContentSerializer(typeof(TextureContentSerializer))]
-    [ContentSerializer(typeof(DataContentSerializer<Texture>))]
     [DebuggerDisplay("Texture {ViewWidth}x{ViewHeight}x{ViewDepth} {Format} ({ViewFlags})")]
     [DataSerializer(typeof(TextureSerializer))]
     public sealed partial class Texture : GraphicsResource
