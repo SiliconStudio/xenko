@@ -1696,25 +1696,16 @@
     </Style>
 
     <Style TargetType="{x:Type ProgressBar}">
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{StaticResource SolidBorderBrush}"/>
+        <Setter Property="Background" Value="{StaticResource NormalBorderBrush}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ProgressBar}">
-                    <ControlTemplate.Resources>
-                        <Storyboard x:Key="ValueChangedOn">
-                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="PART_Track" Storyboard.TargetProperty="(UIElement.BitmapEffect).(OuterGlowBitmapEffect.Opacity)">
-                                <SplineDoubleKeyFrame KeyTime="00:00:00" Value="0" />
-                                <SplineDoubleKeyFrame KeyTime="00:00:00.2000000" Value="1" />
-                                <SplineDoubleKeyFrame KeyTime="00:00:02" Value="0" />
-                            </DoubleAnimationUsingKeyFrames>
-                        </Storyboard>
-                    </ControlTemplate.Resources>
                     <Grid>
-                        <Border x:Name="PART_Track" BorderBrush="{DynamicResource SolidBorderBrush}" BorderThickness="1" CornerRadius="0,0,0,0" Background="{DynamicResource LightBrush}">
-                            <Border.BitmapEffect>
-                                <OuterGlowBitmapEffect Opacity="0" GlowColor="{DynamicResource WhiteColor}" GlowSize="3" />
-                            </Border.BitmapEffect>
-                        </Border>
-                        <Border HorizontalAlignment="Left" x:Name="PART_Indicator" BorderBrush="{DynamicResource NormalBorderBrush}" BorderThickness="1" CornerRadius="0,0,0,0">
+                        <Border x:Name="PART_Track" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                Background="{TemplateBinding Background}"/>
+                        <Border HorizontalAlignment="Left" x:Name="PART_Indicator" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
                             <Border.Background>
                                 <LinearGradientBrush EndPoint=".7,1" StartPoint=".7,0">
                                     <GradientStop Color="#B2FFFFFF" Offset="0" />
@@ -1729,20 +1720,22 @@
                             </Border.Background>
                         </Border>
                         <Grid x:Name="IndeterminateRoot" Visibility="Collapsed">
-                            <Rectangle Margin="{TemplateBinding BorderThickness}" x:Name="IndeterminateSolidFill" Opacity="1" RenderTransformOrigin="0.5,0.5" Fill="{StaticResource SelectedBackgroundBrush}" Stroke="#FF448DCA" StrokeThickness="0" />
-                            <Rectangle Margin="{TemplateBinding BorderThickness}" x:Name="IndeterminateGradientFill" StrokeThickness="1">
+                            <Rectangle Margin="{TemplateBinding BorderThickness}" Opacity="0.25">
                                 <Rectangle.Fill>
-                                    <!--<LinearGradientBrush EndPoint="0.508,1.394" StartPoint="0.401,-0.394" SpreadMethod="Repeat">
-                                        <LinearGradientBrush.Transform>
-                                            <TransformGroup>
-                                                <TranslateTransform X="0" />
-                                            </TransformGroup>
-                                        </LinearGradientBrush.Transform>
-                                        <GradientStop Color="#00FFFFFF" />
-                                        <GradientStop Color="#FEA1A1A1" Offset="1" />
-                                        <GradientStop Color="#00FEFEFE" Offset="0.517" />
-                                        <GradientStop Color="#FEA1A1A1" Offset="0.517" />
-                                    </LinearGradientBrush>-->
+                                    <LinearGradientBrush EndPoint=".7,1" StartPoint=".7,0">
+                                        <GradientStop Color="#B2FFFFFF" Offset="0" />
+                                        <GradientStop Color="#C6FFFFFF" Offset="0.15" />
+                                        <GradientStop Color="#D1FFFFFF" Offset="0.275" />
+                                        <GradientStop Color="#C6FFFFFF" Offset="0.4" />
+                                        <GradientStop Color="#BFFFFFFF" Offset="0.65" />
+                                        <GradientStop Color="#A5FFFFFF" Offset="0.75" />
+                                        <GradientStop Color="#91FFFFFF" Offset="0.85" />
+                                        <GradientStop Color="#72FFFFFF" Offset="1" />
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <Rectangle Margin="{TemplateBinding BorderThickness}" x:Name="IndeterminateGradientFill" StrokeThickness="1" Opacity="0.5">
+                                <Rectangle.Fill>
                                     <LinearGradientBrush EndPoint="0,1"
                                                              MappingMode="Absolute"
                                                              SpreadMethod="Repeat"
@@ -1762,15 +1755,12 @@
                                 </Rectangle.Fill>
                             </Rectangle>
                         </Grid>
-                        <Border Background="{DynamicResource DisabledBackgroundBrush}" Opacity="0" BorderThickness="1,1,1,1" BorderBrush="{DynamicResource DisabledBorderBrush}" x:Name="border"/>
+                        <Border Background="{StaticResource DisabledBackgroundBrush}" Opacity="0" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{StaticResource DisabledBorderBrush}" x:Name="border"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Opacity" TargetName="border" Value="0.8"/>
                         </Trigger>
-                        <EventTrigger RoutedEvent="RangeBase.ValueChanged">
-                            <BeginStoryboard Storyboard="{StaticResource ValueChangedOn}" />
-                        </EventTrigger>
                         <Trigger Property="IsIndeterminate" Value="True">
                             <Trigger.EnterActions>
                                 <BeginStoryboard x:Name="IndeterminateOnStoryboard">
