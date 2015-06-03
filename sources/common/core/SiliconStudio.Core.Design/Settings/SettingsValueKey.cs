@@ -91,7 +91,7 @@ namespace SiliconStudio.Core.Settings
                     e.Ignore();
                 }
             }
-            value = default(T);
+            value = DefaultValue;
             return false;
         }
 

@@ -91,7 +91,7 @@
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketClient.cs" />
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketListener.cs" />
     <Compile Include="Rendering\Composers\DirectRenderFrameProvider.cs" />
-    <Compile Include="Shaders.Compiler\EffectCompilerRemote.cs" />
+    <Compile Include="Shaders.Compiler\RemoteEffectCompiler.cs" />
     <Compile Include="Engine\Processors\BackgroundComponentProcessor.cs" />
     <Compile Include="Engine\AnimationComponent.cs" />
     <Compile Include="Engine\AudioEmitterComponent.cs" />

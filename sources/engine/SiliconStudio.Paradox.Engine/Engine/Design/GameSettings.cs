@@ -26,5 +26,15 @@ namespace SiliconStudio.Paradox.Engine.Design
         public int DefaultBackBufferHeight { get; set; }
 
         public GraphicsProfile DefaultGraphicsProfileUsed { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether effect compile should be recorded and sent to effect compile server for GameStudio notification.
+        /// </summary>
+        public bool AllowRemoteEffectCompilation { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether effect compile should be recorded and sent to effect compile server for GameStudio notification.
+        /// </summary>
+        public bool RecordEffectRequested { get; set; }
     }
 }

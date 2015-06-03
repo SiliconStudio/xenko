@@ -29,11 +29,10 @@ namespace SiliconStudio.Paradox.Rendering
         private DirectoryWatcher directoryWatcher;
         private bool isInitialized;
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-        // Ideally it should be a "HashStore", but we don't have it yet...
-        private DictionaryStore<EffectCompileRequest, bool> recordedEffectCompile;
-        private object effectCompileRecordLock = new object();
-#endif
+        /// <summary>
+        /// Called each time a non-cached effect is requested.
+        /// </summary>
+        internal Action<EffectCompileRequest> EffectRequested;
 
         private readonly HashSet<string> recentlyModifiedShaders = new HashSet<string>();
         private bool clearNextFrame = false;
@@ -76,7 +75,10 @@ namespace SiliconStudio.Paradox.Rendering
             directoryWatcher.Modified += FileModifiedEvent;
             // TODO: pdxfx too
 #endif
-            compiler = (EffectCompilerBase)CreateEffectCompiler();
+
+            // Make sure default compiler is created
+            if (Compiler == null)
+                Compiler = CreateEffectCompiler();
         }
 
         protected override void Destroy()
@@ -98,72 +100,26 @@ namespace SiliconStudio.Paradox.Rendering
             base.Destroy();
         }
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         /// <summary>
-        /// Records the effect compilation request to the specified file.
+        /// Creates an effect compiler, with either specificed <see cref="effectCompiler"/> or default one, wrapped in an <see cref="EffectCompilerCache"/>.
         /// </summary>
-        /// <param name="filePath">The file path.</param>
-        /// <param name="reset">if set to <c>true</c> erase the previous file, otherwise append.</param>
-        public void StartRecordEffectCompile(string filePath, bool reset)
+        /// <param name="effectCompiler">The effect compiler.</param>
+        /// <param name="taskSchedulerSelector">The task scheduler selector.</param>
+        /// <returns></returns>
+        public static IEffectCompiler CreateEffectCompiler(EffectCompilerBase effectCompiler = null, TaskSchedulerSelector taskSchedulerSelector = null)
         {
-            try
+            if (effectCompiler == null)
             {
-                if (reset && File.Exists(filePath))
-                {
-                    File.Delete(filePath);
-                }
-            }
-            catch (IOException)
-            {
-            }
-
-            var fileStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
-            var effectCompileLog = new DictionaryStore<EffectCompileRequest, bool>(fileStream);
-            if (!reset)
-                effectCompileLog.LoadNewValues();
-
-            StartRecordEffectCompile(effectCompileLog);
-        }
-
-        public void StartRecordEffectCompile(DictionaryStore<EffectCompileRequest, bool> requestStore)
-        {
-            lock (effectCompileRecordLock)
-            {
-                if (this.recordedEffectCompile != null)
-                    throw new InvalidOperationException("Effect compile requests were already being recorded.");
-
-                this.recordedEffectCompile = requestStore;
-            }
-        }
-
-        public void StopRecordEffectCompile()
-        {
-            DictionaryStore<EffectCompileRequest, bool> effectCompileLog;
-            lock (effectCompileRecordLock)
-            {
-                if (recordedEffectCompile == null)
-                    throw new InvalidOperationException("Effect compile requests were not being recorded.");
-
-                effectCompileLog = recordedEffectCompile;
-                recordedEffectCompile = null;
-            }
-
-            effectCompileLog.Dispose();
-        }
-#endif
-
-        public static IEffectCompiler CreateEffectCompiler(TaskSchedulerSelector taskSchedulerSelector = null)
-        {
-            // Create compiler
+                // Create compiler
 #if SILICONSTUDIO_PARADOX_EFFECT_COMPILER
-            var effectCompiler = new Shaders.Compiler.EffectCompiler();
-            effectCompiler.SourceDirectories.Add(EffectCompilerBase.DefaultSourceShaderFolder);
-#elif SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_WINDOWS_PHONE || SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_WINDOWS_STORE
-            var effectCompiler = new EffectCompilerRemote();
-            EffectCompilerRemote.Connect();
+                effectCompiler = new EffectCompiler
+                {
+                    SourceDirectories = { EffectCompilerBase.DefaultSourceShaderFolder },
+                };
 #else
-            var effectCompiler = new NullEffectCompiler();
+                effectCompiler = new NullEffectCompiler();
 #endif
+            }
             return new EffectCompilerCache(effectCompiler, taskSchedulerSelector);
         }
 
@@ -315,23 +271,11 @@ namespace SiliconStudio.Paradox.Rendering
                 var source = isPdxfx ? new ShaderMixinGeneratorSource(effectName) : (ShaderSource)new ShaderClassSource(effectName);
                 compilerResult = compiler.Compile(source, compilerParameters);
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-                // If enabled, request this effect compile
-                // TODO: For now we save usedParameters, but ideally we probably want to have a list of everything that might be use by a given
-                //       pdxfx and filter against this, so that branches not taken on a specific situation/platform can still be reproduced on another.
-                // Alternatively, we could save full compilerParameters, but we would have to ignore certain things that are not serializable, such as Texture. 
-                lock (effectCompileRecordLock)
+                var effectRequested = EffectRequested;
+                if (effectRequested != null)
                 {
-                    if (recordedEffectCompile != null)
-                    {
-                        var effectCompileRequest = new EffectCompileRequest(effectName, compilerResult.UsedParameters);
-                        if (!recordedEffectCompile.Contains(effectCompileRequest))
-                        {
-                            recordedEffectCompile[effectCompileRequest] = true;
-                        }
-                    }
+                    effectRequested(new EffectCompileRequest(effectName, compilerResult.UsedParameters));
                 }
-#endif
                 
                 if (!compilerResult.HasErrors && isPdxfx)
                 {
@@ -447,6 +391,28 @@ namespace SiliconStudio.Paradox.Rendering
             }
 
             return null;
+        }
+
+        internal void SetupRemoteEffectCompilation(Guid? packageId, bool allowRemoteEffectCompilation, bool recordEffectRequested)
+        {
+            // Nothing to do
+            if (!allowRemoteEffectCompilation && !recordEffectRequested)
+                return;
+
+            // Create the object that handles the connection
+            var shaderCompilerTarget = new ShaderCompilerTarget(packageId);
+
+            if (recordEffectRequested)
+            {
+                // Let's notify effect compiler server for each new effect requested
+                EffectRequested += shaderCompilerTarget.NotifyEffectRequested;
+            }
+
+            if (allowRemoteEffectCompilation)
+            {
+                // Create a remote compiler
+                Compiler = CreateEffectCompiler(new RemoteEffectCompiler(shaderCompilerTarget));
+            }
         }
     }
 }

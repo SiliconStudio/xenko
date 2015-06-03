@@ -41,7 +41,6 @@ namespace SiliconStudio.Paradox.Assets.Effect
             public override Task<ResultStatus> Execute(IExecuteContext executeContext, BuilderContext builderContext)
             {
                 var steps = new List<BuildStep>();
-                Steps = steps;
 
                 var urlRoot = originalSourcePath.GetParent();
 
@@ -59,6 +58,8 @@ namespace SiliconStudio.Paradox.Assets.Effect
                     compilerParameters.Profile = context.GetGraphicsProfile();
                     steps.Add(new CommandBuildStep(new EffectCompileCommand(context, urlRoot, effectCompileRequest.EffectName, compilerParameters)));
                 }
+
+                Steps = steps;
 
                 return base.Execute(executeContext, builderContext);
             }

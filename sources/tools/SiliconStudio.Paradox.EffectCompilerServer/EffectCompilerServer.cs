@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Paradox.Assets.Effect;
@@ -15,6 +18,8 @@ namespace SiliconStudio.Paradox.EffectCompilerServer
     /// </summary>
     public class EffectCompilerServer : RouterServiceServer
     {
+        private Dictionary<Guid, SocketMessageLayer> gameStudioPerPackageId = new Dictionary<Guid, SocketMessageLayer>();
+
         public EffectCompilerServer() : base(string.Format("/service/{0}/SiliconStudio.Paradox.EffectCompilerServer.exe", ParadoxVersion.CurrentAsText))
         {
             // TODO: Asynchronously initialize Irony grammars to improve first compilation request performance?a
@@ -23,37 +28,78 @@ namespace SiliconStudio.Paradox.EffectCompilerServer
         /// <inheritdoc/>
         protected override async void HandleClient(SimpleSocket clientSocket, string url)
         {
+            string[] urlSegments;
+            string urlParameters;
+            RouterHelper.ParseUrl(url, out urlSegments, out urlParameters);
+            var parameters = RouterHelper.ParseQueryString(urlParameters);
+            var mode = parameters["mode"];
+
             // We accept everything
             await AcceptConnection(clientSocket);
 
-            // Create an effect compiler per connection
-            var effectCompiler = new EffectCompiler();
+            var socketMessageLayer = new SocketMessageLayer(clientSocket, true);
 
-            var socketMessageLoop = new SocketMessageLayer(clientSocket, true);
+            Guid? packageId = null;
+            {
+                Guid packageIdParsed;
+                if (Guid.TryParse(parameters["packageid"], out packageIdParsed))
+                    packageId = packageIdParsed;
+            }
 
-            Console.WriteLine("Client connected");
+            if (mode == "gamestudio")
+            {
+                Console.WriteLine("GameStudio mode started!");
 
-            var tempFilename = Path.GetTempFileName();
-            var fileStream = new FileStream(tempFilename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+                if (!packageId.HasValue)
+                    return;
 
-            // TODO: Properly close the file, and choose where to copy/move it?
-            var recordedEffectCompile = new EffectLogStore(fileStream);
+                lock (gameStudioPerPackageId)
+                {
+                    gameStudioPerPackageId[packageId.Value] = socketMessageLayer;
+                }
+            }
+            else
+            {
+                // Create an effect compiler per connection
+                var effectCompiler = new EffectCompiler();
 
-            // TODO: This should come from an "init" packet
-            effectCompiler.SourceDirectories.Add(EffectCompilerBase.DefaultSourceShaderFolder);
+                Console.WriteLine("Client connected");
 
-            // Make a VFS that will access remotely the DatabaseFileProvider
-            // TODO: Is that how we really want to do that in the future?
-            var networkVFS = new NetworkVirtualFileProvider(socketMessageLoop, "/asset");
-            VirtualFileSystem.RegisterProvider(networkVFS);
-            effectCompiler.FileProvider = networkVFS;
+                // TODO: Properly close the file, and choose where to copy/move it?
+                var recordedEffectCompile = new EffectLogStore(new MemoryStream());
 
-            socketMessageLoop.AddPacketHandler<ShaderCompilerRequest>((packet) => ShaderCompilerRequestHandler(socketMessageLoop, recordedEffectCompile, effectCompiler, packet));
+                // TODO: This should come from an "init" packet
+                effectCompiler.SourceDirectories.Add(EffectCompilerBase.DefaultSourceShaderFolder);
 
-            Task.Run(() => socketMessageLoop.MessageLoop());
+                // Make a VFS that will access remotely the DatabaseFileProvider
+                // TODO: Is that how we really want to do that in the future?
+                var networkVFS = new NetworkVirtualFileProvider(socketMessageLayer, "/asset");
+                VirtualFileSystem.RegisterProvider(networkVFS);
+                effectCompiler.FileProvider = networkVFS;
+
+                socketMessageLayer.AddPacketHandler<RemoteEffectCompilerEffectRequest>((packet) => ShaderCompilerRequestHandler(socketMessageLayer, recordedEffectCompile, effectCompiler, packet));
+
+                socketMessageLayer.AddPacketHandler<RemoteEffectCompilerEffectRequested>((packet) =>
+                {
+                    if (!packageId.HasValue)
+                        return;
+
+                    SocketMessageLayer gameStudio;
+                    lock (gameStudioPerPackageId)
+                    {
+                        if (!gameStudioPerPackageId.TryGetValue(packageId.Value, out gameStudio))
+                            return;
+                    }
+
+                    // Forward to game studio
+                    gameStudio.Send(packet);
+                });
+            }
+
+            Task.Run(() => socketMessageLayer.MessageLoop());
         }
 
-        private static async Task ShaderCompilerRequestHandler(SocketMessageLayer socketMessageLayer, EffectLogStore recordedEffectCompile, EffectCompiler effectCompiler, ShaderCompilerRequest shaderCompilerRequest)
+        private static async Task ShaderCompilerRequestHandler(SocketMessageLayer socketMessageLayer, EffectLogStore recordedEffectCompile, EffectCompiler effectCompiler, RemoteEffectCompilerEffectRequest remoteEffectCompilerEffectRequest)
         {
             // Yield so that this socket can continue its message loop to answer to shader file request
             // TODO: maybe not necessary anymore with RouterServiceServer?
@@ -62,16 +108,16 @@ namespace SiliconStudio.Paradox.EffectCompilerServer
             Console.WriteLine("Compiling shader");
 
             // Restore MixinTree.UsedParameters (since it is DataMemberIgnore)
-            shaderCompilerRequest.MixinTree.UsedParameters = shaderCompilerRequest.UsedParameters;
+            remoteEffectCompilerEffectRequest.MixinTree.UsedParameters = remoteEffectCompilerEffectRequest.UsedParameters;
 
             // A shader has been requested, compile it (asynchronously)!
-            var precompiledEffectShaderPass = await effectCompiler.Compile(shaderCompilerRequest.MixinTree, null).AwaitResult();
+            var precompiledEffectShaderPass = await effectCompiler.Compile(remoteEffectCompilerEffectRequest.MixinTree, null).AwaitResult();
 
             // Record compilation to asset file (only if parent)
-            recordedEffectCompile[new EffectCompileRequest(shaderCompilerRequest.MixinTree.Name, shaderCompilerRequest.MixinTree.UsedParameters)] = true;
+            recordedEffectCompile[new EffectCompileRequest(remoteEffectCompilerEffectRequest.MixinTree.Name, remoteEffectCompilerEffectRequest.MixinTree.UsedParameters)] = true;
             
             // Send compiled shader
-            socketMessageLayer.Send(new ShaderCompilerAnswer { StreamId = shaderCompilerRequest.StreamId, EffectBytecode = precompiledEffectShaderPass.Bytecode });
+            socketMessageLayer.Send(new RemoteEffectCompilerEffectAnswer { StreamId = remoteEffectCompilerEffectRequest.StreamId, EffectBytecode = precompiledEffectShaderPass.Bytecode });
         }
     }
 }

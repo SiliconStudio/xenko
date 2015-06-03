@@ -98,7 +98,6 @@ namespace SiliconStudio.Paradox.Assets
             var sharedProfile = package.Profiles.FindSharedProfile();
             if (sharedProfile != null)
             {
-                result.PackageId = package.Id;
                 var sceneAsset = sharedProfile.Properties.Get(DefaultScene);
                 if (sceneAsset != null) result.DefaultSceneUrl = sceneAsset.Location;
                 result.DefaultBackBufferWidth = sharedProfile.Properties.Get(BackBufferWidth);
@@ -116,6 +115,13 @@ namespace SiliconStudio.Paradox.Assets
                     if (customProfile > 0) result.DefaultGraphicsProfileUsed = customProfile;
                 }
             }
+
+            // Save package id
+            result.PackageId = package.Id;
+
+            // Save some package user settings
+            result.RecordEffectRequested = package.Settings.GetValue(GameUserSettings.Effect.RecordEffectRequested);
+            result.AllowRemoteEffectCompilation = package.Settings.GetValue(GameUserSettings.Effect.AllowRemoteEffectCompilation);
 
             return result;
         }
