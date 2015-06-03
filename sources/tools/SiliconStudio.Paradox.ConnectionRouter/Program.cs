@@ -80,9 +80,6 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                 // Start Android management thread
                 new Thread(() => AndroidTracker.TrackDevices(router)).Start();
 
-                // Start iOS management thread
-                //iOSTracker.TrackDevices(router);
-
                 // Start Windows Phone management thread
                 new Thread(() => WindowsPhoneTracker.TrackDevices(router)).Start();
 

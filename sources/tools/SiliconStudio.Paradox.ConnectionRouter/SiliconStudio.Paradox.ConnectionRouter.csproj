@@ -61,7 +61,6 @@
     <Compile Include="WindowsPhoneTracker.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="AndroidTracker.cs" />
-    <Compile Include="iOSTracker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Router.cs" />
     <Compile Include="RouterHelper.cs" />
