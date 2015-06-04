@@ -191,6 +191,7 @@ namespace SiliconStudio.Assets
             }
         }
 
+        [Obsolete]
         public void UpdatePackage(IPackage package)
         {
             using (GetLocalRepositoryLocker())
@@ -201,7 +202,7 @@ namespace SiliconStudio.Assets
                 UpdateTargetsInternal();
 
                 // Install vsix
-                InstallVsix(GetLatestPackageInstalled(package.Id));
+                //InstallVsix(GetLatestPackageInstalled(package.Id));
             }
         }
 
@@ -383,140 +384,6 @@ namespace SiliconStudio.Assets
             // Remove it from the list of packages to process
             packages.Remove(packageToTrack);
         }
-
-        public void InstallVsix(IPackage package)
-        {
-            if (package == null)
-            {
-                return;
-            }
-
-            var packageDirectory = PathResolver.GetInstallPath(package);
-            InstallVsixFromPackageDirectory(packageDirectory);
-        }
-
-        internal void InstallVsixFromPackageDirectory(string packageDirectory)
-        {
-            var vsixInstallerPath = FindLatestVsixInstaller();
-            if (vsixInstallerPath == null)
-            {
-                return;
-            }
-
-            var files = Directory.EnumerateFiles(packageDirectory, "*.vsix", SearchOption.AllDirectories);
-            foreach (var file in files)
-            {
-                InstallVsix(vsixInstallerPath, file);
-            }
-        }
-
-        private void InstallVsix(string vsixInstallerPath, string pathToVsix)
-        {
-            // Uninstall previous vsix
-
-            var vsixId = GetVsixId(pathToVsix);
-            if (vsixId == Guid.Empty)
-            {
-                throw new InvalidOperationException(string.Format("Invalid VSIX package [{0}]", pathToVsix));
-            }
-
-            var vsixName = Path.GetFileNameWithoutExtension(pathToVsix);
-            
-            // Log just one message when installing the visual studio package
-            Logger.Log(MessageLevel.Info, "Installing Visual Studio Package [{0}]", vsixName);
-
-            RunVsixInstaller(vsixInstallerPath, "/q /uninstall:" + vsixId.ToString("D", CultureInfo.InvariantCulture));
-
-            // Install new vsix
-            RunVsixInstaller(vsixInstallerPath, "/q \"" + pathToVsix + "\"");
-        }
-
-        private static bool RunVsixInstaller(string pathToVsixInstaller, string arguments)
-        {
-            try
-            {
-                var process = Process.Start(pathToVsixInstaller, arguments);
-                if (process == null)
-                {
-                    return false;
-                }
-                process.WaitForExit();
-                return process.ExitCode == 0;
-            }
-            catch (Exception)
-            {
-            }
-
-            return false;
-        }
-
-        private static Guid GetVsixId(string pathToVsix)
-        {
-            if (pathToVsix == null) throw new ArgumentNullException("pathToVsix");
-
-            var id = Guid.Empty;
-            using (var stream = File.OpenRead(pathToVsix))
-            {
-                var package = System.IO.Packaging.Package.Open(stream);
-
-                var uri = System.IO.Packaging.PackUriHelper.CreatePartUri(new Uri("extension.vsixmanifest", UriKind.Relative));
-                var manifest = package.GetPart(uri);
-
-                var doc = XElement.Load(manifest.GetStream());
-                var identity = doc.Descendants().FirstOrDefault(element => element.Name.LocalName == "Identity");
-                if (identity != null)
-                {
-                    var idAttribute = identity.Attribute("Id");
-                    if (idAttribute != null)
-                    {
-                        Guid.TryParse(idAttribute.Value, out id);
-                    }
-                }
-            }
-
-            return id;
-        }
-
-        private static string FindLatestVsixInstaller()
-        {
-            var key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
-            var subKey = key.OpenSubKey(@"SOFTWARE\Microsoft\VisualStudio\");
-            if (subKey == null)
-            {
-                return null;
-            }
-
-            var versions = new Dictionary<Version, string>();
-            foreach (var subKeyName in subKey.GetSubKeyNames())
-            {
-                Version version;
-                if (Version.TryParse(subKeyName, out version))
-                {
-                    versions.Add(version, subKeyName);
-                }
-            }
-
-            foreach (var version in versions.Keys.OrderByDescending(v => v))
-            {
-                var subKeyName = versions[version];
-                
-                var vsKey = subKey.OpenSubKey(subKeyName);
-
-                var installDirValue = vsKey.GetValue("InstallDir");
-                if (installDirValue != null)
-                {
-                    var installDir = installDirValue.ToString();
-                    var vsixInstallerPath = Path.Combine(installDir, "VSIXInstaller.exe");
-                    if (File.Exists(vsixInstallerPath))
-                    {
-                        return vsixInstallerPath;
-                    }
-                }
-            }
-
-            return null;
-        }
-
 
         public static bool IsSourceUnavailableException(Exception ex)
         {
