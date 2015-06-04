@@ -3,10 +3,10 @@
 using System;
 using System.Collections.Generic;
 
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Presentation.Extensions;
 
-namespace SiliconStudio.Presentation.Settings
+namespace SiliconStudio.Core.Settings
 {
     /// <summary>
     /// This class represents a <see cref="SettingsKey"/> containing a single value of the specified type <see cref="T"/>.

@@ -8,7 +8,7 @@ using System.Linq;
 using SiliconStudio.ActionStack;
 using SiliconStudio.Core.IO;
 
-namespace SiliconStudio.Presentation.Settings
+namespace SiliconStudio.Core.Settings
 {
     /// <summary>
     /// An internal object that represent a value for a settings key into a <see cref="SettingsProfile"/>.

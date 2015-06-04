@@ -6,7 +6,7 @@ using System.Globalization;
 
 using SiliconStudio.Core.IO;
 
-namespace SiliconStudio.Presentation.Settings
+namespace SiliconStudio.Core.Settings
 {
     /// <summary>
     /// Arguments of the <see cref="SettingsKey.ChangesValidated"/> event.

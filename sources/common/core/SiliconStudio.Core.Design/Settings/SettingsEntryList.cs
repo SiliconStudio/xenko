@@ -8,11 +8,11 @@ using System.Globalization;
 using System.Linq;
 
 using SiliconStudio.ActionStack;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Presentation.Collections;
 
-namespace SiliconStudio.Presentation.Settings
+namespace SiliconStudio.Core.Settings
 {
     /// <summary>
     /// An internal object that represent a list of typed values for a settings key into a <see cref="SettingsProfile"/>.
@@ -20,7 +20,7 @@ namespace SiliconStudio.Presentation.Settings
     /// <typeparam name="T">The type of values contained in the list.</typeparam>
     internal sealed class SettingsEntryList<T> : SettingsEntry
     {
-        private readonly NonGenericObservableListWrapper<T> items = new NonGenericObservableListWrapper<T>(new ObservableList<T>());
+        private readonly TrackingCollection<T> items = new TrackingCollection<T>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsEntryList{T}"/> class.
@@ -32,7 +32,8 @@ namespace SiliconStudio.Presentation.Settings
             : base(profile, name)
         {
             if (listItems == null) throw new ArgumentNullException("listItems");
-            listItems.Cast<object>().ForEach(x => items.Add(x));
+            foreach (T item in listItems)
+                items.Add(item);
             Value = items;
             items.CollectionChanged += CollectionChanged;
             ShouldNotify = true;
@@ -44,11 +45,22 @@ namespace SiliconStudio.Presentation.Settings
             return new List<object>(items.Cast<object>().Select(x => x != null ? string.Format(CultureInfo.InvariantCulture, "{0}", x) : null));
         }
 
-        private void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
             if (!Profile.IsDiscarding)
             {
-                var action = new CollectionChangedActionItem(items, e);
+
+                CollectionChangedActionItem action;
+                
+                switch (e.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                    case NotifyCollectionChangedAction.Remove:
+                        action = new CollectionChangedActionItem(items, new NotifyCollectionChangedEventArgs(e.Action, e.Item, e.Index));
+                        break;
+                    default:
+                        throw new NotSupportedException();
+                }
                 Profile.ActionStack.Add(action);
                 Profile.NotifyEntryChanged(Name);
             }

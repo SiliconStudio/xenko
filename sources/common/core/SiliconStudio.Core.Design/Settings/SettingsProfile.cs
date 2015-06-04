@@ -5,9 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 
 using SiliconStudio.Core.IO;
-using SiliconStudio.Presentation.Core;
 
-namespace SiliconStudio.Presentation.Settings
+namespace SiliconStudio.Core.Settings
 {
     /// <summary>
     /// This class represents a collection of values for all registered <see cref="SettingsKey"/>. It may also contains values for settings keys that

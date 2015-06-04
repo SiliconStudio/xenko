@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 
-namespace SiliconStudio.Presentation.Settings
+namespace SiliconStudio.Core.Settings
 {
     /// <summary>
     /// This class represents a set of settings that can be stored in a file. This class is public for serialization purpose only, and should not be used directly.
