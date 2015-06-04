@@ -8,6 +8,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Rendering
 {
@@ -130,6 +131,19 @@ namespace SiliconStudio.Paradox.Rendering
             {
                 return modelComponentAndPickingRenderer.ModelRenderer;
             }
+        }
+
+        /// <summary>
+        /// Gets the default <see cref="RasterizerState" /> for models drawn by this render mode.
+        /// </summary>
+        /// <param name="isGeomertryInverted"><c>true</c> if the rendered gometry is inverted through scaling, <c>false</c> otherwise.</param>
+        /// <returns>The rasterizer state.</returns>
+        public override RasterizerState GetDefaultRasterizerState(bool isGeomertryInverted)
+        {
+            if (EnableBackColor || ShowBackface)
+                return Context.GraphicsDevice.RasterizerStates.WireFrame;
+
+            return isGeomertryInverted ? Context.GraphicsDevice.RasterizerStates.WireFrameCullFront : Context.GraphicsDevice.RasterizerStates.WireFrameCullBack;
         }
 
         protected override void DrawCore(RenderContext context)

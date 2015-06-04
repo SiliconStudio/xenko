@@ -97,7 +97,9 @@ namespace SiliconStudio.Paradox.Graphics
             currentStateIndex = -1;
             PushState();
 
+            Begin();
             ClearState();
+            End();
         }
 
         protected override void Destroy()

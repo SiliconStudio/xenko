@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'iPhone' ">
@@ -30,7 +30,7 @@
     <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="monotouch" Label="Paradox.DoNotSync" />
+    <Reference Include="Xamarin.iOS" Label="Paradox.DoNotSync" />
     <Reference Include="MonoTouch.NUnitLite" Label="Paradox.DoNotSync" />
     <None Include="Info.plist" Label="Paradox.DoNotSync" />
     <Compile Include="..\..\..\tests\nunitlite\NUnitLiteLauncher.iPhone.cs" Label="Paradox.DoNotSync">
@@ -82,5 +82,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Import Condition="'$(SiliconStudioCompilerTargetsEnable)' != 'false'" Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
+  <Import Condition="'$(SiliconStudioCompilerTargetsEnable)' != 'false'" Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

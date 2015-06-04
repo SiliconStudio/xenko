@@ -7,14 +7,19 @@ Release date: 2015/##/##
 #### Enhancements
 - Studio: Allow to fetch a referenced entity from the property grid in the scene editor.
 - Studio: Entities can be duplicated by dragging a transformation gizmo while maintaining ctrl key down.
-- Studio: More option to manage gizmos display in the scene editor
+- Studio: More option to manage gizmos display in the scene editor.
+- Studio: Store some settings in an .user file along with the .pdxpkg file.
 
 #### Issues fixed
 - Studio: Adding a Child scene component was crashing the scene editor.
 - Studio: Entities with transparent materials could not be selected.
-- Engine: Fixed lights not being positioned releative to their parents.
+- Engine: Fixed lights not being positioned relative to their parents.
 - Engine: Fixed wrong lighting after disabling and reenabling light components.
 - Engine: Fixed an exception when an object was not in the culling groups of any lights.
+- Engine: Ambient occlusion maps now ignore UV scaling overrides as intended.
+- Engine: Models with negative scaling did not have their faces inverted.
+- Engine: Fixed an issue where cloning an entity with AnimationComponent would cause crashes.
+- Sample: Fixed Forward Lighting sample.
 - Shaders: Directional shadow maps were requiring Shader Model 5.0. ([#222](https://github.com/SiliconStudio/paradox/issues/222)).
 
 #### Breaking changes

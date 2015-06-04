@@ -4,7 +4,7 @@ using System;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 #if SILICONSTUDIO_PLATFORM_IOS
-using MonoTouch.UIKit;
+using UIKit;
 #endif
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
@@ -65,7 +65,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
 
                     // create the paradox game view 
                     var bounds = UIScreen.MainScreen.Bounds;
-                    var paradoxGameView = new Starter.ParadoxApplicationDelegate.iOSParadoxView(bounds) { ContentScaleFactor = UIScreen.MainScreen.Scale };
+                    var paradoxGameView = new Starter.ParadoxApplicationDelegate.iOSParadoxView((System.Drawing.RectangleF)bounds) { ContentScaleFactor = UIScreen.MainScreen.Scale };
 
                     // create the view controller used to display the paradox game
                     var paradoxGameController = new iOSGameTestController(game) { View = paradoxGameView };
@@ -107,7 +107,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
                     var window = UIApplication.SharedApplication.KeyWindow;
                     var rootNavigationController = (UINavigationController)window.RootViewController;
 
-                    rootNavigationController.PopViewControllerAnimated(false);
+                    rootNavigationController.PopViewController(false);
                 });
 #elif SILICONSTUDIO_PLATFORM_ANDROID
                 AndroidGameTestActivity.Game = null;

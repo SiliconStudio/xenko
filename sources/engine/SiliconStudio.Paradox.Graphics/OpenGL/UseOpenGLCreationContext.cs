@@ -46,7 +46,7 @@ namespace SiliconStudio.Paradox.Graphics
             // so let's query EGL directly.
             if (GraphicsDevice.EglGetCurrentContext() == IntPtr.Zero)
 #elif SILICONSTUDIO_PLATFORM_IOS
-            if (MonoTouch.OpenGLES.EAGLContext.CurrentContext == null)
+            if (OpenGLES.EAGLContext.CurrentContext == null)
 #else
             if (GraphicsContext.CurrentContext == null)
 #endif
