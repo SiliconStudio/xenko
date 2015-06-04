@@ -7,11 +7,11 @@ using System.IO;
 using System.Linq;
 
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Presentation.Extensions;
 
-namespace SiliconStudio.Presentation.Settings
+namespace SiliconStudio.Core.Settings
 {
     /// <summary>
     /// A static class that manages settings loading and saving for an application.

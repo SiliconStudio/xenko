@@ -7,8 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
-
-using SiliconStudio.Presentation.Settings;
+using SiliconStudio.Core.Settings;
 
 namespace SiliconStudio.Presentation.Tests
 {

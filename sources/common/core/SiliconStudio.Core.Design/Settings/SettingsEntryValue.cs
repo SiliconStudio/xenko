@@ -5,7 +5,7 @@ using System.Globalization;
 
 using SiliconStudio.Core.IO;
 
-namespace SiliconStudio.Presentation.Settings
+namespace SiliconStudio.Core.Settings
 {
     /// <summary>
     /// An internal object that represent a single value for a settings key into a <see cref="SettingsProfile"/>.

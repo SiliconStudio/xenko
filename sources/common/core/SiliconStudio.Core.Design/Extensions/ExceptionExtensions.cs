@@ -3,7 +3,7 @@
 using System;
 using System.Linq;
 
-namespace SiliconStudio.Presentation.Extensions
+namespace SiliconStudio.Core.Extensions
 {
     public static class ExceptionExtensions
     {
@@ -11,7 +11,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// Represents the maximum number of lines to include in the stack trace when formatting a exception to be displayed in a dialog.
         /// </summary>
         public const int MaxStackTraceLines = 30;
-        
+
         /// <summary>
         /// Explicitly ignores the exception. This method does nothing but suppress warnings related to a catch block doing nothing.
         /// </summary>
@@ -71,7 +71,7 @@ namespace SiliconStudio.Presentation.Extensions
         public static string ExtractStackTrace(this Exception exception, int maxLines = -1)
         {
             var stackTraceArray = exception.StackTrace.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                return string.Join(Environment.NewLine, maxLines > 0 ? stackTraceArray.Take(maxLines) : stackTraceArray);
+            return string.Join(Environment.NewLine, maxLines > 0 ? stackTraceArray.Take(maxLines) : stackTraceArray);
         }
     }
 }

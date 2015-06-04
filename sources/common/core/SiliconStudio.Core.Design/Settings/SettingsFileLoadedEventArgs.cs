@@ -4,7 +4,7 @@ using System;
 
 using SiliconStudio.Core.IO;
 
-namespace SiliconStudio.Presentation.Settings
+namespace SiliconStudio.Core.Settings
 {
     /// <summary>
     /// Arguments of the <see cref="SettingsService.SettingsFileLoaded"/> event.

@@ -225,6 +225,7 @@ namespace SiliconStudio.Paradox.Rendering
                 parameterCollections.Add(modelInstance.Parameters);
             }
 
+            // TODO: Should we add RenderMesh.Parameters before ModelComponent.Parameters to allow user overiddes at component level?
             parameterCollections.Add(parameters);
         }
     }
