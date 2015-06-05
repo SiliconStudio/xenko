@@ -2,16 +2,13 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading;
-using System.Xml.Linq;
+
 using Microsoft.Build.Evaluation;
-using Microsoft.Build.Logging;
-using Microsoft.Win32;
+
 using NuGet;
 
 namespace SiliconStudio.Assets
