@@ -17,6 +17,11 @@ namespace SiliconStudio.Paradox.Engine.Design
     {
         public const string AssetUrl = "__GameSettings__";
 
+        public GameSettings()
+        {
+            EffectCompilationMode = EffectCompilationMode.Local;
+        }
+
         public Guid PackageId { get; set; }
 
         public string DefaultSceneUrl { get; set; }
@@ -28,12 +33,12 @@ namespace SiliconStudio.Paradox.Engine.Design
         public GraphicsProfile DefaultGraphicsProfileUsed { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether effect compile should be recorded and sent to effect compile server for GameStudio notification.
+        /// Gets or sets a value indicating whether effect compile should be allowed, and if yes, should it be done locally (if possible) or remotely?
         /// </summary>
-        public bool AllowRemoteEffectCompilation { get; set; }
+        public EffectCompilationMode EffectCompilationMode { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether effect compile should be recorded and sent to effect compile server for GameStudio notification.
+        /// Gets or sets a value indicating whether effect compile (local or remote) should be recorded and sent to effect compile server for GameStudio notification.
         /// </summary>
         public bool RecordEffectRequested { get; set; }
     }

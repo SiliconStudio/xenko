@@ -8,6 +8,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.ReferenceCounting;
 using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Paradox.Engine.Design;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
@@ -76,7 +77,7 @@ namespace SiliconStudio.Paradox.Rendering
             // TODO: pdxfx too
 #endif
 
-            // Make sure default compiler is created
+            // Make sure default compiler is created (local if possible otherwise none) if nothing else was explicitely set/requested (i.e. by GameSettings)
             if (Compiler == null)
                 Compiler = CreateEffectCompiler();
         }
@@ -106,21 +107,9 @@ namespace SiliconStudio.Paradox.Rendering
         /// <param name="effectCompiler">The effect compiler.</param>
         /// <param name="taskSchedulerSelector">The task scheduler selector.</param>
         /// <returns></returns>
-        public static IEffectCompiler CreateEffectCompiler(EffectCompilerBase effectCompiler = null, TaskSchedulerSelector taskSchedulerSelector = null)
+        public static IEffectCompiler CreateEffectCompiler(TaskSchedulerSelector taskSchedulerSelector = null)
         {
-            if (effectCompiler == null)
-            {
-                // Create compiler
-#if SILICONSTUDIO_PARADOX_EFFECT_COMPILER
-                effectCompiler = new EffectCompiler
-                {
-                    SourceDirectories = { EffectCompilerBase.DefaultSourceShaderFolder },
-                };
-#else
-                effectCompiler = new NullEffectCompiler();
-#endif
-            }
-            return new EffectCompilerCache(effectCompiler, taskSchedulerSelector);
+            return CreateEffectCompiler(null, null, EffectCompilationMode.Local, false);
         }
 
         public override void Update(GameTime gameTime)
@@ -393,26 +382,49 @@ namespace SiliconStudio.Paradox.Rendering
             return null;
         }
 
-        internal void SetupRemoteEffectCompilation(Guid? packageId, bool allowRemoteEffectCompilation, bool recordEffectRequested)
+        internal static IEffectCompiler CreateEffectCompiler(EffectSystem effectSystem, Guid? packageId, EffectCompilationMode effectCompilationMode, bool recordEffectRequested)
         {
-            // Nothing to do
-            if (!allowRemoteEffectCompilation && !recordEffectRequested)
-                return;
+            EffectCompilerBase compiler = null;
 
-            // Create the object that handles the connection
-            var shaderCompilerTarget = new ShaderCompilerTarget(packageId);
-
-            if (recordEffectRequested)
+#if SILICONSTUDIO_PARADOX_EFFECT_COMPILER
+            if ((effectCompilationMode & EffectCompilationMode.Local) != 0)
             {
-                // Let's notify effect compiler server for each new effect requested
-                EffectRequested += shaderCompilerTarget.NotifyEffectRequested;
+                // Local allowed and available, let's use that
+                compiler = new EffectCompiler
+                {
+                    SourceDirectories = { EffectCompilerBase.DefaultSourceShaderFolder },
+                };
+            }
+#endif               
+
+            // Nothing to do remotely
+            bool needRemoteCompiler = (compiler == null && (effectCompilationMode & EffectCompilationMode.Remote) != 0);
+            if (needRemoteCompiler || recordEffectRequested)
+            {
+                // Create the object that handles the connection
+                var shaderCompilerTarget = new ShaderCompilerTarget(packageId);
+
+                if (recordEffectRequested)
+                {
+                    // Let's notify effect compiler server for each new effect requested
+                    effectSystem.EffectRequested += shaderCompilerTarget.NotifyEffectRequested;
+                }
+
+                // Use remote only if nothing else was found before (i.e. a local compiler)
+                if (needRemoteCompiler)
+                {
+                    // Create a remote compiler
+                    compiler = new RemoteEffectCompiler(shaderCompilerTarget);
+                }
             }
 
-            if (allowRemoteEffectCompilation)
+            // Local not possible or allowed, and remote not allowed either => switch back to null compiler
+            if (compiler == null)
             {
-                // Create a remote compiler
-                Compiler = CreateEffectCompiler(new RemoteEffectCompiler(shaderCompilerTarget));
+                compiler = new NullEffectCompiler();
             }
+
+            return new EffectCompilerCache(compiler);
         }
     }
 }

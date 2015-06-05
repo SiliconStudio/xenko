@@ -243,7 +243,7 @@ namespace SiliconStudio.Paradox.Engine
             // If requested in game settings, compile effects remotely and/or notify new shader requests
             if (gameSettings != null)
             {
-                EffectSystem.SetupRemoteEffectCompilation(gameSettings.PackageId, gameSettings.AllowRemoteEffectCompilation, gameSettings.RecordEffectRequested);
+                EffectSystem.Compiler = EffectSystem.CreateEffectCompiler(EffectSystem, gameSettings.PackageId, gameSettings.EffectCompilationMode, gameSettings.RecordEffectRequested);
             }
 
             GameSystems.Add(EffectSystem);
