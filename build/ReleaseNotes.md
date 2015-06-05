@@ -20,6 +20,7 @@ Release date: 2015/##/##
 - Engine: Models with negative scaling did not have their faces inverted.
 - Engine: Fixed an issue where cloning an entity with AnimationComponent would cause crashes.
 - Sample: Fixed Forward Lighting sample.
+- Shaders: Directional shadow maps were requiring Shader Model 5.0. ([#222](https://github.com/SiliconStudio/paradox/issues/222)).
 
 #### Breaking changes
 
