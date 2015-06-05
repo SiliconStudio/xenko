@@ -88,23 +88,6 @@ namespace SiliconStudio.Paradox.Games
 
             gameForm.LayerColorFormat = EAGLColorFormat.RGBA8;
             //gameForm.LayerRetainsBacking = false;
-
-            // Setup the initial size of the window
-            var width = gameContext.RequestedWidth;
-            if (width == 0)
-            {
-                width = (int)(gameForm.Size.Width * gameForm.ContentScaleFactor);
-            }
-
-            var height = gameContext.RequestedHeight;
-            if (height == 0)
-            {
-                height = (int)(gameForm.Size.Height * gameForm.ContentScaleFactor);
-            }
-
-            gameForm.Size = new Size(width, height);
-
-            //gameForm.Resize += OnClientSizeChanged;
         }
 
         void gameForm_Load(object sender, EventArgs e)
