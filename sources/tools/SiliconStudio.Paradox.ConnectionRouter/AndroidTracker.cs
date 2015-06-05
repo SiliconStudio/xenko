@@ -52,7 +52,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                         if (startLocalPort >= 65536) // Make sure we stay in the range of dynamic ports: 49152-65535
                             startLocalPort = 49152;
 
-                        var output = ShellHelper.RunProcessAndGetOutput(@"adb", string.Format(@"-s {0} forward tcp:{1} tcp:{2}", connectedDevice.Key, startLocalPort, RouterClient.DefaultListenPort));
+                        var output = ShellHelper.RunProcessAndGetOutput(@"adb", string.Format(@"-s {0} forward tcp:{1} tcp:{2}", connectedDevice.Key, testedLocalPort, RouterClient.DefaultListenPort));
 
                         if (output.ExitCode == 0)
                         {
