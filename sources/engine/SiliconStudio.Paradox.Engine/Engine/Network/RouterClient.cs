@@ -9,12 +9,12 @@ namespace SiliconStudio.Paradox.Engine.Network
         /// <summary>
         /// The default port to connect to router server.
         /// </summary>
-        public static readonly int DefaultPort = 1244;
+        public static readonly int DefaultPort = 31244;
 
         /// <summary>
         /// The default port to listen for connection from router.
         /// </summary>
-        public static readonly int DefaultListenPort = 1245;
+        public static readonly int DefaultListenPort = 31245;
 
         /// <summary>
         /// Starts a service.
