@@ -3,6 +3,7 @@
 Release date: 2015/##/##
 
 #### New Features
+- Platforms: Add support for iOS ARM64 and iOS simulator.
 
 #### Enhancements
 - Studio: Allow to fetch a referenced entity from the property grid in the scene editor.
