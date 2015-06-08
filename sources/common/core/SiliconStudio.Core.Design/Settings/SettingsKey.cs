@@ -33,7 +33,6 @@ namespace SiliconStudio.Core.Settings
             Name = name;
             DisplayName = name.GetFileName();
             DefaultObjectValue = defaultValue;
-            IsEditable = true;
             Group = group;
             Group.RegisterSettingsKey(name, defaultValue, this);
         }
@@ -49,7 +48,6 @@ namespace SiliconStudio.Core.Settings
             Name = name;
             DisplayName = name;
             DefaultObjectValueCallback = defaultValueCallback;
-            IsEditable = true;
             Group = group;
             Group.RegisterSettingsKey(name, defaultValueCallback(), this);
         }
@@ -63,12 +61,6 @@ namespace SiliconStudio.Core.Settings
         /// Gets the type of this <see cref="SettingsKey"/>.
         /// </summary>
         public abstract Type Type { get; }
-
-        /// <summary>
-        /// Gets or sets whether this <see cref="SettingsKey"/> is editable by users.
-        /// </summary>
-        [Obsolete]
-        public bool IsEditable { get; set; }
 
         /// <summary>
         /// Gets the <see cref="SettingsGroup"/> containing this <see cref="SettingsKey"/>.
