@@ -20,9 +20,9 @@ namespace SiliconStudio.Core.Design.Tests
 
         public static void Initialize()
         {
-            IntValue = new SettingsValueKey<int>("Test/Simple/IntValue", 10);
-            DoubleValue = new SettingsValueKey<double>("Test/Simple/DoubleValue", 3.14);
-            StringValue = new SettingsValueKey<string>("Test/Simple/StringValue", "Test string");
+            IntValue = new SettingsValueKey<int>("Test/Simple/IntValue", TestSettings.SettingsGroup, 10);
+            DoubleValue = new SettingsValueKey<double>("Test/Simple/DoubleValue", TestSettings.SettingsGroup, 3.14);
+            StringValue = new SettingsValueKey<string>("Test/Simple/StringValue", TestSettings.SettingsGroup, "Test string");
             Console.WriteLine(@"Static settings keys initialized (ValueSettingsKeys)");
         }
     }
@@ -35,9 +35,9 @@ namespace SiliconStudio.Core.Design.Tests
 
         public static void Initialize()
         {
-            IntList = new SettingsValueKey<List<int>>("Test/Lists/IntList", Enumerable.Empty<int>().ToList());
-            DoubleList = new SettingsValueKey<List<double>>("Test/Lists/DoubleList", new[] { 2.0, 6.0, 9.0 }.ToList());
-            StringList = new SettingsValueKey<List<string>>("Test/Lists/StringList", new[] { "String 1", "String 2", "String 3" }.ToList());
+            IntList = new SettingsValueKey<List<int>>("Test/Lists/IntList", TestSettings.SettingsGroup, Enumerable.Empty<int>().ToList());
+            DoubleList = new SettingsValueKey<List<double>>("Test/Lists/DoubleList", TestSettings.SettingsGroup, new[] { 2.0, 6.0, 9.0 }.ToList());
+            StringList = new SettingsValueKey<List<string>>("Test/Lists/StringList", TestSettings.SettingsGroup, new[] { "String 1", "String 2", "String 3" }.ToList());
             Console.WriteLine(@"Static settings keys initialized (ListSettingsKeys)");
         }
     }
@@ -46,7 +46,7 @@ namespace SiliconStudio.Core.Design.Tests
     class TestSettings
     {
         public static Guid SessionGuid = Guid.NewGuid();
-
+        public static SettingsGroup SettingsGroup = new SettingsGroup();
         [SetUp]
         public static void InitializeSettings()
         {
