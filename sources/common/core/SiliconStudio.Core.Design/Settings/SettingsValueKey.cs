@@ -20,9 +20,10 @@ namespace SiliconStudio.Core.Settings
         /// Initializes a new instance of the <see cref="SettingsValueKey{T}"/> class.
         /// </summary>
         /// <param name="name">The name of the settings key. Must be unique amongst an application.</param>
+        /// <param name="group">The <see cref="SettingsGroup"/> containing this <see cref="SettingsKey"/>.</param>
         /// <param name="defaultValue">The default value for this settings key.</param>
-        public SettingsValueKey(UFile name, T defaultValue)
-            : base(name, defaultValue)
+        public SettingsValueKey(UFile name, SettingsGroup group, T defaultValue)
+            : base(name, group, defaultValue)
         {
         }
 
@@ -30,8 +31,10 @@ namespace SiliconStudio.Core.Settings
         /// Initializes a new instance of the <see cref="SettingsValueKey{T}"/> class.
         /// </summary>
         /// <param name="name">The name of this settings key. Must be unique amongst the application.</param>
-        /// <param name="defaultValueCallback">The default value callback for this settings key.</param>
-        public SettingsValueKey(UFile name, Func<object> defaultValueCallback) : base(name, defaultValueCallback)
+        /// <param name="group">The <see cref="SettingsGroup"/> containing this <see cref="SettingsKey"/>.</param>
+        /// <param name="defaultValueCallback">A function that returns the default value associated to this settings key.</param>
+        public SettingsValueKey(UFile name, SettingsGroup group, Func<object> defaultValueCallback)
+            : base(name, group, defaultValueCallback)
         {
         }
 
@@ -52,14 +55,14 @@ namespace SiliconStudio.Core.Settings
         /// Gets the value of this settings key in the given profile.
         /// </summary>
         /// <param name="searchInParentProfile">If true, the settings service will look in the parent profile of the given profile if the settings key is not defined into it.</param>
-        /// <param name="profile">The profile in which to look for the value. If <c>null</c>, it will look in the <see cref="SettingsService.CurrentProfile"/>.</param>
+        /// <param name="profile">The profile in which to look for the value. If <c>null</c>, it will look in the <see cref="SettingsGroup.CurrentProfile"/>.</param>
         /// <param name="createInCurrentProfile">If true, the list will be created in the current profile, from the value of its parent profile.</param>
         /// <returns>The value of this settings key.</returns>
         /// <exception cref="KeyNotFoundException">No value can be found in the given profile matching this settings key.</exception>
         public T GetValue(bool searchInParentProfile = true, SettingsProfile profile = null, bool createInCurrentProfile = false)
         {
             object value;
-            profile = profile ?? SettingsService.CurrentProfile;
+            profile = profile ?? Group.CurrentProfile;
             if (profile.GetValue(Name, out value, searchInParentProfile, createInCurrentProfile))
             {
                 return (T)value;
@@ -71,10 +74,10 @@ namespace SiliconStudio.Core.Settings
         /// Sets the value of this settings key in the given profile.
         /// </summary>
         /// <param name="value">The new value to set.</param>
-        /// <param name="profile">The profile in which to set the value. If <c>null</c>, it will look in the <see cref="SettingsService.CurrentProfile"/>.</param>
+        /// <param name="profile">The profile in which to set the value. If <c>null</c>, it will look in the <see cref="SettingsGroup.CurrentProfile"/>.</param>
         public void SetValue(T value, SettingsProfile profile = null)
         {
-            profile = profile ?? SettingsService.CurrentProfile;
+            profile = profile ?? Group.CurrentProfile;
             profile.SetValue(Name, value);
         }
 
@@ -83,12 +86,12 @@ namespace SiliconStudio.Core.Settings
         /// </summary>
         /// <param name="value">The resulting value, if found</param>
         /// <param name="searchInParentProfile">If true, the settings service will look in the parent profile of the given profile if the settings key is not defined into it.</param>
-        /// <param name="profile">The profile in which to look for the value. If <c>null</c>, it will look in the <see cref="SettingsService.CurrentProfile"/>.</param>
+        /// <param name="profile">The profile in which to look for the value. If <c>null</c>, it will look in the <see cref="SettingsGroup.CurrentProfile"/>.</param>
         /// <returns><c>true</c> if the value was found, <c>false</c> otherwise.</returns>
         public bool TryGetValue(out T value, bool searchInParentProfile = true, SettingsProfile profile = null)
         {
             object obj;
-            profile = profile ?? SettingsService.CurrentProfile;
+            profile = profile ?? Group.CurrentProfile;
             if (profile.GetValue(Name, out obj, searchInParentProfile, false))
             {
                 try
@@ -116,10 +119,9 @@ namespace SiliconStudio.Core.Settings
             }
             catch (Exception)
             {
+                // Can't decode back, use default value
+                return DefaultValue;
             }
-
-            // Can't decode back, use default value
-            return DefaultValue;
         }
     }
 }

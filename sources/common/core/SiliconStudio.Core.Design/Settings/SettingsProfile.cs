@@ -26,12 +26,19 @@ namespace SiliconStudio.Core.Settings
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsProfile"/> class.
         /// </summary>
+        /// <param name="group">The <see cref="SettingsGroup"/> containing this profile.</param>
         /// <param name="parentProfile">The parent profile.</param>
-        internal SettingsProfile(SettingsProfile parentProfile)
+        internal SettingsProfile(SettingsGroup group, SettingsProfile parentProfile)
         {
+            Group = group;
             this.parentProfile = parentProfile;
         }
 
+        /// <summary>
+        /// Gets the <see cref="SettingsGroup"/> containing this profile.
+        /// </summary>
+        public SettingsGroup Group { get; private set; }
+        
         /// <summary>
         /// Gets the path of the file in which this profile has been saved.
         /// </summary>
@@ -66,7 +73,7 @@ namespace SiliconStudio.Core.Settings
 
         public void ValidateSettingsChanges()
         {
-            var keys = SettingsService.GetAllSettingsKeys(true);
+            var keys = Group.GetAllSettingsKeys();
             foreach (var key in keys)
             {
                 if (modifiedSettings.Contains(key.Name))
@@ -202,7 +209,7 @@ namespace SiliconStudio.Core.Settings
                 handler(null, args);
                 if (args.ReloadFile)
                 {
-                    SettingsService.ReloadSettingsProfile(this);
+                    Group.ReloadSettingsProfile(this);
                 }
             }
         }

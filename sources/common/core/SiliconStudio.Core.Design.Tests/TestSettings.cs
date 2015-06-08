@@ -50,7 +50,7 @@ namespace SiliconStudio.Core.Design.Tests
         [SetUp]
         public static void InitializeSettings()
         {
-            SettingsService.ClearSettings();
+            SettingsGroup.ClearSettings();
         }
 
         public static string TempPath(string file)
@@ -103,7 +103,7 @@ namespace SiliconStudio.Core.Design.Tests
             ValueSettingsKeys.IntValue.SetValue(20);
             ValueSettingsKeys.DoubleValue.SetValue(6.5);
             ValueSettingsKeys.StringValue.SetValue("New string");
-            SettingsService.CurrentProfile.ValidateSettingsChanges();
+            SettingsGroup.CurrentProfile.ValidateSettingsChanges();
             Assert.AreEqual(3, settingsChangedCount[0]);
             settingsChangedCount[0] = 0;
         }
@@ -135,8 +135,8 @@ namespace SiliconStudio.Core.Design.Tests
         {
             TestSettingsWrite();
             TestSettingsList();
-            SettingsService.SaveSettingsProfile(SettingsService.CurrentProfile, TempPath("TestSettingsSaveAndLoad.txt"));
-            SettingsService.LoadSettingsProfile(TempPath("TestSettingsSaveAndLoad.txt"), true);
+            SettingsGroup.SaveSettingsProfile(SettingsGroup.CurrentProfile, TempPath("TestSettingsSaveAndLoad.txt"));
+            SettingsGroup.LoadSettingsProfile(TempPath("TestSettingsSaveAndLoad.txt"), true);
 
             Assert.AreEqual(30, ValueSettingsKeys.IntValue.GetValue());
             Assert.AreEqual(9.1, ValueSettingsKeys.DoubleValue.GetValue());
@@ -174,7 +174,7 @@ Settings:
             {
                 writer.Write(TestSettingsLoadFileText);
             }
-            SettingsService.LoadSettingsProfile(TempPath("TestSettingsLoad.txt"), true);
+            SettingsGroup.LoadSettingsProfile(TempPath("TestSettingsLoad.txt"), true);
 
             ValueSettingsKeys.Initialize();
             ListSettingsKeys.Initialize();
@@ -225,8 +225,8 @@ Settings:
             ListSettingsKeys.DoubleList.ChangesValidated += (s, e) => ++doubleListChangeCount;
             ListSettingsKeys.StringList.ChangesValidated += (s, e) => ++stringListChangeCount;
 
-            SettingsService.LoadSettingsProfile(TempPath("TestSettingsValueChangedOnLoadText.txt"), true);
-            SettingsService.CurrentProfile.ValidateSettingsChanges();
+            SettingsGroup.LoadSettingsProfile(TempPath("TestSettingsValueChangedOnLoadText.txt"), true);
+            SettingsGroup.CurrentProfile.ValidateSettingsChanges();
 
             Assert.AreEqual(1, intValueChangeCount);
             Assert.AreEqual(0, doubleValueChangeCount);
@@ -255,7 +255,7 @@ Settings:
             {
                 writer.Write(TestSettingsLoadWrongTypeFileText);
             }
-            SettingsService.LoadSettingsProfile(TempPath("TestSettingsLoadWrongType.txt"), true);
+            SettingsGroup.LoadSettingsProfile(TempPath("TestSettingsLoadWrongType.txt"), true);
 
             ValueSettingsKeys.Initialize();
             ListSettingsKeys.Initialize();
@@ -293,14 +293,14 @@ Settings:
                         {
                             writer.Write(TestSettingsFileModifiedText1);
                         }
-                        SettingsService.LoadSettingsProfile(TempPath("TestSettingsFileModified.txt"), true);
-                        SettingsService.CurrentProfile.MonitorFileModification = true;
-                        SettingsService.CurrentProfile.FileModified += settingsModified;
+                        SettingsGroup.LoadSettingsProfile(TempPath("TestSettingsFileModified.txt"), true);
+                        SettingsGroup.CurrentProfile.MonitorFileModification = true;
+                        SettingsGroup.CurrentProfile.FileModified += settingsModified;
                         ValueSettingsKeys.Initialize();
                         ListSettingsKeys.Initialize();
                         Assert.AreEqual(55, ValueSettingsKeys.IntValue.GetValue());
 
-                        SettingsService.SettingsFileLoaded += settingsLoaded;
+                        SettingsGroup.SettingsFileLoaded += settingsLoaded;
 
                         using (var writer = new StreamWriter(TempPath("TestSettingsFileModified.txt")))
                         {
@@ -311,11 +311,11 @@ Settings:
                         await tcs.Task;
 
                         Assert.AreEqual(75, ValueSettingsKeys.IntValue.GetValue());
-                        SettingsService.SettingsFileLoaded -= settingsLoaded;
+                        SettingsGroup.SettingsFileLoaded -= settingsLoaded;
                     }
                     catch
                     {
-                        SettingsService.SettingsFileLoaded -= settingsLoaded;
+                        SettingsGroup.SettingsFileLoaded -= settingsLoaded;
                     }
                 });
 

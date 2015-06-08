@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using SharpYaml.Events;
 using SharpYaml.Serialization;
 using SharpYaml.Serialization.Serializers;
-using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Yaml;
 

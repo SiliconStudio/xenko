@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
@@ -13,6 +12,9 @@ namespace SiliconStudio.Assets
         private const string SettingsExtension = ".pdxpkg.user";
         private readonly Package package;
         private readonly SettingsProfile profile;
+        private readonly HashSet<SettingsKey> registeredKeys = new HashSet<SettingsKey>();
+
+        public static SettingsGroup SettingsGroup = new SettingsGroup();
 
         internal PackageSettings(Package package)
         {
@@ -20,21 +22,21 @@ namespace SiliconStudio.Assets
             this.package = package;
             if (package.FullPath == null)
             {
-                profile = SettingsService.CreateSettingsProfile(false);
+                profile = SettingsGroup.CreateSettingsProfile(false);
             }
             else
             {
                 var path = Path.Combine(package.FullPath.GetFullDirectory(), package.FullPath.GetFileName() + SettingsExtension);
                 try
                 {
-                    profile = SettingsService.LoadSettingsProfile(path, false);
+                    profile = SettingsGroup.LoadSettingsProfile(path, false);
                 }
                 catch (Exception e)
                 {
                     e.Ignore();
                 }
                 if (profile == null)
-                    profile = SettingsService.CreateSettingsProfile(false);
+                    profile = SettingsGroup.CreateSettingsProfile(false);
             }
         }
 
@@ -44,21 +46,28 @@ namespace SiliconStudio.Assets
                 return false;
 
             var path = Path.Combine(package.FullPath.GetFullDirectory(), package.FullPath.GetFileName() + SettingsExtension);
-            return SettingsService.SaveSettingsProfile(profile, path);
+            return SettingsGroup.SaveSettingsProfile(profile, path);
         }
+
+        public IEnumerable<SettingsKey> RegisteredKeys { get { return registeredKeys; } }
+
+        public SettingsProfile Profile { get { return profile; } }
 
         public T GetOrCreateValue<T>(SettingsValueKey<T> key)
         {
+            registeredKeys.Add(key);
             return key.GetValue(true, profile, true);
         }
 
         public T GetValue<T>(SettingsValueKey<T> key)
         {
+            registeredKeys.Add(key);
             return key.GetValue(true, profile);
         }
 
         public void SetValue<T>(SettingsValueKey<T> key, T value)
         {
+            registeredKeys.Add(key);
             key.SetValue(value, profile);
         }
     }

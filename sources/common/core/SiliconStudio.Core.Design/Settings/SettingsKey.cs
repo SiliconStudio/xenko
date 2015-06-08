@@ -2,38 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
 using SharpYaml.Events;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Core.Settings
 {
-    /// <summary>
-    /// Arguments of the <see cref="SettingsKey.ChangesValidated"/> event.
-    /// </summary>
-    public class ChangesValidatedEventArgs : EventArgs
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChangesValidatedEventArgs"/> class.
-        /// </summary>
-        /// <param name="profile">The profile in which changes have been validated.</param>
-        public ChangesValidatedEventArgs(SettingsProfile profile)
-        {
-            Profile = profile;
-        }
-
-        /// <summary>
-        /// Gets the <see cref="SettingsProfile"/> in which changes have been validated.
-        /// </summary>
-        public SettingsProfile Profile { get; private set; }
-
-        /// <summary>
-        /// Gets whether the profile in which changes have been validated is the current profile or not. 
-        /// </summary>
-        public bool IsCurrentProfile { get { return Profile == SettingsService.CurrentProfile; } }
-    }
-
     /// <summary>
     /// This class represents property to store in the settings that is identified by a key.
     /// </summary>
@@ -53,28 +26,32 @@ namespace SiliconStudio.Core.Settings
         /// Initializes a new instance of the <see cref="SettingsKey"/> class.
         /// </summary>
         /// <param name="name">The name of this settings key. Must be unique amongst the application.</param>
+        /// <param name="group">The <see cref="SettingsGroup"/> containing this <see cref="SettingsKey"/>.</param>
         /// <param name="defaultValue">The default value associated to this settings key.</param>
-        protected SettingsKey(UFile name, object defaultValue)
+        protected SettingsKey(UFile name, SettingsGroup group, object defaultValue)
         {
             Name = name;
             DisplayName = name;
             DefaultObjectValue = defaultValue;
             IsEditable = true;
-            SettingsService.RegisterSettingsKey(name, defaultValue, this);
+            Group = group;
+            Group.RegisterSettingsKey(name, defaultValue, this);
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsKey"/> class.
         /// </summary>
         /// <param name="name">The name of this settings key. Must be unique amongst the application.</param>
-        /// <param name="defaultValue">The default value associated to this settings key.</param>
-        protected SettingsKey(UFile name, Func<object> defaultValueCallback)
+        /// <param name="group">The <see cref="SettingsGroup"/> containing this <see cref="SettingsKey"/>.</param>
+        /// <param name="defaultValueCallback">A function that returns the default value associated to this settings key.</param>
+        protected SettingsKey(UFile name, SettingsGroup group, Func<object> defaultValueCallback)
         {
             Name = name;
             DisplayName = name;
             DefaultObjectValueCallback = defaultValueCallback;
             IsEditable = true;
-            SettingsService.RegisterSettingsKey(name, defaultValueCallback(), this);
+            Group = group;
+            Group.RegisterSettingsKey(name, defaultValueCallback(), this);
         }
 
         /// <summary>
@@ -90,7 +67,13 @@ namespace SiliconStudio.Core.Settings
         /// <summary>
         /// Gets or sets whether this <see cref="SettingsKey"/> is editable by users.
         /// </summary>
+        [Obsolete]
         public bool IsEditable { get; set; }
+
+        /// <summary>
+        /// Gets the <see cref="SettingsGroup"/> containing this <see cref="SettingsKey"/>.
+        /// </summary>
+        public SettingsGroup Group { get; private set; }
 
         /// <summary>
         /// Gets or sets the display name of the <see cref="SettingsKey"/>.
