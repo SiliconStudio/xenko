@@ -422,7 +422,7 @@ namespace SiliconStudio.Paradox.Audio
         }
         
         [DebuggerDisplay("AudioDataMixer for input bus {parent.BusIndexChannelMixer}-{parent.BusIndex3DMixer}")]
-        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        [StructLayout(LayoutKind.Sequential)]
         struct AudioDataRendererInfo
         {
             public int LoopStartPoint;

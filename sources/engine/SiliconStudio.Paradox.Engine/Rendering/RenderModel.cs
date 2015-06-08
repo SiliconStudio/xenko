@@ -38,9 +38,13 @@ namespace SiliconStudio.Paradox.Rendering
 
         internal void Update()
         {
+            var scale = TransformComponent.WorldMatrix.ScaleVector;
+            var isGeomertyInverted = scale.X * scale.Y * scale.Z < 0;
+
             Group = Entity.Group;
             var previousModel = Model;
             Model = ModelComponent.Model;
+
             if (previousModel != Model)
             {
                 // When changing the model, we need to regenerate the render meshes
@@ -51,6 +55,7 @@ namespace SiliconStudio.Paradox.Rendering
                         // TODO: Should we dispose something here?
                         renderMeshes.Clear();
                         renderMeshes.TransformUpdated = false;
+                        renderMeshes.IsGeomertyInverted = isGeomertyInverted;
                     }
                 }
             }
@@ -62,6 +67,7 @@ namespace SiliconStudio.Paradox.Rendering
                     if (renderMeshes != null)
                     {
                         renderMeshes.TransformUpdated = false;
+                        renderMeshes.IsGeomertyInverted = isGeomertyInverted;
                     }
                 }
             }
@@ -103,6 +109,8 @@ namespace SiliconStudio.Paradox.Rendering
     internal class RenderMeshCollection : List<RenderMesh>
     {
         public bool TransformUpdated { get; set; }
+
+        public bool IsGeomertyInverted { get; set; }
     }
 
 }

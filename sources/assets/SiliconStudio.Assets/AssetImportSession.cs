@@ -532,6 +532,27 @@ namespace SiliconStudio.Assets
                         return Diff3ChangeType.MergeFromAsset1;
                     }
                 }
+                else
+                {
+                    // If the instance is not a content reference itself, there might a reference attached
+                    var instance = node.Asset2Node.Instance;
+                    var reference = instance != null ? AttachedReferenceManager.GetAttachedReference(instance) : null;
+
+                    if (reference != null)
+                    {
+                        AssetItem realItem;
+                        // Ids are remapped, so we are going to remap here, both on the
+                        // new base and on the merged result
+                        if (idRemapping.TryGetValue(reference.Id, out realItem))
+                        {
+                            var newReference = AttachedReferenceManager.CreateSerializableVersion(instance.GetType(), realItem.Id, realItem.Location);
+                            node.ReplaceValue(newReference, diff3Node => diff3Node.Asset2Node);
+                        }
+
+                        return Diff3ChangeType.MergeFromAsset2;
+                    }
+                }
+
                 return AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1(node);
             });
 
@@ -1037,7 +1058,7 @@ namespace SiliconStudio.Assets
             var conflictCount = diffList.Count(node => node.HasConflict);
 
             // Gets the references differences
-            var assetReferencesDiffs = diffList.Where(node => typeof(IContentReference).IsAssignableFrom(node.InstanceType)).ToList();
+            var assetReferencesDiffs = diffList.Where(IsContentReference).ToList();
 
             // The matching is calculated taking into account the number of conflicts and the number
             // of unresolved references (implicit conflicts)
@@ -1052,17 +1073,20 @@ namespace SiliconStudio.Assets
             // Recursively calculate differences on referenced objects
             foreach (var referenceDiff in assetReferencesDiffs)
             {
-                var base1 = (IContentReference)referenceDiff.BaseNode.Instance;
-                var newRef = (IContentReference)referenceDiff.Asset2Node.Instance;
+                var base1 = referenceDiff.BaseNode.Instance;
+                var newRef = referenceDiff.Asset2Node.Instance;
 
                 if (base1 != null && newRef != null)
                 {
+                    var baseId = GetContentId(base1);
+                    var asset2Id = GetContentId(newRef);
+
                     // Check if the referenced asset is existing in the session
-                    var baseItem1 = session.FindAsset(base1.Id);
+                    var baseItem1 = session.FindAsset(baseId);
                     if (baseItem1 != null)
                     {
                         // Try to find an asset from the import session that is matching 
-                        var subImport1 = toImport.Items.Where(it => it.Enabled).FirstOrDefault(importList => importList.Item.Id == newRef.Id);
+                        var subImport1 = toImport.Items.Where(it => it.Enabled).FirstOrDefault(importList => importList.Item.Id == asset2Id);
                         if (subImport1 != null && baseItem1.Asset.GetType() == subImport1.Item.Asset.GetType())
                         {
                             RecursiveCalculateMatchAndPrepareMerge(toImport, subImport1, baseItem1);
@@ -1086,12 +1110,36 @@ namespace SiliconStudio.Assets
             toImportMergeGroup.Merges.Add(assetMatching);
         }
 
+        private static bool IsContentReference(Diff3Node node)
+        {
+            if (typeof(IContentReference).IsAssignableFrom(node.InstanceType))
+                return true;
+
+            // If the new asset version is a reference, we can try to merge it
+            if (node.Asset2Node != null && node.Asset2Node.Instance != null)
+                return AttachedReferenceManager.GetAttachedReference(node.Asset2Node.Instance) != null;
+
+            return false;
+        }
+
+        private static Guid GetContentId(object instance)
+        {
+            var contentReference = instance as IContentReference;
+            if (contentReference != null)
+            {
+                return contentReference.Id;
+            }
+
+            var attachedReference = AttachedReferenceManager.GetAttachedReference(instance);
+            return attachedReference != null ? attachedReference.Id : Guid.Empty;
+        }
+
         private Diff3ChangeType MergeImportPolicy(Diff3Node node)
         {
             // Asset references are a special case while importing, as we are
             // going to try to rematch them, so if they changed, we expect to 
             // use the original instance
-            if (typeof(IContentReference).IsAssignableFrom(node.InstanceType))
+            if (IsContentReference(node))
             {
                 if (node.Asset1Node != null)
                 {

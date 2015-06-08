@@ -24,9 +24,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
+using SharpDX.Mathematics.Interop;
 
 using SiliconStudio.Paradox.Graphics.Font;
 
@@ -117,7 +117,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
                         throw new ArgumentOutOfRangeException();
                 }
 
-                Bool isSupported;
+                RawBool isSupported;
                 FontFileType fontType;
                 FontFaceType faceType;
                 int numberFaces;
@@ -170,9 +170,13 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
             var pixelWidth = (int)Math.Ceiling(width + 4);
             var pixelHeight = (int)Math.Ceiling(height + 4);
 
-            var matrix = Matrix.Identity;
-            matrix.M41 = -(float)Math.Floor(xOffset) + 1;
-            matrix.M42 = -(float)Math.Floor(yOffset) + 1;
+            var matrix = new RawMatrix3x2
+            {
+                M11 = 1,
+                M22 = 1,
+                M31 = -(float)Math.Floor(xOffset) + 1,
+                M32 = -(float)Math.Floor(yOffset) + 1
+            };
 
             Bitmap bitmap;
             if (char.IsWhiteSpace(character))
@@ -215,19 +219,19 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
                     0.0f))
                 {
 
-                    var bounds = new SharpDX.Rectangle(0, 0, pixelWidth, pixelHeight);
-                    bitmap = new Bitmap(bounds.Width, bounds.Height, PixelFormat.Format32bppArgb);
+                    var bounds = new RawRectangle(0, 0, pixelWidth, pixelHeight);
+                    bitmap = new Bitmap(pixelWidth, pixelHeight, PixelFormat.Format32bppArgb);
 
                     if (renderingMode == RenderingMode.Aliased)
                     {
 
-                        var texture = new byte[bounds.Width * bounds.Height];
+                        var texture = new byte[pixelWidth * pixelHeight];
                         runAnalysis.CreateAlphaTexture(TextureType.Aliased1x1, bounds, texture, texture.Length);
-                        for (int y = 0; y < bounds.Height; y++)
+                        for (int y = 0; y < pixelHeight; y++)
                         {
-                            for (int x = 0; x < bounds.Width; x++)
+                            for (int x = 0; x < pixelWidth; x++)
                             {
-                                int pixelX = y * bounds.Width + x;
+                                int pixelX = y * pixelWidth + x;
                                 var grey = texture[pixelX];
                                 var color = Color.FromArgb(grey, grey, grey);
 
@@ -237,13 +241,13 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
                     }
                     else
                     {
-                        var texture = new byte[bounds.Width * bounds.Height * 3];
+                        var texture = new byte[pixelWidth * pixelHeight * 3];
                         runAnalysis.CreateAlphaTexture(TextureType.Cleartype3x1, bounds, texture, texture.Length);
-                        for (int y = 0; y < bounds.Height; y++)
+                        for (int y = 0; y < pixelHeight; y++)
                         {
-                            for (int x = 0; x < bounds.Width; x++)
+                            for (int x = 0; x < pixelWidth; x++)
                             {
-                                int pixelX = (y * bounds.Width + x) * 3;
+                                int pixelX = (y * pixelWidth + x) * 3;
                                 var red = LinearToGamma(texture[pixelX]);
                                 var green = LinearToGamma(texture[pixelX + 1]);
                                 var blue = LinearToGamma(texture[pixelX + 2]);
@@ -258,9 +262,9 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
 
             var glyph = new Glyph(character, bitmap)
             {
-                XOffset = -matrix.M41,
+                XOffset = -matrix.M31,
                 XAdvance = advanceWidth,
-                YOffset = -matrix.M42,
+                YOffset = -matrix.M32,
             };
             return glyph;
         }

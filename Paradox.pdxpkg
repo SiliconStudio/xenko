@@ -35,6 +35,7 @@ TemplateFolders:
         - samples\Games\SpaceEscape\SpaceEscape.pdxtpl
         - samples\Graphics\AnimatedModel\AnimatedModel.pdxtpl
         - samples\Graphics\CustomEffect\CustomEffect.pdxtpl
+        - samples\Graphics\ForwardLighting\ForwardLighting.pdxtpl
         - samples\Graphics\GeometricPrimitives\GeometricPrimitives.pdxtpl
         - samples\Graphics\HelloWorld\HelloWorld.pdxtpl
         - samples\Graphics\MaterialSample\MaterialSample.pdxtpl

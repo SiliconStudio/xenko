@@ -341,7 +341,7 @@ namespace SiliconStudio.Paradox.Rendering
                         foreach (var collection in collectionArray)
                             WriteParameters(builder, collection, indent + 1, true);
                     }
-                    else if (usedParam.Value is Array)
+                    else if (usedParam.Value is Array || usedParam.Value is IList)
                     {
                         builder.AppendLine(string.Join(", ", (IEnumerable<object>)usedParam.Value));
                     }

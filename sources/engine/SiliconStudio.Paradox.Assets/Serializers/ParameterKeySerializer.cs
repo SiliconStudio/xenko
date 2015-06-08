@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using SharpYaml;
 using SharpYaml.Events;
 using SharpYaml.Serialization;
-using SiliconStudio.Assets;
-using SiliconStudio.Assets.Serializers;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Rendering;
 
@@ -26,9 +26,7 @@ namespace SiliconStudio.Paradox.Assets.Serializers
             var parameterKey = ParameterKeys.FindByName(fromScalar.Value);
             if (parameterKey == null)
             {
-                parameterKey = ParameterKeys.New<object>(null, fromScalar.Value);
-                // Dont' throw an exception if keys was not found
-                //throw new YamlException(fromScalar.Start, fromScalar.End, "Unable to find registered ParameterKey [{0}]".ToFormat(fromScalar.Value));
+                throw new YamlException(fromScalar.Start, fromScalar.End, "Unable to find registered ParameterKey [{0}]".ToFormat(fromScalar.Value));
             }
             return parameterKey;
         }

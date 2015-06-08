@@ -17,8 +17,6 @@
          However, that means that Tests dependencies must be compiled properly on Windows (should be the case usually).
     -->
     <SiliconStudioParadoxCompileAssetOptions>--compile-property:SolutionDir=$([System.IO.Path]::GetFullPath('$(SiliconStudioParadoxDir)'))\build\;SolutionName=Paradox;BuildProjectReferences=false</SiliconStudioParadoxCompileAssetOptions>
-
-    <SiliconStudioOpenSourceSign Condition="'$(SiliconStudioOpenSourceSign)' == '' And '$(SiliconStudioSign)' != 'true'">true</SiliconStudioOpenSourceSign>
   </PropertyGroup>
   
   <!-- On Windows, let's sign the assemblies with fake strong signing (OpenSource Signing, OSS),
