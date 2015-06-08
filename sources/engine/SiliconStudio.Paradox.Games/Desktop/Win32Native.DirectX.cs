@@ -25,8 +25,8 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
-using SharpDX;
 using SharpDX.Win32;
+using SharpDX.Mathematics.Interop;
 
 namespace SiliconStudio.Paradox.Games
 {
@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Games
     internal partial class Win32Native
     {
         [DllImport("user32.dll", EntryPoint = "GetClientRect")]
-        public static extern bool GetClientRect(IntPtr hWnd, out Rectangle lpRect);
+        public static extern bool GetClientRect(IntPtr hWnd, out RawRectangle lpRect);
 
         [DllImport("user32.dll", EntryPoint = "PeekMessage")]
         [SuppressUnmanagedCodeSecurity]

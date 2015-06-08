@@ -30,7 +30,6 @@ using System.Windows.Forms;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
-using SharpDX.Windows;
 using Point = System.Drawing.Point;
 
 namespace SiliconStudio.Paradox.Games

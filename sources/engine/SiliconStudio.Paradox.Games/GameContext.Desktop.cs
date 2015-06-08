@@ -25,8 +25,6 @@ using System;
 using System.Windows.Forms;
 using SiliconStudio.Paradox.Games.Resources;
 
-using SharpDX.Windows;
-
 namespace SiliconStudio.Paradox.Games
 {
     /// <summary>

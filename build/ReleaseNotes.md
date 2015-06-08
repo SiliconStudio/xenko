@@ -14,6 +14,7 @@ Release date: 2015/##/##
 #### Issues fixed
 - Studio: Adding a Child scene component was crashing the scene editor.
 - Studio: Entities with transparent materials could not be selected.
+- Studio: Fixed issues when reimporting and merging assets.
 - Engine: Fixed lights not being positioned relative to their parents.
 - Engine: Fixed wrong lighting after disabling and reenabling light components.
 - Engine: Fixed an exception when an object was not in the culling groups of any lights.

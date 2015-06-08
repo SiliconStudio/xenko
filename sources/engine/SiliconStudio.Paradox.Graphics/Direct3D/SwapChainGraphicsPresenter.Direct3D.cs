@@ -28,6 +28,7 @@ using System.Windows.Forms;
 #endif
 using SharpDX;
 using SharpDX.DXGI;
+using SharpDX.Mathematics.Interop;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -98,7 +99,7 @@ namespace SiliconStudio.Paradox.Graphics
 
                 try
                 {
-                    Bool isCurrentlyFullscreen;
+                    RawBool isCurrentlyFullscreen;
                     swapChain.GetFullscreenState(out isCurrentlyFullscreen, out currentOutput);
 
                     // check if the current fullscreen monitor is the same as new one
@@ -210,7 +211,7 @@ namespace SiliconStudio.Paradox.Graphics
                 var swapChain2 = swapChain.QueryInterface<SwapChain2>();
                 if (swapChain2 != null)
                 {
-                    swapChain2.MatrixTransform = Matrix3x2.Scaling(1f / swapChainPanel.CompositionScaleX, 1f / swapChainPanel.CompositionScaleY);
+                    swapChain2.MatrixTransform = new RawMatrix3x2 { M11 = 1f / swapChainPanel.CompositionScaleX, M22 = 1f / swapChainPanel.CompositionScaleY };
                     swapChain2.Dispose();
                 }
             }

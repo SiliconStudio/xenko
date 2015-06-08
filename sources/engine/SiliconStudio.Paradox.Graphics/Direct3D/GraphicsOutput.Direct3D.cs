@@ -209,12 +209,15 @@ namespace SiliconStudio.Paradox.Graphics
 
             foreach (var supportedDisplayMode in SupportedDisplayModes)
             {
-                if (supportedDisplayMode.Width == desktopBounds.Width
-                    && supportedDisplayMode.Height == desktopBounds.Height
+                var width = desktopBounds.Right - desktopBounds.Left;
+                var height = desktopBounds.Bottom - desktopBounds.Top;
+
+                if (supportedDisplayMode.Width == width
+                    && supportedDisplayMode.Height == height
                     && (Format)supportedDisplayMode.Format == format)
                 {
                     // Stupid DXGI, there is no way to get the DXGI.Format, nor the refresh rate.
-                    return new DisplayMode((PixelFormat)format, desktopBounds.Width, desktopBounds.Height, supportedDisplayMode.RefreshRate);
+                    return new DisplayMode((PixelFormat)format, width, height, supportedDisplayMode.RefreshRate);
                 }
             }
 
