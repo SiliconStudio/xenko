@@ -5,7 +5,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+using SharpYaml;
+using SharpYaml.Events;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
@@ -116,11 +117,12 @@ namespace SiliconStudio.Core.Settings
                 {
                     SettingsKey key;
                     var value = settings.Value;
+                    object finalValue = value;
                     if (SettingsKeys.TryGetValue(settings.Key, out key))
                     {
-                        value = key.ConvertValue(value);
+                        finalValue = key.ConvertValue(value);
                     }
-                    profile.SetValue(settings.Key, value);
+                    profile.SetValue(settings.Key, finalValue);
                 }
             }
             catch (Exception e)
@@ -169,11 +171,12 @@ namespace SiliconStudio.Core.Settings
                 {
                     SettingsKey key;
                     var value = settings.Value;
+                    object finalValue = value;
                     if (SettingsKeys.TryGetValue(settings.Key, out key))
                     {
-                        value = key.ConvertValue(value);
+                        finalValue = key.ConvertValue(value);
                     }
-                    profile.SetValue(settings.Key, value);
+                    profile.SetValue(settings.Key, finalValue);
                 }
             }
             catch (Exception e)
@@ -218,7 +221,17 @@ namespace SiliconStudio.Core.Settings
                 var settingsFile = new SettingsFile();
                 foreach (var entry in profile.Settings.Values)
                 {
-                    settingsFile.Settings.Add(entry.Name, entry.GetSerializableValue());
+                    try
+                    {
+                        // Find key
+                        SettingsKey key;
+                        SettingsKeys.TryGetValue(entry.Name, out key);
+
+                        settingsFile.Settings.Add(entry.Name, entry.GetSerializableValue(key));
+                    }
+                    catch (Exception)
+                    {
+                    }
                 }
 
                 using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.Write))
@@ -272,7 +285,8 @@ namespace SiliconStudio.Core.Settings
             {
                 if (profile.Settings.TryGetValue(name, out entry))
                 {
-                    var convertedValue = settingsKey.ConvertValue(entry.Value);
+                    var parsingEvents = entry.Value as List<ParsingEvent>;
+                    var convertedValue = parsingEvents != null ? settingsKey.ConvertValue(parsingEvents) : entry.Value;
                     entry = SettingsEntry.CreateFromValue(profile, name, convertedValue);
                     profile.Settings[name] = entry;
                 }

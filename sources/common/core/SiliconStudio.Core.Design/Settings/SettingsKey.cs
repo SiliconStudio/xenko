@@ -1,9 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-
+using SharpYaml.Events;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Core.Settings
@@ -44,6 +45,11 @@ namespace SiliconStudio.Core.Settings
         protected readonly object DefaultObjectValue;
 
         /// <summary>
+        /// The default value of the settings key.
+        /// </summary>
+        protected readonly Func<object> DefaultObjectValueCallback;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="SettingsKey"/> class.
         /// </summary>
         /// <param name="name">The name of this settings key. Must be unique amongst the application.</param>
@@ -55,6 +61,20 @@ namespace SiliconStudio.Core.Settings
             DefaultObjectValue = defaultValue;
             IsEditable = true;
             SettingsService.RegisterSettingsKey(name, defaultValue, this);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SettingsKey"/> class.
+        /// </summary>
+        /// <param name="name">The name of this settings key. Must be unique amongst the application.</param>
+        /// <param name="defaultValue">The default value associated to this settings key.</param>
+        protected SettingsKey(UFile name, Func<object> defaultValueCallback)
+        {
+            Name = name;
+            DisplayName = name;
+            DefaultObjectValueCallback = defaultValueCallback;
+            IsEditable = true;
+            SettingsService.RegisterSettingsKey(name, defaultValueCallback(), this);
         }
 
         /// <summary>
@@ -94,7 +114,7 @@ namespace SiliconStudio.Core.Settings
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>The converted value if the conversion is possible, the default value otherwise.</returns>
-        internal abstract object ConvertValue(object value);
+        internal abstract object ConvertValue(List<ParsingEvent> value);
 
         /// <summary>
         /// Notifes that the changes have been validated by <see cref="SettingsProfile.ValidateSettingsChanges"/>.
@@ -105,36 +125,6 @@ namespace SiliconStudio.Core.Settings
             var handler = ChangesValidated;
             if (handler != null)
                 handler(this, new ChangesValidatedEventArgs(profile));
-        }
-
-        /// <summary>
-        /// Attempts to convert an object to the given type with a <see cref="TypeConverter"/> if available, or with the <see cref="Convert"/> class otherwise.
-        /// </summary>
-        /// <typeparam name="T">The type to convert to.</typeparam>
-        /// <param name="obj">The object to convert.</param>
-        /// <param name="defaultValue">The default value to return when the conversion is not possible.</param>
-        /// <returns>The object converted to the given type if the conversion was possible, the value of <paramref name="defaultValue"/> otherwise.</returns>
-        protected static T ConvertObject<T>(object obj, T defaultValue)
-        {
-            T result;
-            try
-            {
-                TypeConverter converter = TypeDescriptor.GetConverter(typeof(T));
-                if (converter.CanConvertFrom(obj != null ? obj.GetType() : typeof(object)))
-                {
-                    // ReSharper disable once AssignNullToNotNullAttribute - It's fine to pass null here.
-                    result = (T)converter.ConvertFrom(null, CultureInfo.InvariantCulture, obj);
-                }
-                else
-                {
-                    result = (T)Convert.ChangeType(obj, typeof(T));
-                }
-            }
-            catch (Exception)
-            {
-                result = defaultValue;
-            }
-            return result;
         }
     }
 }

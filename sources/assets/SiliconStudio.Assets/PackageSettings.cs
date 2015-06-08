@@ -57,16 +57,6 @@ namespace SiliconStudio.Assets
             return key.GetValue(true, profile);
         }
 
-        public IList<T> GetOrCreateList<T>(SettingsListKey<T> key)
-        {
-            return key.GetList(true, profile, true);
-        }
-
-        public IList GetOrCreateList(SettingsListKey key)
-        {
-            return key.GetNonGenericList(true, profile, true);
-        }
-
         public void SetValue<T>(SettingsValueKey<T> key, T value)
         {
             key.SetValue(value, profile);

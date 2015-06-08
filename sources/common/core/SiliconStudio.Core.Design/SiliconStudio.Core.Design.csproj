@@ -87,12 +87,10 @@
     <Compile Include="Settings\FileModifiedEventArgs.cs" />
     <Compile Include="Settings\NamespaceDoc.cs" />
     <Compile Include="Settings\SettingsEntry.cs" />
-    <Compile Include="Settings\SettingsEntryList.cs" />
     <Compile Include="Settings\SettingsEntryValue.cs" />
     <Compile Include="Settings\SettingsFile.cs" />
     <Compile Include="Settings\SettingsFileLoadedEventArgs.cs" />
     <Compile Include="Settings\SettingsKey.cs" />
-    <Compile Include="Settings\SettingsListKey.cs" />
     <Compile Include="Settings\SettingsProfile.cs" />
     <Compile Include="Settings\SettingsService.cs" />
     <Compile Include="Settings\SettingsValueKey.cs" />

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core.Settings;
 
-namespace SiliconStudio.Presentation.Tests
+namespace SiliconStudio.Core.Design.Tests
 {
     class ValueSettingsKeys
     {
@@ -28,15 +29,15 @@ namespace SiliconStudio.Presentation.Tests
 
     class ListSettingsKeys
     {
-        public static SettingsListKey<int> IntList;
-        public static SettingsListKey<double> DoubleList;
-        public static SettingsListKey<string> StringList;
+        public static SettingsValueKey<List<int>> IntList;
+        public static SettingsValueKey<List<double>> DoubleList;
+        public static SettingsValueKey<List<string>> StringList;
 
         public static void Initialize()
         {
-            IntList = new SettingsListKey<int>("Test/Lists/IntList", Enumerable.Empty<int>());
-            DoubleList = new SettingsListKey<double>("Test/Lists/DoubleList", new[] { 2.0, 6.0, 9.0 });
-            StringList = new SettingsListKey<string>("Test/Lists/StringList", new[] { "String 1", "String 2", "String 3" });
+            IntList = new SettingsValueKey<List<int>>("Test/Lists/IntList", Enumerable.Empty<int>().ToList());
+            DoubleList = new SettingsValueKey<List<double>>("Test/Lists/DoubleList", new[] { 2.0, 6.0, 9.0 }.ToList());
+            StringList = new SettingsValueKey<List<string>>("Test/Lists/StringList", new[] { "String 1", "String 2", "String 3" }.ToList());
             Console.WriteLine(@"Static settings keys initialized (ListSettingsKeys)");
         }
     }
@@ -98,9 +99,6 @@ namespace SiliconStudio.Presentation.Tests
             ValueSettingsKeys.IntValue.ChangesValidated += (s, e) => ++settingsChangedCount[0];
             ValueSettingsKeys.DoubleValue.ChangesValidated += (s, e) => ++settingsChangedCount[0];
             ValueSettingsKeys.StringValue.ChangesValidated += (s, e) => ++settingsChangedCount[0];
-            ListSettingsKeys.IntList.ChangesValidated += (s, e) => ++settingsChangedCount[0];
-            ListSettingsKeys.DoubleList.ChangesValidated += (s, e) => ++settingsChangedCount[0];
-            ListSettingsKeys.StringList.ChangesValidated += (s, e) => ++settingsChangedCount[0];
 
             ValueSettingsKeys.IntValue.SetValue(20);
             ValueSettingsKeys.DoubleValue.SetValue(6.5);
@@ -108,44 +106,27 @@ namespace SiliconStudio.Presentation.Tests
             SettingsService.CurrentProfile.ValidateSettingsChanges();
             Assert.AreEqual(3, settingsChangedCount[0]);
             settingsChangedCount[0] = 0;
-
-            var intList = ListSettingsKeys.IntList.GetList();
-            var doubleList = ListSettingsKeys.DoubleList.GetList();
-            var stringList = ListSettingsKeys.StringList.GetList();
-
-            intList.Add(1);
-            doubleList.Remove(2.0);
-            stringList.Insert(1, "String 1.5");
-            SettingsService.CurrentProfile.ValidateSettingsChanges();
-            Assert.AreEqual(3, settingsChangedCount[0]);
-            settingsChangedCount[0] = 0;
-            
-            intList.Add(3);
-            doubleList.RemoveAt(0);
-            stringList[1] = "String 1.5 Modified";
-            SettingsService.CurrentProfile.ValidateSettingsChanges();
-            Assert.AreEqual(3, settingsChangedCount[0]);
         }
 
         [Test]
         public void TestSettingsList()
         {
             ListSettingsKeys.Initialize();
-            var intList = ListSettingsKeys.IntList.GetList();
+            var intList = ListSettingsKeys.IntList.GetValue();
             intList.Add(1);
             intList.Add(3);
-            var doubleList = ListSettingsKeys.DoubleList.GetList();
+            var doubleList = ListSettingsKeys.DoubleList.GetValue();
             doubleList.Remove(2.0);
             doubleList.RemoveAt(0);
-            var stringList = ListSettingsKeys.StringList.GetList();
+            var stringList = ListSettingsKeys.StringList.GetValue();
             stringList.Insert(1, "String 1.5");
             stringList[2] = "String 2.0";
 
-            intList = ListSettingsKeys.IntList.GetList();
+            intList = ListSettingsKeys.IntList.GetValue();
             Assert.That(intList, Is.EquivalentTo(new[] { 1, 3 }));
-            doubleList = ListSettingsKeys.DoubleList.GetList();
+            doubleList = ListSettingsKeys.DoubleList.GetValue();
             Assert.That(doubleList, Is.EquivalentTo(new[] { 9.0 }));
-            stringList = ListSettingsKeys.StringList.GetList();
+            stringList = ListSettingsKeys.StringList.GetValue();
             Assert.That(stringList, Is.EquivalentTo(new[] { "String 1", "String 1.5", "String 2.0", "String 3" }));
         }
 
@@ -160,12 +141,12 @@ namespace SiliconStudio.Presentation.Tests
             Assert.AreEqual(30, ValueSettingsKeys.IntValue.GetValue());
             Assert.AreEqual(9.1, ValueSettingsKeys.DoubleValue.GetValue());
             Assert.AreEqual("Another string", ValueSettingsKeys.StringValue.GetValue());
-           
-            var intList = ListSettingsKeys.IntList.GetList();
+
+            var intList = ListSettingsKeys.IntList.GetValue();
             Assert.That(intList, Is.EquivalentTo(new[] { 1, 3 }));
-            var doubleList = ListSettingsKeys.DoubleList.GetList();
+            var doubleList = ListSettingsKeys.DoubleList.GetValue();
             Assert.That(doubleList, Is.EquivalentTo(new[] { 9.0 }));
-            var stringList = ListSettingsKeys.StringList.GetList();
+            var stringList = ListSettingsKeys.StringList.GetValue();
             Assert.That(stringList, Is.EquivalentTo(new[] { "String 1", "String 1.5", "String 2.0", "String 3" }));
         }
 
@@ -200,11 +181,11 @@ Settings:
             Assert.AreEqual(45, ValueSettingsKeys.IntValue.GetValue());
             Assert.AreEqual(25.0, ValueSettingsKeys.DoubleValue.GetValue());
             Assert.AreEqual(new DateTime(2004, 7, 25, 18, 18, 00).ToString(CultureInfo.InvariantCulture), ValueSettingsKeys.StringValue.GetValue());
-            var intList = ListSettingsKeys.IntList.GetList();
+            var intList = ListSettingsKeys.IntList.GetValue();
             Assert.That(intList, Is.EquivalentTo(new[] { 1, 3 }));
-            var doubleList = ListSettingsKeys.DoubleList.GetList();
+            var doubleList = ListSettingsKeys.DoubleList.GetValue();
             Assert.That(doubleList, Is.EquivalentTo(new[] { 9.0 }));
-            var stringList = ListSettingsKeys.StringList.GetList();
+            var stringList = ListSettingsKeys.StringList.GetValue();
             Assert.That(stringList, Is.EquivalentTo(new[] { "String 1", "String 1.5", "String 2", "String 3" }));
         }
 
@@ -281,9 +262,9 @@ Settings:
             Assert.AreEqual(ValueSettingsKeys.IntValue.DefaultValue, ValueSettingsKeys.IntValue.GetValue());
             Assert.AreEqual(ValueSettingsKeys.DoubleValue.DefaultValue, ValueSettingsKeys.DoubleValue.GetValue());
             Assert.AreEqual(ValueSettingsKeys.StringValue.DefaultValue, ValueSettingsKeys.StringValue.GetValue());
-            var intList = ListSettingsKeys.IntList.GetList();
+            var intList = ListSettingsKeys.IntList.GetValue();
             Assert.That(intList, Is.EquivalentTo(ListSettingsKeys.IntList.DefaultValue));
-            var doubleList = ListSettingsKeys.DoubleList.GetList();
+            var doubleList = ListSettingsKeys.DoubleList.GetValue();
             Assert.That(doubleList, Is.EquivalentTo(ListSettingsKeys.DoubleList.DefaultValue));
         }
 

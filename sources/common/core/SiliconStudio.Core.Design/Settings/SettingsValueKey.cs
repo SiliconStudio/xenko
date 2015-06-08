@@ -2,9 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-
+using SharpYaml;
+using SharpYaml.Events;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Core.Settings
 {
@@ -24,13 +26,22 @@ namespace SiliconStudio.Core.Settings
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SettingsValueKey{T}"/> class.
+        /// </summary>
+        /// <param name="name">The name of this settings key. Must be unique amongst the application.</param>
+        /// <param name="defaultValueCallback">The default value callback for this settings key.</param>
+        public SettingsValueKey(UFile name, Func<object> defaultValueCallback) : base(name, defaultValueCallback)
+        {
+        }
+
         /// <inheritdoc/>
         public override Type Type { get { return typeof(T); } }
         
         /// <summary>
         /// Gets the default value of this settings key.
         /// </summary>
-        public T DefaultValue { get { return (T)DefaultObjectValue; } }
+        public T DefaultValue { get { return DefaultObjectValueCallback != null ? (T)DefaultObjectValueCallback() : (T)DefaultObjectValue; } }
 
         /// <summary>
         /// Gets or sets a function that returns an enumation of acceptable values for this <see cref="SettingsValueKey{T}"/>.
@@ -96,9 +107,19 @@ namespace SiliconStudio.Core.Settings
         }
 
         /// <inheritdoc/>
-        internal override object ConvertValue(object value)
+        internal override object ConvertValue(List<ParsingEvent> parsingEvents)
         {
-            return ConvertObject(value, DefaultValue);
+            try
+            {
+                var eventReader = new EventReader(new MemoryParser(parsingEvents));
+                return YamlSerializer.Deserialize(eventReader, Type);
+            }
+            catch (Exception)
+            {
+            }
+
+            // Can't decode back, use default value
+            return DefaultValue;
         }
     }
 }
