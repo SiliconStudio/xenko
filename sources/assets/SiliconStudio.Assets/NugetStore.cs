@@ -229,6 +229,11 @@ namespace SiliconStudio.Assets
             return LocalRepository.GetPackages().Where(p => p.Id == packageId).OrderByDescending(p => p.Version).FirstOrDefault();
         }
 
+        public IList<IPackage> GetPackagesInstalled(string packageId)
+        {
+            return LocalRepository.GetPackages().Where(p => p.Id == packageId).OrderByDescending(p => p.Version).ToArray();
+        }
+
         public static bool CheckSource(IPackageRepository repository)
         {
             try

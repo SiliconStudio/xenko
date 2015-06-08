@@ -1,9 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Globalization;
-
+using System;
+using System.Collections.Generic;
+using SharpYaml;
+using SharpYaml.Events;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Core.Settings
 {
@@ -26,9 +29,41 @@ namespace SiliconStudio.Core.Settings
         }
 
         /// <inheritdoc/>
-        internal override object GetSerializableValue()
+        internal override List<ParsingEvent> GetSerializableValue(SettingsKey key)
         {
-            return Value != null ? string.Format(CultureInfo.InvariantCulture, "{0}", Value) : null;
+            // Value might have been kept as a parsing event list (if key didn't exist)
+            var parsingEvents = Value as List<ParsingEvent>;
+            if (parsingEvents != null)
+                return parsingEvents;
+
+            if (key == null)
+                throw new InvalidOperationException();
+
+            parsingEvents = new List<ParsingEvent>();
+            YamlSerializer.Serialize(new ParsingEventListEmitter(parsingEvents), Value, key.Type);
+
+            return parsingEvents;
         }
+
+        class ParsingEventListEmitter : IEmitter
+        {
+            private readonly List<ParsingEvent> parsingEvents;
+
+            public ParsingEventListEmitter(List<ParsingEvent> parsingEvents)
+            {
+                this.parsingEvents = parsingEvents;
+            }
+
+            public void Emit(ParsingEvent @event)
+            {
+                // Ignore some events
+                if (@event is StreamStart || @event is StreamEnd
+                    || @event is DocumentStart || @event is DocumentEnd)
+                    return;
+
+                parsingEvents.Add(@event);
+            }
+        }
+
     }
 }

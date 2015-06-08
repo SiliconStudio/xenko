@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
@@ -11,8 +10,11 @@ namespace SiliconStudio.Assets
     public class PackageSettings
     {
         private const string SettingsExtension = ".pdxpkg.user";
+        private static readonly Dictionary<SettingsKey, bool> registeredKeys = new Dictionary<SettingsKey, bool>();
         private readonly Package package;
         private readonly SettingsProfile profile;
+
+        public static SettingsGroup SettingsGroup = new SettingsGroup();
 
         internal PackageSettings(Package package)
         {
@@ -20,21 +22,21 @@ namespace SiliconStudio.Assets
             this.package = package;
             if (package.FullPath == null)
             {
-                profile = SettingsService.CreateSettingsProfile(false);
+                profile = SettingsGroup.CreateSettingsProfile(false);
             }
             else
             {
                 var path = Path.Combine(package.FullPath.GetFullDirectory(), package.FullPath.GetFileName() + SettingsExtension);
                 try
                 {
-                    profile = SettingsService.LoadSettingsProfile(path, false);
+                    profile = SettingsGroup.LoadSettingsProfile(path, false);
                 }
                 catch (Exception e)
                 {
                     e.Ignore();
                 }
                 if (profile == null)
-                    profile = SettingsService.CreateSettingsProfile(false);
+                    profile = SettingsGroup.CreateSettingsProfile(false);
             }
         }
 
@@ -44,7 +46,16 @@ namespace SiliconStudio.Assets
                 return false;
 
             var path = Path.Combine(package.FullPath.GetFullDirectory(), package.FullPath.GetFileName() + SettingsExtension);
-            return SettingsService.SaveSettingsProfile(profile, path);
+            return SettingsGroup.SaveSettingsProfile(profile, path);
+        }
+
+        public SettingsProfile Profile { get { return profile; } }
+
+        public static IReadOnlyDictionary<SettingsKey, bool> RegisteredKeys { get { return registeredKeys; } }
+
+        public static void RegisterAsEditable(SettingsKey key, bool executableOnly)
+        {
+            registeredKeys[key] = executableOnly;
         }
 
         public T GetOrCreateValue<T>(SettingsValueKey<T> key)
@@ -52,14 +63,9 @@ namespace SiliconStudio.Assets
             return key.GetValue(true, profile, true);
         }
 
-        public IList<T> GetOrCreateList<T>(SettingsListKey<T> key)
+        public T GetValue<T>(SettingsValueKey<T> key)
         {
-            return key.GetList(true, profile, true);
-        }
-
-        public IList GetOrCreateList(SettingsListKey key)
-        {
-            return key.GetNonGenericList(true, profile, true);
+            return key.GetValue(true, profile);
         }
 
         public void SetValue<T>(SettingsValueKey<T> key, T value)

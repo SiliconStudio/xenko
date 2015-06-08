@@ -4,7 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
+using SharpYaml.Events;
 using SiliconStudio.ActionStack;
 using SiliconStudio.Core.IO;
 
@@ -53,24 +53,6 @@ namespace SiliconStudio.Core.Settings
         {
             if (profile == null) throw new ArgumentNullException("profile");
             if (name == null) throw new ArgumentNullException("name");
-            if (value != null)
-            {
-                Type type = value.GetType();
-                // Check if we have a list interface...
-                if (value is IList || type.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IList<>)))
-                {
-                    var listItems = (IEnumerable)value;
-                    var genericListInterface = type.GetInterfaces().FirstOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IList<>));
-                    if (genericListInterface != null)
-                    {
-                        var itemType = genericListInterface.GetGenericArguments()[0];
-                        var result = (SettingsEntry)Activator.CreateInstance(typeof(SettingsEntryList<>).MakeGenericType(itemType), profile, name, listItems);
-                        return result;
-                    }
-                    return new SettingsEntryList<object>(profile, name, listItems);
-                }
-            }
-
             return new SettingsEntryValue(profile, name, value);
         }
 
@@ -78,7 +60,7 @@ namespace SiliconStudio.Core.Settings
         /// Gets the value of this entry converted to a serializable type.
         /// </summary>
         /// <returns></returns>
-        internal abstract object GetSerializableValue();
+        internal abstract List<ParsingEvent> GetSerializableValue(SettingsKey key);
 
         private void UpdateValue(object newValue)
         {

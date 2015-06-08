@@ -37,6 +37,18 @@ namespace SiliconStudio.Core.Yaml
         /// <summary>
         /// Deserializes an object from the specified stream (expecting a YAML string).
         /// </summary>
+        /// <param name="eventReader">A YAML event reader.</param>
+        /// <param name="expectedType">The expected type.</param>
+        /// <returns>An instance of the YAML data.</returns>
+        public static object Deserialize(EventReader eventReader, Type expectedType)
+        {
+            var serializer = GetYamlSerializer(false);
+            return serializer.Deserialize(eventReader, expectedType);
+        }
+
+        /// <summary>
+        /// Deserializes an object from the specified stream (expecting a YAML string).
+        /// </summary>
         /// <param name="stream">A YAML string from a stream .</param>
         /// <returns>An instance of the YAML data.</returns>
         public static IEnumerable<T> DeserializeMultiple<T>(Stream stream)
@@ -55,6 +67,20 @@ namespace SiliconStudio.Core.Yaml
                 yield return doc;
             }
         }
+
+        /// <summary>
+        /// Serializes an object to specified stream in YAML format.
+        /// </summary>
+        /// <param name="emitter">The emitter.</param>
+        /// <param name="instance">The object to serialize.</param>
+        /// <param name="type">The type.</param>
+        /// <param name="keepOnlySealedOverrides">if set to <c>true</c> [keep only sealed overrides].</param>
+        public static void Serialize(IEmitter emitter, object instance, Type type, bool keepOnlySealedOverrides = false)
+        {
+            var serializer = GetYamlSerializer(keepOnlySealedOverrides);
+            serializer.Serialize(emitter, instance, type);
+        }
+
 
         /// <summary>
         /// Serializes an object to specified stream in YAML format.
