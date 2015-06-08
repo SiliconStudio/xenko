@@ -229,6 +229,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                         case PlatformType.Windows:
                         case PlatformType.WindowsPhone:
                         case PlatformType.WindowsStore:
+                        case PlatformType.Windows10:
                             switch (parameters.GraphicsPlatform)
                             {
                                 case GraphicsPlatform.Direct3D11:
