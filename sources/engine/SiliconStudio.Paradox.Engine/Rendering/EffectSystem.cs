@@ -402,7 +402,7 @@ namespace SiliconStudio.Paradox.Rendering
             if (needRemoteCompiler || recordEffectRequested)
             {
                 // Create the object that handles the connection
-                var shaderCompilerTarget = new ShaderCompilerTarget(packageId);
+                var shaderCompilerTarget = new RemoteEffectCompilerClient(packageId);
 
                 if (recordEffectRequested)
                 {

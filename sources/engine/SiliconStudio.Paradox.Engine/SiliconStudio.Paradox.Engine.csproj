@@ -2186,6 +2186,10 @@
     <Compile Include="Internals\LambdaReadOnlyCollection.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Engine\Network\RouterClient.cs" />
+    <Compile Include="Shaders.Compiler\RemoteEffectCompilerClient.cs" />
+    <Compile Include="Shaders.Compiler\RemoteEffectCompilerEffectAnswer.cs" />
+    <Compile Include="Shaders.Compiler\RemoteEffectCompilerEffectRequest.cs" />
+    <Compile Include="Shaders.Compiler\RemoteEffectCompilerEffectRequested.cs" />
     <Compile Include="Starter\AndroidParadoxActivity.cs" />
     <Compile Include="Engine\Processors\ScriptSystem.cs" />
     <Compile Include="Engine\Script.cs" />
