@@ -10,9 +10,9 @@ namespace SiliconStudio.Assets
     public class PackageSettings
     {
         private const string SettingsExtension = ".pdxpkg.user";
+        private static readonly Dictionary<SettingsKey, bool> registeredKeys = new Dictionary<SettingsKey, bool>();
         private readonly Package package;
         private readonly SettingsProfile profile;
-        private readonly HashSet<SettingsKey> registeredKeys = new HashSet<SettingsKey>();
 
         public static SettingsGroup SettingsGroup = new SettingsGroup();
 
@@ -49,25 +49,27 @@ namespace SiliconStudio.Assets
             return SettingsGroup.SaveSettingsProfile(profile, path);
         }
 
-        public IEnumerable<SettingsKey> RegisteredKeys { get { return registeredKeys; } }
-
         public SettingsProfile Profile { get { return profile; } }
+
+        public static IReadOnlyDictionary<SettingsKey, bool> RegisteredKeys { get { return registeredKeys; } }
+
+        public static void RegisterAsEditable(SettingsKey key, bool executableOnly)
+        {
+            registeredKeys[key] = executableOnly;
+        }
 
         public T GetOrCreateValue<T>(SettingsValueKey<T> key)
         {
-            registeredKeys.Add(key);
             return key.GetValue(true, profile, true);
         }
 
         public T GetValue<T>(SettingsValueKey<T> key)
         {
-            registeredKeys.Add(key);
             return key.GetValue(true, profile);
         }
 
         public void SetValue<T>(SettingsValueKey<T> key, T value)
         {
-            registeredKeys.Add(key);
             key.SetValue(value, profile);
         }
     }

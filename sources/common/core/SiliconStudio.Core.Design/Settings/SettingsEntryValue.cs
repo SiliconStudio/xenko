@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using SharpYaml;
 using SharpYaml.Events;
 using SiliconStudio.Core.IO;
@@ -48,7 +47,7 @@ namespace SiliconStudio.Core.Settings
 
         class ParsingEventListEmitter : IEmitter
         {
-            private List<ParsingEvent> parsingEvents;
+            private readonly List<ParsingEvent> parsingEvents;
 
             public ParsingEventListEmitter(List<ParsingEvent> parsingEvents)
             {

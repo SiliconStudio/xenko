@@ -31,7 +31,7 @@ namespace SiliconStudio.Core.Settings
         protected SettingsKey(UFile name, SettingsGroup group, object defaultValue)
         {
             Name = name;
-            DisplayName = name;
+            DisplayName = name.GetFileName();
             DefaultObjectValue = defaultValue;
             IsEditable = true;
             Group = group;

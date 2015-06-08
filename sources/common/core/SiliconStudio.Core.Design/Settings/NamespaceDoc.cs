@@ -3,7 +3,7 @@
 namespace SiliconStudio.Core.Settings
 {
     /// <summary>
-    /// The <see cref="SiliconStudio.Presentation.Settings"/> namespace contains types to handle application settings. It supports multiple
+    /// The <see cref="SiliconStudio.Core.Settings"/> namespace contains types to handle application settings. It supports multiple
     /// settings profiles, profile inheritance, profile saving and loading, and it is thread-safe. It uses YAML serialization to write settings
     /// files.
     /// </summary>
