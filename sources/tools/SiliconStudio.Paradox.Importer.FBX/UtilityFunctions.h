@@ -24,3 +24,6 @@ double FocalLengthToVerticalFov(double filmHeight, double focalLength);
 
 // operators
 FbxDouble3 operator*(double factor, FbxDouble3 vector);
+
+// string manipulation
+System::String^ ConvertToUTF8(std::string str);
