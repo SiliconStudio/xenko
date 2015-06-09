@@ -6,6 +6,7 @@ Release date: 2015/##/##
 - Platforms: Add support for iOS ARM64 and iOS simulator.
 
 #### Enhancements
+- Assets: Add `Auto` alpha format for automatic alpha detection in textures.
 - Studio: Allow to fetch a referenced entity from the property grid in the scene editor.
 - Studio: Entities can be duplicated by dragging a transformation gizmo while maintaining ctrl key down.
 - Studio: More option to manage gizmos display in the scene editor.
@@ -26,6 +27,7 @@ Release date: 2015/##/##
 - Importers: Unicode characters in model node names are correctly imported.
 
 #### Breaking changes
+- Assets: Texture default transparency mode changes from `None` to `Auto`.
 
 #### Known Issues
 - Platforms: Shaders can’t compile due to lack of a proper workflow on other platforms than Windows Desktop  (this will be fixed soon)
