@@ -29,7 +29,6 @@
     <Color x:Key="HoverColor">#FF393939</Color>
     <Color x:Key="DefaultColor">#FF9BB1C5</Color>
     <SolidColorBrush x:Key="LightBrush" Color="#FF333333" />
-    <SolidColorBrush x:Key="ShadeBrush" Color="#FF434343" />
 
     <Color x:Key="TopGradientSelectColor">#FFFFFFFF</Color>
     <Color x:Key="BottomGradientSelectColor">#FF737373</Color>
@@ -185,7 +184,7 @@
         </Setter>
     </Style>
     <Style TargetType="TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
     </Style>
 
     <Style TargetType="Hyperlink">
@@ -194,7 +193,7 @@
                 <Setter Property="Foreground" Value="{StaticResource SelectedBackgroundBrush}" />
             </Trigger>
         </Style.Triggers>
-        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="TextBlock.TextDecorations" Value="{x:Null}" />
     </Style>
     
@@ -755,7 +754,7 @@
     <Style TargetType="{x:Type ToggleButton}">
         <Setter Property="FocusVisualStyle" Value="{StaticResource NuclearButtonFocusVisual}" />
         <Setter Property="Background" Value="{StaticResource ButtonNormalBackground}" />
-        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="BorderBrush" Value="{StaticResource NormalBorderBrush}" />
         <Setter Property="Template" Value="{StaticResource SimpleToggleButtonTemplate}" />
         <Setter Property="BorderThickness" Value="0"/>
@@ -1845,7 +1844,7 @@
                                 </RepeatButton>
                                 <RepeatButton x:Name="PART_DecreaseButton" Command="{x:Static ctrl:NumericTextBox.SmallDecreaseCommand}">
                                     <Grid Margin="2,0" Background="Transparent">
-                                        <Path HorizontalAlignment="Stretch" Width="Auto" Height="Auto" Fill="{StaticResource TextBrush}" Stretch="Uniform" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M4,-2 L-4,-2 0,2 z"/>
+                                        <Path HorizontalAlignment="Stretch" Width="Auto" Height="Auto" Fill="{DynamicResource TextBrush}" Stretch="Uniform" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M4,-2 L-4,-2 0,2 z"/>
                                     </Grid>
                                 </RepeatButton>
                             </UniformGrid>
@@ -2319,6 +2318,7 @@
         </Setter>
     </Style>
     <Style TargetType="{x:Type TabControl}">
+        <Setter Property="Background" Value="{DynamicResource LightBrush}"/>
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
@@ -2355,10 +2355,10 @@
                             <RowDefinition Height="Auto" x:Name="RowDefinition0" />
                             <RowDefinition Height="*" x:Name="RowDefinition1" />
                         </Grid.RowDefinitions>
-                        <Border CornerRadius="2,2,0,0" Background="{DynamicResource LightBrush}" x:Name="border">
+                        <Border Background="{TemplateBinding Background}" x:Name="border">
                             <ItemsPresenter x:Name="HeaderPanel"/>
                         </Border>
-                        <Border x:Name="ContentPanel" Grid.Column="0" Grid.Row="1" KeyboardNavigation.DirectionalNavigation="Contained" KeyboardNavigation.TabIndex="2" KeyboardNavigation.TabNavigation="Local" Background="{DynamicResource ShadeBrush}">
+                        <Border x:Name="ContentPanel" Grid.Column="0" Grid.Row="1" KeyboardNavigation.DirectionalNavigation="Contained" KeyboardNavigation.TabIndex="2" KeyboardNavigation.TabNavigation="Local">
                             <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" x:Name="PART_SelectedContentHost" ContentSource="SelectedContent"/>
                         </Border>
                         <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" BorderThickness="0,0,0,1" Opacity="0.5" Margin="2,0,2,0" x:Name="border1">
@@ -2444,6 +2444,7 @@
     </Style>
     <Style d:IsControlPart="True" TargetType="{x:Type TabItem}">
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+        <Setter Property="Padding" Value="1" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TabItem}">
@@ -2469,7 +2470,7 @@
                             </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
                     </ControlTemplate.Resources>
-                    <Grid x:Name="grid" Margin="2,1,2,3">
+                    <Grid x:Name="grid">
                         <Grid.LayoutTransform>
                             <TransformGroup>
                                 <ScaleTransform ScaleX="1" ScaleY="1"/>
@@ -2495,8 +2496,8 @@
                                 </LinearGradientBrush>
                             </Border.Background>
                         </Border>
-                        <Grid>
-                            <ContentPresenter x:Name="ContentSite" RecognizesAccessKey="True" ContentSource="Header" d:LayoutOverrides="Width, Height" HorizontalAlignment="Center" Margin="6,1,6,1" VerticalAlignment="Center" />
+                        <Grid>                        
+                            <ContentPresenter x:Name="ContentSite" RecognizesAccessKey="True" ContentSource="Header" d:LayoutOverrides="Width, Height" HorizontalAlignment="Center" Margin="{TemplateBinding Padding}" VerticalAlignment="Center" />
                         </Grid>
                     </Grid>
                     <ControlTemplate.Triggers>
@@ -4302,42 +4303,42 @@
                         <ToolBarTray DockPanel.Dock="Top" Visibility="{Binding IsToolBarVisible, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:VisibleOrCollapsed}}">
                             <ToolBar ToolBarTray.IsLocked="True" Visibility="{Binding CanClearLog, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:VisibleOrCollapsed}}">
                                 <Button x:Name="PART_ClearLog">
-                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryDelete}"/>
+                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryDelete}"/>
                                 </Button>
                             </ToolBar>
                             <ToolBar ToolBarTray.IsLocked="True" Header="Filters:" Visibility="{Binding CanFilterLog, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:VisibleOrCollapsed}}">
                                 <ToggleButton IsChecked="{Binding ShowDebugMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}">
-                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryDebugMessage}"/>
+                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryDebugMessage}"/>
                                 </ToggleButton>
                                 <ToggleButton IsChecked="{Binding ShowVerboseMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}">
-                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryVerboseMessage}"/>
+                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryVerboseMessage}"/>
                                 </ToggleButton>
                                 <ToggleButton IsChecked="{Binding ShowInfoMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}">
-                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryInfoMessage}"/>
+                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryInfoMessage}"/>
                                 </ToggleButton>
                                 <ToggleButton IsChecked="{Binding ShowWarningMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}">
-                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryWarningMessage}"/>
+                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryWarningMessage}"/>
                                 </ToggleButton>
                                 <ToggleButton IsChecked="{Binding ShowErrorMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}">
-                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryErrorMessage}"/>
+                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryErrorMessage}"/>
                                 </ToggleButton>
                                 <ToggleButton IsChecked="{Binding ShowFatalMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}">
-                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryFatalMessage}"/>
+                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryFatalMessage}"/>
                                 </ToggleButton>
                             </ToolBar>
                             <ToolBar ToolBarTray.IsLocked="True" Header="Search:" Visibility="{Binding CanSearchLog, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:VisibleOrCollapsed}}">
                                 <ctrl:TextBox UseTimedValidation="True" Width="150" Text="{Binding SearchToken, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=OneWayToSource}" WatermarkContent="Search"/>
                                 <Button x:Name="PART_PreviousResult">
-                                    <Path Width="8" Height="8" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryPrevious}"/>
+                                    <Path Width="8" Height="8" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryPrevious}"/>
                                 </Button>
                                 <Button x:Name="PART_NextResult">
-                                    <Path Width="8" Height="8" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryNext}"/>
+                                    <Path Width="8" Height="8" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryNext}"/>
                                 </Button>
                                 <ToggleButton IsChecked="{Binding SearchMatchCase, RelativeSource={RelativeSource Mode=TemplatedParent}}">
-                                    <Path Width="16" Height="16" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryMatchCase}"/>
+                                    <Path Width="16" Height="16" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryMatchCase}"/>
                                 </ToggleButton>
                                 <ToggleButton IsChecked="{Binding SearchMatchWord, RelativeSource={RelativeSource Mode=TemplatedParent}}">
-                                    <Path Width="16" Height="16" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryMatchWord}"/>
+                                    <Path Width="16" Height="16" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryMatchWord}"/>
                                 </ToggleButton>
                             </ToolBar>
                         </ToolBarTray>
