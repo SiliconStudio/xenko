@@ -41,6 +41,8 @@ namespace SiliconStudio.Paradox.Rendering
 
         public bool HasTransparency { get; private set; }
 
+        public Matrix WorldMatrix;
+
         private readonly ParameterCollection parameters;
         private readonly FastList<ParameterCollection> parameterCollections = new FastList<ParameterCollection>();
         private EffectParameterCollectionGroup parameterCollectionGroup;
@@ -99,6 +101,8 @@ namespace SiliconStudio.Paradox.Rendering
             var material = Material;
             var vao = vertexArrayObject;
             var drawCount = currentRenderData.DrawCount;
+
+            parameters.Set(TransformationKeys.World, WorldMatrix);
 
             if (context.IsPicking()) // TODO move this code corresponding to picking outside of the runtime code!
             {

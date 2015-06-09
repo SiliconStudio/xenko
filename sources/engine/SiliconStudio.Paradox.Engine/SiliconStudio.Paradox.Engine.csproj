@@ -92,6 +92,7 @@
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketClient.cs" />
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketListener.cs" />
     <Compile Include="Rendering\Composers\DirectRenderFrameProvider.cs" />
+    <Compile Include="Rendering\CullingMode.cs" />
     <Compile Include="Shaders.Compiler\RemoteEffectCompiler.cs" />
     <Compile Include="Engine\Processors\BackgroundComponentProcessor.cs" />
     <Compile Include="Engine\AnimationComponent.cs" />
@@ -2145,7 +2146,6 @@
     <Compile Include="Rendering\EffectSystemExtensions.cs" />
     <Compile Include="Rendering\MeshAnimationUpdater.cs" />
     <Compile Include="Rendering\ModelRendererState.cs" />
-    <Compile Include="Rendering\ModelRendererExtensions.cs" />
     <Compile Include="Rendering\ProfilingKeys.cs" />
     <Compile Include="Rendering\RendererExtensions.cs" />
     <Compile Include="Engine\EntityGroup.cs" />
