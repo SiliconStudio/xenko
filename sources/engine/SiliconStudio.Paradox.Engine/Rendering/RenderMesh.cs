@@ -100,6 +100,11 @@ namespace SiliconStudio.Paradox.Rendering
             var vao = vertexArrayObject;
             var drawCount = currentRenderData.DrawCount;
 
+            // TODO: Should this be set somewhere else?
+            var sceneCameraRenderer = context.Tags.Get(SceneCameraRenderer.Current);
+            var rasterizerState = sceneCameraRenderer != null ? sceneCameraRenderer.Mode.GetDefaultRasterizerState(RenderModel.IsGeometryInverted) : null;
+            context.Parameters.Set(Effect.RasterizerStateKey, rasterizerState);
+
             if (context.IsPicking()) // TODO move this code corresponding to picking outside of the runtime code!
             {
                 parameters.Set(ModelComponentPickingShaderKeys.ModelComponentId, new Color4(RenderModel.ModelComponent.Id));
