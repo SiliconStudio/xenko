@@ -62,3 +62,13 @@ FbxDouble3 operator*(double factor, FbxDouble3 vector)
 {
 	return FbxDouble3(factor * vector[0], factor * vector[1], factor * vector[2]);
 }
+
+// string manipulation
+System::String^ ConvertToUTF8(std::string str)
+{
+	auto byteCount = str.length();
+	array<Byte>^ bytes = gcnew array<Byte>(byteCount);
+	pin_ptr<Byte> p = &bytes[0];
+	memcpy(p, str.c_str(), byteCount);
+	return System::Text::Encoding::UTF8->GetString(bytes);
+}

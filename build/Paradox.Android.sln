@@ -38,8 +38,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets", "00-Targets", 
 		..\store.config = ..\store.config
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "70-Shaders", "70-Shaders", "{10D145AF-C8AE-428F-A80F-CA1B591D0DB2}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{D2A80DA7-3C1A-4A73-BE85-0B28847EA44C}"
 	ProjectSection(SolutionItems) = preProject
 		..\sources\common\shared\SharedAssemblyInfo.cs = ..\sources\common\shared\SharedAssemblyInfo.cs
@@ -59,7 +57,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Engine", "..\sources\engine\SiliconStudio.Paradox.Engine\SiliconStudio.Paradox.Engine.csproj", "{C121A566-555E-42B9-9B0A-1696529A9088}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7F348346-8AFE-4555-A14D-2290028D7B11} = {7F348346-8AFE-4555-A14D-2290028D7B11}
-		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F} = {F2D52EDB-BC17-4243-B06D-33CD20F87A7F}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Graphics", "..\sources\engine\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj", "{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}"
@@ -82,20 +79,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Input
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.Tests.Android", "..\sources\common\core\SiliconStudio.Core.Tests\SiliconStudio.Core.Tests.Android.csproj", "{5AA408BA-E766-453E-B661-E3D7EC46E2A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Shaders", "..\sources\common\shaders\SiliconStudio.Shaders\SiliconStudio.Shaders.csproj", "{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}"
-	ProjectSection(ProjectDependencies) = postProject
-		{7F348346-8AFE-4555-A14D-2290028D7B11} = {7F348346-8AFE-4555-A14D-2290028D7B11}
-		{5210FB81-B807-49BB-AF0D-31FB6A83A572} = {5210FB81-B807-49BB-AF0D-31FB6A83A572}
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.AssemblyProcessor", "..\sources\common\core\SiliconStudio.AssemblyProcessor\SiliconStudio.AssemblyProcessor.csproj", "{7F348346-8AFE-4555-A14D-2290028D7B11}"
 	ProjectSection(ProjectDependencies) = postProject
 		{5D778003-7C87-47AC-A6C2-358CCCD8416E} = {5D778003-7C87-47AC-A6C2-358CCCD8416E}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.AssemblyProcessor.Common", "..\sources\common\core\SiliconStudio.AssemblyProcessor.Common\SiliconStudio.AssemblyProcessor.Common.csproj", "{5D778003-7C87-47AC-A6C2-358CCCD8416E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Irony", "..\sources\common\shaders\Irony\Irony.csproj", "{D81F5C91-D7DB-46E5-BC99-49488FB6814C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Games", "..\sources\engine\SiliconStudio.Paradox.Games\SiliconStudio.Paradox.Games.csproj", "{42780CBD-3FE7-48E3-BD5B-59945EA20137}"
 EndProject
@@ -120,15 +109,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.MicroThr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.IO", "..\sources\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj", "{1DE01410-22C9-489B-9796-1ADDAB1F64E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Shaders.Parser", "..\sources\engine\SiliconStudio.Paradox.Shaders.Parser\SiliconStudio.Paradox.Shaders.Parser.csproj", "{14A47447-2A24-4ECD-B24D-6571499DCD4C}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Shaders", "..\sources\engine\SiliconStudio.Paradox.Shaders\SiliconStudio.Paradox.Shaders.csproj", "{273BDD15-7392-4078-91F0-AF23594A3D7B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Audio", "..\sources\engine\SiliconStudio.Paradox.Audio\SiliconStudio.Paradox.Audio.csproj", "{DE042125-C270-4D1D-9270-0759C167567A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox", "..\sources\engine\SiliconStudio.Paradox\SiliconStudio.Paradox.csproj", "{72390339-B2A1-4F61-A800-31ED0975B515}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Shaders.Compiler", "..\sources\engine\SiliconStudio.Paradox.Shaders.Compiler\SiliconStudio.Paradox.Shaders.Compiler.csproj", "{E8B3553F-A79F-4E50-B75B-ACEE771C320C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Input", "..\sources\engine\SiliconStudio.Paradox.Input\SiliconStudio.Paradox.Input.csproj", "{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}"
 EndProject
@@ -213,18 +198,6 @@ Global
 		{5AA408BA-E766-453E-B661-E3D7EC46E2A6}.Testing|Android.ActiveCfg = Release|Android
 		{5AA408BA-E766-453E-B661-E3D7EC46E2A6}.Testing|Android.Build.0 = Release|Android
 		{5AA408BA-E766-453E-B661-E3D7EC46E2A6}.Testing|Android.Deploy.0 = Release|Android
-		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.AppStore|Android.ActiveCfg = Release|Android
-		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.AppStore|Android.Build.0 = Release|Android
-		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.AppStore|Android.Deploy.0 = Release|Android
-		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.Debug|Android.ActiveCfg = Debug|Android
-		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.Debug|Android.Build.0 = Debug|Android
-		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.Debug|Android.Deploy.0 = Debug|Android
-		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.Release|Android.ActiveCfg = Release|Android
-		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.Release|Android.Build.0 = Release|Android
-		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.Release|Android.Deploy.0 = Release|Android
-		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.Testing|Android.ActiveCfg = Release|Android
-		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.Testing|Android.Build.0 = Release|Android
-		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.Testing|Android.Deploy.0 = Release|Android
 		{7F348346-8AFE-4555-A14D-2290028D7B11}.AppStore|Android.ActiveCfg = Release|Any CPU
 		{7F348346-8AFE-4555-A14D-2290028D7B11}.AppStore|Android.Build.0 = Release|Any CPU
 		{7F348346-8AFE-4555-A14D-2290028D7B11}.Debug|Android.ActiveCfg = Debug|Any CPU
@@ -241,18 +214,6 @@ Global
 		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.Release|Android.Build.0 = Release|Any CPU
 		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.Testing|Android.ActiveCfg = Release|Any CPU
 		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.Testing|Android.Build.0 = Release|Any CPU
-		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.AppStore|Android.ActiveCfg = Release|Android
-		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.AppStore|Android.Build.0 = Release|Android
-		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.AppStore|Android.Deploy.0 = Release|Android
-		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Debug|Android.ActiveCfg = Debug|Android
-		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Debug|Android.Build.0 = Debug|Android
-		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Debug|Android.Deploy.0 = Debug|Android
-		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Release|Android.ActiveCfg = Release|Android
-		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Release|Android.Build.0 = Release|Android
-		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Release|Android.Deploy.0 = Release|Android
-		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Testing|Android.ActiveCfg = Release|Android
-		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Testing|Android.Build.0 = Release|Android
-		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Testing|Android.Deploy.0 = Release|Android
 		{42780CBD-3FE7-48E3-BD5B-59945EA20137}.AppStore|Android.ActiveCfg = Release|Android
 		{42780CBD-3FE7-48E3-BD5B-59945EA20137}.AppStore|Android.Build.0 = Release|Android
 		{42780CBD-3FE7-48E3-BD5B-59945EA20137}.AppStore|Android.Deploy.0 = Release|Android
@@ -337,18 +298,6 @@ Global
 		{1DE01410-22C9-489B-9796-1ADDAB1F64E5}.Testing|Android.ActiveCfg = Release|Android
 		{1DE01410-22C9-489B-9796-1ADDAB1F64E5}.Testing|Android.Build.0 = Release|Android
 		{1DE01410-22C9-489B-9796-1ADDAB1F64E5}.Testing|Android.Deploy.0 = Release|Android
-		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.AppStore|Android.ActiveCfg = Release|Android
-		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.AppStore|Android.Build.0 = Release|Android
-		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.AppStore|Android.Deploy.0 = Release|Android
-		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.Debug|Android.ActiveCfg = Debug|Android
-		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.Debug|Android.Build.0 = Debug|Android
-		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.Debug|Android.Deploy.0 = Debug|Android
-		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.Release|Android.ActiveCfg = Release|Android
-		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.Release|Android.Build.0 = Release|Android
-		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.Release|Android.Deploy.0 = Release|Android
-		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.Testing|Android.ActiveCfg = Release|Android
-		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.Testing|Android.Build.0 = Release|Android
-		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.Testing|Android.Deploy.0 = Release|Android
 		{273BDD15-7392-4078-91F0-AF23594A3D7B}.AppStore|Android.ActiveCfg = Release|Android
 		{273BDD15-7392-4078-91F0-AF23594A3D7B}.AppStore|Android.Build.0 = Release|Android
 		{273BDD15-7392-4078-91F0-AF23594A3D7B}.AppStore|Android.Deploy.0 = Release|Android
@@ -385,18 +334,6 @@ Global
 		{72390339-B2A1-4F61-A800-31ED0975B515}.Testing|Android.ActiveCfg = Release|Android
 		{72390339-B2A1-4F61-A800-31ED0975B515}.Testing|Android.Build.0 = Release|Android
 		{72390339-B2A1-4F61-A800-31ED0975B515}.Testing|Android.Deploy.0 = Release|Android
-		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.AppStore|Android.ActiveCfg = Release|Android
-		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.AppStore|Android.Build.0 = Release|Android
-		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.AppStore|Android.Deploy.0 = Release|Android
-		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.Debug|Android.ActiveCfg = Debug|Android
-		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.Debug|Android.Build.0 = Debug|Android
-		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.Debug|Android.Deploy.0 = Debug|Android
-		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.Release|Android.ActiveCfg = Release|Android
-		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.Release|Android.Build.0 = Release|Android
-		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.Release|Android.Deploy.0 = Release|Android
-		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.Testing|Android.ActiveCfg = Release|Android
-		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.Testing|Android.Build.0 = Release|Android
-		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.Testing|Android.Deploy.0 = Release|Android
 		{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}.AppStore|Android.ActiveCfg = Release|Android
 		{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}.AppStore|Android.Build.0 = Release|Android
 		{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}.AppStore|Android.Deploy.0 = Release|Android
@@ -480,10 +417,8 @@ Global
 		{A8F8D125-7A22-489F-99BC-9A02F545A17F} = {4C142567-C42B-40F5-B092-798882190209}
 		{01700344-CF44-482C-BEBC-60213B0F844C} = {4C142567-C42B-40F5-B092-798882190209}
 		{5AA408BA-E766-453E-B661-E3D7EC46E2A6} = {2E93E2B5-4500-4E47-9B65-E705218AB578}
-		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F} = {10D145AF-C8AE-428F-A80F-CA1B591D0DB2}
 		{7F348346-8AFE-4555-A14D-2290028D7B11} = {2E93E2B5-4500-4E47-9B65-E705218AB578}
 		{5D778003-7C87-47AC-A6C2-358CCCD8416E} = {2E93E2B5-4500-4E47-9B65-E705218AB578}
-		{D81F5C91-D7DB-46E5-BC99-49488FB6814C} = {10D145AF-C8AE-428F-A80F-CA1B591D0DB2}
 		{42780CBD-3FE7-48E3-BD5B-59945EA20137} = {4C142567-C42B-40F5-B092-798882190209}
 		{7AF4B563-AAD3-42FF-B91E-84B9D34D904A} = {4C142567-C42B-40F5-B092-798882190209}
 		{0E916AB7-5A6C-4820-8AB1-AA492FE66D68} = {2E93E2B5-4500-4E47-9B65-E705218AB578}
@@ -491,11 +426,9 @@ Global
 		{5210FB81-B807-49BB-AF0D-31FB6A83A572} = {2E93E2B5-4500-4E47-9B65-E705218AB578}
 		{1320F627-EE43-4115-8E89-19D1753E51F2} = {2E93E2B5-4500-4E47-9B65-E705218AB578}
 		{1DE01410-22C9-489B-9796-1ADDAB1F64E5} = {2E93E2B5-4500-4E47-9B65-E705218AB578}
-		{14A47447-2A24-4ECD-B24D-6571499DCD4C} = {4C142567-C42B-40F5-B092-798882190209}
 		{273BDD15-7392-4078-91F0-AF23594A3D7B} = {4C142567-C42B-40F5-B092-798882190209}
 		{DE042125-C270-4D1D-9270-0759C167567A} = {4C142567-C42B-40F5-B092-798882190209}
 		{72390339-B2A1-4F61-A800-31ED0975B515} = {4C142567-C42B-40F5-B092-798882190209}
-		{E8B3553F-A79F-4E50-B75B-ACEE771C320C} = {4C142567-C42B-40F5-B092-798882190209}
 		{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E} = {4C142567-C42B-40F5-B092-798882190209}
 		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC} = {4C142567-C42B-40F5-B092-798882190209}
 		{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3} = {4C142567-C42B-40F5-B092-798882190209}

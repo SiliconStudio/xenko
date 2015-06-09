@@ -1,38 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.ComponentModel;
-using System.Globalization;
-
+using System.Collections.Generic;
+using SharpYaml.Events;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Core.Settings
 {
-    /// <summary>
-    /// Arguments of the <see cref="SettingsKey.ChangesValidated"/> event.
-    /// </summary>
-    public class ChangesValidatedEventArgs : EventArgs
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChangesValidatedEventArgs"/> class.
-        /// </summary>
-        /// <param name="profile">The profile in which changes have been validated.</param>
-        public ChangesValidatedEventArgs(SettingsProfile profile)
-        {
-            Profile = profile;
-        }
-
-        /// <summary>
-        /// Gets the <see cref="SettingsProfile"/> in which changes have been validated.
-        /// </summary>
-        public SettingsProfile Profile { get; private set; }
-
-        /// <summary>
-        /// Gets whether the profile in which changes have been validated is the current profile or not. 
-        /// </summary>
-        public bool IsCurrentProfile { get { return Profile == SettingsService.CurrentProfile; } }
-    }
-
     /// <summary>
     /// This class represents property to store in the settings that is identified by a key.
     /// </summary>
@@ -44,17 +18,38 @@ namespace SiliconStudio.Core.Settings
         protected readonly object DefaultObjectValue;
 
         /// <summary>
+        /// The default value of the settings key.
+        /// </summary>
+        protected readonly Func<object> DefaultObjectValueCallback;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="SettingsKey"/> class.
         /// </summary>
         /// <param name="name">The name of this settings key. Must be unique amongst the application.</param>
+        /// <param name="group">The <see cref="SettingsGroup"/> containing this <see cref="SettingsKey"/>.</param>
         /// <param name="defaultValue">The default value associated to this settings key.</param>
-        protected SettingsKey(UFile name, object defaultValue)
+        protected SettingsKey(UFile name, SettingsGroup group, object defaultValue)
+        {
+            Name = name;
+            DisplayName = name.GetFileName();
+            DefaultObjectValue = defaultValue;
+            Group = group;
+            Group.RegisterSettingsKey(name, defaultValue, this);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SettingsKey"/> class.
+        /// </summary>
+        /// <param name="name">The name of this settings key. Must be unique amongst the application.</param>
+        /// <param name="group">The <see cref="SettingsGroup"/> containing this <see cref="SettingsKey"/>.</param>
+        /// <param name="defaultValueCallback">A function that returns the default value associated to this settings key.</param>
+        protected SettingsKey(UFile name, SettingsGroup group, Func<object> defaultValueCallback)
         {
             Name = name;
             DisplayName = name;
-            DefaultObjectValue = defaultValue;
-            IsEditable = true;
-            SettingsService.RegisterSettingsKey(name, defaultValue, this);
+            DefaultObjectValueCallback = defaultValueCallback;
+            Group = group;
+            Group.RegisterSettingsKey(name, defaultValueCallback(), this);
         }
 
         /// <summary>
@@ -68,9 +63,9 @@ namespace SiliconStudio.Core.Settings
         public abstract Type Type { get; }
 
         /// <summary>
-        /// Gets or sets whether this <see cref="SettingsKey"/> is editable by users.
+        /// Gets the <see cref="SettingsGroup"/> containing this <see cref="SettingsKey"/>.
         /// </summary>
-        public bool IsEditable { get; set; }
+        public SettingsGroup Group { get; private set; }
 
         /// <summary>
         /// Gets or sets the display name of the <see cref="SettingsKey"/>.
@@ -94,7 +89,7 @@ namespace SiliconStudio.Core.Settings
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>The converted value if the conversion is possible, the default value otherwise.</returns>
-        internal abstract object ConvertValue(object value);
+        internal abstract object ConvertValue(List<ParsingEvent> value);
 
         /// <summary>
         /// Notifes that the changes have been validated by <see cref="SettingsProfile.ValidateSettingsChanges"/>.
@@ -105,36 +100,6 @@ namespace SiliconStudio.Core.Settings
             var handler = ChangesValidated;
             if (handler != null)
                 handler(this, new ChangesValidatedEventArgs(profile));
-        }
-
-        /// <summary>
-        /// Attempts to convert an object to the given type with a <see cref="TypeConverter"/> if available, or with the <see cref="Convert"/> class otherwise.
-        /// </summary>
-        /// <typeparam name="T">The type to convert to.</typeparam>
-        /// <param name="obj">The object to convert.</param>
-        /// <param name="defaultValue">The default value to return when the conversion is not possible.</param>
-        /// <returns>The object converted to the given type if the conversion was possible, the value of <paramref name="defaultValue"/> otherwise.</returns>
-        protected static T ConvertObject<T>(object obj, T defaultValue)
-        {
-            T result;
-            try
-            {
-                TypeConverter converter = TypeDescriptor.GetConverter(typeof(T));
-                if (converter.CanConvertFrom(obj != null ? obj.GetType() : typeof(object)))
-                {
-                    // ReSharper disable once AssignNullToNotNullAttribute - It's fine to pass null here.
-                    result = (T)converter.ConvertFrom(null, CultureInfo.InvariantCulture, obj);
-                }
-                else
-                {
-                    result = (T)Convert.ChangeType(obj, typeof(T));
-                }
-            }
-            catch (Exception)
-            {
-                result = defaultValue;
-            }
-            return result;
         }
     }
 }

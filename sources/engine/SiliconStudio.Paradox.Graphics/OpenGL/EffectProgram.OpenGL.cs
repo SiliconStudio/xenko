@@ -473,6 +473,10 @@ namespace SiliconStudio.Paradox.Graphics
 
                 int textureUnitCount = 0;
 
+                const int sbCapacity = 128;
+                int length;
+                var sb = new StringBuilder(sbCapacity);
+
                 for (int activeUniformIndex = 0; activeUniformIndex < activeUniformCount; ++activeUniformIndex)
                 {
 #if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
@@ -481,7 +485,8 @@ namespace SiliconStudio.Paradox.Graphics
 #else
                     ActiveUniformType uniformType;
                     int uniformCount;
-                    var uniformName = GL.GetActiveUniform(resourceId, activeUniformIndex, out uniformCount, out uniformType);
+                    GL.GetActiveUniform(resourceId, activeUniformIndex, sbCapacity, out length, out uniformCount, out uniformType, sb);
+                    var uniformName = sb.ToString();
                     //int uniformSize;
                     //GL.GetActiveUniform(resourceId, activeUniformIndex, out uniformSize, ActiveUniformType.Float);
 #endif

@@ -77,7 +77,7 @@ namespace SiliconStudio.Paradox.Games
 
             // Transmit requested back buffer and depth stencil formats to OpenTK
             paradoxGameForm.RequestedBackBufferFormat = gameContext.RequestedBackBufferFormat;
-            paradoxGameForm.RequestedDepthStencilFormat = gameContext.RequestedDepthStencilFormat;
+            paradoxGameForm.RequestedDepthStencilFormat = PixelFormat.None;
             paradoxGameForm.RequestedGraphicsProfile = gameContext.RequestedGraphicsProfile;
 
             paradoxGameForm.Size = new Size(width, height);
