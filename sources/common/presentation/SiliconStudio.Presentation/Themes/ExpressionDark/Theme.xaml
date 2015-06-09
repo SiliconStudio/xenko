@@ -2319,6 +2319,30 @@
         </Setter>
     </Style>
     <Style TargetType="{x:Type TabControl}">
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <TabPanel IsItemsHost="true" Panel.ZIndex="1" KeyboardNavigation.TabIndex="1" RenderTransformOrigin="0.5,0.5" Width="Auto" Height="Auto">
+                        <TabPanel.LayoutTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="1" ScaleY="1" />
+                                <SkewTransform AngleX="0" AngleY="0" />
+                                <RotateTransform Angle="0" />
+                                <TranslateTransform X="0" Y="0" />
+                            </TransformGroup>
+                        </TabPanel.LayoutTransform>
+                        <TabPanel.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="1" ScaleY="1" />
+                                <SkewTransform AngleX="0" AngleY="0" />
+                                <RotateTransform />
+                                <TranslateTransform X="0" Y="0" />
+                            </TransformGroup>
+                        </TabPanel.RenderTransform>
+                    </TabPanel>
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TabControl}">
@@ -2332,30 +2356,12 @@
                             <RowDefinition Height="*" x:Name="RowDefinition1" />
                         </Grid.RowDefinitions>
                         <Border CornerRadius="2,2,0,0" Background="{DynamicResource LightBrush}" x:Name="border">
-                            <TabPanel x:Name="HeaderPanel" IsItemsHost="true" Panel.ZIndex="1" KeyboardNavigation.TabIndex="1" RenderTransformOrigin="0.5,0.5" Width="Auto" Height="Auto">
-                                <TabPanel.LayoutTransform>
-                                    <TransformGroup>
-                                        <ScaleTransform ScaleX="1" ScaleY="1" />
-                                        <SkewTransform AngleX="0" AngleY="0" />
-                                        <RotateTransform Angle="0" />
-                                        <TranslateTransform X="0" Y="0" />
-                                    </TransformGroup>
-                                </TabPanel.LayoutTransform>
-                                <TabPanel.RenderTransform>
-                                    <TransformGroup>
-                                        <ScaleTransform ScaleX="1" ScaleY="1" />
-                                        <SkewTransform AngleX="0" AngleY="0" />
-                                        <RotateTransform />
-                                        <TranslateTransform X="0" Y="0" />
-                                    </TransformGroup>
-                                </TabPanel.RenderTransform>
-
-                            </TabPanel>
+                            <ItemsPresenter x:Name="HeaderPanel"/>
                         </Border>
-                        <Border x:Name="ContentPanel" Grid.Column="0" Grid.Row="1" KeyboardNavigation.DirectionalNavigation="Contained" KeyboardNavigation.TabIndex="2" KeyboardNavigation.TabNavigation="Local" Background="{DynamicResource ShadeBrush}" CornerRadius="0,0,2,2">
-                            <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" />
+                        <Border x:Name="ContentPanel" Grid.Column="0" Grid.Row="1" KeyboardNavigation.DirectionalNavigation="Contained" KeyboardNavigation.TabIndex="2" KeyboardNavigation.TabNavigation="Local" Background="{DynamicResource ShadeBrush}">
+                            <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" x:Name="PART_SelectedContentHost" ContentSource="SelectedContent"/>
                         </Border>
-                        <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" BorderThickness="0,0,0,1" CornerRadius="10,0,0,0" Opacity="0.5" Margin="2,0,2,0" x:Name="border1">
+                        <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" BorderThickness="0,0,0,1" Opacity="0.5" Margin="2,0,2,0" x:Name="border1">
                             <Border.LayoutTransform>
                                 <TransformGroup>
                                     <ScaleTransform ScaleX="1" ScaleY="1"/>
@@ -2472,7 +2478,7 @@
                                 <TranslateTransform X="0" Y="0"/>
                             </TransformGroup>
                         </Grid.LayoutTransform>
-                        <Border x:Name="border" BorderBrush="{x:Null}" CornerRadius="2,2,2,2" Opacity="0.5">
+                        <Border x:Name="border" BorderBrush="{x:Null}" Opacity="0.5">
                             <Border.Background>
                                 <LinearGradientBrush EndPoint="0.5,0.976" StartPoint="0.5,0.039">
                                     <GradientStop Color="#7F595959" Offset="0" />
@@ -2480,8 +2486,8 @@
                                 </LinearGradientBrush>
                             </Border.Background>
                         </Border>
-                        <Border x:Name="SelectedBorder" BorderBrush="{x:Null}" CornerRadius="2,2,2,2" Opacity="0" Background="{DynamicResource SelectedBackgroundBrush}"/>
-                        <Border x:Name="HoverBorder" BorderBrush="{x:Null}" CornerRadius="2,2,2,2" Opacity="0">
+                        <Border x:Name="SelectedBorder" BorderBrush="{x:Null}" Opacity="0" Background="{DynamicResource SelectedBackgroundBrush}"/>
+                        <Border x:Name="HoverBorder" BorderBrush="{x:Null}" Opacity="0">
                             <Border.Background>
                                 <LinearGradientBrush EndPoint="0.5,0.976" StartPoint="0.5,0.039">
                                     <GradientStop Color="#7F595959" Offset="0" />
