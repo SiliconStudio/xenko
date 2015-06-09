@@ -16,6 +16,8 @@ namespace SiliconStudio.Paradox.ConnectionRouter
     {
         private static string IpOverUsbParadoxName = "ParadoxRouterServer";
 
+        private static bool ConsoleVisible = false;
+
         static int Main(string[] args)
         {
             var exeName = Path.GetFileName(Assembly.GetExecutingAssembly().Location);
@@ -63,10 +65,6 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                 }
 
                 SetupTrayIcon(logFileName);
-
-                // Enable console logging
-                var consoleLogListener = new ConsoleLogListener { LogMode = ConsoleLogMode.Always };
-                GlobalLogger.GlobalMessageLogged += consoleLogListener;
 
                 // Enable file logging
                 if (!string.IsNullOrEmpty(logFileName))
@@ -138,7 +136,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             }
 
             var openConsoleMenuItem = new System.Windows.Forms.MenuItem("Open Console");
-            openConsoleMenuItem.Click += (sender, args) => OnOpenConsoleClick();
+            openConsoleMenuItem.Click += (sender, args) => OnOpenConsoleClick((System.Windows.Forms.MenuItem)sender);
             notifyIcon.ContextMenu.MenuItems.Add(openConsoleMenuItem);
 
             var exitMenuItem = new System.Windows.Forms.MenuItem("E&xit");
@@ -178,9 +176,21 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             };
         }
 
-        private static void OnOpenConsoleClick()
+        private static void OnOpenConsoleClick(System.Windows.Forms.MenuItem menuItem)
         {
+            menuItem.Enabled = false;
+
+            // Check if not already done
+            if (ConsoleVisible)
+                return;
+            ConsoleVisible = true;
+
+            // Show console
             ConsoleLogListener.ShowConsole();
+
+            // Enable console logging
+            var consoleLogListener = new ConsoleLogListener { LogMode = ConsoleLogMode.Always };
+            GlobalLogger.GlobalMessageLogged += consoleLogListener;
         }
 
         private static void OnShowLogClick(string logFileName)
