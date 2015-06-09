@@ -216,17 +216,12 @@ namespace SiliconStudio.Paradox.Rendering
 
                 var meshes = PrepareModelForRendering(context, renderModel);
 
-                var rasterizerState = sceneCameraRenderer != null ? sceneCameraRenderer.Mode.GetDefaultRasterizerState(meshes.IsGeomertyInverted) : null;
-
                 foreach (var renderMesh in meshes)
                 {
                     if (!renderMesh.Enabled)
                     {
                         continue;
                     }
-
-                    // TODO: Should this be set somewhere else, since it prevents users from overriding?
-                    renderMesh.Parameters.Set(Effect.RasterizerStateKey, rasterizerState);
 
                     var worldMatrix = renderMesh.WorldMatrix;
 
@@ -348,7 +343,7 @@ namespace SiliconStudio.Paradox.Rendering
             }
         }
 
-        private RenderMeshCollection PrepareModelForRendering(RenderContext context, RenderModel renderModel)
+        private List<RenderMesh> PrepareModelForRendering(RenderContext context, RenderModel renderModel)
         {
             // Create the list of RenderMesh objects
             var renderMeshes = renderModel.RenderMeshesList[modelRenderSlot];
