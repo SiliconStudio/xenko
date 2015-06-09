@@ -22,6 +22,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// </summary>
         public PlaneProceduralModel()
         {
+            Normal = NormalDirection.UpY;
             Size = new Vector2(1.0f);
             Tessellation = new Int2(1);
             UVScales = new Vector2(1);
@@ -59,9 +60,9 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
 
 
         [DataMember(40)]
-        [DefaultValue(GeometricPrimitive.Plane.NormalDirection.UpZ)]
+        [DefaultValue(NormalDirection.UpZ)]
         [Display("Normal")]
-        public GeometricPrimitive.Plane.NormalDirection Normal { get; set; }
+        public NormalDirection Normal { get; set; }
 
 
         /// <summary>
