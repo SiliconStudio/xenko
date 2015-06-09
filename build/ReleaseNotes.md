@@ -7,6 +7,7 @@ Release date: 2015/##/##
 
 #### Enhancements
 - Assets: Add `Auto` alpha format for automatic alpha detection in textures.
+- Assets: Add the possibility to change the orientation of the plane procedural model.
 - Studio: Allow to fetch a referenced entity from the property grid in the scene editor.
 - Studio: Entities can be duplicated by dragging a transformation gizmo while maintaining ctrl key down.
 - Studio: More option to manage gizmos display in the scene editor.

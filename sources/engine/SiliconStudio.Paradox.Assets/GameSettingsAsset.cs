@@ -120,8 +120,8 @@ namespace SiliconStudio.Paradox.Assets
             result.PackageId = package.Id;
 
             // Save some package user settings
-            result.EffectCompilationMode = package.Settings.GetValue(GameUserSettings.Effect.EffectCompilationMode);
-            result.RecordEffectRequested = package.Settings.GetValue(GameUserSettings.Effect.RecordEffectRequested);
+            result.EffectCompilation = package.Settings.GetValue(GameUserSettings.Effect.EffectCompilation);
+            result.RecordUsedEffects = package.Settings.GetValue(GameUserSettings.Effect.RecordUsedEffects);
 
             return result;
         }

@@ -2299,12 +2299,12 @@ namespace SiliconStudio.Paradox.Graphics
 
             // Extract FBO render target
             int renderTargetTextureId;
-            GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
+            GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
             windowProvidedRenderTexture.resourceId = renderTargetTextureId;
             windowProvidedRenderTexture.Reload = (graphicsResource) => { };
 
             // Extract FBO depth target
-            GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferSlot.DepthAttachment, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
+            GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
             //windowProvidedDepthTexture.resourceId = renderTargetTextureId;
             //windowProvidedDepthTexture.Reload = (graphicsResource) => { };
 
