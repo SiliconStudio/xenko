@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using SiliconStudio.Assets;
+using SiliconStudio.Paradox.GameStudio.Plugin.Debugging;
 
 namespace SiliconStudio.Paradox.ConnectionRouter
 {
@@ -55,7 +56,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             return null;
         }
 
-        public static bool EnsureRouterLaunched()
+        public static bool EnsureRouterLaunched(bool attachChildJob = false)
         {
             try
             {
@@ -113,9 +114,15 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                 }
 
                 // Start new router process
-                Process.Start(routerAssemblyFile);
+                var spawnedRouterProcess = Process.Start(routerAssemblyFile);
 
-                return true;
+                // If we are in "developer" mode, attach job so that it gets killed with editor
+                if (attachChildJob && spawnedRouterProcess != null)
+                {
+                    new AttachedChildProcessJob(spawnedRouterProcess);
+                }
+
+                return spawnedRouterProcess != null;
             }
             catch
             {
