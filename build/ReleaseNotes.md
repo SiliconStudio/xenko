@@ -25,11 +25,14 @@ Release date: 2015/##/##
 - Engine: Models with negative scaling did not have their faces inverted.
 - Engine: Fixed an issue where cloning an entity with AnimationComponent would cause crashes.
 - Engine: Restored frustum culling.
+- Engine: Fixed an issue when rendering shadow maps from a child renderer
 - Sample: Fixed Forward Lighting sample.
 - Shaders: Directional shadow maps were requiring Shader Model 5.0. ([#222](https://github.com/SiliconStudio/paradox/issues/222)).
 - Importers: Unicode characters in model node names are correctly imported.
 
 #### Breaking changes
+- Engine: The `CameraComponent` is now using the aspect ratio of current viewport by default. This can be changed with `CameraComponent.UseCustomAspectRatio`.
+- Graphics: `GraphicsDevice.BackBuffer` and `Graphics.DepthStencilBuffer` are now returning the current back buffer and depth stencil buffer bound to the `GraphicsDevice`, instead of the BackBuffer/DepthStencilBuffer of the screen (eg. `GraphicsDevice.Presenter.BackBuffer`).
 
 #### Known Issues
 - Platforms: Shaders can’t compile due to lack of a proper workflow on other platforms than Windows Desktop  (this will be fixed soon)
