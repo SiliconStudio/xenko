@@ -191,6 +191,10 @@ namespace SiliconStudio.Paradox.Rendering
             var viewProjectionMatrix = camera.ViewProjectionMatrix;
             var preRenderModel = Callbacks.PreRenderModel;
 
+            var sceneCameraRenderer = context.Tags.Get(SceneCameraRenderer.Current);
+            var cullingMode = sceneCameraRenderer != null ? sceneCameraRenderer.CullingMode : CullingMode.None;
+            var frustum = new BoundingFrustum(ref viewProjectionMatrix);
+
             foreach (var renderModel in renderModels)
             {
                 // If Model is null, then skip it
@@ -219,9 +223,29 @@ namespace SiliconStudio.Paradox.Rendering
                         continue;
                     }
 
+                    var worldMatrix = renderMesh.WorldMatrix;
+
+                    // Perform frustum culling
+                    if (cullingMode == CullingMode.Frustum)
+                    {
+                        // Always render meshes with unspecified bounds
+                        // TODO: This should not be necessary. Add proper bounding boxes to gizmos etc.
+                        var boundingBox = renderMesh.Mesh.BoundingBox;
+                        if (boundingBox.Extent == Vector3.Zero)
+                        {
+                            // Fast AABB transform: http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
+                            // Compute transformed AABB (by world)
+                            var boundingBoxExt = new BoundingBoxExt(boundingBox);
+                            boundingBoxExt.Transform(worldMatrix);
+
+                            if (!frustum.Contains(ref boundingBoxExt))
+                                continue;
+                        }
+                    }
+
                     // Project the position
                     // TODO: This could be done in a SIMD batch, but we need to figure-out how to plugin in with RenderMesh object
-                    var worldPosition = new Vector4(renderMesh.Parameters.Get(TransformationKeys.World).TranslationVector, 1.0f);
+                    var worldPosition = new Vector4(worldMatrix.TranslationVector, 1.0f);
                     Vector4 projectedPosition;
                     Vector4.Transform(ref worldPosition, ref viewProjectionMatrix, out projectedPosition);
                     var projectedZ = projectedPosition.Z / projectedPosition.W;
