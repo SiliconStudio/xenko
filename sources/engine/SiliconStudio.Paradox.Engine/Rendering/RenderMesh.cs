@@ -39,6 +39,11 @@ namespace SiliconStudio.Paradox.Rendering
 
         public bool IsShadowReceiver;
 
+        /// <summary>
+        /// A Rasterizer state setup before <see cref="Draw"/> when rendering this mesh.
+        /// </summary>
+        public RasterizerState RasterizerState;
+
         public bool HasTransparency { get; private set; }
 
         public Matrix WorldMatrix;
@@ -104,10 +109,8 @@ namespace SiliconStudio.Paradox.Rendering
 
             parameters.Set(TransformationKeys.World, WorldMatrix);
 
-            // TODO: Should this be set somewhere else?
-            var sceneCameraRenderer = context.Tags.Get(SceneCameraRenderer.Current);
-            var rasterizerState = sceneCameraRenderer != null ? sceneCameraRenderer.Mode.GetDefaultRasterizerState(RenderModel.IsGeometryInverted) : null;
-            context.Parameters.Set(Effect.RasterizerStateKey, rasterizerState);
+            // TODO: We should clarify exactly how to override rasterizer states. Currently setup here on Context.Parameters to allow Material/ModelComponent overrides, but this is ugly
+            context.Parameters.Set(Effect.RasterizerStateKey, RasterizerState);
 
             if (context.IsPicking()) // TODO move this code corresponding to picking outside of the runtime code!
             {

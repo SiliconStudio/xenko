@@ -116,6 +116,12 @@ namespace SiliconStudio.Paradox.Rendering
         /// <value>The custom render model list.</value>
         public List<RenderModel> CustomRenderModelList { get; private set; }
 
+        /// <summary>
+        /// Gets or sets the state of the rasterizer to overrides the default one.
+        /// </summary>
+        /// <value>The state of the rasterizer.</value>
+        public RasterizerState RasterizerState { get; set; }
+
         public DynamicEffectCompiler DynamicEffectCompiler
         {
             get
@@ -195,6 +201,8 @@ namespace SiliconStudio.Paradox.Rendering
             var cullingMode = sceneCameraRenderer != null ? sceneCameraRenderer.CullingMode : CullingMode.None;
             var frustum = new BoundingFrustum(ref viewProjectionMatrix);
 
+            var cameraRenderMode = sceneCameraRenderer != null ? sceneCameraRenderer.Mode : null;
+
             foreach (var renderModel in renderModels)
             {
                 // If Model is null, then skip it
@@ -249,6 +257,10 @@ namespace SiliconStudio.Paradox.Rendering
                     Vector4 projectedPosition;
                     Vector4.Transform(ref worldPosition, ref viewProjectionMatrix, out projectedPosition);
                     var projectedZ = projectedPosition.Z / projectedPosition.W;
+
+                    // TODO: Should this be set somewhere else?
+                    var rasterizerState = cameraRenderMode != null ? cameraRenderMode.GetDefaultRasterizerState(renderMesh.RenderModel.IsGeometryInverted) : null;
+                    renderMesh.RasterizerState = RasterizerState ?? rasterizerState;
 
                     renderMesh.UpdateMaterial();
                     var list = renderMesh.HasTransparency ? transparentList : opaqueList;
