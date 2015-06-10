@@ -165,7 +165,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                 }
 
                 // Display notification (for one second)
-                notifyIcon.ShowBalloonTip(2000, logMessage.Module, string.Format("{0}: {1}", logMessage.Type, logMessage.Text), toolTipIcon);
+                notifyIcon.ShowBalloonTip(2000, "Paradox Connection Router", logMessage.ToString(), toolTipIcon);
             };
 
             System.Windows.Forms.Application.ApplicationExit += (sender, e) =>
