@@ -32,6 +32,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             var dice = Asset.Load<Entity>("Cube/cube");
 
             var cameraComp = Camera.Get<CameraComponent>();
+            cameraComp.UseCustomAspectRatio = true;
             cameraComp.AspectRatio = 1;
             cameraComp.FarClipPlane = 100;
             cameraComp.NearClipPlane = 0.1f;
