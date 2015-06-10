@@ -208,6 +208,12 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
             shadowMapTextures.Clear();
             LightComponentsWithShadows.Clear();
 
+            // Shadows are currently disabled on Android, Windows Phone and iOS
+            if (Platform.Type == PlatformType.Android || Platform.Type == PlatformType.WindowsPhone || Platform.Type == PlatformType.iOS)
+            {
+                return;
+            }
+
             // Collect all required shadow maps
             CollectShadowMaps();
 

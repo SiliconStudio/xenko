@@ -44,6 +44,7 @@ Release date: 2015/##/##
 - Studio: Renaming default scene won’t properly update reference. Please set again the reference in project properties.
 - Studio: DDS images cannot be viewed in the Sprite editor
 - Studio: Collections in assets properties cannot be edited nor displayed in multi-selection
+- Engine: Shadows are currently not supported on mobile platforms
 
 ### Version 1.1.2-beta
 
