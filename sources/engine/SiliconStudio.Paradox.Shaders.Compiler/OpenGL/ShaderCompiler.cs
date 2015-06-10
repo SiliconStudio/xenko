@@ -137,7 +137,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
             // null entry point for pixel shader means no pixel shader. In that case, we return a default function.
             if (entryPoint == null && stage == ShaderStage.Pixel && isOpenGLES)
             {
-                shaderString = "void main(){}";
+                shaderString = "out float fragmentdepth; void main(){ fragmentdepth = gl_FragCoord.z; }";
             }
             else
             {
