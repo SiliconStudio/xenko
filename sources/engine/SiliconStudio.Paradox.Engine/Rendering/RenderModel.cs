@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Processors;
@@ -40,7 +41,11 @@ namespace SiliconStudio.Paradox.Rendering
 
         internal void Update()
         {
-            var scale = TransformComponent.WorldMatrix.ScaleVector;
+            Vector3 scale;
+            Vector3 translation;
+            Quaternion rotation;
+
+            TransformComponent.WorldMatrix.Decompose(out scale, out rotation, out translation);
             IsGeometryInverted = scale.X * scale.Y * scale.Z < 0;
 
             Group = Entity.Group;
