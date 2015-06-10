@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-
+using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Storage;
@@ -171,7 +171,9 @@ namespace SiliconStudio.Paradox.Rendering.Lights
                 modelRenderer.Callbacks.PreRenderMesh += PreRenderMesh;
 
                 // TODO: Make this pluggable
-                if (context.GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0)
+                // TODO: Shadows should work on mobile platforms
+                if (context.GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0
+                    && (Platform.Type == PlatformType.Windows || Platform.Type == PlatformType.WindowsStore))
                 {
                     shadowMapRenderer = new ShadowMapRenderer(modelRenderer.EffectName);
                     shadowMapRenderer.Renderers.Add(typeof(LightDirectional), new LightDirectionalShadowMapRenderer());
