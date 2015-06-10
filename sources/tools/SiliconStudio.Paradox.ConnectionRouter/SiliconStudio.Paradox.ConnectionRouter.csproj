@@ -25,7 +25,7 @@
     <Reference Include="Mono.Options">
       <HintPath>$(SiliconStudioDependenciesDir)Mono.Options\Mono.Options.dll</HintPath>
     </Reference>
-    <Reference Include="NuGet.Core, Version=1.6.30117.9648, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="NuGet.Core">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\deps\Nuget\NuGet.Core.dll</HintPath>
     </Reference>
