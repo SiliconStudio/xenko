@@ -9,8 +9,10 @@ Release date: 2015/##/##
 - Assets: Add the possibility to change the orientation of the plane procedural model.
 - Studio: Allow to fetch a referenced entity from the property grid in the scene editor.
 - Studio: Entities can be duplicated by dragging a transformation gizmo while maintaining ctrl key down.
-- Studio: More option to manage gizmos display in the scene editor.
+- Studio: More gizmos, and more options to manage gizmos display (visibility, size…) in the scene editor.
 - Studio: Store some settings in an .user file along with the .pdxpkg file.
+- Studio: New materials now have at least a white diffuse color by default.
+- Studio: When compiling, switch to the build log tab only if there is an error.
 
 #### Issues fixed
 - Studio: Adding a Child scene component was crashing the scene editor.
