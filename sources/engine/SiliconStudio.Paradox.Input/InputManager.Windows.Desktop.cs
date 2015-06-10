@@ -240,7 +240,7 @@ namespace SiliconStudio.Paradox.Input
             if (IsMousePositionLocked && Cursor.Position == capturedPosition)
                 return;
 
-            CurrentMouseDelta = CurrentMousePosition - previousMousePosition;
+            CurrentMouseDelta += CurrentMousePosition - previousMousePosition;
             
             // trigger touch move events
             foreach (MouseButton button in Enum.GetValues(typeof(MouseButton)))
