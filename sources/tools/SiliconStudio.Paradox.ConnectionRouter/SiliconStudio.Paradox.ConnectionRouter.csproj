@@ -123,6 +123,14 @@
   <ItemGroup>
     <None Include="Resources\Logo.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ios-tcprelay\paradox-ios-relay.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ios-tcprelay\usbmux.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
