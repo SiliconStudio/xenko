@@ -1013,7 +1013,7 @@ namespace SiliconStudio.Paradox.Graphics
 
                 // Is it the default provided render target?
                 // TODO: Need to disable some part of rendering if either is null
-                var isProvidedDepthBuffer = (depthStencilBuffer == RootDevice.windowProvidedDepthTexture);
+                var isProvidedDepthBuffer = RootDevice.windowProvidedDepthTexture != null && (depthStencilBuffer == RootDevice.windowProvidedDepthTexture);
                 var isProvidedRenderTarget = (fboKey.LastRenderTarget == 1 && renderTargets[0] == RootDevice.windowProvidedRenderTexture);
                 if ((isProvidedDepthBuffer || depthStencilBuffer == null) && (isProvidedRenderTarget || fboKey.LastRenderTarget == 0)) // device provided framebuffer
                 {
