@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             this.packageId = packageId;
         }
 
-        public void NotifyEffectRequested(EffectCompileRequest effectCompileRequest)
+        public void NotifyEffectUsed(EffectCompileRequest effectCompileRequest)
         {
             Task.Run(async () =>
             {
