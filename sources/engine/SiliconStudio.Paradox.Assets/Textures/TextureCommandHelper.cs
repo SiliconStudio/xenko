@@ -433,23 +433,15 @@ namespace SiliconStudio.Paradox.Assets.Textures
                 if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
                     return ResultStatus.Cancelled;
 
-
                 // Save the texture
-                if (parameters.SeparateAlpha)
+                using (var outputImage = texTool.ConvertToParadoxImage(texImage))
                 {
-                    //TextureAlphaComponentSplitter.CreateAndSaveSeparateTextures(texTool, texImage, outputUrl, textureAsset.GenerateMipmaps);
-                }
-                else
-                {
-                    using (var outputImage = texTool.ConvertToParadoxImage(texImage))
-                    {
-                        if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
-                            return ResultStatus.Cancelled;
+                    if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                        return ResultStatus.Cancelled;
 
-                        assetManager.Save(outputUrl, outputImage.ToSerializableVersion());
+                    assetManager.Save(outputUrl, outputImage.ToSerializableVersion());
 
-                        logger.Info("Compression successful [{3}] to ({0}x{1},{2})", outputImage.Description.Width, outputImage.Description.Height, outputImage.Description.Format, outputUrl);
-                    }
+                    logger.Info("Compression successful [{3}] to ({0}x{1},{2})", outputImage.Description.Width, outputImage.Description.Height, outputImage.Description.Format, outputUrl);
                 }
             }
 
