@@ -1,6 +1,6 @@
 ### Version 1.1.3-beta
 
-Release date: 2015/##/##
+Release date: 2015/06/11
 
 #### New Features
 - Platforms: Add support for iOS ARM64 and iOS simulator.
@@ -33,6 +33,7 @@ Release date: 2015/##/##
 #### Breaking changes
 - Engine: The `CameraComponent` is now using the aspect ratio of current viewport by default. This can be changed with `CameraComponent.UseCustomAspectRatio`.
 - Graphics: `GraphicsDevice.BackBuffer` and `Graphics.DepthStencilBuffer` are now returning the current back buffer and depth stencil buffer bound to the `GraphicsDevice`, instead of the BackBuffer/DepthStencilBuffer of the screen (eg. `GraphicsDevice.Presenter.BackBuffer`).
+- Platform: If you want to target Windows Store/Phone, you need to upgrade Game.dll project to Profile 151, aka ".NET Portable Subset (.NET Framework 4.5.1, Windows 8.1, Windows Phone 8.1)"
 
 #### Known Issues
 - Platforms: Shaders can’t compile due to lack of a proper workflow on other platforms than Windows Desktop  (this will be fixed soon)
