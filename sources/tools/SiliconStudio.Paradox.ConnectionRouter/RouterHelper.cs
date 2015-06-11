@@ -47,7 +47,10 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                 var store = new NugetStore(paradoxSdkDir);
 
                 var paradoxPackages = store.GetPackagesInstalled(store.MainPackageId);
-                var paradoxPackage = paradoxVersion != null ? paradoxPackages.FirstOrDefault(p => p.Version.ToString() == paradoxVersion) : paradoxPackages.LastOrDefault();
+                var paradoxPackage = paradoxVersion != null
+                    ? (paradoxPackages.FirstOrDefault(p => p.Version.ToString() == paradoxVersion)
+                        ?? paradoxPackages.FirstOrDefault(p => VersionWithoutSpecialPart(p.Version.ToString()) == VersionWithoutSpecialPart(paradoxVersion))) // If no exact match, try a second time without the special version tag (beta, alpha, etc...)
+                    : paradoxPackages.FirstOrDefault();
                 if (paradoxPackage == null)
                     return null;
 
@@ -56,6 +59,15 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             }
 
             return null;
+        }
+
+        private static string VersionWithoutSpecialPart(string version)
+        {
+            var indexOfDash = version.IndexOf('-');
+            if (indexOfDash == -1)
+                return version;
+
+            return version.Substring(0, indexOfDash);
         }
 
         public static bool EnsureRouterLaunched(bool attachChildJob = false)
