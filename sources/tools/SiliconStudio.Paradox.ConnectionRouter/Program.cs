@@ -73,10 +73,18 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                     GlobalLogger.GlobalMessageLogged += fileLogListener;
                 }
 
-                if (!RouterHelper.RouterMutex.WaitOne(TimeSpan.Zero, true))
+                try
                 {
-                    Console.WriteLine("Another instance of Paradox Router is already running");
-                    return -1;
+                    if (!RouterHelper.RouterMutex.WaitOne(TimeSpan.Zero, true))
+                    {
+                        Console.WriteLine("Another instance of Paradox Router is already running");
+                        return -1;
+                    }
+                }
+                catch (AbandonedMutexException)
+                {
+                    // Previous instance of this application was not closed properly.
+                    // However, receiving this exception means we could capture the mutex.
                 }
 
                 var router = new Router();
