@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 using SiliconStudio.Core.Extensions;
@@ -10,7 +9,6 @@ namespace SiliconStudio.Assets
     public class PackageSettings
     {
         private const string SettingsExtension = ".pdxpkg.user";
-        private static readonly Dictionary<SettingsKey, bool> registeredKeys = new Dictionary<SettingsKey, bool>();
         private readonly Package package;
         private readonly SettingsProfile profile;
 
@@ -50,13 +48,6 @@ namespace SiliconStudio.Assets
         }
 
         public SettingsProfile Profile { get { return profile; } }
-
-        public static IReadOnlyDictionary<SettingsKey, bool> RegisteredKeys { get { return registeredKeys; } }
-
-        public static void RegisterAsEditable(SettingsKey key, bool executableOnly)
-        {
-            registeredKeys[key] = executableOnly;
-        }
 
         public T GetOrCreateValue<T>(SettingsValueKey<T> key)
         {
