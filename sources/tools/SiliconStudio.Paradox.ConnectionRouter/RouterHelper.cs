@@ -23,9 +23,14 @@ namespace SiliconStudio.Paradox.ConnectionRouter
         /// <returns></returns>
         public static string FindParadoxSdkDir(string paradoxVersion = null)
         {
-            // TODO: Duplicate of ParadoxCommandsProxy.FindParadoxSdkDir!!
+            // TODO: Almost duplicate of ParadoxCommandsProxy.FindParadoxSdkDir!!
             // TODO: Maybe move it in some common class somewhere? (in this case it would be included with "Add as link" in VSPackage)
-            var paradoxSdkDir = Environment.GetEnvironmentVariable("SiliconStudioParadoxDir");
+            var paradoxSdkDir = DirectoryHelper.GetInstallationDirectory("Paradox");
+
+            if (paradoxSdkDir == null)
+            {
+                paradoxSdkDir = Environment.GetEnvironmentVariable("SiliconStudioParadoxDir");
+            }
 
             if (paradoxSdkDir == null)
             {
