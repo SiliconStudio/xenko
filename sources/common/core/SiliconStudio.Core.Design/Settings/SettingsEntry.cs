@@ -68,7 +68,7 @@ namespace SiliconStudio.Core.Settings
             bool changed = !Equals(oldValue, newValue);
             if (changed && ShouldNotify && !Profile.IsDiscarding)
             {
-                var actionItem = new PropertyChangedActionItem("Value", this, oldValue);
+                var actionItem = new PropertyChangedActionItem("Value", this, oldValue, true);
                 Profile.ActionStack.Add(actionItem);
                 Profile.NotifyEntryChanged(Name);
             }
