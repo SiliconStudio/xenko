@@ -46,7 +46,7 @@ TemplateFolders:
         - samples\Graphics\SpriteEntity\SpriteEntity.pdxtpl
         - samples\Graphics\SpriteFonts\SpriteFonts.pdxtpl
         - samples\Input\TouchInputs\TouchInputs.pdxtpl
-        - samples\Physics\CharacterController\CharacterController.pdxtpl
+        - samples\Physics\CharacterControllerSample\CharacterControllerSample.pdxtpl
         - samples\Physics\Constraints\Constraints.pdxtpl
         - samples\Physics\Raycasting\Raycasting.pdxtpl
         - samples\UI\GameMenu\GameMenu.pdxtpl
