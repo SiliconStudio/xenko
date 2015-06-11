@@ -92,6 +92,7 @@
     <Compile Include="Settings\SettingsFile.cs" />
     <Compile Include="Settings\SettingsFileLoadedEventArgs.cs" />
     <Compile Include="Settings\SettingsKey.cs" />
+    <Compile Include="Settings\SettingsKeyWrapper.cs" />
     <Compile Include="Settings\SettingsProfile.cs" />
     <Compile Include="Settings\SettingsGroup.cs" />
     <Compile Include="Settings\SettingsValueKey.cs" />

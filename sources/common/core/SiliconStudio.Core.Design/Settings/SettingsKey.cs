@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using SharpYaml.Events;
 using SiliconStudio.Core.IO;
@@ -77,6 +78,11 @@ namespace SiliconStudio.Core.Settings
         /// Gets or sets the description of this <see cref="SettingsKey"/>.
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// Gets an enumeration of acceptable values for this <see cref="SettingsKey"/>.
+        /// </summary>
+        public abstract IEnumerable<object> AcceptableValues { get; }
 
         /// <summary>
         /// Raised when the value of the settings key has been modified and the method <see cref="SettingsProfile.ValidateSettingsChanges"/> has been invoked.
