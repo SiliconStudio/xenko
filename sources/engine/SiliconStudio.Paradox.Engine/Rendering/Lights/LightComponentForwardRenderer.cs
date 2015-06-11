@@ -284,7 +284,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
                 visibleLights.Add(light);
 
                 // Add light to a special list if it has shadows
-                if (directLight != null && directLight.Shadow.Enabled)
+                if (directLight != null && directLight.Shadow.Enabled && shadowMapRenderer != null)
                 {
                     // A visible light with shadows
                     visibleLightsWithShadows.Add(light);
@@ -623,7 +623,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
             LightComponentCollectionGroup lightGroup;
 
             var directLight = light.Type as IDirectLight;
-            var lightGroups = directLight != null && directLight.Shadow.Enabled
+            var lightGroups = directLight != null && directLight.Shadow.Enabled && shadowMapRenderer != null
                 ? activeLightGroupsWithShadows
                 : activeLightGroups;
 
