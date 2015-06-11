@@ -263,7 +263,7 @@ namespace SiliconStudio.Paradox.Graphics
         public void ApplyPlatformSpecificParams(Effect effect)
         {
             //effect.Parameters.Set(ShaderBaseKeys.ParadoxFlipRendertarget, flipRenderTarget ? -1.0f : 1.0f);
-            Parameters.Set(ShaderBaseKeys.ParadoxFlipRendertarget, flipRenderTarget ? -1.0f : 1.0f);
+            Parameters.Set(ShaderBaseKeys.ParadoxFlipRendertarget, flipRenderTarget ? 1.0f : -1.0f);
         }
 
         /// <summary>
@@ -1294,7 +1294,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             // Change face culling if the rendertarget is flipped
             var newFrontFace = currentFrontFace;
-            if (flipRenderTarget)
+            if (!flipRenderTarget)
                 newFrontFace = newFrontFace == FrontFaceDirection.Cw ? FrontFaceDirection.Ccw : FrontFaceDirection.Cw;
 
             if (newFrontFace != boundFrontFace)
