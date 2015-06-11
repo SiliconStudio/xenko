@@ -194,7 +194,11 @@ namespace SiliconStudio.Paradox.Assets.Textures
                             break;
                         case PlatformType.iOS:
                             // PVRTC works only for square POT textures
-                            if (textureAsset.SRgb)
+                            if (inputImageFormat.IsHDR())
+                            {
+                                outputFormat = inputImageFormat;
+                            }
+                            else if (textureAsset.SRgb)
                             {
                                 outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
                             }
