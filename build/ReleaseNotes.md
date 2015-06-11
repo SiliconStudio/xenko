@@ -1,3 +1,26 @@
+### Version 1.1.4-beta
+
+Release date: 2015/XX/XX
+
+#### New Features
+
+#### Enhancements
+
+#### Issues fixed
+
+#### Breaking changes
+
+#### Known Issues
+- UI: EditText is not implemented on Windows Store and Windows Phone.
+- Android: Physics engine is not working properly.
+- Samples: Material Sample does not work properly on some mob
+- Assets: ModelAsset scaling and orientation works only for .FBX, not other formats supported by Assimp library
+- Studio: Scripts are not automatically reloaded by the editor. Closing and re-opening it is needed in order to see new scripts.
+- Studio: Renaming default scene won’t properly update reference. Please set again the reference in project properties.
+- Studio: DDS images cannot be viewed in the Sprite editor
+- Studio: Collections in assets properties cannot be edited nor displayed in multi-selection
+- Engine: Shadows are currently not supported on mobile platforms
+
 ### Version 1.1.3-beta
 
 Release date: 2015/06/11
