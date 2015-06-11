@@ -37,7 +37,6 @@ Release date: 2015/06/11
 - Platform: If you want to target Windows Store/Phone, you need to upgrade Game.dll project to Profile 151, aka ".NET Portable Subset (.NET Framework 4.5.1, Windows 8.1, Windows Phone 8.1)"
 
 #### Known Issues
-- iOS: OpenGL ES3 (Graphic Profile 10+) is not properly supported yet 
 - UI: EditText is not implemented on Windows Store and Windows Phone.
 - Android: Physics engine is not working properly.
 - Samples: Material Sample does not work properly on some mob
