@@ -610,6 +610,12 @@ namespace SiliconStudio.Paradox.Games
                 preferredParameters.PreferredBackBufferHeight = resizedBackBufferHeight;
             }
 
+            GraphicsProfile availableGraphicsProfile;
+            if (!IsPreferredProfileAvailable(preferredParameters.PreferredGraphicsProfile, out availableGraphicsProfile))
+            {
+                throw new InvalidOperationException(string.Format("Graphics profiles [{0}] are not supported by the adapter. The highest available profile is [{1}].", string.Join(",", preferredParameters.PreferredGraphicsProfile), availableGraphicsProfile));
+            }
+
             var devices = graphicsDeviceFactory.FindBestDevices(preferredParameters);
             if (devices.Count == 0)
             {
@@ -734,6 +740,31 @@ namespace SiliconStudio.Paradox.Games
 
                         return 0;
                     });
+        }
+
+        private bool IsPreferredProfileAvailable(GraphicsProfile[] preferredProfiles, out GraphicsProfile availableProfile)
+        {
+            availableProfile = GraphicsProfile.Level_9_1;
+
+            var graphicsProfiles = Enum.GetValues(typeof(GraphicsProfile));
+
+            foreach (var graphicsAdapter in GraphicsAdapterFactory.Adapters)
+            {
+                foreach (var graphicsProfileValue in graphicsProfiles)
+                {
+                    var graphicsProfile = (GraphicsProfile)graphicsProfileValue;
+                    if (graphicsProfile > availableProfile && graphicsAdapter.IsProfileSupported(graphicsProfile))
+                        availableProfile = graphicsProfile;
+                }
+            }
+
+            foreach (var preferredProfile in preferredProfiles)
+            {
+                if (availableProfile >= preferredProfile)
+                    return true;
+            }
+
+            return false;
         }
 
         private int CalculateRankForFormat(PixelFormat format)
