@@ -87,6 +87,21 @@
     <Compile Include="..\SiliconStudio.Core\Storage\ObjectIdBuilder.cs">
       <Link>Core\ObjectIdBuilder.cs</Link>
     </Compile>
+    <Compile Include="..\SiliconStudio.Core\Diagnostics\ILogger.cs">
+      <Link>Diagnostics\ILogger.cs</Link>
+    </Compile>
+    <Compile Include="..\SiliconStudio.Core\Diagnostics\ILogMessage.cs">
+      <Link>Diagnostics\ILogMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\SiliconStudio.Core\Diagnostics\LogMessageType.cs">
+      <Link>Diagnostics\LogMessageType.cs</Link>
+    </Compile>
+    <Compile Include="..\SiliconStudio.Core\Diagnostics\LogMessage.cs">
+      <Link>Diagnostics\LogMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\SiliconStudio.Core\Diagnostics\CallerInfo.cs">
+      <Link>Diagnostics\CallerInfo.cs</Link>
+    </Compile>	
     <Compile Include="AssemblyProcessorApp.cs" />
     <Compile Include="AssemblyProcessorContext.cs" />
     <Compile Include="AssemblyVersionProcessor.cs" />

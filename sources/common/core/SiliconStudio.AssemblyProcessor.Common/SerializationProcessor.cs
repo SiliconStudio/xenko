@@ -7,6 +7,7 @@ using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.AssemblyProcessor
 {
@@ -16,17 +17,20 @@ namespace SiliconStudio.AssemblyProcessor
 
         public List<string> SerializatonProjectReferencePaths { get; private set; }
 
-        public SerializationProcessor(string signKeyFile, List<string> serializatonProjectReferencePaths)
+        public ILogger Log { get; private set; }
+
+        public SerializationProcessor(string signKeyFile, List<string> serializatonProjectReferencePaths, ILogger log)
         {
             SignKeyFile = signKeyFile;
             SerializatonProjectReferencePaths = serializatonProjectReferencePaths;
+            Log = log;
         }
 
         public bool Process(AssemblyProcessorContext context)
         {
             // Generate serialization assembly
             var serializationAssemblyFilepath = ComplexSerializerGenerator.GenerateSerializationAssemblyLocation(context.Assembly.MainModule.FullyQualifiedName);
-            context.Assembly = ComplexSerializerGenerator.GenerateSerializationAssembly(context.Platform, context.AssemblyResolver, context.Assembly, serializationAssemblyFilepath, SignKeyFile, SerializatonProjectReferencePaths);
+            context.Assembly = ComplexSerializerGenerator.GenerateSerializationAssembly(context.Platform, context.AssemblyResolver, context.Assembly, serializationAssemblyFilepath, SignKeyFile, SerializatonProjectReferencePaths, Log);
 
             return true;
         }
