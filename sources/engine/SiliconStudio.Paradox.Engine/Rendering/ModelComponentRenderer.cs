@@ -116,6 +116,12 @@ namespace SiliconStudio.Paradox.Rendering
         /// <value>The custom render model list.</value>
         public List<RenderModel> CustomRenderModelList { get; private set; }
 
+        /// <summary>
+        /// Gets or sets the state of the rasterizer to overrides the default one.
+        /// </summary>
+        /// <value>The state of the rasterizer.</value>
+        public RasterizerState RasterizerState { get; set; }
+
         public DynamicEffectCompiler DynamicEffectCompiler
         {
             get
@@ -191,6 +197,12 @@ namespace SiliconStudio.Paradox.Rendering
             var viewProjectionMatrix = camera.ViewProjectionMatrix;
             var preRenderModel = Callbacks.PreRenderModel;
 
+            var sceneCameraRenderer = context.Tags.Get(SceneCameraRenderer.Current);
+            var cullingMode = sceneCameraRenderer != null ? sceneCameraRenderer.CullingMode : CullingMode.None;
+            var frustum = new BoundingFrustum(ref viewProjectionMatrix);
+
+            var cameraRenderMode = sceneCameraRenderer != null ? sceneCameraRenderer.Mode : null;
+
             foreach (var renderModel in renderModels)
             {
                 // If Model is null, then skip it
@@ -212,9 +224,6 @@ namespace SiliconStudio.Paradox.Rendering
 
                 var meshes = PrepareModelForRendering(context, renderModel);
 
-                var sceneCameraRenderer = context.Tags.Get(SceneCameraRenderer.Current);
-                var rasterizerState = sceneCameraRenderer != null ? sceneCameraRenderer.Mode.GetDefaultRasterizerState(meshes.IsGeomertyInverted) : null;
-                
                 foreach (var renderMesh in meshes)
                 {
                     if (!renderMesh.Enabled)
@@ -222,15 +231,36 @@ namespace SiliconStudio.Paradox.Rendering
                         continue;
                     }
 
-                    // TODO: Should this be set somewhere else, since it prevents users from overriding?
-                    renderMesh.Parameters.Set(Effect.RasterizerStateKey, rasterizerState);
+                    var worldMatrix = renderMesh.WorldMatrix;
+
+                    // Perform frustum culling
+                    if (cullingMode == CullingMode.Frustum)
+                    {
+                        // Always render meshes with unspecified bounds
+                        // TODO: This should not be necessary. Add proper bounding boxes to gizmos etc.
+                        var boundingBox = renderMesh.Mesh.BoundingBox;
+                        if (boundingBox.Extent == Vector3.Zero)
+                        {
+                            // Fast AABB transform: http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
+                            // Compute transformed AABB (by world)
+                            var boundingBoxExt = new BoundingBoxExt(boundingBox);
+                            boundingBoxExt.Transform(worldMatrix);
+
+                            if (!frustum.Contains(ref boundingBoxExt))
+                                continue;
+                        }
+                    }
 
                     // Project the position
                     // TODO: This could be done in a SIMD batch, but we need to figure-out how to plugin in with RenderMesh object
-                    var worldPosition = new Vector4(renderMesh.Parameters.Get(TransformationKeys.World).TranslationVector, 1.0f);
+                    var worldPosition = new Vector4(worldMatrix.TranslationVector, 1.0f);
                     Vector4 projectedPosition;
                     Vector4.Transform(ref worldPosition, ref viewProjectionMatrix, out projectedPosition);
                     var projectedZ = projectedPosition.Z / projectedPosition.W;
+
+                    // TODO: Should this be set somewhere else?
+                    var rasterizerState = cameraRenderMode != null ? cameraRenderMode.GetDefaultRasterizerState(renderMesh.RenderModel.IsGeometryInverted) : null;
+                    renderMesh.RasterizerState = RasterizerState ?? rasterizerState;
 
                     renderMesh.UpdateMaterial();
                     var list = renderMesh.HasTransparency ? transparentList : opaqueList;
@@ -325,7 +355,7 @@ namespace SiliconStudio.Paradox.Rendering
             }
         }
 
-        private RenderMeshCollection PrepareModelForRendering(RenderContext context, RenderModel renderModel)
+        private List<RenderMesh> PrepareModelForRendering(RenderContext context, RenderModel renderModel)
         {
             // Create the list of RenderMesh objects
             var renderMeshes = renderModel.RenderMeshesList[modelRenderSlot];

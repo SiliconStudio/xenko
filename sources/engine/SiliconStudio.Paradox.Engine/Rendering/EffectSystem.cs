@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// <summary>
         /// Called each time a non-cached effect is requested.
         /// </summary>
-        internal Action<EffectCompileRequest> EffectRequested;
+        internal Action<EffectCompileRequest> EffectUsed;
 
         private readonly HashSet<string> recentlyModifiedShaders = new HashSet<string>();
         private bool clearNextFrame = false;
@@ -260,7 +260,7 @@ namespace SiliconStudio.Paradox.Rendering
                 var source = isPdxfx ? new ShaderMixinGeneratorSource(effectName) : (ShaderSource)new ShaderClassSource(effectName);
                 compilerResult = compiler.Compile(source, compilerParameters);
 
-                var effectRequested = EffectRequested;
+                var effectRequested = EffectUsed;
                 if (effectRequested != null)
                 {
                     effectRequested(new EffectCompileRequest(effectName, compilerResult.UsedParameters));
@@ -407,7 +407,7 @@ namespace SiliconStudio.Paradox.Rendering
                 if (recordEffectRequested)
                 {
                     // Let's notify effect compiler server for each new effect requested
-                    effectSystem.EffectRequested += shaderCompilerTarget.NotifyEffectRequested;
+                    effectSystem.EffectUsed += shaderCompilerTarget.NotifyEffectUsed;
                 }
 
                 // Use remote only if nothing else was found before (i.e. a local compiler)

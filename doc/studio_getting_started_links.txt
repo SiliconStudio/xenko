@@ -6,3 +6,4 @@
 {Create an UI}{How to create an UI and add it to your game.}{page:HOWTO%3A+Create+an+UI}
 {Add post-effects}{How to enable and customize post-effects such as depth-of-field, bloom, tonemapping, etc...}{page:HOWTO%3a+Add+post-effects}
 {Execute a game}{Let's run our game from either Paradox Studio or Visual Studio}{page:HOWTO%3A+Execute+a+game}
+{Generate effects on mobile devices}{Let's generate all effects our game needs so that it can run seamlessly on mobile devices}{page:HOWTO%3A+Generate+effects+on+mobile+devices}

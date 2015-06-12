@@ -137,7 +137,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
             // null entry point for pixel shader means no pixel shader. In that case, we return a default function.
             if (entryPoint == null && stage == ShaderStage.Pixel && isOpenGLES)
             {
-                shaderString = "void main(){}";
+                shaderString = "out float fragmentdepth; void main(){ fragmentdepth = gl_FragCoord.z; }";
             }
             else
             {
@@ -214,12 +214,6 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
                 if (isOpenGLES3)
                     glslShaderCode
                         .AppendLine("#version 300 es") // TODO: 310 version?
-                        .AppendLine();
-
-                if (generateUniformBlocks) // TODO: is it really needed? It produces only a warning.
-                    glslShaderCode
-                        .AppendLine("#extension GL_EXT_gpu_shader4 : enable")
-                        .AppendLine("#extension GL_ARB_gpu_shader5 : enable")
                         .AppendLine();
 
                 if (pipelineStage == PipelineStage.Pixel)

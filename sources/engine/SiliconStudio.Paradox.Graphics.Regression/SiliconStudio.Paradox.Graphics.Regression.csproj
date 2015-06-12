@@ -58,6 +58,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup Condition="'$(SiliconStudioPlatform)' == 'Android'">
     <Compile Include="AndroidGameTestActivity.cs" />

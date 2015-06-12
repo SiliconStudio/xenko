@@ -84,7 +84,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// <returns>The rasterizer state.</returns>
         public virtual RasterizerState GetDefaultRasterizerState(bool isGeomertryInverted)
         {
-            return isGeomertryInverted ? Context.GraphicsDevice.RasterizerStates.CullFront : null;
+            return isGeomertryInverted ? Context.GraphicsDevice.RasterizerStates.CullFront : Context.GraphicsDevice.RasterizerStates.CullBack;
         }
 
         /// <summary>

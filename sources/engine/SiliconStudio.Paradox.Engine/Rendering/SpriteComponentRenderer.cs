@@ -24,14 +24,6 @@ namespace SiliconStudio.Paradox.Rendering
 
         public override bool SupportPicking { get { return true; } }
 
-        public override bool IsWritingToDepth
-        {
-            get
-            {
-                return false;
-            }
-        }
-
         protected override void InitializeCore()
         {
             base.InitializeCore();

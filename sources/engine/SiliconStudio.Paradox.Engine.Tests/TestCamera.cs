@@ -44,6 +44,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             MoveSpeed = 10f;
             RotationSpeed = MathUtil.Pi / 2f;
             SceneUnit = 1;
+            Camera.UseCustomAspectRatio = true;
         }
 
         /// <summary>

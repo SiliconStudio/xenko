@@ -72,7 +72,7 @@ namespace SiliconStudio.Paradox.Graphics
             if (backBuffer != GraphicsDevice.windowProvidedRenderTexture)
                 GraphicsDevice.CopyScaler2D(backBuffer, GraphicsDevice.windowProvidedRenderTexture,
                     new Rectangle(0, 0, backBuffer.Width, backBuffer.Height),
-                    new Rectangle(0, 0, GraphicsDevice.windowProvidedRenderTexture.Width, GraphicsDevice.windowProvidedRenderTexture.Height), false);
+                    new Rectangle(0, 0, GraphicsDevice.windowProvidedRenderTexture.Width, GraphicsDevice.windowProvidedRenderTexture.Height), true);
 
             ((AndroidGraphicsContext)gameWindow.GraphicsContext).Swap();
 

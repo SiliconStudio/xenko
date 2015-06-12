@@ -62,6 +62,7 @@ namespace SiliconStudio.AssemblyProcessor
             {
                 if (existingWindowsKitsReferenceAssemblies == null)
                 {
+                    // First time, make list of existing assemblies in windows kits directory
                     existingWindowsKitsReferenceAssemblies = new HashSet<string>();
 
                     try
@@ -76,6 +77,7 @@ namespace SiliconStudio.AssemblyProcessor
                     }
                 }
 
+                // Look for this assembly in the windows kits directory
                 if (existingWindowsKitsReferenceAssemblies.Contains(name.Name))
                 {
                     var assemblyFile = Path.Combine(WindowsKitsReferenceDirectory, name.Name, name.Version.ToString(), name.Name + ".winmd");

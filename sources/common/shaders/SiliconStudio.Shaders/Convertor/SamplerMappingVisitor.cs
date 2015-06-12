@@ -131,13 +131,15 @@ namespace SiliconStudio.Shaders.Convertor
                             case "SampleBias":
                             case "SampleGrad":
                             case "SampleLevel":
+                            case "SampleCmp":
                                 {
                                     var sampler = this.FindGlobalVariable(methodInvocationExpression.Arguments[0]);
                                     if (sampler == null)
                                         throw new InvalidOperationException(string.Format("Unable to find sampler [{0}] as a global variable",
                                                                                           methodInvocationExpression.Arguments[0]));
 
-                                    GenerateGLSampler(sampler, textureVariable);
+                                    bool needsComparison = memberRef.Member == "SampleCmp";
+                                    GenerateGLSampler(sampler, textureVariable, needsComparison);
                                 }
                                 break;
                         }
@@ -338,7 +340,7 @@ namespace SiliconStudio.Shaders.Convertor
         /// </summary>
         /// <param name="sampler">The D3D sampler (can be null).</param>
         /// <param name="texture">The D3D texture.</param>
-        private void GenerateGLSampler(Variable sampler, Variable texture)
+        private void GenerateGLSampler(Variable sampler, Variable texture, bool needsComparison = false)
         {
             Variable glslSampler;
 
@@ -348,7 +350,13 @@ namespace SiliconStudio.Shaders.Convertor
             var samplerKey = new SamplerTextureKey(sampler, texture);
             if (!samplerMapping.TryGetValue(samplerKey, out glslSampler))
             {
-                glslSampler = new Variable(new TypeName(texture.Type.ResolveType().Name.Text.Replace("Texture", "sampler")), texture.Name + (sampler != null ? "_" + sampler.Name : "_NoSampler")) { Span = sampler == null ? texture.Span : sampler.Span };
+                var samplerTypeName = texture.Type.ResolveType().Name.Text.Replace("Texture", "sampler");
+
+                // Handle comparison samplers
+                if (needsComparison)
+                    samplerTypeName += "Shadow";
+
+                glslSampler = new Variable(new TypeName(samplerTypeName), texture.Name + (sampler != null ? "_" + sampler.Name : "_NoSampler")) { Span = sampler == null ? texture.Span : sampler.Span };
                 samplerMapping.Add(samplerKey, glslSampler);
             }
         }
