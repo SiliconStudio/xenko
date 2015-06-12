@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
 using System.Collections.Generic;
 
 using NUnit.Framework;
@@ -44,6 +44,8 @@ namespace SiliconStudio.Quantum.Tests
             {
                 StringIntDic = new Dictionary<string, int> { { "a", 1 }, { "b", 2 }, { "c", 3 } };
                 StringClassDic = new Dictionary<string, SimpleClass> { { "a", new SimpleClass() }, { "b", new SimpleClass() } };
+                // TODO: test with primitive struct
+                // TODO: test with nested struct
                 //SimpleStructList = new List<SimpleStruct> { new SimpleStruct(), new SimpleStruct() };
                 //NestedStructList = new List<NestedStruct> { new NestedStruct(), new NestedStruct() };
                 //ListOfSimpleStructLists = new List<List<SimpleStruct>> { new List<SimpleStruct> { new SimpleStruct() }, new List<SimpleStruct> { new SimpleStruct() } };
@@ -76,13 +78,7 @@ namespace SiliconStudio.Quantum.Tests
             var obj = new ClassWithDictionaries();
             var container = new ModelContainer();
             IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
-            Console.WriteLine(model.PrintHierarchy());
-            foreach (var guid in container.Guids)
-            {
-                var node = container.GetModelNode(guid);
-                if (model != node)
-                    Console.WriteLine(node.PrintHierarchy());
-            }
+            Helper.PrintModelContainerContent(container, model);
 
             Assert.That(model.GetChild("StringIntDic").Children.Count, Is.EqualTo(0));
             Assert.That(model.GetChild("StringIntDic").Content.Value, Is.SameAs(obj.StringIntDic));
@@ -91,7 +87,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.That(model.GetChild("StringClassDic").Content.Value, Is.SameAs(obj.StringClassDic));
             Assert.That(model.GetChild("StringClassDic").Content.Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
             var enumerator = obj.StringClassDic.GetEnumerator();
-            foreach (var reference in (ReferenceEnumerable)model.GetChild("StringClassDic").Content.Reference)
+            foreach (var reference in model.GetChild("StringClassDic").Content.Reference.AsEnumerable)
             {
                 enumerator.MoveNext();
                 var keyValuePair = enumerator.Current;
@@ -129,12 +125,14 @@ namespace SiliconStudio.Quantum.Tests
             var obj = new ClassWithDictionaries();
             var container = new ModelContainer();
             IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
-            Console.WriteLine(model.PrintHierarchy());
+            Helper.PrintModelContainerContent(container, model);
             ((Dictionary<string, int>)model.GetChild("StringIntDic").Content.Value)["b"] = 42;
             ((Dictionary<string, int>)model.GetChild("StringIntDic").Content.Value).Add("d", 26);
             Assert.That(obj.StringIntDic.Count, Is.EqualTo(4));
             Assert.That(obj.StringIntDic["b"], Is.EqualTo(42));
             Assert.That(obj.StringIntDic["d"], Is.EqualTo(26));
+            Helper.PrintModelContainerContent(container, model);
+            Helper.ConsistencyCheck(container, obj);
         }
 
     }
