@@ -20,7 +20,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SiliconStudio.AssemblyProcessor</RootNamespace>
     <AssemblyName>SiliconStudio.AssemblyProcessor.Common</AssemblyName>
-    <ParadoxBuildTags>*</ParadoxBuildTags>
+    <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
 	<DefineConstants>$(DefineConstants);ASSEMBLY_PROCESSOR</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
