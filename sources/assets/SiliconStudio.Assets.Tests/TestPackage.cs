@@ -14,13 +14,6 @@ namespace SiliconStudio.Assets.Tests
     [TestFixture]
     public class TestPackage : TestBase
     {
-        //[Test]
-        //public void TestPackageLoadingAndCompile()
-        //{
-        //    var session = PackageSession.Load(@"E:\Code\SengokuRun\SengokuRun\WindowsLauncher\GameAssets\Assets.pdxpkg", true, true);
-        //    Assert.AreEqual(session.Packages.Count, 3);
-        //}
-
         [Test]
         public void TestBasicPackageCreateSaveLoad()
         {
@@ -190,7 +183,6 @@ namespace SiliconStudio.Assets.Tests
 
                 // Move asset into a different directory
                 var assetItem = project.Assets.Find(new Guid("28D0DE9C-8913-41B1-B50E-848DD8A7AF65"));
-                var previousAssetPath = assetItem.FullPath;
                 Assert.NotNull(assetItem);
                 project.Assets.Remove(assetItem);
 
@@ -202,8 +194,6 @@ namespace SiliconStudio.Assets.Tests
                 var subPackage = session.Packages.Find(Guid.Parse("281321F0-7664-4523-B1DC-3CFC26F80F77"));
                 subPackage.FullPath = Path.Combine(DirectoryTestBase, @"TestPackageMovingAssets2\SubPackage\SubPackage.pdxpkg");
                 session.Save();
-
-                Assert.IsFalse(File.Exists(previousAssetPath), "Asset [{0}] must have been deleted on the disk", previousAssetPath);
             }
 
             // Reload the project from location TestPackageMovingAssets2
