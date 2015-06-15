@@ -154,7 +154,13 @@ namespace SiliconStudio.Paradox.Rendering
                     // set the position
                     worldMatrix.TranslationVector = transfoComp.WorldMatrix.TranslationVector;
                 }
-                
+
+                // apply the offset due to the center of the sprite
+                var normalizedCenter = new Vector2(elementSize.X * (sprite.Center.X / sourceRegion.Width - 0.5f), elementSize.Y * (sprite.Center.Y / sourceRegion.Height - 0.5f));
+                worldMatrix.M41 -= normalizedCenter.X * worldMatrix.M11 + normalizedCenter.Y * worldMatrix.M21;
+                worldMatrix.M42 -= normalizedCenter.X * worldMatrix.M12 + normalizedCenter.Y * worldMatrix.M22;
+                worldMatrix.M43 -= normalizedCenter.X * worldMatrix.M13 + normalizedCenter.Y * worldMatrix.M23; 
+
                 // draw the sprite
                 sprite3DBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref elementSize, ref color, sprite.Orientation, SwizzleMode.None, renderItem.Depth);
             }

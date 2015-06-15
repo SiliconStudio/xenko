@@ -7,6 +7,7 @@ Release date: 2015/XX/XX
 #### Enhancements
 
 #### Issues fixed
+- Engine: The center of sprites is now properly taken in account when rendered by the CameraRenderer.
 
 #### Breaking changes
 
