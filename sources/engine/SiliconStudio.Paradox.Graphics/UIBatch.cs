@@ -214,8 +214,9 @@ namespace SiliconStudio.Paradox.Graphics
 
             Matrix worldViewProjection;
             Matrix.Multiply(ref matrix, ref viewProjectionMatrix, out worldViewProjection);
-            Vector4.Transform(ref vector4UnitX, ref worldViewProjection, out drawInfo.UnitXWorld);
-            Vector4.Transform(ref vector4UnitY, ref worldViewProjection, out drawInfo.UnitYWorld);
+            drawInfo.UnitXWorld = worldViewProjection.Row1;
+            drawInfo.UnitYWorld = worldViewProjection.Row2;
+            drawInfo.UnitZWorld = worldViewProjection.Row3;
             Vector4.Transform(ref vector4LeftTop, ref worldViewProjection, out drawInfo.LeftTopCornerWorld);
 
             var elementInfo = new ElementInfo(4, 6, ref drawInfo, depthBias);
@@ -274,9 +275,9 @@ namespace SiliconStudio.Paradox.Graphics
 
             Matrix worldViewProjection;
             Matrix.Multiply(ref matrix, ref viewProjectionMatrix, out worldViewProjection);
-            Vector4.Transform(ref vector4UnitX, ref worldViewProjection, out drawInfo.UnitXWorld);
-            Vector4.Transform(ref vector4UnitY, ref worldViewProjection, out drawInfo.UnitYWorld);
-            Vector4.Transform(ref vector4UnitZ, ref worldViewProjection, out drawInfo.UnitZWorld);
+            drawInfo.UnitXWorld = worldViewProjection.Row1;
+            drawInfo.UnitYWorld = worldViewProjection.Row2;
+            drawInfo.UnitZWorld = worldViewProjection.Row3;
             Vector4.Transform(ref vector4LeftTop, ref worldViewProjection, out drawInfo.LeftTopCornerWorld);
 
             var elementInfo = new ElementInfo(8, 6 * 6, ref drawInfo, depthBias);
@@ -351,8 +352,8 @@ namespace SiliconStudio.Paradox.Graphics
 
             Matrix worldViewProjection;
             Matrix.Multiply(ref matrix, ref viewProjectionMatrix, out worldViewProjection);
-            Vector4.Transform(ref vector4UnitX, ref worldViewProjection, out drawInfo.UnitXWorld);
-            Vector4.Transform(ref vector4UnitY, ref worldViewProjection, out drawInfo.UnitYWorld);
+            drawInfo.UnitXWorld = worldViewProjection.Row1;
+            drawInfo.UnitYWorld = worldViewProjection.Row2;
 
             // rotate origin and unit axis if need.
             var leftTopCorner = vector4LeftTop;
