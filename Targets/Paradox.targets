@@ -122,8 +122,6 @@
       <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioUnitTest)' != 'true'">$(SiliconStudioAssemblyProcessorOptions) --serializationProjectReferencePaths="@(_ResolvedProjectReferencePaths)"</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorCommand Condition="'$(SiliconStudioAssemblyProcessorCommand)' == ''">"$(SiliconStudioPackageParadoxSdkBin)\SiliconStudio.AssemblyProcessor.exe" --platform=$(SiliconStudioPlatform) --targetFramework=$(SiliconStudioNETFrameworkVersion) $(SiliconStudioAssemblyProcessorOptions) "$(TargetPath)"</SiliconStudioAssemblyProcessorCommand>
       <SiliconStudioAssemblyProcessorCommand Condition="'$(AssemblyOriginatorKeyFile)' != ''">$(SiliconStudioAssemblyProcessorCommand) --signkeyfile="$(AssemblyOriginatorKeyFile)"</SiliconStudioAssemblyProcessorCommand>
-      <!-- If building non-user solutions (unit tests enabled), turn build warnings into errors -->
-      <SiliconStudioAssemblyProcessorCommand Condition="'$(SiliconStudioUnitTest)' == 'true'">$(SiliconStudioAssemblyProcessorCommand) --warnings-as-errors</SiliconStudioAssemblyProcessorCommand>
     </PropertyGroup>
     
     <!-- Run assembly processor -->

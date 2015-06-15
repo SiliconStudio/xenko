@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using Mono.Cecil;
 using Mono.Options;
@@ -100,7 +101,7 @@ namespace SiliconStudio.AssemblyProcessor
                 { "a|assembly=", "Additional assembly (for now, it will add the assembly directory to search path)", v => app.SearchDirectories.Add(Path.GetDirectoryName(v)) },
                 { "signkeyfile=", "Signing Key File", v => app.SignKeyFile = v },
                 { "serializationProjectReferencePaths=", "Project reference paths to auto-load by serialization module initializer (separated by semi-colon)", v => app.SerializationProjectReferences.AddRange(v.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)) },
-                { "warnings-as-errors", "Treat warnings as errors", v => app.TreatWarningsAsErrors = true }
+                { "Werror", "Promote warnings to errors", v => app.TreatWarningsAsErrors = true }
             };
 
             showHelp = localShowHelp;
