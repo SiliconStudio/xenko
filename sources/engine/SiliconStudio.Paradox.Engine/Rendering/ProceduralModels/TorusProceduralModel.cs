@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         public TorusProceduralModel()
         {
             Diameter = 1.0f;
-            Thickness = 33.3f;
+            Thickness = 3.3f;
             Tessellation = 32;
         }
 
@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// </summary>
         /// <value>The thickness.</value>
         [DataMember(20)]
-        [DefaultValue(33.3f)]
+        [DefaultValue(3.3f)]
         public float Thickness { get; set; }
 
         /// <summary>
