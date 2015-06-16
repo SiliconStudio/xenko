@@ -4,6 +4,7 @@ using System;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interactivity;
+using System.Windows.Interop;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -96,13 +97,16 @@ namespace SiliconStudio.Presentation.Behaviors
             var window = Window.GetWindow(AssociatedObject);
             if (window == null) throw new InvalidOperationException("The button attached to this behavior is not in a window");
 
-            // Window.DialogResult setter will throw an exception when the window was not displayed with ShowDialog, even if we're setting null.
             bool dialogResultUpdated = false;
-            if (DialogResult != window.DialogResult)
+            // Window.DialogResult setter will throw an exception when the window was not displayed with ShowDialog, even if we're setting null.
+            if (ComponentDispatcher.IsThreadModal)
             {
-                // Setting DialogResult to a non-null value will close the window, we don't want to invoke Close after that.
-                window.DialogResult = DialogResult;
-                dialogResultUpdated = true;
+                if (DialogResult != window.DialogResult)
+                {
+                    // Setting DialogResult to a non-null value will close the window, we don't want to invoke Close after that.
+                    window.DialogResult = DialogResult;
+                    dialogResultUpdated = true;
+                }
             }
 
             if (DialogResult == null || !dialogResultUpdated)
