@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace SiliconStudio.Presentation.Core
 {
@@ -25,6 +27,18 @@ namespace SiliconStudio.Presentation.Core
         public static string SplitCamelCase(string input)
         {
             return Regex.Replace(input, "([a-z](?=[A-Z])|[A-Z](?=[A-Z][a-z]))", "$1 ");
+        }
+
+        /// <summary>
+        /// Creates a task that completes when the given window has been closed.
+        /// </summary>
+        /// <param name="window">The window to wait.</param>
+        /// <returns>A task that completes when the given window has been closed.</returns>
+        public static Task WaitForWindows(Window window)
+        {
+            var tcs = new TaskCompletionSource<int>();
+            window.Closed += (s, e) => tcs.TrySetResult(0);
+            return tcs.Task;
         }
     }
 }

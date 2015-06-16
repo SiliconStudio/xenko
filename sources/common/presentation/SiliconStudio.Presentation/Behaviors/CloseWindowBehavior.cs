@@ -1,10 +1,12 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interactivity;
-using System.Windows.Interop;
+
+using SiliconStudio.Presentation.Services;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -99,7 +101,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
             bool dialogResultUpdated = false;
             // Window.DialogResult setter will throw an exception when the window was not displayed with ShowDialog, even if we're setting null.
-            if (ComponentDispatcher.IsThreadModal)
+            if (IsModal(window))
             {
                 if (DialogResult != window.DialogResult)
                 {
@@ -108,11 +110,25 @@ namespace SiliconStudio.Presentation.Behaviors
                     dialogResultUpdated = true;
                 }
             }
+            else
+            {
+                var modalWindow = window as IModalWithResultDialog;
+                if (modalWindow != null)
+                {
+                    modalWindow.DialogResult = DialogResult ?? false ? Services.DialogResult.Ok : Services.DialogResult.Cancel;
+                }
+            }
+
 
             if (DialogResult == null || !dialogResultUpdated)
             {
                 window.Close();
             }
+        }
+
+        private static bool IsModal(Window window)
+        {
+            return (bool)typeof(Window).GetField("_showingAsDialog", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(window);
         }
     }
 }
