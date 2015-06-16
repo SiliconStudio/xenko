@@ -34,21 +34,37 @@ namespace SiliconStudio.Paradox.Games
             var gameWindowiOS = gameWindow as GameWindowiOS;
             if (gameWindowiOS != null)
             {
-                // Unlike Desktop and WinRT, the list of best devices are completely fixed in WP8 XAML
-                // So we return a single element
-                var deviceInfo = new GraphicsDeviceInformation
+                var graphicsAdapter = GraphicsAdapterFactory.Default;
+                var graphicsDeviceInfos = new List<GraphicsDeviceInformation>();
+                var preferredGraphicsProfiles = preferredParameters.PreferredGraphicsProfile;
+                foreach (var featureLevel in preferredGraphicsProfiles)
+                {
+                    // Check if this profile is supported.
+                    if (graphicsAdapter.IsProfileSupported(featureLevel))
                     {
-                        Adapter = GraphicsAdapterFactory.Default,
-                        GraphicsProfile = GraphicsProfile.Level_9_3,
-                        PresentationParameters = new PresentationParameters(gameWindowiOS.ClientBounds.Width,
-                                                                            gameWindowiOS.ClientBounds.Height,
-                                                                            gameWindowiOS.NativeWindow)
+                        // Everything is already created at this point, just transmit what has been done
+                        var deviceInfo = new GraphicsDeviceInformation
+                        {
+                            Adapter = GraphicsAdapterFactory.Default,
+                            GraphicsProfile = featureLevel,
+                            PresentationParameters = new PresentationParameters(gameWindowiOS.ClientBounds.Width,
+                                                                                gameWindowiOS.ClientBounds.Height,
+                                                                                gameWindowiOS.NativeWindow)
                             {
-                                DepthStencilFormat = PixelFormat.D16_UNorm,
+                                // TODO: PDX-364: Transmit what was actually created
+                                BackBufferFormat = preferredParameters.PreferredBackBufferFormat,
+                                DepthStencilFormat = preferredParameters.PreferredDepthStencilFormat,
                             }
-                    }; 
+                        };
 
-                return new List<GraphicsDeviceInformation>() { deviceInfo };
+                        graphicsDeviceInfos.Add(deviceInfo);
+
+                        // If the profile is supported, we are just using the first best one
+                        break;
+                    }
+                }
+
+                return graphicsDeviceInfos;
             }
             return base.FindBestDevices(preferredParameters);
         }

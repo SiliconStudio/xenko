@@ -131,10 +131,10 @@ namespace SiliconStudio.Core.Reflection
         }
 
         /// <summary>
-        /// Returnes true if the specified <paramref name="type"/> is a struct type.
+        /// Indicates whether the specified <paramref name="type"/> is a non-primitive struct type.
         /// </summary>
-        /// <param name="type"><see cref="Type"/> to be analyzed.</param>
-        /// <returns>true if the specified <paramref name="type"/> is a struct type; otehrwise false.</returns>
+        /// <param name="type">The <see cref="Type"/> to be analyzed.</param>
+        /// <returns><c>True</c> if the specified <paramref name="type"/> is a non-primitive struct type; otehrwise <c>False</c>.</returns>
         public static bool IsStruct(this Type type)
         {
             return type != null && type.GetTypeInfo().IsValueType && !type.GetTypeInfo().IsPrimitive && !type.GetTypeInfo().IsEnum;

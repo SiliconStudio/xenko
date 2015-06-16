@@ -18,12 +18,6 @@ namespace SiliconStudio.Paradox.Rendering
         bool SupportPicking { get; }
 
         /// <summary>
-        /// Gets a value indicating whether this renderer is writing to the depth buffer
-        /// </summary>
-        /// <value><c>true</c> if [write to depth]; otherwise, <c>false</c>.</value>
-        bool IsWritingToDepth { get; }
-
-        /// <summary>
         /// Prepares a list of opaque and transparent <see cref="RenderItem"/>. See remarks.
         /// </summary>
         /// <param name="context">The context.</param>

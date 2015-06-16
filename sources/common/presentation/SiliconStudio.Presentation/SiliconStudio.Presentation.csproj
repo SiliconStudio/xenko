@@ -98,6 +98,7 @@
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="MarkupExtensions\FalseExtension.cs" />
+    <Compile Include="MarkupExtensions\IntExtension.cs" />
     <Compile Include="MarkupExtensions\TrueExtension.cs" />
     <Compile Include="ValueConverters\FormatString.cs" />
     <Compile Include="ValueConverters\ItemToIndex.cs" />

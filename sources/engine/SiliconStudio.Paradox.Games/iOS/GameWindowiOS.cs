@@ -76,6 +76,7 @@ namespace SiliconStudio.Paradox.Games
 
                     gameForm.ContextRenderingApi = contextRenderingApi;
                     contextAvailable = true;
+                    break;
                 }
                 catch (Exception)
                 {

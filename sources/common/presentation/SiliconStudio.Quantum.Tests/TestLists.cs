@@ -99,13 +99,7 @@ namespace SiliconStudio.Quantum.Tests
             var obj = new ClassWithLists();
             var container = new ModelContainer();
             IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
-            Console.WriteLine(model.PrintHierarchy());
-            foreach (var guid in container.Guids)
-            {
-                var node = container.GetModelNode(guid);
-                if (model != node)
-                    Console.WriteLine(node.PrintHierarchy());
-            }
+            Helper.PrintModelContainerContent(container, model);
 
             Assert.That(model.GetChild("IntList").Children.Count, Is.EqualTo(0));
             Assert.That(model.GetChild("IntList").Content.Value, Is.SameAs(obj.IntList));
@@ -122,26 +116,21 @@ namespace SiliconStudio.Quantum.Tests
             Assert.That(model.GetChild("ListOfSimpleStructLists").Children.Count, Is.EqualTo(0));
             Assert.That(model.GetChild("ListOfSimpleStructLists").Content.Value, Is.SameAs(obj.ListOfSimpleStructLists));
             Assert.That(model.GetChild("ListOfSimpleStructLists").Content.Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
-            foreach (var reference in (ReferenceEnumerable)model.GetChild("ListOfSimpleStructLists").Content.Reference)
+            foreach (var reference in model.GetChild("ListOfSimpleStructLists").Content.Reference.AsEnumerable)
             {
                 Assert.That(reference, Is.AssignableFrom(typeof(ObjectReference)));
             }
             Assert.That(model.GetChild("ListOfNestedStructLists").Children.Count, Is.EqualTo(0));
             Assert.That(model.GetChild("ListOfNestedStructLists").Content.Value, Is.SameAs(obj.ListOfNestedStructLists));
             Assert.That(model.GetChild("ListOfNestedStructLists").Content.Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
-            foreach (var reference in (ReferenceEnumerable)model.GetChild("ListOfNestedStructLists").Content.Reference)
+            foreach (var reference in model.GetChild("ListOfNestedStructLists").Content.Reference.AsEnumerable)
             {
                 Assert.That(reference, Is.AssignableFrom(typeof(ObjectReference)));
             }
 
             Assert.That(container.GetModelNode(obj.ClassList[0]), !Is.Null);
-            Assert.That(container.Guids.Count(), Is.EqualTo(14));
-            var visitor = new ModelConsistencyCheckVisitor(container.NodeBuilder);
-            visitor.Check((ModelNode)model, obj, typeof(ClassWithLists), true);
-            foreach (var node in container.Models)
-            {
-                visitor.Check((ModelNode)node, node.Content.Value, node.Content.Type, true);
-            }
+            Assert.That(container.Guids.Count(), Is.EqualTo(18));
+            Helper.ConsistencyCheck(container, obj);
         }
 
         [Test]
@@ -150,17 +139,8 @@ namespace SiliconStudio.Quantum.Tests
             var obj = new ClassWithNullLists();
             var container = new ModelContainer();
             IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
-            Console.WriteLine(model.PrintHierarchy());
-            foreach (var node in container.Guids.Select(container.GetModelNode).Where(x => model != x))
-            {
-                Console.WriteLine(node.PrintHierarchy());
-            }
-            var visitor = new ModelConsistencyCheckVisitor(container.NodeBuilder);
-            visitor.Check((ModelNode)model, obj, typeof(ClassWithNullLists), true);
-            foreach (var node in container.Models)
-            {
-                visitor.Check((ModelNode)node, node.Content.Value, node.Content.Type, true);
-            }
+            Helper.PrintModelContainerContent(container, model);
+            Helper.ConsistencyCheck(container, obj);
         }
 
         [Test]
@@ -175,12 +155,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.That(obj.IntList.Count, Is.EqualTo(4));
             Assert.That(obj.IntList[1], Is.EqualTo(42));
             Assert.That(obj.IntList[3], Is.EqualTo(26));
-            var visitor = new ModelConsistencyCheckVisitor(container.NodeBuilder);
-            visitor.Check((ModelNode)model, obj, typeof(ClassWithLists), true);
-            foreach (var node in container.Models)
-            {
-                visitor.Check((ModelNode)node, node.Content.Value, node.Content.Type, true);
-            }
+            Helper.ConsistencyCheck(container, obj);
         }
 
         [Test]
@@ -189,16 +164,12 @@ namespace SiliconStudio.Quantum.Tests
             var obj = new ClassWithLists();
             var container = new ModelContainer();
             IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
-            Console.WriteLine(model.PrintHierarchy());
+            Helper.PrintModelContainerContent(container, model);
             var objRef = ((ReferenceEnumerable)model.GetChild("ClassList").Content.Reference).First();
             objRef.TargetNode.GetChild("SecondValue").Content.Value = 32;
+            Helper.PrintModelContainerContent(container, model);
             Assert.That(obj.ClassList[0].SecondValue, Is.EqualTo(32));
-            var visitor = new ModelConsistencyCheckVisitor(container.NodeBuilder);
-            visitor.Check((ModelNode)model, obj, typeof(ClassWithLists), true);
-            foreach (var node in container.Models)
-            {
-                visitor.Check((ModelNode)node, node.Content.Value, node.Content.Type, true);
-            }
+            Helper.ConsistencyCheck(container, obj);
         }
 
         [Test]
@@ -207,16 +178,12 @@ namespace SiliconStudio.Quantum.Tests
             var obj = new ClassWithLists();
             var container = new ModelContainer();
             IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
-            Console.WriteLine(model.PrintHierarchy());
+            Helper.PrintModelContainerContent(container, model);
             var objRef = ((ReferenceEnumerable)model.GetChild("SimpleStructList").Content.Reference).First();
             objRef.TargetNode.GetChild("SecondValue").Content.Value = 32;
+            Helper.PrintModelContainerContent(container, model);
             Assert.That(obj.SimpleStructList[0].SecondValue, Is.EqualTo(32));
-            var visitor = new ModelConsistencyCheckVisitor(container.NodeBuilder);
-            visitor.Check((ModelNode)model, obj, typeof(ClassWithLists), true);
-            foreach (var node in container.Models)
-            {
-                visitor.Check((ModelNode)node, node.Content.Value, node.Content.Type, true);
-            }
+            Helper.ConsistencyCheck(container, obj);
         }
 
         [Test]
@@ -225,16 +192,15 @@ namespace SiliconStudio.Quantum.Tests
             var obj = new ClassWithLists();
             var container = new ModelContainer();
             IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
-            Console.WriteLine(model.PrintHierarchy());
+            Helper.PrintModelContainerContent(container, model);
             var objRef = ((ReferenceEnumerable)model.GetChild("NestedStructList").Content.Reference).First();
-            objRef.TargetNode.GetChild("Struct").GetChild("SecondValue").Content.Value = 32;
+            var structNode = container.GetModelNode(((ObjectReference)objRef.TargetNode.GetChild("Struct").Content.Reference).TargetGuid);
+            structNode.GetChild("SecondValue").Content.Value = 32;
+            Helper.PrintModelContainerContent(container, model);
             Assert.That(obj.NestedStructList[0].Struct.SecondValue, Is.EqualTo(32));
             var visitor = new ModelConsistencyCheckVisitor(container.NodeBuilder);
             visitor.Check((ModelNode)model, obj, typeof(ClassWithLists), true);
-            foreach (var node in container.Models)
-            {
-                visitor.Check((ModelNode)node, node.Content.Value, node.Content.Type, true);
-            }
+            Helper.ConsistencyCheck(container, obj);
         }
 
         [Test]
@@ -243,17 +209,13 @@ namespace SiliconStudio.Quantum.Tests
             var obj = new ClassWithLists();
             var container = new ModelContainer();
             IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
-            Console.WriteLine(model.PrintHierarchy());
+            Helper.PrintModelContainerContent(container, model);
             var listRef = ((ReferenceEnumerable)model.GetChild("ListOfSimpleStructLists").Content.Reference).Last();
             var objRef = ((ReferenceEnumerable)listRef.TargetNode.Content.Reference).Last();
             objRef.TargetNode.GetChild("SecondValue").Content.Value = 32;
+            Helper.PrintModelContainerContent(container, model);
             Assert.That(obj.ListOfSimpleStructLists[1][0].SecondValue, Is.EqualTo(32));
-            var visitor = new ModelConsistencyCheckVisitor(container.NodeBuilder);
-            visitor.Check((ModelNode)model, obj, typeof(ClassWithLists), true);
-            foreach (var node in container.Models)
-            {
-                visitor.Check((ModelNode)node, node.Content.Value, node.Content.Type, true);
-            }
+            Helper.ConsistencyCheck(container, obj);
         }
 
         [Test]
@@ -262,17 +224,14 @@ namespace SiliconStudio.Quantum.Tests
             var obj = new ClassWithLists();
             var container = new ModelContainer();
             IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
-            Console.WriteLine(model.PrintHierarchy());
+            Helper.PrintModelContainerContent(container, model);
             var listRef = ((ReferenceEnumerable)model.GetChild("ListOfNestedStructLists").Content.Reference).Last();
             var objRef = ((ReferenceEnumerable)listRef.TargetNode.Content.Reference).Last();
-            objRef.TargetNode.GetChild("Struct").GetChild("SecondValue").Content.Value = 32;
+            var structNode = container.GetModelNode(((ObjectReference)objRef.TargetNode.GetChild("Struct").Content.Reference).TargetGuid);
+            structNode.GetChild("SecondValue").Content.Value = 32;
+            Helper.PrintModelContainerContent(container, model);
             Assert.That(obj.ListOfNestedStructLists[1][0].Struct.SecondValue, Is.EqualTo(32));
-            var visitor = new ModelConsistencyCheckVisitor(container.NodeBuilder);
-            visitor.Check((ModelNode)model, obj, typeof(ClassWithLists), true);
-            foreach (var node in container.Models)
-            {
-                visitor.Check((ModelNode)node, node.Content.Value, node.Content.Type, true);
-            }
+            Helper.ConsistencyCheck(container, obj);
         }
     }
 }

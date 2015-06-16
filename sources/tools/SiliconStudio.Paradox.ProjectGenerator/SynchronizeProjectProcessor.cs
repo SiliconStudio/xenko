@@ -71,6 +71,15 @@ namespace SiliconStudio.Paradox.ProjectGenerator
                         itemGroup.Remove();
                 }
 
+                if (projectType == ProjectType.iOS)
+                {
+                    // Remove ProjectReference/Private (seems they cause problem for iOS deployment of unit tests)
+                    foreach (var projectReferencePrivate in newDoc.XPathSelectElements("/x:Project/x:ItemGroup/x:ProjectReference/x:Private", context.NamespaceManager).ToArray())
+                    {
+                        projectReferencePrivate.Remove();
+                    }
+                }
+
                 // Set newly generated document
                 context.Document = newDoc;
             }

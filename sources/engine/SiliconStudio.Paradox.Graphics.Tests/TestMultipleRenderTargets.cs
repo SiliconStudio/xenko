@@ -56,6 +56,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             {
                 new CameraComponent
                 {
+                    UseCustomAspectRatio = true,
                     AspectRatio = 8/4.8f,
                     FarClipPlane = 5,
                     NearClipPlane = 1,

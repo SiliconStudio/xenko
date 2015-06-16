@@ -185,12 +185,17 @@ namespace SiliconStudio.Paradox.Graphics
                         GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, resourceId);
                         GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, depth, Width, Height);
 
-                        // separate stencil
                         if (stencil != 0)
                         {
+                            // separate stencil
                             GL.GenRenderbuffers(1, out resourceIdStencil);
                             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, resourceIdStencil);
                             GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, stencil, Width, Height);
+                        }
+                        else if (HasStencil)
+                        {
+                            // depth+stencil in a single texture
+                            resourceIdStencil = resourceId;
                         }
 
                         GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);

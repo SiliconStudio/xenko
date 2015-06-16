@@ -81,9 +81,9 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             spriteBatch.End();
 
             // copy texture on screen
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsDevice.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsDevice.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
             spriteBatch.Begin();
             spriteBatch.Draw(offlineTarget, new RectangleF(0, 0, width, height), Color.White);

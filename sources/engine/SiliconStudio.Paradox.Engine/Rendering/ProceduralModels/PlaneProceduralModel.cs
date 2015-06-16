@@ -22,6 +22,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// </summary>
         public PlaneProceduralModel()
         {
+            Normal = NormalDirection.UpY;
             Size = new Vector2(1.0f);
             Tessellation = new Int2(1);
             UVScales = new Vector2(1);
@@ -57,18 +58,25 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         [Display("UV Scales")]
         public Vector2 UVScales { get; set; }
 
+
+        [DataMember(40)]
+        [DefaultValue(NormalDirection.UpZ)]
+        [Display("Normal")]
+        public NormalDirection Normal { get; set; }
+
+
         /// <summary>
         /// Gets or sets value indicating if a back face should be added.
         /// </summary>
         /// <userdoc>Check the this combo box to generate a back face to the plane</userdoc>
-        [DataMember(40)]
+        [DataMember(50)]
         [DefaultValue(1.0f)]
         [Display("Back Face")]
         public bool GenerateBackFace { get; set; }
 
         protected override GeometricMeshData<VertexPositionNormalTexture> CreatePrimitiveMeshData()
         {
-            return GeometricPrimitive.Plane.New(Size.X, Size.Y, Tessellation.X, Tessellation.Y, UVScales.X, UVScales.Y, GenerateBackFace);
+            return GeometricPrimitive.Plane.New(Size.X, Size.Y, Tessellation.X, Tessellation.Y, UVScales.X, UVScales.Y, GenerateBackFace, false, Normal);
         }
     }
 }

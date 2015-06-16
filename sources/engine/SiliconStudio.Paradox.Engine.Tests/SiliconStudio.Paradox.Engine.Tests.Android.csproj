@@ -191,7 +191,6 @@
     <Compile Include="TestCamera.cs" />
     <Compile Include="TestSpriteAnimation.cs" />
     <Compile Include="TestTesselation.cs" />
-    <Compile Include="TestTextureAlphaSeparation.cs" />
     <None Include="Build\TestSerializer.cs" />
     <Compile Include="Build\TestStorage.cs" />
     <Compile Include="Module.cs" />

@@ -24,6 +24,7 @@ Hierarchy:
     Asset: !EntityAsset
         Id: 00000000-0000-0000-0000-000000000000
         Tags: []
+        Source: 
         ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
         Hierarchy:
             RootEntity: 0554f357-f330-40fa-a659-2de27786ad4c

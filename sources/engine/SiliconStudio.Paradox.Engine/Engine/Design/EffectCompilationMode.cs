@@ -1,4 +1,5 @@
 using System;
+using SiliconStudio.Core;
 using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Engine.Design
@@ -6,7 +7,6 @@ namespace SiliconStudio.Paradox.Engine.Design
     /// <summary>
     /// Defines how <see cref="EffectSystem.CreateEffectCompiler"/> tries to create compiler.
     /// </summary>
-    [Flags]
     public enum EffectCompilationMode
     {
         /// <summary>

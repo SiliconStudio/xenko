@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Processors;
@@ -36,10 +37,16 @@ namespace SiliconStudio.Paradox.Rendering
 
         public EntityGroup Group { get; private set; }
 
+        public bool IsGeometryInverted { get; private set; }
+
         internal void Update()
         {
-            var scale = TransformComponent.WorldMatrix.ScaleVector;
-            var isGeomertyInverted = scale.X * scale.Y * scale.Z < 0;
+            Vector3 scale;
+            Vector3 translation;
+            Quaternion rotation;
+
+            TransformComponent.WorldMatrix.Decompose(out scale, out rotation, out translation);
+            IsGeometryInverted = scale.X * scale.Y * scale.Z < 0;
 
             Group = Entity.Group;
             var previousModel = Model;
@@ -55,7 +62,6 @@ namespace SiliconStudio.Paradox.Rendering
                         // TODO: Should we dispose something here?
                         renderMeshes.Clear();
                         renderMeshes.TransformUpdated = false;
-                        renderMeshes.IsGeomertyInverted = isGeomertyInverted;
                     }
                 }
             }
@@ -67,7 +73,6 @@ namespace SiliconStudio.Paradox.Rendering
                     if (renderMeshes != null)
                     {
                         renderMeshes.TransformUpdated = false;
-                        renderMeshes.IsGeomertyInverted = isGeomertyInverted;
                     }
                 }
             }
@@ -109,8 +114,6 @@ namespace SiliconStudio.Paradox.Rendering
     internal class RenderMeshCollection : List<RenderMesh>
     {
         public bool TransformUpdated { get; set; }
-
-        public bool IsGeomertyInverted { get; set; }
     }
 
 }
