@@ -29,15 +29,11 @@ namespace SiliconStudio.Paradox.Rendering
             Renderer = renderer;
             DrawContext = drawContext;
 
-            // If depth less than 0, than set it to 0
-            if (depth < MathUtil.ZeroTolerance)
-            {
-                depth = 0.0f;
-            }
-
             unsafe
             {
                 Depth = *(int*)&depth;
+                if (Depth < 0)
+                    Depth = (1 << 31) - Depth;
             }
         }
 
