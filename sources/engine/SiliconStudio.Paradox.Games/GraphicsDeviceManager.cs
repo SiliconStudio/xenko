@@ -613,7 +613,7 @@ namespace SiliconStudio.Paradox.Games
             GraphicsProfile availableGraphicsProfile;
             if (!IsPreferredProfileAvailable(preferredParameters.PreferredGraphicsProfile, out availableGraphicsProfile))
             {
-                throw new InvalidOperationException(string.Format("Graphics profiles [{0}] are not supported by the adapter. The highest available profile is [{1}].", string.Join(",", preferredParameters.PreferredGraphicsProfile), availableGraphicsProfile));
+                throw new InvalidOperationException(string.Format("Graphics profiles [{0}] are not supported by the device. The highest available profile is [{1}].", string.Join(", ", preferredParameters.PreferredGraphicsProfile), availableGraphicsProfile));
             }
 
             var devices = graphicsDeviceFactory.FindBestDevices(preferredParameters);
