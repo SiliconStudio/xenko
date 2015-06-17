@@ -100,13 +100,16 @@ namespace SiliconStudio.Assets
                 dependencies.Dispose();
             }
 
-            foreach (var assembly in assemblyContainer.LoadedAssemblies)
+            var loadedAssemblies = assemblyContainer.LoadedAssemblies;
+            for (int index = loadedAssemblies.Count - 1; index >= 0; index--)
             {
+                var loadedAssembly = loadedAssemblies[index];
+
                 // Unregisters assemblies that have been registered in Package.Load => Package.LoadAssemblyReferencesForPackage
-                AssemblyRegistry.Unregister(assembly.Value);
+                AssemblyRegistry.Unregister(loadedAssembly.Assembly);
 
                 // Unload assembly
-                assemblyContainer.UnloadAssembly(assembly.Value);
+                assemblyContainer.UnloadAssembly(loadedAssembly.Assembly);
             }
         }
 
