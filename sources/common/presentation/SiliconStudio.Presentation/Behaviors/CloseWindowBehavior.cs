@@ -6,8 +6,6 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interactivity;
 
-using SiliconStudio.Presentation.Services;
-
 namespace SiliconStudio.Presentation.Behaviors
 {
     /// <summary>
@@ -110,15 +108,10 @@ namespace SiliconStudio.Presentation.Behaviors
                     dialogResultUpdated = true;
                 }
             }
-            else
+            else if (DialogResult != null)
             {
-                var modalWindow = window as IModalWithResultDialog;
-                if (modalWindow != null)
-                {
-                    modalWindow.DialogResult = DialogResult ?? false ? Services.DialogResult.Ok : Services.DialogResult.Cancel;
-                }
+                throw new InvalidOperationException("The DialogResult can be set by a CloseWindowBehavior only if the window is modal");
             }
-
 
             if (DialogResult == null || !dialogResultUpdated)
             {
