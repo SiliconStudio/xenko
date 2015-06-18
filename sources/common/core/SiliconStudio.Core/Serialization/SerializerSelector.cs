@@ -43,9 +43,10 @@ namespace SiliconStudio.Core.Serialization
     /// </summary>
     public class SerializerSelector
     {
-        private readonly List<DataSerializerFactory> dataSerializerFactories = new List<DataSerializerFactory>();
-        private readonly Dictionary<Type, DataSerializer> dataSerializersByType = new Dictionary<Type, DataSerializer>();
-        private readonly Dictionary<ObjectId, DataSerializer> dataSerializersByTypeId = new Dictionary<ObjectId, DataSerializer>();
+        private readonly bool reuseReferences;
+        private readonly string[] profiles;
+        private Dictionary<Type, DataSerializer> dataSerializersByType = new Dictionary<Type, DataSerializer>();
+        private Dictionary<ObjectId, DataSerializer> dataSerializersByTypeId = new Dictionary<ObjectId, DataSerializer>();
 
         /// <summary>
         /// Gets the default instance of Serializer.
@@ -58,19 +59,35 @@ namespace SiliconStudio.Core.Serialization
         public static SerializerSelector Asset { get; internal set; }
         public static SerializerSelector AssetWithReuse { get; internal set; }
 
+        public IEnumerable<string> Profiles { get { return profiles; } }
+
+        private bool invalidated;
+
         static SerializerSelector()
         {
-            Default = new SerializerSelector();
-            Default.RegisterProfile("Default");
+            Default = new SerializerSelector("Default");
 
-            Asset = new SerializerSelector();
-            Asset.RegisterProfile("Default");
-            Asset.RegisterProfile("Asset");
+            Asset = new SerializerSelector("Default", "Asset");
 
-            AssetWithReuse = new SerializerSelector();
-            AssetWithReuse.RegisterProfile("Default");
-            AssetWithReuse.RegisterProfile("Asset");
-            AssetWithReuse.ReuseReferences = true;
+            AssetWithReuse = new SerializerSelector(true, "Default", "Asset");
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SerializerSelector"/> class.
+        /// </summary>
+        /// <param name="reuseReferences">if set to <c>true</c> [reuse references] (allow cycles in the object graph).</param>
+        /// <param name="profiles">The profiles.</param>
+        public SerializerSelector(bool reuseReferences, params string[] profiles)
+        {
+            this.reuseReferences = reuseReferences;
+            this.profiles = profiles;
+            invalidated = true;
+            DataSerializerFactory.RegisterSerializerSelector(this);
+            UpdateDataSerializers();
+        }
+
+        public SerializerSelector(params string[] profiles) : this(false, profiles)
+        {
         }
 
         /// <summary>
@@ -80,72 +97,114 @@ namespace SiliconStudio.Core.Serialization
         /// <value>
         ///   <c>true</c> if [serialization reuses references]; otherwise, <c>false</c>.
         /// </value>
-        public bool ReuseReferences { get; set; }
-
-        public bool HashOnly { get; set; }
-
-        public SerializerSelector RegisterProfile(string profileName)
-        {
-            RegisterFactory(DataSerializerFactory.CreateDataSerializerFactory(profileName));
-            return this;
-        }
-
-        /// <summary>
-        /// Registers the <see cref="DataSerializer{T}"/> factory.
-        /// </summary>
-        /// <param name="factory">The factory.</param>
-        public SerializerSelector RegisterFactory(DataSerializerFactory factory)
-        {
-            dataSerializerFactories.Add(factory);
-            return this;
-        }
-
-        /// <summary>
-        /// Registers the serializer.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="serializer">The serializer.</param>
-        public SerializerSelector RegisterSerializer<T>(DataSerializer<T> serializer)
-        {
-            lock (dataSerializersByType)
-            {
-                PrepareSerializer(serializer);
-                dataSerializersByType[typeof(T)] = serializer;
-                dataSerializersByTypeId[serializer.SerializationTypeId] = serializer;
-            }
-
-            return this;
-        }
+        public bool ReuseReferences { get { return reuseReferences; } }
 
         public DataSerializer GetSerializer(ref ObjectId typeId)
         {
             lock (dataSerializersByType)
             {
+                if (invalidated)
+                    UpdateDataSerializers();
+
                 DataSerializer dataSerializer;
-                if (!dataSerializersByTypeId.TryGetValue(typeId, out dataSerializer))
+                dataSerializersByTypeId.TryGetValue(typeId, out dataSerializer);
+                return dataSerializer;
+            }
+        }
+
+        /// <summary>
+        /// Gets the serializer.
+        /// </summary>
+        /// <param name="type">The type that you want to (de)serialize.</param>
+        /// <returns>The <see cref="DataSerializer{T}"/> for this type if it exists or can be created, otherwise null.</returns>
+        public DataSerializer GetSerializer(Type type)
+        {
+            lock (dataSerializersByType)
+            {
+                if (invalidated)
+                    UpdateDataSerializers();
+
+                DataSerializer dataSerializer;
+                dataSerializersByType.TryGetValue(type, out dataSerializer);
+                return dataSerializer;
+            }
+        }
+
+        /// <summary>
+        /// Gets the serializer.
+        /// </summary>
+        /// <typeparam name="T">The type that you want to (de)serialize.</typeparam>
+        /// <returns>The <see cref="DataSerializer{T}"/> for this type if it exists or can be created, otherwise null.</returns>
+        public DataSerializer<T> GetSerializer<T>()
+        {
+            return (DataSerializer<T>)GetSerializer(typeof(T));
+        }
+
+        internal void Invalidate()
+        {
+            lock (dataSerializersByType)
+            {
+                invalidated = true;
+            }
+        }
+
+        private void UpdateDataSerializers()
+        {
+            if (invalidated)
+            {
+                var oldDataSerializersByType = dataSerializersByType;
+                var oldDataSerializersByTypeId = dataSerializersByTypeId;
+
+                dataSerializersByType = new Dictionary<Type, DataSerializer>(oldDataSerializersByType);
+                dataSerializersByTypeId = new Dictionary<ObjectId, DataSerializer>(oldDataSerializersByTypeId);
+
+                invalidated = false;
+
+                // Create list of combined serializers
+                var combinedSerializers = new Dictionary<Type, AssemblySerializerEntry>();
+
+                lock (DataSerializerFactory.Lock)
                 {
-                    // Iterate over IDataSerializerFactory
-                    for (int index = dataSerializerFactories.Count - 1; index >= 0; index--)
+                    foreach (var profile in profiles)
                     {
-                        var dataSerializerFactory = dataSerializerFactories[index];
-                        if (!dataSerializerFactory.CanSerialize(ref typeId))
-                            continue;
-
-                        // Found a serializer, initialize it
-                        dataSerializer = dataSerializerFactory.GetSerializer(ref typeId);
-                        dataSerializersByType[dataSerializer.SerializationType] = dataSerializer;
-                        dataSerializersByTypeId[typeId] = dataSerializer;
-
-                        if (dataSerializer != null)
-                            PrepareSerializer(dataSerializer);
-
-                        return dataSerializer;
+                        Dictionary<Type, AssemblySerializerEntry> serializersPerProfile;
+                        if (DataSerializerFactory.DataSerializersPerProfile.TryGetValue(profile, out serializersPerProfile))
+                        {
+                            foreach (var serializer in serializersPerProfile)
+                            {
+                                combinedSerializers[serializer.Key] = serializer.Value;
+                            }
+                        }
                     }
-
-                    return null;
                 }
 
-                return dataSerializer;
+                var newSerializers = new List<DataSerializer>();
+
+                // Create new list of serializers (it will create new ones, and remove unused ones)
+                foreach (var serializer in combinedSerializers)
+                {
+                    DataSerializer dataSerializer;
+                    if (!oldDataSerializersByType.TryGetValue(serializer.Key, out dataSerializer))
+                    {
+                        if (serializer.Value.SerializerType != null)
+                        {
+                            // New serializer, let's create it
+                            dataSerializer = (DataSerializer)Activator.CreateInstance(serializer.Value.SerializerType);
+                            dataSerializer.SerializationTypeId = serializer.Value.Id;
+
+                            newSerializers.Add(dataSerializer);
+                        }
+                    }
+
+                    dataSerializersByType[serializer.Key] = dataSerializer;
+                    dataSerializersByTypeId[serializer.Value.Id] = dataSerializer;
+                }
+
+                // Prepare all serializers
+                foreach (var dataSerializer in newSerializers)
+                {
+                    PrepareSerializer(dataSerializer);
+                }
             }
         }
 
@@ -161,54 +220,6 @@ namespace SiliconStudio.Core.Serialization
 
             if (dataSerializer is IDataSerializerInitializer)
                 ((IDataSerializerInitializer)dataSerializer).Initialize(this);
-        }
-
-        /// <summary>
-        /// Gets the serializer.
-        /// </summary>
-        /// <param name="type">The type that you want to (de)serialize.</param>
-        /// <returns>The <see cref="DataSerializer{T}"/> for this type if it exists or can be created, otherwise null.</returns>
-        public DataSerializer GetSerializer(Type type)
-        {
-            lock (dataSerializersByType)
-            {
-                DataSerializer dataSerializer;
-                if (!dataSerializersByType.TryGetValue(type, out dataSerializer))
-                {
-                    // Iterate over IDataSerializerFactory
-                    for (int index = dataSerializerFactories.Count - 1; index >= 0; index--)
-                    {
-                        var dataSerializerFactory = dataSerializerFactories[index];
-                        if (!dataSerializerFactory.CanSerialize(type))
-                            continue;
-
-                        // Found a serializer, initialize it
-                        var dataSerializerWithId = dataSerializerFactory.GetSerializer(type);
-                        dataSerializer = dataSerializerWithId.Value;
-                        dataSerializersByType[type] = dataSerializer;
-                        dataSerializersByTypeId[dataSerializerWithId.Key] = dataSerializer;
-
-                        if (dataSerializer != null)
-                            PrepareSerializer(dataSerializer);
-
-                        return dataSerializer;
-                    }
-
-                    return null;
-                }
-
-                return dataSerializer;
-            }
-        }
-
-        /// <summary>
-        /// Gets the serializer.
-        /// </summary>
-        /// <typeparam name="T">The type that you want to (de)serialize.</typeparam>
-        /// <returns>The <see cref="DataSerializer{T}"/> for this type if it exists or can be created, otherwise null.</returns>
-        public DataSerializer<T> GetSerializer<T>()
-        {
-            return (DataSerializer<T>)GetSerializer(typeof(T));
         }
     }
 }
