@@ -81,6 +81,8 @@ namespace SiliconStudio.Paradox.Games.Android
 
             switch (RequestedDepthStencilFormat)
             {
+                case PixelFormat.None:
+                    break;
                 case PixelFormat.D16_UNorm:
                     requestedDepth = 16;
                     break;

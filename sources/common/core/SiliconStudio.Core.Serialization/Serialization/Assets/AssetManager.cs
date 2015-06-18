@@ -667,7 +667,7 @@ namespace SiliconStudio.Core.Serialization.Assets
             }
 
             // Log error
-            Log.Error("Asset [{0}] could not be found.");
+            Log.Error("Asset [{0}] could not be found.", url);
         }
     }
 }

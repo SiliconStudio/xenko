@@ -32,6 +32,7 @@ namespace SiliconStudio.Paradox.Engine
         private readonly GameFontSystem gameFontSystem;
 
         private readonly LogListener logListener;
+        private GameSettings gameSettings; // for easy transfer from PrepareContext to Initialize
 
         /// <summary>
         /// Gets the graphics device manager.
@@ -210,9 +211,9 @@ namespace SiliconStudio.Paradox.Engine
                 GlobalLogger.GlobalMessageLogged -= logListener;
         }
 
-        protected internal override void PrepareRun()
+        protected internal override void PrepareContext()
         {
-            base.PrepareRun();
+            base.PrepareContext();
 
             // Init assets
             if (Context.InitializeDatabase)
@@ -222,21 +223,29 @@ namespace SiliconStudio.Paradox.Engine
                 // Load several default settings
                 if (AutoLoadDefaultSettings && Asset.Exists(GameSettings.AssetUrl))
                 {
-                    var settings = Asset.Load<GameSettings>(GameSettings.AssetUrl);
+                    gameSettings = Asset.Load<GameSettings>(GameSettings.AssetUrl);
+
                     var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
-                    if (settings.DefaultGraphicsProfileUsed > 0) deviceManager.PreferredGraphicsProfile = new[] { settings.DefaultGraphicsProfileUsed };
-                    if (settings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = settings.DefaultBackBufferWidth;
-                    if (settings.DefaultBackBufferHeight > 0) deviceManager.PreferredBackBufferHeight = settings.DefaultBackBufferHeight;
-                    SceneSystem.InitialSceneUrl = settings.DefaultSceneUrl;
+                    if (gameSettings.DefaultGraphicsProfileUsed > 0) deviceManager.PreferredGraphicsProfile = new[] { gameSettings.DefaultGraphicsProfileUsed };
+                    if (gameSettings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = gameSettings.DefaultBackBufferWidth;
+                    if (gameSettings.DefaultBackBufferHeight > 0) deviceManager.PreferredBackBufferHeight = gameSettings.DefaultBackBufferHeight;
+                    SceneSystem.InitialSceneUrl = gameSettings.DefaultSceneUrl;
                 }
             }
         }
 
         protected override void Initialize()
         {
-            base.Initialize(); 
+            base.Initialize();
 
             EffectSystem = new EffectSystem(Services);
+
+            // If requested in game settings, compile effects remotely and/or notify new shader requests
+            if (gameSettings != null)
+            {
+                EffectSystem.Compiler = EffectSystem.CreateEffectCompiler(EffectSystem, gameSettings.PackageId, gameSettings.EffectCompilation, gameSettings.RecordUsedEffects);
+            }
+
             GameSystems.Add(EffectSystem);
 
             GameSystems.Add(SceneSystem);

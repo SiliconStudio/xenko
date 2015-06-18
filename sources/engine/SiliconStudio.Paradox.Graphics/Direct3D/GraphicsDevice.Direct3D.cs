@@ -10,6 +10,7 @@ using SharpDX.Direct3D11;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Shaders;
+using SharpDX.Mathematics.Interop;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -41,7 +42,7 @@ namespace SiliconStudio.Paradox.Graphics
         private SharpDX.Direct3D11.InputLayout currentInputLayout;
         private VertexArrayObject currentVertexArrayObject;
         private VertexArrayLayout currentVertexArrayLayout;
-        private readonly SharpDX.ViewportF[] currentNativeViewports = new SharpDX.ViewportF[SimultaneousRenderTargetCount];
+        private readonly RawViewportF[] currentNativeViewports = new RawViewportF[SimultaneousRenderTargetCount];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphicsDevice" /> class using the default GraphicsAdapter
@@ -181,7 +182,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <param name="profileColor">Color of the profile.</param>
         /// <param name="name">The name.</param>
-        public void BeginProfile(Color4 profileColor, string name)
+        public unsafe void BeginProfile(Color4 profileColor, string name)
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             if (nativeDeviceProfiler != null)
@@ -190,7 +191,8 @@ namespace SiliconStudio.Paradox.Graphics
             }
             else
             {
-                SharpDX.Direct3D.PixHelper.BeginEvent(new SharpDX.ColorBGRA(profileColor.ToBgra()), name);
+                var rawColor = profileColor.ToBgra();
+                SharpDX.Direct3D.PixHelper.BeginEvent(*(RawColorBGRA*)(&rawColor), name);
             }
 #endif
         }
@@ -230,7 +232,7 @@ namespace SiliconStudio.Paradox.Graphics
         {
             if (renderTarget == null) throw new ArgumentNullException("renderTarget");
 
-            NativeDeviceContext.ClearRenderTargetView(renderTarget.NativeRenderTargetView, *(SharpDX.Color4*)&color);
+            NativeDeviceContext.ClearRenderTargetView(renderTarget.NativeRenderTargetView, *(RawColor4*)&color);
         }
 
         /// <summary>
@@ -245,7 +247,7 @@ namespace SiliconStudio.Paradox.Graphics
             if (buffer == null) throw new ArgumentNullException("buffer");
             if (buffer.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting buffer supporting UAV", "buffer");
 
-            NativeDeviceContext.ClearUnorderedAccessView(buffer.NativeUnorderedAccessView, *(SharpDX.Vector4*)&value);
+            NativeDeviceContext.ClearUnorderedAccessView(buffer.NativeUnorderedAccessView, *(RawVector4*)&value);
         }
 
         /// <summary>
@@ -260,7 +262,7 @@ namespace SiliconStudio.Paradox.Graphics
             if (buffer == null) throw new ArgumentNullException("buffer");
             if (buffer.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting buffer supporting UAV", "buffer");
 
-            NativeDeviceContext.ClearUnorderedAccessView(buffer.NativeUnorderedAccessView, *(SharpDX.Int4*)&value);
+            NativeDeviceContext.ClearUnorderedAccessView(buffer.NativeUnorderedAccessView, *(RawInt4*)&value);
         }
 
         /// <summary>
@@ -275,7 +277,7 @@ namespace SiliconStudio.Paradox.Graphics
             if (buffer == null) throw new ArgumentNullException("buffer");
             if (buffer.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting buffer supporting UAV", "buffer");
 
-            NativeDeviceContext.ClearUnorderedAccessView(buffer.NativeUnorderedAccessView, *(SharpDX.Int4*)&value);
+            NativeDeviceContext.ClearUnorderedAccessView(buffer.NativeUnorderedAccessView, *(RawInt4*)&value);
         }
 
         /// <summary>
@@ -290,7 +292,7 @@ namespace SiliconStudio.Paradox.Graphics
             if (texture == null) throw new ArgumentNullException("texture");
             if (texture.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting buffer supporting UAV", "texture");
 
-            NativeDeviceContext.ClearUnorderedAccessView(texture.NativeUnorderedAccessView, *(SharpDX.Vector4*)&value);
+            NativeDeviceContext.ClearUnorderedAccessView(texture.NativeUnorderedAccessView, *(RawVector4*)&value);
         }
 
         /// <summary>
@@ -305,7 +307,7 @@ namespace SiliconStudio.Paradox.Graphics
             if (texture == null) throw new ArgumentNullException("texture");
             if (texture.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting buffer supporting UAV", "texture");
 
-            NativeDeviceContext.ClearUnorderedAccessView(texture.NativeUnorderedAccessView, *(SharpDX.Int4*)&value);
+            NativeDeviceContext.ClearUnorderedAccessView(texture.NativeUnorderedAccessView, *(RawInt4*)&value);
         }
 
         /// <summary>
@@ -320,7 +322,7 @@ namespace SiliconStudio.Paradox.Graphics
             if (texture == null) throw new ArgumentNullException("texture");
             if (texture.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting buffer supporting UAV", "texture");
 
-            NativeDeviceContext.ClearUnorderedAccessView(texture.NativeUnorderedAccessView, *(SharpDX.Int4*)&value);
+            NativeDeviceContext.ClearUnorderedAccessView(texture.NativeUnorderedAccessView, *(RawInt4*)&value);
         }
 
         private void ClearStateImpl()
@@ -666,10 +668,10 @@ namespace SiliconStudio.Paradox.Graphics
         public unsafe void SetScissorRectangles(params Rectangle[] scissorRectangles)
         {
             if (scissorRectangles == null) throw new ArgumentNullException("scissorRectangles");
-            var localScissorRectangles = new SharpDX.Rectangle[scissorRectangles.Length];
+            var localScissorRectangles = new RawRectangle[scissorRectangles.Length];
             for (int i = 0; i < scissorRectangles.Length; i++)
             {
-                localScissorRectangles[i] = new SharpDX.Rectangle(scissorRectangles[i].X, scissorRectangles[i].Y, scissorRectangles[i].Width, scissorRectangles[i].Height);
+                localScissorRectangles[i] = new RawRectangle(scissorRectangles[i].X, scissorRectangles[i].Y, scissorRectangles[i].Right, scissorRectangles[i].Bottom);
             }
             NativeDeviceContext.Rasterizer.SetScissorRectangles(localScissorRectangles);
         }

@@ -276,10 +276,7 @@ namespace SiliconStudio.Core.IO
                 // Note: Maybe we should release the lock quickly so that two threads can read at the same time?
                 // Or if the previously described case doesn't happen, maybe no lock at all is required?
                 // Otherwise, last possibility would be deterministic filesize (with size encoded at the beginning of each block).
-#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
-                if (stream is FileStream)
-                    LockFile(position, long.MaxValue, false);
-#endif
+                LockFile(position, long.MaxValue, false);
 
                 try
                 {
@@ -289,11 +286,8 @@ namespace SiliconStudio.Core.IO
                 }
                 finally
                 {
-#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
                     // Release the lock
-                    if (stream is FileStream)
-                        UnlockFile(position, long.MaxValue);
-#endif
+                    UnlockFile(position, long.MaxValue);
                 }
 
                 return true;
@@ -303,7 +297,9 @@ namespace SiliconStudio.Core.IO
         private void LockFile(long offset, long count, bool exclusive)
         {
 #if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
-            var fileStream = (FileStream)stream;
+            var fileStream = stream as FileStream;
+            if (fileStream == null)
+                return;
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             var countLow = (uint)count;
@@ -343,7 +339,9 @@ namespace SiliconStudio.Core.IO
         private void UnlockFile(long offset, long count)
         {
 #if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
-            var fileStream = (FileStream)stream;
+            var fileStream = stream as FileStream;
+            if (fileStream == null)
+                return;
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             var countLow = (uint)count;
@@ -374,6 +372,9 @@ namespace SiliconStudio.Core.IO
 
             // Precache everything in a MemoryStream
             var length = (int)(fileSize - stream.Position);
+            if (length == 0)
+                return;
+
             var bufferToRead = new byte[length];
             stream.Read(bufferToRead, 0, length);
             var memoryStream = new MemoryStream(bufferToRead);

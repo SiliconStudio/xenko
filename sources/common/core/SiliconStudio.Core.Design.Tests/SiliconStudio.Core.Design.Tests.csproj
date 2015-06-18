@@ -31,6 +31,7 @@
     <Compile Include="TestDataMemberVisitor.cs" />
     <Compile Include="TestMemberPathBase.cs" />
     <Compile Include="TestNamingHelper.cs" />
+    <Compile Include="TestSettings.cs" />
     <Compile Include="TestTypeConverter.cs" />
     <Compile Include="TestUPath.cs" />
     <Compile Include="Module.cs" />

@@ -202,9 +202,9 @@ namespace SiliconStudio.AssemblyProcessor
                             throw new InvalidOperationException("Expecting option target framework for iOS");
                         }
 
-                        var monoAndroidPath = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Reference Assemblies\Microsoft\Framework\MonoTouch");
-                        frameworkFolder = Path.Combine(monoAndroidPath, "v1.0");
-                        var additionalFrameworkFolder = Path.Combine(monoAndroidPath, TargetFramework);
+                        var monoTouchPath = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Reference Assemblies\Microsoft\Framework\Xamarin.iOS");
+                        frameworkFolder = Path.Combine(monoTouchPath, "v1.0");
+                        var additionalFrameworkFolder = Path.Combine(monoTouchPath, TargetFramework);
                         assemblyResolver.AddSearchDirectory(additionalFrameworkFolder);
                         assemblyResolver.AddSearchDirectory(frameworkFolder);
 

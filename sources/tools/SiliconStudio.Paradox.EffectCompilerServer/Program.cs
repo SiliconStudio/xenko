@@ -3,99 +3,65 @@
 
 using System;
 using System.IO;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using SiliconStudio.Core.IO;
-using SiliconStudio.Paradox.Assets.Effect;
+using System.Reflection;
+using Mono.Options;
 using SiliconStudio.Paradox.Engine.Network;
-using SiliconStudio.Paradox.Shaders.Compiler;
-using SiliconStudio.Paradox.Shaders.Compiler.Internals;
 
 namespace SiliconStudio.Paradox.EffectCompilerServer
 {
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
-            // Setup adb port forward
-            // TODO: Currently hardcoded
-            ShellHelper.RunProcessAndGetOutput(@"adb", @"forward tcp:1244 tcp:1244");
+            var exeName = Path.GetFileName(Assembly.GetExecutingAssembly().Location);
+            var showHelp = false;
+            int exitCode = 0;
 
-            var shaderCompilerServer = new ShaderCompilerHost();
+            var p = new OptionSet
+                {
+                    "Copyright (C) 2011-2015 Silicon Studio Corporation. All Rights Reserved",
+                    "Paradox Effect Compiler Server - Version: "
+                    +
+                    String.Format(
+                        "{0}.{1}.{2}",
+                        typeof(Program).Assembly.GetName().Version.Major,
+                        typeof(Program).Assembly.GetName().Version.Minor,
+                        typeof(Program).Assembly.GetName().Version.Build) + string.Empty,
+                    string.Format("Usage: {0}", exeName),
+                    string.Empty,
+                    "=== Options ===",
+                    string.Empty,
+                    { "h|help", "Show this message and exit", v => showHelp = v != null },
+                };
 
-            // Wait and process messages
-            // TODO: Rearrange how thread/async is done
-            // TODO: We should support both client and server mode for socket connection
-            while (true)
+            try
             {
-                shaderCompilerServer.TryConnect(1244).Wait();
+                var commandArgs = p.Parse(args);
+                if (showHelp)
+                {
+                    p.WriteOptionDescriptions(Console.Out);
+                    return 0;
+                }
+
+                // Make sure path exists
+                if (commandArgs.Count > 0)
+                    throw new OptionException("This command expect no additional arguments", "");
+
+                var effectCompilerServer = new EffectCompilerServer();
+                effectCompilerServer.TryConnect("127.0.0.1", RouterClient.DefaultPort);
+
+                // Forbid process to terminate (unless ctrl+c)
+                while (true) Console.Read();
             }
-        }
-    }
-
-    /// <summary>
-    /// Shader compiler host (over network)
-    /// </summary>
-    public class ShaderCompilerHost
-    {
-        private SocketContext socketContext;
-        private TaskCompletionSource<bool> clientConnectedTCS;
-
-        public Task TryConnect(int port)
-        {
-            socketContext = new SocketContext();
-            clientConnectedTCS = new TaskCompletionSource<bool>();
-
-            socketContext.Connected = (clientSocketContext) =>
+            catch (Exception e)
             {
-                // Create an effect compiler per connection
-                var effectCompiler = new EffectCompiler();
+                Console.WriteLine("{0}: {1}", exeName, e);
+                if (e is OptionException)
+                    p.WriteOptionDescriptions(Console.Out);
+                exitCode = 1;
+            }
 
-                var tempFilename = Path.GetTempFileName();
-                var fileStream = new FileStream(tempFilename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
-
-                // TODO: Properly close the file, and choose where to copy/move it?
-                var recordedEffectCompile = new EffectLogStore(fileStream);
-
-                // TODO: This should come from an "init" packet
-                effectCompiler.SourceDirectories.Add(EffectCompilerBase.DefaultSourceShaderFolder);
-
-                // Make a VFS that will access remotely the DatabaseFileProvider
-                // TODO: Is that how we really want to do that in the future?
-                var networkVFS = new NetworkVirtualFileProvider(clientSocketContext, "/asset");
-                VirtualFileSystem.RegisterProvider(networkVFS);
-                effectCompiler.FileProvider = networkVFS;
-
-                clientSocketContext.AddPacketHandler<ShaderCompilerRequest>((packet) => ShaderCompilerRequestHandler(clientSocketContext, recordedEffectCompile, effectCompiler, packet));
-
-                clientConnectedTCS.TrySetResult(true);
-            };
-
-            // Wait for a connection to be possible on adb forwarded port
-            var clientDone = socketContext.StartClient(IPAddress.Loopback, port);
-
-            return clientDone;
-        }
-
-        private async void ShaderCompilerRequestHandler(SocketContext clientSocketContext, EffectLogStore recordedEffectCompile, EffectCompiler effectCompiler, ShaderCompilerRequest shaderCompilerRequest)
-        {
-            // Wait for a client to be connected
-            await clientConnectedTCS.Task;
-
-            // Yield so that this socket can continue its message loop to answer to shader file request.
-            await Task.Yield();
-
-            Console.WriteLine("Compiling shader");
-
-            // A shader has been requested, compile it (asynchronously)!
-            var precompiledEffectShaderPass = await effectCompiler.Compile(shaderCompilerRequest.MixinTree, null).AwaitResult();
-
-            // Record compilation to asset file (only if parent)
-            recordedEffectCompile[new EffectCompileRequest(shaderCompilerRequest.MixinTree.Name, shaderCompilerRequest.MixinTree.UsedParameters)] = true;
-            
-            // Send compiled shader
-            clientSocketContext.Send(new ShaderCompilerAnswer { StreamId = shaderCompilerRequest.StreamId, EffectBytecode = precompiledEffectShaderPass.Bytecode });
+            return exitCode;
         }
     }
 }

@@ -43,9 +43,11 @@ namespace SiliconStudio.Paradox.Rendering.Images
 
 	        // Apply brightness and contrast
 	        float globalAverageLum = exp2(LuminanceAverageGlobal);
-	        //color = max(color + globalAverageLum.xxx * Brightness, 0.0001);
-	        color = max(color + globalAverageLum.xxx * Brightness, 0.0001);
-	        color = max(lerp(globalAverageLum.xxx, color, Contrast + 1.0f), 0.0001);
+            // PDX-1417: OpenGL conversion doesn't seem to like globalAverageLum.xxx, creating explicit float3
+            float3 globalAverageLum3 = float3(globalAverageLum, globalAverageLum, globalAverageLum);
+	        //color = max(color + globalAverageLum3 * Brightness, 0.0001);
+	        color = max(color + globalAverageLum3 * Brightness, 0.0001);
+	        color = max(lerp(globalAverageLum3, color, Contrast + 1.0f), 0.0001);
 
             // Apply ToneMapping
 	        color = ToneMap(color, avgLuminance);

@@ -9,6 +9,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Design;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Rendering
 {
@@ -74,6 +75,16 @@ namespace SiliconStudio.Paradox.Rendering
             {
                 return batchRenderer;
             }
+        }
+
+        /// <summary>
+        /// Gets the default <see cref="RasterizerState" /> for models drawn by this render mode.
+        /// </summary>
+        /// <param name="isGeomertryInverted"><c>true</c> if the rendered gometry is inverted through scaling, <c>false</c> otherwise.</param>
+        /// <returns>The rasterizer state.</returns>
+        public virtual RasterizerState GetDefaultRasterizerState(bool isGeomertryInverted)
+        {
+            return isGeomertryInverted ? Context.GraphicsDevice.RasterizerStates.CullFront : Context.GraphicsDevice.RasterizerStates.CullBack;
         }
 
         /// <summary>

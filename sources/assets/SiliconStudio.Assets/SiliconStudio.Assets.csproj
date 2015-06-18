@@ -131,6 +131,7 @@
     <Compile Include="PackageExtensions.cs" />
     <Compile Include="PackageSessionHelper.cs" />
     <Compile Include="PackageLoadParameters.cs" />
+    <Compile Include="PackageSettings.cs" />
     <Compile Include="PackageStore.cs" />
     <Compile Include="PackageMeta.cs" />
     <Compile Include="PackageReference.cs" />

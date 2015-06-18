@@ -3,6 +3,5 @@
   <PropertyGroup>
     <!--  Defines the API used by Paradox - Values are Direct3D/Null/OpenGL/OpenGLES -->
     <ParadoxGraphicsApi Condition=" '$(ParadoxGraphicsApi)' == '' ">Direct3D11</ParadoxGraphicsApi>
-    <SiliconStudioOpenSourceSign Condition="'$(SiliconStudioOpenSourceSign)' == '' And '$(SiliconStudioSign)' != 'true'">true</SiliconStudioOpenSourceSign>
   </PropertyGroup>
 </Project>

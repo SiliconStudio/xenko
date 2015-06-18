@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Collections.Generic;
 
 namespace SiliconStudio
@@ -14,7 +16,17 @@ namespace SiliconStudio
         {
             var devices = new List<AndroidDeviceDescription>();
 
-            var devicesOutputs = ShellHelper.RunProcessAndGetOutput(@"adb", @"devices");
+            ProcessOutputs devicesOutputs;
+
+            try
+            {
+                devicesOutputs = ShellHelper.RunProcessAndGetOutput(@"adb", @"devices");
+            }
+            catch (Exception)
+            {
+                return new AndroidDeviceDescription[0];
+            }
+
             var whitespace = new[] { ' ', '\t' };
             for (var i = 1; i < devicesOutputs.OutputLines.Count; ++i) // from the second line
             {
