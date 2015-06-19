@@ -5,6 +5,8 @@ Release date: 2015/XX/XX
 #### New Features
 
 #### Enhancements
+- Studio: The sprite editor has been improved.
+- Studio: Setting a diffuse map/specular map on a material will also set the diffuse model/specular model of this material.
 
 #### Issues fixed
 - Engine: The center of sprites is now properly taken in account when rendered by the CameraRenderer.
