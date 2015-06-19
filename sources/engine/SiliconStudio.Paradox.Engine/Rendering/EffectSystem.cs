@@ -8,6 +8,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.ReferenceCounting;
 using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Paradox.Engine.Design;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
@@ -29,11 +30,10 @@ namespace SiliconStudio.Paradox.Rendering
         private DirectoryWatcher directoryWatcher;
         private bool isInitialized;
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-        // Ideally it should be a "HashStore", but we don't have it yet...
-        private DictionaryStore<EffectCompileRequest, bool> recordedEffectCompile;
-        private object effectCompileRecordLock = new object();
-#endif
+        /// <summary>
+        /// Called each time a non-cached effect is requested.
+        /// </summary>
+        internal Action<EffectCompileRequest> EffectUsed;
 
         private readonly HashSet<string> recentlyModifiedShaders = new HashSet<string>();
         private bool clearNextFrame = false;
@@ -76,7 +76,10 @@ namespace SiliconStudio.Paradox.Rendering
             directoryWatcher.Modified += FileModifiedEvent;
             // TODO: pdxfx too
 #endif
-            compiler = (EffectCompilerBase)CreateEffectCompiler();
+
+            // Make sure default compiler is created (local if possible otherwise none) if nothing else was explicitely set/requested (i.e. by GameSettings)
+            if (Compiler == null)
+                Compiler = CreateEffectCompiler();
         }
 
         protected override void Destroy()
@@ -98,70 +101,15 @@ namespace SiliconStudio.Paradox.Rendering
             base.Destroy();
         }
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         /// <summary>
-        /// Records the effect compilation request to the specified file.
+        /// Creates an effect compiler, with either specificed <see cref="effectCompiler"/> or default one, wrapped in an <see cref="EffectCompilerCache"/>.
         /// </summary>
-        /// <param name="filePath">The file path.</param>
-        /// <param name="reset">if set to <c>true</c> erase the previous file, otherwise append.</param>
-        public void StartRecordEffectCompile(string filePath, bool reset)
-        {
-            try
-            {
-                if (reset && File.Exists(filePath))
-                {
-                    File.Delete(filePath);
-                }
-            }
-            catch (IOException)
-            {
-            }
-
-            var fileStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
-            var effectCompileLog = new DictionaryStore<EffectCompileRequest, bool>(fileStream);
-            if (!reset)
-                effectCompileLog.LoadNewValues();
-
-            StartRecordEffectCompile(effectCompileLog);
-        }
-
-        public void StartRecordEffectCompile(DictionaryStore<EffectCompileRequest, bool> requestStore)
-        {
-            lock (effectCompileRecordLock)
-            {
-                if (this.recordedEffectCompile != null)
-                    throw new InvalidOperationException("Effect compile requests were already being recorded.");
-
-                this.recordedEffectCompile = requestStore;
-            }
-        }
-
-        public void StopRecordEffectCompile()
-        {
-            DictionaryStore<EffectCompileRequest, bool> effectCompileLog;
-            lock (effectCompileRecordLock)
-            {
-                if (recordedEffectCompile == null)
-                    throw new InvalidOperationException("Effect compile requests were not being recorded.");
-
-                effectCompileLog = recordedEffectCompile;
-                recordedEffectCompile = null;
-            }
-
-            effectCompileLog.Dispose();
-        }
-#endif
-
+        /// <param name="effectCompiler">The effect compiler.</param>
+        /// <param name="taskSchedulerSelector">The task scheduler selector.</param>
+        /// <returns></returns>
         public static IEffectCompiler CreateEffectCompiler(TaskSchedulerSelector taskSchedulerSelector = null)
         {
-            // Create compiler
-#if SILICONSTUDIO_PARADOX_EFFECT_COMPILER
-            var effectCompiler = new Shaders.Compiler.EffectCompiler();
-            effectCompiler.SourceDirectories.Add(EffectCompilerBase.DefaultSourceShaderFolder);
-#else
-            var effectCompiler = new NullEffectCompiler();
-#endif
-            return new EffectCompilerCache(effectCompiler, taskSchedulerSelector);
+            return CreateEffectCompiler(null, null, EffectCompilationMode.Local, false);
         }
 
         public override void Update(GameTime gameTime)
@@ -312,23 +260,11 @@ namespace SiliconStudio.Paradox.Rendering
                 var source = isPdxfx ? new ShaderMixinGeneratorSource(effectName) : (ShaderSource)new ShaderClassSource(effectName);
                 compilerResult = compiler.Compile(source, compilerParameters);
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-                // If enabled, request this effect compile
-                // TODO: For now we save usedParameters, but ideally we probably want to have a list of everything that might be use by a given
-                //       pdxfx and filter against this, so that branches not taken on a specific situation/platform can still be reproduced on another.
-                // Alternatively, we could save full compilerParameters, but we would have to ignore certain things that are not serializable, such as Texture. 
-                lock (effectCompileRecordLock)
+                var effectRequested = EffectUsed;
+                if (effectRequested != null)
                 {
-                    if (recordedEffectCompile != null)
-                    {
-                        var effectCompileRequest = new EffectCompileRequest(effectName, compilerResult.UsedParameters);
-                        if (!recordedEffectCompile.Contains(effectCompileRequest))
-                        {
-                            recordedEffectCompile[effectCompileRequest] = true;
-                        }
-                    }
+                    effectRequested(new EffectCompileRequest(effectName, compilerResult.UsedParameters));
                 }
-#endif
                 
                 if (!compilerResult.HasErrors && isPdxfx)
                 {
@@ -444,6 +380,51 @@ namespace SiliconStudio.Paradox.Rendering
             }
 
             return null;
+        }
+
+        internal static IEffectCompiler CreateEffectCompiler(EffectSystem effectSystem, Guid? packageId, EffectCompilationMode effectCompilationMode, bool recordEffectRequested)
+        {
+            EffectCompilerBase compiler = null;
+
+#if SILICONSTUDIO_PARADOX_EFFECT_COMPILER
+            if ((effectCompilationMode & EffectCompilationMode.Local) != 0)
+            {
+                // Local allowed and available, let's use that
+                compiler = new EffectCompiler
+                {
+                    SourceDirectories = { EffectCompilerBase.DefaultSourceShaderFolder },
+                };
+            }
+#endif               
+
+            // Nothing to do remotely
+            bool needRemoteCompiler = (compiler == null && (effectCompilationMode & EffectCompilationMode.Remote) != 0);
+            if (needRemoteCompiler || recordEffectRequested)
+            {
+                // Create the object that handles the connection
+                var shaderCompilerTarget = new RemoteEffectCompilerClient(packageId);
+
+                if (recordEffectRequested)
+                {
+                    // Let's notify effect compiler server for each new effect requested
+                    effectSystem.EffectUsed += shaderCompilerTarget.NotifyEffectUsed;
+                }
+
+                // Use remote only if nothing else was found before (i.e. a local compiler)
+                if (needRemoteCompiler)
+                {
+                    // Create a remote compiler
+                    compiler = new RemoteEffectCompiler(shaderCompilerTarget);
+                }
+            }
+
+            // Local not possible or allowed, and remote not allowed either => switch back to null compiler
+            if (compiler == null)
+            {
+                compiler = new NullEffectCompiler();
+            }
+
+            return new EffectCompilerCache(compiler);
         }
     }
 }

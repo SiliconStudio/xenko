@@ -205,7 +205,7 @@ namespace SiliconStudio {
 						ModelNodeDefinition modelNodeDefinition;
 						modelNodeDefinition.ParentIndex = parentIndex;
 						modelNodeDefinition.Transform.Scaling = Vector3::One;
-						modelNodeDefinition.Name = gcnew String(nodeNames[pNode].c_str());
+						modelNodeDefinition.Name = ConvertToUTF8(nodeNames[pNode]);
 						modelNodeDefinition.Flags = ModelNodeFlags::Default;
 						nodes->Add(modelNodeDefinition);
 

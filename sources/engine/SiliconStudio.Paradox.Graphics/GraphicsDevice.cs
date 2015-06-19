@@ -97,7 +97,9 @@ namespace SiliconStudio.Paradox.Graphics
             currentStateIndex = -1;
             PushState();
 
+            Begin();
             ClearState();
+            End();
         }
 
         protected override void Destroy()
@@ -144,16 +146,16 @@ namespace SiliconStudio.Paradox.Graphics
         public GraphicsAdapter Adapter { get; private set; }
 
         /// <summary>
-        ///     Gets the back buffer sets by the current <see cref="Presenter" /> setup on this device.
+        ///     Gets the render target buffer currently sets on this instance.
         /// </summary>
         /// <value>
-        ///     The back buffer. The returned value may be null if no <see cref="GraphicsPresenter" /> are setup on this device.
+        ///     The render target buffer currently sets on this instance.
         /// </value>
         public Texture BackBuffer
         {
             get
             {
-                return Presenter != null ? Presenter.BackBuffer : null;
+                return currentState.RenderTargets[0];
             }
         }
 
@@ -166,16 +168,16 @@ namespace SiliconStudio.Paradox.Graphics
         public BlendStateFactory BlendStates { get; private set; }
 
         /// <summary>
-        ///     Gets the depth stencil buffer sets by the current <see cref="Presenter" /> setup on this device.
+        ///     Gets the depth stencil buffer currently sets on this instance.
         /// </summary>
         /// <value>
-        ///     The depth stencil buffer. The returned value may be null if no <see cref="GraphicsPresenter" /> are setup on this device or no depth buffer was allocated.
+        ///     The depth stencil buffer currently sets on this instance.
         /// </value>
         public Texture DepthStencilBuffer
         {
             get
             {
-                return Presenter != null ? Presenter.DepthStencilBuffer : null;
+                return currentState.DepthStencilBuffer;
             }
         }
 
@@ -354,7 +356,14 @@ namespace SiliconStudio.Paradox.Graphics
             SetDepthStencilState(DepthStencilStates.Default);
 
             // Setup the default render target
-            SetDepthAndRenderTarget(DepthStencilBuffer, BackBuffer);
+            Texture depthStencilBuffer = null;
+            Texture backBuffer = null;
+            if (Presenter != null)
+            {
+                depthStencilBuffer = Presenter.DepthStencilBuffer;
+                backBuffer = Presenter.BackBuffer;
+            }
+            SetDepthAndRenderTarget(depthStencilBuffer, backBuffer);
         }
 
         /// <summary>

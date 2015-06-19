@@ -3,7 +3,7 @@
 #if SILICONSTUDIO_PLATFORM_IOS
 using System;
 using System.Runtime.InteropServices;
-using MonoTouch;
+using ObjCRuntime;
 
 namespace SiliconStudio.Paradox.Graphics.Regression
 {

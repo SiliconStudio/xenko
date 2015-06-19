@@ -21,7 +21,7 @@
         </When>
         <When Condition=" '$(SiliconStudioPlatform)' == 'iOS'">
           <ItemGroup>
-            <Reference Include="monotouch" />
+            <Reference Include="Xamarin.iOS" />
           </ItemGroup>
         </When>
       </Choose>
@@ -51,8 +51,13 @@
   <Import Condition="'$(SiliconStudioCompilerTargetsEnable)' != 'false'" Project="$(SiliconStudioCompilerTargets)" />
   
   <Target Name="RunSiliconStudioAssemblyProcessor" Condition=" '$(SiliconStudioAssemblyProcessor)' == 'true' and '$(SiliconStudioAssemblyProcessorGlobal)' == 'true' and '$(SiliconStudioAssemblyProcessorOptions)' != '' ">
-    <!-- SiliconStudio.AssemblyProcessor should be compiled. Get its target path as well. -->
-    <MSBuild Condition="'$(ParadoxUserBuild)' != 'true'" Projects="$(MSBuildThisFileDirectory)..\core\SiliconStudio.AssemblyProcessor\SiliconStudio.AssemblyProcessor.csproj" Targets="Build" Properties="Configuration=$(Configuration);BuildingInsideVisualStudio=false">
+    <!-- Get target path of SiliconStudio.AssemblyProcessor -->
+    <MSBuild Condition="'$(ParadoxUserBuild)' != 'true'" Projects="$(MSBuildThisFileDirectory)..\core\SiliconStudio.AssemblyProcessor\SiliconStudio.AssemblyProcessor.csproj" Targets="GetTargetPath" Properties="Configuration=$(Configuration);BuildingInsideVisualStudio=false">
+      <Output TaskParameter="TargetOutputs" ItemName="_SiliconStudioAssemblyProcessorPath" />
+    </MSBuild>
+
+    <!-- SiliconStudio.AssemblyProcessor must be compiled if it doesn't exist -->
+    <MSBuild Condition="'$(ParadoxUserBuild)' != 'true' and !Exists('@(_SiliconStudioAssemblyProcessorPath)')" Projects="$(MSBuildThisFileDirectory)..\core\SiliconStudio.AssemblyProcessor\SiliconStudio.AssemblyProcessor.csproj" Targets="Build" Properties="Configuration=$(Configuration);BuildingInsideVisualStudio=false">
       <Output TaskParameter="TargetOutputs" ItemName="_SiliconStudioAssemblyProcessorPath" />
     </MSBuild>
 
@@ -62,7 +67,7 @@
     </MSBuild>
 
     <!-- SiliconStudio.Core must be compiled if it doesn't exist -->
-    <MSBuild Condition="'$(ParadoxUserBuild)' != 'true' and '$(ProjectName)' != 'SiliconStudio.Core' and !Exists('@(_SiliconStudioAssemblyProcessorPath)')" Projects="$(MSBuildThisFileDirectory)..\core\SiliconStudio.Core\SiliconStudio.Core.csproj" Targets="Build" Properties="Configuration=$(Configuration)">
+    <MSBuild Condition="'$(ParadoxUserBuild)' != 'true' and '$(ProjectName)' != 'SiliconStudio.Core' and !Exists('@(_SiliconStudioCoreAssemblyPath)')" Projects="$(MSBuildThisFileDirectory)..\core\SiliconStudio.Core\SiliconStudio.Core.csproj" Targets="Build" Properties="Configuration=$(Configuration)">
       <Output TaskParameter="TargetOutputs" ItemName="_SiliconStudioCoreAssemblyPath" />
     </MSBuild>
 

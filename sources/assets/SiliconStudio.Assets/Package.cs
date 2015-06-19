@@ -35,10 +35,13 @@ namespace SiliconStudio.Assets
 
         private readonly List<UDirectory> explicitFolders;
 
+        private readonly List<PackageLoadedAssembly> loadedAssemblies;
+
         private PackageSession session;
 
         private UFile packagePath;
         private bool isDirty;
+        private Lazy<PackageSettings> settings;
 
         /// <summary>
         /// The file extension used for <see cref="Package"/>.
@@ -59,12 +62,14 @@ namespace SiliconStudio.Assets
             temporaryAssets = new AssetItemCollection();
             assets = new PackageAssetCollection(this);
             explicitFolders = new List<UDirectory>();
+            loadedAssemblies = new List<PackageLoadedAssembly>();
             Bundles = new BundleCollection(this);
             Meta = new PackageMeta();
             TemplateFolders = new List<TemplateFolder>();
             Templates = new List<TemplateDescription>();
             Profiles = new PackageProfileCollection();
             IsDirty = true;
+            settings = new Lazy<PackageSettings>(() => new PackageSettings(this));
         }
 
         /// <summary>
@@ -230,6 +235,30 @@ namespace SiliconStudio.Assets
                 session = value;
                 IsIdLocked = (session != null);
             }
+        }
+
+        /// <summary>
+        /// Gets the package settings. Usually stored in a .user file alongside the package. Lazily loaded on first time.
+        /// </summary>
+        /// <value>
+        /// The package settings.
+        /// </value>
+        [DataMemberIgnore]
+        public PackageSettings Settings
+        {
+            get { return settings.Value; }
+        }
+
+        /// <summary>
+        /// Gets the list of assemblies loaded by this package.
+        /// </summary>
+        /// <value>
+        /// The loaded assemblies.
+        /// </value>
+        [DataMemberIgnore]
+        public List<PackageLoadedAssembly> LoadedAssemblies
+        {
+            get { return loadedAssemblies; }
         }
 
         /// <summary>
@@ -758,6 +787,9 @@ namespace SiliconStudio.Assets
                             continue;
                         }
 
+                        var loadedAssembly = new PackageLoadedAssembly(projectReference, assemblyPath);
+                        loadedAssemblies.Add(loadedAssembly);
+
                         if (!File.Exists(assemblyPath))
                         {
                             log.Error("Unable to build assembly reference [{0}]", assemblyPath);
@@ -769,6 +801,8 @@ namespace SiliconStudio.Assets
                         {
                             log.Error("Unable to load assembly reference [{0}]", assemblyPath);
                         }
+
+                        loadedAssembly.Assembly = assembly;
 
                         if (assembly != null)
                         {

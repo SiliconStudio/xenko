@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -75,9 +76,9 @@ namespace SiliconStudio.Paradox.Shaders
                 {
                     var genArg = genericArguments[i];
                     if (genArg is bool)
-                        GenericArguments[i] = ((bool)genArg).ToString().ToLower();
+                        GenericArguments[i] = ((bool)genArg) ? "true" : "false";
                     else
-                        GenericArguments[i] = genArg == null ? "null": genArg.ToString();
+                        GenericArguments[i] = genArg == null ? "null" : Convert.ToString(genArg, CultureInfo.InvariantCulture);
                 }
             }
         }

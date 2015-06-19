@@ -439,7 +439,7 @@ namespace SiliconStudio.Paradox.Games
             // Gets the GameWindow Context
             Context = gameContext ?? new GameContext();
 
-            PrepareRun();
+            PrepareContext();
 
             try
             {
@@ -473,7 +473,7 @@ namespace SiliconStudio.Paradox.Games
             }
         }
 
-        internal protected virtual void PrepareRun()
+        internal protected virtual void PrepareContext()
         {
         }
 

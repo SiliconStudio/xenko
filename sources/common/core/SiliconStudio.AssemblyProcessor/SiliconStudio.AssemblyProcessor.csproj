@@ -12,7 +12,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>SiliconStudio.AssemblyProcessor</RootNamespace>
     <AssemblyName>SiliconStudio.AssemblyProcessor</AssemblyName>
-    <ParadoxBuildTags>*</ParadoxBuildTags>
+    <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
     <SiliconStudioAssemblyProcessor>false</SiliconStudioAssemblyProcessor>
   </PropertyGroup>
   <ItemGroup>

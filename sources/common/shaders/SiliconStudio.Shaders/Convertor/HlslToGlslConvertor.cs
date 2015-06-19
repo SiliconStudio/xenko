@@ -1333,6 +1333,7 @@ namespace SiliconStudio.Shaders.Convertor
                     case "SampleBias":
                     case "SampleGrad":
                     case "SampleLevel":
+                    case "SampleCmp":
                         {
                             string methodName = "texture";
 
@@ -1390,6 +1391,18 @@ namespace SiliconStudio.Shaders.Convertor
                                     methodName += "Lod";
                                 else
                                     methodName = "texelFetch";
+                            }
+
+                            if (memberReferenceExpression.Member == "SampleCmp")
+                            {
+                                // Need to convert texture.SampleCmp(texcoord, compareValue) to texture(vec3(texcoord, compareValue))
+                                var texcoord = methodInvocationExpression.Arguments[1];
+                                methodInvocationExpression.Arguments[1] = new MethodInvocationExpression(
+                                    new TypeReferenceExpression(new VectorType(ScalarType.Float, TypeBase.GetDimensionSize(texcoord.TypeInference.TargetType, 1) + 1)),
+                                    methodInvocationExpression.Arguments[1],
+                                    methodInvocationExpression.Arguments[2]
+                                    );
+                                methodInvocationExpression.Arguments.RemoveAt(methodInvocationExpression.Arguments.Count - 1);
                             }
 
                             if (methodInvocationExpression.Arguments.Count == baseParameterCount + 1)
@@ -1466,6 +1479,9 @@ namespace SiliconStudio.Shaders.Convertor
                             // TODO: Check how many components are required
                             // methodInvocationExpression.Arguments[1] = new MemberReferenceExpression(new ParenthesizedExpression(methodInvocationExpression.Arguments[1]), "xy");
                         }
+
+                        // Set methodDeclaration to null, so that "Add default parameters" doesn't do anything little bit further in this method
+                        methodDeclaration = null;
 
                         break;
                 }

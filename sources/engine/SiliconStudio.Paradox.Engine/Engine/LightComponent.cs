@@ -116,7 +116,7 @@ namespace SiliconStudio.Paradox.Engine
             Vector3.TransformNormal(ref lightDir, ref Entity.Transform.WorldMatrix, out lightDirection);
             lightDirection.Normalize();
 
-            Position = Entity.Transform.Position;
+            Position = Entity.Transform.WorldMatrix.TranslationVector;
             Direction = lightDirection;
 
             // Color

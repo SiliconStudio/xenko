@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Assets
     [DataContract("Paradox")]
     public sealed class ParadoxConfig
     {
-        private const string XamariniOSBuild = @"MSBuild\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets";
+        private const string XamariniOSBuild = @"MSBuild\Xamarin\iOS\Xamarin.iOS.CSharp.targets";
         private const string XamarinAndroidBuild = @"MSBuild\Xamarin\Android\Xamarin.Android.CSharp.targets";
         private const string WindowsRuntimeBuild = @"MSBuild\Microsoft\WindowsXaml\v12.0\8.1\Microsoft.Windows.UI.Xaml.Common.Targets";
         private static readonly string ProgramFilesX86 = Environment.GetEnvironmentVariable(Environment.Is64BitOperatingSystem ? "ProgramFiles(x86)" : "ProgramFiles");
@@ -225,10 +225,11 @@ namespace SiliconStudio.Paradox.Assets
             iphonePlatform.Properties[GraphicsPlatform] = Graphics.GraphicsPlatform.OpenGLES;
             iphonePlatform.Configurations.Add(new SolutionConfiguration("Testing"));
             iphonePlatform.Configurations.Add(new SolutionConfiguration("AppStore"));
-            var iPhoneCommonProperties = new List<string>()
+            var iPhoneCommonProperties = new List<string>
                 {
                     "<ConsolePause>false</ConsolePause>",
                     "<MtouchUseSGen>True</MtouchUseSGen>",
+                    "<MtouchArch>ARMv7, ARMv7s, ARM64</MtouchArch>"
                 };
 
             iphonePlatform.Configurations["Debug"].Properties.AddRange(iPhoneCommonProperties);
@@ -261,11 +262,14 @@ namespace SiliconStudio.Paradox.Assets
             var iPhoneSimulatorPlatform = iphonePlatform.PlatformsPart["iPhoneSimulator"];
             iPhoneSimulatorPlatform.Configurations["Debug"].Properties.AddRange(new[]
                 {
-                    "<MtouchLink>None</MtouchLink>"
+                    "<MtouchDebug>True</MtouchDebug>",
+                    "<MtouchLink>None</MtouchLink>",
+                    "<MtouchArch>i386, x86_64</MtouchArch>"
                 });
             iPhoneSimulatorPlatform.Configurations["Release"].Properties.AddRange(new[]
                 {
-                    "<MtouchLink>None</MtouchLink>"
+                    "<MtouchLink>None</MtouchLink>",
+                    "<MtouchArch>i386, x86_64</MtouchArch>"
                 });
 
             AssetRegistry.RegisterSupportedPlatforms(solutionPlatforms);

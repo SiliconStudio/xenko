@@ -32,7 +32,7 @@ namespace SiliconStudio.Core.IO
 #if SILICONSTUDIO_PLATFORM_IOS
             if (AutoSetSkipBackupAttribute && (mode == VirtualFileMode.CreateNew || mode == VirtualFileMode.Create || mode == VirtualFileMode.OpenOrCreate))
             {
-                MonoTouch.Foundation.NSFileManager.SetSkipBackupAttribute(filename, true);
+                Foundation.NSFileManager.SetSkipBackupAttribute(filename, true);
             }
 #endif
 

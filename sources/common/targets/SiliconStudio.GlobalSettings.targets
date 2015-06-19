@@ -32,9 +32,9 @@
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
     <TargetFrameworkVersionTool>v4.5.1</TargetFrameworkVersionTool>
     <TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == ''">v4.5</TargetFrameworkVersion>
-    <ParadoxSharpDXSdkBinDir>$(ParadoxSharpDXSdkDir)\Bin\DirectX11_2-Signed-net40</ParadoxSharpDXSdkBinDir>
-    <ParadoxSharpDXAudioSdkBinDir>$(ParadoxSharpDXSdkDir)\Bin\DirectX11-Signed-net40</ParadoxSharpDXAudioSdkBinDir>
-    <ParadoxSharpDXInputSdkBinDir>$(ParadoxSharpDXSdkDir)\Bin\DirectX11-Signed-net40</ParadoxSharpDXInputSdkBinDir>
+    <ParadoxSharpDXSdkBinDir>$(ParadoxSharpDXSdkDir)\Bin\Desktop</ParadoxSharpDXSdkBinDir>
+    <ParadoxSharpDXAudioSdkBinDir>$(ParadoxSharpDXSdkBinDir)</ParadoxSharpDXAudioSdkBinDir>
+    <ParadoxSharpDXInputSdkBinDir>$(ParadoxSharpDXSdkBinDir)</ParadoxSharpDXInputSdkBinDir>
     <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP;NET45</SiliconStudioPlatformDefines>
     <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-4.0\</NUnitLiteBinDir>
   </PropertyGroup>
@@ -43,7 +43,7 @@
     <TargetPlatformVersion>8.1</TargetPlatformVersion>
     <AutoIncludeSystemAssembly>true</AutoIncludeSystemAssembly>
     <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_STORE;NET45;NETFX_CORE</SiliconStudioPlatformDefines>
-    <ParadoxSharpDXSdkBinDir>$(ParadoxSharpDXSdkDir)\Bin\DirectX11_2-Signed-winrt</ParadoxSharpDXSdkBinDir>
+    <ParadoxSharpDXSdkBinDir>$(ParadoxSharpDXSdkDir)\Bin\StoreApp</ParadoxSharpDXSdkBinDir>
     <ParadoxSharpDXAudioSdkBinDir>$(ParadoxSharpDXSdkBinDir)</ParadoxSharpDXAudioSdkBinDir>
     <ParadoxSharpDXInputSdkBinDir>$(ParadoxSharpDXSdkBinDir)</ParadoxSharpDXInputSdkBinDir>
     <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-winrt\</NUnitLiteBinDir>
@@ -54,7 +54,7 @@
     <TargetPlatformVersion>8.1</TargetPlatformVersion>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_PHONE;NET45;NETFX_CORE;SILVERLIGHT;WINDOWS_PHONE</SiliconStudioPlatformDefines>
-    <ParadoxSharpDXSdkBinDir>$(ParadoxSharpDXSdkDir)\Bin\DirectX11_2-Signed-winrt</ParadoxSharpDXSdkBinDir>
+    <ParadoxSharpDXSdkBinDir>$(ParadoxSharpDXSdkDir)\Bin\StoreApp</ParadoxSharpDXSdkBinDir>
     <ParadoxSharpDXAudioSdkBinDir>$(ParadoxSharpDXSdkBinDir)</ParadoxSharpDXAudioSdkBinDir>
     <ParadoxSharpDXInputSdkBinDir>$(ParadoxSharpDXSdkBinDir)</ParadoxSharpDXInputSdkBinDir>
     <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-winphone\</NUnitLiteBinDir>
@@ -86,7 +86,7 @@
     <Platform Condition=" '$(Platform)' == '' ">iPhone</Platform>
     <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
     <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS;NET45</SiliconStudioPlatformDefines>
-    <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
   </PropertyGroup>
 

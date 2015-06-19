@@ -95,6 +95,7 @@ Nodes:
         SerializedVersion: 2
         BuildOrder: 500
         Tags: []
+        Source: 
         ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
         Materials:
             -   Name: c100_chr_ch00_Knight_KINGHT_iron

@@ -42,6 +42,12 @@ namespace SiliconStudio.Quantum.References
         /// <inheritdoc/>
         public object Index { get; private set; }
 
+        /// <inheritdoc/>
+        public ObjectReference AsObject { get { throw new InvalidCastException("This reference is not an ObjectReference"); } }
+
+        /// <inheritdoc/>
+        public ReferenceEnumerable AsEnumerable { get { return this; } }
+
         /// <summary>
         /// Gets whether this reference enumerates a dictionary collection.
         /// </summary>

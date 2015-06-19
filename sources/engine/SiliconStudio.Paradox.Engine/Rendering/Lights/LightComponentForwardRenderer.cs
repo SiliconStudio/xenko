@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-
+using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Storage;
@@ -171,7 +171,9 @@ namespace SiliconStudio.Paradox.Rendering.Lights
                 modelRenderer.Callbacks.PreRenderMesh += PreRenderMesh;
 
                 // TODO: Make this pluggable
-                if (context.GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0)
+                // TODO: Shadows should work on mobile platforms
+                if (context.GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0
+                    && (Platform.Type == PlatformType.Windows || Platform.Type == PlatformType.WindowsStore))
                 {
                     shadowMapRenderer = new ShadowMapRenderer(modelRenderer.EffectName);
                     shadowMapRenderer.Renderers.Add(typeof(LightDirectional), new LightDirectionalShadowMapRenderer());
@@ -282,7 +284,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
                 visibleLights.Add(light);
 
                 // Add light to a special list if it has shadows
-                if (directLight != null && directLight.Shadow.Enabled)
+                if (directLight != null && directLight.Shadow.Enabled && shadowMapRenderer != null)
                 {
                     // A visible light with shadows
                     visibleLightsWithShadows.Add(light);
@@ -328,7 +330,8 @@ namespace SiliconStudio.Paradox.Rendering.Lights
                 var lightRenderer = activeRenderer.LightRenderer;
                 var lightCollection = activeRenderer.LightGroup.FindLightCollectionByGroup(group);
 
-                int lightMaxCount = Math.Min(lightCollection.Count, lightRenderer.LightMaxCount);
+                var lightCount = lightCollection == null ? 0 : lightCollection.Count;
+                int lightMaxCount = Math.Min(lightCount, lightRenderer.LightMaxCount);
                 var lightRendererId = lightRenderer.LightRendererId;
                 var allocCountForNewLightType = lightRenderer.AllocateLightMaxCount ? (byte)lightRenderer.LightMaxCount : (byte)1;
 
@@ -357,7 +360,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
                 {
                     ILightShadowMapRenderer currentShadowRenderer = null;
 
-                    for (int i = 0; i < lightCollection.Count; i++)
+                    for (int i = 0; i < lightCount; i++)
                     {
                         var light = lightCollection[i];
                         var directLight = (IDirectLight)light.Type;
@@ -427,34 +430,32 @@ namespace SiliconStudio.Paradox.Rendering.Lights
                 }
             }
 
-            // If we have lights, find or create an existing shaders/parameters permutation
-            if (environmentLightsPerModel.Count > 0 || directLightsPerModel.Count > 0)
+            // Find or create an existing shaders/parameters permutation
+
+            // Build the keys for Shaders and Parameters permutations
+            ObjectId shaderKeyId;
+            ObjectId parametersKeyId;
+            shaderKeyIdBuilder.ComputeHash(out shaderKeyId);
+            parametersKeyIdBuilder.ComputeHash(out parametersKeyId);
+
+            // Calculate the shader parameters just once
+            // If we don't have already this permutation, use it
+            LightShaderPermutationEntry newLightShaderPermutationEntry;
+            if (!shaderEntries.TryGetValue(shaderKeyId, out newLightShaderPermutationEntry))
             {
-                // Build the keys for Shaders and Parameters permutations
-                ObjectId shaderKeyId;
-                ObjectId parametersKeyId;
-                shaderKeyIdBuilder.ComputeHash(out shaderKeyId);
-                parametersKeyIdBuilder.ComputeHash(out parametersKeyId);
-
-                // Calculate the shader parameters just once
-                // If we don't have already this permutation, use it
-                LightShaderPermutationEntry newLightShaderPermutationEntry;
-                if (!shaderEntries.TryGetValue(shaderKeyId, out newLightShaderPermutationEntry))
-                {
-                    newLightShaderPermutationEntry = CreateShaderPermutationEntry();
-                    shaderEntries.Add(shaderKeyId, newLightShaderPermutationEntry);
-                }
-
-                LightParametersPermutationEntry newShaderEntryParameters;
-                // Calculate the shader parameters just once per light combination and for this rendering pass
-                if (!lightParameterEntries.TryGetValue(parametersKeyId, out newShaderEntryParameters))
-                {
-                    newShaderEntryParameters = CreateParametersPermutationEntry(newLightShaderPermutationEntry);
-                    lightParameterEntries.Add(parametersKeyId, newShaderEntryParameters);
-                }
-
-                modelToLights.Add(model, new RenderModelLights(newLightShaderPermutationEntry, newShaderEntryParameters));
+                newLightShaderPermutationEntry = CreateShaderPermutationEntry();
+                shaderEntries.Add(shaderKeyId, newLightShaderPermutationEntry);
             }
+
+            LightParametersPermutationEntry newShaderEntryParameters;
+            // Calculate the shader parameters just once per light combination and for this rendering pass
+            if (!lightParameterEntries.TryGetValue(parametersKeyId, out newShaderEntryParameters))
+            {
+                newShaderEntryParameters = CreateParametersPermutationEntry(newLightShaderPermutationEntry);
+                lightParameterEntries.Add(parametersKeyId, newShaderEntryParameters);
+            }
+
+            modelToLights.Add(model, new RenderModelLights(newLightShaderPermutationEntry, newShaderEntryParameters));
 
             return true;
         }
@@ -622,7 +623,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
             LightComponentCollectionGroup lightGroup;
 
             var directLight = light.Type as IDirectLight;
-            var lightGroups = directLight != null && directLight.Shadow.Enabled
+            var lightGroups = directLight != null && directLight.Shadow.Enabled && shadowMapRenderer != null
                 ? activeLightGroupsWithShadows
                 : activeLightGroups;
 

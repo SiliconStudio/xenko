@@ -39,7 +39,14 @@ namespace SiliconStudio.Paradox.Rendering
 
         public bool IsShadowReceiver;
 
+        /// <summary>
+        /// A Rasterizer state setup before <see cref="Draw"/> when rendering this mesh.
+        /// </summary>
+        public RasterizerState RasterizerState;
+
         public bool HasTransparency { get; private set; }
+
+        public Matrix WorldMatrix;
 
         private readonly ParameterCollection parameters;
         private readonly FastList<ParameterCollection> parameterCollections = new FastList<ParameterCollection>();
@@ -100,11 +107,19 @@ namespace SiliconStudio.Paradox.Rendering
             var vao = vertexArrayObject;
             var drawCount = currentRenderData.DrawCount;
 
+            parameters.Set(TransformationKeys.World, WorldMatrix);
+
+            // TODO: We should clarify exactly how to override rasterizer states. Currently setup here on Context.Parameters to allow Material/ModelComponent overrides, but this is ugly
+            context.Parameters.Set(Effect.RasterizerStateKey, RasterizerState);
+
             if (context.IsPicking()) // TODO move this code corresponding to picking outside of the runtime code!
             {
                 parameters.Set(ModelComponentPickingShaderKeys.ModelComponentId, new Color4(RenderModel.ModelComponent.Id));
                 parameters.Set(ModelComponentPickingShaderKeys.MeshId, new Color4(Mesh.NodeIndex));
                 parameters.Set(ModelComponentPickingShaderKeys.MaterialId, new Color4(Mesh.MaterialIndex));
+
+                // Don't use the materials blend state on picking targets
+                parameters.Set(Effect.BlendStateKey, null);
             }
 
             if (material != null && material.TessellationMethod != ParadoxTessellationMethod.None)
@@ -222,6 +237,7 @@ namespace SiliconStudio.Paradox.Rendering
                 parameterCollections.Add(modelInstance.Parameters);
             }
 
+            // TODO: Should we add RenderMesh.Parameters before ModelComponent.Parameters to allow user overiddes at component level?
             parameterCollections.Add(parameters);
         }
     }

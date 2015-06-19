@@ -63,6 +63,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
             // TODO: It might be interesting to support pulling from VS, but this should be done from the IMaterialSurface and dedicated ComputerColors
             streams.matNormal = float3(0, 0, 1);
 
+            streams.matColorBase = 0.0f;
             streams.matDiffuse = 0.0f; 
             streams.matDiffuseVisible = 0.0f;      
 

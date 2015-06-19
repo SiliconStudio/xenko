@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
             streams.shadingColor += streams.matEmissive.rgb * streams.matEmissiveIntensity;
             if (TUseAlphaFromEmissive)
             {
-                streams.matDiffuse.a = streams.matEmissive.a;
+                streams.shadingColorAlpha = streams.matEmissive.a;
             }
         }
     };

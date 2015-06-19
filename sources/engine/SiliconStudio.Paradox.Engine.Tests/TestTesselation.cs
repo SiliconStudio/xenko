@@ -48,9 +48,8 @@ namespace SiliconStudio.Paradox.Engine.Tests
         }
 
         public TestTesselation(bool isDebug)
-            : base("ParadoxEffectBase")
         {
-            CurrentVersion = 1;
+            CurrentVersion = 2;
             debug = isDebug;
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };

@@ -24,8 +24,8 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
+using Foundation;
+using UIKit;
 using SiliconStudio.Paradox.UnitTesting.UI;
 
 namespace SiliconStudio.Tests

@@ -106,91 +106,89 @@ namespace SiliconStudio.Assets.Diff
             var asset1NodeDesc = GetNodeDescription(asset1Node);
             var asset2NodeDesc = GetNodeDescription(asset2Node);
 
-            bool hasMembers = false;
-
-            Type type = null;
-            Type nodeType = null;
-            if (baseNodeDesc.Type != null)
+            if (asset1NodeDesc.Type == asset2NodeDesc.Type)
             {
-                type = baseNodeDesc.Type;
-                hasMembers = baseNode.HasMembers;
-                nodeType = baseNode.GetType();
-            }
-
-            if (asset1NodeDesc.Type != null)
-            {
-                if (type == null)
+                if (baseNodeDesc.Type == asset1NodeDesc.Type)
                 {
-                    type = asset1NodeDesc.Type;
-                    hasMembers = asset1Node.HasMembers;
-                    nodeType = asset1Node.GetType();
+                    // If all types are the same, perform a normal diff.
+                    return DiffNodeWithUniformType(baseNode, asset1Node, asset2Node);
                 }
                 else
                 {
-                    if (nodeType != asset1Node.GetType())
-                    {
-                        diff3.ChangeType = Diff3ChangeType.InvalidNodeType;
-                        return diff3;
-                    } 
-
-                    if (type != asset1NodeDesc.Type)
-                    {
-                        diff3.ChangeType = Diff3ChangeType.ConflictType;
-                        return diff3;
-                    }
+                    // If base has a different type, but asset1 and asset2 are equal, use them. Otherwise there is a conflict with base.
+                    var temp = DiffNodeWithUniformType(asset1Node, asset1Node, asset2Node);
+                    diff3.ChangeType = temp.ChangeType == Diff3ChangeType.None ? Diff3ChangeType.MergeFromAsset1And2 : Diff3ChangeType.Conflict;
+                    diff3.InstanceType = asset1NodeDesc.Type;
                 }
             }
-
-            if (asset2NodeDesc.Type != null)
+            else if (baseNodeDesc.Type == asset1NodeDesc.Type)
             {
-                if (type == null)
+                // If base and asset 1 are equal, use asset 2.
+                var temp = DiffNodeWithUniformType(baseNode, asset1Node, asset1Node);
+                diff3.ChangeType = temp.ChangeType == Diff3ChangeType.None ? Diff3ChangeType.MergeFromAsset2 : Diff3ChangeType.Conflict;
+                diff3.InstanceType = asset2NodeDesc.Type;
+            }
+            else if (baseNodeDesc.Type == asset2NodeDesc.Type)
+            {
+                // If base and asset 2 are equal, use asset 1.
+                var temp = DiffNodeWithUniformType(baseNode, asset2Node, asset2Node);
+                diff3.ChangeType = temp.ChangeType == Diff3ChangeType.None ? Diff3ChangeType.MergeFromAsset1 : Diff3ChangeType.Conflict;
+                diff3.InstanceType = asset1NodeDesc.Type;
+            }
+            else
+            {
+                // If one asset is unspecified, use the other.
+                // If all types are different, there is a type conflict.
+                if (asset1Node == null)
                 {
-                    type = asset2NodeDesc.Type;
-                    hasMembers = asset2Node.HasMembers;
+                    diff3.ChangeType = Diff3ChangeType.MergeFromAsset2;
+                    diff3.InstanceType = asset2NodeDesc.Type;
+                }
+                else if (asset2Node == null)
+                {
+                    diff3.ChangeType = Diff3ChangeType.MergeFromAsset1;
+                    diff3.InstanceType = asset1NodeDesc.Type;
                 }
                 else
                 {
-                    if (nodeType != asset2Node.GetType())
-                    {
-                        diff3.ChangeType = Diff3ChangeType.InvalidNodeType;
-                        return diff3;
-                    }
-
-                    if (type != asset2NodeDesc.Type)
-                    {
-                        diff3.ChangeType = Diff3ChangeType.ConflictType;
-                        return diff3;
-                    }
+                    diff3.ChangeType = Diff3ChangeType.ConflictType;
                 }
             }
 
-            if (type == null)
-            {
-                return diff3;
-            }
+            return diff3;
+        }
 
-            diff3.InstanceType = type;
+        private Diff3Node DiffNodeWithUniformType(DataVisitNode baseNode, DataVisitNode asset1Node, DataVisitNode asset2Node)
+        {
+            var baseNodeDesc = GetNodeDescription(baseNode);
+            var asset1NodeDesc = GetNodeDescription(asset1Node);
+            var asset2NodeDesc = GetNodeDescription(asset2Node);
 
-            if (IsComparableType(hasMembers, type))
+            var node = baseNode ?? asset1Node ?? asset2Node;
+            var type = baseNodeDesc.Type ?? asset1NodeDesc.Type ?? asset2NodeDesc.Type;
+
+            var diff3 = new Diff3Node(baseNode, asset1Node, asset2Node) { InstanceType = type };
+
+            if (IsComparableType(node.HasMembers, type))
             {
                 DiffValue(diff3, ref baseNodeDesc, ref asset1NodeDesc, ref asset2NodeDesc);
-                return diff3;
             }
+            else
+            {
+                DiffMembers(diff3, baseNode, asset1Node, asset2Node);
 
-            // Diff members
-            DiffMembers(diff3, baseNode, asset1Node, asset2Node);
-
-            if (DictionaryDescriptor.IsDictionary(type))
-            {
-                DiffDictionary(diff3, baseNode, asset1Node, asset2Node);
-            }
-            else if (CollectionDescriptor.IsCollection(type))
-            {
-                DiffCollection(diff3, baseNode, asset1Node, asset2Node);
-            }
-            else if (type.IsArray)
-            {
-                DiffArray(diff3, baseNode, asset1Node, asset2Node);
+                if (DictionaryDescriptor.IsDictionary(type))
+                {
+                    DiffDictionary(diff3, baseNode, asset1Node, asset2Node);
+                }
+                else if (CollectionDescriptor.IsCollection(type))
+                {
+                    DiffCollection(diff3, baseNode, asset1Node, asset2Node);
+                }
+                else if (type.IsArray)
+                {
+                    DiffArray(diff3, baseNode, asset1Node, asset2Node);
+                }
             }
 
             return diff3;

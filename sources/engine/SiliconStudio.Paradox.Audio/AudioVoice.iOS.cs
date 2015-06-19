@@ -6,8 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using MonoTouch.AudioToolbox;
-using MonoTouch.AudioUnit;
+using AudioToolbox;
+using AudioUnit;
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Audio.Wave;
 using SiliconStudio.Core.Diagnostics;
@@ -41,8 +41,8 @@ namespace SiliconStudio.Paradox.Audio
         private static readonly object StaticMembersLock = new object();
 
         private static AUGraph audioGraph;
-        private static AudioUnit unitChannelMixer;
-        private static AudioUnit unit3DMixer;
+        private static AudioUnit.AudioUnit unitChannelMixer;
+        private static AudioUnit.AudioUnit unit3DMixer;
 
         private readonly AudioDataRendererInfo* pAudioDataRendererInfo;
 
@@ -73,19 +73,6 @@ namespace SiliconStudio.Paradox.Audio
         /// </summary>
         internal uint BusIndexMixer { get; private set; }
 
-        /// <summary>
-        /// This enumeration is missing from MonoTouch
-        /// </summary>
-        enum _3DMixerParametersIds
-        {
-            Azimuth = 0,
-            Elevation = 1,
-            Distance = 2,
-            Gain = 3,
-            PlaybackRate = 4,
-            Enable = 5,
-        }
-
         public bool DidVoicePlaybackEnd()
         {
             return pAudioDataRendererInfo->PlaybackEnded;
@@ -109,7 +96,7 @@ namespace SiliconStudio.Paradox.Audio
                 !Is3D && shouldBeEnabled ? 1f : 0f, AudioUnitScopeType.Input, BusIndexMixer), "Failed to enable/disable the ChannelMixerInput.");
 
             if(waveFormat.Channels == 1) // no 3D mixer for stereo sounds
-                CheckUnitStatus(unit3DMixer.SetParameter((AudioUnitParameterType)_3DMixerParametersIds.Enable,
+                CheckUnitStatus(unit3DMixer.SetParameter(AudioUnitParameterType.Mixer3DEnable,
                     Is3D && shouldBeEnabled ? 1f : 0f, AudioUnitScopeType.Input, BusIndexMixer), "Failed to enable/disable the 3DMixerInput.");
 
             pAudioDataRendererInfo->IsEnabled2D = shouldBeEnabled && !Is3D;
@@ -217,7 +204,7 @@ namespace SiliconStudio.Paradox.Audio
                     for (uint i = 0; i < MaxNumberOfTracks; i++)
                     {
                         CheckUnitStatus(unitChannelMixer.SetParameter(AudioUnitParameterType.MultiChannelMixerEnable, 0f, AudioUnitScopeType.Input, i), "Failed to enable/disable the ChannelMixerInput.");
-                        CheckUnitStatus(unit3DMixer.SetParameter((AudioUnitParameterType)_3DMixerParametersIds.Enable, 0f, AudioUnitScopeType.Input, i), "Failed to enable/disable the 3DMixerInput.");
+                        CheckUnitStatus(unit3DMixer.SetParameter(AudioUnitParameterType.Mixer3DEnable, 0f, AudioUnitScopeType.Input, i), "Failed to enable/disable the 3DMixerInput.");
                     }
 
                     // At initialization all UnitElement are available.
@@ -373,7 +360,7 @@ namespace SiliconStudio.Paradox.Audio
             if (Is3D)
             {
                 var gain = Math.Max(-120f, (float) (20*Math.Log10(volume)));
-                CheckUnitStatus(unit3DMixer.SetParameter((AudioUnitParameterType)_3DMixerParametersIds.Gain, gain, AudioUnitScopeType.Input, BusIndexMixer), "Failed to set the Gain parameter of the 3D mixer");
+                CheckUnitStatus(unit3DMixer.SetParameter(AudioUnitParameterType.Mixer3DGain, gain, AudioUnitScopeType.Input, BusIndexMixer), "Failed to set the Gain parameter of the 3D mixer");
             }
             else
             {
@@ -395,10 +382,10 @@ namespace SiliconStudio.Paradox.Audio
             if (BusIndexMixer == uint.MaxValue)
                 return;
 
-            CheckUnitStatus(unit3DMixer.SetParameter((AudioUnitParameterType)_3DMixerParametersIds.Azimuth, azimuth, AudioUnitScopeType.Input, BusIndexMixer), "Failed to set the Azimuth parameter of the 3D mixer");
-            CheckUnitStatus(unit3DMixer.SetParameter((AudioUnitParameterType)_3DMixerParametersIds.Elevation, elevation, AudioUnitScopeType.Input, BusIndexMixer), "Failed to set the Elevation parameter of the 3D mixer");
-            CheckUnitStatus(unit3DMixer.SetParameter((AudioUnitParameterType)_3DMixerParametersIds.Distance, distance, AudioUnitScopeType.Input, BusIndexMixer), "Failed to set the Distance parameter of the 3D mixer");
-            CheckUnitStatus(unit3DMixer.SetParameter((AudioUnitParameterType)_3DMixerParametersIds.PlaybackRate, playRate, AudioUnitScopeType.Input, BusIndexMixer), "Failed to set the PlayRate parameter of the 3D mixer");
+            CheckUnitStatus(unit3DMixer.SetParameter(AudioUnitParameterType.Mixer3DAzimuth, azimuth, AudioUnitScopeType.Input, BusIndexMixer), "Failed to set the Azimuth parameter of the 3D mixer");
+            CheckUnitStatus(unit3DMixer.SetParameter(AudioUnitParameterType.Mixer3DElevation, elevation, AudioUnitScopeType.Input, BusIndexMixer), "Failed to set the Elevation parameter of the 3D mixer");
+            CheckUnitStatus(unit3DMixer.SetParameter(AudioUnitParameterType.Mixer3DDistance, distance, AudioUnitScopeType.Input, BusIndexMixer), "Failed to set the Distance parameter of the 3D mixer");
+            CheckUnitStatus(unit3DMixer.SetParameter(AudioUnitParameterType.Mixer3DPlaybackRate, playRate, AudioUnitScopeType.Input, BusIndexMixer), "Failed to set the PlayRate parameter of the 3D mixer");
         }
 
         public void Apply3D(float azimut, float elevation, float distance, float playRate)
@@ -422,7 +409,7 @@ namespace SiliconStudio.Paradox.Audio
                 return;
 
             Set3DParameters(0, 0, 0, 1);
-            CheckUnitStatus(unit3DMixer.SetParameter((AudioUnitParameterType)_3DMixerParametersIds.Gain, 0, AudioUnitScopeType.Input, BusIndexMixer), "Failed to set the Gain parameter of the 3D mixer");
+            CheckUnitStatus(unit3DMixer.SetParameter(AudioUnitParameterType.Mixer3DGain, 0, AudioUnitScopeType.Input, BusIndexMixer), "Failed to set the Gain parameter of the 3D mixer");
         }
 
         private void ResetChannelMixerParameter()
@@ -435,7 +422,7 @@ namespace SiliconStudio.Paradox.Audio
         }
         
         [DebuggerDisplay("AudioDataMixer for input bus {parent.BusIndexChannelMixer}-{parent.BusIndex3DMixer}")]
-        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        [StructLayout(LayoutKind.Sequential)]
         struct AudioDataRendererInfo
         {
             public int LoopStartPoint;
