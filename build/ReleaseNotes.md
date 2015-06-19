@@ -8,6 +8,8 @@ Release date: 2015/XX/XX
 
 #### Issues fixed
 - Engine: The center of sprites is now properly taken in account when rendered by the CameraRenderer.
+- Engine: Fixed an issue that prevented frustum culling from working.
+- Shaders: Ambient occlusion now correctly affects ambient light.
 
 #### Breaking changes
 
