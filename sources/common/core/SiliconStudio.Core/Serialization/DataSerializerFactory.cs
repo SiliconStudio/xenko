@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Core.Serialization
@@ -33,12 +34,12 @@ namespace SiliconStudio.Core.Serialization
         public AssemblySerializers(Assembly assembly)
         {
             Assembly = assembly;
-            Modules = new List<ModuleHandle>();
+            Modules = new List<Module>();
         }
 
         public Assembly Assembly { get; private set; }
 
-        public List<ModuleHandle> Modules { get; private set; }
+        public List<Module> Modules { get; private set; }
     }
 
     public static class DataSerializerFactory
@@ -77,7 +78,7 @@ namespace SiliconStudio.Core.Serialization
             // Run module ctor
             foreach (var module in assemblySerializers.Modules)
             {
-                RuntimeHelpers.RunModuleConstructor(module);
+                ModuleRuntimeHelpers.RunModuleConstructor(module);
             }
 
             lock (Lock)

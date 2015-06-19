@@ -227,7 +227,7 @@ namespace SiliconStudio.DataSerializers
             
             #line default
             #line hidden
-            this.Write(").GetTypeInfo().Module.ModuleHandle);\r\n");
+            this.Write(").GetTypeInfo().Module);\r\n");
             
             #line 52 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
  } 
