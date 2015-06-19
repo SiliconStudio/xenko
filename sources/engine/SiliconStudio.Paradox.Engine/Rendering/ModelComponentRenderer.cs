@@ -239,7 +239,7 @@ namespace SiliconStudio.Paradox.Rendering
                         // Always render meshes with unspecified bounds
                         // TODO: This should not be necessary. Add proper bounding boxes to gizmos etc.
                         var boundingBox = renderMesh.Mesh.BoundingBox;
-                        if (boundingBox.Extent == Vector3.Zero)
+                        if (boundingBox.Extent != Vector3.Zero)
                         {
                             // Fast AABB transform: http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
                             // Compute transformed AABB (by world)

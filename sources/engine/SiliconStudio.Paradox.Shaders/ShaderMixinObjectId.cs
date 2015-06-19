@@ -16,6 +16,8 @@ namespace SiliconStudio.Paradox.Shaders
     /// <summary>
     /// A helper class to compute a unique object id for a <see cref="ShaderMixinSource"/>.
     /// </summary>
+    [DataSerializerGlobal(typeof(ParameterKeyHashSerializer), Profile = "Hash")]
+    [DataSerializerGlobal(typeof(ParameterCollectionHashSerializer), Profile = "Hash")]
     public class ShaderMixinObjectId
     {
         private static object generatorLock = new object();
@@ -34,10 +36,7 @@ namespace SiliconStudio.Paradox.Shaders
             buffer = Marshal.AllocHGlobal(65536);
             memStream = new NativeMemoryStream(buffer, 65536);
             writer = new HashSerializationWriter(memStream);
-            writer.Context.SerializerSelector = new SerializerSelector();
-            writer.Context.SerializerSelector.RegisterProfile("Default");
-            writer.Context.SerializerSelector.RegisterSerializer(new ParameterKeyHashSerializer());
-            writer.Context.SerializerSelector.RegisterSerializer(new ParameterCollectionHashSerializer());
+            writer.Context.SerializerSelector = new SerializerSelector("Default", "Hash");
 
             if (parameters == null)
                 parameters = new ParameterCollection();

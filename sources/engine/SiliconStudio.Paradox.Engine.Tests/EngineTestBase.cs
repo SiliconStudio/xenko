@@ -7,6 +7,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Rendering.Composers;
 using SiliconStudio.Paradox.Graphics.Regression;
+using SiliconStudio.Paradox.Rendering.Lights;
 
 namespace SiliconStudio.Paradox.Engine.Tests
 {
@@ -32,7 +33,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
         private SceneGraphicsCompositorLayers graphicsCompositor;
 
-        public EngineTestBase(string effectName = "ParadoxEditorForwardShadingEffect")
+        public EngineTestBase(string effectName = "ParadoxForwardShadingEffect")
         {
             SceneCameraRenderer = new CameraRendererModeForward { Name = "Camera renderer", ModelEffect = effectName };
         }
@@ -58,6 +59,9 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
             Scene = new Scene { Settings = { GraphicsCompositor = graphicsCompositor } };
             Scene.AddChild(Camera);
+
+            var ambientLight = new Entity { new LightComponent { Type = new LightAmbient { Color = new LightColorRgb(Color.White) }, Intensity = 1 } };
+            Scene.AddChild(ambientLight);
 
             SceneSystem.SceneInstance = new SceneInstance(Services, Scene);
         }

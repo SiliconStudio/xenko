@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         public TestSpriteFont(string assetPrefix, string saveImageSuffix)
         {
-            CurrentVersion = 1;
+            CurrentVersion = 2;
 
             this.assetPrefix = assetPrefix;
             this.saveImageSuffix = saveImageSuffix;
