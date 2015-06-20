@@ -29,17 +29,25 @@ namespace SiliconStudio.Core.Serialization
     {
     }
 
-    public class AssemblySerializers : Dictionary<string, AssemblySerializersPerProfile>
+    public class AssemblySerializers
     {
         public AssemblySerializers(Assembly assembly)
         {
             Assembly = assembly;
             Modules = new List<Module>();
+            Profiles = new Dictionary<string, AssemblySerializersPerProfile>();
         }
 
         public Assembly Assembly { get; private set; }
 
         public List<Module> Modules { get; private set; }
+
+        public Dictionary<string, AssemblySerializersPerProfile> Profiles { get; private set; }
+
+        public override string ToString()
+        {
+            return Assembly.ToString();
+        }
     }
 
     public static class DataSerializerFactory
@@ -51,6 +59,8 @@ namespace SiliconStudio.Core.Serialization
 
         // List of registered assemblies
         private static readonly List<AssemblySerializers> AssemblySerializers = new List<AssemblySerializers>();
+
+        private static readonly Dictionary<Assembly, AssemblySerializers> AvailableAssemblySerializers = new Dictionary<Assembly, AssemblySerializers>();
 
         // List of serializers per profile
         internal static readonly Dictionary<string, Dictionary<Type, AssemblySerializerEntry>> DataSerializersPerProfile = new Dictionary<string, Dictionary<Type, AssemblySerializerEntry>>();
@@ -75,6 +85,20 @@ namespace SiliconStudio.Core.Serialization
 
         public static void RegisterSerializationAssembly(AssemblySerializers assemblySerializers)
         {
+            lock (Lock)
+            {
+                // Register it (so that we can get it back if unregistered)
+                if (!AvailableAssemblySerializers.ContainsKey(assemblySerializers.Assembly))
+                    AvailableAssemblySerializers.Add(assemblySerializers.Assembly, assemblySerializers);
+
+                // Check if already loaded
+                if (AssemblySerializers.Contains(assemblySerializers))
+                    return;
+
+                // Update existing SerializerSelector
+                AssemblySerializers.Add(assemblySerializers);
+            }
+
             // Run module ctor
             foreach (var module in assemblySerializers.Modules)
             {
@@ -83,28 +107,48 @@ namespace SiliconStudio.Core.Serialization
 
             lock (Lock)
             {
-                // Update existing SerializerSelector
-                AssemblySerializers.Add(assemblySerializers);
+                RegisterSerializers(assemblySerializers);
+            }
 
-                // Register serializers
-                foreach (var assemblySerializerPerProfile in assemblySerializers)
+            foreach (var weakSerializerSelector in SerializerSelectors)
+            {
+                SerializerSelector serializerSelector;
+                if (weakSerializerSelector.TryGetTarget(out serializerSelector))
                 {
-                    var profile = assemblySerializerPerProfile.Key;
+                    serializerSelector.Invalidate();
+                }
+            }
+        }
 
-                    Dictionary<Type, AssemblySerializerEntry> dataSerializers;
-                    if (!DataSerializersPerProfile.TryGetValue(profile, out dataSerializers))
-                    {
-                        dataSerializers = new Dictionary<Type, AssemblySerializerEntry>();
-                        DataSerializersPerProfile.Add(profile, dataSerializers);
-                    }
+        public static void RegisterSerializationAssembly(Assembly assembly)
+        {
+            lock (Lock)
+            {
+                AssemblySerializers assemblySerializers;
+                if (AvailableAssemblySerializers.TryGetValue(assembly, out assemblySerializers))
+                    RegisterSerializationAssembly(assemblySerializers);
+            }
+        }
 
-                    foreach (var assemblySerializer in assemblySerializerPerProfile.Value)
-                    {
-                        if (!dataSerializers.ContainsKey(assemblySerializer.ObjectType))
-                        {
-                            dataSerializers.Add(assemblySerializer.ObjectType, assemblySerializer);
-                        }
-                    }
+        public static void UnregisterSerializationAssembly(Assembly assembly)
+        {
+            AssemblySerializers removedAssemblySerializer;
+
+            lock (Lock)
+            {
+                removedAssemblySerializer = AssemblySerializers.FirstOrDefault(x => x.Assembly == assembly);
+                if (removedAssemblySerializer == null)
+                    return;
+
+                AssemblySerializers.Remove(removedAssemblySerializer);
+
+                // Rebuild serializer list
+                // TODO: For now, we simply reregister all assemblies one-by-one, but it can easily be improved if it proves to be unefficient (for now it shouldn't happen often so probably not a big deal)
+                DataSerializersPerProfile.Clear();
+
+                foreach (var assemblySerializer in AssemblySerializers)
+                {
+                    RegisterSerializers(assemblySerializer);
                 }
             }
 
@@ -118,38 +162,28 @@ namespace SiliconStudio.Core.Serialization
             }
         }
 
-        public static AssemblySerializers UnregisterSerializationAssembly(Assembly assembly)
+        private static void RegisterSerializers(AssemblySerializers assemblySerializers)
         {
-            AssemblySerializers removedAssemblySerializer;
-
-            lock (Lock)
+            // Register serializers
+            foreach (var assemblySerializerPerProfile in assemblySerializers.Profiles)
             {
-                removedAssemblySerializer = AssemblySerializers.FirstOrDefault(x => x.Assembly == assembly);
-                if (removedAssemblySerializer == null)
-                    return null;
+                var profile = assemblySerializerPerProfile.Key;
 
-                AssemblySerializers.Remove(removedAssemblySerializer);
-
-                // Rebuild serializer list
-                // TODO: For now, we simply reregister all assemblies one-by-one, but it can easily be improved if it proves to be unefficient (for now it shouldn't happen often so probably not a big deal)
-                DataSerializersPerProfile.Clear();
-
-                foreach (var assemblySerializer in AssemblySerializers)
+                Dictionary<Type, AssemblySerializerEntry> dataSerializers;
+                if (!DataSerializersPerProfile.TryGetValue(profile, out dataSerializers))
                 {
-                    RegisterSerializationAssembly(assemblySerializer);
+                    dataSerializers = new Dictionary<Type, AssemblySerializerEntry>();
+                    DataSerializersPerProfile.Add(profile, dataSerializers);
+                }
+
+                foreach (var assemblySerializer in assemblySerializerPerProfile.Value)
+                {
+                    if (!dataSerializers.ContainsKey(assemblySerializer.ObjectType))
+                    {
+                        dataSerializers.Add(assemblySerializer.ObjectType, assemblySerializer);
+                    }
                 }
             }
-
-            foreach (var weakSerializerSelector in SerializerSelectors)
-            {
-                SerializerSelector serializerSelector;
-                if (weakSerializerSelector.TryGetTarget(out serializerSelector))
-                {
-                    serializerSelector.Invalidate();
-                }
-            }
-
-            return removedAssemblySerializer;
         }
     }
 }
