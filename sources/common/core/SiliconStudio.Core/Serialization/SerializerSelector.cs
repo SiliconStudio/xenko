@@ -43,6 +43,7 @@ namespace SiliconStudio.Core.Serialization
     /// </summary>
     public class SerializerSelector
     {
+        private object Lock = new object();
         private readonly bool reuseReferences;
         private readonly string[] profiles;
         private Dictionary<Type, DataSerializer> dataSerializersByType = new Dictionary<Type, DataSerializer>();
@@ -101,7 +102,7 @@ namespace SiliconStudio.Core.Serialization
 
         public DataSerializer GetSerializer(ref ObjectId typeId)
         {
-            lock (dataSerializersByType)
+            lock (Lock)
             {
                 if (invalidated)
                     UpdateDataSerializers();
@@ -119,7 +120,7 @@ namespace SiliconStudio.Core.Serialization
         /// <returns>The <see cref="DataSerializer{T}"/> for this type if it exists or can be created, otherwise null.</returns>
         public DataSerializer GetSerializer(Type type)
         {
-            lock (dataSerializersByType)
+            lock (Lock)
             {
                 if (invalidated)
                     UpdateDataSerializers();
@@ -142,7 +143,7 @@ namespace SiliconStudio.Core.Serialization
 
         internal void Invalidate()
         {
-            lock (dataSerializersByType)
+            lock (Lock)
             {
                 invalidated = true;
             }
@@ -155,8 +156,8 @@ namespace SiliconStudio.Core.Serialization
                 var oldDataSerializersByType = dataSerializersByType;
                 var oldDataSerializersByTypeId = dataSerializersByTypeId;
 
-                dataSerializersByType = new Dictionary<Type, DataSerializer>(oldDataSerializersByType);
-                dataSerializersByTypeId = new Dictionary<ObjectId, DataSerializer>(oldDataSerializersByTypeId);
+                dataSerializersByType = new Dictionary<Type, DataSerializer>();
+                dataSerializersByTypeId = new Dictionary<ObjectId, DataSerializer>();
 
                 invalidated = false;
 

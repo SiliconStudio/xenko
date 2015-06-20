@@ -54,7 +54,7 @@ namespace SiliconStudio.DataSerializers
 <# foreach (var profile in cecilSerializerContext.SerializableTypesProfiles) { #>
 			{
 				var assemblySerializersProfile = new AssemblySerializersPerProfile();
-				assemblySerializers["<#=profile.Key#>"] = assemblySerializersProfile;
+				assemblySerializers.Profiles["<#=profile.Key#>"] = assemblySerializersProfile;
 
 <#   foreach (var type in profile.Value.SerializableTypes.Where(x => x.Value.Local)) { #>
 				assemblySerializersProfile.Add(new AssemblySerializerEntry(<#=type.Key.ConvertTypeId()#>, typeof(<#= type.Key.ConvertCSharp() #>), <# if (type.Value.SerializerType != null) { #>typeof(<#= type.Value.SerializerType.ConvertCSharp() #>)<# } else { #>null<# } #>));
