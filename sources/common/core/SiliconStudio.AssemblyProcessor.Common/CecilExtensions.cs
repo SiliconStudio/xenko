@@ -109,10 +109,9 @@ namespace SiliconStudio.AssemblyProcessor
         /// <exception cref="System.InvalidOperationException">Missing mscorlib.dll from assembly</exception>
         public static AssemblyDefinition FindCorlibAssembly(AssemblyDefinition assembly)
         {
-            var corlib = assembly.MainModule.TypeSystem.CoreLibrary as AssemblyNameReference;
-            if (corlib == null)
-                throw new NotSupportedException("CoreLibrary is not an AssemblyNameReference");
-            return assembly.MainModule.AssemblyResolver.Resolve(corlib);
+            // For now, we hardcode this dependency (using assembly.MainModule.TypeSystem.CoreLibrary might return System.Runtime but we prefer mscorlib with full redirects)
+            // TODO: Avoid hardcoding 4.0 by checking target framework maybe?
+            return assembly.MainModule.AssemblyResolver.Resolve(new AssemblyNameReference("mscorlib", new Version(4, 0)));
         }
 
         /// <summary>
