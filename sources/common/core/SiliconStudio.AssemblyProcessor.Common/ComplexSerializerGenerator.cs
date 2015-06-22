@@ -143,8 +143,7 @@ namespace SiliconStudio.AssemblyProcessor
                 }
             }
 
-            // Run ILMerge
-            var merge = new ILRepacking.ILRepack()
+            var repackOptions = new ILRepacking.RepackOptions(new string[0])
             {
                 OutputFile = assembly.MainModule.FullyQualifiedName,
                 DebugInfo = true,
@@ -152,18 +151,21 @@ namespace SiliconStudio.AssemblyProcessor
                 AllowMultipleAssemblyLevelAttributes = true,
                 XmlDocumentation = false,
                 NoRepackRes = true,
+                InputAssemblies = new[] { serializationAssemblyLocation },
+                SearchDirectories = assemblyResolver.GetSearchDirectories(),
+            };
+
+            // Run ILMerge
+            var merge = new ILRepacking.ILRepack(repackOptions)
+            {
                 PrimaryAssemblyDefinition = assembly,
-                WriteToDisk = false,
+                MemoryOnly = true,
                 //KeepFirstOfMultipleAssemblyLevelAttributes = true,
                 //Log = true,
                 //LogFile = "ilmerge.log",
             };
-            merge.SetInputAssemblies(new string[] { serializationAssemblyLocation });
 
-            // Force to use the correct framework
-            //merge.SetTargetPlatform("v4", frameworkFolder);
-            merge.SetSearchDirectories(assemblyResolver.GetSearchDirectories());
-            merge.Merge();
+            merge.Repack();
 
             // Copy name
             merge.TargetAssemblyDefinition.Name.Name = assembly.Name.Name;

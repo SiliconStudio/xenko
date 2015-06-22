@@ -88,8 +88,11 @@ namespace SiliconStudio.Paradox.Assets.Textures
                     break;
                 case GraphicsProfile.Level_11_0:
                 case GraphicsProfile.Level_11_1:
+                case GraphicsProfile.Level_11_2:
                     maxTextureSize = 16384;
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException("graphicsProfile");
             }
 
             if (textureSize.Width > maxTextureSize || textureSize.Height > maxTextureSize)

@@ -208,6 +208,7 @@ namespace SiliconStudio.Core.Yaml
         internal static void Initialize()
         {
             AssemblyRegistry.AssemblyRegistered += AssemblyRegistry_AssemblyRegistered;
+            AssemblyRegistry.AssemblyUnregistered += AssemblyRegistry_AssemblyUnregistered;
             foreach (var assembly in AssemblyRegistry.FindAll())
             {
                 RegisteredAssemblies.Add(assembly);
@@ -219,6 +220,18 @@ namespace SiliconStudio.Core.Yaml
             lock (Lock)
             {
                 RegisteredAssemblies.Add(e.Assembly);
+
+                // Reset the current serializer as the set of assemblies has changed
+                globalSerializer = null;
+                globalSerializerKeepOnlySealedOverrides = null;
+            }
+        }
+
+        private static void AssemblyRegistry_AssemblyUnregistered(object sender, AssemblyRegisteredEventArgs e)
+        {
+            lock (Lock)
+            {
+                RegisteredAssemblies.Remove(e.Assembly);
 
                 // Reset the current serializer as the set of assemblies has changed
                 globalSerializer = null;
