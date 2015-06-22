@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
                 FontSize = textBlock.TextSize,
                 Batch = Batch,
                 SnapText = context.ShouldSnapText && !textBlock.DoNotSnapText,
-                WorldMatrix = textBlock.WorldMatrixInternal,
+                Matrix = textBlock.WorldMatrixInternal,
                 Alignment = textBlock.TextAlignment,
                 Size = new Vector2(textBlock.ActualWidth, textBlock.ActualHeight)
             };
