@@ -40,6 +40,10 @@ namespace SiliconStudio.Paradox.Debugger.Target
         public GameDebuggerTarget()
         {
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+
+            // Make sure this assembly is registered (it contains custom Yaml serializers such as CloneReferenceSerializer)
+            // Note: this assembly should not be registered when run by Game Studio
+            AssemblyRegistry.Register(typeof(Program).GetTypeInfo().Assembly, AssemblyCommonCategories.Assets);
         }
 
         Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)

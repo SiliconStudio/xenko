@@ -28,6 +28,8 @@ namespace SiliconStudio.Paradox.Debugger.Target
 
         public void Reload()
         {
+            CloneReferenceSerializer.References = new List<object>();
+
             var loadedAssembliesSet = new HashSet<Assembly>(assembliesToUnregister);
             var reloadedScripts = CollectReloadedScriptEntries(loadedAssembliesSet);
 
@@ -54,6 +56,8 @@ namespace SiliconStudio.Paradox.Debugger.Target
             }
 
             RestoreReloadedScriptEntries(reloadedScripts);
+
+            CloneReferenceSerializer.References = null;
         }
 
         protected override void ReplaceScript(ScriptComponent scriptComponent, ReloadedScriptEntry reloadedScript)

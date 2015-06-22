@@ -12,7 +12,7 @@ using SiliconStudio.Core.Yaml;
 namespace SiliconStudio.Assets.Serializers
 {
     [YamlSerializerFactory]
-    internal class ContentReferenceSerializer : AssetScalarSerializerBase
+    public class ContentReferenceSerializer : AssetScalarSerializerBase
     {
         public static readonly ContentReferenceSerializer Default = new ContentReferenceSerializer();
 
