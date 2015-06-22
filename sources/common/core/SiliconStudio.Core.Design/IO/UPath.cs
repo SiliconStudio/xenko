@@ -181,6 +181,26 @@ namespace SiliconStudio.Core.IO
         }
 
         /// <summary>
+        /// Indicates whether the specified <see cref="UPath"/> is null or empty.
+        /// </summary>
+        /// <param name="path">The path to test</param>
+        /// <returns><c>true</c> if the value parameter is null or empty, otherwise <c>false</c>.</returns>
+        public static bool IsNullOrEmpty(UPath path)
+        {
+            return path == null || string.IsNullOrEmpty(path.FullPath);
+        }
+
+        /// <summary>
+        /// Indicates whether the specified <see cref="UPath"/> is null, empty, or consists only of white-space characters.
+        /// </summary>
+        /// <param name="path">The path to test</param>
+        /// <returns><c>true</c> if the value parameter is null, empty, or consists only of white-space characters, otherwise <c>false</c>.</returns>
+        public static bool IsNullOrWhiteSpace(UPath path)
+        {
+            return path == null || string.IsNullOrWhiteSpace(path.FullPath);
+        }
+
+        /// <summary>
         /// Gets the directory. Can be null.
         /// </summary>
         /// <returns>The directory.</returns>

@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [ThumbnailCompiler(PreviewerCompilerNames.EntityThumbnailCompilerQualifiedName, true)]
     [Display("Entity", "An entity")]
     //[AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
-    public class EntityAsset : AssetImportTracked, IDiffResolver, IAssetComposer
+    public class EntityAsset : Asset, IDiffResolver, IAssetComposer
     {
         public const int AssetFormatVersion = 0;
 

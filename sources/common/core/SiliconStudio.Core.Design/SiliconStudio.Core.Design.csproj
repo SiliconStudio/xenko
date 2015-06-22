@@ -87,6 +87,7 @@
     <Compile Include="Settings\ChangesValidatedEventArgs.cs" />
     <Compile Include="Settings\FileModifiedEventArgs.cs" />
     <Compile Include="Settings\NamespaceDoc.cs" />
+    <Compile Include="Yaml\ParsingEventListEmitter.cs" />
     <Compile Include="Settings\SettingsEntry.cs" />
     <Compile Include="Settings\SettingsEntryValue.cs" />
     <Compile Include="Settings\SettingsFile.cs" />
@@ -125,6 +126,7 @@
     <Compile Include="VisualStudio\SolutionFileException.cs" />
     <Compile Include="VisualStudio\SolutionReader.cs" />
     <Compile Include="VisualStudio\SolutionWriter.cs" />
+    <Compile Include="VisualStudio\VisualStudioVersions.cs" />
     <Compile Include="Windows\AppHelper.cs" />
     <Compile Include="Yaml\AssetScalarSerializerBase.cs" />
     <Compile Include="Yaml\DynamicYamlArray.cs" />
