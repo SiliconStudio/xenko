@@ -105,6 +105,7 @@
     <Compile Include="ValueConverters\MatchType.cs" />
     <Compile Include="ValueConverters\MaxNum.cs" />
     <Compile Include="ValueConverters\MinNum.cs" />
+    <Compile Include="ValueConverters\MultiplyMultiConverter.cs" />
     <Compile Include="ViewModel\ActionStack\AnonymousViewModelActionItem.cs" />
     <Compile Include="ViewModel\IViewModelServiceProvider.cs" />
     <Compile Include="ViewModel\ViewModelServiceProvider.cs" />
