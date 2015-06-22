@@ -109,17 +109,10 @@ namespace SiliconStudio.AssemblyProcessor
         /// <exception cref="System.InvalidOperationException">Missing mscorlib.dll from assembly</exception>
         public static AssemblyDefinition FindCorlibAssembly(AssemblyDefinition assembly)
         {
-            AssemblyDefinition mscorlibAssembly = null;
-
-            foreach (var assemblyNameReference in assembly.MainModule.AssemblyReferences)
-            {
-                if (assemblyNameReference.Name.ToLower() == "mscorlib")
-                {
-                    mscorlibAssembly = assembly.MainModule.AssemblyResolver.Resolve(assemblyNameReference);
-                    break;
-                }
-            }
-            return mscorlibAssembly;
+            var corlib = assembly.MainModule.TypeSystem.CoreLibrary as AssemblyNameReference;
+            if (corlib == null)
+                throw new NotSupportedException("CoreLibrary is not an AssemblyNameReference");
+            return assembly.MainModule.AssemblyResolver.Resolve(corlib);
         }
 
         /// <summary>
