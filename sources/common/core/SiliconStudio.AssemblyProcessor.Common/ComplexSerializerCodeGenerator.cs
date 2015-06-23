@@ -227,7 +227,7 @@ namespace SiliconStudio.DataSerializers
             
             #line default
             #line hidden
-            this.Write(").GetTypeInfo().Module.ModuleHandle);\r\n");
+            this.Write(").GetTypeInfo().Module);\r\n");
             
             #line 52 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
  } 
@@ -242,7 +242,7 @@ namespace SiliconStudio.DataSerializers
             #line default
             #line hidden
             this.Write("\t\t\t{\r\n\t\t\t\tvar assemblySerializersProfile = new AssemblySerializersPerProfile();\r\n" +
-                    "\t\t\t\tassemblySerializers[\"");
+                    "\t\t\t\tassemblySerializers.Profiles[\"");
             
             #line 57 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(profile.Key));

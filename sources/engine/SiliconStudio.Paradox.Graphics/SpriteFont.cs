@@ -9,7 +9,6 @@ using System.Text;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.Graphics.Font;
 
 using Color = SiliconStudio.Core.Mathematics.Color;
@@ -94,7 +93,6 @@ namespace SiliconStudio.Paradox.Graphics
         internal Dictionary<int, float> KerningMap;
 
         private FontSystem fontSystem;
-        private Vector4 nullVector4 = Vector4.Zero;
 
         /// <summary>
         /// The swizzle mode to use when drawing the sprite font.
@@ -245,12 +243,6 @@ namespace SiliconStudio.Paradox.Graphics
 
         internal void InternalUIDraw(ref StringProxy text, ref InternalUIDrawCommand drawCommand)
         {
-            if (!IsDynamic && (drawCommand.FontScale.X != 1 || drawCommand.FontScale.Y != 1)) // ensure that static font are not scaled internally
-            {
-                drawCommand.SnapText = false;   // we don't want snapping of the resolution of the screen does not match virtual resolution. (character alignment problems)
-                drawCommand.FontScale = Vector2.One;
-            }
-
             var fontSize = new Vector2(drawCommand.FontSize * drawCommand.FontScale.Y); // we don't want to have letters with non uniform ratio
             var scaledSize = new Vector2(drawCommand.Size.X * drawCommand.FontScale.X, drawCommand.Size.Y * drawCommand.FontScale.Y);
             ForEachGlyph(ref text, ref fontSize, InternalUIDrawGlyph, ref drawCommand, drawCommand.Alignment, true, scaledSize);
@@ -260,22 +252,36 @@ namespace SiliconStudio.Paradox.Graphics
         {
             if (char.IsWhiteSpace((char)glyph.Character))
                 return;
-            
-            var xShift = x + glyph.Subrect.Width / 2f;
-            var yShift = y + GetBaseOffsetY(fontSize.Y) + glyph.Offset.Y + glyph.Subrect.Height / 2f;
+
+            // Skip items with null size
+            var elementSize = new Vector2(glyph.Subrect.Width / parameters.FontScale.X, glyph.Subrect.Height / parameters.FontScale.Y);
+            if (elementSize.Length() < MathUtil.ZeroTolerance) 
+                return;
+
+            var xShift = x;
+            var yShift = y + GetBaseOffsetY(fontSize.Y) + glyph.Offset.Y;
+            if (parameters.SnapText)
+            {
+                xShift = (float)Math.Round(xShift);
+                yShift = (float)Math.Round(yShift);
+            }
             var xScaledShift = xShift / parameters.FontScale.X;
             var yScaledShift = yShift / parameters.FontScale.Y;
 
-            var worldMatrix = parameters.WorldMatrix;
+            var worldMatrix = parameters.Matrix;
             worldMatrix.M41 += worldMatrix.M11 * xScaledShift + worldMatrix.M21 * yScaledShift;
             worldMatrix.M42 += worldMatrix.M12 * xScaledShift + worldMatrix.M22 * yScaledShift;
             worldMatrix.M43 += worldMatrix.M13 * xScaledShift + worldMatrix.M23 * yScaledShift;
 
-            var elementSize = new Vector3(glyph.Subrect.Width / parameters.FontScale.X, glyph.Subrect.Height / parameters.FontScale.Y, 0);
+            worldMatrix.M11 *= elementSize.X;
+            worldMatrix.M12 *= elementSize.X;
+            worldMatrix.M13 *= elementSize.X;
+            worldMatrix.M21 *= elementSize.Y;
+            worldMatrix.M22 *= elementSize.Y;
+            worldMatrix.M23 *= elementSize.Y;
 
             RectangleF sourceRectangle = glyph.Subrect;
-            parameters.Batch.DrawImage(Textures[glyph.BitmapIndex], null, ref worldMatrix, ref sourceRectangle, ref elementSize, ref nullVector4, 
-                ref parameters.Color, parameters.DepthBias, ImageOrientation.AsIs, Swizzle, parameters.SnapText);
+            parameters.Batch.DrawCharacter(Textures[glyph.BitmapIndex], ref worldMatrix, ref sourceRectangle, ref parameters.Color, parameters.DepthBias, Swizzle);
         }
 
         /// <summary>
@@ -496,8 +502,14 @@ namespace SiliconStudio.Paradox.Graphics
                     var lineSize = Vector2.Zero;
                     ForGlyph(ref text, ref fontSize, MeasureStringGlyph, ref lineSize, startIndex, endIndex, updateGpuResources);
 
-                    // scan the line
+                    // Determine the start position of the line along the x axis
+                    // We round this value to the closest integer to force alignment of all characters to the same pixels
+                    // Otherwise the starting offset can fall just in between two pixels and due to float imprecision 
+                    // some characters can be aligned to the pixel before and others to the pixel after, resulting in gaps and character overlapping
                     var xStart = (scanOrder == TextAlignment.Center) ? (wholeSize.X - lineSize.X) / 2 : wholeSize.X - lineSize.X;
+                    xStart = (float)Math.Round(xStart); 
+
+                    // scan the line
                     ForGlyph(ref text, ref fontSize, action, ref parameters, startIndex, endIndex, updateGpuResources, xStart, yStart);
                     
                     // update variable before going to next line
@@ -656,7 +668,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             public UIBatch Batch;
 
-            public Matrix WorldMatrix;
+            public Matrix Matrix;
 
             public Vector2 Size;
 

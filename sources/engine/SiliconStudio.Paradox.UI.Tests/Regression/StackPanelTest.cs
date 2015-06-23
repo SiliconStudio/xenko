@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public StackPanelTest()
         {
-            CurrentVersion = 5;
+            CurrentVersion = 6;
         }
 
         protected override void RegisterTests()

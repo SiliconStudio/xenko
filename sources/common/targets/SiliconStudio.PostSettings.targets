@@ -85,7 +85,7 @@
     </PropertyGroup>
 
     <!-- Run assembly processor -->
-    <Message Importance="High" Text="AssemblyProcessor: $(TargetPath) with $(SiliconStudioAssemblyProcessorPath) $(SiliconStudioAssemblyProcessorOptions)"/>
+    <Message Importance="High" Text='AssemblyProcessor: Running with "$(SiliconStudioAssemblyProcessorPath)" $(SiliconStudioAssemblyProcessorOptions) "$(TargetPath)"'/>
     <Exec Command='"$(SiliconStudioAssemblyProcessorPath)" $(SiliconStudioAssemblyProcessorOptions) "$(TargetPath)"' ContinueOnError='false'/>
 
     <!-- Copy back *.dll from bin/Debug|Release to obj/Debug/Release directory -->
