@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Assets.Serializers
         }
 
         /// <inheritdoc/>
-        protected override object ReadCollectionItem(ref ObjectContext objectContext, Type itemType)
+        protected override object ReadCollectionItem(ref ObjectContext objectContext, object value, Type itemType)
         {
             // Save the Yaml stream, in case loading fails we can keep this representation
             var parsingEvents = new List<ParsingEvent>();
@@ -47,7 +47,7 @@ namespace SiliconStudio.Paradox.Assets.Serializers
 
             try
             {
-                return objectContext.ObjectSerializerBackend.ReadCollectionItem(ref objectContext, itemType);
+                return objectContext.ObjectSerializerBackend.ReadCollectionItem(ref objectContext, value, itemType);
             }
             catch (YamlException)
             {
