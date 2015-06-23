@@ -12,7 +12,7 @@ using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Core.Tests
 {
-    [TestFixture]
+    [TestFixture, Ignore]
     public class TestWatcher
     {
         [Test]

@@ -1211,7 +1211,7 @@
                 <RowDefinition Height="*" />
                 <RowDefinition MaxHeight="18" />
             </Grid.RowDefinitions>
-            <RepeatButton Grid.Row="0" x:Name="DecreaseRepeat" Command="ScrollBar.LineUpCommand" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+            <RepeatButton Grid.Row="0" x:Name="DecreaseRepeat" Command="ScrollBar.LineUpCommand" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Style="{DynamicResource {x:Type RepeatButton}}">
                 <Grid Margin="0" Background="Transparent">
                     <Path Margin="4.742,3.997,4.946,5.327" VerticalAlignment="Stretch" Height="Auto" Fill="{DynamicResource GlyphBrush}" Stretch="Fill" Stroke="{DynamicResource GlyphBrush}" StrokeThickness="1" Data="M5.2422477,11.132184 L11.5544,11.132184 8.6412958,4.4969033 z" x:Name="DecreaseArrow" />
                 </Grid>
@@ -1227,7 +1227,7 @@
                     <RepeatButton x:Name="PageDown" Style="{DynamicResource NuclearScrollRepeatButtonStyle}" Command="ScrollBar.PageUpCommand" />
                 </Track.DecreaseRepeatButton>
             </Track>
-            <RepeatButton Grid.Row="2" x:Name="IncreaseRepeat" Command="ScrollBar.LineDownCommand">
+            <RepeatButton Grid.Row="2" x:Name="IncreaseRepeat" Command="ScrollBar.LineDownCommand" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Style="{DynamicResource {x:Type RepeatButton}}">
                 <Grid Margin="0" Background="Transparent">
                     <Path Margin="4.742,3.997,4.946,5.327" x:Name="IncreaseArrow" VerticalAlignment="Stretch" Height="Auto" Fill="{DynamicResource GlyphBrush}" Stretch="Fill" Stroke="{DynamicResource GlyphBrush}" StrokeThickness="1" Data="M5.2422477,11.132184 L11.5544,11.132184 8.6412958,4.4969033 z" RenderTransformOrigin="0.5,0.5">
                         <Path.RenderTransform>
@@ -1246,7 +1246,7 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition MaxWidth="18" />
             </Grid.ColumnDefinitions>
-            <RepeatButton Grid.Column="0" x:Name="DecreaseRepeat" Command="ScrollBar.LineLeftCommand">
+            <RepeatButton Grid.Column="0" x:Name="DecreaseRepeat" Command="ScrollBar.LineLeftCommand" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Style="{DynamicResource {x:Type RepeatButton}}">
                 <Grid Margin="0" Background="Transparent">
                     <Path Margin="4.742,3.997,4.946,5.327" HorizontalAlignment="Stretch" Width="Auto" Fill="{DynamicResource GlyphBrush}" Stretch="Fill" Stroke="{DynamicResource GlyphBrush}" StrokeThickness="1" Data="M5.2422477,11.132184 L11.5544,11.132184 8.6412958,4.4969033 z" x:Name="DecreaseArrow" RenderTransformOrigin="0.5,0.5">
                         <Path.RenderTransform>
@@ -1260,13 +1260,13 @@
                     <Thumb Style="{DynamicResource HorizontalNuclearThumbStyle}" Background="{x:Null}" Foreground="{x:Null}"/>
                 </Track.Thumb>
                 <Track.IncreaseRepeatButton>
-                    <RepeatButton x:Name="PageUp" Style="{DynamicResource NuclearScrollRepeatButtonStyle}" Command="ScrollBar.PageRightCommand" />
+                    <RepeatButton x:Name="PageUp" Style="{DynamicResource NuclearScrollRepeatButtonStyle}" Command="ScrollBar.PageRightCommand"/>
                 </Track.IncreaseRepeatButton>
                 <Track.DecreaseRepeatButton>
-                    <RepeatButton x:Name="PageDown" Style="{DynamicResource NuclearScrollRepeatButtonStyle}" Command="ScrollBar.PageLeftCommand" />
+                    <RepeatButton x:Name="PageDown" Style="{DynamicResource NuclearScrollRepeatButtonStyle}" Command="ScrollBar.PageLeftCommand"/>
                 </Track.DecreaseRepeatButton>
             </Track>
-            <RepeatButton Grid.Column="2" x:Name="IncreaseRepeat" Command="ScrollBar.LineRightCommand">
+            <RepeatButton Grid.Column="2" x:Name="IncreaseRepeat" Command="ScrollBar.LineRightCommand" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Style="{DynamicResource {x:Type RepeatButton}}">
                 <Grid Margin="0" Background="Transparent">
                     <Path Margin="4.742,3.997,4.946,5.327" x:Name="IncreaseArrow" HorizontalAlignment="Stretch" Width="Auto" Fill="{DynamicResource GlyphBrush}" Stretch="Fill" Stroke="{DynamicResource GlyphBrush}" StrokeThickness="1" Data="M5.2422477,11.132184 L11.5544,11.132184 8.6412958,4.4969033 z" RenderTransformOrigin="0.5,0.5">
                         <Path.RenderTransform>
