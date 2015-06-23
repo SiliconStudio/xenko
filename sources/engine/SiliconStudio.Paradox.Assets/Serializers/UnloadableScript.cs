@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Assets.Serializers
     /// </summary>
     [DataSerializerGlobal(typeof(InvariantObjectCloneSerializer<UnloadableScript>), Profile = "AssetClone")]
     [Display("Error: unable to load this script")]
-    class UnloadableScript : Script
+    public class UnloadableScript : Script
     {
         [DataMemberIgnore]
         public List<ParsingEvent> ParsingEvents { get; private set; }

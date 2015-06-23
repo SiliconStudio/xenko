@@ -5,8 +5,12 @@ using System;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Engine;
+
+using IObjectFactory = SiliconStudio.Core.Reflection.IObjectFactory;
 
 namespace SiliconStudio.Paradox.Assets.Entities
 {
@@ -17,6 +21,8 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetDescription(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
     //[ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName, true)]
+    [AssetFormatVersion(1)]
+    [AssetUpgrader(0, 1, typeof(Upgrader))]
     [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
@@ -36,6 +42,17 @@ namespace SiliconStudio.Paradox.Assets.Entities
                     RootEntity = rootEntity.Id,
                 }
             };
+        }
+
+        class Upgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                if (asset.Source != null)
+                    asset.Source = DynamicYamlEmpty.Default;
+                if (asset.SourceHash != null)
+                    asset.SourceHash = DynamicYamlEmpty.Default;
+            }
         }
 
         private class SceneFactory : IObjectFactory

@@ -17,19 +17,29 @@ namespace SiliconStudio.Presentation.Collections
     /// <seealso cref="AutoUpdatingSortedObservableCollection{T}"/>
     public class SortedObservableCollection<T> : ObservableCollection<T>, IObservableCollection<T>, IReadOnlyObservableCollection<T>
     {
-        protected readonly Func<T, T, int> DefaultCompareFunc;
+        protected readonly Comparison<T> DefaultCompareFunc;
 
         /// <summary>
-        /// Public constructor. A comparer can be provided to compare items. If null, the default comparer will be used (if available).
-        /// If no comparer is provided and no default comparer is available, an <see cref="InvalidOperationException"/> will be thrown when methods requesting comparer are invoked.
+        /// Initializes a new instance of the <see cref="SortedObservableCollection{T}"/> class with a comparer.
         /// </summary>
-        /// <param name="comparer">The comparer to use to compare items.</param>
-        public SortedObservableCollection(IComparer<T> comparer = null)
+        /// <param name="comparer">The comparer to use to compare items. If null, the default comparison for the type T will be used.</param>
+        /// <exception cref="InvalidOperationException">No comparer has been provided and the associated type does not implement <see cref="IComparable"/> nor <see cref="IComparable{T}"/>.</exception>
+        public SortedObservableCollection(IComparer<T> comparer)
+            : this(comparer != null ? comparer.Compare : (Comparison<T>)null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SortedObservableCollection{T}"/> class with a comparison delegate.
+        /// </summary>
+        /// <param name="comparison">The comparison to use to compare items. If null, the default comparison for the type T will be used.</param>
+        /// <exception cref="InvalidOperationException">No comparison has been provided and the associated type does not implement <see cref="IComparable"/> nor <see cref="IComparable{T}"/>.</exception>
+        public SortedObservableCollection(Comparison<T> comparison = null)
         {
             // Check if a comparer is provided. If so, we will use it for sorting.
-            if (comparer != null)
+            if (comparison != null)
             {
-                DefaultCompareFunc = comparer.Compare;
+                DefaultCompareFunc = comparison;
             }
 
             // Otherwise, let's check if the generic type T implements the generic IComparable interface.
@@ -111,11 +121,11 @@ namespace SiliconStudio.Presentation.Collections
         {
             return string.Format("{{SortedObservableCollection}} Count = {0}", Count);
         }
-        
+
         protected int GetIndex(T item, bool returnInsertIndex)
         {
             if (DefaultCompareFunc == null) throw new InvalidOperationException("No comparison available or provided for items of this collection.");
-            return GetIndex(item, returnInsertIndex, DefaultCompareFunc);
+            return GetIndex(item, returnInsertIndex, DefaultCompareFunc.Invoke);
         }
 
         protected int GetIndex<TSearch>(TSearch key, bool returnInsertIndex, Func<T, TSearch, int> compareFunc)
