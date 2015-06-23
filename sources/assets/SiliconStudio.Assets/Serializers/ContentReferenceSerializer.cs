@@ -18,6 +18,11 @@ namespace SiliconStudio.Assets.Serializers
 
         public override bool CanVisit(Type type)
         {
+            return IsReferenceType(type);
+        }
+
+        public static bool IsReferenceType(Type type)
+        {
             // TODO: Quite inefficient, probably need an attribute
             var serializer = SerializerSelector.AssetWithReuse.GetSerializer(type);
             if (serializer == null)

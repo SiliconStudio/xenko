@@ -3,10 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using SharpYaml;
-using SharpYaml.Events;
 using SharpYaml.Serialization;
+using SharpYaml.Serialization.Serializers;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Yaml;
@@ -18,35 +16,112 @@ namespace SiliconStudio.Paradox.Debugger.Target
     /// When serializing/deserializing Yaml for live objects, this serializer will handle those objects as reference (similar to Clone serializer).
     /// </summary>
     [YamlSerializerFactory]
-    public class CloneReferenceSerializer : ContentReferenceSerializer
+    public class CloneReferenceSerializer : ObjectSerializer
     {
+        // TODO: We might want to share some of the recursive logic with EntitySerializer?
+        // However, ThreadStatic would still need to be separated...
+        [ThreadStatic]
+        private static int recursionLevel;
+
         /// <summary>
         /// The list of live references during that serialization/deserialization cycle.
         /// </summary>
         [ThreadStatic] internal static List<object> References;
 
-        public override bool CanVisit(Type type)
+        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
-            // TODO: Special case will be needed for Script (two-pass deserialization required)
-            return base.CanVisit(type) || type == typeof(Entity) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type);
+            if (CanVisit(typeDescriptor.Type))
+                return this;
+
+            return null;
         }
 
-        public override object ConvertFrom(ref ObjectContext context, Scalar fromScalar)
+        private bool CanVisit(Type type)
         {
-            int index;
-            if (!int.TryParse(fromScalar.Value, out index))
+            // Also handles Entity, EntityComponent and Script
+            return ContentReferenceSerializer.IsReferenceType(type)
+                || type == typeof(Entity) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type)
+                || typeof(Script).IsAssignableFrom(type);
+        }
+
+        /// <inheritdoc/>
+        protected override void CreateOrTransformObject(ref ObjectContext objectContext)
+        {
+            if (recursionLevel >= 2)
             {
-                throw new YamlException(fromScalar.Start, fromScalar.End, "Unable to decode asset reference [{0}]. Expecting format GUID:LOCATION".ToFormat(fromScalar.Value));
+                // We are inside a Script
+                // Transform everything into CloneReference for both serialization and deserialization
+                if (objectContext.SerializerContext.IsSerializing)
+                {
+                    var index = References.Count;
+                    objectContext.Tag = objectContext.Settings.TagTypeRegistry.TagFromType(objectContext.Instance.GetType());
+                    References.Add(objectContext.Instance);
+                    objectContext.Instance = new CloneReference { Id = index };
+                }
+                else
+                {
+                    objectContext.Instance = new CloneReference();
+                }
             }
-            return References[index];
+
+            base.CreateOrTransformObject(ref objectContext);
         }
 
-        public override string ConvertTo(ref ObjectContext objectContext)
+        /// <inheritdoc/>
+        protected override void TransformObjectAfterRead(ref ObjectContext objectContext)
         {
-            // Add to Objects and return index
-            var result = References.Count.ToString();
-            References.Add(objectContext.Instance);
-            return result;
+            if (recursionLevel >= 2)
+            {
+                // We are inside a Script
+                if (!objectContext.SerializerContext.IsSerializing)
+                {
+                    if (objectContext.Instance is CloneReference)
+                    {
+                        objectContext.Instance = References[((CloneReference)objectContext.Instance).Id];
+                        return;
+                    }
+                }
+            }
+
+            base.TransformObjectAfterRead(ref objectContext);
+        }
+
+        /// <inheritdoc/>
+        public override void WriteYaml(ref ObjectContext objectContext)
+        {
+            recursionLevel++;
+
+            try
+            {
+                base.WriteYaml(ref objectContext);
+            }
+            finally
+            {
+                recursionLevel--;
+            }
+        }
+
+        /// <inheritdoc/>
+        public override object ReadYaml(ref ObjectContext objectContext)
+        {
+            recursionLevel++;
+
+            try
+            {
+                return base.ReadYaml(ref objectContext);
+            }
+            finally
+            {
+                recursionLevel--;
+            }
+        }
+
+        /// <summary>
+        /// Helper class used by CloneReferenceSerializer
+        /// </summary>
+        internal class CloneReference
+        {
+            public int Id;
         }
     }
 }
