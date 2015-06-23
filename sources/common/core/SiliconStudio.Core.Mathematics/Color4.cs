@@ -668,6 +668,16 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Premultiplies the color components by the alpha value.
+        /// </summary>
+        /// <param name="value">The color to premultiply.</param>
+        /// <returns>A color with premultiplied alpha.</returns>
+        public static Color4 PremultiplyAlpha(Color4 value)
+        {
+            return new Color4(value.R * value.A, value.G * value.A, value.B * value.A, value.A);
+        }
+
+        /// <summary>
         /// Adds two colors.
         /// </summary>
         /// <param name="left">The first color to add.</param>
