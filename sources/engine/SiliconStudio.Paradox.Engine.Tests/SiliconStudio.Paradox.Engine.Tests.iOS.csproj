@@ -210,7 +210,6 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="SiliconStudio.Paradox.Engine.Tests.pdxpkg" />
-    <Folder Include="GameAssets\" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\Icon.png" Label="Paradox.DoNotSync" />
