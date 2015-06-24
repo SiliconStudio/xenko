@@ -10,7 +10,7 @@ using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Paradox.Debugger.Target
 {
-    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
+    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Multiple)]
     public class GameDebuggerHost : IGameDebuggerHost
     {
         private TaskCompletionSource<IGameDebuggerTarget> target = new TaskCompletionSource<IGameDebuggerTarget>();
