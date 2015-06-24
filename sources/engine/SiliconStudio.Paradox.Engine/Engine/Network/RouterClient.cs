@@ -71,28 +71,11 @@ namespace SiliconStudio.Paradox.Engine.Network
 
             Task.Run(async () =>
             {
-                // Keep trying to establish connections until no errors
-                bool hasErrors;
-                do
-                {
-                    try
-                    {
-                        hasErrors = false;
-                        if (PlatformIsPortForward)
-                            await socketContext.StartServer(DefaultListenPort, true);
-                        else
-                            await socketContext.StartClient("127.0.0.1", DefaultPort);
-                    }
-                    catch (Exception)
-                    {
-                        hasErrors = true;
-                    }
-                    if (hasErrors)
-                    {
-                        // Wait a little bit before next try
-                        await Task.Delay(100);
-                    }
-                } while (hasErrors);
+                // If connecting as a client, try once, otherwise try to listen multiple time (in case port is shared)
+                if (PlatformIsPortForward)
+                    await socketContext.StartServer(DefaultListenPort, true, 10);
+                else
+                    await socketContext.StartClient("127.0.0.1", DefaultPort);
             });
 
             // Wait for server to connect to us (as a Task)
