@@ -6,12 +6,33 @@ using System.Reflection;
 
 namespace SiliconStudio.Core
 {
+    public enum ExpandRule
+    {
+        /// <summary>
+        /// The control representing the associated object will use the default rule.
+        /// </summary>
+        Auto,
+        /// <summary>
+        /// The control representing the associated object will be expanded only the first time it is displayed.
+        /// </summary>
+        Once,
+        /// <summary>
+        /// The control representing the associated object will be collapsed.
+        /// </summary>
+        Never,
+        /// <summary>
+        /// The control representing the associated object will be expanded.
+        /// </summary>
+        Always
+    }
+    
     // ReSharper disable once CSharpWarnings::CS1584
     /// <summary>
     /// Portable DisplayAttribute equivalent to <see cref="System.ComponentModel.DataAnnotations.DisplayAttribute"/>.
     /// </summary>
     public class DisplayAttribute : Attribute
     {
+
         private static readonly Dictionary<MemberInfo, DisplayAttribute> RegisteredDisplayAttributes = new Dictionary<MemberInfo, DisplayAttribute>();
 
         private readonly int? order;
@@ -97,10 +118,9 @@ namespace SiliconStudio.Core
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the property must be expanded by default in the editor.
+        /// Gets or sets whether to expand the control representing the associated object in the UI.
         /// </summary>
-        /// <value><c>true</c> if [automatic expand]; otherwise, <c>false</c>.</value>
-        public bool AlwaysExpand { get; set; }
+        public ExpandRule Expand { get; set; }
 
         /// <summary>
         /// Gets the display attribute attached to the specified member info.
