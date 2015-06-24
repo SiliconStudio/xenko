@@ -90,6 +90,11 @@ namespace SiliconStudio.Assets
         /// <value>The solution path.</value>
         public UFile SolutionPath { get; set; }
 
+        public AssemblyContainer AssemblyContainer
+        {
+            get { return assemblyContainer; }
+        }
+
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>

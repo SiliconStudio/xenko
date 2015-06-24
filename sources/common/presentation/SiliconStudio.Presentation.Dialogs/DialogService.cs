@@ -21,7 +21,7 @@ namespace SiliconStudio.Presentation.Dialogs
             ParentWindow = parentWindow;
         }
 
-        public Window ParentWindow { get; private set; }
+        public Window ParentWindow { get; set; }
 
         public IFileOpenModalDialog CreateFileOpenModalDialog()
         {

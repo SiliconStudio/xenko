@@ -63,7 +63,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         /// </summary>
         /// <value>The bias parameters.</value>
         [DataMember(100)]
-        [Display("Bias Parameters", AlwaysExpand = true)]
+        [Display("Bias Parameters", Expand = ExpandRule.Always)]
         public ShadowMapBiasParameters BiasParameters { get; private set; }
 
         /// <summary>

@@ -2206,7 +2206,7 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
 
             // Create default OpenGL State objects
-            defaultSamplerState = SamplerState.New(this, new SamplerStateDescription(TextureFilter.MinPointMagMipLinear, TextureAddressMode.Wrap) { MaxAnisotropy = 1 }).KeepAliveBy(this);
+            defaultSamplerState = SamplerState.New(this, new SamplerStateDescription(TextureFilter.MinPointMagMipLinear, TextureAddressMode.Wrap) { MaxAnisotropy = 1 }).DisposeBy(this);
 
             this.immediateContext = this;
         }

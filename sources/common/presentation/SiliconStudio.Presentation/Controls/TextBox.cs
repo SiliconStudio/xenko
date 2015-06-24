@@ -215,7 +215,7 @@ namespace SiliconStudio.Presentation.Controls
                     throw new ArgumentException("Invalid 'TextTrimming' argument.");
             }
 
-            const string Ellipsis = "...";
+            const string Ellipsis = "…";
             if (TrimmingSource == TrimmingSource.Begin)
             {
                 var n = text.Length - 1;

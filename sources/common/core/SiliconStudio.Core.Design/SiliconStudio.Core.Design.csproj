@@ -126,6 +126,7 @@
     <Compile Include="VisualStudio\SolutionFileException.cs" />
     <Compile Include="VisualStudio\SolutionReader.cs" />
     <Compile Include="VisualStudio\SolutionWriter.cs" />
+    <Compile Include="VisualStudio\VisualStudioVersions.cs" />
     <Compile Include="Windows\AppHelper.cs" />
     <Compile Include="Yaml\AssetScalarSerializerBase.cs" />
     <Compile Include="Yaml\DynamicYamlArray.cs" />

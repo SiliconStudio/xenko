@@ -152,31 +152,15 @@
       <Link>app_data\SiliconStudio.Paradox.Assets.Tests\TX-Factory_Ground.dds</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="GameAssets\blinn1.pdxmat" />
+    <None Include="GameAssets\blinn2.pdxmat" />
     <None Include="GameAssets\checker.pdxtex" />
-    <None Include="GameAssets\Cube\cube.pdxentity" />
-    <None Include="GameAssets\Cube\cube_model.pdxm3d" />
-    <None Include="GameAssets\Cube\cube_material_lambert1.pdxmat" />
-    <None Include="GameAssets\Cube\cube_Untitled.pdxtex" />
     <None Include="GameAssets\earth.pdxtex" />
-    <None Include="GameAssets\factory.pdxentity" />
-    <None Include="GameAssets\factory2\factory.pdxentity" />
-    <None Include="GameAssets\factory2\factory_material_blinn1.pdxmat" />
-    <None Include="GameAssets\factory2\factory_material_blinn2.pdxmat" />
-    <None Include="GameAssets\factory2\factory_model.pdxm3d" />
-    <None Include="GameAssets\factory2\factory_TX-Factory_ALL.pdxtex" />
-    <None Include="GameAssets\factory2\factory_TX-Factory_Ground.pdxtex" />
-    <None Include="GameAssets\factory\factory.pdxentity" />
-    <None Include="GameAssets\factory\factory_material_blinn1.pdxmat" />
-    <None Include="GameAssets\factory\factory_material_blinn2.pdxmat" />
-    <None Include="GameAssets\factory\factory_model.pdxm3d" />
-    <None Include="GameAssets\factory\factory_TX-Factory_ALL.pdxtex" />
-    <None Include="GameAssets\factory\factory_TX-Factory_Ground.pdxtex" />
-    <None Include="GameAssets\factory_material_blinn1.pdxmat" />
-    <None Include="GameAssets\factory_material_blinn2.pdxmat" />
-    <None Include="GameAssets\factory_model.pdxm3d" />
-    <None Include="GameAssets\factory_TX-Factory_ALL.pdxtex" />
-    <None Include="GameAssets\factory_TX-Factory_Ground.pdxtex" />
+    <None Include="GameAssets\factory Model.pdxm3d" />
+    <None Include="GameAssets\MainScene.pdxscene" />
     <None Include="GameAssets\starMask.pdxtex" />
+    <None Include="GameAssets\TX-Factory_ALL.pdxtex" />
+    <None Include="GameAssets\TX-Factory_Ground.pdxtex" />
     <None Include="materials\testConstantValueKey.pdxmat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

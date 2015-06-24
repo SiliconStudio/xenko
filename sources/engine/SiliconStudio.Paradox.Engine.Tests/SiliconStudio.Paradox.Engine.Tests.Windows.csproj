@@ -168,9 +168,7 @@
   <ItemGroup>
     <Compile Label="Paradox.DoNotSync" Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="GameAssets\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SiliconStudioPackageProps)" Condition="Exists('$(SiliconStudioPackageProps)')" />
   <Import Project="$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets" Condition="Exists('$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets')" />

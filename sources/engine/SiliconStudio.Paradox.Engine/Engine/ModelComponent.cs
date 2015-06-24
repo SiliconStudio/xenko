@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Engine
     /// Add a <see cref="Model"/> to an <see cref="Entity"/>, that will be used during rendering.
     /// </summary>
     [DataContract("ModelComponent")]
-    [Display(110, "Model")]
+    [Display(110, "Model", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(ModelComponentAndPickingRenderer))]
     [DefaultEntityComponentProcessor(typeof(ModelProcessor))]
     public sealed class ModelComponent : EntityComponent, IModelInstance

@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Engine
     /// Describes the camera projection and view.
     /// </summary>
     [DataContract("CameraComponent")]
-    [Display(130, "Camera")]
+    [Display(130, "Camera", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(CameraComponentRenderer), -1000)]
     public sealed class CameraComponent : EntityComponent
     {

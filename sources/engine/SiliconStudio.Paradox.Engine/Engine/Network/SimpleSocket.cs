@@ -55,7 +55,7 @@ namespace SiliconStudio.Paradox.Engine.Network
             DisposeSocket();
         }
 
-        public async Task StartServer(int port, bool singleConnection)
+        public async Task StartServer(int port, bool singleConnection, int retryCount = 1)
         {
             // Create TCP listener
             var listener = new TcpSocketListener(2048);
@@ -87,8 +87,20 @@ namespace SiliconStudio.Paradox.Engine.Network
                 }
             };
 
-            // Start listening
-            await listener.StartListeningAsync(port);
+            for (int i = 0; i < retryCount; ++i)
+            {
+                try
+                {
+                    // Start listening
+                    await listener.StartListeningAsync(port);
+                }
+                catch (Exception)
+                {
+                    // If there was an exception last try, propragate exception
+                    if (i == retryCount - 1)
+                        throw;
+                }
+            }
         }
 
         public async Task StartClient(string address, int port)

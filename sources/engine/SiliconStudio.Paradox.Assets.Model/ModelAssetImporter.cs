@@ -128,7 +128,8 @@ namespace SiliconStudio.Paradox.Assets.Model
         {
             var entityUrl = new UFile(localPath.GetFileName(), null);
 
-            var asset = new EntityAsset { Source = localPath };
+            // TODO: Entities do not have source anymore, if this is needed again we should make scene assets that do not inherits from entity assets.
+            var asset = new EntityAsset(); // { Source = localPath };
             var rootEntityData = new Entity();
             asset.Hierarchy.Entities.Add(rootEntityData);
             asset.Hierarchy.RootEntity = rootEntityData.Id;

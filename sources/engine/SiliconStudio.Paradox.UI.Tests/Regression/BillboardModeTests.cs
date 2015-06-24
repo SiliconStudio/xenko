@@ -8,6 +8,7 @@ using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.UI.Controls;
 
 namespace SiliconStudio.Paradox.UI.Tests.Regression
@@ -26,7 +27,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            var cube = Asset.Load<Entity>("cube");
+            var cube = new Entity { new ModelComponent { Model = Asset.Load<Model>("cube Model") } };
             cube.Transform.Scale = new Vector3(10000);
             cube.Transform.Position = new Vector3(0, 0, 10);
             Scene.AddChild(cube);

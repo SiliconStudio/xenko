@@ -1,8 +1,7 @@
 !SceneAsset
 Id: 629b95b0-5c22-4f4f-805e-3ad9543be1ff
+SerializedVersion: 1
 Tags: []
-Source: 
-SourceHash: 00000000000000000000000000000000
 Hierarchy:
     RootEntity: 0a57d5d8-e125-45fb-b9e4-4d4fb12c68d1
     Entities:
@@ -33,8 +32,8 @@ Hierarchy:
     Location: --import--
     Asset: !SceneAsset
         Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: 1
         Tags: []
-        Source: 
         Hierarchy:
             RootEntity: 0a57d5d8-e125-45fb-b9e4-4d4fb12c68d1
             Entities:
