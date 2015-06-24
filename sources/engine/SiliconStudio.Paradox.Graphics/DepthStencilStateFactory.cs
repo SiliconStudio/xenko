@@ -15,16 +15,16 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="device">The device.</param>
         internal DepthStencilStateFactory(GraphicsDevice device) : base(device)
         {
-            Default = DepthStencilState.New(device, new DepthStencilStateDescription(true, true)).KeepAliveBy(this);
+            Default = DepthStencilState.New(device, new DepthStencilStateDescription(true, true)).DisposeBy(this);
             Default.Name = "DepthStencilState.Default";
 
-            DefaultInverse = DepthStencilState.New(device, new DepthStencilStateDescription(true, true) { DepthBufferFunction = CompareFunction.GreaterEqual }).KeepAliveBy(this);
+            DefaultInverse = DepthStencilState.New(device, new DepthStencilStateDescription(true, true) { DepthBufferFunction = CompareFunction.GreaterEqual }).DisposeBy(this);
             DefaultInverse.Name = "DepthStencilState.DefaultInverse";
 
-            DepthRead = DepthStencilState.New(device, new DepthStencilStateDescription(true, false)).KeepAliveBy(this);
+            DepthRead = DepthStencilState.New(device, new DepthStencilStateDescription(true, false)).DisposeBy(this);
             DepthRead.Name = "DepthStencilState.DepthRead";
 
-            None = DepthStencilState.New(device, new DepthStencilStateDescription(false, false)).KeepAliveBy(this);
+            None = DepthStencilState.New(device, new DepthStencilStateDescription(false, false)).DisposeBy(this);
             None.Name = "DepthStencilState.None";
         }
 
