@@ -7,6 +7,7 @@ Release date: 2015/XX/XX
 #### Enhancements
 - Studio: The sprite editor has been improved.
 - Studio: Setting a diffuse map/specular map on a material will also set the diffuse model/specular model of this material.
+- Studio: Keyboard shortcut to switch between transformation gizmos (W, E, R, Space by default)
 
 #### Issues fixed
 - Engine: The center of sprites is now properly taken in account when rendered by the CameraRenderer.

@@ -202,7 +202,6 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="SiliconStudio.Paradox.Engine.Tests.pdxpkg" />
-    <Folder Include="GameAssets\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="$(SiliconStudioPackageProps)" Condition="Exists('$(SiliconStudioPackageProps)')" />

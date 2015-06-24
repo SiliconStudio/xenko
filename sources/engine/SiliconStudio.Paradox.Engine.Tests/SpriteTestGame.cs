@@ -58,7 +58,8 @@ namespace SiliconStudio.Paradox.Engine.Tests
             groundSprites = Asset.Load<SpriteGroup>("GroundSprite");
             ballSprite1 = Asset.Load<SpriteGroup>("BallSprite1");
             ballSprite2 = Asset.Load<SpriteGroup>("BallSprite2");
-            ball = Asset.Load<Entity>("Ball");
+            ball = new Entity { new SpriteComponent { SpriteProvider = new SpriteFromSpriteGroup { SpriteGroup = Asset.Load<SpriteGroup>("BallSprite1") } } };
+            ball.Transform.Scale = new Vector3(150, 150, 1);
 
             // create fore/background entities
             foreground = new Entity();
@@ -151,19 +152,6 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
                 transfoComponent.Position[i] = nextPosition;
             }
-        }
-
-        protected override void Destroy()
-        {
-            if (ball != null)
-            {
-                Asset.Unload(ball);
-                Asset.Unload(ballSprite1);
-                Asset.Unload(ballSprite2);
-                Asset.Unload(groundSprites);
-            }
-
-            base.Destroy();
         }
 
         [Test]
