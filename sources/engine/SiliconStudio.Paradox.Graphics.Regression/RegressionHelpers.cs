@@ -153,7 +153,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
         public string Platform;
         public string Serial;
         public string DeviceName;
-        public string BranchName;
+        public string BranchName = "";
         public ImageComparisonFlags Flags;
 
         public void Read(BinaryReader reader)

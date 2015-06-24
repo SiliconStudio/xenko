@@ -29,6 +29,7 @@
     <Compile Include="ChannelMicroThreadAwaiter.cs" />
     <Compile Include="ChannelPreference.cs" />
     <Compile Include="MicroThread.cs" />
+    <Compile Include="MicroThreadCancelledException.cs" />
     <Compile Include="MicroThreadEvent.cs" />
     <Compile Include="MicroThreadFlags.cs" />
     <Compile Include="MicroThreadLocal.cs" />

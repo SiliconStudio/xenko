@@ -70,15 +70,8 @@ namespace SiliconStudio.Core
             EnsureValid();
 
             if (!disposables.Contains(objectToDispose))
-            {
                 disposables.Add(objectToDispose);
 
-                var referenceableObject = objectToDispose as IReferencable;
-                if (referenceableObject != null)
-                {
-                    referenceableObject.AddReference();
-                }
-            }
             return objectToDispose;
         }
 
@@ -104,21 +97,18 @@ namespace SiliconStudio.Core
         public void Remove<T>(T objectToDispose)
         {
             if (disposables != null && disposables.Contains(objectToDispose))
-            {
                 disposables.Remove(objectToDispose);
-
-                var referenceableObject = objectToDispose as IReferencable;
-                if (referenceableObject != null)
-                {
-                    referenceableObject.Release();
-                }
-            }
         }
 
         private void DisposeObject(object objectToDispose)
         {
-            if (objectToDispose == null || objectToDispose is IReferencable)
+            if (objectToDispose == null)
+                return;
+
+            var referenceableObject = objectToDispose as IReferencable;
+            if (referenceableObject != null)
             {
+                referenceableObject.Release();
                 return;
             }
 
@@ -129,7 +119,7 @@ namespace SiliconStudio.Core
             }
             else
             {
-                var localData = (object)objectToDispose;
+                var localData = objectToDispose;
                 var dataPointer = (IntPtr)localData;
                 Utilities.FreeMemory(dataPointer);
             }            

@@ -9,7 +9,7 @@ using OpenTK.Graphics.ES30;
 using OpenTK.Graphics.OpenGL;
 #endif
 using SiliconStudio.Core;
-using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.ReferenceCounting;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -36,6 +36,13 @@ namespace SiliconStudio.Paradox.Graphics
             this.vertexBufferBindings = vertexBufferBindings;
             this.indexBufferBinding = indexBufferBinding;
             this.preferredInputSignature = shaderSignature;
+            
+            // Increase the reference count on the provided buffers -> we do not want to take the ownership
+            foreach (VertexBufferBinding vertexBufferBinding in vertexBufferBindings)
+                vertexBufferBinding.Buffer.AddReferenceInternal();
+
+            if (indexBufferBinding != null)
+                indexBufferBinding.Buffer.AddReferenceInternal();
 
             CreateAttributes();
         }

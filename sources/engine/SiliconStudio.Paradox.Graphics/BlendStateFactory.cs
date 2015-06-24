@@ -17,25 +17,25 @@ namespace SiliconStudio.Paradox.Graphics
         {
             var blendDescription = new BlendStateDescription(Blend.One, Blend.Zero);
             blendDescription.SetDefaults();
-            Default = BlendState.New(device, blendDescription).KeepAliveBy(device);
+            Default = BlendState.New(device, blendDescription).DisposeBy(device);
             Default.Name = "Default";
 
-            Additive = BlendState.New(device, new BlendStateDescription(Blend.SourceAlpha, Blend.One)).KeepAliveBy(device);
+            Additive = BlendState.New(device, new BlendStateDescription(Blend.SourceAlpha, Blend.One)).DisposeBy(device);
             Additive.Name = "Additive";
 
-            AlphaBlend = BlendState.New(device, new BlendStateDescription(Blend.One, Blend.InverseSourceAlpha)).KeepAliveBy(device);
+            AlphaBlend = BlendState.New(device, new BlendStateDescription(Blend.One, Blend.InverseSourceAlpha)).DisposeBy(device);
             AlphaBlend.Name = "AlphaBlend";
 
-            NonPremultiplied = BlendState.New(device, new BlendStateDescription(Blend.SourceAlpha, Blend.InverseSourceAlpha)).KeepAliveBy(device);
+            NonPremultiplied = BlendState.New(device, new BlendStateDescription(Blend.SourceAlpha, Blend.InverseSourceAlpha)).DisposeBy(device);
             NonPremultiplied.Name = "NonPremultiplied";
-            
-            Opaque = BlendState.New(device, new BlendStateDescription(Blend.One, Blend.Zero)).KeepAliveBy(device);
+
+            Opaque = BlendState.New(device, new BlendStateDescription(Blend.One, Blend.Zero)).DisposeBy(device);
             Opaque.Name = "Opaque";
 
             var colorDisabledDescription = new BlendStateDescription();
             colorDisabledDescription.SetDefaults();
             colorDisabledDescription.RenderTargets[0].ColorWriteChannels = ColorWriteChannels.None;
-            ColorDisabled = BlendState.New(device, colorDisabledDescription).KeepAliveBy(device);
+            ColorDisabled = BlendState.New(device, colorDisabledDescription).DisposeBy(device);
             ColorDisabled.Name = "ColorDisabled";
         }
 

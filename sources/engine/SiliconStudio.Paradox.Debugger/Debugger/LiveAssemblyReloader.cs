@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using SharpYaml;
 using SharpYaml.Events;
+using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
@@ -131,7 +132,7 @@ namespace SiliconStudio.Paradox.Debugger.Target
             if (oldScript.MicroThread != null && !oldScript.MicroThread.IsOver)
             {
                 // Force the script to be cancelled
-                oldScript.MicroThread.RaiseException(new Exception("Cancelled"));
+                oldScript.MicroThread.RaiseException(new MicroThreadCancelledException());
             }
 
             // Replace with new script
