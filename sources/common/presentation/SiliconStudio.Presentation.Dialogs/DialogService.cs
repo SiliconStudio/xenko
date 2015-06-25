@@ -51,7 +51,10 @@ namespace SiliconStudio.Presentation.Dialogs
                 ParentWindow.DialogResult = dialogResult;
             }
             ParentWindow.Close();
-            ParentWindow = null;
+            if (!ParentWindow.IsLoaded)
+            {
+                ParentWindow = null;
+            }
         }
     }
 }
