@@ -32,6 +32,9 @@ namespace SiliconStudio.Paradox.Rendering
             unsafe
             {
                 Depth = *(int*)&depth;
+
+                // Ordering of negative float and int values is reversed, since negative ints are ordered (bitwise)
+                // by increasing value, while negative floats are ordered by increasing absolute value
                 if (Depth < 0)
                     Depth = (1 << 31) - Depth;
             }
