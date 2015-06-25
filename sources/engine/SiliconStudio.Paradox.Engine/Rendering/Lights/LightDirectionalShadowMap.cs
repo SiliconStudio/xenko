@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         /// <value>The depth range mode.</value>
         [DataMember(80)]
         [NotNull]
-        [Display("Depth Range", AlwaysExpand = true)]
+        [Display("Depth Range", Expand = ExpandRule.Always)]
         public DepthRangeParameters DepthRange { get; private set; }
 
         /// <summary>
