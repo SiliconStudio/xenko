@@ -1,17 +1,50 @@
-### Version 1.1.3-beta
+### Version 1.1.4-beta
 
-Release date: 2015/##/##
+Release date: 2015/XX/XX
 
 #### New Features
-- Platforms: Add support for iOS ARM64 and iOS simulator.
 
 #### Enhancements
 - Assets: Add `Auto` alpha format for automatic alpha detection in textures.
+- Studio: The sprite editor has been improved.
+- Studio: Setting a diffuse map/specular map on a material will also set the diffuse model/specular model of this material.
+- Studio: Keyboard shortcut to switch between transformation gizmos (W, E, R, Space by default)
+
+#### Issues fixed
+- Engine: The center of sprites is now properly taken in account when rendered by the CameraRenderer.
+- Engine: Fixed an issue that prevented frustum culling from working.
+- Shaders: Ambient occlusion now correctly affects ambient light.
+
+#### Breaking changes
+- Assets: Texture default transparency mode changes from `None` to `Auto`.
+
+#### Known Issues
+- UI: EditText is not implemented on Windows Store and Windows Phone.
+- Android: Physics engine is not working properly.
+- Samples: Material Sample does not work properly on some mob
+- Assets: ModelAsset scaling and orientation works only for .FBX, not other formats supported by Assimp library
+- Studio: Scripts are not automatically reloaded by the editor. Closing and re-opening it is needed in order to see new scripts.
+- Studio: Renaming default scene won’t properly update reference. Please set again the reference in project properties.
+- Studio: DDS images cannot be viewed in the Sprite editor
+- Studio: Collections in assets properties cannot be edited nor displayed in multi-selection
+- Engine: Shadows are currently not supported on mobile platforms
+
+### Version 1.1.3-beta
+
+Release date: 2015/06/11
+
+#### New Features
+- Platforms: Add support for iOS ARM64 and iOS simulator.
+- Shaders: Effects can be compiled remotely by host computer when running game on mobile platforms [For iOS see specific documentation]
+
+#### Enhancements
 - Assets: Add the possibility to change the orientation of the plane procedural model.
 - Studio: Allow to fetch a referenced entity from the property grid in the scene editor.
 - Studio: Entities can be duplicated by dragging a transformation gizmo while maintaining ctrl key down.
-- Studio: More option to manage gizmos display in the scene editor.
+- Studio: More gizmos, and more options to manage gizmos display (visibility, size…) in the scene editor.
 - Studio: Store some settings in an .user file along with the .pdxpkg file.
+- Studio: New materials now have at least a white diffuse color by default.
+- Studio: When compiling, switch to the build log tab only if there is an error.
 
 #### Issues fixed
 - Studio: Adding a Child scene component was crashing the scene editor.
@@ -23,23 +56,27 @@ Release date: 2015/##/##
 - Engine: Ambient occlusion maps now ignore UV scaling overrides as intended.
 - Engine: Models with negative scaling did not have their faces inverted.
 - Engine: Fixed an issue where cloning an entity with AnimationComponent would cause crashes.
+- Engine: Restored frustum culling.
+- Engine: Fixed an issue when rendering shadow maps from a child renderer
 - Sample: Fixed Forward Lighting sample.
 - Shaders: Directional shadow maps were requiring Shader Model 5.0. ([#222](https://github.com/SiliconStudio/paradox/issues/222)).
 - Importers: Unicode characters in model node names are correctly imported.
 
 #### Breaking changes
-- Assets: Texture default transparency mode changes from `None` to `Auto`.
+- Engine: The `CameraComponent` is now using the aspect ratio of current viewport by default. This can be changed with `CameraComponent.UseCustomAspectRatio`.
+- Graphics: `GraphicsDevice.BackBuffer` and `Graphics.DepthStencilBuffer` are now returning the current back buffer and depth stencil buffer bound to the `GraphicsDevice`, instead of the BackBuffer/DepthStencilBuffer of the screen (eg. `GraphicsDevice.Presenter.BackBuffer`).
+- Platform: If you want to target Windows Store/Phone, you need to upgrade Game.dll project to Profile 151, aka ".NET Portable Subset (.NET Framework 4.5.1, Windows 8.1, Windows Phone 8.1)"
 
 #### Known Issues
-- Platforms: Shaders can’t compile due to lack of a proper workflow on other platforms than Windows Desktop  (this will be fixed soon)
-- Platforms: Android and iOS platforms are currently not properly supported (this will be fixed soon).
-- Platforms: iOS x64 is not yet supported (this will be added soon)
-- Assets: Reimporting a Model asset (i.e. FBX) might have issues when merging materials
+- UI: EditText is not implemented on Windows Store and Windows Phone.
+- Android: Physics engine is not working properly.
+- Samples: Material Sample does not work properly on some mob
 - Assets: ModelAsset scaling and orientation works only for .FBX, not other formats supported by Assimp library
 - Studio: Scripts are not automatically reloaded by the editor. Closing and re-opening it is needed in order to see new scripts.
 - Studio: Renaming default scene won’t properly update reference. Please set again the reference in project properties.
 - Studio: DDS images cannot be viewed in the Sprite editor
 - Studio: Collections in assets properties cannot be edited nor displayed in multi-selection
+- Engine: Shadows are currently not supported on mobile platforms
 
 ### Version 1.1.2-beta
 

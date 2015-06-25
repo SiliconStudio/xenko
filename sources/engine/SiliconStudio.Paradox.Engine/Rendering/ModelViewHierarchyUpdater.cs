@@ -126,7 +126,7 @@ namespace SiliconStudio.Paradox.Rendering
                 renderMesh.Enabled = enabled;
                 if (enabled)
                 {
-                    renderMesh.Parameters.Set(TransformationKeys.World, nodeTransformationsLocal[nodeIndex].WorldMatrix);
+                    renderMesh.WorldMatrix = nodeTransformationsLocal[nodeIndex].WorldMatrix;
                 }
             }
         }

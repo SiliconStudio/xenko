@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// <value>The type of geometric primitive.</value>
         [DataMember(10)]
         [NotNull]
-        [Display("Type", AlwaysExpand = true)]
+        [Display("Type", Expand = ExpandRule.Always)]
         public IProceduralModel Type { get; set; }
 
         public Model GenerateModel(IServiceRegistry services)

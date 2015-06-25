@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("SceneComponent")]
     [DefaultEntityComponentProcessor(typeof(SceneProcessor))]
-    [Display(-100, "Scene")]
+    [Display(-100, "Scene", Expand = ExpandRule.Once)]
     public sealed class SceneComponent : EntityComponent
     {
         public readonly static PropertyKey<SceneComponent> Key = new PropertyKey<SceneComponent>("Key", typeof(SceneComponent),
@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         /// <value>The graphics composer.</value>
         [DataMember(10)]
-        [Display("Graphics Composition", AlwaysExpand = true)]
+        [Display("Graphics Composition", Expand = ExpandRule.Always)]
         [NotNull]
         [Category]
         public ISceneGraphicsCompositor GraphicsCompositor { get; set; }   // TODO: Should we move this to a special component?
@@ -46,7 +46,7 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         /// <value>The editor settings.</value>
         [DataMember(20)]
-        [Display("Editor Settings", AlwaysExpand = true)]
+        [Display("Editor Settings", Expand = ExpandRule.Always)]
         [Category]
         public SceneEditorSettings EditorSettings { get; set; }
 

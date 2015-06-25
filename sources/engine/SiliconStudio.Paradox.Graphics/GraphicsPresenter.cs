@@ -145,7 +145,7 @@ namespace SiliconStudio.Paradox.Graphics
         {
             if (DepthStencilBuffer != null)
             {
-                depthStencilBuffer.RemoveKeepAliveBy(this);
+                depthStencilBuffer.RemoveDisposeBy(this);
             }
         }
 
@@ -184,7 +184,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
 
             var depthTexture = Texture.New2D(GraphicsDevice, Description.BackBufferWidth, Description.BackBufferHeight, Description.DepthStencilFormat, flags);
-            DepthStencilBuffer = depthTexture.KeepAliveBy(this);
+            DepthStencilBuffer = depthTexture.DisposeBy(this);
         }
     }
 }

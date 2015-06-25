@@ -3,6 +3,7 @@
 
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Graphics;
@@ -91,6 +92,7 @@ namespace SiliconStudio.Paradox.Rendering.Sprites
         /// The texture of representing the sprite
         /// </summary>
         [DataMember(5)]
+        [InlineProperty]
         public Texture Texture
         {
             get { return texture; }

@@ -14,14 +14,6 @@ namespace SiliconStudio.Paradox.Rendering
     {
         public virtual bool SupportPicking { get { return false; } }
 
-        public virtual bool IsWritingToDepth
-        {
-            get
-            {
-                return true;
-            }
-        }
-
         public void Prepare(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
             if (Context == null)

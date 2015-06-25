@@ -48,9 +48,8 @@ namespace SiliconStudio.Paradox.Engine.Tests
         }
 
         public TestTesselation(bool isDebug)
-            : base("ParadoxEffectBase")
         {
-            CurrentVersion = 1;
+            CurrentVersion = 2;
             debug = isDebug;
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
@@ -75,11 +74,11 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
             var cube = new Entity("Cube") { new ModelComponent(new ProceduralModelDescriptor(new CubeProceduralModel { Size = new Vector3(80), MaterialInstance = { Material = materials[0] } }).GenerateModel(Services)) };
             var sphere = new Entity("Sphere") { new ModelComponent(new ProceduralModelDescriptor(new SphereProceduralModel { Diameter = 100, Tessellation = 5, MaterialInstance = { Material = materials[0] }} ).GenerateModel(Services)) };
-            
-            var megalodon = Asset.Load<Entity>("megalodon Entity"); 
+
+            var megalodon = new Entity { new ModelComponent { Model = Asset.Load<Model>("megalodon Model") } };
             megalodon.Transform.Position= new Vector3(0, -30f, -10f);
 
-            var knight = Asset.Load<Entity>("AnimatedModel");
+            var knight = new Entity { new ModelComponent { Model = Asset.Load<Model>("knight Model") } };
             knight.Transform.RotationEulerXYZ = new Vector3(-MathUtil.Pi / 2, MathUtil.Pi / 4, 0);
             knight.Transform.Position = new Vector3(0, -50f, 20f);
             knight.Transform.Scale= new Vector3(0.6f);

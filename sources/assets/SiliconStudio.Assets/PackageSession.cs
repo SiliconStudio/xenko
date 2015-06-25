@@ -90,6 +90,11 @@ namespace SiliconStudio.Assets
         /// <value>The solution path.</value>
         public UFile SolutionPath { get; set; }
 
+        public AssemblyContainer AssemblyContainer
+        {
+            get { return assemblyContainer; }
+        }
+
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
@@ -100,13 +105,18 @@ namespace SiliconStudio.Assets
                 dependencies.Dispose();
             }
 
-            foreach (var assembly in assemblyContainer.LoadedAssemblies)
+            var loadedAssemblies = packages.SelectMany(x => x.LoadedAssemblies).ToList();
+            for (int index = loadedAssemblies.Count - 1; index >= 0; index--)
             {
+                var loadedAssembly = loadedAssemblies[index];
+                if (loadedAssembly == null)
+                    continue;
+
                 // Unregisters assemblies that have been registered in Package.Load => Package.LoadAssemblyReferencesForPackage
-                AssemblyRegistry.Unregister(assembly.Value);
+                AssemblyRegistry.Unregister(loadedAssembly.Assembly);
 
                 // Unload assembly
-                assemblyContainer.UnloadAssembly(assembly.Value);
+                assemblyContainer.UnloadAssembly(loadedAssembly.Assembly);
             }
         }
 

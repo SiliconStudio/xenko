@@ -49,7 +49,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
         /// <value>The type.</value>
         [DataMember(10)]
         [NotNull]
-        [Display("Type", AlwaysExpand = true)]
+        [Display("Type", Expand = ExpandRule.Always)]
         public IProceduralModel Type { get; set; }
 
         /// <inheritdoc/>

@@ -23,6 +23,8 @@ namespace SiliconStudio.Paradox.ConnectionRouter
 
         public void Listen(int port)
         {
+            Log.Info("Start to listen on port {0}", port);
+
             var socketContext = CreateSocketContext();
             Task.Run(() => socketContext.StartServer(port, false));
         }

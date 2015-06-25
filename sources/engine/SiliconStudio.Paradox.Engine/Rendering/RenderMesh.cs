@@ -39,7 +39,14 @@ namespace SiliconStudio.Paradox.Rendering
 
         public bool IsShadowReceiver;
 
+        /// <summary>
+        /// A Rasterizer state setup before <see cref="Draw"/> when rendering this mesh.
+        /// </summary>
+        public RasterizerState RasterizerState;
+
         public bool HasTransparency { get; private set; }
+
+        public Matrix WorldMatrix;
 
         private readonly ParameterCollection parameters;
         private readonly FastList<ParameterCollection> parameterCollections = new FastList<ParameterCollection>();
@@ -99,6 +106,11 @@ namespace SiliconStudio.Paradox.Rendering
             var material = Material;
             var vao = vertexArrayObject;
             var drawCount = currentRenderData.DrawCount;
+
+            parameters.Set(TransformationKeys.World, WorldMatrix);
+
+            // TODO: We should clarify exactly how to override rasterizer states. Currently setup here on Context.Parameters to allow Material/ModelComponent overrides, but this is ugly
+            context.Parameters.Set(Effect.RasterizerStateKey, RasterizerState);
 
             if (context.IsPicking()) // TODO move this code corresponding to picking outside of the runtime code!
             {

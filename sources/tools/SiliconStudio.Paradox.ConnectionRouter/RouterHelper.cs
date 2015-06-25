@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using SiliconStudio.Assets;
+using SiliconStudio.Paradox.GameStudio.Plugin.Debugging;
 
 namespace SiliconStudio.Paradox.ConnectionRouter
 {
@@ -22,7 +23,9 @@ namespace SiliconStudio.Paradox.ConnectionRouter
         /// <returns></returns>
         public static string FindParadoxSdkDir(string paradoxVersion = null)
         {
-            var paradoxSdkDir = DirectoryHelper.GetPackageDirectory("Paradox");
+            // TODO: Almost duplicate of ParadoxCommandsProxy.FindParadoxSdkDir!!
+            // TODO: Maybe move it in some common class somewhere? (in this case it would be included with "Add as link" in VSPackage)
+            var paradoxSdkDir = DirectoryHelper.GetInstallationDirectory("Paradox");
 
             if (paradoxSdkDir == null)
             {
@@ -44,7 +47,10 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                 var store = new NugetStore(paradoxSdkDir);
 
                 var paradoxPackages = store.GetPackagesInstalled(store.MainPackageId);
-                var paradoxPackage = paradoxVersion != null ? paradoxPackages.FirstOrDefault(p => p.Version.ToString() == paradoxVersion) : paradoxPackages.LastOrDefault();
+                var paradoxPackage = paradoxVersion != null
+                    ? (paradoxPackages.FirstOrDefault(p => p.Version.ToString() == paradoxVersion)
+                        ?? paradoxPackages.FirstOrDefault(p => VersionWithoutSpecialPart(p.Version.ToString()) == VersionWithoutSpecialPart(paradoxVersion))) // If no exact match, try a second time without the special version tag (beta, alpha, etc...)
+                    : paradoxPackages.FirstOrDefault();
                 if (paradoxPackage == null)
                     return null;
 
@@ -55,7 +61,16 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             return null;
         }
 
-        public static bool EnsureRouterLaunched()
+        private static string VersionWithoutSpecialPart(string version)
+        {
+            var indexOfDash = version.IndexOf('-');
+            if (indexOfDash == -1)
+                return version;
+
+            return version.Substring(0, indexOfDash);
+        }
+
+        public static bool EnsureRouterLaunched(bool attachChildJob = false)
         {
             try
             {
@@ -113,9 +128,15 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                 }
 
                 // Start new router process
-                Process.Start(routerAssemblyFile);
+                var spawnedRouterProcess = Process.Start(routerAssemblyFile);
 
-                return true;
+                // If we are in "developer" mode, attach job so that it gets killed with editor
+                if (attachChildJob && spawnedRouterProcess != null)
+                {
+                    new AttachedChildProcessJob(spawnedRouterProcess);
+                }
+
+                return spawnedRouterProcess != null;
             }
             catch
             {

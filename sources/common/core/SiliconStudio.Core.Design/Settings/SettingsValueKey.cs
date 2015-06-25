@@ -2,6 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using SharpYaml;
 using SharpYaml.Events;
 using SiliconStudio.Core.Extensions;
@@ -50,6 +52,9 @@ namespace SiliconStudio.Core.Settings
         /// Gets or sets a function that returns an enumation of acceptable values for this <see cref="SettingsValueKey{T}"/>.
         /// </summary>
         public Func<IEnumerable<T>> GetAcceptableValues { get; set; }
+
+        /// <inheritdoc/>
+        public override IEnumerable<object> AcceptableValues { get { return GetAcceptableValues != null ? (IEnumerable<object>)GetAcceptableValues() : Enumerable.Empty<object>(); } }
 
         /// <summary>
         /// Gets the value of this settings key in the given profile.

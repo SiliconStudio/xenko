@@ -6,17 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Core.Serialization.Serializers;
-
 namespace SiliconStudio.Core.Serialization.Contents
 {
-    public class DataContentSerializerHelper
-    {
-        internal static DataSerializerFactory DefaultSerializerFactory = DataSerializerFactory.CreateDataSerializerFactory("Default");
-    }
-    public class DataContentSerializerHelper<T> : DataContentSerializerHelper
+    public class DataContentSerializerHelper<T>
     {
         private DataSerializer<T> dataSerializer;
 
@@ -27,9 +19,10 @@ namespace SiliconStudio.Core.Serialization.Contents
             // However, we would like to serialize the actual type here
             if (dataSerializer == null)
             {
-                if (!DataContentSerializerHelper.DefaultSerializerFactory.CanSerialize(typeof(T)))
+                var dataSerializerType = DataSerializerFactory.GetSerializer("Default", typeof(T)).SerializerType;
+                if (dataSerializerType == null)
                     throw new InvalidOperationException(string.Format("Could not find a serializer for type {0}", typeof(T)));
-                dataSerializer = (DataSerializer<T>)DataContentSerializerHelper.DefaultSerializerFactory.GetSerializer(typeof(T)).Value;
+                dataSerializer = (DataSerializer<T>)Activator.CreateInstance(dataSerializerType);
                 if (dataSerializer is IDataSerializerInitializer)
                     ((IDataSerializerInitializer)dataSerializer).Initialize(stream.Context.SerializerSelector);
             }

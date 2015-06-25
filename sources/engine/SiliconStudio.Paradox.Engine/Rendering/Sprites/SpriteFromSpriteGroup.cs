@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Graphics;
 
@@ -17,6 +18,7 @@ namespace SiliconStudio.Paradox.Rendering.Sprites
         /// <summary>
         /// Gets or sets the <see cref="SpriteGroup"/> of the provider.
         /// </summary>
+        [InlineProperty]
         public SpriteGroup SpriteGroup { get; set; }
 
         public Sprite GetSprite(int index)

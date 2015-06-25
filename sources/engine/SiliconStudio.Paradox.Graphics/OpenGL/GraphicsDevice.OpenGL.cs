@@ -263,7 +263,7 @@ namespace SiliconStudio.Paradox.Graphics
         public void ApplyPlatformSpecificParams(Effect effect)
         {
             //effect.Parameters.Set(ShaderBaseKeys.ParadoxFlipRendertarget, flipRenderTarget ? -1.0f : 1.0f);
-            Parameters.Set(ShaderBaseKeys.ParadoxFlipRendertarget, flipRenderTarget ? -1.0f : 1.0f);
+            Parameters.Set(ShaderBaseKeys.ParadoxFlipRendertarget, flipRenderTarget ? 1.0f : -1.0f);
         }
 
         /// <summary>
@@ -1013,7 +1013,7 @@ namespace SiliconStudio.Paradox.Graphics
 
                 // Is it the default provided render target?
                 // TODO: Need to disable some part of rendering if either is null
-                var isProvidedDepthBuffer = (depthStencilBuffer == RootDevice.windowProvidedDepthTexture);
+                var isProvidedDepthBuffer = RootDevice.windowProvidedDepthTexture != null && (depthStencilBuffer == RootDevice.windowProvidedDepthTexture);
                 var isProvidedRenderTarget = (fboKey.LastRenderTarget == 1 && renderTargets[0] == RootDevice.windowProvidedRenderTexture);
                 if ((isProvidedDepthBuffer || depthStencilBuffer == null) && (isProvidedRenderTarget || fboKey.LastRenderTarget == 0)) // device provided framebuffer
                 {
@@ -1294,7 +1294,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             // Change face culling if the rendertarget is flipped
             var newFrontFace = currentFrontFace;
-            if (flipRenderTarget)
+            if (!flipRenderTarget)
                 newFrontFace = newFrontFace == FrontFaceDirection.Cw ? FrontFaceDirection.Ccw : FrontFaceDirection.Cw;
 
             if (newFrontFace != boundFrontFace)
@@ -2206,7 +2206,7 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
 
             // Create default OpenGL State objects
-            defaultSamplerState = SamplerState.New(this, new SamplerStateDescription(TextureFilter.MinPointMagMipLinear, TextureAddressMode.Wrap) { MaxAnisotropy = 1 }).KeepAliveBy(this);
+            defaultSamplerState = SamplerState.New(this, new SamplerStateDescription(TextureFilter.MinPointMagMipLinear, TextureAddressMode.Wrap) { MaxAnisotropy = 1 }).DisposeBy(this);
 
             this.immediateContext = this;
         }

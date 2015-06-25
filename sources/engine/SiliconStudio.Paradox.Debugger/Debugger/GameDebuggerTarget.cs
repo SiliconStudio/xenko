@@ -200,7 +200,9 @@ namespace SiliconStudio.Paradox.Debugger.Target
 
         private IEnumerable<Type> GameEnumerateTypesHelper()
         {
-            return loadedAssemblies.SelectMany(assembly => assembly.Value.GetTypes().Where(x => typeof(Game).IsAssignableFrom(x)));
+            // We enumerate custom games, and then typeof(Game) as fallback
+            return loadedAssemblies.SelectMany(assembly => assembly.Value.GetTypes().Where(x => typeof(Game).IsAssignableFrom(x)))
+                .Concat(Enumerable.Repeat(typeof(Game), 1));
         }
 
         private DebugAssembly CreateDebugAssembly(Assembly assembly)
