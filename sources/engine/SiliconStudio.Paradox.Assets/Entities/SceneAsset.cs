@@ -23,8 +23,9 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [DataContract("SceneAsset")]
     [AssetDescription(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
-    [AssetFormatVersion(1)]
-    [AssetUpgrader(0, 1, typeof(Upgrader))]
+    [AssetFormatVersion(2)]
+    [AssetUpgrader(0, 1, typeof(RemoveSourceUpgrader))]
+    [AssetUpgrader(1, 2, typeof(RemoveBaseUpgrader))]
     [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
@@ -46,7 +47,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
             };
         }
 
-        class Upgrader : AssetUpgraderBase
+        class RemoveSourceUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
             {
@@ -54,25 +55,26 @@ namespace SiliconStudio.Paradox.Assets.Entities
                     asset.Source = DynamicYamlEmpty.Default;
                 if (asset.SourceHash != null)
                     asset.SourceHash = DynamicYamlEmpty.Default;
+            }
+        }
 
-                // NOT USED - for reference, how to access a node that has a . inside is name
-                //foreach (var entity in asset.Hierarchy.Entities)
-                //{
-                //    var comp = entity.Components as DynamicYamlMapping;
-                //    if (comp != null)
-                //    {
-                //        var lightCompNode = comp.Node.Children.Where(x => x.Key is YamlScalarNode).FirstOrDefault(x => (string)(YamlScalarNode)(x.Key) == "LightComponent.Key").Value as YamlMappingNode;
-                //        if (lightCompNode != null)
-                //        {
-                //            dynamic lightComp = new DynamicYamlMapping(lightCompNode);
-                //            var shadow = lightComp.Type.Shadow as DynamicYamlMapping;
-                //            if (shadow != null)
-                //            {
-                //                shadow.Node.Tag = null;
-                //            }
-                //        }
-                //    }
-                //}
+        public class RemoveBaseUpgrader : IAssetUpgrader
+        {
+            public void Upgrade(int currentVersion, int targetVersion, ILogger log, YamlMappingNode yamlAssetNode)
+            {
+                dynamic asset = new DynamicYamlMapping(yamlAssetNode);
+                var baseBranch = asset["~Base"];
+                if (baseBranch != null)
+                    asset["~Base"] = DynamicYamlEmpty.Default;
+
+                SetSerializableVersion(asset, targetVersion);
+            }
+
+            private static void SetSerializableVersion(dynamic asset, int value)
+            {
+                asset.SerializedVersion = value;
+                // Ensure that it is stored right after the asset Id
+                asset.MoveChild("SerializedVersion", asset.IndexOf("Id") + 1);
             }
         }
 
