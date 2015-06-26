@@ -20,6 +20,7 @@ namespace SiliconStudio.Paradox.Assets
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
     public class GameSettingsAsset
     {
+        public const string DefaultSceneLocation = "MainScene";
 
         public static readonly PropertyKey<AssetReference<SceneAsset>> DefaultScene = new PropertyKey<AssetReference<SceneAsset>>("DefaultScene", typeof(GameSettingsAsset));
 
@@ -126,7 +127,7 @@ namespace SiliconStudio.Paradox.Assets
             return result;
         }
 
-        public static void CreateAndSetDefaultScene(Package package, String location = "MainScene")
+        public static void CreateAndSetDefaultScene(Package package, String location = DefaultSceneLocation)
         {
             var defaultSceneAsset = SceneAsset.Create();
 
