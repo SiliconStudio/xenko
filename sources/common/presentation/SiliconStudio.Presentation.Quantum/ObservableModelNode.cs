@@ -43,12 +43,12 @@ namespace SiliconStudio.Presentation.Quantum
             CombineMode = index != null && isPrimitive ? CombineMode.AlwaysCombine : CombineMode.CombineOnlyForAll;
             targetNode = GetTargetNode(modelNode, index);
             SourceNodePath = modelNodePath;
-
+        
             // Override display name if available
-            var memberDescriptor = GetMemberDescriptor() as MemberDescriptorBase;
-            if (memberDescriptor != null)
+            if (index == null)
             {
-                if (index == null)
+                var memberDescriptor = GetMemberDescriptor() as MemberDescriptorBase;
+                if (memberDescriptor != null)
                 {
                     var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(memberDescriptor.MemberInfo);
                     if (displayAttribute != null && !string.IsNullOrEmpty(displayAttribute.Name))
@@ -56,7 +56,6 @@ namespace SiliconStudio.Presentation.Quantum
                         DisplayName = displayAttribute.Name;
                     }
                 }
-                IsReadOnly = !memberDescriptor.HasSet;
             }
         }
 
