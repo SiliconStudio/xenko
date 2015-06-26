@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// <value>The material attributes.</value>
         [DataMember(10)]
         [NotNull]
-        [Display("Attributes", AlwaysExpand = true)]
+        [Display("Attributes", Expand = ExpandRule.Always)]
         MaterialAttributes Attributes { get; set; }
 
         /// <summary>

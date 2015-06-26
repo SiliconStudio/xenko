@@ -54,12 +54,29 @@ namespace SiliconStudio.Paradox.Rendering
             Parameters.SetKeyMapping(keyMapping);
         }
 
-        public void UpdateCounter(ParameterCollection parameters)
+        public void UpdatedUsedParameters(Effect effect, ParameterCollection parameters)
         {
+            // Try to update counters only if possible
             var internalValues = parameters.InternalValues;
-            for (int i = 0; i < internalValues.Count; ++i)
+            bool parameterKeyMatches = SortedCounters.Length == internalValues.Count;
+
+            if (parameterKeyMatches)
             {
-                SortedCounters[i] = internalValues[i].Value.Counter;
+                for (int i = 0; i < internalValues.Count; ++i)
+                {
+                    if (SortedKeys[i] != internalValues[i].Key)
+                    {
+                        parameterKeyMatches = false;
+                        break;
+                    }
+                    SortedCounters[i] = internalValues[i].Value.Counter;
+                }
+            }
+
+            // Somehow, the used parameters changed, we need a full reset
+            if (!parameterKeyMatches)
+            {
+                Initialize(effect, parameters);
             }
         }
     }

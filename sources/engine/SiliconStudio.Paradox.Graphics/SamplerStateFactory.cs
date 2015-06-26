@@ -15,22 +15,22 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="device">The device.</param>
         internal SamplerStateFactory(GraphicsDevice device) : base(device)
         {
-            PointWrap = SamplerState.New(device, new SamplerStateDescription(TextureFilter.Point, TextureAddressMode.Wrap)).KeepAliveBy(this);
+            PointWrap = SamplerState.New(device, new SamplerStateDescription(TextureFilter.Point, TextureAddressMode.Wrap)).DisposeBy(this);
             PointWrap.Name = "SamplerState.PointWrap";
 
-            PointClamp = SamplerState.New(device, new SamplerStateDescription(TextureFilter.Point, TextureAddressMode.Clamp)).KeepAliveBy(this);
+            PointClamp = SamplerState.New(device, new SamplerStateDescription(TextureFilter.Point, TextureAddressMode.Clamp)).DisposeBy(this);
             PointClamp.Name = "SamplerState.PointClamp";
 
-            LinearWrap = SamplerState.New(device, new SamplerStateDescription(TextureFilter.Linear, TextureAddressMode.Wrap)).KeepAliveBy(this);
+            LinearWrap = SamplerState.New(device, new SamplerStateDescription(TextureFilter.Linear, TextureAddressMode.Wrap)).DisposeBy(this);
             LinearWrap.Name = "SamplerState.LinearWrap";
 
-            LinearClamp = SamplerState.New(device, new SamplerStateDescription(TextureFilter.Linear, TextureAddressMode.Clamp)).KeepAliveBy(this);
+            LinearClamp = SamplerState.New(device, new SamplerStateDescription(TextureFilter.Linear, TextureAddressMode.Clamp)).DisposeBy(this);
             LinearClamp.Name = "SamplerState.LinearClamp";
 
-            AnisotropicWrap = SamplerState.New(device, new SamplerStateDescription(TextureFilter.Anisotropic, TextureAddressMode.Wrap)).KeepAliveBy(this);
+            AnisotropicWrap = SamplerState.New(device, new SamplerStateDescription(TextureFilter.Anisotropic, TextureAddressMode.Wrap)).DisposeBy(this);
             AnisotropicWrap.Name = "SamplerState.AnisotropicWrap";
 
-            AnisotropicClamp = SamplerState.New(device, new SamplerStateDescription(TextureFilter.Anisotropic, TextureAddressMode.Clamp)).KeepAliveBy(this);
+            AnisotropicClamp = SamplerState.New(device, new SamplerStateDescription(TextureFilter.Anisotropic, TextureAddressMode.Clamp)).DisposeBy(this);
             AnisotropicClamp.Name = "SamplerState.AnisotropicClamp";
         }
 
