@@ -2,6 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Linq;
+
+using SharpYaml.Serialization;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
@@ -20,7 +23,6 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [DataContract("SceneAsset")]
     [AssetDescription(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
-    //[ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName, true)]
     [AssetFormatVersion(1)]
     [AssetUpgrader(0, 1, typeof(Upgrader))]
     [Display(200, "Scene", "A scene")]
@@ -52,6 +54,25 @@ namespace SiliconStudio.Paradox.Assets.Entities
                     asset.Source = DynamicYamlEmpty.Default;
                 if (asset.SourceHash != null)
                     asset.SourceHash = DynamicYamlEmpty.Default;
+
+                // NOT USED - for reference, how to access a node that has a . inside is name
+                //foreach (var entity in asset.Hierarchy.Entities)
+                //{
+                //    var comp = entity.Components as DynamicYamlMapping;
+                //    if (comp != null)
+                //    {
+                //        var lightCompNode = comp.Node.Children.Where(x => x.Key is YamlScalarNode).FirstOrDefault(x => (string)(YamlScalarNode)(x.Key) == "LightComponent.Key").Value as YamlMappingNode;
+                //        if (lightCompNode != null)
+                //        {
+                //            dynamic lightComp = new DynamicYamlMapping(lightCompNode);
+                //            var shadow = lightComp.Type.Shadow as DynamicYamlMapping;
+                //            if (shadow != null)
+                //            {
+                //                shadow.Node.Tag = null;
+                //            }
+                //        }
+                //    }
+                //}
             }
         }
 
