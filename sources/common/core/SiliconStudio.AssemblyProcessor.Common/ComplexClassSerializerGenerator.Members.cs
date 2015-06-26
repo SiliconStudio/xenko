@@ -238,13 +238,17 @@ namespace SiliconStudio.AssemblyProcessor
             {
                 foreach (var field in fields)
                 {
-                    if (field.IsInitOnly)
-                        continue;
                     if (field.CustomAttributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Core.DataMemberIgnoreAttribute"))
                         continue;
                     var attributes = field.CustomAttributes;
                     var fixedAttribute = field.CustomAttributes.FirstOrDefault(x => x.AttributeType.FullName == typeof(FixedBufferAttribute).FullName);
-                    yield return new SerializableItem { MemberInfo = field, Type = field.FieldType, Name = field.Name, Attributes = attributes, AssignBack = true, NeedReference = false, HasFixedAttribute = fixedAttribute != null };
+                    var assignBack = !field.IsInitOnly;
+
+                    // If not assigned back, check that type is serializable in place
+                    if (!assignBack && !IsReadOnlyTypeSerializable(field.FieldType))
+                        continue;
+
+                    yield return new SerializableItem { MemberInfo = field, Type = field.FieldType, Name = field.Name, Attributes = attributes, AssignBack = assignBack, NeedReference = false, HasFixedAttribute = fixedAttribute != null };
                 }
             }
             if ((flags & ComplexTypeSerializerFlags.SerializePublicProperties) != 0)
@@ -258,10 +262,21 @@ namespace SiliconStudio.AssemblyProcessor
                     if (property.CustomAttributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Core.DataMemberIgnoreAttribute"))
                         continue;
                     var attributes = property.CustomAttributes;
-                    bool assignBack = property.SetMethod != null && (property.SetMethod.IsPublic || property.SetMethod.IsAssembly);
+                    var assignBack = property.SetMethod != null && (property.SetMethod.IsPublic || property.SetMethod.IsAssembly);
+
+                    // If not assigned back, check that type is serializable in place
+                    if (!assignBack && !IsReadOnlyTypeSerializable(property.PropertyType))
+                        continue;
+
                     yield return new SerializableItem { MemberInfo = property, Type = property.PropertyType, Name = property.Name, Attributes = attributes, AssignBack = assignBack, NeedReference = !type.IsClass || type.IsValueType };
                 }
             }
+        }
+
+        private static bool IsReadOnlyTypeSerializable(TypeReference type)
+        {
+            // For now, we allow any class which is not a string (since they are immutable)
+            return type.MetadataType != MetadataType.String && type.Resolve().IsClass;
         }
 
         protected static string CreateMemberVariableName(IMemberDefinition memberInfo)
