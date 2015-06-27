@@ -8,7 +8,6 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine.Design;
 using SiliconStudio.Paradox.Engine.Processors;
 using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Gizmos;
 
 namespace SiliconStudio.Paradox.Engine
 {
@@ -17,7 +16,6 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("CameraComponent")]
     [Display(130, "Camera")]
-    [GizmoEntity(GizmoEntityNames.CameraGizmoEntityQualifiedName)]
     [DefaultEntityComponentRenderer(typeof(CameraComponentRenderer), -1000)]
     public sealed class CameraComponent : EntityComponent
     {
@@ -55,8 +53,6 @@ namespace SiliconStudio.Paradox.Engine
             Projection = CameraProjectionMode.Perspective;
             VerticalFieldOfView = DefaultVerticalFieldOfView;
             OrthographicSize = DefaultOrthographicSize;
-
-            // TODO: Handle Aspect ratio differently
             AspectRatio = DefaultAspectRatio;
             NearClipPlane = nearClipPlane;
             FarClipPlane = farClipPlane;
@@ -112,6 +108,15 @@ namespace SiliconStudio.Paradox.Engine
         [DataMember(30)]
         [DefaultValue(DefaultFarClipPlane)]
         public float FarClipPlane { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to use a custom <see cref="AspectRatio"/>. Default is <c>false</c>, meaning that the aspect ratio is calculated from the ratio of the current viewport when rendering.
+        /// </summary>
+        /// <value>The use custom aspect ratio.</value>
+        [DataMember(35)]
+        [DefaultValue(false)]
+        [Display("Custom Aspect Ratio?")]
+        public bool UseCustomAspectRatio { get; set; }
 
         /// <summary>
         /// Gets or sets the aspect ratio.
@@ -174,6 +179,15 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         public void Update()
         {
+            Update(null);
+        }
+
+        /// <summary>
+        /// Calculates the projection matrix and view matrix.
+        /// </summary>
+        /// <param name="screenAspectRatio">The current screen aspect ratio. If null, use the <see cref="AspectRatio"/> even if <see cref="UseCustomAspectRatio"/> is false.</param>
+        public void Update(float? screenAspectRatio)
+        {
             // Calculates the View
             if (!UseCustomViewMatrix)
             {
@@ -185,9 +199,16 @@ namespace SiliconStudio.Paradox.Engine
             // TODO: Should we throw an error if Projection is not set?
             if (!UseCustomProjectionMatrix)
             {
-                ProjectionMatrix = Projection == CameraProjectionMode.Perspective ? 
-                    Matrix.PerspectiveFovRH(MathUtil.DegreesToRadians(VerticalFieldOfView), AspectRatio, NearClipPlane, FarClipPlane) :
-                    Matrix.OrthoRH(AspectRatio * OrthographicSize, OrthographicSize, NearClipPlane, FarClipPlane);
+                // Calculates the aspect ratio
+                var aspectRatio = AspectRatio;
+                if (!UseCustomAspectRatio && screenAspectRatio.HasValue)
+                {
+                    aspectRatio = screenAspectRatio.Value;
+                }
+
+                ProjectionMatrix = Projection == CameraProjectionMode.Perspective ?
+                    Matrix.PerspectiveFovRH(MathUtil.DegreesToRadians(VerticalFieldOfView), aspectRatio, NearClipPlane, FarClipPlane) :
+                    Matrix.OrthoRH(aspectRatio * OrthographicSize, OrthographicSize, NearClipPlane, FarClipPlane);
             }
 
             // Update ViewProjectionMatrix

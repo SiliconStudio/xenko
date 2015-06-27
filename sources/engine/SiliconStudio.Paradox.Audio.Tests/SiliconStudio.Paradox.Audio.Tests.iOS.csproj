@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{7AF4B563-AAD3-42FF-B91E-84B9D34D904A}</ProjectGuid>
-    <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
@@ -108,7 +108,7 @@
     <StartupObject>SiliconStudio.Tests.Application</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="monotouch" Label="Paradox.DoNotSync" />
+    <Reference Include="Xamarin.iOS" Label="Paradox.DoNotSync" />
   </ItemGroup>
   <ItemGroup>
     <None Label="Paradox.DoNotSync" Include="Info.plist" />
@@ -119,72 +119,58 @@
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
       <Name>SiliconStudio.Core</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
       <Project>{1DE01410-22C9-489B-9796-1ADDAB1F64E5}</Project>
       <Name>SiliconStudio.Core.IO</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
       <Project>{1320F627-EE43-4115-8E89-19D1753E51F2}</Project>
       <Name>SiliconStudio.Core.MicroThreading</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
       <Name>SiliconStudio.Core</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
       <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
       <Name>SiliconStudio.Core.Serialization</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox.Input\SiliconStudio.Paradox.Input.csproj">
       <Project>{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}</Project>
       <Name>SiliconStudio.Paradox.Input</Name>
-      <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'Android'" Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders.Compiler\SiliconStudio.Paradox.Shaders.Compiler.csproj">
+    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders.Compiler\SiliconStudio.Paradox.Shaders.Compiler.csproj">
       <Project>{E8B3553F-A79F-4E50-B75B-ACEE771C320C}</Project>
       <Name>SiliconStudio.Paradox.Shaders.Compiler</Name>
-      <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'Android'" Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders.Parser\SiliconStudio.Paradox.Shaders.Parser.csproj">
+    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders.Parser\SiliconStudio.Paradox.Shaders.Parser.csproj">
       <Project>{14A47447-2A24-4ECD-B24D-6571499DCD4C}</Project>
       <Name>SiliconStudio.Paradox.Shaders.Parser</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders\SiliconStudio.Paradox.Shaders.csproj">
       <Project>{273BDD15-7392-4078-91F0-AF23594A3D7B}</Project>
       <Name>SiliconStudio.Paradox.Shaders</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox\SiliconStudio.Paradox.csproj">
       <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
       <Name>SiliconStudio.Paradox</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox.Engine\SiliconStudio.Paradox.Engine.csproj">
       <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
       <Name>SiliconStudio.Paradox.Engine</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj">
       <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
       <Name>SiliconStudio.Paradox.Graphics</Name>
-      <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'Android'" Include="..\..\..\sources\common\shaders\SiliconStudio.Shaders\SiliconStudio.Shaders.csproj">
+    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\common\shaders\SiliconStudio.Shaders\SiliconStudio.Shaders.csproj">
       <Project>{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}</Project>
       <Name>SiliconStudio.Shaders</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.Audio\SiliconStudio.Paradox.Audio.csproj">
       <Project>{DE042125-C270-4D1D-9270-0759C167567A}</Project>
@@ -260,7 +246,7 @@
     <BundleResource Include="Resources\Icon-60%402x.png" Label="Paradox.DoNotSync" />
     <BundleResource Include="Resources\Icon.png" Label="Paradox.DoNotSync" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="$(SiliconStudioPackageProps)" Condition="Exists('$(SiliconStudioPackageProps)')" />
   <Import Project="$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets" Condition="Exists('$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets')" />
   <Target Name="EnsureSiliconStudioParadoxInstalled" BeforeTargets="PrepareForBuild">

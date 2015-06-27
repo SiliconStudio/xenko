@@ -16,6 +16,14 @@ namespace SiliconStudio.Paradox.Assets.Model
     public class AdditiveAnimationAsset : AnimationAsset
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="AdditiveAnimationAsset"/> class.
+        /// </summary>
+        public AdditiveAnimationAsset()
+        {
+            BaseSource = new UFile("");
+        }
+
+        /// <summary>
         /// Gets or sets the path to the base source animation model when using additive animation.
         /// </summary>
         /// <value>The source.</value>

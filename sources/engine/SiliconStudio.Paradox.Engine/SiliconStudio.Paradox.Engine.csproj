@@ -73,8 +73,27 @@
     <Compile Include="Animations\CompressedTimeSpan.cs" />
     <Compile Include="Animations\AnimationCurveEvaluatorOptimizedQuaternionGroup.cs" />
     <Compile Include="Animations\Interpolator.cs" />
+    <Compile Include="Engine\Design\EffectCompilationMode.cs" />
+    <Compile Include="Engine\Network\ClientRouterMessage.cs" />
+    <Compile Include="Engine\Network\SocketExtensions.cs" />
+    <Compile Include="Engine\Network\SocketMessageLayer.cs" />
+    <Compile Include="Engine\Network\Sockets.Implementation.NET\CommsInterface.cs" />
+    <Compile Include="Engine\Network\Sockets.Implementation.NET\CommsInterfaceNative.cs" />
+    <Compile Include="Engine\Network\Sockets.Implementation.NET\NetworkExtensions.cs" />
+    <Compile Include="Engine\Network\Sockets.Implementation.NET\TcpSocketClient.cs" />
+    <Compile Include="Engine\Network\Sockets.Implementation.NET\TcpSocketListener.cs" />
+    <Compile Include="Engine\Network\Sockets.Implementation.WinRT\CommsInterface.cs" />
+    <Compile Include="Engine\Network\Sockets.Implementation.WinRT\NetworkExtensions.cs" />
+    <Compile Include="Engine\Network\Sockets.Implementation.WinRT\TcpSocketClient.cs" />
+    <Compile Include="Engine\Network\Sockets.Implementation.WinRT\TcpSocketListener.cs" />
+    <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\Enums\CommsInterfaceStatus.cs" />
+    <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\EventArgs\TcpSocketListenerConnectEventArgs.cs" />
+    <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ICommsInterface.cs" />
+    <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketClient.cs" />
+    <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketListener.cs" />
     <Compile Include="Rendering\Composers\DirectRenderFrameProvider.cs" />
-    <Compile Include="Shaders.Compiler\EffectCompilerRemote.cs" />
+    <Compile Include="Rendering\CullingMode.cs" />
+    <Compile Include="Shaders.Compiler\RemoteEffectCompiler.cs" />
     <Compile Include="Engine\Processors\BackgroundComponentProcessor.cs" />
     <Compile Include="Engine\AnimationComponent.cs" />
     <Compile Include="Engine\AudioEmitterComponent.cs" />
@@ -2101,10 +2120,6 @@
     <Compile Include="Engine\Design\EntityComponentRendererType.cs" />
     <Compile Include="Engine\EntityGroupMask.cs" />
     <Compile Include="Engine\EntityGroupMaskExtensions.cs" />
-    <Compile Include="Rendering\Gizmos\GizmoBase.cs" />
-    <Compile Include="Rendering\Gizmos\GizmoContext.cs" />
-    <Compile Include="Rendering\Gizmos\GizmoEntityAttribute.cs" />
-    <Compile Include="Rendering\Gizmos\GizmoEntityNames.cs" />
     <Compile Include="Extensions\SimpleExtensions.cs" />
     <Compile Include="Extensions\MergeExtensions.cs" />
     <Compile Include="Extensions\SplitExtensions.cs" />
@@ -2131,7 +2146,6 @@
     <Compile Include="Rendering\EffectSystemExtensions.cs" />
     <Compile Include="Rendering\MeshAnimationUpdater.cs" />
     <Compile Include="Rendering\ModelRendererState.cs" />
-    <Compile Include="Rendering\ModelRendererExtensions.cs" />
     <Compile Include="Rendering\ProfilingKeys.cs" />
     <Compile Include="Rendering\RendererExtensions.cs" />
     <Compile Include="Engine\EntityGroup.cs" />
@@ -2162,7 +2176,6 @@
     <Compile Include="Engine\Design\CloneEntityComponentSerializer.cs" />
     <Compile Include="Engine\EntityExtensions.cs" />
     <Compile Include="Engine\Design\EntityHierarchyData.cs" />
-    <Compile Include="Rendering\Gizmos\IGizmo.cs" />
     <Compile Include="Engine\Design\GameSettings.cs" />
     <Compile Include="Engine\Scene.cs" />
     <Compile Include="Rendering\SceneChildRenderer.cs" />
@@ -2172,6 +2185,11 @@
     <Compile Include="Rendering\Sprites\SpriteProcessor.cs" />
     <Compile Include="Internals\LambdaReadOnlyCollection.cs" />
     <Compile Include="Module.cs" />
+    <Compile Include="Engine\Network\RouterClient.cs" />
+    <Compile Include="Shaders.Compiler\RemoteEffectCompilerClient.cs" />
+    <Compile Include="Shaders.Compiler\RemoteEffectCompilerEffectAnswer.cs" />
+    <Compile Include="Shaders.Compiler\RemoteEffectCompilerEffectRequest.cs" />
+    <Compile Include="Shaders.Compiler\RemoteEffectCompilerEffectRequested.cs" />
     <Compile Include="Starter\AndroidParadoxActivity.cs" />
     <Compile Include="Engine\Processors\ScriptSystem.cs" />
     <Compile Include="Engine\Script.cs" />
@@ -2208,7 +2226,7 @@
     <Compile Include="Extensions\TNBExtensions.cs" />
     <Compile Include="Extensions\VertexExtensions.cs" />
     <Compile Include="Shaders.Compiler\Internals\NetworkVirtualFileProvider.cs" />
-    <Compile Include="Engine\Network\SocketContext.cs" />
+    <Compile Include="Engine\Network\SimpleSocket.cs" />
     <Compile Include="Engine\Network\SocketMessage.cs" />
     <Compile Include="Engine\Network\SocketSerializer.cs" />
     <Compile Include="Engine\Design\EntityCloner.cs" />
@@ -2622,6 +2640,7 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadingColor.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\Images\ImageEffects.cd" />
     <None Include="Rendering\Images\AntiAliasing\FXAAShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>FXAAShader.cs</LastGenOutput>
@@ -2910,6 +2929,7 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LightSkyboxEffect.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\Materials\ComputeColors\ComputeColors.cd" />
     <None Include="Rendering\Materials\IMaterialSurfaceDomain.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>IMaterialSurfaceDomain.cs</LastGenOutput>
@@ -2926,6 +2946,7 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialDomainStream.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\Materials\Materials.cd" />
     <None Include="Rendering\Materials\MaterialStreamAdditiveBlend.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialStreamAdditiveBlend.cs</LastGenOutput>
@@ -3150,6 +3171,8 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>CameraCube.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\Composers\SceneGraphicsCompositor.cd" />
+    <None Include="Rendering\ProceduralModels\ProceduralModels.cd" />
     <None Include="Rendering\Shadows\ShadowGroup.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowGroup.cs</LastGenOutput>
@@ -3371,6 +3394,7 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Rendering\Gizmos\" />
     <Folder Include="Rendering\Lights\obsolete\" />
     <Folder Include="Rendering\Shadows\obsolete\" />
   </ItemGroup>

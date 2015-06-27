@@ -24,6 +24,10 @@
       <ItemGroup>
         <Reference Include="System.Drawing" />
         <Reference Include="System.Windows.Forms" />
+        <Reference Include="SharpDX.Desktop">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.Desktop.dll</HintPath>
+        </Reference>        
       </ItemGroup>
     </When>
   </Choose>
@@ -104,6 +108,7 @@
     <Compile Include="DataOld\GpuRasterizerStateSerializer.cs" />
     <Compile Include="DataOld\GpuSamplerStateSerializer2.cs" />
     <Compile Include="DataOld\GpuTextureSerializer2.cs" />
+    <Compile Include="Data\TextureContentSerializer.cs" />
     <Compile Include="Effects\EffectParameterUpdaterDefinition.cs" />
     <Compile Include="Effects\ParameterDependency.cs" />
     <Compile Include="Font\DynamicSpriteFontContentSerializer.cs" />
@@ -131,7 +136,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="VertexHelper.cs" />
-    <Compile Include="WorkingSpace.cs" />
+    <Compile Include="TransformationSpace.cs" />
     <Compile Include="Font\FontAntiAliasMode.cs" />
     <Compile Include="Font\FontStyleExtensions.cs" />
     <Compile Include="GeometricPrimitives\GeometricPrimitive.Cone.cs" />

@@ -473,6 +473,10 @@ namespace SiliconStudio.Paradox.Graphics
 
                 int textureUnitCount = 0;
 
+                const int sbCapacity = 128;
+                int length;
+                var sb = new StringBuilder(sbCapacity);
+
                 for (int activeUniformIndex = 0; activeUniformIndex < activeUniformCount; ++activeUniformIndex)
                 {
 #if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
@@ -481,7 +485,8 @@ namespace SiliconStudio.Paradox.Graphics
 #else
                     ActiveUniformType uniformType;
                     int uniformCount;
-                    var uniformName = GL.GetActiveUniform(resourceId, activeUniformIndex, out uniformCount, out uniformType);
+                    GL.GetActiveUniform(resourceId, activeUniformIndex, sbCapacity, out length, out uniformCount, out uniformType, sb);
+                    var uniformName = sb.ToString();
                     //int uniformSize;
                     //GL.GetActiveUniform(resourceId, activeUniformIndex, out uniformSize, ActiveUniformType.Float);
 #endif
@@ -526,10 +531,12 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
 #if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                         case ActiveUniformType.Sampler1D:
+                        case ActiveUniformType.Sampler1DShadow:
 #endif
                         case ActiveUniformType.Sampler2D:
                         case ActiveUniformType.Sampler3D: // TODO: remove Texture3D that is not available in OpenGL ES 2
                         case ActiveUniformType.SamplerCube:
+                        case ActiveUniformType.Sampler2DShadow:
 #if SILICONSTUDIO_PLATFORM_ANDROID
                             var uniformIndex = GL.GetUniformLocation(resourceId, new StringBuilder(uniformName));
 #else
@@ -734,75 +741,66 @@ namespace SiliconStudio.Paradox.Graphics
                 case ActiveUniformType.Bool:
                     return 1;
                 case ActiveUniformType.IntVec2:
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 case ActiveUniformType.UnsignedIntVec2:
-#endif
                 case ActiveUniformType.FloatVec2:
                 case ActiveUniformType.BoolVec2:
                     return 2;
                 case ActiveUniformType.IntVec3:
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 case ActiveUniformType.UnsignedIntVec3:
-#endif
                 case ActiveUniformType.FloatVec3:
                 case ActiveUniformType.BoolVec3:
                     return 3;
                 case ActiveUniformType.IntVec4:
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 case ActiveUniformType.UnsignedIntVec4:
-#endif
                 case ActiveUniformType.FloatVec4:
                 case ActiveUniformType.BoolVec4:
                 case ActiveUniformType.FloatMat2:
                     return 4;
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 case ActiveUniformType.FloatMat2x3:
                 case ActiveUniformType.FloatMat3x2:
                     return 6;
                 case ActiveUniformType.FloatMat2x4:
                 case ActiveUniformType.FloatMat4x2:
                     return 8;
-#endif
                 case ActiveUniformType.FloatMat3:
                     return 9;
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 case ActiveUniformType.FloatMat3x4:
                 case ActiveUniformType.FloatMat4x3:
                     return 12;
-#endif
                 case ActiveUniformType.FloatMat4:
                     return 16;
                 
                 case ActiveUniformType.Sampler2D:
                 case ActiveUniformType.SamplerCube:
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                case ActiveUniformType.Sampler1D:
                 case ActiveUniformType.Sampler3D:
-                case ActiveUniformType.Sampler1DShadow:
                 case ActiveUniformType.Sampler2DShadow:
-                case ActiveUniformType.Sampler2DRect:
-                case ActiveUniformType.Sampler2DRectShadow:
                 case ActiveUniformType.SamplerCubeShadow:
-                case ActiveUniformType.IntSampler1D:
                 case ActiveUniformType.IntSampler2D:
                 case ActiveUniformType.IntSampler3D:
                 case ActiveUniformType.IntSamplerCube:
-                case ActiveUniformType.IntSampler2DRect:
-                case ActiveUniformType.UnsignedIntSampler1D:
                 case ActiveUniformType.UnsignedIntSampler2D:
                 case ActiveUniformType.UnsignedIntSampler3D:
                 case ActiveUniformType.UnsignedIntSamplerCube:
-                case ActiveUniformType.UnsignedIntSampler2DRect:
-                    return 1;
-                case ActiveUniformType.Sampler1DArray:
                 case ActiveUniformType.Sampler2DArray:
-                case ActiveUniformType.Sampler1DArrayShadow:
                 case ActiveUniformType.Sampler2DArrayShadow:
-                case ActiveUniformType.IntSampler1DArray:
                 case ActiveUniformType.IntSampler2DArray:
-                case ActiveUniformType.UnsignedIntSampler1DArray:
                 case ActiveUniformType.UnsignedIntSampler2DArray:
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                case ActiveUniformType.Sampler1D:
+                case ActiveUniformType.Sampler1DShadow:
+                case ActiveUniformType.Sampler2DRect:
+                case ActiveUniformType.Sampler2DRectShadow:
+                case ActiveUniformType.IntSampler1D:
+                case ActiveUniformType.IntSampler2DRect:
+                case ActiveUniformType.UnsignedIntSampler1D:
+                case ActiveUniformType.UnsignedIntSampler2DRect:
+                case ActiveUniformType.Sampler1DArray:
+                case ActiveUniformType.Sampler1DArrayShadow:
+                case ActiveUniformType.IntSampler1DArray:
+                case ActiveUniformType.UnsignedIntSampler1DArray:
+#endif
                     return 1;
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 case ActiveUniformType.SamplerBuffer:
                 case ActiveUniformType.IntSamplerBuffer:
                 case ActiveUniformType.UnsignedIntSamplerBuffer:
@@ -839,56 +837,52 @@ namespace SiliconStudio.Paradox.Graphics
                 case ActiveUniformType.BoolVec2:
                 case ActiveUniformType.BoolVec3:
                 case ActiveUniformType.BoolVec4:
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 case ActiveUniformType.UnsignedIntVec2:
                 case ActiveUniformType.UnsignedIntVec3:
                 case ActiveUniformType.UnsignedIntVec4:
-#endif
                     return EffectParameterClass.Vector;
                 case ActiveUniformType.FloatMat2:
                 case ActiveUniformType.FloatMat3:
                 case ActiveUniformType.FloatMat4:
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 case ActiveUniformType.FloatMat2x3:
                 case ActiveUniformType.FloatMat2x4:
                 case ActiveUniformType.FloatMat3x2:
                 case ActiveUniformType.FloatMat3x4:
                 case ActiveUniformType.FloatMat4x2:
                 case ActiveUniformType.FloatMat4x3:
-#endif
                     return EffectParameterClass.MatrixColumns;
                     //return EffectParameterClass.MatrixRows;
                     //return EffectParameterClass.Vector;
                 case ActiveUniformType.Sampler2D:
                 case ActiveUniformType.SamplerCube:
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                case ActiveUniformType.Sampler1D:
                 case ActiveUniformType.Sampler3D:
-                case ActiveUniformType.Sampler1DShadow:
                 case ActiveUniformType.Sampler2DShadow:
-                case ActiveUniformType.Sampler2DRect:
-                case ActiveUniformType.Sampler2DRectShadow:
-                case ActiveUniformType.Sampler1DArray:
                 case ActiveUniformType.Sampler2DArray:
-                case ActiveUniformType.SamplerBuffer:
-                case ActiveUniformType.Sampler1DArrayShadow:
                 case ActiveUniformType.Sampler2DArrayShadow:
                 case ActiveUniformType.SamplerCubeShadow:
-                case ActiveUniformType.IntSampler1D:
                 case ActiveUniformType.IntSampler2D:
                 case ActiveUniformType.IntSampler3D:
                 case ActiveUniformType.IntSamplerCube:
-                case ActiveUniformType.IntSampler2DRect:
-                case ActiveUniformType.IntSampler1DArray:
                 case ActiveUniformType.IntSampler2DArray:
-                case ActiveUniformType.IntSamplerBuffer:
-                case ActiveUniformType.UnsignedIntSampler1D:
                 case ActiveUniformType.UnsignedIntSampler2D:
                 case ActiveUniformType.UnsignedIntSampler3D:
                 case ActiveUniformType.UnsignedIntSamplerCube:
+                case ActiveUniformType.UnsignedIntSampler2DArray:
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                case ActiveUniformType.Sampler1D:
+                case ActiveUniformType.Sampler1DShadow:
+                case ActiveUniformType.Sampler2DRect:
+                case ActiveUniformType.Sampler2DRectShadow:
+                case ActiveUniformType.Sampler1DArray:
+                case ActiveUniformType.SamplerBuffer:
+                case ActiveUniformType.Sampler1DArrayShadow:
+                case ActiveUniformType.IntSampler1D:
+                case ActiveUniformType.IntSampler2DRect:
+                case ActiveUniformType.IntSampler1DArray:
+                case ActiveUniformType.IntSamplerBuffer:
+                case ActiveUniformType.UnsignedIntSampler1D:
                 case ActiveUniformType.UnsignedIntSampler2DRect:
                 case ActiveUniformType.UnsignedIntSampler1DArray:
-                case ActiveUniformType.UnsignedIntSampler2DArray:
                 case ActiveUniformType.UnsignedIntSamplerBuffer:
                 case ActiveUniformType.Sampler2DMultisample:
                 case ActiveUniformType.IntSampler2DMultisample:
@@ -920,25 +914,23 @@ namespace SiliconStudio.Paradox.Graphics
                 case ActiveUniformType.FloatMat2:
                 case ActiveUniformType.FloatMat3:
                 case ActiveUniformType.FloatMat4:
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 case ActiveUniformType.FloatMat2x3:
                 case ActiveUniformType.FloatMat2x4:
                 case ActiveUniformType.FloatMat3x2:
                 case ActiveUniformType.FloatMat3x4:
                 case ActiveUniformType.FloatMat4x2:
                 case ActiveUniformType.FloatMat4x3:
-#endif
                     return EffectParameterType.Float;
                 case ActiveUniformType.Bool:
                 case ActiveUniformType.BoolVec2:
                 case ActiveUniformType.BoolVec3:
                 case ActiveUniformType.BoolVec4:
                     return EffectParameterType.Bool;
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 case ActiveUniformType.UnsignedIntVec2:
                 case ActiveUniformType.UnsignedIntVec3:
                 case ActiveUniformType.UnsignedIntVec4:
                     return EffectParameterType.UInt;
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 case ActiveUniformType.Sampler1D:
                 case ActiveUniformType.Sampler1DShadow:
                 case ActiveUniformType.IntSampler1D:
@@ -946,40 +938,36 @@ namespace SiliconStudio.Paradox.Graphics
                     return EffectParameterType.Texture1D;
 #endif
                 case ActiveUniformType.Sampler2D:
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 case ActiveUniformType.Sampler2DShadow:
+                case ActiveUniformType.IntSampler2D:
+                case ActiveUniformType.UnsignedIntSampler2D:
+#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 case ActiveUniformType.Sampler2DRect:
                 case ActiveUniformType.Sampler2DRectShadow:
-                case ActiveUniformType.IntSampler2D:
                 case ActiveUniformType.IntSampler2DRect:
-                case ActiveUniformType.UnsignedIntSampler2D:
                 case ActiveUniformType.UnsignedIntSampler2DRect:
 #endif
                     return EffectParameterType.Texture2D;
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 case ActiveUniformType.Sampler3D:
                 case ActiveUniformType.IntSampler3D:
                 case ActiveUniformType.UnsignedIntSampler3D:
                     return EffectParameterType.Texture3D;
-#endif
                 case ActiveUniformType.SamplerCube:
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 case ActiveUniformType.SamplerCubeShadow:
                 case ActiveUniformType.IntSamplerCube:
                 case ActiveUniformType.UnsignedIntSamplerCube:
-#endif
                     return EffectParameterType.TextureCube;
+                case ActiveUniformType.Sampler2DArray:
+                case ActiveUniformType.Sampler2DArrayShadow:
+                case ActiveUniformType.IntSampler2DArray:
+                case ActiveUniformType.UnsignedIntSampler2DArray:
+                    return EffectParameterType.Texture2DArray;
 #if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 case ActiveUniformType.Sampler1DArray:
                 case ActiveUniformType.Sampler1DArrayShadow:
                 case ActiveUniformType.IntSampler1DArray:
                 case ActiveUniformType.UnsignedIntSampler1DArray:
                     return EffectParameterType.Texture1DArray;
-                case ActiveUniformType.Sampler2DArray:
-                case ActiveUniformType.Sampler2DArrayShadow:
-                case ActiveUniformType.IntSampler2DArray:
-                case ActiveUniformType.UnsignedIntSampler2DArray:
-                    return EffectParameterType.Texture2DArray;
                 case ActiveUniformType.SamplerBuffer:
                 case ActiveUniformType.IntSamplerBuffer:
                 case ActiveUniformType.UnsignedIntSamplerBuffer:

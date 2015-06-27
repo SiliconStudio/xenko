@@ -54,19 +54,17 @@ namespace SiliconStudio.Presentation.View
         }
 
         /// <inheritdoc/>
-        public Task InvokeAsync(Func<Task> callback)
+        public Task InvokeAsync(Action callback)
         {
-            var tcs = new TaskCompletionSource<int>();
-            dispatcher.InvokeAsync(async () => { await callback(); tcs.SetResult(0); });
-            return tcs.Task;
+            var operation = dispatcher.InvokeAsync(callback);
+            return operation.Task;
         }
 
         /// <inheritdoc/>
-        public Task<TResult> InvokeAsync<TResult>(Func<Task<TResult>> callback)
+        public Task<TResult> InvokeAsync<TResult>(Func<TResult> callback)
         {
-            var tcs = new TaskCompletionSource<TResult>();
-            dispatcher.InvokeAsync(async () => { var result = await callback(); tcs.SetResult(result); });
-            return tcs.Task;
+            var operation = dispatcher.InvokeAsync(callback);
+            return operation.Task;
         }
 
         /// <inheritdoc/>

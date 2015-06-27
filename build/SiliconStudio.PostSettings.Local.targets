@@ -13,7 +13,7 @@
 
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
     <SiliconStudioShaderUseSharpDX>true</SiliconStudioShaderUseSharpDX>
-    <SharpDXSdkBinDir>$(SharpDXSdkDir)\Bin\DirectX11_2-net40</SharpDXSdkBinDir>
+    <SharpDXSdkBinDir>$(SharpDXSdkDir)\Bin\Desktop</SharpDXSdkBinDir>
     <DefineConstants>FRAMEWORK_SHADER_USE_SHARPDX;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 </Project>

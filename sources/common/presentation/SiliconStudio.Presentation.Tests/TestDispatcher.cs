@@ -51,7 +51,7 @@ namespace SiliconStudio.Presentation.Tests
             int count = 1;
             var task = dispatcher.InvokeAsync(async () => { await Task.Delay(100); count = count + 1; });
             Assert.AreEqual(1, count);
-            task.Wait();
+            task.Result.Wait();
             Assert.AreEqual(2, count);
             ShutdownDispatcher(dispatcher);
         }
@@ -64,7 +64,7 @@ namespace SiliconStudio.Presentation.Tests
             var task = dispatcher.InvokeAsync(async () => { await Task.Delay(100); return 2; });
             Assert.AreEqual(1, count);
             task.Wait();
-            count += task.Result;
+            count += task.Result.Result;
             Assert.AreEqual(3, count);
             ShutdownDispatcher(dispatcher);
         }
@@ -76,7 +76,7 @@ namespace SiliconStudio.Presentation.Tests
             int count = 1;
             var task = dispatcher.InvokeAsync(async () => { await Task.Delay(100); count = count + 1; });
             Assert.AreEqual(1, count);
-            await task;
+            await task.Result;
             Assert.AreEqual(2, count);
             ShutdownDispatcher(dispatcher);
         }
@@ -88,7 +88,7 @@ namespace SiliconStudio.Presentation.Tests
             int count = 1;
             var task = dispatcher.InvokeAsync(async () => { await Task.Delay(100); return 2; });
             Assert.AreEqual(1, count);
-            count += await task;
+            count += await task.Result;
             Assert.AreEqual(3, count);
             ShutdownDispatcher(dispatcher);
         }

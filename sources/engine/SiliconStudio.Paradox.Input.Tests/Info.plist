@@ -19,7 +19,7 @@
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
 	<key>MinimumOSVersion</key>
-	<string>5.0</string>
+	<string>5.1.1</string>
 	<key>NSMainNibFile</key>
 	<string></string>
 	<key>UIStatusBarStyle</key>

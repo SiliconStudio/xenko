@@ -5,7 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using OpenTK.Platform.iPhoneOS;
-using MonoTouch.OpenGLES;
+using OpenGLES;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.OpenGL;
 using Rectangle = SiliconStudio.Core.Mathematics.Rectangle;
@@ -76,6 +76,7 @@ namespace SiliconStudio.Paradox.Games
 
                     gameForm.ContextRenderingApi = contextRenderingApi;
                     contextAvailable = true;
+                    break;
                 }
                 catch (Exception)
                 {
@@ -86,25 +87,8 @@ namespace SiliconStudio.Paradox.Games
             if (!contextAvailable)
                 throw new Exception("Graphics context could not be created.");
 
-            gameForm.LayerColorFormat = MonoTouch.OpenGLES.EAGLColorFormat.RGBA8;
+            gameForm.LayerColorFormat = EAGLColorFormat.RGBA8;
             //gameForm.LayerRetainsBacking = false;
-
-            // Setup the initial size of the window
-            var width = gameContext.RequestedWidth;
-            if (width == 0)
-            {
-                width = (int)(gameForm.Size.Width * gameForm.ContentScaleFactor);
-            }
-
-            var height = gameContext.RequestedHeight;
-            if (height == 0)
-            {
-                height = (int)(gameForm.Size.Height * gameForm.ContentScaleFactor);
-            }
-
-            gameForm.Size = new Size(width, height);
-
-            //gameForm.Resize += OnClientSizeChanged;
         }
 
         void gameForm_Load(object sender, EventArgs e)

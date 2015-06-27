@@ -33,6 +33,7 @@ namespace SiliconStudio.Paradox.Rendering
             PreRenderers = new SafeList<IGraphicsRenderer>();
             PostRenderers = new SafeList<IGraphicsRenderer>();
             CullingMask = EntityGroupMask.All;
+            CullingMode = CullingMode.Frustum;
         }
 
         /// <summary>
@@ -57,6 +58,14 @@ namespace SiliconStudio.Paradox.Rendering
         [DataMember(30)]
         [DefaultValue(EntityGroupMask.All)]
         public EntityGroupMask CullingMask { get; set; }
+
+        /// <summary>
+        /// Gets or sets the culling mode.
+        /// </summary>
+        /// <value>The culling mode.</value>
+        [DataMember(40)]
+        [DefaultValue(CullingMode.Frustum)]
+        public CullingMode CullingMode { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating the current rendering is for picking or not.

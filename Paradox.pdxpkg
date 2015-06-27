@@ -2,7 +2,7 @@
 Id: cc1bcc78-50b2-4da6-8902-f7a3ae42898b
 Meta:
     Name: Paradox
-    Version: 1.1.2-beta
+    Version: 1.1.3-beta
     Owners:
       - Silicon Studio Corp.
     Authors: 
@@ -35,6 +35,7 @@ TemplateFolders:
         - samples\Games\SpaceEscape\SpaceEscape.pdxtpl
         - samples\Graphics\AnimatedModel\AnimatedModel.pdxtpl
         - samples\Graphics\CustomEffect\CustomEffect.pdxtpl
+        - samples\Graphics\ForwardLighting\ForwardLighting.pdxtpl
         - samples\Graphics\GeometricPrimitives\GeometricPrimitives.pdxtpl
         - samples\Graphics\HelloWorld\HelloWorld.pdxtpl
         - samples\Graphics\MaterialSample\MaterialSample.pdxtpl
@@ -45,7 +46,7 @@ TemplateFolders:
         - samples\Graphics\SpriteEntity\SpriteEntity.pdxtpl
         - samples\Graphics\SpriteFonts\SpriteFonts.pdxtpl
         - samples\Input\TouchInputs\TouchInputs.pdxtpl
-        - samples\Physics\CharacterController\CharacterController.pdxtpl
+        - samples\Physics\CharacterControllerSample\CharacterControllerSample.pdxtpl
         - samples\Physics\Constraints\Constraints.pdxtpl
         - samples\Physics\Raycasting\Raycasting.pdxtpl
         - samples\UI\GameMenu\GameMenu.pdxtpl

@@ -263,7 +263,7 @@ namespace SiliconStudio.Paradox.Graphics
         public void ApplyPlatformSpecificParams(Effect effect)
         {
             //effect.Parameters.Set(ShaderBaseKeys.ParadoxFlipRendertarget, flipRenderTarget ? -1.0f : 1.0f);
-            Parameters.Set(ShaderBaseKeys.ParadoxFlipRendertarget, flipRenderTarget ? -1.0f : 1.0f);
+            Parameters.Set(ShaderBaseKeys.ParadoxFlipRendertarget, flipRenderTarget ? 1.0f : -1.0f);
         }
 
         /// <summary>
@@ -627,15 +627,9 @@ namespace SiliconStudio.Paradox.Graphics
                     throw new InvalidOperationException("Error while linking GLSL shaders.");
 
                 GL.UseProgram(copyProgram);
-#if SILICONSTUDIO_PLATFORM_ANDROID
-                var textureLocation = GL.GetUniformLocation(copyProgram, new StringBuilder("s_texture"));
-                copyProgramOffsetLocation = GL.GetUniformLocation(copyProgram, new StringBuilder("uOffset"));
-                copyProgramScaleLocation = GL.GetUniformLocation(copyProgram, new StringBuilder("uScale"));
-#else
-                    var textureLocation = GL.GetUniformLocation(copyProgram, "s_texture");
-                    copyProgramOffsetLocation = GL.GetUniformLocation(copyProgram, "uOffset");
-                    copyProgramScaleLocation = GL.GetUniformLocation(copyProgram, "uScale");
-#endif
+                var textureLocation = GL.GetUniformLocation(copyProgram, "s_texture");
+                copyProgramOffsetLocation = GL.GetUniformLocation(copyProgram, "uOffset");
+                copyProgramScaleLocation = GL.GetUniformLocation(copyProgram, "uScale");
                 GL.Uniform1(textureLocation, 0);
             }
 
@@ -1019,7 +1013,7 @@ namespace SiliconStudio.Paradox.Graphics
 
                 // Is it the default provided render target?
                 // TODO: Need to disable some part of rendering if either is null
-                var isProvidedDepthBuffer = (depthStencilBuffer == RootDevice.windowProvidedDepthTexture);
+                var isProvidedDepthBuffer = RootDevice.windowProvidedDepthTexture != null && (depthStencilBuffer == RootDevice.windowProvidedDepthTexture);
                 var isProvidedRenderTarget = (fboKey.LastRenderTarget == 1 && renderTargets[0] == RootDevice.windowProvidedRenderTexture);
                 if ((isProvidedDepthBuffer || depthStencilBuffer == null) && (isProvidedRenderTarget || fboKey.LastRenderTarget == 0)) // device provided framebuffer
                 {
@@ -1300,7 +1294,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             // Change face culling if the rendertarget is flipped
             var newFrontFace = currentFrontFace;
-            if (flipRenderTarget)
+            if (!flipRenderTarget)
                 newFrontFace = newFrontFace == FrontFaceDirection.Cw ? FrontFaceDirection.Ccw : FrontFaceDirection.Cw;
 
             if (newFrontFace != boundFrontFace)
@@ -2068,7 +2062,7 @@ namespace SiliconStudio.Paradox.Graphics
 #if SILICONSTUDIO_PLATFORM_IOS
             // Seems like iPhoneOSGraphicsContext.MakeCurrent(null) doesn't remove current context
             // Let's do it manually
-            MonoTouch.OpenGLES.EAGLContext.SetCurrentContext(null);
+            OpenGLES.EAGLContext.SetCurrentContext(null);
 #endif
         }
 
@@ -2200,8 +2194,8 @@ namespace SiliconStudio.Paradox.Graphics
 
             graphicsContextEglPtr = EglGetCurrentContext();
 #elif SILICONSTUDIO_PLATFORM_IOS
-            var asyncContext = new MonoTouch.OpenGLES.EAGLContext(IsOpenGLES2 ? MonoTouch.OpenGLES.EAGLRenderingAPI.OpenGLES2 : MonoTouch.OpenGLES.EAGLRenderingAPI.OpenGLES3, gameWindow.EAGLContext.ShareGroup);
-            MonoTouch.OpenGLES.EAGLContext.SetCurrentContext(asyncContext);
+            var asyncContext = new OpenGLES.EAGLContext(IsOpenGLES2 ? OpenGLES.EAGLRenderingAPI.OpenGLES2 : OpenGLES.EAGLRenderingAPI.OpenGLES3, gameWindow.EAGLContext.ShareGroup);
+            OpenGLES.EAGLContext.SetCurrentContext(asyncContext);
             deviceCreationContext = new OpenTK.Graphics.GraphicsContext(new OpenTK.ContextHandle(asyncContext.Handle), null, graphicsContext, versionMajor, versionMinor, creationFlags);
             deviceCreationWindowInfo = windowInfo;
             gameWindow.MakeCurrent();
@@ -2277,48 +2271,42 @@ namespace SiliconStudio.Paradox.Graphics
 
         internal void InitDefaultRenderTarget(PresentationParameters presentationParameters)
         {
+#if SILICONSTUDIO_PLATFORM_IOS
+            windowProvidedFrameBuffer = gameWindow.Framebuffer;
+
+            // Scale for Retina display
+            var width = (int)(gameWindow.Size.Width * gameWindow.ContentScaleFactor);
+            var height = (int)(gameWindow.Size.Height * gameWindow.ContentScaleFactor);
+#else
+            var width = gameWindow.Size.Width;
+            var height = gameWindow.Size.Height;
+            windowProvidedFrameBuffer = 0;
+#endif
+
             // TODO: iOS (and possibly other platforms): get real render buffer ID for color/depth?
             windowProvidedRenderTexture = Texture.New2D(
                 this,
-                presentationParameters.BackBufferWidth,
-                presentationParameters.BackBufferHeight,
+                width,
+                height,
                 1,
                 presentationParameters.BackBufferFormat,
-                TextureFlags.RenderTarget);
+                TextureFlags.RenderTarget | Texture.TextureFlagsCustomResourceId);
             windowProvidedRenderTexture.Reload = (graphicsResource) => { };
 
-            if (presentationParameters.DepthStencilFormat != PixelFormat.None)
-            {
-                windowProvidedDepthTexture = Texture.New2D(
-                    this,
-                    presentationParameters.BackBufferWidth,
-                    presentationParameters.BackBufferHeight,
-                    1,
-                    presentationParameters.DepthStencilFormat,
-                    TextureFlags.DepthStencil);
-                windowProvidedDepthTexture.Reload = (graphicsResource) => { };
-            }
-
-#if SILICONSTUDIO_PLATFORM_IOS
-            // TODO: This can probably be valid for Android/PC as well (everything 0)
-            windowProvidedFrameBuffer = gameWindow.Framebuffer;
             boundFBO = windowProvidedFrameBuffer;
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, windowProvidedFrameBuffer);
 
             // Extract FBO render target
             int renderTargetTextureId;
-            GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
+            GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
             windowProvidedRenderTexture.resourceId = renderTargetTextureId;
-            windowProvidedRenderTexture.Reload = (graphicsResource) => { throw new NotImplementedException(); };
-            windowProvidedRenderTexture.resourceId = renderTargetTextureId;
+            windowProvidedRenderTexture.Reload = (graphicsResource) => { };
 
             // Extract FBO depth target
-            GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferSlot.DepthAttachment, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
-            windowProvidedDepthTexture.resourceId = renderTargetTextureId;
-            windowProvidedDepthTexture.Reload = (graphicsResource) => { throw new NotImplementedException(); };
-            windowProvidedRenderTexture.resourceId = renderTargetTextureId;
-#endif
+            GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
+            //windowProvidedDepthTexture.resourceId = renderTargetTextureId;
+            //windowProvidedDepthTexture.Reload = (graphicsResource) => { };
 
             RootDevice.existingFBOs[new FBOKey(windowProvidedDepthTexture, new[] { windowProvidedRenderTexture })] = windowProvidedFrameBuffer;
 

@@ -193,7 +193,7 @@ namespace SiliconStudio.Core
 #if SILICONSTUDIO_PLATFORM_ANDROID
             return Android.OS.Environment.ExternalStorageDirectory.AbsolutePath + "/Android/data/" + PlatformAndroid.Context.PackageName + "/data";
 #elif SILICONSTUDIO_PLATFORM_IOS
-            return MonoTouch.Foundation.NSBundle.MainBundle.BundlePath + "/data";
+            return Foundation.NSBundle.MainBundle.BundlePath + "/data";
 #elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             return Windows.ApplicationModel.Package.Current.InstalledLocation.Path + @"\data";
 #else

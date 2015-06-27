@@ -221,6 +221,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Asset
 		{50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698} = {50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698}
 	EndProjectSection
 EndProject
+		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531} = {E25E7778-0B2F-4A0B-BCD6-1DE95320B531}
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Assets.Model", "..\sources\engine\SiliconStudio.Paradox.Assets.Model\SiliconStudio.Paradox.Assets.Model.csproj", "{C904D2C6-5A15-4E0B-8432-33967E1735AA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Quantum.Tests", "..\sources\common\presentation\SiliconStudio.Quantum.Tests\SiliconStudio.Quantum.Tests.csproj", "{49AAA22D-D1C8-4E0F-82E8-F462D5442463}"
@@ -272,9 +273,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Graph
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Debugger", "..\sources\engine\SiliconStudio.Paradox.Debugger\SiliconStudio.Paradox.Debugger.csproj", "{73AA8A18-15C4-405B-BBF4-5D41C1CE44AD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.EffectCompilerServer", "..\sources\tools\SiliconStudio.Paradox.EffectCompilerServer\SiliconStudio.Paradox.EffectCompilerServer.csproj", "{77E2FCC0-4CA6-436C-BE6F-9418CB807D45}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.ConnectionRouter", "..\sources\tools\SiliconStudio.Paradox.ConnectionRouter\SiliconStudio.Paradox.ConnectionRouter.csproj", "{77E2FCC0-4CA6-436C-BE6F-9418CB807D45}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.NugetPackageRewriter", "..\sources\tools\SiliconStudio.NugetPackageRewriter\SiliconStudio.NugetPackageRewriter.csproj", "{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.EffectCompilerServer", "..\sources\tools\SiliconStudio.Paradox.EffectCompilerServer\SiliconStudio.Paradox.EffectCompilerServer.csproj", "{E25E7778-0B2F-4A0B-BCD6-1DE95320B531}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1778,6 +1781,26 @@ Global
 		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
 		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.Testing|Win32.ActiveCfg = Release|Any CPU
 		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65}.Testing|Win32.Build.0 = Release|Any CPU
+		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
+		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531}.AppStore|Win32.ActiveCfg = Release|Any CPU
+		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531}.Release|Win32.ActiveCfg = Release|Any CPU
+		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531}.Testing|Any CPU.ActiveCfg = Release|Any CPU
+		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531}.Testing|Any CPU.Build.0 = Release|Any CPU
+		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
+		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531}.Testing|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1857,5 +1880,6 @@ Global
 		{73AA8A18-15C4-405B-BBF4-5D41C1CE44AD} = {4C142567-C42B-40F5-B092-798882190209}
 		{77E2FCC0-4CA6-436C-BE6F-9418CB807D45} = {1AE1AC60-5D2F-4CA7-AE20-888F44551185}
 		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65} = {860946E4-CC77-4FDA-A4FD-3DB2A502A696}
+		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531} = {1AE1AC60-5D2F-4CA7-AE20-888F44551185}
 	EndGlobalSection
 EndGlobal

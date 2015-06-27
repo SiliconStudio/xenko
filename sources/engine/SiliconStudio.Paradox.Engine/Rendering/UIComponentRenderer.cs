@@ -667,6 +667,7 @@ namespace SiliconStudio.Paradox.Rendering
 
                 var cameraComponent = new CameraComponent(nearPlane, farPlane)
                 {
+                    UseCustomAspectRatio = true,
                     AspectRatio = aspectRatio,
                     VerticalFieldOfView = MathUtil.RadiansToDegrees(verticalFov),
                     ViewMatrix = Matrix.LookAtRH(new Vector3(0, 0, zOffset), Vector3.Zero, Vector3.UnitY),

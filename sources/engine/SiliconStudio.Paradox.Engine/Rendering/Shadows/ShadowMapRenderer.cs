@@ -162,12 +162,13 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
             {
                 CameraComponentRenderer.UpdateParameters(context, ShadowCamera);
 
-                // When rendering shadow maps, objects should not be culled by the rasterizer (in case the object is out of the frustum but cast
-                // a shadow into the frustum)
-                context.GraphicsDevice.SetRasterizerState(shadowRasterizerState);
-
                 opaqueRenderItems.Clear();
                 transparentRenderItems.Clear();
+
+                // When rendering shadow maps, objects should not be culled by the rasterizer (in case the object is out of the frustum but cast
+                // a shadow into the frustum)
+                shadowModelComponentRenderer.RasterizerState = shadowRasterizerState;
+
                 shadowModelComponentRenderer.CurrentCullingMask = cullingMask;
                 shadowModelComponentRenderer.Prepare(context, opaqueRenderItems, transparentRenderItems);
                 shadowModelComponentRenderer.Draw(context, opaqueRenderItems, 0, opaqueRenderItems.Count - 1);

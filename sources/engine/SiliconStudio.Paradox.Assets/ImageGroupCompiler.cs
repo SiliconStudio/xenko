@@ -23,8 +23,6 @@ namespace SiliconStudio.Paradox.Assets
         where TGroupAsset : ImageGroupAsset<TImageInfo> 
         where TImageInfo: ImageInfo
     {
-        protected bool SeparateAlphaTexture;
-
         private bool TextureFileIsValid(UFile file)
         {
             return file != null && File.Exists(file);
@@ -34,9 +32,6 @@ namespace SiliconStudio.Paradox.Assets
         {
             result.BuildSteps = new AssetBuildStep(AssetItem);
             
-            // Evaluate if we need to use a separate the alpha texture
-            SeparateAlphaTexture = TextureCommandHelper.ShouldSeparateAlpha(asset.Alpha, asset.Format, context.Platform, context.GetGraphicsProfile());
-
             // create the registry containing the sprite assets texture index association
             var imageToTextureIndex = new Dictionary<TImageInfo, int>();
 
@@ -76,7 +71,7 @@ namespace SiliconStudio.Paradox.Assets
                     result.BuildSteps.Add(
                         new TextureAssetCompiler.TextureConvertCommand(
                             ImageGroupAsset.BuildTextureUrl(urlInStorage, i),
-                            new TextureConvertParameters(assetSource, textureAsset, context.Platform, context.GetGraphicsPlatform(), context.GetGraphicsProfile(), context.GetTextureQuality(), SeparateAlphaTexture)));
+                            new TextureConvertParameters(assetSource, textureAsset, context.Platform, context.GetGraphicsPlatform(), context.GetGraphicsProfile(), context.GetTextureQuality())));
                 }
 
                 result.BuildSteps.Add(new WaitBuildStep()); // wait the textures to be imported
@@ -94,33 +89,20 @@ namespace SiliconStudio.Paradox.Assets
         where TImageGroupData : ImageGroup<TImageData>, new()
         where TImageData : ImageFragment, new()
     {
-        protected readonly bool UseSeparateAlphaTexture;
-
         protected readonly Dictionary<TImageInfo, int> ImageToTextureIndex;
 
-        protected ImageGroupCommand(string url, ImageGroupParameters<TGroupAsset> asset, Dictionary<TImageInfo, int> imageToTextureIndex, bool useSeparateAlphaTexture)
+        protected ImageGroupCommand(string url, ImageGroupParameters<TGroupAsset> asset, Dictionary<TImageInfo, int> imageToTextureIndex)
             : base(url, asset)
         {
             ImageToTextureIndex = imageToTextureIndex;
-            UseSeparateAlphaTexture = useSeparateAlphaTexture;
         }
 
         public override IEnumerable<ObjectUrl> GetInputFiles()
         {
             for (int i = 0; i < ImageToTextureIndex.Values.Distinct().Count(); i++)
-            {
-                if (UseSeparateAlphaTexture)
-                {
-                    //var textureUrl = ImageGroupAsset.BuildTextureUrl(Url, i);
-                    //yield return new ObjectUrl(UrlType.Internal, TextureAlphaComponentSplitter.GenerateColorTextureURL(textureUrl));
-                    //yield return new ObjectUrl(UrlType.Internal, TextureAlphaComponentSplitter.GenerateAlphaTextureURL(textureUrl));
-                }
-                else
-                {
-                    yield return new ObjectUrl(UrlType.Internal, ImageGroupAsset.BuildTextureUrl(Url, i));
-                }
-            }
+                yield return new ObjectUrl(UrlType.Internal, ImageGroupAsset.BuildTextureUrl(Url, i));
         }
+
         protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
         {
             var assetManager = new AssetManager();
@@ -138,23 +120,14 @@ namespace SiliconStudio.Paradox.Assets
                     Orientation = uiImage.Orientation,
                 };
 
-                if (UseSeparateAlphaTexture)
+                int imageIndex;
+                if (ImageToTextureIndex.TryGetValue(uiImage, out imageIndex))
                 {
-                    //var baseLocation = ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]);
-                    // newImage.Texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(Guid.Empty, TextureAlphaComponentSplitter.GenerateColorTextureURL(baseLocation));
-                    // newImage.TextureAlpha = AttachedReferenceManager.CreateSerializableVersion<Texture>(Guid.Empty, TextureAlphaComponentSplitter.GenerateAlphaTextureURL(baseLocation));
+                    newImage.Texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(Guid.Empty, ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]));
                 }
                 else
                 {
-                    int imageIndex;
-                    if (ImageToTextureIndex.TryGetValue(uiImage, out imageIndex))
-                    {
-                        newImage.Texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(Guid.Empty, ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]));
-                    }
-                    else
-                    {
-                        commandContext.Logger.Warning("Image '{0}' has an invalid image source file '{1}', resulting texture will be null.", uiImage.Name, uiImage.Source);
-                    }
+                    commandContext.Logger.Warning("Image '{0}' has an invalid image source file '{1}', resulting texture will be null.", uiImage.Name, uiImage.Source);
                 }
 
                 SetImageSpecificFields(uiImage, newImage);

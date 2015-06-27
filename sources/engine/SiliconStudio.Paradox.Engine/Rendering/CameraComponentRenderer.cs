@@ -42,6 +42,21 @@ namespace SiliconStudio.Paradox.Rendering
         {
             if (camera == null) throw new ArgumentNullException("camera");
 
+            // Setup viewport size
+            var currentViewport = context.GraphicsDevice.Viewport;
+            var aspectRatio = currentViewport.AspectRatio;
+
+            // Update the aspect ratio
+            if (camera.UseCustomAspectRatio)
+            {
+                aspectRatio = camera.AspectRatio;
+            }
+            else
+            {
+                // If the aspect ratio is calculated automatically from the current viewport, update matrices here
+                camera.Update(aspectRatio);
+            }
+
             // Store the current view/projection matrix in the context
             var viewParameters = context.Parameters;
             viewParameters.Set(TransformationKeys.View, camera.ViewMatrix);
@@ -51,13 +66,8 @@ namespace SiliconStudio.Paradox.Rendering
             viewParameters.Set(CameraKeys.FarClipPlane, camera.FarClipPlane);
             viewParameters.Set(CameraKeys.VerticalFieldOfView, camera.VerticalFieldOfView);
             viewParameters.Set(CameraKeys.OrthoSize, camera.OrthographicSize);
-
-            // Setup viewport size
-            var currentViewport = context.GraphicsDevice.Viewport;
             viewParameters.Set(CameraKeys.ViewSize, new Vector2(currentViewport.Width, currentViewport.Height));
-
-            // TODO: Review camera aspect ratio
-            viewParameters.Set(CameraKeys.AspectRatio, currentViewport.AspectRatio);
+            viewParameters.Set(CameraKeys.AspectRatio, aspectRatio);
 
             //viewParameters.Set(CameraKeys.FocusDistance, camera.FocusDistance);
         }

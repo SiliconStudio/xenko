@@ -139,7 +139,7 @@ namespace SiliconStudio.Paradox.Rendering
             if (nodeNameFirstChar == -1)
                 return null;
 
-            int nodeNameLastChar = propertyName.IndexOf(']', nodeNameFirstChar);
+            int nodeNameLastChar = propertyName.LastIndexOf(']');
 
             return propertyName.Substring(nodeNameFirstChar + 1, nodeNameLastChar - nodeNameFirstChar - 1);
         }
