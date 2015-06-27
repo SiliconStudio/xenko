@@ -7,6 +7,7 @@ This release is mostly a hotfix so that 1.1 still works properly when 1.2 is ins
 #### Issues fixed
 - Studio: Paradox Package resolution was not properly done if a newer Paradox version was installed alongside. It is now enforced to currently loaded verison.
 - Engine: Fixed Frustum culling ([#232](https://github.com/SiliconStudio/paradox/issues/232)).
+- Android: Due to a mixup between PCL and custom framework, using Enum would result in compilation errors on iOS and Android ([#240](https://github.com/SiliconStudio/paradox/issues/240)).
 
 ### Version 1.1.3-beta
 
