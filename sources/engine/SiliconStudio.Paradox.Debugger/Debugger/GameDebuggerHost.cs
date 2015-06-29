@@ -2,12 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Linq;
 using System.ServiceModel;
-using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Paradox.Debugger.Target
 {
@@ -20,9 +17,9 @@ namespace SiliconStudio.Paradox.Debugger.Target
 
         public LoggerResult Log { get; private set; }
 
-        public GameDebuggerHost()
+        public GameDebuggerHost(LoggerResult logger)
         {
-            Log = new LoggerResult();
+            Log = logger;
         }
 
         public Task<IGameDebuggerTarget> Target
