@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
 
@@ -811,4 +812,88 @@ namespace SiliconStudio.TextureConverter.DxtWrapper
         }
 
     }
+
+    internal unsafe class DDSHeader
+    {
+        enum DDSPfFlags {
+            DDPF_ALPHAPIXELS    =   0x0001,
+            DDPF_ALPHA          =   0x0002,
+            DDPF_FOURCC         =   0x0004,
+            DDPF_RGB            =   0x0040,
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        private struct DDSHeaderDX9
+        {
+            public uint dwMagic;
+            public uint dwSize;
+            public uint dwFlags;
+            public uint dwHeight;
+            public uint dwWidth;
+            public uint dwPitchOrLinearSize;
+            public uint dwDepth;
+            public uint dwMipMapCount;
+            public fixed uint dwReserved[11];
+            public uint dwPfSize;
+            public uint dwPfFlags;
+            public uint dwFourCC;
+            public uint dwRGBBitCount;
+            public uint dwRBitMask;
+            public uint dwGBitMask;
+            public uint dwBBitMask;
+            public uint dwRGBAlphaBitMask;
+            public uint dwCaps;
+            public uint dwCaps2;
+            public fixed uint dwReservedCaps[2];
+            public uint dwReserved2;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        private struct DDSHeaderDX10
+        {
+            public uint dxgiFormat;
+            public uint resourceDimension;
+            public uint miscFlag;
+            public uint arraySize;
+            public uint reserved;
+        }
+
+        private static int GetBitCount(uint bitmask)
+        {
+            int count = 0;
+            for (uint i = 0 ; i < 32 ; ++i, bitmask>>=1)
+            {
+                if ((bitmask&1) != 0)
+                    count++;
+            }
+            return count;
+        }
+
+        internal static int GetAlphaDepth(String filePath)
+        {
+            using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                int headerSize = sizeof(DDSHeaderDX9);  // 128byte
+                byte[] buffer = new byte[headerSize];
+                DDSHeaderDX9 header;
+                fileStream.Read(buffer, 0, headerSize);
+                fixed (byte* ptr = buffer)
+                {
+                    DDSHeaderDX9* headerPtr = &header;
+                    SiliconStudio.Core.Utilities.CopyMemory((IntPtr)headerPtr, (IntPtr)ptr, headerSize);
+                }
+                if (header.dwMagic != 0x20534444 || header.dwPfSize != 32)
+                    return -1;
+                if ((header.dwPfFlags & (uint)DDSPfFlags.DDPF_FOURCC) == 0 && (header.dwPfFlags & (uint)(DDSPfFlags.DDPF_RGB|DDSPfFlags.DDPF_ALPHA)) != 0)
+                {
+                    if((header.dwPfFlags & (uint)DDSPfFlags.DDPF_ALPHAPIXELS) != 0)
+                        return GetBitCount(header.dwRGBAlphaBitMask);
+                    return 0;
+                }
+            }
+            return -1;
+        }
+
+    }
+
 }
