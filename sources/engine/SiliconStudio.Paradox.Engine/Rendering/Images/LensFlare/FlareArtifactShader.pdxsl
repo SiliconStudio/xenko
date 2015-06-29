@@ -36,10 +36,11 @@ namespace SiliconStudio.Paradox.Rendering.Images
             for (int i = 0; i < TapCount; i++) 
             {
                 // Zoom effect
-                uv = ( originalUV - 0.5) * ZoomOffsetsDistortions[i].x + 0.5;
+                float2 zoomOffsetsDistortions = ZoomOffsetsDistortions[i];
+                uv = ( originalUV - 0.5) * zoomOffsetsDistortions.x + 0.5;
 
                 // Distort UV around the center
-                float distortion = sin(pow(distanceToCenter, ZoomOffsetsDistortions[i].y));
+                float distortion = sin(pow(distanceToCenter, zoomOffsetsDistortions.y)); // NOTE: Introducing the zoomOffsetsDistortions local variable prevents glLinkProgram from freezing on some android devices
                 float2 distortedUV = distortion * (uv - 0.5) + 0.5;
                 float3 tapColor = Texture0.Sample(LinearSampler, distortedUV).rgb;
 

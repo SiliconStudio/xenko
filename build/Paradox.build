@@ -78,12 +78,22 @@ Example of use:
   </Target>
   
   <!--
+  Package Installer: install-prerequisites.exe
+  -->
+  <Target Name="PrerequisitesInstaller">
+    <Delete Files="$(ParadoxRoot)Bin\Prerequisites\install-prerequisites.exe"/>
+    <Exec Command='"$(AdvancedInstallerPath)" /rebuild "$(ParadoxRoot)sources\install\Prerequisites\prerequisites.aip"'/>
+    <Copy SourceFiles="$(ParadoxRoot)sources\install\Prerequisites\install-prerequisites.exe" DestinationFolder="$(ParadoxRoot)Bin\Prerequisites"/>
+  </Target>
+  
+  <!--
   Perform a full build: Build, Package and PackageInstaller
   -->
   <Target Name="FullBuild">
     <CallTarget Targets="Build"/>
     <CallTarget Targets="Package"/>
     <CallTarget Targets="PackageInstaller"/>
+    <CallTarget Targets="PrerequisitesInstaller"/>
 	<CallTarget Targets="VSIXPlugin"/>
   </Target>
   

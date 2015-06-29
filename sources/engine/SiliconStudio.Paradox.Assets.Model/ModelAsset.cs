@@ -35,7 +35,6 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// </summary>
         public ModelAsset()
         {
-            SerializedVersion = AssetFormatVersion;
             ScaleImport = 1.0f;
             Materials = new List<ModelMaterial>();
             Nodes = new List<NodeInformation>();
