@@ -102,6 +102,8 @@ namespace SiliconStudio.Paradox.Debugger.Target
         /// <inheritdoc/>
         public bool AssemblyUpdate(List<DebugAssembly> assembliesToUnregister, List<DebugAssembly> assembliesToRegister)
         {
+            Log.Info("Reloading assemblies and updating scripts");
+
             // Unload and load assemblies in assemblyContainer, serialization, etc...
             lock (loadedAssemblies)
             {
@@ -130,6 +132,8 @@ namespace SiliconStudio.Paradox.Debugger.Target
         {
             try
             {
+                Log.Info("Running game with type {0}", gameTypeName);
+
                 Type gameType;
                 lock (loadedAssemblies)
                 {
@@ -154,8 +158,7 @@ namespace SiliconStudio.Paradox.Debugger.Target
                     }
                     catch (Exception e)
                     {
-                        // Mute exceptions
-                        // TODO: Transfer them back to listening process?
+                        Log.Error("Exception while running game", e);
                     }
 
                     host.OnGameExited();
@@ -202,10 +205,33 @@ namespace SiliconStudio.Paradox.Debugger.Target
         {
             host = gameDebuggerHost;
             host.RegisterTarget();
+
+            Log.MessageLogged += Log_MessageLogged;
+
+            Log.Info("Starting debugging session");
+
             while (!requestedExit)
             {
                 Thread.Sleep(10);
             }
+        }
+
+        void Log_MessageLogged(object sender, MessageLoggedEventArgs e)
+        {
+            var message = e.Message;
+            var serializableMessage = message as SerializableLogMessage;
+            if (serializableMessage == null)
+            {
+                var logMessage = message as LogMessage;
+                serializableMessage = logMessage != null ? new SerializableLogMessage(logMessage) : null;
+            }
+
+            if (serializableMessage == null)
+            {
+                throw new InvalidOperationException(@"Unable to process the given log message.");
+            }
+
+            host.OnLogMessage(serializableMessage);
         }
     }
 }

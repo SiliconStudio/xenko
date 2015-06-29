@@ -6,6 +6,7 @@ using System.Linq;
 using System.ServiceModel;
 using System.Threading;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Paradox.Debugger.Target
@@ -16,6 +17,13 @@ namespace SiliconStudio.Paradox.Debugger.Target
         private TaskCompletionSource<IGameDebuggerTarget> target = new TaskCompletionSource<IGameDebuggerTarget>();
 
         public event Action GameExited;
+
+        public LoggerResult Log { get; private set; }
+
+        public GameDebuggerHost()
+        {
+            Log = new LoggerResult();
+        }
 
         public Task<IGameDebuggerTarget> Target
         {
@@ -32,6 +40,11 @@ namespace SiliconStudio.Paradox.Debugger.Target
             var gameExited = GameExited;
             if (gameExited != null)
                 gameExited();
+        }
+
+        public void OnLogMessage(SerializableLogMessage logMessage)
+        {
+            Log.Log(logMessage);
         }
     }
 }
