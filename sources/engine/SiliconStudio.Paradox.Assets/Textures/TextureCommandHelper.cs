@@ -143,6 +143,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// Determine the output format of the texture depending on the platform and asset properties.
         /// </summary>
         /// <param name="parameters">The conversion request parameters</param>
+        /// <param name="platform">The platform for which the texture is compiled</param>
         /// <param name="graphicsPlatform">The graphics platform</param>
         /// <param name="graphicsProfile">The graphics profile</param>
         /// <param name="imageSize">The texture output size</param>
@@ -151,7 +152,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// <param name="alphaDepth">The depth of the alpha channel</param>
         /// <returns>The pixel format to use as output</returns>
         public static PixelFormat DetermineOutputFormat(TextureAsset textureAsset, TextureConvertParameters parameters, Int2 imageSize, PixelFormat inputImageFormat, PlatformType platform, GraphicsPlatform graphicsPlatform,
-            GraphicsProfile graphicsProfile, int alphaDepth=-1)
+            GraphicsProfile graphicsProfile, int alphaDepth)
         {
             if (textureAsset.SRgb && ((int)parameters.GraphicsProfile < (int)GraphicsProfile.Level_9_2 && parameters.GraphicsPlatform != GraphicsPlatform.Direct3D11))
                 throw new NotSupportedException("sRGB is not supported on OpenGl profile level {0}".ToFormat(parameters.GraphicsProfile));
@@ -173,7 +174,6 @@ namespace SiliconStudio.Paradox.Assets.Textures
                         alphaMode = AlphaFormat.Interpolated;
                         break;
                 }
-
             }
 
             // Default output format
