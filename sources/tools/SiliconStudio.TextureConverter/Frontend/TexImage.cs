@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.TextureConverter
 {
@@ -20,7 +21,7 @@ namespace SiliconStudio.TextureConverter
         public int Depth { get; internal set; }
         public int RowPitch { get; internal set; }
         public int SlicePitch { get; internal set; }
-        public Paradox.Graphics.PixelFormat Format { get; internal set; }
+        public PixelFormat Format { get; internal set; }
 
         /// <summary>
         /// The depth of the alpha channel in the original data.
@@ -87,7 +88,7 @@ namespace SiliconStudio.TextureConverter
             OriginalAlphaDepth = -1;
 
             SubImageArray = new SubImage[1];
-            Format = Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm;
+            Format = PixelFormat.B8G8R8A8_UNorm;
 
             LibraryData = new Dictionary<ITexLibrary, ITextureLibraryData>();
 
@@ -108,7 +109,7 @@ namespace SiliconStudio.TextureConverter
         /// <param name="dimension">The dimension.</param>
         /// <param name="faceCount">The face count (multiple of 6 if Texture Cube, 1 otherwise).</param>
         /// <param name="alphaDepth">The depth of the alpha channel</param>
-        public TexImage(IntPtr data, int dataSize, int width, int height, int depth, SiliconStudio.Paradox.Graphics.PixelFormat format, int mipmapCount, int arraySize, TextureDimension dimension, int faceCount = 1, int alphaDepth = -1)
+        public TexImage(IntPtr data, int dataSize, int width, int height, int depth, PixelFormat format, int mipmapCount, int arraySize, TextureDimension dimension, int faceCount = 1, int alphaDepth = -1)
         {
             Data = data;
             DataSize = dataSize;
@@ -371,7 +372,8 @@ namespace SiliconStudio.TextureConverter
         /// <returns>The depth of the alpha channel in bits</returns>
         public int GetAlphaDepth()
         {
-            int alphaDepth = GetAlphaDepthFromFormat(Format);
+            // TODO: Improve this function so that it checks that actual data (will probably need to add the region to check as parameter)
+            int alphaDepth = Format.AlphaSizeInBits();
             if (OriginalAlphaDepth == -1)
                 return alphaDepth;
 
@@ -387,91 +389,5 @@ namespace SiliconStudio.TextureConverter
         {
             return (x & (x - 1)) == 0;
         }
-
-        internal static int GetAlphaDepthFromFormat(Paradox.Graphics.PixelFormat format)
-        {
-            switch (format)
-            {
-                case Paradox.Graphics.PixelFormat.R32G32B32A32_Typeless:
-                case Paradox.Graphics.PixelFormat.R32G32B32A32_Float:
-                case Paradox.Graphics.PixelFormat.R32G32B32A32_UInt:
-                case Paradox.Graphics.PixelFormat.R32G32B32A32_SInt:
-                    return  32;
-
-                case Paradox.Graphics.PixelFormat.R16G16B16A16_Typeless:
-                case Paradox.Graphics.PixelFormat.R16G16B16A16_Float:
-                case Paradox.Graphics.PixelFormat.R16G16B16A16_UNorm:
-                case Paradox.Graphics.PixelFormat.R16G16B16A16_UInt:
-                case Paradox.Graphics.PixelFormat.R16G16B16A16_SNorm:
-                case Paradox.Graphics.PixelFormat.R16G16B16A16_SInt:
-                    return  16;
-
-                case Paradox.Graphics.PixelFormat.R10G10B10A2_Typeless:
-                case Paradox.Graphics.PixelFormat.R10G10B10A2_UNorm:
-                case Paradox.Graphics.PixelFormat.R10G10B10A2_UInt:
-                case Paradox.Graphics.PixelFormat.R10G10B10_Xr_Bias_A2_UNorm:
-                    return  2;
-
-                case Paradox.Graphics.PixelFormat.R8G8B8A8_Typeless:
-                case Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm:
-                case Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm_SRgb:
-                case Paradox.Graphics.PixelFormat.R8G8B8A8_UInt:
-                case Paradox.Graphics.PixelFormat.R8G8B8A8_SNorm:
-                case Paradox.Graphics.PixelFormat.R8G8B8A8_SInt:
-                case Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm:
-                case Paradox.Graphics.PixelFormat.B8G8R8A8_Typeless:
-                case Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm_SRgb:
-                case Paradox.Graphics.PixelFormat.A8_UNorm:
-                    return  8;
-
-                case (Paradox.Graphics.PixelFormat)115: // DXGI_FORMAT_B4G4R4A4_UNORM
-                    return  4;
-
-                case Paradox.Graphics.PixelFormat.B5G5R5A1_UNorm:
-                    return  1;
-
-                case Paradox.Graphics.PixelFormat.BC1_Typeless:
-                case Paradox.Graphics.PixelFormat.BC1_UNorm:
-                case Paradox.Graphics.PixelFormat.BC1_UNorm_SRgb:
-                    return  1;  // or 0
-
-                case Paradox.Graphics.PixelFormat.BC2_Typeless:
-                case Paradox.Graphics.PixelFormat.BC2_UNorm:
-                case Paradox.Graphics.PixelFormat.BC2_UNorm_SRgb:
-                    return  4;
-
-                case Paradox.Graphics.PixelFormat.BC3_Typeless:
-                case Paradox.Graphics.PixelFormat.BC3_UNorm:
-                case Paradox.Graphics.PixelFormat.BC3_UNorm_SRgb:
-                    return  8;
-
-                case Paradox.Graphics.PixelFormat.BC7_Typeless:
-                case Paradox.Graphics.PixelFormat.BC7_UNorm:
-                case Paradox.Graphics.PixelFormat.BC7_UNorm_SRgb:
-                    return  8;  // or 0
-
-                case Paradox.Graphics.PixelFormat.PVRTC_2bpp_RGBA:
-                case Paradox.Graphics.PixelFormat.PVRTC_4bpp_RGBA:
-                    return  8;
-
-                case Paradox.Graphics.PixelFormat.PVRTC_II_2bpp:
-                case Paradox.Graphics.PixelFormat.PVRTC_II_4bpp:
-                    return  8;  // or 0
-
-                case Paradox.Graphics.PixelFormat.ETC2_RGBA:
-                    return  8;
-
-                case Paradox.Graphics.PixelFormat.ETC2_RGB_A1:
-                    return  1;
-
-                case Paradox.Graphics.PixelFormat.ATC_RGBA_Explicit:
-                    return  4;
-
-                case Paradox.Graphics.PixelFormat.ATC_RGBA_Interpolated:
-                    return  8;
-            }
-            return  0;
-        }
-
     }
 }

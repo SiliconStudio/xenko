@@ -379,7 +379,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 FreeImage.Unload(redChannel);
             }
 
-            if (image.Format.IsInBGRAOrder())
+            if (image.Format.IsBGRAOrder())
                 image.Format = PixelFormat.R8G8B8A8_UNorm;
             else
                 image.Format = PixelFormat.B8G8R8A8_UNorm;
@@ -505,7 +505,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 throw new TextureToolsException("Not implemented.");
             }
 
-            if(!image.Format.IsInBGRAOrder())
+            if(!image.Format.IsBGRAOrder())
             {
                 SwitchChannels(image, libraryData, new SwitchingBRChannelsRequest());
             }

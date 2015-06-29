@@ -230,7 +230,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             UpdateImage(image, libraryData);
             
             var alphaSize = DDSHeader.GetAlphaDepth(loader.FilePath);
-            image.OriginalAlphaDepth = alphaSize != -1 ? alphaSize : TexImage.GetAlphaDepthFromFormat(image.Format);
+            image.OriginalAlphaDepth = alphaSize != -1 ? alphaSize : image.Format.AlphaSizeInBits();
         }
 
         private static void ChangeDxtImageType(DxtTextureLibraryData libraryData, DXGI_FORMAT dxgiFormat)
@@ -686,7 +686,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             image.MipmapCount = libraryData.Metadata.MipLevels;
             image.ArraySize = libraryData.Metadata.ArraySize;
             image.SlicePitch = libraryData.DxtImages[0].SlicePitch;
-            image.OriginalAlphaDepth = Math.Min(image.OriginalAlphaDepth, TexImage.GetAlphaDepthFromFormat(image.Format));
+            image.OriginalAlphaDepth = Math.Min(image.OriginalAlphaDepth, image.Format.AlphaSizeInBits());
         }
 
 
@@ -697,7 +697,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <returns>
         ///     <c>true</c> if the formats is supported; otherwise, <c>false</c>.
         /// </returns>
-        private bool SupportFormat(SiliconStudio.Paradox.Graphics.PixelFormat format)
+        private bool SupportFormat(PixelFormat format)
         {
             return ((int) (format) >= 1 && (int) (format) <= 115);
         }

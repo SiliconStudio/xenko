@@ -1153,7 +1153,7 @@ namespace SiliconStudio.TextureConverter
                 ITexLibrary library;
                 if ((library = FindLibrary(image, request)) != null)
                 {
-                    if (image.Format.IsInBGRAOrder() && !library.SupportBGRAOrder())
+                    if (image.Format.IsBGRAOrder() && !library.SupportBGRAOrder())
                     {
                         SwitchChannel(image);
                     }
