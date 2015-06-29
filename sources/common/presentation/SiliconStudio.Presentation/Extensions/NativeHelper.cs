@@ -58,6 +58,24 @@ namespace SiliconStudio.Presentation.Extensions
         [DllImport("user32.dll", EntryPoint = "DestroyWindow", CharSet = CharSet.Unicode)]
         public static extern bool DestroyWindow(IntPtr hwnd);
 
+        public static IntPtr SetWindowLong(HandleRef hwnd, WindowLongType index, IntPtr wndProcPtr)
+        {
+            if (IntPtr.Size == 4)
+            {
+                return SetWindowLong32(hwnd, index, wndProcPtr);
+            }
+            return SetWindowLongPtr64(hwnd, index, wndProcPtr);
+        }
+
+        [DllImport("user32.dll", EntryPoint = "SetParent", CharSet = CharSet.Unicode)]
+        public static extern IntPtr SetParent(HandleRef hWnd, IntPtr hWndParent);
+
+        [DllImport("user32.dll", EntryPoint = "SetWindowLong", CharSet = CharSet.Unicode)]
+        private static extern IntPtr SetWindowLong32(HandleRef hwnd, WindowLongType index, IntPtr wndProc);
+
+        [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", CharSet = CharSet.Unicode)]
+        private static extern IntPtr SetWindowLongPtr64(HandleRef hwnd, WindowLongType index, IntPtr wndProc);
+
         #endregion Methods
 
         #region Structures
@@ -107,6 +125,17 @@ namespace SiliconStudio.Presentation.Extensions
                 Right = right;
                 Bottom = bottom;
             }
+        }
+
+        public enum WindowLongType
+        {
+            WndProc = (-4),
+            HInstance = (-6),
+            HwndParent = (-8),
+            Style = (-16),
+            ExtendedStyle = (-20),
+            UserData = (-21),
+            Id = (-12)
         }
 
         #endregion Structures
