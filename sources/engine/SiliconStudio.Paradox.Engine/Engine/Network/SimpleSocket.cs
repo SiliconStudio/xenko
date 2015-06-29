@@ -93,6 +93,7 @@ namespace SiliconStudio.Paradox.Engine.Network
                 {
                     // Start listening
                     await listener.StartListeningAsync(port);
+                    break; // Break if no exception, otherwise retry
                 }
                 catch (Exception)
                 {

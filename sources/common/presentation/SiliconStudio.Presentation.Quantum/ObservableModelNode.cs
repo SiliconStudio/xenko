@@ -55,8 +55,8 @@ namespace SiliconStudio.Presentation.Quantum
                     {
                         DisplayName = displayAttribute.Name;
                     }
+                    IsReadOnly = !memberDescriptor.HasSet;
                 }
-                IsReadOnly = !memberDescriptor.HasSet;
             }
         }
 
