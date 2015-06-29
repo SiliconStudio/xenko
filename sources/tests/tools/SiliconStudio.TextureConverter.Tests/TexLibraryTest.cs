@@ -66,9 +66,9 @@ namespace SiliconStudio.TextureConverter.Tests
 
         public static void SwitchChannelsTest(TexImage image, ITexLibrary library)
         {
-            var isInRgbaOrder = image.Format.IsInRGBAOrder();
+            var isInRgbaOrder = image.Format.IsRGBAOrder();
             library.Execute(image, new SwitchingBRChannelsRequest());
-            Assert.IsTrue(image.Format.IsInRGBAOrder() != isInRgbaOrder);
+            Assert.IsTrue(image.Format.IsRGBAOrder() != isInRgbaOrder);
 
             //Console.WriteLine("SwitchChannelsTest_" + image.Name + "." + TestTools.ComputeSHA1(image.Data, image.DataSize));
             Assert.IsTrue(TestTools.ComputeSHA1(image.Data, image.DataSize).Equals(TestTools.GetInstance().Checksum["SwitchChannelsTest_" + image.Name]));

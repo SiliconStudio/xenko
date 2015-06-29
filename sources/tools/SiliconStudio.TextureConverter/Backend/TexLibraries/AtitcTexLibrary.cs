@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
+
 using System.Runtime.InteropServices;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.TextureConverter.AtitcWrapper;
@@ -82,7 +82,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
             libraryData.Textures = new Texture[image.SubImageArray.Length];
 
-            int bpp = (int)image.Format.GetBPP();
+            var bpp = Paradox.Graphics.PixelFormatExtensions.SizeInBits(image.Format);
 
             for (int i = 0; i < image.SubImageArray.Length; ++i)
             {
