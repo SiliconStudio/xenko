@@ -45,6 +45,9 @@ namespace SiliconStudio.Paradox.Assets.Debugging
                 for (int index = 0; index < scriptComponent.Scripts.Count; index++)
                 {
                     var script = scriptComponent.Scripts[index];
+                    if (script == null)
+                        continue;
+
                     var scriptType = script.GetType();
 
                     // We force both scripts that were just unloaded and UnloadableScript (from previous failure) to try to reload
