@@ -40,7 +40,6 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
         public ProceduralModelAsset()
         {
             Type = new CubeProceduralModel();
-            SerializedVersion = AssetFormatVersion;
         }
 
         /// <summary>
