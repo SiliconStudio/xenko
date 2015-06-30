@@ -249,7 +249,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
 
             // Let's tie lifetime of spawned process to ours
             // TODO: Move that in a better namespace? (currently a shared file)
-            new GameStudio.Plugin.Debugging.AttachedChildProcessJob(process);
+            new AttachedChildProcessJob(process);
 
             return process;
         }
