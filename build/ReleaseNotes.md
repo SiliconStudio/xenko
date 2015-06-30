@@ -1,4 +1,4 @@
-### Version 1.1.4-beta
+### Version 1.2.0-beta
 
 Release date: 2015/XX/XX
 
