@@ -212,6 +212,7 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
 
                 if (GenerateSerializer(serializableItem.Type, profile: profile) == null)
                 {
+                    ComplexClassSerializerGenerator.IgnoreMember(serializableItem.MemberInfo);
                     log.Log(new LogMessage(log.Module, LogMessageType.Warning, string.Format("Member {0} does not have a valid serializer. Add [DataMemberIgnore], turn the member non-public, or add a [DataContract] to it's type.", serializableItem.MemberInfo)));
                 }
             }
