@@ -7,6 +7,7 @@ using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Core.Settings;
 using SiliconStudio.Paradox.Assets.Entities;
 using SiliconStudio.Paradox.Engine.Design;
 using SiliconStudio.Paradox.Graphics;
@@ -21,13 +22,13 @@ namespace SiliconStudio.Paradox.Assets
     public class GameSettingsAsset
     {
 
-        public static readonly PropertyKey<AssetReference<SceneAsset>> DefaultScene = new PropertyKey<AssetReference<SceneAsset>>("DefaultScene", typeof(GameSettingsAsset));
+        public static readonly SettingsValueKey<AssetReference<SceneAsset>> DefaultScene = new SettingsValueKey<AssetReference<SceneAsset>>("GameSettingsAsset.DefaultScene", PackageProfile.SettingsGroup);
 
-        public static readonly PropertyKey<int> BackBufferWidth = new PropertyKey<int>("BackBufferWidth", typeof(GameSettingsAsset));
+        public static readonly SettingsValueKey<int> BackBufferWidth = new SettingsValueKey<int>("GameSettingsAsset.BackBufferWidth", PackageProfile.SettingsGroup, 1280);
 
-        public static readonly PropertyKey<int> BackBufferHeight = new PropertyKey<int>("BackBufferHeight", typeof(GameSettingsAsset));
+        public static readonly SettingsValueKey<int> BackBufferHeight = new SettingsValueKey<int>("GameSettingsAsset.BackBufferHeight", PackageProfile.SettingsGroup, 720);
 
-        public static readonly PropertyKey<GraphicsProfile> DefaultGraphicsProfile = new PropertyKey<GraphicsProfile>("DefaultGraphicsProfile", typeof(GameSettingsAsset));
+        public static readonly SettingsValueKey<GraphicsProfile> DefaultGraphicsProfile = new SettingsValueKey<GraphicsProfile>("GameSettingsAsset.DefaultGraphicsProfile", PackageProfile.SettingsGroup, GraphicsProfile.Level_10_0);
 
 
         // Gets the default scene from a package properties

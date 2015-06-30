@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using SiliconStudio.Core.Settings;
+
 namespace SiliconStudio.Assets.Compiler
 {
     /// <summary>
@@ -14,6 +16,7 @@ namespace SiliconStudio.Assets.Compiler
         public CompilerContext()
         {
             Properties = new PropertyCollection();
+            PackageProperties = new SettingsCollection(PackageProfile.SettingsGroup);
         }
 
         /// <summary>
@@ -21,6 +24,8 @@ namespace SiliconStudio.Assets.Compiler
         /// </summary>
         /// <value>The attributes.</value>
         public PropertyCollection Properties { get; private set; }
+
+        public SettingsCollection PackageProperties { get; private set; }
 
         public CompilerContext Clone()
         {

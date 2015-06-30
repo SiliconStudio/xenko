@@ -30,6 +30,8 @@ namespace SiliconStudio.Core.Settings
 
     public class SettingsDictionary : Dictionary<UFile, List<ParsingEvent>>
     {
-
+        // Used for temporary internal storage
+        [DataMemberIgnore]
+        internal object Tags;
     }
 }
