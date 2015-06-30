@@ -7,7 +7,7 @@ namespace SiliconStudio.Core.Settings
     /// <summary>
     /// An helper class to wrap a <see cref="SettingsKey"/> in the context of a given <see cref="SettingsProfile"/> into a simple object.
     /// </summary>
-    public abstract class SettingsKeyWrapper
+    public class SettingsKeyWrapper
     {
         protected readonly SettingsProfile Profile;
 
@@ -27,11 +27,6 @@ namespace SiliconStudio.Core.Settings
         /// </summary>
         [DataMemberIgnore]
         public SettingsKey Key { get; private set; }
-
-        /// <summary>
-        /// Gets the current value of the <see cref="SettingsKey"/>.
-        /// </summary>
-        public abstract object Value { get; set; }
 
         /// <summary>
         /// Create a new instance of the correct implementation of <see cref="SettingsKeyWrapper"/> that matches the given settings key.
@@ -71,9 +66,6 @@ namespace SiliconStudio.Core.Settings
         [InlineProperty]
         [NotNull]
         public T TypedValue { get { return GetValue(); } set { SetValue(value); } }
-
-        /// <inheritdoc/>
-        public override object Value { get; set; }
         
         private void SetValue(T value)
         {

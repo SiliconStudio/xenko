@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Rendering
                 if (!CurrentCullingMask.Contains(backgroundComponent.Entity.Group))
                     continue;
 
-                opaqueList.Add(new RenderItem(this, backgroundComponent, 0.0f)); // render background first so that it can replace a clear frame
+                opaqueList.Add(new RenderItem(this, backgroundComponent, float.NegativeInfinity)); // render background first so that it can replace a clear frame
                 return; // draw only one background by group
             }
         }

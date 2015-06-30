@@ -35,7 +35,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var assetManager = new AssetManager();
-                assetManager.Save(Url, new ProceduralModelDescriptor(asset.Type));
+                assetManager.Save(Url, new ProceduralModelDescriptor(Asset.Type));
 
                 return Task.FromResult(ResultStatus.Successful);
             }

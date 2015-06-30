@@ -82,7 +82,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
             {
                 var assetManager = new AssetManager();
 
-                var rootEntity = asset.Hierarchy.Entities[asset.Hierarchy.RootEntity];
+                var rootEntity = Asset.Hierarchy.Entities[Asset.Hierarchy.RootEntity];
                 assetManager.Save(Url, rootEntity);
 
                 // Save the default settings

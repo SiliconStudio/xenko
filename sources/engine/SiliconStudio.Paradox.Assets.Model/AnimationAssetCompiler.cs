@@ -76,8 +76,8 @@ namespace SiliconStudio.Paradox.Assets.Model
                 var assetManager = new AssetManager();
 
                 // Load source and base animations
-                var baseAnimation = assetManager.Load<AnimationClip>(asset.BaseUrl);
-                var sourceAnimation = assetManager.Load<AnimationClip>(asset.SourceUrl);
+                var baseAnimation = assetManager.Load<AnimationClip>(Asset.BaseUrl);
+                var sourceAnimation = assetManager.Load<AnimationClip>(Asset.SourceUrl);
 
                 // Generate diff animation
                 var animation = SubtractAnimations(baseAnimation, sourceAnimation);
@@ -127,7 +127,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                         time = sourceAnimation.Duration;
 
                     TimeSpan baseTime;
-                    switch (asset.Mode)
+                    switch (Asset.Mode)
                     {
                         case AdditiveAnimationBaseMode.FirstFrame:
                             baseTime = TimeSpan.Zero;

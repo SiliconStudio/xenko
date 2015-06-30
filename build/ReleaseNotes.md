@@ -5,6 +5,7 @@ Release date: 2015/XX/XX
 #### New Features
 
 #### Enhancements
+- Assets: Add `Auto` alpha format for automatic alpha detection in textures.
 - Studio: The sprite editor has been improved.
 - Studio: Setting a diffuse map/specular map on a material will also set the diffuse model/specular model of this material.
 - Studio: Keyboard shortcut to switch between transformation gizmos (W, E, R, Space by default)
@@ -15,6 +16,7 @@ Release date: 2015/XX/XX
 - Shaders: Ambient occlusion now correctly affects ambient light.
 
 #### Breaking changes
+- Assets: Texture default transparency mode changes from `None` to `Auto`.
 
 #### Known Issues
 - UI: EditText is not implemented on Windows Store and Windows Phone.

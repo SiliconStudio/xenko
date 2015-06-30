@@ -25,7 +25,7 @@ namespace SiliconStudio.TextureConverter
             int widthCount = width;
             int heightCount = height;
 
-            int bpp = (int)fmt.GetBPP();
+            int bpp = fmt.SizeInBits();
 
             if (fmt.IsCompressed())
             {
@@ -61,7 +61,7 @@ namespace SiliconStudio.TextureConverter
         /// </returns>
         public static bool IsInSameChannelOrder(PixelFormat format1, PixelFormat format2)
         {
-            return format1.IsInBGRAOrder() && format2.IsInBGRAOrder() || format1.IsInRGBAOrder() && format2.IsInRGBAOrder();
+            return format1.IsBGRAOrder() && format2.IsBGRAOrder() || format1.IsRGBAOrder() && format2.IsRGBAOrder();
         }
     }
 }

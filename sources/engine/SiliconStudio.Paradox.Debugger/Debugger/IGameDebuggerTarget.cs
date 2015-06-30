@@ -37,12 +37,13 @@ namespace SiliconStudio.Paradox.Debugger.Target
         DebugAssembly AssemblyLoadRaw(byte[] peData, byte[] pdbData);
 
         /// <summary>
-        /// Unloads a previously loaded assembly.
+        /// Unregister and register a group of coherent assembly.
         /// </summary>
-        /// <param name="debugAssembly">The debug assembly.</param>
+        /// <param name="assembliesToUnregister">The assemblies to unregister.</param>
+        /// <param name="assembliesToRegister">The assemblies to register.</param>
         /// <returns></returns>
         [OperationContract]
-        bool AssemblyUnload(DebugAssembly debugAssembly);
+        bool AssemblyUpdate(List<DebugAssembly> assembliesToUnregister, List<DebugAssembly> assembliesToRegister);
         #endregion
 
         #region Game

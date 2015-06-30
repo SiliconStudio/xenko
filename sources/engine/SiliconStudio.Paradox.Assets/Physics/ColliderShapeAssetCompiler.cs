@@ -58,12 +58,12 @@ namespace SiliconStudio.Paradox.Assets.Physics
             {
                 var assetManager = new AssetManager();
 
-                asset.ColliderShapes = asset.ColliderShapes.Where(x => x != null
+                Asset.ColliderShapes = Asset.ColliderShapes.Where(x => x != null
                     && (x.GetType() != typeof(ConvexHullColliderShapeDesc) || ((ConvexHullColliderShapeDesc)x).Model != null)).ToList();
 
                 //pre process special types
                 foreach (var convexHullDesc in
-                    (from shape in asset.ColliderShapes let type = shape.GetType() where type == typeof(ConvexHullColliderShapeDesc) select shape)
+                    (from shape in Asset.ColliderShapes let type = shape.GetType() where type == typeof(ConvexHullColliderShapeDesc) select shape)
                     .Cast<ConvexHullColliderShapeDesc>())
                 {
                     //decompose and fill vertex data
@@ -231,7 +231,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
                     }
                 }
 
-                var runtimeShape = new PhysicsColliderShape { Descriptions = asset.ColliderShapes };
+                var runtimeShape = new PhysicsColliderShape { Descriptions = Asset.ColliderShapes };
                 assetManager.Save(Url, runtimeShape);
 
                 return Task.FromResult(ResultStatus.Successful);

@@ -143,19 +143,38 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// Determine the output format of the texture depending on the platform and asset properties.
         /// </summary>
         /// <param name="parameters">The conversion request parameters</param>
+        /// <param name="platform">The platform for which the texture is compiled</param>
         /// <param name="graphicsPlatform">The graphics platform</param>
         /// <param name="graphicsProfile">The graphics profile</param>
         /// <param name="imageSize">The texture output size</param>
         /// <param name="inputImageFormat">The pixel format of the input image</param>
         /// <param name="textureAsset">The texture asset</param>
+        /// <param name="alphaDepth">The depth of the alpha channel</param>
         /// <returns>The pixel format to use as output</returns>
         public static PixelFormat DetermineOutputFormat(TextureAsset textureAsset, TextureConvertParameters parameters, Int2 imageSize, PixelFormat inputImageFormat, PlatformType platform, GraphicsPlatform graphicsPlatform,
-            GraphicsProfile graphicsProfile)
+            GraphicsProfile graphicsProfile, int alphaDepth)
         {
             if (textureAsset.SRgb && ((int)parameters.GraphicsProfile < (int)GraphicsProfile.Level_9_2 && parameters.GraphicsPlatform != GraphicsPlatform.Direct3D11))
                 throw new NotSupportedException("sRGB is not supported on OpenGl profile level {0}".ToFormat(parameters.GraphicsProfile));
 
             var hint = textureAsset.Hint;
+
+            var alphaMode = textureAsset.Alpha;
+            if (alphaMode == AlphaFormat.Auto)
+            {
+                switch (alphaDepth)
+                {
+                    case 0:
+                        alphaMode = AlphaFormat.None;
+                        break;
+                    case 1:
+                        alphaMode = AlphaFormat.Mask;
+                        break;
+                    default:
+                        alphaMode = AlphaFormat.Interpolated;
+                        break;
+                }
+            }
 
             // Default output format
             var outputFormat = PixelFormat.R8G8B8A8_UNorm;
@@ -180,7 +199,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                                     case GraphicsProfile.Level_9_1:
                                     case GraphicsProfile.Level_9_2:
                                     case GraphicsProfile.Level_9_3:
-                                        outputFormat = textureAsset.Alpha == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.R8G8B8A8_UNorm;
+                                        outputFormat = alphaMode == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.R8G8B8A8_UNorm;
                                         break;
                                     case GraphicsProfile.Level_10_0:
                                     case GraphicsProfile.Level_10_1:
@@ -188,7 +207,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                                     case GraphicsProfile.Level_11_1:
                                     case GraphicsProfile.Level_11_2:
                                         // GLES3.0 starting from Level_10_0, this profile enables ETC2 compression on Android
-                                        outputFormat = textureAsset.Alpha == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.ETC2_RGBA;
+                                        outputFormat = alphaMode == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.ETC2_RGBA;
                                         break;
                                     default:
                                         throw new ArgumentOutOfRangeException("graphicsProfile");
@@ -207,7 +226,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                             }
                             else if (SupportPVRTC(imageSize))
                             {
-                                switch (textureAsset.Alpha)
+                                switch (alphaMode)
                                 {
                                     case AlphaFormat.None:
                                         // DXT1 handles 1-bit alpha channel
@@ -254,7 +273,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                                     // Three-channel high dynamic range (HDR) color      Three color channels (16 bits:16 bits:16 bits) in "half" floating point*    BC6H   Direct3D 11      (HDR images)
                                     // Three-channel color, alpha channel optional       Three color channels (4 to 7 bits per channel) with 0 to 8 bits of alpha    BC7    Direct3D 11      (High quality color maps, Color maps with full alpha)
 
-                                    switch (textureAsset.Alpha)
+                                    switch (alphaMode)
                                     {
                                         case AlphaFormat.None:
                                         case AlphaFormat.Mask:
@@ -288,7 +307,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                                         else if (inputImageFormat.IsHDR())
                                         {
                                             // BC6H is too slow to compile
-                                            //outputFormat = parameters.GraphicsProfile >= GraphicsProfile.Level_11_0 && textureAsset.Alpha == AlphaFormat.None ? PixelFormat.BC6H_Uf16 : inputImageFormat;
+                                            //outputFormat = parameters.GraphicsProfile >= GraphicsProfile.Level_11_0 && alphaMode == AlphaFormat.None ? PixelFormat.BC6H_Uf16 : inputImageFormat;
                                             outputFormat = inputImageFormat;
                                         }
                                         // TODO support the BC6/BC7 but they are so slow to compile that we can't use them right now
@@ -310,7 +329,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                                             case GraphicsProfile.Level_9_1:
                                             case GraphicsProfile.Level_9_2:
                                             case GraphicsProfile.Level_9_3:
-                                                outputFormat = textureAsset.Alpha == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.R8G8B8A8_UNorm;
+                                                outputFormat = alphaMode == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.R8G8B8A8_UNorm;
                                                 break;
                                             case GraphicsProfile.Level_10_0:
                                             case GraphicsProfile.Level_10_1:
@@ -318,7 +337,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                                             case GraphicsProfile.Level_11_1:
                                             case GraphicsProfile.Level_11_2:
                                                 // GLES3.0 starting from Level_10_0, this profile enables ETC2 compression on Android
-                                                outputFormat = textureAsset.Alpha == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.ETC2_RGBA;
+                                                outputFormat = alphaMode == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.ETC2_RGBA;
                                                 break;
                                             default:
                                                 throw new ArgumentOutOfRangeException("graphicsProfile");
@@ -343,11 +362,11 @@ namespace SiliconStudio.Paradox.Assets.Textures
                     }
                     else
                     {
-                        if (textureAsset.Alpha == AlphaFormat.None)
+                        if (alphaMode == AlphaFormat.None)
                         {
                             outputFormat = PixelFormat.B5G6R5_UNorm;
                         }
-                        else if (textureAsset.Alpha == AlphaFormat.Mask)
+                        else if (alphaMode == AlphaFormat.Mask)
                         {
                             outputFormat = PixelFormat.B5G5R5A1_UNorm;
                         }
@@ -434,7 +453,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
 
                 // Convert/Compress to output format
                 // TODO: Change alphaFormat depending on actual image content (auto-detection)?
-                var outputFormat = DetermineOutputFormat(textureAsset, parameters, textureSize, texImage.Format, parameters.Platform, parameters.GraphicsPlatform, parameters.GraphicsProfile);
+                var outputFormat = DetermineOutputFormat(textureAsset, parameters, textureSize, texImage.Format, parameters.Platform, parameters.GraphicsPlatform, parameters.GraphicsProfile, texImage.GetAlphaDepth());
                 texTool.Compress(texImage, outputFormat, (TextureConverter.Requests.TextureQuality)parameters.TextureQuality);
 
                 if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded

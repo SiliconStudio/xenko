@@ -10,30 +10,34 @@ namespace SiliconStudio.Assets.Compiler
     /// </summary>
     public abstract class AssetCommand : IndexFileCommand
     {
+        public string Url { get; set; }
+
+        protected AssetCommand()
+        {
+        }
+        
+        protected AssetCommand(string url)
+        {
+            Url = url;
+        }
+
     }
 
     public abstract class AssetCommand<T> : AssetCommand
     {
-        protected T asset;
-
-        public string Url { get; set; }
-
-        public T Asset
-        {
-            get { return asset; }
-            set { asset = value; }
-        }
 
         protected AssetCommand()
         {
         }
 
         protected AssetCommand(string url, T asset)
+            : base (url)
         {
-            this.Url = url;
-            this.asset = asset;
+            Asset = asset;
         }
 
+        public T Asset { get; set; }
+        
         public override string Title
         {
             get
@@ -69,6 +73,7 @@ namespace SiliconStudio.Assets.Compiler
             base.ComputeParameterHash(writer);
             
             var url = Url;
+            var asset = Asset;
             writer.SerializeExtended(ref asset, ArchiveMode.Serialize);
             writer.Serialize(ref url, ArchiveMode.Serialize);
         }
@@ -76,7 +81,7 @@ namespace SiliconStudio.Assets.Compiler
         public override string ToString()
         {
             // TODO provide automatic asset to string via YAML
-            return asset.ToString();
+            return Asset.ToString();
         }
     }
 }

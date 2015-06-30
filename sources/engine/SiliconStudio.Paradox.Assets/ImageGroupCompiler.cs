@@ -110,13 +110,13 @@ namespace SiliconStudio.Paradox.Assets
             var imageGroupData = new TImageGroupData { Images = new List<TImageData>() };
 
             // add the sprite data to the sprite list.
-            foreach (var uiImage in asset.GroupAsset.Images)
+            foreach (var uiImage in Asset.GroupAsset.Images)
             {
                 var newImage = new TImageData
                 {
                     Name = uiImage.Name,
                     Region = uiImage.TextureRegion,
-                    IsTransparent = asset.GroupAsset.Alpha != AlphaFormat.None, // todo analyze texture region texture data to auto-determine alpha?
+                    IsTransparent = Asset.GroupAsset.Alpha != AlphaFormat.None, // todo analyze texture region texture data to auto-determine alpha?
                     Orientation = uiImage.Orientation,
                 };
 
