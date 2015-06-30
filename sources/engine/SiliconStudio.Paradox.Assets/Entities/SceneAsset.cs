@@ -2,11 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Linq;
 
 using SharpYaml.Serialization;
 
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
@@ -23,6 +23,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [DataContract("SceneAsset")]
     [AssetDescription(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
+    [ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName)]
     [AssetFormatVersion(2)]
     [AssetUpgrader(0, 1, typeof(RemoveSourceUpgrader))]
     [AssetUpgrader(1, 2, typeof(RemoveBaseUpgrader))]
