@@ -70,7 +70,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
 
                 using (var context = new SkyboxGeneratorContext())
                 {
-                    var result = SkyboxGenerator.Compile(asset, context);
+                    var result = SkyboxGenerator.Compile(Asset, context);
 
                     if (result.HasErrors)
                     {
