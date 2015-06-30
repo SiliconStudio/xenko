@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using SiliconStudio.Assets;
-using SiliconStudio.Paradox.GameStudio.Plugin.Debugging;
 
 namespace SiliconStudio.Paradox.ConnectionRouter
 {
