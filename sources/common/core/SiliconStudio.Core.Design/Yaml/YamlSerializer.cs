@@ -18,7 +18,7 @@ namespace SiliconStudio.Core.Yaml
     public static class YamlSerializer
     {
         // TODO: This code is not robust in case of reloading assemblies into the same process
-        private static readonly HashSet<Assembly> RegisteredAssemblies = new HashSet<Assembly>();
+        private static readonly List<Assembly> RegisteredAssemblies = new List<Assembly>();
         private static readonly object Lock = new object();
         private static Serializer globalSerializer;
         private static Serializer globalSerializerKeepOnlySealedOverrides;
@@ -44,6 +44,19 @@ namespace SiliconStudio.Core.Yaml
         {
             var serializer = GetYamlSerializer(false);
             return serializer.Deserialize(eventReader, expectedType);
+        }
+
+        /// <summary>
+        /// Deserializes an object from the specified stream (expecting a YAML string).
+        /// </summary>
+        /// <param name="eventReader">A YAML event reader.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="expectedType">The expected type.</param>
+        /// <returns>An instance of the YAML data.</returns>
+        public static object Deserialize(EventReader eventReader, object value, Type expectedType)
+        {
+            var serializer = GetYamlSerializer(false);
+            return serializer.Deserialize(eventReader, value, expectedType);
         }
 
         /// <summary>
@@ -123,8 +136,9 @@ namespace SiliconStudio.Core.Yaml
                         EmitShortTypeName = true,
                     };
 
-                foreach (var registeredAssembly in RegisteredAssemblies)
+                for (int index = RegisteredAssemblies.Count - 1; index >= 0; index--)
                 {
+                    var registeredAssembly = RegisteredAssemblies[index];
                     config.RegisterAssembly(registeredAssembly);
                 }
 
@@ -208,6 +222,7 @@ namespace SiliconStudio.Core.Yaml
         internal static void Initialize()
         {
             AssemblyRegistry.AssemblyRegistered += AssemblyRegistry_AssemblyRegistered;
+            AssemblyRegistry.AssemblyUnregistered += AssemblyRegistry_AssemblyUnregistered;
             foreach (var assembly in AssemblyRegistry.FindAll())
             {
                 RegisteredAssemblies.Add(assembly);
@@ -219,6 +234,18 @@ namespace SiliconStudio.Core.Yaml
             lock (Lock)
             {
                 RegisteredAssemblies.Add(e.Assembly);
+
+                // Reset the current serializer as the set of assemblies has changed
+                globalSerializer = null;
+                globalSerializerKeepOnlySealedOverrides = null;
+            }
+        }
+
+        private static void AssemblyRegistry_AssemblyUnregistered(object sender, AssemblyRegisteredEventArgs e)
+        {
+            lock (Lock)
+            {
+                RegisteredAssemblies.Remove(e.Assembly);
 
                 // Reset the current serializer as the set of assemblies has changed
                 globalSerializer = null;

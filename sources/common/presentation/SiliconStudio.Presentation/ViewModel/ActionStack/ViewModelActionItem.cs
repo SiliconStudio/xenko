@@ -13,7 +13,7 @@ namespace SiliconStudio.Presentation.ViewModel.ActionStack
     /// </summary>
     public abstract class ViewModelActionItem : ActionItem
     {
-        private readonly List<IDirtiableViewModel> dirtiables;
+        protected readonly List<IDirtiableViewModel> dirtiables;
         private bool isSaved;
 
         /// <summary>

@@ -21,7 +21,7 @@ namespace SiliconStudio.Presentation.Dialogs
             ParentWindow = parentWindow;
         }
 
-        public Window ParentWindow { get; private set; }
+        public Window ParentWindow { get; set; }
 
         public IFileOpenModalDialog CreateFileOpenModalDialog()
         {
@@ -51,7 +51,10 @@ namespace SiliconStudio.Presentation.Dialogs
                 ParentWindow.DialogResult = dialogResult;
             }
             ParentWindow.Close();
-            ParentWindow = null;
+            if (!ParentWindow.IsLoaded)
+            {
+                ParentWindow = null;
+            }
         }
     }
 }

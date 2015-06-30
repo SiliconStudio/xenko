@@ -22,6 +22,16 @@ namespace SiliconStudio.Quantum.References
         object Index { get; }
 
         /// <summary>
+        /// Gets this object casted as a <see cref="ObjectReference"/>.
+        /// </summary>
+        ObjectReference AsObject { get; }
+
+        /// <summary>
+        /// Gets this object casted as a <see cref="ReferenceEnumerable"/>.
+        /// </summary>
+        ReferenceEnumerable AsEnumerable { get; }
+
+        /// <summary>
         /// Clear the reference, making it represent a null or empty object.
         /// </summary>
         void Clear();

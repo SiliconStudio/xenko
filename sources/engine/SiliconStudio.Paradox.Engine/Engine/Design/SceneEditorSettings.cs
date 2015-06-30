@@ -48,7 +48,7 @@ namespace SiliconStudio.Paradox.Engine.Design
         /// <value>The camera.</value>
         [DataMember(10)]
         [NotNull]
-        [Display("Camera", AlwaysExpand = true)]
+        [Display("Camera", Expand = ExpandRule.Always)]
         public SceneEditorCameraSettings Camera { get; set; }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace SiliconStudio.Paradox.Engine.Design
         /// <userdoc>Use HDR rendering when displaying a scene in the editor</userdoc>
         [DataMember(20)]
         [NotNull]
-        [Display("Rendering Mode", AlwaysExpand = true)]
+        [Display("Rendering Mode", Expand = ExpandRule.Always)]
         public ISceneEditorGraphicsModeSettings Mode { get; set; }
     }
 }

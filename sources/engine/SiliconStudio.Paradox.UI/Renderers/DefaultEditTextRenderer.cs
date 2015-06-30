@@ -89,7 +89,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
                 FontSize = editText.TextSize,
                 Batch = Batch,
                 SnapText = context.ShouldSnapText && !editText.DoNotSnapText,
-                WorldMatrix = editText.WorldMatrixInternal,
+                Matrix = editText.WorldMatrixInternal,
                 Alignment = editText.TextAlignment,
                 Size = textRegionSize
             };

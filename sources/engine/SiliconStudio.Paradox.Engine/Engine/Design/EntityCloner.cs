@@ -22,6 +22,10 @@ namespace SiliconStudio.Paradox.Engine.Design
     [DataSerializerGlobal(typeof(CloneSerializer<SamplerState>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<DepthStencilState>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<Texture>), Profile = "Clone")]
+    [DataSerializerGlobal(typeof(CloneSerializer<Mesh>), Profile = "Clone")]
+    [DataSerializerGlobal(typeof(CloneSerializer<Model>), Profile = "Clone")]
+    [DataSerializerGlobal(typeof(CloneSerializer<AnimationClip>), Profile = "Clone")]
+    [DataSerializerGlobal(typeof(CloneSerializer<string>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(ContentReferenceCloneDataSerializer<>), typeof(ContentReference<>), DataSerializerGenericMode.GenericArguments, Profile = "Clone")]
     class EntityCloner
     {
@@ -67,17 +71,7 @@ namespace SiliconStudio.Paradox.Engine.Design
         {
             if (cloneSerializerSelector == null)
             {
-                cloneSerializerSelector = new SerializerSelector();
-                cloneSerializerSelector.ReuseReferences = true;
-
-                cloneSerializerSelector
-                    .RegisterProfile("Default")
-                    .RegisterProfile("Clone")
-                    .RegisterSerializer(new CloneSerializer<string>())
-                    .RegisterSerializer(new CloneSerializer<Effect>())
-                    .RegisterSerializer(new CloneSerializer<Mesh>())
-                    .RegisterSerializer(new CloneSerializer<Model>())
-                    .RegisterSerializer(new CloneSerializer<AnimationClip>());
+                cloneSerializerSelector = new SerializerSelector(true, "Default", "Clone");
             }
 
             // Initialize CloneContext

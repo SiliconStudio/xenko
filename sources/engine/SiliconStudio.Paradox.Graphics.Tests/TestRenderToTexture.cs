@@ -94,7 +94,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             GraphicsDevice.Clear(offlineTarget2, Color.Black);
 
             // direct render
-            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
             GraphicsDevice.SetViewport(new Viewport(0, 0, width / 2, height / 2));
             DrawGeometry();
 
@@ -103,7 +103,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             GraphicsDevice.SetDepthAndRenderTarget(depthBuffer, offlineTarget0);
             DrawGeometry();
 
-            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
             GraphicsDevice.SetViewport(new Viewport(width / 2, 0, width / 2, height / 2));
             GraphicsDevice.DrawTexture(offlineTarget0);
 
@@ -116,12 +116,12 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             GraphicsDevice.SetDepthAndRenderTarget(depthBuffer, offlineTarget2);
             GraphicsDevice.DrawTexture(offlineTarget1);
 
-            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
             GraphicsDevice.SetViewport(new Viewport(0, height / 2, width / 2, height / 2));
             GraphicsDevice.DrawTexture(offlineTarget2);
 
             // draw quad on screen
-            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
             GraphicsDevice.SetViewport(new Viewport(width / 2, height / 2, width / 2, height / 2));
             GraphicsDevice.DrawTexture(UVTexture);
         }

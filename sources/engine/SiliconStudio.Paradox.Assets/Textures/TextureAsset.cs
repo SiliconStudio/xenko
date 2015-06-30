@@ -136,7 +136,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// The format to use for alpha in the texture.
         /// </userdoc>
         [DataMember(55)]
-        [DefaultValue(AlphaFormat.None)]
+        [DefaultValue(AlphaFormat.Auto)]
         [Display(null, null, "Transparency")]
         public AlphaFormat Alpha { get; set; }
 
@@ -182,7 +182,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
             Height = 100.0f;
             Format = TextureFormat.Compressed;
             Hint = TextureHint.Color;
-            Alpha = AlphaFormat.None;
+            Alpha = AlphaFormat.Auto;
             ColorKeyColor = new Color(255, 0, 255);
             ColorKeyEnabled = false;
             IsSizeInPercentage = true;

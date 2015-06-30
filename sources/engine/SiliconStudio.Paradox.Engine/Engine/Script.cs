@@ -15,8 +15,6 @@ namespace SiliconStudio.Paradox.Engine
         internal ScriptComponent ScriptComponent;
         [DataMemberIgnore]
         internal MicroThread MicroThread;
-        [DataMemberIgnore]
-        internal bool Unloaded;
 
         /// <summary>
         /// The script identifier.

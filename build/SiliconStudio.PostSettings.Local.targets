@@ -4,7 +4,8 @@
     <!-- Override SiliconStudioBuildDirectory only now so that SiliconStudio common projects still get build in obj without ParadoxGraphicsApi -->
     <SiliconStudioAssemblyProcessorGlobal>true</SiliconStudioAssemblyProcessorGlobal>
     <SiliconStudioBuildDirectory>$(SiliconStudioPlatform)-$(ParadoxGraphicsApi)</SiliconStudioBuildDirectory>
-    <OutputPath>$(SolutionDir)..\Bin\$(SiliconStudioBuildDirectory)\</OutputPath>
+    <SiliconStudioOutputCommonDir>$(SolutionDir)..\Bin\$(SiliconStudioBuildDirectory)\</SiliconStudioOutputCommonDir>
+    <OutputPath>$(SiliconStudioOutputCommonDir)</OutputPath>
 
     <ParadoxDependenciesDir Condition="'$(ParadoxDependenciesDir)' == ''">$(MSBuildThisFileDirectory)..\deps\</ParadoxDependenciesDir>
     <ParadoxDependenciesDir Condition="'$(ParadoxDependenciesDir)' != '' and !HasTrailingSlash('$(ParadoxDependenciesDir)')">$(ParadoxDependenciesDir)\</ParadoxDependenciesDir>

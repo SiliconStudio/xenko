@@ -199,7 +199,6 @@
     <Compile Include="TestCamera.cs" />
     <Compile Include="TestSpriteAnimation.cs" />
     <Compile Include="TestTesselation.cs" />
-    <Compile Include="TestTextureAlphaSeparation.cs" />
     <None Include="Build\TestSerializer.cs" />
     <Compile Include="Build\TestStorage.cs" />
     <Compile Include="Module.cs" />
@@ -211,7 +210,6 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="SiliconStudio.Paradox.Engine.Tests.pdxpkg" />
-    <Folder Include="GameAssets\" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\Icon.png" Label="Paradox.DoNotSync" />

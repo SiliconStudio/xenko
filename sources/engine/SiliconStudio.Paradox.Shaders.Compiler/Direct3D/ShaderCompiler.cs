@@ -37,7 +37,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.Direct3D
 
             var byteCodeResult = new ShaderBytecodeResult();
 
-            if (compilationResult.HasErrors)
+            if (compilationResult.HasErrors || compilationResult.Bytecode == null)
             {
                 // Log compilation errors
                 byteCodeResult.Error(compilationResult.Message);

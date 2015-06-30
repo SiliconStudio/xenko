@@ -34,6 +34,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
         {
             if (recursionLevel >= recursionMaxExpectedDepth)
             {
+                // Create appropriate reference type for both serialization and deserialization
                 if (objectContext.SerializerContext.IsSerializing)
                 {
                     var entityComponent = objectContext.Instance as EntityComponent;
@@ -78,6 +79,8 @@ namespace SiliconStudio.Paradox.Assets.Entities
         {
             if (recursionLevel >= recursionMaxExpectedDepth)
             {
+                // Transform the deserialized reference into a fake Entity, EntityComponent, etc...
+                // Fake objects will later be fixed later with EntityAnalysis.FixupEntityReferences()
                 if (!objectContext.SerializerContext.IsSerializing)
                 {
                     var entityComponentReference = objectContext.Instance as EntityComponentReference;

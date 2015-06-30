@@ -169,17 +169,16 @@ namespace SiliconStudio.Core.Diagnostics
 
             var outputRedirected = IsHandleRedirected((IntPtr)StdOutConsoleHandle);
 
-            if (handle == IntPtr.Zero || outputRedirected)
+            // If we are outputting somewhere unexpected, add an additional console window
+            if (outputRedirected)
             {
-                Stream originalStream = null;
-                if (outputRedirected)
-                {
-                    originalStream = Console.OpenStandardOutput();
-                }
+                var originalStream = Console.OpenStandardOutput();
 
+                // Free before trying to allocate
+                FreeConsole();
                 AllocConsole();
 
-                Stream outputStream = Console.OpenStandardOutput();
+                var outputStream = Console.OpenStandardOutput();
                 if (originalStream != null)
                 {
                     outputStream = new DualStream(originalStream, outputStream);
@@ -188,7 +187,7 @@ namespace SiliconStudio.Core.Diagnostics
                 TextWriter writer = new StreamWriter(outputStream) { AutoFlush = true };
                 Console.SetOut(writer);
             }
-            else
+            else if (handle != IntPtr.Zero)
             {
                 const int SW_SHOW = 5;
                 ShowWindow(handle, SW_SHOW);
@@ -281,6 +280,9 @@ namespace SiliconStudio.Core.Diagnostics
         private static extern bool AttachConsole(int dwProcessId);
 
         [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool FreeConsole();
+
+        [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool AllocConsole();
 
         [DllImport("kernel32.dll")]
@@ -307,11 +309,12 @@ namespace SiliconStudio.Core.Diagnostics
             {
                 return true;
             }
-            else
-            {
-                int mode;
-                return !GetConsoleMode(ioHandle, out mode);
-            }
+
+            // We are fine with being attached to non-consoles
+            return false;
+
+            //int mode;
+            //return !GetConsoleMode(ioHandle, out mode);
         }
 
 #else

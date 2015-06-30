@@ -34,5 +34,11 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// </summary>
         /// <userdoc>Ensure an alpha channel well suited for alpha gradient.</userdoc>
         Interpolated,
+
+        /// <summary>
+        /// Automatic alpha detection.
+        /// </summary>
+        /// <userdoc>Automatic alpha detection</userdoc>
+        Auto,
     }
 }

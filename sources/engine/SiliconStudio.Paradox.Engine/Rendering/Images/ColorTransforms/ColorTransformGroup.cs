@@ -72,7 +72,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// </summary>
         /// <value>The transforms.</value>
         [DataMember(10)]
-        [Display("Transforms", AlwaysExpand = true)]
+        [Display("Transforms", Expand = ExpandRule.Always)]
         [NotNullItems]
         public ColorTransformCollection Transforms
         {

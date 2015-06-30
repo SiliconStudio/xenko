@@ -23,12 +23,22 @@ namespace SiliconStudio.Presentation.Collections
         private int changeCount;
 
         /// <summary>
-        /// Public constructor. A comparer can be provided to compare items. If null, the default comparer will be used (if available).
-        /// If no comparer is provided and no default comparer is available, an <see cref="InvalidOperationException"/> will be thrown when methods requesting comparer are invoked.
+        /// Initializes a new instance of the <see cref="AutoUpdatingSortedObservableCollection{T}"/> class with a comparer.
         /// </summary>
-        /// <param name="comparer">The comparer to use to compare items.</param>
+        /// <param name="comparer">The comparer to use to compare items. If null, the default comparison for the type T will be used.</param>
+        /// <exception cref="InvalidOperationException">No comparer has been provided and the associated type does not implement <see cref="IComparable"/> nor <see cref="IComparable{T}"/>.</exception>
         public AutoUpdatingSortedObservableCollection(IComparer<T> comparer = null)
             : base(comparer)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutoUpdatingSortedObservableCollection{T}"/> class with a comparison delegate.
+        /// </summary>
+        /// <param name="comparison">The comparison to use to compare items. If null, the default comparison for the type T will be used.</param>
+        /// <exception cref="InvalidOperationException">No comparison has been provided and the associated type does not implement <see cref="IComparable"/> nor <see cref="IComparable{T}"/>.</exception>
+        public AutoUpdatingSortedObservableCollection(Comparison<T> comparison)
+            : base(comparison)
         {
         }
 

@@ -31,21 +31,15 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Paradox.Graphics.Tests
 {
     /// <summary>
-    /// Tests for <see cref="Texture2DBase"/>
+    /// Tests for <see cref="Texture"/>
     /// </summary>
     [TestFixture]
     [Description("Tests SharpDX.Toolkit.Graphics.Image")]
     public class TestImage
     {
-        private string dxsdkDir;
-
         [TestFixtureSetUp]
         public void Initialize()
         {
-            dxsdkDir = Environment.GetEnvironmentVariable("DXSDK_DIR");
-
-            if (string.IsNullOrEmpty(dxsdkDir))
-                throw new NotSupportedException("Install DirectX SDK June 2010 to run this test (DXSDK_DIR env variable is missing).");
         }
 
         /// <summary>
@@ -189,6 +183,10 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         [Test]
         public void TestLoadAndSave()
         {
+            var dxsdkDir = Environment.GetEnvironmentVariable("DXSDK_DIR");
+
+            if (string.IsNullOrEmpty(dxsdkDir))
+                throw new NotSupportedException("Install DirectX SDK June 2010 to run this test (DXSDK_DIR env variable is missing).");
 
             GC.Collect();
             GC.WaitForFullGCComplete();

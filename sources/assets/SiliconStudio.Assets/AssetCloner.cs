@@ -23,11 +23,7 @@ namespace SiliconStudio.Assets
 
         static AssetCloner()
         {
-            ClonerSelector = new SerializerSelector();
-            ClonerSelector.RegisterProfile("Default");
-            ClonerSelector.RegisterProfile("Asset");
-            ClonerSelector.RegisterProfile("AssetClone");
-            ClonerSelector.ReuseReferences = true;
+            ClonerSelector = new SerializerSelector(true, "Default", "Asset", "AssetClone");
         }
 
         /// <summary>

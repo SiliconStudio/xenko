@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Rendering
         public IImageEffectRendererInput Input { get; set; }
 
         [DataMember(20)]
-        [Display("Effect", AlwaysExpand = true)]
+        [Display("Effect", Expand = ExpandRule.Always)]
         public IImageEffectRenderer Effect { get; set; }
 
         protected override void Destroy()

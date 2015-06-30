@@ -26,9 +26,8 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         /// Gets or sets the shadow.
         /// </summary>
         /// <value>The shadow.</value>
-        [Category]
         [DataMember(200)]
-        public LightShadowMap Shadow { get; set; }
+        public LightShadowMap Shadow { get; protected set; }
 
         public abstract bool HasBoundingBox { get; }
 

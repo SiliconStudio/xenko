@@ -10,7 +10,7 @@ using SiliconStudio.Paradox.Physics;
 namespace SiliconStudio.Paradox.Engine
 {
     [DataContract("PhysicsComponent")]
-    [Display(30, "Physics")]
+    [Display(30, "Physics", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(PhysicsProcessor))]
     public sealed class PhysicsComponent : EntityComponent
     {

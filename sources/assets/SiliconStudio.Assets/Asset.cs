@@ -26,7 +26,7 @@ namespace SiliconStudio.Assets
         {
             Id = Guid.NewGuid();
             Tags = new TagCollection();
-            AssetFormatVersion = AssetRegistry.GetCurrentFormatVersion(GetType());
+            SerializedVersion = AssetRegistry.GetCurrentFormatVersion(GetType());
         }
 
         /// <summary>
@@ -67,13 +67,6 @@ namespace SiliconStudio.Assets
         [Browsable(false)]
         [DefaultValue(0)]
         public int SerializedVersion { get;  set; }
-
-        /// <summary>
-        /// Gets the current asset format version for this asset.
-        /// </summary>
-        /// <value>The current asset format version for this asset.</value>
-        [DataMemberIgnore]
-        public int AssetFormatVersion { get; private set; }
 
         /// <summary>
         /// Gets or sets the base.

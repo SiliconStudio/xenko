@@ -39,12 +39,8 @@ namespace SiliconStudio.Presentation.ViewModel
             }
         }
 
-        /// <summary>
-        /// Register a new service in this <see cref="ViewModelServiceProvider"/>.
-        /// </summary>
-        /// <param name="service">The service to register.</param>
-        /// <exception cref="InvalidOperationException">A service of the same type has already been registered.</exception>
-        protected void RegisterService(object service)
+        /// <inheritdoc/>
+        public void RegisterService(object service)
         {
             if (service == null) throw new ArgumentNullException("service");
             if (services.Any(x => x.GetType() == service.GetType()))
@@ -53,6 +49,7 @@ namespace SiliconStudio.Presentation.ViewModel
             services.Add(service);
         }
 
+        /// <inheritdoc/>
         public void UnregisterService(object service)
         {
             if (service == null) throw new ArgumentNullException("service");
