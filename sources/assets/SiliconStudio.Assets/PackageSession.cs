@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
-
+using NuGet;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
@@ -20,6 +20,7 @@ namespace SiliconStudio.Assets
     /// </summary>
     public sealed class PackageSession : IDisposable, IDirtyable
     {
+        private readonly DefaultConstraintProvider constraintProvider = new DefaultConstraintProvider();
         private readonly PackageCollection packagesCopy;
         private readonly PackageCollection packages;
         private readonly AssemblyContainer assemblyContainer;
@@ -41,6 +42,8 @@ namespace SiliconStudio.Assets
         /// </summary>
         public PackageSession(Package package)
         {
+            constraintProvider.AddConstraint(PackageStore.Instance.DefaultPackageName, new VersionSpec(PackageStore.Instance.DefaultPackageVersion.ToSemanticVersion()));
+
             packages = new PackageCollection();
             packagesCopy = new PackageCollection();
             assemblyContainer = new AssemblyContainer();
@@ -678,6 +681,9 @@ namespace SiliconStudio.Assets
                 // Add the package has loaded before loading dependencies
                 loadedPackages.Add(package);
 
+                // Package has been loaded, register it in constraints so that we force each subsequent loads to use this one (or fails if version doesn't match)
+                session.constraintProvider.AddConstraint(package.Meta.Name, new VersionSpec(package.Meta.Version.ToSemanticVersion()));
+
                 // Load package dependencies
                 PreLoadPackageDependencies(session, log, package, loadedPackages, loadParameters);
 
@@ -716,7 +722,7 @@ namespace SiliconStudio.Assets
                     continue;
                 }
 
-                var file = PackageStore.Instance.GetPackageFileName(packageDependency.Name, packageDependency.Version);
+                var file = PackageStore.Instance.GetPackageFileName(packageDependency.Name, packageDependency.Version, session.constraintProvider);
 
                 if (file == null)
                 {
