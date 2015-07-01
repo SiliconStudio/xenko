@@ -52,6 +52,14 @@ namespace SiliconStudio.Assets
         public Dictionary<string, string> ExtraCompileProperties { get; set; }
 
         /// <summary>
+        /// Gets or sets the asset files to load, if you want to not rely on the default <see cref="Package.ListAssetFiles"/>.
+        /// </summary>
+        /// <value>
+        /// The load asset files.
+        /// </value>
+        public List<Package.LoadAssetFile> AssetFiles { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether to automatically load assets. Default is <c>true</c>
         /// </summary>
         /// <value><c>true</c> if [automatic load assets]; otherwise, <c>false</c>.</value>

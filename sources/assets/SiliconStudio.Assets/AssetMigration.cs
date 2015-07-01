@@ -19,8 +19,10 @@ namespace SiliconStudio.Assets
     /// </summary>
     static class AssetMigration
     {
-        public static bool MigrateAssetIfNeeded(ILogger log, string assetFullPath)
+        public static bool MigrateAssetIfNeeded(ILogger log, Package.LoadAssetFile loadAsset)
         {
+            var assetFullPath = loadAsset.FilePath.FullPath;
+
             // Determine if asset was Yaml or not
             var assetFileExtension = Path.GetExtension(assetFullPath);
             if (assetFileExtension == null)
@@ -39,7 +41,8 @@ namespace SiliconStudio.Assets
 
             // Read from Yaml file the asset version and its type (to get expected version)
             // Note: It tries to read as few as possible (SerializedVersion is expected to be right after Id, so it shouldn't try to read further than that)
-            using (var streamReader = new StreamReader(assetFullPath))
+            using (var assetStream = loadAsset.OpenStream())
+            using (var streamReader = new StreamReader(assetStream))
             {
                 var yamlEventReader = new EventReader(new Parser(streamReader));
 
@@ -124,8 +127,14 @@ namespace SiliconStudio.Assets
                 var preferredIndent = YamlSerializer.GetSerializerSettings().PreferredIndent;
 
                 // Save asset back to disk
-                using (var streamWriter = new StreamWriter(assetFullPath))
-                    yamlStream.Save(streamWriter, true, preferredIndent);
+                using (var memoryStream = new MemoryStream())
+                {
+                    using (var streamWriter = new StreamWriter(memoryStream))
+                    {
+                        yamlStream.Save(streamWriter, true, preferredIndent);
+                    }
+                    loadAsset.AssetContent = memoryStream.ToArray();
+                }
 
                 return true;
             }

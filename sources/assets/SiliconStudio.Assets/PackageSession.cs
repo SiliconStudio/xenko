@@ -12,6 +12,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.Core.Reflection;
+using ILogger = SiliconStudio.Core.Diagnostics.ILogger;
 
 namespace SiliconStudio.Assets
 {
@@ -670,12 +671,8 @@ namespace SiliconStudio.Assets
                     return loadedPackages.Find(packageId);
                 }
 
-                // Load the package without loading assets
-                var newLoadParameters = loadParameters.Clone();
-                newLoadParameters.AssemblyContainer = session.assemblyContainer;
-
-                // Load the package
-                var package = Package.Load(log, filePath, newLoadParameters);
+                // Load the package without loading any assets
+                var package = Package.LoadRaw(log, filePath);
                 package.IsSystem = isSystemPackage;
 
                 // Add the package has loaded before loading dependencies
@@ -684,8 +681,23 @@ namespace SiliconStudio.Assets
                 // Package has been loaded, register it in constraints so that we force each subsequent loads to use this one (or fails if version doesn't match)
                 session.constraintProvider.AddConstraint(package.Meta.Name, new VersionSpec(package.Meta.Version.ToSemanticVersion()));
 
+                // Load list of assets
+                var assetFiles = Package.ListAssetFiles(log, package, loadParameters.CancelToken);
+
+                // Process the package for assets
+                var newLoadParameters = loadParameters.Clone();
+                newLoadParameters.AssetFiles = assetFiles;
+
                 // Load package dependencies
-                PreLoadPackageDependencies(session, log, package, loadedPackages, loadParameters);
+                // This will perform necessary asset upgrades
+                // TODO: We should probably split package loading in two recursive top-level passes (right now those two passes are mixed, making it more difficult to make proper checks)
+                //   - First, load raw packages with their dependencies recursively, then resolve dependencies and constraints (and print errors/warnings)
+                //   - Then, if everything is OK, load the actual references and assets for each packages
+                PreLoadPackageDependencies(session, log, package, loadedPackages, newLoadParameters);
+
+                // Load assemblies and assets
+                newLoadParameters.AssemblyContainer = session.assemblyContainer;
+                package.LoadAssembliesAndAssets(log, newLoadParameters);
 
                 // Add the package to the session but don't freeze it yet
                 session.Packages.Add(package);
