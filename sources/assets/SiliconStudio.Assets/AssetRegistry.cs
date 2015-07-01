@@ -133,7 +133,7 @@ namespace SiliconStudio.Assets
         /// <returns>System.String.</returns>
         public static string GetDefaultExtension(Type assetType)
         {
-            AssertAssetType(assetType);
+            IsAssetType(assetType, true);
             lock (RegisteredAssetFileExtensions)
             {
                 string extension;
@@ -149,7 +149,7 @@ namespace SiliconStudio.Assets
         /// <returns>The current format version of this asset.</returns>
         public static int GetCurrentFormatVersion(Type assetType)
         {
-            AssertAssetType(assetType);
+            IsAssetType(assetType, true);
             lock (RegisteredFormatVersions)
             {
                 Tuple<int, int> version;
@@ -165,7 +165,7 @@ namespace SiliconStudio.Assets
         /// <returns>The current format version of this asset.</returns>
         public static int GetMinimalFormatVersion(Type assetType)
         {
-            AssertAssetType(assetType);
+            IsAssetType(assetType, true);
             lock (RegisteredFormatVersions)
             {
                 Tuple<int, int> version;
@@ -181,7 +181,7 @@ namespace SiliconStudio.Assets
         /// <returns>The <see cref="AssetUpgraderCollection"/> of an asset type if available, or <c>null</c> otherwise.</returns>
         public static AssetUpgraderCollection GetAssetUpgraders(Type assetType)
         {
-            AssertAssetType(assetType);
+            IsAssetType(assetType, true);
             lock (RegisteredAssetUpgraders)
             {
                 AssetUpgraderCollection upgraders;
@@ -226,7 +226,7 @@ namespace SiliconStudio.Assets
         /// <returns><c>true</c> if [has dynamic thumbnail] [the specified asset type]; otherwise, <c>false</c>.</returns>
         public static bool HasDynamicThumbnail(Type assetType)
         {
-            AssertAssetType(assetType);
+            IsAssetType(assetType, true);
             lock (RegisteredDynamicThumbnails)
             {
                 bool hasThumbnail;
@@ -364,7 +364,7 @@ namespace SiliconStudio.Assets
         /// <exception cref="System.ArgumentNullException">description</exception>
         private static void RegisterDynamicThumbnail(Type assetType, bool isDynamicThumbnail)
         {
-            AssertAssetType(assetType);
+            IsAssetType(assetType, true);
             lock (RegisteredDynamicThumbnails)
             {
                 RegisteredDynamicThumbnails[assetType] = isDynamicThumbnail;
@@ -565,13 +565,18 @@ namespace SiliconStudio.Assets
             }
         }
 
-        internal static void AssertAssetType(Type assetType)
+        public static bool IsAssetType(Type assetType, bool throwException = false)
         {
             if (assetType == null)
                 throw new ArgumentNullException("assetType");
 
-            if (!typeof(Asset).IsAssignableFrom(assetType)) 
-                throw new ArgumentException("Type [{0}] must be assignable to Asset".ToFormat(assetType), "assetType");
+            if (!typeof(Asset).IsAssignableFrom(assetType))
+            {
+                if (throwException)
+                    throw new ArgumentException("Type [{0}] must be assignable to Asset".ToFormat(assetType), "assetType");
+                return false;
+            }
+            return true;
         }
 
         static AssetRegistry()
