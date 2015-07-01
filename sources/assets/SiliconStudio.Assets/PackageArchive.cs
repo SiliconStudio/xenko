@@ -31,6 +31,7 @@ namespace SiliconStudio.Assets
                     NewFile(@"Bin\**\*.config", "Bin"),
                     NewFile(@"Bin\**\*.dll", "Bin"),
                     NewFile(@"Bin\**\*.xml", "Bin"),
+                    NewFile(@"Bin\**\*.usrdoc", "Bin"),
                     NewFile(@"Bin\**\*.winmd", "Bin"),
                     NewFile(@"Targets\*.targets", "Targets"),
                 };
