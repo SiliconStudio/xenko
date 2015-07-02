@@ -24,6 +24,20 @@ namespace SiliconStudio.Presentation.ViewModel
             }
         }
 
+        public ViewModelServiceProvider(IViewModelServiceProvider parentProvider)
+        {
+            // If the parent provider is a ViewModelServiceProvider, try to merge its service list instead of using composition.
+            var parent = parentProvider as ViewModelServiceProvider;
+            if (parent != null)
+            {
+                parent.services.ForEach(RegisterService);
+            }
+            else
+            {
+                this.parentProvider = parentProvider;
+            }
+        }
+
         public ViewModelServiceProvider(IViewModelServiceProvider parentProvider, IEnumerable<object> services)
             : this(services)
         {

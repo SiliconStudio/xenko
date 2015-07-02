@@ -787,7 +787,7 @@ namespace SiliconStudio.Assets
                     var packageUpgrader = session.CheckPackageUpgrade(log, package, packageDependency, dependencyPackage);
                     if (packageUpgrader != null)
                     {
-                        pendingPackageUpgrades.Add(new PendingPackageUpgrade { PackageUpgrader = packageUpgrader, Dependency = packageDependency, DependencyPackage = dependencyPackage });
+                        pendingPackageUpgrades.Add(new PendingPackageUpgrade(packageUpgrader, packageDependency, dependencyPackage));
                     }
                 }
 
@@ -796,7 +796,18 @@ namespace SiliconStudio.Assets
 
                 if (pendingPackageUpgrades.Count > 0)
                 {
+                    var upgradeAllowed = true;
                     // Need upgrades, let's ask user confirmation
+                    if (loadParameters.PackageUpgradeRequested != null)
+                    {
+                        upgradeAllowed = loadParameters.PackageUpgradeRequested(package, pendingPackageUpgrades);
+                    }
+
+                    if (!upgradeAllowed)
+                    {
+                        log.Error("Necessary package migration for [{0}] has not been allowed", package.Meta.Name);
+                        return false;
+                    }
 
                     // Perform upgrades
                     foreach (var pendingPackageUpgrade in pendingPackageUpgrades)
@@ -946,11 +957,18 @@ namespace SiliconStudio.Assets
             }
         }
 
-        class PendingPackageUpgrade
+        public class PendingPackageUpgrade
         {
-            public PackageUpgrader PackageUpgrader;
-            public PackageDependency Dependency;
-            public Package DependencyPackage;
+            public readonly PackageUpgrader PackageUpgrader;
+            public readonly PackageDependency Dependency;
+            public readonly Package DependencyPackage;
+
+            public PendingPackageUpgrade(PackageUpgrader packageUpgrader, PackageDependency dependency, Package dependencyPackage)
+            {
+                PackageUpgrader = packageUpgrader;
+                Dependency = dependency;
+                DependencyPackage = dependencyPackage;
+            }
         }
 
         private static PackageAnalysisParameters GetPackageAnalysisParametersForLoad()

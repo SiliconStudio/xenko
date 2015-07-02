@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using SiliconStudio.Core.IO;
@@ -90,6 +92,11 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The generate new asset ids.</value>
         public bool GenerateNewAssetIds { get; set; }
+
+        /// <summary>
+        /// Occurs when one or more package upgrades are required for a single package. Returning false will cancel upgrades on this package.
+        /// </summary>
+        public Func<Package, IList<PackageSession.PendingPackageUpgrade>, bool> PackageUpgradeRequested;
 
         /// <summary>
         /// Clones this instance.
