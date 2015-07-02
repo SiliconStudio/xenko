@@ -12,6 +12,7 @@ Release date: 2015/XX/XX
 - Studio: The sprite editor has been improved.
 - Studio: Setting a diffuse map/specular map on a material will also set the diffuse model/specular model of this material.
 - Studio: Keyboard shortcut to switch between transformation gizmos (W, E, R, Space by default)
+- Engine: Add the possibility to enable/disable the depth test in sprite component.
 
 #### Issues fixed
 - Engine: The center of sprites is now properly taken in account when rendered by the CameraRenderer.
@@ -20,6 +21,7 @@ Release date: 2015/XX/XX
 
 #### Breaking changes
 - Assets: Texture default transparency mode changes from `None` to `Auto`.
+- Engine: Sprites are drawn by default with depth test enabled.
 
 #### Known Issues
 - UI: EditText is not implemented on Windows Store and Windows Phone.
