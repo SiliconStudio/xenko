@@ -96,6 +96,46 @@ namespace SiliconStudio.Assets
         public bool IsMaxInclusive { get; set; }
 
         /// <summary>
+        /// Determines whether this version range contains the specified version.
+        /// </summary>
+        /// <param name="version">The version to check.</param>
+        /// <returns></returns>
+        public bool Contains(PackageVersion version)
+        {
+            // Check minimum version
+            if (MinVersion != null)
+            {
+                if (IsMinInclusive)
+                {
+                    if (version < MinVersion)
+                        return false;
+                }
+                else
+                {
+                    if (version <= MinVersion)
+                        return false;
+                }
+            }
+
+            // Check maximum version
+            if (MaxVersion != null)
+            {
+                if (IsMaxInclusive)
+                {
+                    if (version > MaxVersion)
+                        return false;
+                }
+                else
+                {
+                    if (version >= MaxVersion)
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// The safe range is defined as the highest build and revision for a given major and minor version
         /// </summary>
         public static PackageVersionRange GetSafeRange(PackageVersion version)

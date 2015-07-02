@@ -243,7 +243,15 @@ namespace SiliconStudio.Assets
             }
 
             // TODO: Check version for default package
-            return DefaultPackageName == packageName ? defaultPackageDirectory : null;
+            if (packageName == DefaultPackageName)
+            {
+                if (versionRange.Contains(DefaultPackageVersion))
+                {
+                    return defaultPackageDirectory;
+                }
+            }
+
+            return null;
         }
     }
 }
