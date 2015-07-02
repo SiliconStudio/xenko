@@ -44,7 +44,7 @@ namespace SiliconStudio.Paradox.Rendering.Skyboxes
             var skybox = skyboxProcessor.ActiveSkyboxBackground;
 
             // do not draw if no active skybox or the skybox is not included in the current entity group
-            if (skybox == null || CurrentCullingMask.Contains(skybox.Entity.Group))
+            if (skybox == null || !CurrentCullingMask.Contains(skybox.Entity.Group))
                 return;
 
             // Copy camera/pass parameters
