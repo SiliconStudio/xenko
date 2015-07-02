@@ -57,7 +57,7 @@ namespace SiliconStudio.Assets
         /// <value>
         /// The load asset files.
         /// </value>
-        public List<Package.LoadAssetFile> AssetFiles { get; set; }
+        public List<PackageLoadingAssetFile> AssetFiles { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to automatically load assets. Default is <c>true</c>

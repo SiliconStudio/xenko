@@ -19,6 +19,24 @@ using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Assets
 {
+    public enum PackageState
+    {
+        /// <summary>
+        /// Package has been deserialized. References and assets are not ready.
+        /// </summary>
+        Raw,
+
+        /// <summary>
+        /// Dependencies have all been resolved and are also in <see cref="DependenciesReady"/> state.
+        /// </summary>
+        DependenciesReady,
+
+        /// <summary>
+        /// Assembly references and assets have all been loaded.
+        /// </summary>
+        AssetsReady,
+    }
+
     /// <summary>
     /// A package managing assets.
     /// </summary>
@@ -200,6 +218,9 @@ namespace SiliconStudio.Assets
                 OnAssetDirtyChanged(this);
             }
         }
+
+        [DataMemberIgnore]
+        public PackageState State { get; set; }
 
         /// <summary>
         /// Gets the top directory of this package on the local disk.
@@ -695,7 +716,7 @@ namespace SiliconStudio.Assets
         /// <exception cref="System.InvalidOperationException">Package RootDirectory is null
         /// or
         /// Package RootDirectory [{0}] does not exist.ToFormat(RootDirectory)</exception>
-        public void LoadTemporaryAssets(ILogger log, IList<LoadAssetFile> assetFiles = null, CancellationToken? cancelToken = null)
+        public void LoadTemporaryAssets(ILogger log, IList<PackageLoadingAssetFile> assetFiles = null, CancellationToken? cancelToken = null)
         {
             if (log == null) throw new ArgumentNullException("log");
 
@@ -965,9 +986,9 @@ namespace SiliconStudio.Assets
             return existingAssetFolders;
         }
 
-        public static List<LoadAssetFile> ListAssetFiles(ILogger log, Package package, CancellationToken? cancelToken)
+        public static List<PackageLoadingAssetFile> ListAssetFiles(ILogger log, Package package, CancellationToken? cancelToken)
         {
-            var listFiles = new List<LoadAssetFile>();
+            var listFiles = new List<PackageLoadingAssetFile>();
 
             // TODO Check how to handle refresh correctly as a public API
             if (package.RootDirectory == null)
@@ -977,7 +998,7 @@ namespace SiliconStudio.Assets
 
             if (!Directory.Exists(package.RootDirectory))
             {
-                throw new InvalidOperationException("Package RootDirectory [{0}] does not exist".ToFormat(package.RootDirectory));
+                return listFiles;
             }
 
             // Iterate on each source folders
@@ -1009,7 +1030,7 @@ namespace SiliconStudio.Assets
                             continue;
                         }
 
-                        listFiles.Add(new LoadAssetFile(fileUPath, sourceFolder));
+                        listFiles.Add(new PackageLoadingAssetFile(fileUPath, sourceFolder));
                     }
                 }
             }
@@ -1057,37 +1078,6 @@ namespace SiliconStudio.Assets
 
                 assetImport.Base = new AssetBase(assetImportBase);
                 item.IsDirty = true;
-            }
-        }
-
-        /// <summary>
-        /// Represents an asset before being loaded. Used mostly for asset upgrading.
-        /// </summary>
-        public class LoadAssetFile
-        {
-            public readonly UFile FilePath;
-            public readonly UDirectory SourceFolder;
-
-            // If asset has been created or upgraded in place during package upgrade phase, it will be stored here
-            public byte[] AssetContent;
-
-            public bool Deleted;
-
-            public LoadAssetFile(UFile filePath, UDirectory sourceFolder)
-            {
-                FilePath = filePath;
-                SourceFolder = sourceFolder;
-            }
-
-            internal Stream OpenStream()
-            {
-                if (Deleted)
-                    throw new InvalidOperationException();
-
-                if (AssetContent != null)
-                    return new MemoryStream(AssetContent);
-
-                return new FileStream(FilePath.FullPath, FileMode.Open, FileAccess.Read, FileShare.Read);
             }
         }
     }

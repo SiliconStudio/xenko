@@ -37,6 +37,7 @@ namespace SiliconStudio.Assets
         private static readonly Dictionary<Type, AssetUpgraderCollection> RegisteredAssetUpgraders = new Dictionary<Type, AssetUpgraderCollection>();
         private static readonly Dictionary<string, List<IAssetImporter>> RegisterImportExtensions = new Dictionary<string, List<IAssetImporter>>(StringComparer.InvariantCultureIgnoreCase);
         private static readonly HashSet<string> RegisteredAssetFileExtensions = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+        private static readonly Dictionary<string, PackageUpgrader> RegisteredPackageUpgraders = new Dictionary<string, PackageUpgrader>();
         private static readonly HashSet<Assembly> RegisteredAssemblies = new HashSet<Assembly>();
         private static readonly HashSet<IYamlSerializableFactory> RegisteredSerializerFactories = new HashSet<IYamlSerializableFactory>();
         private static readonly List<IDataCustomVisitor> RegisteredDataVisitNodes = new List<IDataCustomVisitor>();
@@ -187,6 +188,16 @@ namespace SiliconStudio.Assets
                 AssetUpgraderCollection upgraders;
                 RegisteredAssetUpgraders.TryGetValue(assetType, out upgraders);
                 return upgraders;
+            }
+        }
+
+        public static PackageUpgrader GetPackageUpgrader(string packageName)
+        {
+            lock (RegisteredPackageUpgraders)
+            {
+                PackageUpgrader upgrader;
+                RegisteredPackageUpgraders.TryGetValue(packageName, out upgrader);
+                return upgrader;
             }
         }
 
@@ -469,6 +480,23 @@ namespace SiliconStudio.Assets
                 if (typeof(PackageSessionAnalysisBase).IsAssignableFrom(type) && type.GetConstructor(new Type[0]) != null )
                 {
                     RegisteredPackageSessionAnalysisTypes.Add(type);
+                }
+
+                {
+                    var packageUpgraderAttribute = type.GetCustomAttribute<PackageUpgraderAttribute>();
+                    if (packageUpgraderAttribute != null)
+                    {
+                        try
+                        {
+                            var packageUpgrader = (PackageUpgrader)Activator.CreateInstance(type);
+                            packageUpgrader.Attribute = packageUpgraderAttribute;
+                            RegisteredPackageUpgraders[packageUpgraderAttribute.PackageName] = packageUpgrader;
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error("Unable to instantiate package upgrader [{0}]", ex, type.Name);
+                        }
+                    }
                 }
 
                 // Only process Asset types

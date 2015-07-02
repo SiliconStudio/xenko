@@ -19,7 +19,7 @@ namespace SiliconStudio.Assets
     /// </summary>
     static class AssetMigration
     {
-        public static bool MigrateAssetIfNeeded(ILogger log, Package.LoadAssetFile loadAsset)
+        public static bool MigrateAssetIfNeeded(ILogger log, PackageLoadingAssetFile loadAsset)
         {
             var assetFullPath = loadAsset.FilePath.FullPath;
 
