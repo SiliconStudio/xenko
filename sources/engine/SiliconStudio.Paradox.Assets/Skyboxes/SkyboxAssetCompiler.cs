@@ -37,8 +37,8 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
         {
             private readonly Package package;
 
-            public SkyboxCompileCommand(string url, SkyboxAsset asset, Package package)
-                : base(url, asset)
+            public SkyboxCompileCommand(string url, SkyboxAsset assetParameters, Package package)
+                : base(url, assetParameters)
             {
                 this.package = package;
             }
@@ -53,9 +53,9 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
             /// <inheritdoc/>
             public override IEnumerable<ObjectUrl> GetInputFiles()
             {
-                if (Asset.Model != null)
+                if (AssetParameters.Model != null)
                 {
-                    foreach (var dependency in Asset.Model.GetDependencies())
+                    foreach (var dependency in AssetParameters.Model.GetDependencies())
                     {
                         yield return new ObjectUrl(UrlType.Internal, dependency.Location);
                     }
@@ -70,7 +70,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
 
                 using (var context = new SkyboxGeneratorContext())
                 {
-                    var result = SkyboxGenerator.Compile(Asset, context);
+                    var result = SkyboxGenerator.Compile(AssetParameters, context);
 
                     if (result.HasErrors)
                     {

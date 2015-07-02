@@ -30,13 +30,13 @@ namespace SiliconStudio.Assets.Compiler
         {
         }
 
-        protected AssetCommand(string url, T asset)
+        protected AssetCommand(string url, T assetParameters)
             : base (url)
         {
-            Asset = asset;
+            AssetParameters = assetParameters;
         }
 
-        public T Asset { get; set; }
+        public T AssetParameters { get; set; }
         
         public override string Title
         {
@@ -73,15 +73,15 @@ namespace SiliconStudio.Assets.Compiler
             base.ComputeParameterHash(writer);
             
             var url = Url;
-            var asset = Asset;
-            writer.SerializeExtended(ref asset, ArchiveMode.Serialize);
+            var assetParameters = AssetParameters;
+            writer.SerializeExtended(ref assetParameters, ArchiveMode.Serialize);
             writer.Serialize(ref url, ArchiveMode.Serialize);
         }
 
         public override string ToString()
         {
             // TODO provide automatic asset to string via YAML
-            return Asset.ToString();
+            return AssetParameters.ToString();
         }
     }
 }

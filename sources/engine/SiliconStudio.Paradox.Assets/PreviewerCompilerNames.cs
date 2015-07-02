@@ -28,7 +28,9 @@ namespace SiliconStudio.Paradox.Assets
         [Obsolete]
         public const string ModelThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "ModelThumbnailCompiler" + PreviewAssemblyQualifiedName;
         [Obsolete]
-        public const string SoundThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "SoundThumbnailCompiler" + PreviewAssemblyQualifiedName;
+        public const string SoundEffectThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "SoundEffectThumbnailCompiler" + PreviewAssemblyQualifiedName;
+        [Obsolete]
+        public const string SoundMusicThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "SoundMusicThumbnailCompiler" + PreviewAssemblyQualifiedName;
         [Obsolete]
         public const string TextureThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "TextureThumbnailCompiler" + PreviewAssemblyQualifiedName;
         [Obsolete]

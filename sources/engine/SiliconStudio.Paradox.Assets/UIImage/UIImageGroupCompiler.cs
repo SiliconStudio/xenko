@@ -22,8 +22,8 @@ namespace SiliconStudio.Paradox.Assets.UIImage
 
         internal class UIImageGroupCommand : ImageGroupCommand<UIImageGroupAsset, UIImageInfo, UIImageGroup, UI.UIImage>
         {
-            public UIImageGroupCommand(string url, ImageGroupParameters<UIImageGroupAsset> asset, Dictionary<UIImageInfo, int> imageToTextureIndex)
-                : base(url, asset, imageToTextureIndex)
+            public UIImageGroupCommand(string url, ImageGroupParameters<UIImageGroupAsset> assetParameters, Dictionary<UIImageInfo, int> imageToTextureIndex)
+                : base(url, assetParameters, imageToTextureIndex)
             {
             }
         
