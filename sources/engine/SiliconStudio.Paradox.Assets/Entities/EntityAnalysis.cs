@@ -30,11 +30,16 @@ namespace SiliconStudio.Paradox.Assets.Entities
             return entityReferenceVistor.Result;
         }
 
-        /// <summary>
-        /// Updates <see cref="EntityReference.Id"/>, <see cref="EntityReference.Name"/>, <see cref="EntityComponentReference{T}.Entity"/>
-        /// and <see cref="EntityComponentReference{T}.Component"/>, while also checking integrity of given <see cref="EntityAsset"/>.
-        /// </summary>
-        /// <param name="entityHierarchy">The entity asset.</param>
+        public static Result Visit(Entity entity)
+        {
+            if (entity == null) throw new ArgumentNullException("entity");
+
+            var entityReferenceVistor = new EntityReferenceAnalysis();
+            entityReferenceVistor.Visit(entity);
+
+            return entityReferenceVistor.Result;
+        }
+
         [Obsolete("This method does not work anymore.")]
         public static void UpdateEntityReferences(EntityHierarchyData entityHierarchy)
         {
