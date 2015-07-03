@@ -158,7 +158,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// </summary>
         /// <value>The antialiasing.</value>
         [DataMember(70)]
-        [Category]
+        [Display("Type", null, "Antialiasing")]
         public IScreenSpaceAntiAliasingEffect Antialiasing
         {
             get
