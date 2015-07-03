@@ -238,7 +238,8 @@ namespace SiliconStudio.Paradox.Rendering.Images
 
             // Luminance pass (only if tone mapping is enabled)
             // TODO: This is not super pluggable to have this kind of dependencies. Check how to improve this
-            if (colorTransformsGroup.Enabled && colorTransformsGroup.Transforms.IsEnabled<ToneMap>())
+            var toneMap = colorTransformsGroup.Transforms.Get<ToneMap>();
+            if (colorTransformsGroup.Enabled && toneMap != null && toneMap.LuminanceLocalFactor > 0.0f)
             {
                 const int LocalLuminanceDownScale = 3;
 
