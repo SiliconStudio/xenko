@@ -759,6 +759,10 @@ namespace SiliconStudio.Assets
             if (package.State < PackageState.DependenciesReady)
                 return false;
 
+            // A package upgrade has previously been tried and denied, so let's keep the package in this state
+            if (package.State == PackageState.UpgradeFailed)
+                return false;
+
             try
             {
                 // First, check that dependencies have their assets loaded
@@ -773,6 +777,10 @@ namespace SiliconStudio.Assets
                     return false;
 
                 var pendingPackageUpgrades = new List<PendingPackageUpgrade>();
+
+                // Note: Default state is upgrade failed (for early exit on error/exceptions)
+                // We will update to success as soon as loading is finished.
+                package.State = PackageState.UpgradeFailed;
 
                 // Process store dependencies for upgraders
                 foreach (var packageDependency in package.Meta.Dependencies)

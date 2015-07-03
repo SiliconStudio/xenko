@@ -32,6 +32,13 @@ namespace SiliconStudio.Assets
         DependenciesReady,
 
         /// <summary>
+        /// Package upgrade has been failed (either error or denied by user).
+        /// Dependencies are ready, but not assets.
+        /// Should be manually switched back to DependenciesReady to try upgrade again.
+        /// </summary>
+        UpgradeFailed,
+
+        /// <summary>
         /// Assembly references and assets have all been loaded.
         /// </summary>
         AssetsReady,
