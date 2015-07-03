@@ -34,10 +34,14 @@ namespace SiliconStudio.Paradox.Rendering.Images
             // Use local luminance slightly differently to allow mix between local and global
 
 	        // Gets the local luminance
-	        float luminanceAverageLocal = LuminanceTexture.Sample(Texturing.LinearSampler, streams.TexCoord).r;
+            float avgLuminance = LuminanceAverageGlobal;
+            if (LuminanceLocalFactor > 0.0f)
+            {
+	            float luminanceAverageLocal = LuminanceTexture.Sample(Texturing.LinearSampler, streams.TexCoord).r;
 
-            // Calculate average geometric mean for luminance using local and global average luminances
-	        float avgLuminance = lerp(LuminanceAverageGlobal, luminanceAverageLocal, LuminanceLocalFactor);
+                // Calculate average geometric mean for luminance using local and global average luminances
+	            avgLuminance = lerp(avgLuminance, luminanceAverageLocal, LuminanceLocalFactor);
+            }
 	        avgLuminance = exp2(avgLuminance);
 	        avgLuminance = max(avgLuminance, 0.0001f);
 

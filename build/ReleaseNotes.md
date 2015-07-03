@@ -6,6 +6,7 @@ Release date: 2015/XX/XX
 
 #### Enhancements
 - Assets: Add `Auto` alpha format for automatic alpha detection in textures.
+- Effects: FXAA quality setting can be changed and it can now be properly disabled.
 - Studio: When selecting a model, material or texture in the asset view, entities that use it will be highlighted in the scene editor
 - Studio: Added a button in the material properties of an entity to highlight them in the scene editor.
 - Studio: Added a material selection mode. When active, it is possible to highlight different materials of a selected entity with the mouse cursor (in the scene editor and in the property grid), and select in the asset view them by clicking on them in the scene editor.
