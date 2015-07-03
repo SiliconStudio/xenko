@@ -96,19 +96,10 @@ namespace SiliconStudio.Paradox.Engine
         }
 
         /// <summary>
-        /// Gets or sets the draw order (from lowest to highest).
-        /// </summary>
-        /// <value>
-        /// The draw order.
-        /// </value>
-        [DataMember(30)]
-        public float DrawOrder { get; set; }
-
-        /// <summary>
         /// Gets or sets a boolean indicating if this model component is casting shadows.
         /// </summary>
         /// <value>A boolean indicating if this model component is casting shadows.</value>
-        [DataMember(40)]
+        [DataMember(30)]
         [DefaultValue(true)]
         [Display("Cast Shadows?")]
         public bool IsShadowCaster { get; set; }
