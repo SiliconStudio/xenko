@@ -72,7 +72,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
             private readonly AssetCompilerContext context;
 
 
-            public EntityCombineCommand(string url, Package package, AssetCompilerContext context, EntityAsset asset) : base(url, asset)
+            public EntityCombineCommand(string url, Package package, AssetCompilerContext context, EntityAsset assetParameters) : base(url, assetParameters)
             {
                 this.package = package;
                 this.context = context;
@@ -82,7 +82,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
             {
                 var assetManager = new AssetManager();
 
-                var rootEntity = Asset.Hierarchy.Entities[Asset.Hierarchy.RootEntity];
+                var rootEntity = AssetParameters.Hierarchy.Entities[AssetParameters.Hierarchy.RootEntity];
                 assetManager.Save(Url, rootEntity);
 
                 // Save the default settings

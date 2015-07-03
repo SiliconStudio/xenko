@@ -39,8 +39,8 @@ namespace SiliconStudio.Paradox.Assets.Physics
 
         private class ColliderShapeCombineCommand : AssetCommand<ColliderShapeAsset>
         {
-            public ColliderShapeCombineCommand(string url, ColliderShapeAsset asset)
-                : base(url, asset)
+            public ColliderShapeCombineCommand(string url, ColliderShapeAsset assetParameters)
+                : base(url, assetParameters)
             {
             }
 
@@ -58,12 +58,12 @@ namespace SiliconStudio.Paradox.Assets.Physics
             {
                 var assetManager = new AssetManager();
 
-                Asset.ColliderShapes = Asset.ColliderShapes.Where(x => x != null
+                AssetParameters.ColliderShapes = AssetParameters.ColliderShapes.Where(x => x != null
                     && (x.GetType() != typeof(ConvexHullColliderShapeDesc) || ((ConvexHullColliderShapeDesc)x).Model != null)).ToList();
 
                 //pre process special types
                 foreach (var convexHullDesc in
-                    (from shape in Asset.ColliderShapes let type = shape.GetType() where type == typeof(ConvexHullColliderShapeDesc) select shape)
+                    (from shape in AssetParameters.ColliderShapes let type = shape.GetType() where type == typeof(ConvexHullColliderShapeDesc) select shape)
                     .Cast<ConvexHullColliderShapeDesc>())
                 {
                     //decompose and fill vertex data
@@ -231,7 +231,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
                     }
                 }
 
-                var runtimeShape = new PhysicsColliderShape { Descriptions = Asset.ColliderShapes };
+                var runtimeShape = new PhysicsColliderShape { Descriptions = AssetParameters.ColliderShapes };
                 assetManager.Save(Url, runtimeShape);
 
                 return Task.FromResult(ResultStatus.Successful);

@@ -91,8 +91,8 @@ namespace SiliconStudio.Paradox.Assets
     {
         protected readonly Dictionary<TImageInfo, int> ImageToTextureIndex;
 
-        protected ImageGroupCommand(string url, ImageGroupParameters<TGroupAsset> asset, Dictionary<TImageInfo, int> imageToTextureIndex)
-            : base(url, asset)
+        protected ImageGroupCommand(string url, ImageGroupParameters<TGroupAsset> assetParameters, Dictionary<TImageInfo, int> imageToTextureIndex)
+            : base(url, assetParameters)
         {
             ImageToTextureIndex = imageToTextureIndex;
         }
@@ -110,13 +110,13 @@ namespace SiliconStudio.Paradox.Assets
             var imageGroupData = new TImageGroupData { Images = new List<TImageData>() };
 
             // add the sprite data to the sprite list.
-            foreach (var uiImage in Asset.GroupAsset.Images)
+            foreach (var uiImage in AssetParameters.GroupAsset.Images)
             {
                 var newImage = new TImageData
                 {
                     Name = uiImage.Name,
                     Region = uiImage.TextureRegion,
-                    IsTransparent = Asset.GroupAsset.Alpha != AlphaFormat.None, // todo analyze texture region texture data to auto-determine alpha?
+                    IsTransparent = AssetParameters.GroupAsset.Alpha != AlphaFormat.None, // todo analyze texture region texture data to auto-determine alpha?
                     Orientation = uiImage.Orientation,
                 };
 

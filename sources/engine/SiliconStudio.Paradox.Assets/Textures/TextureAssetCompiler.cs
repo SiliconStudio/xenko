@@ -47,14 +47,14 @@ namespace SiliconStudio.Paradox.Assets.Textures
             public override System.Collections.Generic.IEnumerable<ObjectUrl> GetInputFiles()
             {
                 // TODO dependency not working
-                yield return new ObjectUrl(UrlType.File, Asset.SourcePathFromDisk);
+                yield return new ObjectUrl(UrlType.File, AssetParameters.SourcePathFromDisk);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                var texture = Asset.Texture;
+                var texture = AssetParameters.Texture;
 
-                var importResult = TextureCommandHelper.ImportAndSaveTextureImage(Asset.SourcePathFromDisk, Url, texture, Asset, CancellationToken, commandContext.Logger);
+                var importResult = TextureCommandHelper.ImportAndSaveTextureImage(AssetParameters.SourcePathFromDisk, Url, texture, AssetParameters, CancellationToken, commandContext.Logger);
 
                 return Task.FromResult(importResult);
             }

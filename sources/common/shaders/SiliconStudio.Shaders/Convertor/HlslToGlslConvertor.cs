@@ -1266,7 +1266,7 @@ namespace SiliconStudio.Shaders.Convertor
                 {
                     methodVar.Name = "log";
                     var log10 = new MethodInvocationExpression("log", new LiteralExpression(10.0f));
-                    return new BinaryExpression(BinaryOperator.Multiply, methodInvocationExpression, log10);
+                    return new BinaryExpression(BinaryOperator.Divide, methodInvocationExpression, log10);
                 }
 
                 if (methodName == "saturate")

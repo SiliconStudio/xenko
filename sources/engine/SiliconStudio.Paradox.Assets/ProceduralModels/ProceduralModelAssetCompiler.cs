@@ -22,8 +22,8 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
 
         private class GeometricPrimitiveCompileCommand : AssetCommand<ProceduralModelAsset>
         {
-            public GeometricPrimitiveCompileCommand(string url, ProceduralModelAsset asset, Package package)
-                : base(url, asset)
+            public GeometricPrimitiveCompileCommand(string url, ProceduralModelAsset assetParameters, Package package)
+                : base(url, assetParameters)
             {
             }
 
@@ -35,7 +35,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var assetManager = new AssetManager();
-                assetManager.Save(Url, new ProceduralModelDescriptor(Asset.Type));
+                assetManager.Save(Url, new ProceduralModelDescriptor(AssetParameters.Type));
 
                 return Task.FromResult(ResultStatus.Successful);
             }
