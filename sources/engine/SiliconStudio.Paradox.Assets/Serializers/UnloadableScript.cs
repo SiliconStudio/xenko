@@ -3,6 +3,7 @@ using SharpYaml.Events;
 
 using SiliconStudio.Core;
 using SiliconStudio.Assets.Serializers;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Engine;
 
@@ -14,18 +15,23 @@ namespace SiliconStudio.Paradox.Assets.Serializers
     /// </summary>
     [DataSerializerGlobal(typeof(InvariantObjectCloneSerializer<UnloadableScript>), Profile = "AssetClone")]
     [Display("Error: unable to load this script")]
+    [NonInstantiable]
     public class UnloadableScript : Script
     {
         [DataMemberIgnore]
         public List<ParsingEvent> ParsingEvents { get; private set; }
 
+        [DataMemberIgnore]
+        public string TypeName { get; private set; }
+
         public UnloadableScript()
         {
         }
 
-        public UnloadableScript(List<ParsingEvent> parsingEvents)
+        public UnloadableScript(List<ParsingEvent> parsingEvents, string typeName)
         {
             ParsingEvents = parsingEvents;
+            TypeName = typeName;
         }
     }
 }

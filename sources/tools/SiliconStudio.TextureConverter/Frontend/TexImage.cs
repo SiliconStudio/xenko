@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.TextureConverter
 {
@@ -20,7 +21,12 @@ namespace SiliconStudio.TextureConverter
         public int Depth { get; internal set; }
         public int RowPitch { get; internal set; }
         public int SlicePitch { get; internal set; }
-        public Paradox.Graphics.PixelFormat Format { get; internal set; }
+        public PixelFormat Format { get; internal set; }
+
+        /// <summary>
+        /// The depth of the alpha channel in the original data.
+        /// </summary>
+        public int OriginalAlphaDepth { get; internal set; }
 
         // Texture infos
         public int ArraySize { get; internal set; }
@@ -79,15 +85,15 @@ namespace SiliconStudio.TextureConverter
             Depth = 1;
             Dimension = TextureDimension.Texture2D;
             Name = "";
+            OriginalAlphaDepth = -1;
 
             SubImageArray = new SubImage[1];
-            Format = SiliconStudio.Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm;
+            Format = PixelFormat.B8G8R8A8_UNorm;
 
             LibraryData = new Dictionary<ITexLibrary, ITextureLibraryData>();
 
             Disposed = false;
         }
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TexImage"/> class.
@@ -102,7 +108,8 @@ namespace SiliconStudio.TextureConverter
         /// <param name="arraySize">Size of the array.</param>
         /// <param name="dimension">The dimension.</param>
         /// <param name="faceCount">The face count (multiple of 6 if Texture Cube, 1 otherwise).</param>
-        public TexImage(IntPtr data, int dataSize, int width, int height, int depth, SiliconStudio.Paradox.Graphics.PixelFormat format, int mipmapCount, int arraySize, TextureDimension dimension, int faceCount = 1)
+        /// <param name="alphaDepth">The depth of the alpha channel</param>
+        public TexImage(IntPtr data, int dataSize, int width, int height, int depth, PixelFormat format, int mipmapCount, int arraySize, TextureDimension dimension, int faceCount = 1, int alphaDepth = -1)
         {
             Data = data;
             DataSize = dataSize;
@@ -114,10 +121,11 @@ namespace SiliconStudio.TextureConverter
             ArraySize = arraySize;
             Dimension = dimension;
             FaceCount = faceCount;
+            OriginalAlphaDepth = alphaDepth;
             Name = "";
 
             int imageCount;
-            if (Dimension == TexImage.TextureDimension.Texture3D)
+            if (Dimension == TextureDimension.Texture3D)
             {
                 int subImagePerArrayElementCount = 0;
                 int curDepth = Depth;
@@ -253,6 +261,7 @@ namespace SiliconStudio.TextureConverter
                 RowPitch = this.RowPitch,
                 SlicePitch = this.SlicePitch,
                 Format = this.Format,
+                OriginalAlphaDepth = this.OriginalAlphaDepth,
 
                 // Texture infos
                 ArraySize = this.ArraySize,
@@ -355,6 +364,20 @@ namespace SiliconStudio.TextureConverter
         public bool IsPowerOfTwo()
         {
             return IsPowerOfTwo(Width) && IsPowerOfTwo(Height);
+        }
+
+        /// <summary>
+        /// Get the depth of the alpha channel of the image.
+        /// </summary>
+        /// <returns>The depth of the alpha channel in bits</returns>
+        public int GetAlphaDepth()
+        {
+            // TODO: Improve this function so that it checks that actual data (will probably need to add the region to check as parameter)
+            int alphaDepth = Format.AlphaSizeInBits();
+            if (OriginalAlphaDepth == -1)
+                return alphaDepth;
+
+            return Math.Min(alphaDepth, OriginalAlphaDepth);
         }
 
         /// <summary>

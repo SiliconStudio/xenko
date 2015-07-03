@@ -3,21 +3,15 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using Microsoft.Build.Execution;
-using SharpYaml;
+
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Storage;
-using SiliconStudio.Core.VisualStudio;
 
 namespace SiliconStudio.Assets
 {
@@ -416,7 +410,16 @@ namespace SiliconStudio.Assets
         public LoggerResult Save()
         {
             var log = new LoggerResult();
+            Save(log);
+            return log;
+        }
 
+        /// <summary>
+        /// Saves all packages and assets.
+        /// </summary>
+        /// <param name="log">The <see cref="LoggerResult"/> in which to report result.</param>
+        public void Save(LoggerResult log)
+        {
             bool packagesSaved = false;
 
             //var clock = Stopwatch.StartNew();
@@ -465,7 +468,7 @@ namespace SiliconStudio.Assets
                     // If package are not modified, return immediately
                     if (!CheckModifiedPackages() && assetsOrPackagesToRemove.Count == 0)
                     {
-                        return log;
+                        return;
                     }
 
                     // Suspend tracking when saving as we don't want to receive
@@ -478,7 +481,7 @@ namespace SiliconStudio.Assets
                     // Return immediately if there is any error
                     if (log.HasErrors)
                     {
-                        return log;
+                        return;
                     }
 
                     // Delete previous files
@@ -543,8 +546,6 @@ namespace SiliconStudio.Assets
 
                 //System.Diagnostics.Trace.WriteLine("Elapsed saved: " + clock.ElapsedMilliseconds);
                 IsDirty = false;
-
-                return log;
             }
         }
 

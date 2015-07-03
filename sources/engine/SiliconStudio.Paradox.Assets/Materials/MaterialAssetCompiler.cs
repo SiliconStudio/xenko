@@ -55,7 +55,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 // We also want to serialize recursively the compile-time dependent assets
                 // (since they are not added as reference but actually embedded as part of the current asset)
                 // TODO: Ideally we would want to put that automatically in AssetCommand<>, but we would need access to package
-                ComputeCompileTimeDependenciesHash(package.Session, writer, asset);
+                ComputeCompileTimeDependenciesHash(package.Session, writer, AssetParameters);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
@@ -91,7 +91,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 var materialContext = new MaterialGeneratorContext() { Assets = assetManager };
                 materialContext.AddLoadingFromSession(package);
 
-                var materialClone = (MaterialAsset)AssetCloner.Clone(Asset);
+                var materialClone = (MaterialAsset)AssetCloner.Clone(AssetParameters);
                 var result = MaterialGenerator.Generate(new MaterialDescriptor() { Attributes = materialClone.Attributes, Layers = materialClone.Layers}, materialContext);
 
                 if (result.HasErrors)

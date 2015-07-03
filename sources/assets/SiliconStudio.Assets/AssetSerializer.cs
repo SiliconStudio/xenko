@@ -125,9 +125,10 @@ namespace SiliconStudio.Assets
                 Directory.CreateDirectory(directoryPath);
             }
 
-            using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.Write))
+            using (var stream = new MemoryStream())
             {
                 Save(stream, asset);
+                File.WriteAllBytes(filePath, stream.ToArray());
             }
         }
 

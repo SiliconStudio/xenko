@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Serialization;
 
@@ -87,23 +88,32 @@ namespace SiliconStudio.Core.IO
         /// <returns></returns>
         public void AddValues(IEnumerable<T> values)
         {
-            lock (lockObject)
+            var shouldSaveValues = !UseTransaction;
+            if (shouldSaveValues)
+                Monitor.Enter(stream); // need to lock stream first and only then lockObject to avoid dead locks with other threads
+
+            try
             {
-                var useTransaction = UseTransaction;
-                int currentTransaction = transaction;
-                if (!useTransaction)
-                    transaction++;
-
-                foreach (var value in values)
+                lock (lockObject)
                 {
-                    // Use unsavedIdMap so that loadedIdMap is still coherent before flushed to disk asynchronously (since other processes/threads might write to it as well).
-                    AddUnsaved(value, currentTransaction);
-                }
+                    int currentTransaction = transaction;
+                    if (shouldSaveValues)
+                        transaction++;
 
-                if (!useTransaction)
-                {
-                    SaveValues(values, currentTransaction);
+                    foreach (var value in values)
+                    {
+                        // Use unsavedIdMap so that loadedIdMap is still coherent before flushed to disk asynchronously (since other processes/threads might write to it as well).
+                        AddUnsaved(value, currentTransaction);
+                    }
+
+                    if (shouldSaveValues)
+                        SaveValues(values, currentTransaction);
                 }
+            }
+            finally
+            {
+                if(shouldSaveValues)
+                    Monitor.Exit(stream);
             }
         }
 
@@ -114,20 +124,29 @@ namespace SiliconStudio.Core.IO
         /// <returns></returns>
         public void AddValue(T item)
         {
-            lock (lockObject)
+            var shouldSaveValue = !UseTransaction;
+            if (shouldSaveValue)
+                Monitor.Enter(stream); // need to lock stream first and only then lockObject to avoid dead locks with other threads
+
+            try
             {
-                var useTransaction = UseTransaction;
-                int currentTransaction = transaction;
-                if (!useTransaction)
-                    transaction++;
-
-                // Use unsavedIdMap so that loadedIdMap is still coherent before flushed to disk asynchronously (since other processes/threads might write to it as well).
-                AddUnsaved(item, currentTransaction);
-
-                if (!useTransaction)
+                lock (lockObject)
                 {
-                    SaveValue(item, currentTransaction);
+                    int currentTransaction = transaction;
+                    if (shouldSaveValue)
+                        transaction++;
+
+                    // Use unsavedIdMap so that loadedIdMap is still coherent before flushed to disk asynchronously (since other processes/threads might write to it as well).
+                    AddUnsaved(item, currentTransaction);
+
+                    if (shouldSaveValue)
+                        SaveValue(item, currentTransaction);
                 }
+            }
+            finally
+            {
+                if (shouldSaveValue)
+                    Monitor.Exit(stream);
             }
         }
 
@@ -216,17 +235,20 @@ namespace SiliconStudio.Core.IO
         /// <summary>
         /// Saves the newly added mapping (only necessary when UseTransaction is set to true).
         /// </summary>
-        /// <param name="saveNow">if set to <c>true</c> save now the map without using a task.</param>
         public void Save()
         {
-            lock (lockObject)
+            if (stream == null)
+                throw new InvalidOperationException("No active stream.");
+
+            lock (stream) // need to lock stream first and only then lockObject to avoid dead locks with other threads
             {
-                int currentTransaction = transaction++;
-                var transactionIds = GetPendingItems(currentTransaction);
+                lock (lockObject)
+                {
+                    int currentTransaction = transaction++;
+                    var transactionIds = GetPendingItems(currentTransaction);
 
-                SaveValues(transactionIds, currentTransaction);
-
-
+                    SaveValues(transactionIds, currentTransaction);
+                }
             }
         }
 

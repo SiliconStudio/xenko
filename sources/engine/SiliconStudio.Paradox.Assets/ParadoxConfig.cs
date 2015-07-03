@@ -6,6 +6,7 @@ using System.IO;
 using SharpDX.Text;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Settings;
 using SiliconStudio.Core.VisualStudio;
 using SiliconStudio.Paradox.Assets.Textures;
 using SiliconStudio.Paradox.Graphics;
@@ -20,11 +21,11 @@ namespace SiliconStudio.Paradox.Assets
         private const string WindowsRuntimeBuild = @"MSBuild\Microsoft\WindowsXaml\v12.0\8.1\Microsoft.Windows.UI.Xaml.Common.Targets";
         private static readonly string ProgramFilesX86 = Environment.GetEnvironmentVariable(Environment.Is64BitOperatingSystem ? "ProgramFiles(x86)" : "ProgramFiles");
 
-        public static PropertyKey<DisplayOrientation> DisplayOrientation = new PropertyKey<DisplayOrientation>("DisplayOrientation", typeof(ParadoxConfig));
+        public static SettingsValueKey<DisplayOrientation> DisplayOrientation = new SettingsValueKey<DisplayOrientation>("Paradox.DisplayOrientation", PackageProfile.SettingsGroup);
 
-        public static PropertyKey<GraphicsPlatform> GraphicsPlatform = new PropertyKey<GraphicsPlatform>("GraphicsPlatform", typeof(ParadoxConfig));
+        public static SettingsValueKey<GraphicsPlatform> GraphicsPlatform = new SettingsValueKey<GraphicsPlatform>("Paradox.GraphicsPlatform", PackageProfile.SettingsGroup);
 
-        public static PropertyKey<TextureQuality> TextureQuality = new PropertyKey<TextureQuality>("TextureQuality", typeof(ParadoxConfig));
+        public static SettingsValueKey<TextureQuality> TextureQuality = new SettingsValueKey<TextureQuality>("Paradox.TextureQuality", PackageProfile.SettingsGroup);
 
         public static readonly PackageVersion LatestPackageVersion = new PackageVersion(ParadoxVersion.CurrentAsText);
 

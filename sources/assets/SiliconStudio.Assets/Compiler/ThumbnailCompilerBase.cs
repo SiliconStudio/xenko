@@ -22,6 +22,8 @@ namespace SiliconStudio.Assets.Compiler
     /// <typeparam name="T">Type of the asset</typeparam>
     public abstract class ThumbnailCompilerBase<T> : AssetDependenciesCompilerBase<T> where T : Asset
     {
+        protected const string ThumbnailStorageNamePrefix = "__THUMBNAIL__";
+
         private class ThumbnailFailureBuildStep : BuildStep
         {
             public ThumbnailFailureBuildStep(IEnumerable<ILogMessage> messages)
@@ -63,13 +65,17 @@ namespace SiliconStudio.Assets.Compiler
             return compilerResult;
         }
 
+        protected virtual string BuildThumbnailStoreName()
+        {
+            return AssetItem.Location.GetDirectoryAndFileName().Insert(0, ThumbnailStorageNamePrefix);
+        }
+
         protected sealed override AssetCompilerResult CompileOverride(AssetCompilerContext context, AssetCompilerResult compilerResult)
         {
             var thumbnailCompilerContext = (ThumbnailCompilerContext)context;
 
             // Build the path of the thumbnail in the storage
-            var assetStorageUrl = AssetItem.Location.GetDirectoryAndFileName();
-            var thumbnailStorageUrl = assetStorageUrl.Insert(0, "__THUMBNAIL__");
+            var thumbnailStorageUrl = BuildThumbnailStoreName();
 
             // Check if this asset produced any error
             // (dependent assets errors are generally ignored as long as thumbnail could be generated,

@@ -119,7 +119,7 @@ namespace SiliconStudio.Paradox.Rendering.Sprites
             sprite.IsTransparent = isTransparent;
             if (texture != null)
             {
-                sprite.Center = center + (centerFromMiddle ? new Vector2(texture.Width, texture.Height) : Vector2.Zero);
+                sprite.Center = center + (centerFromMiddle ? new Vector2(texture.Width, texture.Height) / 2 : Vector2.Zero);
                 sprite.Region = new RectangleF(0, 0, texture.Width, texture.Height);
             }
 

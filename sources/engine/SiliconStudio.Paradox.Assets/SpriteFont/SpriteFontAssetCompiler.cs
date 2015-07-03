@@ -86,8 +86,8 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
                     yield return inputFile;
                 }
 
-                if(File.Exists(asset.CharacterSet))
-                    yield return new ObjectUrl(UrlType.File, asset.CharacterSet);
+                if(File.Exists(AssetParameters.CharacterSet))
+                    yield return new ObjectUrl(UrlType.File, AssetParameters.CharacterSet);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
@@ -96,7 +96,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
                 Graphics.SpriteFont staticFont;
                 try
                 {
-                    staticFont = StaticFontCompiler.Compile(FontDataFactory, asset);
+                    staticFont = StaticFontCompiler.Compile(FontDataFactory, AssetParameters);
                 }
                 catch (FontNotFoundException ex) 
                 {
@@ -169,8 +169,8 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var dynamicFont = FontDataFactory.NewDynamic(
-                    FontHelper.PointsToPixels(asset.Size), asset.FontName, asset.Style, 
-                    asset.AntiAlias, asset.UseKerning, asset.Spacing, asset.LineSpacing, asset.DefaultCharacter);
+                    FontHelper.PointsToPixels(AssetParameters.Size), AssetParameters.FontName, AssetParameters.Style, 
+                    AssetParameters.AntiAlias, AssetParameters.UseKerning, AssetParameters.Spacing, AssetParameters.LineSpacing, AssetParameters.DefaultCharacter);
 
                 var assetManager = new AssetManager();
                 assetManager.Save(Url, dynamicFont);

@@ -139,7 +139,10 @@ namespace SiliconStudio.Paradox.Rendering.Images
             var input = GetSafeInput(0);
             var output = GetSafeOutput(0);
 
-            var blurTextureSize = output.Size.Down2(UpscaleCount);
+            // Render the luminance to a power-of-two target, so we preserve energy on downscaling
+            var startWidth = Math.Max(1, Math.Min(MathUtil.NextPowerOfTwo(input.Size.Width), MathUtil.NextPowerOfTwo(input.Size.Height)) / 2);
+            var startSize = new Size3(startWidth, startWidth, 1);
+            var blurTextureSize = startSize.Down2(UpscaleCount);
 
             Texture outputTextureDown = null;
             if (blurTextureSize.Width != 1 && blurTextureSize.Height != 1)
@@ -147,7 +150,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
                 outputTextureDown = NewScopedRenderTarget2D(blurTextureSize.Width, blurTextureSize.Height, luminanceFormat, 1);
             }
 
-            var luminanceMap = NewScopedRenderTarget2D(input.ViewWidth, input.ViewHeight, luminanceFormat, 1);
+            var luminanceMap = NewScopedRenderTarget2D(startSize.Width, startSize.Height, luminanceFormat, 1);
 
             // Calculate the first luminance map
             luminanceLogEffect.SetInput(input);
