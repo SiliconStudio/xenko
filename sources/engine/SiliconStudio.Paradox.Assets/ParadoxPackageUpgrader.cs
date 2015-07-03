@@ -9,7 +9,7 @@ using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Paradox.Assets
 {
-    [PackageUpgrader("Paradox", "1.0.0-beta1", "1.1.4-beta")]
+    [PackageUpgrader("Paradox", "1.0.0-beta01", "1.1.4-beta")]
     public class ParadoxPackageUpgrader : PackageUpgrader
     {
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
