@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core.Reflection;
@@ -21,7 +22,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
 
         public static Result Visit(EntityHierarchyData entityHierarchy)
         {
-            if (entityHierarchy == null) throw new ArgumentNullException("obj");
+            if (entityHierarchy == null) throw new ArgumentNullException("entityHierarchy");
 
             var entityReferenceVistor = new EntityReferenceAnalysis();
             entityReferenceVistor.Visit(entityHierarchy);
@@ -194,6 +195,17 @@ namespace SiliconStudio.Paradox.Assets.Entities
                     componentDepth--;
 
                 --scriptComponentDepth;
+            }
+
+            protected override bool CanVisit(object obj)
+            {
+                if (obj is EntityComponent)
+                    return true;
+
+                if (obj is Script)
+                    return true;
+
+                return base.CanVisit(obj);
             }
         }
 
