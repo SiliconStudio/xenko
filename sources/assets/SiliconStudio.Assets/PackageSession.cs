@@ -248,6 +248,12 @@ namespace SiliconStudio.Assets
 
                 package = PreLoadPackage(this, logger, packagePath, false, packagesLoaded, loadParameters);
 
+                // Load all missing references/dependencies
+                LoadMissingReferences(logger, loadParameters);
+
+                // Load assets
+                TryLoadAssets(this, logger, package, loadParameters);
+
                 // Run analysis after
                 foreach (var packageToAdd in packagesLoaded)
                 {
