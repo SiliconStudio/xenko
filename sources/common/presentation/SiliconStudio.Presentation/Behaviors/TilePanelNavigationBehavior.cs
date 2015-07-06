@@ -40,7 +40,9 @@ namespace SiliconStudio.Presentation.Behaviors
 
         protected override void OnDetachingOverride()
         {
-            selector.PreviewKeyDown -= OnAssociatedObjectKeyDown;
+            // TODO: Not sure why, but it seems that we get an Unloaded event before the Loaded event if loading a broken package. Need to investigate
+            if (selector != null)
+                selector.PreviewKeyDown -= OnAssociatedObjectKeyDown;
             selector = null;
         }
 
