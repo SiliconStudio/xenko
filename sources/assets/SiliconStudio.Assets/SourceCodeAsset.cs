@@ -22,7 +22,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The absolute source location.</value>
         [Browsable(false)]
-        public UFile AbsoluteSourceLocation { get; set; }
+        public string AbsoluteSourceLocation { get; set; }
 
         public string Text { get; set; }
 

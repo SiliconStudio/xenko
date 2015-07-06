@@ -14,18 +14,12 @@ namespace SiliconStudio.Assets
     /// <summary>
     /// Helper class to load/save a VisualStudio solution.
     /// </summary>
-    internal class PackageSessionHelper
+    internal partial class PackageSessionHelper
     {
-        private const string SiliconStudioPackage = "SiliconStudioPackage";
         private const string SolutionHeader = @"Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1";
-
-        public static bool IsSolutionFile(string filePath)
-        {
-            return String.Compare(Path.GetExtension(filePath), ".sln", StringComparison.InvariantCultureIgnoreCase) == 0;
-        }
 
         public static bool IsPackageFile(string filePath)
         {
@@ -54,27 +48,6 @@ MinimumVisualStudioVersion = 10.0.40219.1";
                     packagePaths.Add(packageFullPath);
                 }
             }
-        }
-
-        private static bool IsPackage(Project project)
-        {
-            string packagePath;
-            return IsPackage(project, out packagePath);
-        }
-
-        private static bool IsPackage(Project project, out string packagePathRelative)
-        {
-            packagePathRelative = null;
-            if (project.IsSolutionFolder && project.Sections.Contains(SiliconStudioPackage))
-            {
-                var propertyItem = project.Sections[SiliconStudioPackage].Properties.FirstOrDefault();
-                if (propertyItem != null)
-                {
-                    packagePathRelative = propertyItem.Name;
-                    return true;
-                }
-            }
-            return false;
         }
 
         public static void SaveSolution(PackageSession session, ILogger log)

@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using SiliconStudio.Core.IO;
@@ -52,6 +54,14 @@ namespace SiliconStudio.Assets
         public Dictionary<string, string> ExtraCompileProperties { get; set; }
 
         /// <summary>
+        /// Gets or sets the asset files to load, if you want to not rely on the default <see cref="Package.ListAssetFiles"/>.
+        /// </summary>
+        /// <value>
+        /// The load asset files.
+        /// </value>
+        public List<PackageLoadingAssetFile> AssetFiles { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether to automatically load assets. Default is <c>true</c>
         /// </summary>
         /// <value><c>true</c> if [automatic load assets]; otherwise, <c>false</c>.</value>
@@ -82,6 +92,11 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The generate new asset ids.</value>
         public bool GenerateNewAssetIds { get; set; }
+
+        /// <summary>
+        /// Occurs when one or more package upgrades are required for a single package. Returning false will cancel upgrades on this package.
+        /// </summary>
+        public Func<Package, IList<PackageSession.PendingPackageUpgrade>, bool> PackageUpgradeRequested;
 
         /// <summary>
         /// Clones this instance.
