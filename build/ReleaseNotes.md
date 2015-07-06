@@ -24,6 +24,9 @@ Release date: 2015/XX/XX
 
 #### Breaking changes
 - Assets: Texture default transparency mode changes from `None` to `Auto`.
+- Assets: The `SpriteGroupAsset` and the `UIImageGroupAsset` have been merged into one single `SpriteSheetAsset`. 
+- Engine: The `SpriteGroup` and `UIImageGroup` classes have been merged into one single `SpriteSheet` class.
+- Engine: The `Sprite` and `UIImage` classes have been merged into one single `Sprite` class.
 - Engine: Sprites are drawn by default with depth test enabled.
 
 #### Known Issues

@@ -4,13 +4,14 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.UI.Controls;
 using SiliconStudio.Paradox.UI.Panels;
 
 namespace SiliconStudio.Paradox.UI.Tests.Regression
 {
     /// <summary>
-    /// Class for rendering tests on the <see cref="UIImage"/> with separate alpha texture
+    /// Class for rendering tests on the <see cref="Sprite"/> with separate alpha texture
     /// </summary>
     [TestFixture]
     public class ImageSeparateAlphaTest : UnitTestGameBase
@@ -31,26 +32,26 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            var uiImages = Asset.Load<UIImageGroup>("UIImages");
+            var Sprites = Asset.Load<SpriteSheet>("UIImages");
 
-            var imgElt1 = new ImageElement { Source = uiImages["GameScreen"], StretchType = StretchType.Fill };
+            var imgElt1 = new ImageElement { Source = Sprites["GameScreen"], StretchType = StretchType.Fill };
             imgElt1.DependencyProperties.Set(Panel.ZIndexPropertyKey, 0);
             imgElt1.DependencyProperties.Set(GridBase.RowSpanPropertyKey, 3);
             imgElt1.DependencyProperties.Set(GridBase.ColumnSpanPropertyKey, 3);
             imgElt1.DependencyProperties.Set(GridBase.RowPropertyKey, 0);
             imgElt1.DependencyProperties.Set(GridBase.ColumnPropertyKey, 0);
 
-            var imgElt2 = new ImageElement { Source = uiImages["Logo"], StretchType = StretchType.Fill };
+            var imgElt2 = new ImageElement { Source = Sprites["Logo"], StretchType = StretchType.Fill };
             imgElt2.DependencyProperties.Set(Panel.ZIndexPropertyKey, 1);
             imgElt2.DependencyProperties.Set(GridBase.RowPropertyKey, 0);
             imgElt2.DependencyProperties.Set(GridBase.ColumnPropertyKey, 2);
 
-            var imgElt3 = new ImageElement { Source = uiImages["Logo"], StretchType = StretchType.Fill };
+            var imgElt3 = new ImageElement { Source = Sprites["Logo"], StretchType = StretchType.Fill };
             imgElt3.DependencyProperties.Set(Panel.ZIndexPropertyKey, 2);
             imgElt3.DependencyProperties.Set(GridBase.RowPropertyKey, 2);
             imgElt3.DependencyProperties.Set(GridBase.ColumnPropertyKey, 0);
 
-            var imgElt4 = new ImageElement { Source = uiImages["BorderButton"], StretchType = StretchType.Fill };
+            var imgElt4 = new ImageElement { Source = Sprites["BorderButton"], StretchType = StretchType.Fill };
             imgElt4.DependencyProperties.Set(Panel.ZIndexPropertyKey, 3);
             imgElt4.DependencyProperties.Set(GridBase.RowPropertyKey, 1);
             imgElt4.DependencyProperties.Set(GridBase.ColumnPropertyKey, 1);

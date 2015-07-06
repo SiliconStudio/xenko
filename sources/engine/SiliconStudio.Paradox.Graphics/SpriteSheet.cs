@@ -1,19 +1,22 @@
 ﻿using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Paradox.Graphics
 {
     /// <summary>
-    /// A group of images.
+    /// A sheet (group) of sprites.
     /// </summary>
-    /// <typeparam name="T">The type of image</typeparam>
-    [DataContract(Inherited = true)]
-    public class ImageGroup<T> where T : ImageFragment
+    [DataContract]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<SpriteSheet>), Profile = "Asset")]
+    [ContentSerializer(typeof(DataContentSerializer<SpriteSheet>))]
+    public class SpriteSheet
     {
         /// <summary>
         /// The list of sprites.
         /// </summary>
-        public List<T> Images = new List<T>();
+        public List<Sprite> Sprites = new List<Sprite>();
 
         /// <summary>
         /// Find the index of a sprite in the group using its name.
@@ -24,11 +27,11 @@ namespace SiliconStudio.Paradox.Graphics
         /// <exception cref="KeyNotFoundException">No sprite in the group have the given name</exception>
         public int FindImageIndex(string spriteName)
         {
-            if (Images != null)
+            if (Sprites != null)
             {
-                for (int i = 0; i < Images.Count; i++)
+                for (int i = 0; i < Sprites.Count; i++)
                 {
-                    if (Images[i].Name == spriteName)
+                    if (Sprites[i].Name == spriteName)
                         return i;
                 }
             }
@@ -41,10 +44,10 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <param name="index">The image index</param>
         /// <returns>The image</returns>
-        public T this[int index]
+        public Sprite this[int index]
         {
-            get { return Images[index]; }
-            set { Images[index] = value; }
+            get { return Sprites[index]; }
+            set { Sprites[index] = value; }
         }
 
         /// <summary>
@@ -52,10 +55,10 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <param name="name">The name of the image</param>
         /// <returns>The image</returns>
-        public T this[string name]
+        public Sprite this[string name]
         {
-            get { return Images[FindImageIndex(name)]; }
-            set { Images[FindImageIndex(name)] = value; }
+            get { return Sprites[FindImageIndex(name)]; }
+            set { Sprites[FindImageIndex(name)] = value; }
         }
     }
 }

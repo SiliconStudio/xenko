@@ -1,24 +1,57 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Assets.Textures;
 
-namespace SiliconStudio.Paradox.Assets
+namespace SiliconStudio.Paradox.Assets.Sprite
 {
     /// <summary>
-    /// Describes an image group asset.
+    /// This asset reprensents a sheet (group) of sprites.
     /// </summary>
-    [DataContract("ImageGroupBase")]
-    public abstract class ImageGroupAsset : Asset
+    [DataContract("SpriteSheet")]
+    [CategoryOrder(10, "Parameters")]
+    [CategoryOrder(150, "Sprites")]
+    [AssetFormatVersion(1)]
+    [AssetUpgrader(0, 1, typeof(RenameImageGroupsUpgrader))]
+    [AssetDescription(FileExtension)]
+    [AssetCompiler(typeof(SpriteSheetAssetCompiler))]
+    [ObjectFactory(typeof(SpriteSheetFactory))]
+    [ThumbnailCompiler(PreviewerCompilerNames.SpriteSheetThumbnailCompilerQualifiedName, true)]
+    [Display(160, "Sprite Sheet", "A sheet of sprites")]
+    public class SpriteSheetAsset : Asset
     {
-        protected ImageGroupAsset()
+        /// <summary>
+        /// The default file extension used by the <see cref="SpriteSheetAsset"/>.
+        /// </summary>
+        public const string FileExtension = ".pdxsprite;.pdxuiimage;.pdxsheet";
+        
+        /// <summary>
+        /// Create an empty sprite sheet asset.
+        /// </summary>
+        public SpriteSheetAsset()
         {
             SetDefaults();
         }
+
+        /// <summary>
+        /// Gets or sets the type of the current sheet
+        /// </summary>
+        /// <userdoc>
+        /// The type of the sprite sheet.
+        /// </userdoc>
+        [DataMember(10)]
+        [Display("Sheet Type", category: "Parameters")]
+        public SpriteSheetType Type { get; set; }
 
         /// <summary>
         /// Gets or sets the color key used when color keying for a texture is enabled. When color keying, all pixels of a specified color are replaced with transparent black.
@@ -92,8 +125,19 @@ namespace SiliconStudio.Paradox.Assets
         [Display(category: "Parameters")]
         public bool PremultiplyAlpha { get; set; }
 
+        /// <summary>
+        /// Gets or sets the sprites of the sheet.
+        /// </summary>
+        /// <userdoc>
+        /// The list of images of the sheet to import.
+        /// </userdoc>
+        [DataMember(150)]
+        [Category]
+        public List<SpriteInfo> Sprites { get; set; }
+
         public override void SetDefaults()
         {
+            Sprites = new List<SpriteInfo>();
             Format = TextureFormat.Compressed;
             Alpha = AlphaFormat.Interpolated;
             ColorKeyColor = new Color(255, 0, 255);
@@ -106,33 +150,26 @@ namespace SiliconStudio.Paradox.Assets
         {
             return textureAbsolutePath + "__IMAGE_TEXTURE__" + spriteIndex;
         }
-    }
 
-    /// <summary>
-    /// Describes an image group asset.
-    /// </summary>
-    [DataContract("ImageGroup")]
-    public abstract class ImageGroupAsset<TImage> : ImageGroupAsset
-    {
-        protected ImageGroupAsset()
+        private class SpriteSheetFactory : IObjectFactory
         {
-            SetDefaults();
+            public object New(Type type)
+            {
+                return new SpriteSheetAsset();
+            }
         }
 
-        /// <summary>
-        /// Gets or sets the sprites of the group.
-        /// </summary>
-        /// <userdoc>
-        /// The list of images of the group to import.
-        /// </userdoc>
-        [DataMember(10)]
-        [Category]
-        public List<TImage> Images { get; set; }
-        
-        public override void SetDefaults()
+        class RenameImageGroupsUpgrader : AssetUpgraderBase
         {
-            base.SetDefaults();
-            Images = new List<TImage>();
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                var images = asset.Images;
+                if (images != null)
+                {
+                    asset.Sprites = images;
+                    asset.Images = DynamicYamlEmpty.Default;
+                }
+            }
         }
     }
 }

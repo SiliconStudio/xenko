@@ -1,7 +1,11 @@
-!UIImageGroup
+!SpriteSheet
 Id: c8b6b4b7-12db-488a-8e90-ba0c661944c2
+SerializedVersion: 1
 Tags: []
-Images: 
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Alpha: Explicit
+GenerateMipmaps: true
+Sprites:
     -   Source: ../../../data/tests/rotatedUV.dds
         Name: uvNotRotated
         TextureRegion:
@@ -59,6 +63,3 @@ Images:
             Width: 256
             Height: 256
         Borders: {X: 0, Y: 0, Z: 0, W: 0}
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Alpha: Explicit
-GenerateMipmaps: true

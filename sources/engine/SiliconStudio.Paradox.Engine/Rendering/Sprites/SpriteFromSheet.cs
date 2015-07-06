@@ -9,32 +9,32 @@ using SiliconStudio.Paradox.Graphics;
 namespace SiliconStudio.Paradox.Rendering.Sprites
 {
     /// <summary>
-    /// A sprite provider from a <see cref="SpriteGroup"/>
+    /// A sprite provider from a <see cref="Sheet"/>
     /// </summary>
-    [DataContract("SpriteFromSpriteGroup")]
+    [DataContract("SpriteFromSheet")]
     [Display("Sprite Group")]
-    public class SpriteFromSpriteGroup : ISpriteProvider
+    public class SpriteFromSheet : ISpriteProvider
     {
         /// <summary>
-        /// Gets or sets the <see cref="SpriteGroup"/> of the provider.
+        /// Gets or sets the <see cref="Sheet"/> of the provider.
         /// </summary>
         [InlineProperty]
-        public SpriteGroup SpriteGroup { get; set; }
+        public SpriteSheet Sheet { get; set; }
 
         public Sprite GetSprite(int index)
         {
-            if (SpriteGroup == null || SpriteGroup.Images == null || SpriteGroup.Images.Count == 0)
+            if (Sheet == null || Sheet.Sprites == null || Sheet.Sprites.Count == 0)
                 return null;
 
-            return SpriteGroup.Images[index % SpritesCount];
+            return Sheet.Sprites[index % SpritesCount];
         }
 
         public int SpritesCount
         {
             get
             {
-                if (SpriteGroup != null && SpriteGroup.Images != null)
-                    return SpriteGroup.Images.Count;
+                if (Sheet != null && Sheet.Sprites != null)
+                    return Sheet.Sprites.Count;
 
                 return 0;
             }

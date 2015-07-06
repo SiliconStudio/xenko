@@ -1,7 +1,9 @@
-!SpriteGroup
+!SpriteSheet
 Id: f959170b-df62-40ff-869a-fd72304a8464
+SerializedVersion: 1
 Tags: []
-Images:
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Sprites:
     -   Source: ../../../data/tests/SpriteBackground.png
         Name: New frame
         TextureRegion: {X: 0, Y: 0, Width: 512, Height: 512}
@@ -10,4 +12,3 @@ Images:
         Name: null
         TextureRegion: {X: 0, Y: 0, Width: 256, Height: 256}
         Center: {X: 128, Y: 128}
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

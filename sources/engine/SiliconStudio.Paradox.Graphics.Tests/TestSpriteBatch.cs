@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         private float timeInSeconds;
 
-        private SpriteGroup rotatedImages;
+        private SpriteSheet rotatedImages;
 
         public TestSpriteBatch()
         {
@@ -43,7 +43,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
             sphere = Asset.Load<Texture>("Sphere");
-            rotatedImages = Asset.Load<SpriteGroup>("RotatedImages");
+            rotatedImages = Asset.Load<SpriteSheet>("RotatedImages");
         }
 
         protected override void Draw(GameTime gameTime)

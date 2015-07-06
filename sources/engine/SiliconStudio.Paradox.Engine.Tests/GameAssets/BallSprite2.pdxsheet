@@ -1,7 +1,11 @@
-!SpriteGroup
+!SpriteSheet
 Id: 02de8aa1-8ec5-46aa-b596-598f223bdb06
+SerializedVersion: 1
 Tags: []
-Images:
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+ColorKeyEnabled: true
+Alpha: Mask
+Sprites:
     -   Source: ../../../data/tests/Sphere2.bmp
         Name: sphere1
         TextureRegion: {X: 0, Y: 0, Width: 150, Height: 150}
@@ -130,6 +134,3 @@ Images:
         Name: sphere32
         TextureRegion: {X: 154, Y: 770, Width: 150, Height: 150}
         Center: {X: 0, Y: 0}
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-ColorKeyEnabled: true
-Alpha: Mask

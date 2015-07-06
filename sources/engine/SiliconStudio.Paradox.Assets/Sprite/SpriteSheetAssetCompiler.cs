@@ -8,38 +8,36 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Assets.Textures;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Assets
+namespace SiliconStudio.Paradox.Assets.Sprite
 {
     /// <summary>
-    /// Texture asset compiler.
+    /// The <see cref="SpriteSheetAsset"/> compiler.
     /// </summary>
-    internal abstract class ImageGroupCompiler<TGroupAsset, TImageInfo> : 
-        AssetCompilerBase<TGroupAsset> 
-        where TGroupAsset : ImageGroupAsset<TImageInfo> 
-        where TImageInfo: ImageInfo
+    public class SpriteSheetAssetCompiler : AssetCompilerBase<SpriteSheetAsset> 
     {
         private bool TextureFileIsValid(UFile file)
         {
             return file != null && File.Exists(file);
         }
 
-        protected Dictionary<TImageInfo, int> CompileGroup(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, TGroupAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SpriteSheetAsset asset, AssetCompilerResult result)
         {
             result.BuildSteps = new AssetBuildStep(AssetItem);
             
             // create the registry containing the sprite assets texture index association
-            var imageToTextureIndex = new Dictionary<TImageInfo, int>();
+            var imageToTextureIndex = new Dictionary<SpriteInfo, int>();
 
             // create and add import texture commands
-            if (asset.Images != null)
+            if (asset.Sprites != null)
             {
                 // sort sprites by referenced texture.
-                var spriteByTextures = asset.Images.GroupBy(x => x.Source).ToArray();
+                var spriteByTextures = asset.Sprites.GroupBy(x => x.Source).ToArray();
                 for (int i = 0; i < spriteByTextures.Length; i++)
                 {
                     // skip the texture if the file is not valid.
@@ -70,28 +68,26 @@ namespace SiliconStudio.Paradox.Assets
                     // add the texture build command.
                     result.BuildSteps.Add(
                         new TextureAssetCompiler.TextureConvertCommand(
-                            ImageGroupAsset.BuildTextureUrl(urlInStorage, i),
+                            SpriteSheetAsset.BuildTextureUrl(urlInStorage, i),
                             new TextureConvertParameters(assetSource, textureAsset, context.Platform, context.GetGraphicsPlatform(), context.GetGraphicsProfile(), context.GetTextureQuality())));
                 }
 
                 result.BuildSteps.Add(new WaitBuildStep()); // wait the textures to be imported
             }
-            return imageToTextureIndex;
+
+            if (!result.HasErrors)
+                result.BuildSteps.Add(new SpriteSheetCommand(urlInStorage, new SpriteSheetParameters(asset, context.Platform), imageToTextureIndex));
         }   
     }
 
     /// <summary>
     /// Command used to convert the texture in the storage
     /// </summary>
-    public class ImageGroupCommand<TGroupAsset, TImageInfo, TImageGroupData, TImageData> : AssetCommand<ImageGroupParameters<TGroupAsset>>
-        where TGroupAsset : ImageGroupAsset<TImageInfo>
-        where TImageInfo : ImageInfo
-        where TImageGroupData : ImageGroup<TImageData>, new()
-        where TImageData : ImageFragment, new()
+    public class SpriteSheetCommand : AssetCommand<SpriteSheetParameters>
     {
-        protected readonly Dictionary<TImageInfo, int> ImageToTextureIndex;
+        protected readonly Dictionary<SpriteInfo, int> ImageToTextureIndex;
 
-        protected ImageGroupCommand(string url, ImageGroupParameters<TGroupAsset> assetParameters, Dictionary<TImageInfo, int> imageToTextureIndex)
+        public SpriteSheetCommand(string url, SpriteSheetParameters assetParameters, Dictionary<SpriteInfo, int> imageToTextureIndex)
             : base(url, assetParameters)
         {
             ImageToTextureIndex = imageToTextureIndex;
@@ -100,39 +96,39 @@ namespace SiliconStudio.Paradox.Assets
         public override IEnumerable<ObjectUrl> GetInputFiles()
         {
             for (int i = 0; i < ImageToTextureIndex.Values.Distinct().Count(); i++)
-                yield return new ObjectUrl(UrlType.Internal, ImageGroupAsset.BuildTextureUrl(Url, i));
+                yield return new ObjectUrl(UrlType.Internal, SpriteSheetAsset.BuildTextureUrl(Url, i));
         }
 
         protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
         {
             var assetManager = new AssetManager();
 
-            var imageGroupData = new TImageGroupData { Images = new List<TImageData>() };
+            var imageGroupData = new SpriteSheet { Sprites = new List<Graphics.Sprite>() };
 
             // add the sprite data to the sprite list.
-            foreach (var uiImage in AssetParameters.GroupAsset.Images)
+            foreach (var image in AssetParameters.SheetAsset.Sprites)
             {
-                var newImage = new TImageData
+                var newImage = new Graphics.Sprite
                 {
-                    Name = uiImage.Name,
-                    Region = uiImage.TextureRegion,
-                    IsTransparent = AssetParameters.GroupAsset.Alpha != AlphaFormat.None, // todo analyze texture region texture data to auto-determine alpha?
-                    Orientation = uiImage.Orientation,
+                    Name = image.Name,
+                    Region = image.TextureRegion,
+                    IsTransparent = AssetParameters.SheetAsset.Alpha != AlphaFormat.None, // todo analyze texture region texture data to auto-determine alpha?
+                    Orientation = image.Orientation,
+                    Center = image.Center + (image.CenterFromMiddle ? new Vector2(image.TextureRegion.Width, image.TextureRegion.Height) / 2 : Vector2.Zero),
+                    Borders = image.Borders,
                 };
 
                 int imageIndex;
-                if (ImageToTextureIndex.TryGetValue(uiImage, out imageIndex))
+                if (ImageToTextureIndex.TryGetValue(image, out imageIndex))
                 {
-                    newImage.Texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(Guid.Empty, ImageGroupAsset.BuildTextureUrl(Url, ImageToTextureIndex[uiImage]));
+                    newImage.Texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(Guid.Empty, SpriteSheetAsset.BuildTextureUrl(Url, ImageToTextureIndex[image]));
                 }
                 else
                 {
-                    commandContext.Logger.Warning("Image '{0}' has an invalid image source file '{1}', resulting texture will be null.", uiImage.Name, uiImage.Source);
+                    commandContext.Logger.Warning("Image '{0}' has an invalid image source file '{1}', resulting texture will be null.", image.Name, image.Source);
                 }
 
-                SetImageSpecificFields(uiImage, newImage);
-
-                imageGroupData.Images.Add(newImage);
+                imageGroupData.Sprites.Add(newImage);
             }
 
             // save the imageData into the data base
@@ -140,30 +136,26 @@ namespace SiliconStudio.Paradox.Assets
 
             return Task.FromResult(ResultStatus.Successful);
         }
-
-        protected virtual void SetImageSpecificFields(TImageInfo imageInfo, TImageData newImage)
-        {
-        }
     }
-    
+
     /// <summary>
     /// SharedParameters used for converting/processing the texture in the storage.
     /// </summary>
     [DataContract]
-    public class ImageGroupParameters<T>
+    public class SpriteSheetParameters
     {
-        public ImageGroupParameters()
+        public SpriteSheetParameters()
         {
         }
-    
-        public ImageGroupParameters(T groupAsset, PlatformType platform)
+
+        public SpriteSheetParameters(SpriteSheetAsset sheetAsset, PlatformType platform)
         {
-            GroupAsset = groupAsset;
+            SheetAsset = sheetAsset;
             Platform = platform;
         }
 
-        public T GroupAsset;
-    
+        public SpriteSheetAsset SheetAsset;
+
         public PlatformType Platform;
     }
 }

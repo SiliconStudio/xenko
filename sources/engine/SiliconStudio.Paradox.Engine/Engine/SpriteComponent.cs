@@ -99,7 +99,7 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         public SpriteComponent()
         {
-            SpriteProviderInternal = new SpriteFromSpriteGroup();
+            SpriteProviderInternal = new SpriteFromSheet();
             ExtrusionMethod = SpriteExtrusionMethod.UnitHeightSpriteRatio;
             PremultipliedAlpha = true;
         }

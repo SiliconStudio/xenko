@@ -1,7 +1,9 @@
-!SpriteGroup
+!SpriteSheet
 Id: 91749410-580d-4ab0-bf03-8db5cc703700
+SerializedVersion: 1
 Tags: []
-Images:
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Sprites:
     -   Source: ../../../data/tests/ImageOrientation.png
         Name: NoRotation
         TextureRegion:
@@ -19,4 +21,3 @@ Images:
             Height: 128
         Orientation: Rotated90
         Center: {X: 0, Y: 0}
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

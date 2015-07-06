@@ -146,8 +146,8 @@
     <Compile Include="GraphicsResourceAllocatorExtensions.cs" />
     <Compile Include="GraphicsResourceLink.cs" />
     <Compile Include="GraphicsResourceRecyclePolicyDelegate.cs" />
-    <Compile Include="ImageFragment.cs" />
-    <Compile Include="ImageGroup.cs" />
+    <Compile Include="Sprite.cs" />
+    <Compile Include="SpriteSheet.cs" />
     <Compile Include="ImageOrientation.cs" />
     <Compile Include="OpenGL\OpenGLUtils.cs" />
     <Compile Include="OpenGL\GraphicsOutput.OpenGL.cs" />
@@ -257,12 +257,11 @@
       <DependentUpon>UIEffect.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Shaders.Bytecodes\UIEffectSeparateAlpha.Extensions.cs" />
-    <Compile Include="Sprite.cs" />
+    <Compile Include="Sprite.Extensions.cs" />
     <Compile Include="SpriteBatch.cs" />
     <Compile Include="SpriteEffects.cs" />
     <Compile Include="SpriteFont.cs" />
     <Compile Include="SpriteFrame.cs" />
-    <Compile Include="SpriteGroup.cs" />
     <Compile Include="SpriteSortMode.cs" />
     <Compile Include="DeviceCreationFlags.cs" />
     <Compile Include="GraphicsDeviceStatus.cs" />

@@ -1,7 +1,11 @@
-!UIImageGroup
+!SpriteSheet
 Id: 90569fac-e17d-41a0-9fc0-e7521aa05300
+SerializedVersion: 1
 Tags: []
-Images:
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: Color32Bits
+Alpha: Explicit
+Sprites:
     -   Source: ../../../data/tests/DebugSlider.png
         Name: Background
         TextureRegion: {X: 0, Y: 0, Width: 64, Height: 32}
@@ -47,6 +51,3 @@ Images:
         TextureRegion: {X: 65, Y: 55, Width: 10, Height: 2}
         Orientation: Rotated90
         Borders: {X: 0, Y: 0, Z: 0, W: 0}
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Format: Color32Bits
-Alpha: Explicit

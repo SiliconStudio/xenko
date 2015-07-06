@@ -1,7 +1,13 @@
-!SpriteGroup
+!SpriteSheet
 Id: c3cb3d3b-8e27-4a1a-9e35-26a92fdc18b0
+SerializedVersion: 1
 Tags: []
-Images:
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: AsIs
+Alpha: None
+GenerateMipmaps: true
+PremultiplyAlpha: false
+Sprites:
     -   Source: ../../../data/tests/small_uv.png
         Name: uv1
         TextureRegion:
@@ -34,8 +40,3 @@ Images:
             Width: 128
             Height: 128
         Center: {X: 0, Y: 0}
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Format: AsIs
-Alpha: None
-GenerateMipmaps: true
-PremultiplyAlpha: false

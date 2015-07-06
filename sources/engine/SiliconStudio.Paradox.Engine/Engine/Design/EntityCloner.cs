@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Engine.Design
     /// Provides method for deep cloning of en <see cref="Entity"/>.
     /// </summary>
     [DataSerializerGlobal(typeof(CloneSerializer<Effect>), Profile = "Clone")]
-    [DataSerializerGlobal(typeof(CloneSerializer<SpriteGroup>), Profile = "Clone")]
+    [DataSerializerGlobal(typeof(CloneSerializer<SpriteSheet>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<BlendState>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<RasterizerState>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<SamplerState>), Profile = "Clone")]

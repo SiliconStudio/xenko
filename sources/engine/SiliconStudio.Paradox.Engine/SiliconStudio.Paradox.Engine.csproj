@@ -2114,7 +2114,7 @@
     <Compile Include="Engine\Processors\SceneProcessor.cs" />
     <Compile Include="Engine\Processors\ScriptProcessor.cs" />
     <Compile Include="Rendering\Sprites\SpriteExtrusionMethod.cs" />
-    <Compile Include="Rendering\Sprites\SpriteFromSpriteGroup.cs" />
+    <Compile Include="Rendering\Sprites\SpriteFromSheet.cs" />
     <Compile Include="Rendering\Sprites\SpriteFromTexture.cs" />
     <Compile Include="Rendering\Sprites\SpriteType.cs" />
     <Compile Include="Engine\Processors\UIComponentProcessor.cs" />
