@@ -4,6 +4,8 @@ Tags: []
 Description*!: This is a test
 AssetDirectory: !UDirectory /test/dynamic/path/to/file/in/object/property
 AssetUrl: !UFile /test/dynamic/path/to/file/in/object/property
+CustomObjectWithProtectedSet:
+    Name: customObject
 CustomReference2: 00000000-0000-0000-0000-000000000000:/this/is/an/url/to/MyCustomReference2
 CustomReferences:
     - 00000000-0000-0000-0000-000000000000:/this/is/an/url/to/MyCustomReferenceItem1

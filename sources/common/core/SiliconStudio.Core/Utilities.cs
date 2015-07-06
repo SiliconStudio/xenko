@@ -40,13 +40,13 @@ namespace SiliconStudio.Core
     /// </summary>
     public static class Utilities
     {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
+#if SILICONSTUDIO_PLATFORM_WINDOWS_PHONE || SILICONSTUDIO_PLATFORM_WINDOWS_STORE || SILICONSTUDIO_PLATFORM_WINDOWS10
         public unsafe static void CopyMemory(IntPtr dest, IntPtr src, int sizeInBytesToCopy)
         {
             Interop.memcpy((void*)dest, (void*)src, sizeInBytesToCopy);
         }
 #else
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_WINDOWS_STORE
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         private const string MemcpyDll = "msvcrt.dll";
 #elif SILICONSTUDIO_PLATFORM_ANDROID
         private const string MemcpyDll = "libc.so";

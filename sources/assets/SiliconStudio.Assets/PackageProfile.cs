@@ -8,6 +8,7 @@ using System.Linq;
 using NuGet;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Settings;
 
 namespace SiliconStudio.Assets
 {
@@ -47,6 +48,8 @@ namespace SiliconStudio.Assets
     [DataContract("PackageProfile")]
     public sealed class PackageProfile
     {
+        public static SettingsGroup SettingsGroup = new SettingsGroup();
+
         private readonly AssetFolderCollection assetFolders;
 
         public const string SharedName = "Shared";
@@ -58,7 +61,7 @@ namespace SiliconStudio.Assets
         {
             assetFolders = new AssetFolderCollection();
             InheritProfiles = new List<string>();
-            Properties = new PropertyCollection();
+            Properties = new SettingsCollection(SettingsGroup);
             OutputGroupDirectories = new Dictionary<string, UDirectory>();
             ProjectReferences = new List<ProjectReference>();
         }
@@ -135,7 +138,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The properties.</value>
         [DataMember(60)]
-        public PropertyCollection Properties { get; private set; }
+        public SettingsCollection Properties { get; private set; }
 
         /// <summary>
         /// Gets the assembly references to load when compiling this package.

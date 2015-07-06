@@ -99,7 +99,7 @@ namespace SiliconStudio.AssemblyProcessor
 
             // Make sure System and System.Reflection are added
             // TODO: Maybe we should do that for .NETCore and PCL too? (instead of WinRT only)
-            if (platformType == PlatformType.WindowsStore || platformType == PlatformType.WindowsPhone)
+            if (platformType == PlatformType.WindowsStore || platformType == PlatformType.WindowsPhone || platformType == PlatformType.Windows10)
             {
                 if (assemblyLocations.Add("System"))
                 {
@@ -122,7 +122,7 @@ namespace SiliconStudio.AssemblyProcessor
             }
 
             // Create roslyn compilation object
-            var assemblyName = Path.GetFileNameWithoutExtension(serializationAssemblyLocation);
+            var assemblyName = assembly.Name.Name + ".Serializers";
             var compilation = CSharpCompilation.Create(assemblyName, new[] { syntaxTree }, metadataReferences, compilerOptions);
 
             // Do the actual compilation, and check errors

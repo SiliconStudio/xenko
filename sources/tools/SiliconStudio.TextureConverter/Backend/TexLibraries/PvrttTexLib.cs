@@ -304,6 +304,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             
             var format = RetrieveFormatFromNativeData(libraryData.Header);
             image.Format = request.LoadAsSRgb? format.ToSRgb(): format.ToNonSRgb();
+            image.OriginalAlphaDepth = libraryData.Header.GetAlphaDepth();
 
             int pitch, slice;
             Tools.ComputePitch(image.Format, image.Width, image.Height, out pitch, out slice);

@@ -52,10 +52,6 @@ namespace SiliconStudio.Paradox.Rendering
         [DefaultValue(WireFrameEffect)]
         public override string ModelEffect { get; set; }
 
-        /// <summary>
-        /// Gets or sets the material filter used to render this scene camera.
-        /// </summary>
-        /// <value>The material filter.</value>
         [DataMember(110)]
         public Color3 FrontColor { get; set; }
 

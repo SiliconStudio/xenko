@@ -110,17 +110,13 @@ namespace SiliconStudio.Assets.CompilerApp
             // Copy properties from shared profiles to context properties
             if (sharedProfile != null)
             {
-                foreach (var propertyValue in sharedProfile.Properties)
-                    context.Properties.Set(propertyValue.Key, propertyValue.Value);
+                sharedProfile.Properties.CopyTo(context.PackageProperties, true);
             }
 
-            context.Properties.Set(Paradox.Assets.ParadoxConfig.GraphicsPlatform, builderOptions.GraphicsPlatform.HasValue ? builderOptions.GraphicsPlatform.Value : builderOptions.GetDefaultGraphicsPlatform());
+            context.PackageProperties.Set(Paradox.Assets.ParadoxConfig.GraphicsPlatform, builderOptions.GraphicsPlatform ?? builderOptions.GetDefaultGraphicsPlatform());
 
             // Copy properties from build profile
-            foreach (var propertyValue in buildProfile.Properties)
-            {
-                context.Properties.Set(propertyValue.Key, propertyValue.Value);
-            }
+            buildProfile.Properties.CopyTo(context.PackageProperties, true);
 
             var assetBuildResult = assetBuilder.Compile(context);
             assetBuildResult.CopyTo(builderOptions.Logger);

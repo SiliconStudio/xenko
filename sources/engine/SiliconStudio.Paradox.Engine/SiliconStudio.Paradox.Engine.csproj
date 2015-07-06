@@ -93,6 +93,12 @@
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketListener.cs" />
     <Compile Include="Rendering\Composers\DirectRenderFrameProvider.cs" />
     <Compile Include="Rendering\CullingMode.cs" />
+    <Compile Include="Rendering\Images\AntiAliasing\FXAAShaderEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>FXAAShaderEffect.pdxfx</DependentUpon>
+    </Compile>
     <Compile Include="Shaders.Compiler\RemoteEffectCompiler.cs" />
     <Compile Include="Engine\Processors\BackgroundComponentProcessor.cs" />
     <Compile Include="Engine\AnimationComponent.cs" />
@@ -2639,6 +2645,10 @@
     <None Include="Rendering\Core\ShadingColor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShadingColor.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\AntiAliasing\FXAAShaderEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>FXAAShaderEffect.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Images\ImageEffects.cd" />
     <None Include="Rendering\Images\AntiAliasing\FXAAShader.pdxsl">

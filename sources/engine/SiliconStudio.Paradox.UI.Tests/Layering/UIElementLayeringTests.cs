@@ -298,7 +298,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
 
         private void AssertAreNearlySame(Vector3 v1, Vector3 v2)
         {
-            Assert.IsTrue((v1-v2).Length() < 100*MathUtil.ZeroTolerance);
+            Assert.IsTrue((v1 - v2).Length() <= v1.Length() * MathUtil.ZeroTolerance);
         }
 
         delegate Vector3 MeasureOverrideDelegate(Vector3 availableSizeWithoutMargins);

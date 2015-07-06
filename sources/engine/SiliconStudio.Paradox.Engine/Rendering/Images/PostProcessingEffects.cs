@@ -1,8 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Rendering.Composers;
@@ -156,7 +158,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// </summary>
         /// <value>The antialiasing.</value>
         [DataMember(70)]
-        [Category]
+        [Display("Type", null, "Antialiasing")]
         public IScreenSpaceAntiAliasingEffect Antialiasing
         {
             get
@@ -236,10 +238,16 @@ namespace SiliconStudio.Paradox.Rendering.Images
 
             // Luminance pass (only if tone mapping is enabled)
             // TODO: This is not super pluggable to have this kind of dependencies. Check how to improve this
-            if (colorTransformsGroup.Enabled && colorTransformsGroup.Transforms.IsEnabled<ToneMap>())
+            var toneMap = colorTransformsGroup.Transforms.Get<ToneMap>();
+            if (colorTransformsGroup.Enabled && toneMap != null && toneMap.LuminanceLocalFactor > 0.0f)
             {
                 const int LocalLuminanceDownScale = 3;
-                var lumSize = currentInput.Size.Down2(LocalLuminanceDownScale);
+
+                // The luminance chain uses power-of-two intermediate targets, so it expects to output to one as well
+                var lumWidth = Math.Min(MathUtil.NextPowerOfTwo(currentInput.Size.Width), MathUtil.NextPowerOfTwo(currentInput.Size.Height));
+                lumWidth = Math.Max(1, lumWidth / 2);
+
+                var lumSize = new Size3(lumWidth, lumWidth, 1).Down2(LocalLuminanceDownScale);
                 var luminanceTexture = NewScopedRenderTarget2D(lumSize.Width, lumSize.Height, PixelFormat.R16_Float, 1);
 
                 luminanceEffect.SetInput(currentInput);

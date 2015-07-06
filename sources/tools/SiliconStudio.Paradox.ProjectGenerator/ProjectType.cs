@@ -8,5 +8,6 @@ namespace SiliconStudio.Paradox.ProjectGenerator
         iOS,
         WindowsStore,
         WindowsPhone,
+        Windows10,
     }
 }

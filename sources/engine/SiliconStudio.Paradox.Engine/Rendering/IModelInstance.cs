@@ -23,12 +23,6 @@ namespace SiliconStudio.Paradox.Rendering
         ParameterCollection Parameters { get; }
 
         /// <summary>
-        /// Gets the draw order.
-        /// </summary>
-        /// <value>The draw order.</value>
-        float DrawOrder { get; }
-
-        /// <summary>
         /// Gets the materials.
         /// </summary>
         /// <value>

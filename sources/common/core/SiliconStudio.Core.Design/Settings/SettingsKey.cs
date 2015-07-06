@@ -107,5 +107,69 @@ namespace SiliconStudio.Core.Settings
             if (handler != null)
                 handler(this, new ChangesValidatedEventArgs(profile));
         }
+
+        /// <summary>
+        /// Gets the default value of this settings key.
+        /// </summary>
+        public abstract object DefaultValueObject { get; }
+
+        /// <summary>
+        /// Gets the value of this settings key in the given profile.
+        /// </summary>
+        /// <param name="searchInParentProfile">If true, the settings service will look in the parent profile of the given profile if the settings key is not defined into it.</param>
+        /// <param name="profile">The profile in which to look for the value. If <c>null</c>, it will look in the <see cref="SettingsGroup.CurrentProfile"/>.</param>
+        /// <param name="createInCurrentProfile">If true, the list will be created in the current profile, from the value of its parent profile.</param>
+        /// <returns>The value of this settings key.</returns>
+        /// <exception cref="KeyNotFoundException">No value can be found in the given profile matching this settings key.</exception>
+        public virtual object GetValue(bool searchInParentProfile = true, SettingsProfile profile = null, bool createInCurrentProfile = false)
+        {
+            object value;
+            profile = profile ?? Group.CurrentProfile;
+            if (profile.GetValue(Name, out value, searchInParentProfile, createInCurrentProfile))
+            {
+                return value;
+            }
+            throw new KeyNotFoundException("Settings key not found");
+        }
+
+        /// <summary>
+        /// Sets the value of this settings key in the given profile.
+        /// </summary>
+        /// <param name="value">The new value to set.</param>
+        /// <param name="profile">The profile in which to set the value. If <c>null</c>, it will look in the <see cref="SettingsGroup.CurrentProfile"/>.</param>
+        public void SetValue(object value, SettingsProfile profile = null)
+        {
+            profile = profile ?? Group.CurrentProfile;
+            profile.SetValue(Name, value);
+        }
+
+        /// <summary>
+        /// Tries to gets the value of this settings key in the given profile, if it exists.
+        /// </summary>
+        /// <param name="value">The resulting value, if found</param>
+        /// <param name="searchInParentProfile">If true, the settings service will look in the parent profile of the given profile if the settings key is not defined into it.</param>
+        /// <param name="profile">The profile in which to look for the value. If <c>null</c>, it will look in the <see cref="SettingsGroup.CurrentProfile"/>.</param>
+        /// <returns><c>true</c> if the value was found, <c>false</c> otherwise.</returns>
+        public bool TryGetValue(out object value, bool searchInParentProfile = true, SettingsProfile profile = null)
+        {
+            profile = profile ?? Group.CurrentProfile;
+            if (profile.GetValue(Name, out value, searchInParentProfile, false))
+            {
+                return true;
+            }
+            value = DefaultValueObject;
+            return false;
+        }
+
+        /// <summary>
+        /// Determines whether the specified profile contains key (without checking parent profiles).
+        /// </summary>
+        /// <param name="profile">The profile.</param>
+        /// <returns></returns>
+        public bool ContainsKey(SettingsProfile profile)
+        {
+            object value;
+            return profile.GetValue(Name, out value, false, false);
+        }
     }
 }

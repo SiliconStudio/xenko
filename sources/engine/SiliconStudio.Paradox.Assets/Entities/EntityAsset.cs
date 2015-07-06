@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [DataContract("EntityAsset")]
     [AssetDescription(FileExtension, false)]
     [AssetCompiler(typeof(EntityAssetCompiler))]
-    [ThumbnailCompiler(PreviewerCompilerNames.EntityThumbnailCompilerQualifiedName, true)]
+    //[ThumbnailCompiler(PreviewerCompilerNames.EntityThumbnailCompilerQualifiedName, true)]
     [Display("Entity", "An entity")]
     //[AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
     public class EntityAsset : Asset, IDiffResolver, IAssetComposer

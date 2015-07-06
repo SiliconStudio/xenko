@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core.Reflection;
@@ -21,7 +22,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
 
         public static Result Visit(EntityHierarchyData entityHierarchy)
         {
-            if (entityHierarchy == null) throw new ArgumentNullException("obj");
+            if (entityHierarchy == null) throw new ArgumentNullException("entityHierarchy");
 
             var entityReferenceVistor = new EntityReferenceAnalysis();
             entityReferenceVistor.Visit(entityHierarchy);
@@ -29,13 +30,20 @@ namespace SiliconStudio.Paradox.Assets.Entities
             return entityReferenceVistor.Result;
         }
 
-        /// <summary>
-        /// Updates <see cref="EntityReference.Id"/>, <see cref="EntityReference.Name"/>, <see cref="EntityComponentReference{T}.Entity"/>
-        /// and <see cref="EntityComponentReference{T}.Component"/>, while also checking integrity of given <see cref="EntityAsset"/>.
-        /// </summary>
-        /// <param name="entityHierarchy">The entity asset.</param>
+        public static Result Visit(Entity entity)
+        {
+            if (entity == null) throw new ArgumentNullException("entity");
+
+            var entityReferenceVistor = new EntityReferenceAnalysis();
+            entityReferenceVistor.Visit(entity);
+
+            return entityReferenceVistor.Result;
+        }
+
+        [Obsolete("This method does not work anymore.")]
         public static void UpdateEntityReferences(EntityHierarchyData entityHierarchy)
         {
+            // TODO: Either remove this function or make it do something!
         }
 
         /// <summary>
@@ -145,10 +153,11 @@ namespace SiliconStudio.Paradox.Assets.Entities
 
             private int scriptComponentDepth;
 
+            private Entity currentReferencer;
+
             public EntityReferenceAnalysis()
             {
-                var result = new Result();
-                result.EntityReferences = new List<EntityLink>();
+                var result = new Result { EntityReferences = new List<EntityLink>() };
                 Result = result;
             }
 
@@ -164,20 +173,26 @@ namespace SiliconStudio.Paradox.Assets.Entities
                     var entity = obj as Entity;
                     if (entity != null)
                     {
-                        Result.EntityReferences.Add(new EntityLink(entity, CurrentPath.Clone()));
+                        Result.EntityReferences.Add(new EntityLink(currentReferencer, entity, CurrentPath.Clone()));
                         processObject = false;
                     }
 
                     var entityComponent = obj as EntityComponent;
                     if (entityComponent != null)
                     {
-                        Result.EntityReferences.Add(new EntityLink(entityComponent, CurrentPath.Clone()));
+                        Result.EntityReferences.Add(new EntityLink(currentReferencer, entityComponent, CurrentPath.Clone()));
                         processObject = false;
                     }
                 }
+                else
+                {
+                    var entity = obj as Entity;
+                    if (entity != null)
+                        currentReferencer = entity;
+                }
                 if (scriptComponentDepth != 2 && obj is Script)
                 {
-                    Result.EntityReferences.Add(new EntityLink((Script)obj, CurrentPath.Clone()));
+                    Result.EntityReferences.Add(new EntityLink(currentReferencer, (Script)obj, CurrentPath.Clone()));
                     processObject = false;
                 }
 
@@ -195,33 +210,48 @@ namespace SiliconStudio.Paradox.Assets.Entities
 
                 --scriptComponentDepth;
             }
+
+            protected override bool CanVisit(object obj)
+            {
+                if (obj is EntityComponent)
+                    return true;
+
+                if (obj is Script)
+                    return true;
+
+                return base.CanVisit(obj);
+            }
         }
 
         public struct EntityLink
         {
+            public readonly Entity Referencer;
             public readonly Entity Entity;
             public readonly EntityComponent EntityComponent;
             public readonly Script EntityScript;
             public readonly MemberPath Path;
 
-            public EntityLink(Entity entity, MemberPath path)
+            public EntityLink(Entity referencer, Entity entity, MemberPath path)
             {
+                Referencer = referencer;
                 Entity = entity;
                 EntityScript = null;
                 EntityComponent = null;
                 Path = path;
             }
 
-            public EntityLink(EntityComponent entityComponent, MemberPath path)
+            public EntityLink(Entity referencer, EntityComponent entityComponent, MemberPath path)
             {
+                Referencer = referencer;
                 Entity = null;
                 EntityScript = null;
                 EntityComponent = entityComponent;
                 Path = path;
             }
 
-            public EntityLink(Script script, MemberPath path)
+            public EntityLink(Entity referencer, Script script, MemberPath path)
             {
+                Referencer = referencer;
                 Entity = null;
                 EntityScript = script;
                 EntityComponent = null;

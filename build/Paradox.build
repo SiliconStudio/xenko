@@ -48,7 +48,9 @@ Example of use:
     <Delete Files="@(FilesToDeleteLauncher)"/>
 
     <MSBuild Targets="10-Assets\SiliconStudio_LauncherApp" Projects="$(ParadoxSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
-    <Exec Command='"$(ILRepackPath)" SiliconStudio.LauncherApp.exe Nuget.Core.dll /out:Paradox.exe' WorkingDirectory="$(ParadoxRoot)sources\install\SiliconStudio.LauncherApp\bin\Release"/>
+    <!--<Exec Command='"$(ILRepackPath)" SiliconStudio.LauncherApp.exe Nuget.Core.dll /out:Paradox.exe' WorkingDirectory="$(ParadoxRoot)sources\install\SiliconStudio.LauncherApp\bin\Release"/>-->
+    <!-- Rename SiliconStudio.LauncherApp.exe into Paradox.exe -->
+    <Copy SourceFiles="$(ParadoxRoot)sources\install\SiliconStudio.LauncherApp\bin\Release\SiliconStudio.LauncherApp.exe" DestinationFiles="$(ParadoxRoot)sources\install\SiliconStudio.LauncherApp\bin\Release\Paradox.exe"/>
     <Exec Command='"$(NuGetPath)" pack "$(ParadoxRoot)sources\install\SiliconStudio.LauncherApp\SiliconStudio.LauncherApp.nuspec" -BasePath "$(ParadoxRoot)sources\install\SiliconStudio.LauncherApp\bin\Release"' />
   </Target>
 
@@ -138,6 +140,10 @@ Example of use:
     <MSBuild Targets="Clean;Build" Projects="$(ParadoxSolution).WindowsStore.sln" Properties="$(BuildProperties);Platform=WindowsStore"/>
   </Target>
 
+  <Target Name="BuildWindows10" DependsOnTargets="CopyParadoxKey">
+    <MSBuild Targets="Clean;Build" Projects="$(ParadoxSolution).Windows10.sln" Properties="$(BuildProperties);Platform=Windows10"/>
+  </Target>
+  
   <Target Name="BuildWindowsPhone" DependsOnTargets="CopyParadoxKey">
     <MSBuild Targets="Clean;Build" Projects="$(ParadoxSolution).WindowsPhone.sln" Properties="$(BuildProperties);Platform=WindowsPhone"/>
   </Target>

@@ -37,5 +37,10 @@ namespace SiliconStudio.Core
         /// The iOS.
         /// </summary>
         iOS,
+
+        /// <summary>
+        /// The Windows 10 OS.
+        /// </summary>
+        Windows10,
     }
 }

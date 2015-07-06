@@ -18,7 +18,7 @@ namespace SiliconStudio.Core.Yaml
     public static class YamlSerializer
     {
         // TODO: This code is not robust in case of reloading assemblies into the same process
-        private static readonly HashSet<Assembly> RegisteredAssemblies = new HashSet<Assembly>();
+        private static readonly List<Assembly> RegisteredAssemblies = new List<Assembly>();
         private static readonly object Lock = new object();
         private static Serializer globalSerializer;
         private static Serializer globalSerializerKeepOnlySealedOverrides;
@@ -136,8 +136,9 @@ namespace SiliconStudio.Core.Yaml
                         EmitShortTypeName = true,
                     };
 
-                foreach (var registeredAssembly in RegisteredAssemblies)
+                for (int index = RegisteredAssemblies.Count - 1; index >= 0; index--)
                 {
+                    var registeredAssembly = RegisteredAssemblies[index];
                     config.RegisterAssembly(registeredAssembly);
                 }
 

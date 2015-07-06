@@ -226,21 +226,10 @@ namespace SiliconStudio.Paradox.ProjectGenerator
 
             var processors = new List<IProjectProcessor>();
 
-            if (platform == "Android")
+            ProjectType projectType;
+            if (Enum.TryParse(platform, out projectType))
             {
-                processors.Add(new SynchronizeProjectProcessor(ProjectType.Android));
-            }
-            else if (platform == "iOS")
-            {
-                processors.Add(new SynchronizeProjectProcessor(ProjectType.iOS));
-            }
-            else if (platform == "WindowsPhone")
-            {
-                processors.Add(new SynchronizeProjectProcessor(ProjectType.WindowsPhone));
-            }
-            else if (platform == "WindowsStore")
-            {
-                processors.Add(new SynchronizeProjectProcessor(ProjectType.WindowsStore));
+                processors.Add(new SynchronizeProjectProcessor(projectType));
             }
 
             var projectProcessorContexts = new List<ProjectProcessorContext>();
@@ -518,6 +507,11 @@ namespace SiliconStudio.Paradox.ProjectGenerator
             else if (platform == "WindowsStore")
             {
                 configurations.Add("WindowsStore", "WindowsStore");
+                needDeploy = true;
+            }
+            else if (platform == "Windows10")
+            {
+                configurations.Add("Windows10", "Windows10");
                 needDeploy = true;
             }
             else if (platform == "iOS")

@@ -586,6 +586,45 @@ namespace SiliconStudio.TextureConverter.PvrttWrapper
                 throw new TextureToolsException("Unknown format by PowerVC Texture Tool.");
         }
 
+        public int GetAlphaDepth()
+        {
+            UInt64 format = pvrttGetPixelType(header);
+            if (format <= 0xffffffff)
+            {
+                switch (format)
+                {
+                    case (int)EPVRTPixelFormat.ePVRTPF_PVRTCI_2bpp_RGB:
+                    case (int)EPVRTPixelFormat.ePVRTPF_PVRTCI_4bpp_RGB:
+                    case (int)EPVRTPixelFormat.ePVRTPF_ETC1:
+                    case (int)EPVRTPixelFormat.ePVRTPF_ETC2_RGB:
+                    case (int)EPVRTPixelFormat.ePVRTPF_EAC_R11:
+                    case (int)EPVRTPixelFormat.ePVRTPF_EAC_RG11:
+                        return 0;
+
+                    case (int)EPVRTPixelFormat.ePVRTPF_ETC2_RGB_A1:
+                        return 1;
+
+                    case (int)EPVRTPixelFormat.ePVRTPF_ETC2_RGBA:
+                    case (int)EPVRTPixelFormat.ePVRTPF_PVRTCI_2bpp_RGBA:
+                    case (int)EPVRTPixelFormat.ePVRTPF_PVRTCI_4bpp_RGBA:
+                        return 8;
+
+                    case (int)EPVRTPixelFormat.ePVRTPF_PVRTCII_2bpp:
+                    case (int)EPVRTPixelFormat.ePVRTPF_PVRTCII_4bpp:
+                        return 8;  // or 0
+                }
+                return 0;
+            }
+            for (int i = 0 ; i < 4 ; i++)
+            {
+                if (((format & 255)|0x20) == 'a')
+                {
+                    return ((int)(format>>32) & 255);
+                }
+                format >>= 8;
+            }
+            return 0;
+        }
 
         public void Dispose()
         {

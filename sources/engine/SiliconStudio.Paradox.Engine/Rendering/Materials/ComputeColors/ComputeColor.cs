@@ -1,10 +1,10 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.ComponentModel;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Materials;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
@@ -13,6 +13,17 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
     [Display("Color")]
     public class ComputeColor : ComputeValueBase<Color4>, IComputeColor
     {
+        /// <summary>
+        /// Gets or sets a value indicating whether to convert the texture in pre-multiplied alpha.
+        /// </summary>
+        /// <value><c>true</c> to convert the texture in pre-multiplied alpha.; otherwise, <c>false</c>.</value>
+        /// <userdoc>
+        /// If checked, The color values will be pre-multiplied by the alpha value.
+        /// </userdoc>
+        [DataMember(10)]
+        [DefaultValue(true)]
+        public bool PremultiplyAlpha { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ComputeColor"/> class.
         /// </summary>
@@ -28,6 +39,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         public ComputeColor(Color4 value)
             : base(value)
         {
+            PremultiplyAlpha = true;
         }
 
         /// <inheritdoc/>
@@ -42,6 +54,8 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
 
             // Store the color in Linear space
             var color = Value.ToLinear();
+            if (PremultiplyAlpha)
+                color = Color4.PremultiplyAlpha(color);
             
             if (key is ParameterKey<Color4>)
             {

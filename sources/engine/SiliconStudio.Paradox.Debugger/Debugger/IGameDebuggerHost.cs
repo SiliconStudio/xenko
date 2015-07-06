@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.ServiceModel;
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Paradox.Debugger.Target
 {
@@ -16,5 +17,8 @@ namespace SiliconStudio.Paradox.Debugger.Target
 
         [OperationContract]
         void OnGameExited();
+
+        [OperationContract(IsOneWay = true)]
+        void OnLogMessage(SerializableLogMessage logMessage);
     }
 }

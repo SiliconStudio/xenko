@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SiliconStudio.Paradox.Graphics.Regression</RootNamespace>
     <AssemblyName>SiliconStudio.Paradox.Graphics.Regression</AssemblyName>
-    <ParadoxBuildTags>*</ParadoxBuildTags>
+    <ParadoxBuildTags>Windows;WindowsStore;WindowsPhone;Android;iOS</ParadoxBuildTags>
     <DefineConstants>$(DefineConstants);XAMCORE_2_0</DefineConstants>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
@@ -58,10 +58,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup Condition="'$(SiliconStudioPlatform)' == 'Android'">
