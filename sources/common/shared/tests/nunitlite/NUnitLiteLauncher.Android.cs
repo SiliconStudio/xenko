@@ -44,7 +44,7 @@ using TextUI = SiliconStudio.Paradox.Graphics.Regression.TextUI;
 
 namespace NUnitLite.Tests
 {
-    [Activity(MainLauncher = true)]
+    [Activity(MainLauncher = true, Name = "nunitlite.tests.MainActivity")]
     public class MainActivity : Activity
     {
         private const char IpAddressesSplitCharacter = '%';

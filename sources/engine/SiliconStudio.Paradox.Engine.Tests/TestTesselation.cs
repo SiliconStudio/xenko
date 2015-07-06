@@ -208,7 +208,8 @@ namespace SiliconStudio.Paradox.Engine.Tests
         [Test]
         public void RunTestGame()
         {
-            RunGameTest(new TestTesselation());
+            if (Platform.Type == PlatformType.Windows) // this test requires profile 11.0
+                RunGameTest(new TestTesselation());
         }
 
         static public void Main()

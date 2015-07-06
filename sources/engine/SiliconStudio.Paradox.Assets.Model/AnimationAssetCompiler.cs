@@ -11,7 +11,6 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Animations;
-using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Assets.Model
 {

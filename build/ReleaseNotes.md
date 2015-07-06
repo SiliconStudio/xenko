@@ -6,6 +6,7 @@ Release date: 2015/XX/XX
 
 #### Enhancements
 - Assets: Add `Auto` alpha format for automatic alpha detection in textures.
+- Effects: FXAA quality setting can be changed and it can now be properly disabled.
 - Studio: When selecting a model, material or texture in the asset view, entities that use it will be highlighted in the scene editor
 - Studio: Added a button in the material properties of an entity to highlight them in the scene editor.
 - Studio: Added a material selection mode. When active, it is possible to highlight different materials of a selected entity with the mouse cursor (in the scene editor and in the property grid), and select in the asset view them by clicking on them in the scene editor.
@@ -13,8 +14,10 @@ Release date: 2015/XX/XX
 - Studio: Setting a diffuse map/specular map on a material will also set the diffuse model/specular model of this material.
 - Studio: Keyboard shortcut to switch between transformation gizmos (W, E, R, Space by default)
 - Engine: Add the possibility to enable/disable the depth test in sprite component.
+- Engine: Add a `PremultiplyAlpha` field to `ComputeColor` to be able to easily set pre-multiplied colors from the editor.
 
 #### Issues fixed
+- Studio: Fix the animation preview that where not properly updating when the source file was modified.
 - Engine: The center of sprites is now properly taken in account when rendered by the CameraRenderer.
 - Engine: Fixed an issue that prevented frustum culling from working.
 - Shaders: Ambient occlusion now correctly affects ambient light.

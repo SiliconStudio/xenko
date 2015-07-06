@@ -40,7 +40,7 @@ namespace SiliconStudio.Core
     /// </summary>
     public static class Utilities
     {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_PHONE || SILICONSTUDIO_PLATFORM_WINDOWS_STORE
+#if SILICONSTUDIO_PLATFORM_WINDOWS_PHONE || SILICONSTUDIO_PLATFORM_WINDOWS_STORE || SILICONSTUDIO_PLATFORM_WINDOWS10
         public unsafe static void CopyMemory(IntPtr dest, IntPtr src, int sizeInBytesToCopy)
         {
             Interop.memcpy((void*)dest, (void*)src, sizeInBytesToCopy);

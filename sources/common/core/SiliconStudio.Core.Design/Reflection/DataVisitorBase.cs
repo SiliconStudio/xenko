@@ -256,7 +256,7 @@ namespace SiliconStudio.Core.Reflection
             Visit(value, valueDescriptor);
         }
 
-        private bool CanVisit(object obj)
+        protected virtual bool CanVisit(object obj)
         {
             // Always visit valuetypes
             if (obj.GetType().GetTypeInfo().IsValueType)
