@@ -14,8 +14,10 @@ Release date: 2015/XX/XX
 - Studio: Setting a diffuse map/specular map on a material will also set the diffuse model/specular model of this material.
 - Studio: Keyboard shortcut to switch between transformation gizmos (W, E, R, Space by default)
 - Engine: Add the possibility to enable/disable the depth test in sprite component.
+- Engine: Add a `PremultiplyAlpha` field to `ComputeColor` to be able to easily set pre-multiplied colors from the editor.
 
 #### Issues fixed
+- Studio: Fix the animation preview that where not properly updating when the source file was modified.
 - Engine: The center of sprites is now properly taken in account when rendered by the CameraRenderer.
 - Engine: Fixed an issue that prevented frustum culling from working.
 - Shaders: Ambient occlusion now correctly affects ambient light.
