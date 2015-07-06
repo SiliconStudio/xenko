@@ -19,6 +19,7 @@ using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.VisualStudio;
+using ILogger = SiliconStudio.Core.Diagnostics.ILogger;
 
 namespace SiliconStudio.Assets
 {
