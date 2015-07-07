@@ -245,7 +245,7 @@ namespace SiliconStudio.Assets
             // TODO: Check version for default package
             if (packageName == DefaultPackageName)
             {
-                if (versionRange.Contains(DefaultPackageVersion))
+                if (versionRange == null || versionRange.Contains(DefaultPackageVersion))
                 {
                     return defaultPackageDirectory;
                 }
