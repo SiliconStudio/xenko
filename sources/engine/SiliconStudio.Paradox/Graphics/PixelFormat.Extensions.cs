@@ -632,6 +632,8 @@ namespace SiliconStudio.Paradox.Graphics
                     PixelFormat.R16G16B16A16_Float,
                     PixelFormat.R16G16_Float,
                     PixelFormat.R16_Float,
+                    PixelFormat.BC6H_Sf16,
+                    PixelFormat.BC6H_Uf16,
             }, hdrFormats);
 
             // Init typeless formats

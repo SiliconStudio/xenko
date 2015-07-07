@@ -19,6 +19,7 @@ namespace SiliconStudio.Paradox.Assets
         private const string XamariniOSBuild = @"MSBuild\Xamarin\iOS\Xamarin.iOS.CSharp.targets";
         private const string XamarinAndroidBuild = @"MSBuild\Xamarin\Android\Xamarin.Android.CSharp.targets";
         private const string WindowsRuntimeBuild = @"MSBuild\Microsoft\WindowsXaml\v12.0\8.1\Microsoft.Windows.UI.Xaml.Common.Targets";
+        private const string Windows10UniversalRuntimeBuild = @"MSBuild\Microsoft\WindowsXaml\v14.0\8.2\Microsoft.Windows.UI.Xaml.Common.Targets";
         private static readonly string ProgramFilesX86 = Environment.GetEnvironmentVariable(Environment.Is64BitOperatingSystem ? "ProgramFiles(x86)" : "ProgramFiles");
 
         public static SettingsValueKey<DisplayOrientation> DisplayOrientation = new SettingsValueKey<DisplayOrientation>("Paradox.DisplayOrientation", PackageProfile.SettingsGroup);
@@ -115,7 +116,7 @@ namespace SiliconStudio.Paradox.Assets
                 Name = PlatformType.Windows10.ToString(),
                 DisplayName = "Windows 10",
                 Type = PlatformType.Windows10,
-                IsAvailable = IsFileInProgramFilesx86Exist(WindowsRuntimeBuild),
+                IsAvailable = IsFileInProgramFilesx86Exist(Windows10UniversalRuntimeBuild),
                 UseWithExecutables = false,
                 IncludeInSolution = false,
             };
