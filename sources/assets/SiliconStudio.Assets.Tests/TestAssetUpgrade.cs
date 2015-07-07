@@ -131,11 +131,18 @@ namespace SiliconStudio.Assets.Tests
 
         public void TestUpgrade(MyUpgradedAsset asset, bool needMigration)
         {
-            var outputFilePath = Path.Combine(DirectoryTestBase, @"TestUpgrade\Asset1.pdxobj");
+            var loadingFilePath = new PackageLoadingAssetFile(Path.Combine(DirectoryTestBase, "TestUpgrade\\Asset1.pdxobj"), "");
+            var outputFilePath = loadingFilePath.FilePath.FullPath;
             AssetSerializer.Save(outputFilePath, asset);
 
             var logger = new LoggerResult();
-            Assert.AreEqual(AssetMigration.MigrateAssetIfNeeded(logger, outputFilePath), needMigration);
+            Assert.AreEqual(AssetMigration.MigrateAssetIfNeeded(logger, loadingFilePath), needMigration);
+
+            if (needMigration)
+            {
+                using (var fileStream = new FileStream(outputFilePath, FileMode.Truncate))
+                    fileStream.Write(loadingFilePath.AssetContent, 0, loadingFilePath.AssetContent.Length);
+            }
 
             Console.WriteLine(File.ReadAllText(outputFilePath).Trim());
 
