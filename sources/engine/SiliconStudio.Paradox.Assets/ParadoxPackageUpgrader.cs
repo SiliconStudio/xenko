@@ -3,6 +3,8 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
@@ -27,7 +29,41 @@ namespace SiliconStudio.Paradox.Assets
 
             // Nothing to do for now, most of the work is already done by individual asset upgraders
             // We can later add logic here for package-wide upgrades (i.e. GameSettingsAsset)
+            if (dependency.Version.MinVersion < new PackageVersion("1.2.0-beta"))
+            {
+                // UIImageGroups and SpriteGroups asset have been merged into a single SpriteSheet => rename the assets and modify the tag
+                var uiImageGroups = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".pdxuiimage");
+                var spitesGroups = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".pdxsprite");
+                RenameAndChangeTag(uiImageGroups, "!UIImageGroup");
+                RenameAndChangeTag(spitesGroups, "!SpriteGroup");
+            }
+
             return true;
+        }
+
+        private void RenameAndChangeTag(IEnumerable<PackageLoadingAssetFile> groupFiles, string oldTag)
+        {
+            var oldTagLength = System.Text.Encoding.UTF8.GetBytes(oldTag).Length;
+            var newTagBuffer = System.Text.Encoding.UTF8.GetBytes("!SpriteSheet");
+            
+            foreach (var file in groupFiles)
+            {
+                // rename the file
+                var oldPath = file.FilePath;
+                file.FilePath = new UFile(oldPath.GetDirectory(), oldPath.GetFileName(), ".pdxsheet");
+
+                // modify the content
+                using (var stream = new FileStream(oldPath.FullPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    file.AssetContent = new byte[stream.Length + newTagBuffer.Length - oldTagLength];
+                    using (var memoryStream = new MemoryStream(file.AssetContent))
+                    {
+                        memoryStream.Write(newTagBuffer, 0, newTagBuffer.Length);
+                        stream.Position = oldTagLength;
+                        stream.CopyTo(memoryStream);
+                    }
+                }
+            }
         }
     }
 }
