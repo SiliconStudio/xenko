@@ -16,21 +16,23 @@ namespace SiliconStudio
         public static ProcessOutputs RunProcessAndGetOutput(string command, string parameters)
         {
             var outputs = new ProcessOutputs();
-            var adbProcess = Process.Start(
+            using (var adbProcess = Process.Start(
                 new ProcessStartInfo(command, parameters)
                 {
                     UseShellExecute = false,
                     CreateNoWindow = true,
                     RedirectStandardError = true,
                     RedirectStandardOutput = true,
-                });
-            adbProcess.OutputDataReceived += (_, args) => LockProcessAndAddDataToList(adbProcess, outputs.OutputLines, args);
-            adbProcess.ErrorDataReceived += (_, args) => LockProcessAndAddDataToList(adbProcess, outputs.OutputErrors, args);
-            adbProcess.BeginOutputReadLine();
-            adbProcess.BeginErrorReadLine();
-            adbProcess.WaitForExit();
+                }))
+            {
+                adbProcess.OutputDataReceived += (_, args) => LockProcessAndAddDataToList(adbProcess, outputs.OutputLines, args);
+                adbProcess.ErrorDataReceived += (_, args) => LockProcessAndAddDataToList(adbProcess, outputs.OutputErrors, args);
+                adbProcess.BeginOutputReadLine();
+                adbProcess.BeginErrorReadLine();
+                adbProcess.WaitForExit();
 
-            outputs.ExitCode = adbProcess.ExitCode;
+                outputs.ExitCode = adbProcess.ExitCode;
+            }
 
             return outputs;
         }

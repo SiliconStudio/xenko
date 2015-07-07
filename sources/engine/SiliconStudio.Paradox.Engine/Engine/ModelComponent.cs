@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Engine
     /// Add a <see cref="Model"/> to an <see cref="Entity"/>, that will be used during rendering.
     /// </summary>
     [DataContract("ModelComponent")]
-    [Display(110, "Model")]
+    [Display(110, "Model", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(ModelComponentAndPickingRenderer))]
     [DefaultEntityComponentProcessor(typeof(ModelProcessor))]
     public sealed class ModelComponent : EntityComponent, IModelInstance
@@ -96,19 +96,10 @@ namespace SiliconStudio.Paradox.Engine
         }
 
         /// <summary>
-        /// Gets or sets the draw order (from lowest to highest).
-        /// </summary>
-        /// <value>
-        /// The draw order.
-        /// </value>
-        [DataMember(30)]
-        public float DrawOrder { get; set; }
-
-        /// <summary>
         /// Gets or sets a boolean indicating if this model component is casting shadows.
         /// </summary>
         /// <value>A boolean indicating if this model component is casting shadows.</value>
-        [DataMember(40)]
+        [DataMember(30)]
         [DefaultValue(true)]
         [Display("Cast Shadows?")]
         public bool IsShadowCaster { get; set; }

@@ -29,15 +29,14 @@ namespace SiliconStudio.Paradox.Rendering
             Renderer = renderer;
             DrawContext = drawContext;
 
-            // If depth less than 0, than set it to 0
-            if (depth < MathUtil.ZeroTolerance)
-            {
-                depth = 0.0f;
-            }
-
             unsafe
             {
                 Depth = *(int*)&depth;
+
+                // Ordering of negative float and int values is reversed, since negative ints are ordered (bitwise)
+                // by increasing value, while negative floats are ordered by increasing absolute value
+                if (Depth < 0)
+                    Depth = (1 << 31) - Depth;
             }
         }
 

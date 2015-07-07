@@ -56,6 +56,7 @@ namespace SiliconStudio.Paradox.Graphics
 #else
         private const BufferUsageHint BufferUsageHintStreamRead = BufferUsageHint.StreamRead;
 #endif
+        internal const TextureFlags TextureFlagsCustomResourceId = (TextureFlags)0x1000;
 
         internal SamplerState BoundSamplerState;
         private int pixelBufferObjectId;
@@ -168,6 +169,9 @@ namespace SiliconStudio.Paradox.Graphics
                     HasStencil = false;
                 }
 
+                if ((Description.Flags & TextureFlagsCustomResourceId) != 0)
+                    return;
+
                 using (GraphicsDevice.UseOpenGLCreationContext())
                 {
                     // Depth texture are render buffer for now
@@ -181,12 +185,17 @@ namespace SiliconStudio.Paradox.Graphics
                         GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, resourceId);
                         GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, depth, Width, Height);
 
-                        // separate stencil
                         if (stencil != 0)
                         {
+                            // separate stencil
                             GL.GenRenderbuffers(1, out resourceIdStencil);
                             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, resourceIdStencil);
                             GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, stencil, Width, Height);
+                        }
+                        else if (HasStencil)
+                        {
+                            // depth+stencil in a single texture
+                            resourceIdStencil = resourceId;
                         }
 
                         GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
@@ -203,18 +212,13 @@ namespace SiliconStudio.Paradox.Graphics
                     }
 
                     // No filtering on depth buffer
-                    if ((Description.Flags & (TextureFlags.RenderTarget | TextureFlags.DepthStencil)) !=
-                        TextureFlags.None)
+                    if ((Description.Flags & (TextureFlags.RenderTarget | TextureFlags.DepthStencil)) != TextureFlags.None)
                     {
-                        GL.TexParameter(Target, TextureParameterName.TextureMinFilter,
-                            (int)TextureMinFilter.Nearest);
-                        GL.TexParameter(Target, TextureParameterName.TextureMagFilter,
-                            (int)TextureMagFilter.Nearest);
-                        GL.TexParameter(Target, TextureParameterName.TextureWrapS,
-                            (int)TextureWrapMode.ClampToEdge);
-                        GL.TexParameter(Target, TextureParameterName.TextureWrapT,
-                            (int)TextureWrapMode.ClampToEdge);
-                    BoundSamplerState = GraphicsDevice.SamplerStates.PointClamp;
+                        GL.TexParameter(Target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+                        GL.TexParameter(Target, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+                        GL.TexParameter(Target, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+                        GL.TexParameter(Target, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+                        BoundSamplerState = GraphicsDevice.SamplerStates.PointClamp;
                     }
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                     else if (Description.MipLevels <= 1)

@@ -19,6 +19,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
         public void Initialize()
         {
             AssetRegistry.RegisterAssembly(typeof(ModelAsset).Assembly);
+            AssetRegistry.RegisterAssembly(typeof(EntityAsset).Assembly);
         }
 
         [Test]

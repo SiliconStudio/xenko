@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Engine
     /// Add a light to an <see cref="Entity"/>, that will be used during rendering.
     /// </summary>
     [DataContract("LightComponent")]
-    [Display(120, "Light")]
+    [Display(120, "Light", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(LightComponentRenderer), -10)]
     [DefaultEntityComponentProcessor(typeof(LightProcessor))]
     public sealed class LightComponent : EntityComponent
@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>The type of the light.</value>
         [DataMember(10)]
         [NotNull]
-        [Display("Light", AlwaysExpand = true)]
+        [Display("Light", Expand = ExpandRule.Always)]
         public ILight Type { get; set; }
 
         /// <summary>

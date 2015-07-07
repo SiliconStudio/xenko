@@ -33,10 +33,6 @@ using System.Threading;
 using TaskEx = System.Threading.Tasks.Task;
 #endif
 
-#if SILICONSTUDIO_PLATFORM_IOS
-using MonoTouch;
-#endif
-
 namespace SiliconStudio.Core
 {
     /// <summary>
@@ -44,18 +40,18 @@ namespace SiliconStudio.Core
     /// </summary>
     public static class Utilities
     {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
+#if SILICONSTUDIO_PLATFORM_WINDOWS_PHONE || SILICONSTUDIO_PLATFORM_WINDOWS_STORE || SILICONSTUDIO_PLATFORM_WINDOWS10
         public unsafe static void CopyMemory(IntPtr dest, IntPtr src, int sizeInBytesToCopy)
         {
             Interop.memcpy((void*)dest, (void*)src, sizeInBytesToCopy);
         }
 #else
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_WINDOWS_STORE
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         private const string MemcpyDll = "msvcrt.dll";
 #elif SILICONSTUDIO_PLATFORM_ANDROID
         private const string MemcpyDll = "libc.so";
 #elif SILICONSTUDIO_PLATFORM_IOS
-        private const string MemcpyDll = Constants.SystemLibrary;
+        private const string MemcpyDll = ObjCRuntime.Constants.SystemLibrary;
 #else
 #   error Unsupported platform
 #endif

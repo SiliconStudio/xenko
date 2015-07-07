@@ -12,11 +12,16 @@ using SiliconStudio.Core.Yaml;
 namespace SiliconStudio.Assets.Serializers
 {
     [YamlSerializerFactory]
-    internal class ContentReferenceSerializer : AssetScalarSerializerBase
+    public class ContentReferenceSerializer : AssetScalarSerializerBase
     {
         public static readonly ContentReferenceSerializer Default = new ContentReferenceSerializer();
 
         public override bool CanVisit(Type type)
+        {
+            return IsReferenceType(type);
+        }
+
+        public static bool IsReferenceType(Type type)
         {
             // TODO: Quite inefficient, probably need an attribute
             var serializer = SerializerSelector.AssetWithReuse.GetSerializer(type);

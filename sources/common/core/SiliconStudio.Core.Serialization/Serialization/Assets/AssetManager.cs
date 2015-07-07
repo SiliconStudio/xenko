@@ -196,9 +196,9 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <summary>
         /// Gets a previously loaded asset from its URL.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="url">The URL.</param>
-        /// <returns></returns>
+        /// <typeparam name="T">The type of asset to retrieve.</typeparam>
+        /// <param name="url">The URL of the asset to retrieve.</param>
+        /// <returns>The loaded asset, or <c>null</c> if the asset has not been loaded.</returns>
         public T Get<T>(string url)
         {
             return (T)Get(typeof(T), url);
@@ -207,9 +207,9 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <summary>
         /// Gets a previously loaded asset from its URL.
         /// </summary>
-        /// <param name="type">The type.</param>
-        /// <param name="url">The URL.</param>
-        /// <returns></returns>
+        /// <param name="type">The type of asset to retrieve.</param>
+        /// <param name="url">The URL of the asset to retrieve.</param>
+        /// <returns>The loaded asset, or <c>null</c> if the asset has not been loaded.</returns>
         public object Get(Type type, string url)
         {
             var reference = FindDeserializedObject(url, type);
@@ -667,7 +667,7 @@ namespace SiliconStudio.Core.Serialization.Assets
             }
 
             // Log error
-            Log.Error("Asset [{0}] could not be found.");
+            Log.Error("Asset [{0}] could not be found.", url);
         }
     }
 }

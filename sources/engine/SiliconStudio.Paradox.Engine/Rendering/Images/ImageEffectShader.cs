@@ -12,6 +12,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
     /// <summary>
     /// Post effect using an <see cref="Effect"/> (either pdxfx or pdxsl).
     /// </summary>
+    [DataContract("ImageEffectShader")]
     public class ImageEffectShader : ImageEffect
     {
         /// <summary>

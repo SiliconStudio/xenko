@@ -202,9 +202,9 @@ namespace SiliconStudio.AssemblyProcessor
                             throw new InvalidOperationException("Expecting option target framework for iOS");
                         }
 
-                        var monoAndroidPath = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Reference Assemblies\Microsoft\Framework\MonoTouch");
-                        frameworkFolder = Path.Combine(monoAndroidPath, "v1.0");
-                        var additionalFrameworkFolder = Path.Combine(monoAndroidPath, TargetFramework);
+                        var monoTouchPath = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Reference Assemblies\Microsoft\Framework\Xamarin.iOS");
+                        frameworkFolder = Path.Combine(monoTouchPath, "v1.0");
+                        var additionalFrameworkFolder = Path.Combine(monoTouchPath, TargetFramework);
                         assemblyResolver.AddSearchDirectory(additionalFrameworkFolder);
                         assemblyResolver.AddSearchDirectory(frameworkFolder);
 
@@ -242,6 +242,27 @@ namespace SiliconStudio.AssemblyProcessor
 
                         // Add path to look for WinRT assemblies (Windows.winmd)
                         var windowsAssemblyPath = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Windows Phone Kits\8.1\References\CommonConfiguration\Neutral\", "Windows.winmd");
+                        var windowsAssembly = AssemblyDefinition.ReadAssembly(windowsAssemblyPath, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = false });
+                        assemblyResolver.Register(windowsAssembly);
+
+                        break;
+                    }
+
+                    case PlatformType.Windows10:
+                    {
+                        if (string.IsNullOrEmpty(TargetFramework))
+                        {
+                            throw new InvalidOperationException("Expecting option target framework for Windows10");
+                        }
+
+                        frameworkFolder = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Reference Assemblies\Microsoft\Framework\.NETCore", TargetFramework);
+                        assemblyResolver.AddSearchDirectory(frameworkFolder);
+
+                        // Add path to look for WinRT assemblies (Windows.Foundation.FoundationContract.winmd, etc...)
+                        assemblyResolver.WindowsKitsReferenceDirectory = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Windows Kits\10\References");
+
+                        // Add path to look for WinRT assemblies (Windows.winmd)
+                        var windowsAssemblyPath = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Windows Kits\8.1\References\CommonConfiguration\Neutral\", "Windows.winmd");
                         var windowsAssembly = AssemblyDefinition.ReadAssembly(windowsAssemblyPath, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = false });
                         assemblyResolver.Register(windowsAssembly);
 

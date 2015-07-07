@@ -9,6 +9,7 @@ namespace SiliconStudio.Assets.Compiler
     /// <summary>
     /// A registry containing the thumbnail compilers of the assets.
     /// </summary>
+    [Obsolete]
     public class ThumbnailCompilerRegistry : AttributeBasedRegistry<ThumbnailCompilerAttribute, IAssetCompiler>
     {
         private readonly Dictionary<Type, int> typeToCompilerPriority = new Dictionary<Type, int>();

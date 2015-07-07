@@ -23,7 +23,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
+
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -37,7 +38,8 @@ namespace SiliconStudio.Paradox.Graphics
         private static readonly bool[] srgbFormats = new bool[256];
         private static readonly bool[] hdrFormats = new bool[256];
         private static readonly bool[] typelessFormats = new bool[256];
-
+        private static readonly Dictionary<PixelFormat, PixelFormat> sRgbConvertion;
+        
         private static int GetIndex(PixelFormat format)
         {
             // DirectX official pixel formats (0..115 use 0..127 in the arrays)
@@ -61,11 +63,101 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// Calculates the size of a <see cref="PixelFormat"/> in bits.
         /// </summary>
-        /// <param name="format">The dxgi format.</param>
-        /// <returns>size of in bits</returns>
+        /// <param name="format">The pixel format.</param>
+        /// <returns>The size in bits</returns>
         public static int SizeInBits(this PixelFormat format)
         {
             return sizeOfInBits[GetIndex(format)];
+        }
+
+        /// <summary>
+        /// Calculate the size of the alpha channel in bits depending on the pixel format.
+        /// </summary>
+        /// <param name="format">The pixel format</param>
+        /// <returns>The size in bits</returns>
+        public static int AlphaSizeInBits(this PixelFormat format)
+        {
+            switch (format)
+            {
+                case PixelFormat.R32G32B32A32_Typeless:
+                case PixelFormat.R32G32B32A32_Float:
+                case PixelFormat.R32G32B32A32_UInt:
+                case PixelFormat.R32G32B32A32_SInt:
+                    return 32;
+
+                case PixelFormat.R16G16B16A16_Typeless:
+                case PixelFormat.R16G16B16A16_Float:
+                case PixelFormat.R16G16B16A16_UNorm:
+                case PixelFormat.R16G16B16A16_UInt:
+                case PixelFormat.R16G16B16A16_SNorm:
+                case PixelFormat.R16G16B16A16_SInt:
+                    return 16;
+
+                case PixelFormat.R10G10B10A2_Typeless:
+                case PixelFormat.R10G10B10A2_UNorm:
+                case PixelFormat.R10G10B10A2_UInt:
+                case PixelFormat.R10G10B10_Xr_Bias_A2_UNorm:
+                    return 2;
+
+                case PixelFormat.R8G8B8A8_Typeless:
+                case PixelFormat.R8G8B8A8_UNorm:
+                case PixelFormat.R8G8B8A8_UNorm_SRgb:
+                case PixelFormat.R8G8B8A8_UInt:
+                case PixelFormat.R8G8B8A8_SNorm:
+                case PixelFormat.R8G8B8A8_SInt:
+                case PixelFormat.B8G8R8A8_UNorm:
+                case PixelFormat.B8G8R8A8_Typeless:
+                case PixelFormat.B8G8R8A8_UNorm_SRgb:
+                case PixelFormat.A8_UNorm:
+                    return 8;
+
+                case (PixelFormat)115: // DXGI_FORMAT_B4G4R4A4_UNORM
+                    return 4;
+
+                case PixelFormat.B5G5R5A1_UNorm:
+                    return 1;
+
+                case PixelFormat.BC1_Typeless:
+                case PixelFormat.BC1_UNorm:
+                case PixelFormat.BC1_UNorm_SRgb:
+                    return 1;  // or 0
+
+                case PixelFormat.BC2_Typeless:
+                case PixelFormat.BC2_UNorm:
+                case PixelFormat.BC2_UNorm_SRgb:
+                    return 4;
+
+                case PixelFormat.BC3_Typeless:
+                case PixelFormat.BC3_UNorm:
+                case PixelFormat.BC3_UNorm_SRgb:
+                    return 8;
+
+                case PixelFormat.BC7_Typeless:
+                case PixelFormat.BC7_UNorm:
+                case PixelFormat.BC7_UNorm_SRgb:
+                    return 8;  // or 0
+
+                case PixelFormat.PVRTC_2bpp_RGBA:
+                case PixelFormat.PVRTC_4bpp_RGBA:
+                    return 8;
+
+                case PixelFormat.PVRTC_II_2bpp:
+                case PixelFormat.PVRTC_II_4bpp:
+                    return 8;  // or 0
+
+                case PixelFormat.ETC2_RGBA:
+                    return 8;
+
+                case PixelFormat.ETC2_RGB_A1:
+                    return 1;
+
+                case PixelFormat.ATC_RGBA_Explicit:
+                    return 4;
+
+                case PixelFormat.ATC_RGBA_Interpolated:
+                    return 8;
+            }
+            return 0;
         }
 
         /// <summary>
@@ -223,6 +315,131 @@ namespace SiliconStudio.Paradox.Graphics
 
                 default:
                     return height;
+            }
+        }
+        
+        /// <summary>
+        /// Determine if the format has an equivalent sRGB format.
+        /// </summary>
+        /// <param name="format">the non-sRGB format</param>
+        /// <returns>true if the format has an sRGB equivalent</returns>
+        public static bool HasSRgbEquivalent(this PixelFormat format)
+        {
+            if (format.IsSRgb())
+                throw new ArgumentException("The '{0}' format is already an sRGB format".ToFormat(format));
+
+            return sRgbConvertion.ContainsKey(format);
+        }
+
+        /// <summary>
+        /// Determine if the format has an equivalent non-sRGB format.
+        /// </summary>
+        /// <param name="format">the sRGB format</param>
+        /// <returns>true if the format has an non-sRGB equivalent</returns>
+        public static bool HasNonSRgbEquivalent(this PixelFormat format)
+        {
+            if (!format.IsSRgb())
+                throw new ArgumentException("The provided format is not a sRGB format");
+
+            return sRgbConvertion.ContainsKey(format);
+        }
+
+        /// <summary>
+        /// Find the equivalent sRGB format to the provided format.
+        /// </summary>
+        /// <param name="format">The non sRGB format.</param>
+        /// <returns>
+        /// The equivalent sRGB format if any, the provided format else.
+        /// </returns>
+        public static PixelFormat ToSRgb(this PixelFormat format)
+        {
+            if (format.IsSRgb() || !sRgbConvertion.ContainsKey(format))
+                return format;
+
+            return sRgbConvertion[format];
+        }
+
+        /// <summary>
+        /// Find the equivalent non sRGB format to the provided sRGB format.
+        /// </summary>
+        /// <param name="format">The non sRGB format.</param>
+        /// <returns>
+        /// The equivalent non sRGB format if any, the provided format else.
+        /// </returns>
+        public static PixelFormat ToNonSRgb(this PixelFormat format)
+        {
+            if (!format.IsSRgb() || !sRgbConvertion.ContainsKey(format))
+                return format;
+
+            return sRgbConvertion[format];
+        }
+
+        /// <summary>
+        /// Determines whether the specified format is in RGBA order.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified format is in RGBA order; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsRGBAOrder(this PixelFormat format)
+        {
+            switch (format)
+            {
+                case PixelFormat.R32G32B32A32_Typeless:
+                case PixelFormat.R32G32B32A32_Float:
+                case PixelFormat.R32G32B32A32_UInt:
+                case PixelFormat.R32G32B32A32_SInt:
+                case PixelFormat.R32G32B32_Typeless:
+                case PixelFormat.R32G32B32_Float:
+                case PixelFormat.R32G32B32_UInt:
+                case PixelFormat.R32G32B32_SInt:
+                case PixelFormat.R16G16B16A16_Typeless:
+                case PixelFormat.R16G16B16A16_Float:
+                case PixelFormat.R16G16B16A16_UNorm:
+                case PixelFormat.R16G16B16A16_UInt:
+                case PixelFormat.R16G16B16A16_SNorm:
+                case PixelFormat.R16G16B16A16_SInt:
+                case PixelFormat.R32G32_Typeless:
+                case PixelFormat.R32G32_Float:
+                case PixelFormat.R32G32_UInt:
+                case PixelFormat.R32G32_SInt:
+                case PixelFormat.R32G8X24_Typeless:
+                case PixelFormat.R10G10B10A2_Typeless:
+                case PixelFormat.R10G10B10A2_UNorm:
+                case PixelFormat.R10G10B10A2_UInt:
+                case PixelFormat.R11G11B10_Float:
+                case PixelFormat.R8G8B8A8_Typeless:
+                case PixelFormat.R8G8B8A8_UNorm:
+                case PixelFormat.R8G8B8A8_UNorm_SRgb:
+                case PixelFormat.R8G8B8A8_UInt:
+                case PixelFormat.R8G8B8A8_SNorm:
+                case PixelFormat.R8G8B8A8_SInt:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// Determines whether the specified format is in BGRA order.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified format is in BGRA order; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsBGRAOrder(this PixelFormat format)
+        {
+            switch (format)
+            {
+                case PixelFormat.B8G8R8A8_UNorm:
+                case PixelFormat.B8G8R8X8_UNorm:
+                case PixelFormat.B8G8R8A8_Typeless:
+                case PixelFormat.B8G8R8A8_UNorm_SRgb:
+                case PixelFormat.B8G8R8X8_Typeless:
+                case PixelFormat.B8G8R8X8_UNorm_SRgb:
+                    return true;
+                default:
+                    return false;
             }
         }
 
@@ -447,6 +664,24 @@ namespace SiliconStudio.Paradox.Graphics
                     PixelFormat.BC6H_Typeless,
                     PixelFormat.BC7_Typeless,
                 }, typelessFormats);
+
+            sRgbConvertion = new Dictionary<PixelFormat, PixelFormat>
+            {
+                { PixelFormat.R8G8B8A8_UNorm_SRgb, PixelFormat.R8G8B8A8_UNorm },
+                { PixelFormat.R8G8B8A8_UNorm, PixelFormat.R8G8B8A8_UNorm_SRgb },
+                { PixelFormat.BC1_UNorm_SRgb, PixelFormat.BC1_UNorm },
+                { PixelFormat.BC1_UNorm, PixelFormat.BC1_UNorm_SRgb },
+                { PixelFormat.BC2_UNorm_SRgb, PixelFormat.BC2_UNorm },
+                { PixelFormat.BC2_UNorm, PixelFormat.BC2_UNorm_SRgb },
+                { PixelFormat.BC3_UNorm_SRgb, PixelFormat.BC3_UNorm },
+                { PixelFormat.BC3_UNorm, PixelFormat.BC3_UNorm_SRgb },
+                { PixelFormat.B8G8R8A8_UNorm_SRgb, PixelFormat.B8G8R8A8_UNorm },
+                { PixelFormat.B8G8R8A8_UNorm, PixelFormat.B8G8R8A8_UNorm_SRgb },
+                { PixelFormat.B8G8R8X8_UNorm_SRgb, PixelFormat.B8G8R8X8_UNorm },
+                { PixelFormat.B8G8R8X8_UNorm, PixelFormat.B8G8R8X8_UNorm_SRgb },
+                { PixelFormat.BC7_UNorm_SRgb, PixelFormat.BC7_UNorm },
+                { PixelFormat.BC7_UNorm, PixelFormat.BC7_UNorm_SRgb },
+            };
         }
 
         private static void InitFormat(IEnumerable<PixelFormat> formats, int bitCount)

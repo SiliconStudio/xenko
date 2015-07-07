@@ -96,29 +96,34 @@ namespace SiliconStudio.Quantum.Tests
         [Test]
         public void TestNodeConstruction()
         {
-            var simpleObject = new SimpleObject(1, 2, 3, 4) { Name = "Test", MemberToIgnore = int.MaxValue, SubObject = new SimpleObject(5, 6, 7, 8) };
-            simpleObject.Collection.Add("List Item");
-            simpleObject.Collection.Add(22.5);
-            simpleObject.Collection.Add(Guid.NewGuid());
-            simpleObject.Collection.Add(new List<string> { "one", "two", "three" });
-            simpleObject.Collection.Add(new SimpleObject(9, 10, 11, 12));
-            simpleObject.Dictionary.Add("Item1", "List Item");
-            simpleObject.Dictionary.Add("Item2", 22.5);
-            simpleObject.Dictionary.Add("Item3", Guid.NewGuid());
-            simpleObject.Dictionary.Add("Item4", new List<string> { "one", "two", "three" });
-            simpleObject.Dictionary.Add("Item5", new SimpleObject(9, 10, 11, 12));
-            var container = new ModelContainer();
-            var node = (ModelNode)container.GetOrCreateModelNode(simpleObject, simpleObject.GetType());
-            Console.WriteLine(node.PrintHierarchy());
-
-            var visitor = new ModelConsistencyCheckVisitor(container.NodeBuilder);
-            visitor.Check(node, simpleObject, typeof(SimpleObject), true);
-
-            foreach (var viewModel in container.Models)
+            var obj = new SimpleObject(1, 2, 3, 4)
             {
-                visitor.Check((ModelNode)viewModel, viewModel.Content.Value, viewModel.Content.Type, true);
-                Console.WriteLine(viewModel.PrintHierarchy());
-            }
+                Name = "Test",
+                MemberToIgnore = int.MaxValue,
+                SubObject = new SimpleObject(5, 6, 7, 8),
+                Collection = 
+                {
+                    "List Item",
+                    22.5,
+                    Guid.NewGuid(),
+                    new List<string> { "one", "two", "three" },
+                    new SimpleObject(9, 10, 11, 12),
+                },
+                Dictionary =
+                {
+                    { "Item1", "List Item" },
+                    { "Item2", 22.5 },
+                    { "Item3", Guid.NewGuid() },
+                    { "Item4", new List<string> { "one", "two", "three" } },
+                    { "Item5", new SimpleObject(9, 10, 11, 12) },
+                },
+            };
+
+            var container = new ModelContainer();
+            var node = (ModelNode)container.GetOrCreateModelNode(obj, obj.GetType());
+            Helper.PrintModelContainerContent(container, node);
+            // Run the consistency check to verify construction.
+            Helper.ConsistencyCheck(container, obj);
         }
 
         [Test]
@@ -127,17 +132,10 @@ namespace SiliconStudio.Quantum.Tests
             var obj = new ClassWithNullObject();
             var container = new ModelContainer();
             var node = (ModelNode)container.GetOrCreateModelNode(obj, obj.GetType());
-            Console.WriteLine(node.PrintHierarchy());
-
-            var visitor = new ModelConsistencyCheckVisitor(container.NodeBuilder);
-            visitor.Check(node, obj, typeof(ClassWithNullObject), true);
-
-            foreach (var viewModel in container.Models)
-            {
-                visitor.Check((ModelNode)viewModel, viewModel.Content.Value, viewModel.Content.Type, true);
-                Console.WriteLine(viewModel.PrintHierarchy());
-            }
-
+            Helper.PrintModelContainerContent(container, node);
+            // TODO: Asserts regarding the status of the null value
+            // Run the consistency check to verify construction.
+            Helper.ConsistencyCheck(container, obj);
         }
     }
 }

@@ -17,8 +17,8 @@ namespace SiliconStudio.Paradox.Engine.Tests
     [TestFixture]
     public class SpriteTestGame : EngineTestBase
     {
-        private Texture ballSprite1;
-        private Texture ballSprite2;
+        private SpriteGroup ballSprite1;
+        private SpriteGroup ballSprite2;
 
         private Entity ball;
 
@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
         private TransformComponent transfoComponent;
 
-        private Vector2 ballSpeed = new Vector2(-300, 200);
+        private Vector2 ballSpeed = new Vector2(-300, -200);
 
         private Entity foreground;
 
@@ -37,10 +37,10 @@ namespace SiliconStudio.Paradox.Engine.Tests
         private SpriteGroup groundSprites;
 
         public SpriteTestGame()
-        {
-            CurrentVersion = 4;
+        {   
+            CurrentVersion = 5;
             GraphicsDeviceManager.PreferredDepthStencilFormat = PixelFormat.D24_UNorm_S8_UInt;
-            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
+            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1 };
         }
 
         protected override async Task LoadContent()
@@ -52,13 +52,14 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
             // Creates the camera
             CameraComponent.UseCustomProjectionMatrix = true;
-            CameraComponent.ProjectionMatrix = SpriteBatch.CalculateDefaultProjection(new Vector3(areaSize, 200));
+            CameraComponent.ProjectionMatrix = Matrix.OrthoRH(areaSize.X, areaSize.Y, -2, 2);
 
             // Load assets
             groundSprites = Asset.Load<SpriteGroup>("GroundSprite");
-            ballSprite1 = Asset.Load<Texture>("Sphere1");
-            ballSprite2 = Asset.Load<Texture>("Sphere2");
-            ball = Asset.Load<Entity>("Ball");
+            ballSprite1 = Asset.Load<SpriteGroup>("BallSprite1");
+            ballSprite2 = Asset.Load<SpriteGroup>("BallSprite2");
+            ball = new Entity { new SpriteComponent { SpriteProvider = new SpriteFromSpriteGroup { SpriteGroup = Asset.Load<SpriteGroup>("BallSprite1") } } };
+            ball.Transform.Scale = new Vector3(150, 150, 1);
 
             // create fore/background entities
             foreground = new Entity();
@@ -72,15 +73,12 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
             spriteComponent = ball.Get(SpriteComponent.Key);
             transfoComponent = ball.Get(TransformComponent.Key);
-
-            transfoComponent.Position.X = areaSize.X / 2;
-            transfoComponent.Position.Y = areaSize.Y / 2;
-
+            
             var decorationScalings = new Vector3(areaSize.X, areaSize.Y, 1);
             background.Get(TransformComponent.Key).Scale = decorationScalings;
-            foreground.Get(TransformComponent.Key).Scale = decorationScalings;
+            foreground.Get(TransformComponent.Key).Scale = decorationScalings/2;
             background.Get(TransformComponent.Key).Position = new Vector3(0, 0, -1);
-            foreground.Get(TransformComponent.Key).Position = new Vector3(0, areaSize.Y, 1);
+            foreground.Get(TransformComponent.Key).Position = new Vector3(0, 0, 1);
 
             SpriteAnimation.Play(spriteComponent, 0, spriteComponent.SpriteProvider.SpritesCount-1, AnimationRepeatMode.LoopInfinite, 30);
         }
@@ -95,9 +93,9 @@ namespace SiliconStudio.Paradox.Engine.Tests
             FrameGameSystem.Update(() => SetSpriteImage(ballSprite2)).TakeScreenshot();
         }
 
-        private void SetSpriteImage(Texture texture)
+        private void SetSpriteImage(SpriteGroup sprite)
         {
-            spriteComponent.SpriteProvider = new SpriteFromTexture { Texture = texture, IsTransparent = true };
+            spriteComponent.SpriteProvider = new SpriteFromSpriteGroup { SpriteGroup = sprite };
         }
 
         protected override void Update(GameTime time)
@@ -139,8 +137,8 @@ namespace SiliconStudio.Paradox.Engine.Tests
             {
                 var nextPosition = transfoComponent.Position[i] + totalSeconds * ballSpeed[i];
 
-                var infBound = sprite.Center[i];
-                var supBound = areaSize[i] - (spriteSize[i] - sprite.Center[i]);
+                var infBound = -areaSize[i] / 2 + sprite.Center[i];
+                var supBound =  areaSize[i] / 2 - sprite.Center[i];
 
                 if (nextPosition > supBound || nextPosition<infBound)
                 {
@@ -153,21 +151,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
                 }
 
                 transfoComponent.Position[i] = nextPosition;
-
             }
-        }
-
-        protected override void Destroy()
-        {
-            if (ball != null)
-            {
-                Asset.Unload(ball);
-                Asset.Unload(ballSprite1);
-                Asset.Unload(ballSprite2);
-                Asset.Unload(groundSprites);
-            }
-
-            base.Destroy();
         }
 
         [Test]

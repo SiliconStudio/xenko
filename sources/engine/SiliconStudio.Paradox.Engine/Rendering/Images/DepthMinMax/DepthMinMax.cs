@@ -12,7 +12,8 @@ namespace SiliconStudio.Paradox.Rendering.Images
     {
         internal static ParameterKey<bool> IsFirstPassKey = ParameterKeys.New<bool>();
 
-        private ImageEffectShader effect;
+        // TODO: Currently capturing two effects, because pdxfx permutation triggers DynamicEffectCompiler
+        private ImageEffectShader effectFirstPass, effectNotFirstPass;
 
         private ImageReadback<Vector2> readback;
 
@@ -24,7 +25,8 @@ namespace SiliconStudio.Paradox.Rendering.Images
         {
             base.InitializeCore();
 
-            effect = ToLoadAndUnload(new ImageEffectShader("DepthMinMaxEffect"));
+            effectFirstPass = ToLoadAndUnload(new ImageEffectShader("DepthMinMaxEffect"));
+            effectNotFirstPass = ToLoadAndUnload(new ImageEffectShader("DepthMinMaxEffect"));
             readback = ToLoadAndUnload(new ImageReadback<Vector2>(Context));
         }
 
@@ -60,6 +62,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
 
                 downTexture = NewScopedRenderTarget2D(nextSize.Width, nextSize.Height, PixelFormat.R32G32_Float, 1);
 
+                var effect = isFirstPass ? effectFirstPass : effectNotFirstPass;
                 effect.Parameters.Set(DepthMinMaxShaderKeys.TextureMap, fromTexture);
                 effect.Parameters.Set(DepthMinMaxShaderKeys.TextureReduction, fromTexture);
 

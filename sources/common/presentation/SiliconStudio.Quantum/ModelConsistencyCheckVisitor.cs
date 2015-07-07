@@ -110,9 +110,11 @@ namespace SiliconStudio.Quantum
             }
             else
             {
+                if (referenceInfo == null)
+                    throw new QuantumConsistencyException("Content without reference", "Content with a reference", node);
                 if (node.Content.Reference.GetType() != referenceInfo.ReferenceType)
                     throw new QuantumConsistencyException("Content with a [{0}]", referenceInfo.ReferenceType.Name, "Content with a [{0}]", node.Content.Reference.GetType().Name, node);
-                if (node.Content.Value != obj)
+                if (!Equals(node.Content.Value, obj))
                     throw new QuantumConsistencyException("The node content value [{0}]", obj.ToStringSafe(), "The node content value [{0}]", node.Content.Value.ToStringSafe(), node);
                 if (node.Children.Count > 0)
                     throw new QuantumConsistencyException("A node with a reference and no child", null, "A node with a reference and [{0}] children", node.Children.Count.ToStringSafe(), node);
@@ -186,7 +188,7 @@ namespace SiliconStudio.Quantum
         private ReferenceInfo GetReferenceInfo(Type type, object value)
         {
             // Is it a reference?
-            if (!type.IsClass || IsPrimitiveType(type))
+            if ((!type.IsClass && !type.IsStruct()) || IsPrimitiveType(type))
                 return null;
 
             ITypeDescriptor descriptor = value != null ? TypeDescriptorFactory.Find(value.GetType()) : null;
@@ -228,7 +230,7 @@ namespace SiliconStudio.Quantum
             if (reference.TargetNode == null)
                 throw new QuantumConsistencyException("A resolved reference", "An unresolved reference", referencer);
 
-            if (referencer.Content.Reference == reference && referencer.Content.Value != reference.TargetNode.Content.Value)
+            if (referencer.Content.Reference == reference && !Equals(referencer.Content.Value, reference.TargetNode.Content.Value))
                 throw new QuantumConsistencyException("Referenced node with same content value that its referencer", "Referenced node with different content value that its referencer", referencer);
 
             if (reference.TargetGuid != reference.TargetNode.Guid)

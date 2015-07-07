@@ -8,16 +8,18 @@ namespace SiliconStudio.ActionStack
     public class PropertyChangedActionItem : ActionItem
     {
         private readonly string propertyName;
+        private readonly bool nonPublic;
         private object container;
         private object previousValue;
 
-        public PropertyChangedActionItem(string propertyName, object container, object previousValue)
+        public PropertyChangedActionItem(string propertyName, object container, object previousValue, bool nonPublic = false)
         {
             if (propertyName == null) throw new ArgumentNullException("propertyName");
             if (container == null) throw new ArgumentNullException("container");
             this.propertyName = propertyName;
             this.container = container;
             this.previousValue = previousValue;
+            this.nonPublic = nonPublic;
         }
 
         /// <summary>
@@ -35,7 +37,8 @@ namespace SiliconStudio.ActionStack
         /// <inheritdoc/>
         protected override void UndoAction()
         {
-            PropertyInfo propertyInfo = container.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
+            var flags = nonPublic ? BindingFlags.NonPublic | BindingFlags.Instance : BindingFlags.Public | BindingFlags.Instance;
+            PropertyInfo propertyInfo = container.GetType().GetProperty(propertyName, flags);
             object value = previousValue;
             previousValue = propertyInfo.GetValue(container);
             propertyInfo.SetValue(container, value);

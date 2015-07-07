@@ -48,8 +48,12 @@ namespace SiliconStudio.Paradox.Engine.Processors
                     continue;
                 }
 
-                // Update the group in case it changed
-                camera.Update();
+                // In case the camera has a custom aspect ratio, we can update it here
+                // otherwise it is screen-dependent and we can only update it in the CameraComponentRenderer.
+                if (camera.UseCustomAspectRatio)
+                {
+                    camera.Update();
+                }
 
                 Cameras.Add(camera);
             }

@@ -34,18 +34,24 @@ namespace SiliconStudio.Paradox.Rendering.Images
             // Use local luminance slightly differently to allow mix between local and global
 
 	        // Gets the local luminance
-	        float luminanceAverageLocal = LuminanceTexture.Sample(Texturing.LinearSampler, streams.TexCoord).r;
+            float avgLuminance = LuminanceAverageGlobal;
+            if (LuminanceLocalFactor > 0.0f)
+            {
+	            float luminanceAverageLocal = LuminanceTexture.Sample(Texturing.LinearSampler, streams.TexCoord).r;
 
-            // Calculate average geometric mean for luminance using local and global average luminances
-	        float avgLuminance = lerp(LuminanceAverageGlobal, luminanceAverageLocal, LuminanceLocalFactor);
+                // Calculate average geometric mean for luminance using local and global average luminances
+	            avgLuminance = lerp(avgLuminance, luminanceAverageLocal, LuminanceLocalFactor);
+            }
 	        avgLuminance = exp2(avgLuminance);
 	        avgLuminance = max(avgLuminance, 0.0001f);
 
 	        // Apply brightness and contrast
 	        float globalAverageLum = exp2(LuminanceAverageGlobal);
-	        //color = max(color + globalAverageLum.xxx * Brightness, 0.0001);
-	        color = max(color + globalAverageLum.xxx * Brightness, 0.0001);
-	        color = max(lerp(globalAverageLum.xxx, color, Contrast + 1.0f), 0.0001);
+            // PDX-1417: OpenGL conversion doesn't seem to like globalAverageLum.xxx, creating explicit float3
+            float3 globalAverageLum3 = float3(globalAverageLum, globalAverageLum, globalAverageLum);
+	        //color = max(color + globalAverageLum3 * Brightness, 0.0001);
+	        color = max(color + globalAverageLum3 * Brightness, 0.0001);
+	        color = max(lerp(globalAverageLum3, color, Contrast + 1.0f), 0.0001);
 
             // Apply ToneMapping
 	        color = ToneMap(color, avgLuminance);

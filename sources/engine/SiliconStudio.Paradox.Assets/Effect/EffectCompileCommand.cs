@@ -86,8 +86,16 @@ namespace SiliconStudio.Paradox.Assets.Effect
                 return Task.FromResult(ResultStatus.Failed);
             }
 
+            // wait for result an check compilation status
+            var completedTask = compilerResults.Bytecode.WaitForResult();
+            completedTask.CompilationLog.CopyTo(commandContext.Logger);
+            if (completedTask.CompilationLog.HasErrors)
+            {
+                return Task.FromResult(ResultStatus.Failed);
+            }
+
             // Register all dependencies
-            var allSources = new HashSet<string>(compilerResults.Bytecode.WaitForResult().Bytecode.HashSources.Select(keyPair => keyPair.Key));
+            var allSources = new HashSet<string>(completedTask.Bytecode.HashSources.Select(keyPair => keyPair.Key));
             foreach (var className in allSources)
             {
                 commandContext.RegisterInputDependency(new ObjectUrl(UrlType.Internal, EffectCompilerBase.GetStoragePathFromShaderType(className)));

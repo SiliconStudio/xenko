@@ -3,9 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using SharpYaml;
 using SharpYaml.Events;
 using SharpYaml.Serialization;
+using SharpYaml.Serialization.Descriptors;
 using SharpYaml.Serialization.Serializers;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Engine;
@@ -26,8 +29,25 @@ namespace SiliconStudio.Paradox.Assets.Serializers
             return type == typeof(ScriptCollection) ? this : null;
         }
 
+        protected override void ReadAddCollectionItem(ref ObjectContext objectContext, Type elementType, CollectionDescriptor collectionDescriptor, object thisObject, int index)
+        {
+            var scriptCollection = (ScriptCollection)objectContext.Instance;
+
+            object value = null;
+            bool needAdd = true; // If we could get existing value, no need add to collection
+            if (scriptCollection.Count > index)
+            {
+                value = scriptCollection[index];
+                needAdd = false;
+            }
+
+            value = ReadCollectionItem(ref objectContext, value, elementType);
+            if (needAdd)
+                collectionDescriptor.CollectionAdd(thisObject, value);
+        }
+
         /// <inheritdoc/>
-        protected override object ReadCollectionItem(ref ObjectContext objectContext, Type itemType)
+        protected override object ReadCollectionItem(ref ObjectContext objectContext, object value, Type itemType)
         {
             // Save the Yaml stream, in case loading fails we can keep this representation
             var parsingEvents = new List<ParsingEvent>();
@@ -47,12 +67,14 @@ namespace SiliconStudio.Paradox.Assets.Serializers
 
             try
             {
-                return objectContext.ObjectSerializerBackend.ReadCollectionItem(ref objectContext, itemType);
+                return objectContext.ObjectSerializerBackend.ReadCollectionItem(ref objectContext, value, itemType);
             }
             catch (YamlException)
             {
                 // There was a failure, let's keep this object so that it can be serialized back later
-                return new UnloadableScript(parsingEvents);
+                var startEvent = parsingEvents.FirstOrDefault() as MappingStart;
+                string typeName = startEvent != null && !string.IsNullOrEmpty(startEvent.Tag) ? startEvent.Tag.Substring(1) : null;
+                return new UnloadableScript(parsingEvents, typeName);
             }
             finally
             {

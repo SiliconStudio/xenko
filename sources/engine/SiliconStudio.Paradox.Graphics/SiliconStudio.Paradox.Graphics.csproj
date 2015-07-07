@@ -24,6 +24,10 @@
       <ItemGroup>
         <Reference Include="System.Drawing" />
         <Reference Include="System.Windows.Forms" />
+        <Reference Include="SharpDX.Desktop">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.Desktop.dll</HintPath>
+        </Reference>
       </ItemGroup>
     </When>
   </Choose>
@@ -76,22 +80,22 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'WindowsStore' Or '$(SiliconStudioPlatform)' == 'WindowsPhone'">
+  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'WindowsStore' Or '$(SiliconStudioPlatform)' == 'WindowsPhone' Or '$(SiliconStudioPlatform)' == 'Windows10'">
     <Reference Include="SharpFont">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ParadoxDependenciesDir)SharpFont\Windows\$(Configuration)\SharpFont.dll</HintPath>
+      <HintPath>$(ParadoxDependenciesDir)SharpFont\Windows\Release\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS'">
     <Reference Include="SharpFont">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ParadoxDependenciesDir)SharpFont\iOS\$(Configuration)\SharpFont.dll</HintPath>
+      <HintPath>$(ParadoxDependenciesDir)SharpFont\iOS\Release\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Android'">
     <Reference Include="SharpFont">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ParadoxDependenciesDir)SharpFont\Android\$(Configuration)\SharpFont.dll</HintPath>
+      <HintPath>$(ParadoxDependenciesDir)SharpFont\Android\Release\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
   <!-- Files for Direct3D  -->
@@ -104,6 +108,7 @@
     <Compile Include="DataOld\GpuRasterizerStateSerializer.cs" />
     <Compile Include="DataOld\GpuSamplerStateSerializer2.cs" />
     <Compile Include="DataOld\GpuTextureSerializer2.cs" />
+    <Compile Include="Data\TextureContentSerializer.cs" />
     <Compile Include="Effects\EffectParameterUpdaterDefinition.cs" />
     <Compile Include="Effects\ParameterDependency.cs" />
     <Compile Include="Font\DynamicSpriteFontContentSerializer.cs" />
@@ -475,7 +480,7 @@
   <ItemGroup>
     <None Include="Shaders.Bytecodes\CompileShaders.cmd" />
     <None Include="Shaders.Bytecodes\Graphics.pdxpkg" />
-    <None Include="Shaders.Bytecodes\Shaders.pdxfxlib" />
+    <None Include="Shaders.Bytecodes\Shaders.pdxeffectlog" />
     <None Include="Shaders\ShaderBaseStream.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShaderBaseStream.cs</LastGenOutput>

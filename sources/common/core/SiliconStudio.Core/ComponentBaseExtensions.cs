@@ -16,39 +16,11 @@ namespace SiliconStudio.Core
         /// <param name="thisArg">The component to keep alive.</param>
         /// <param name="container">The container that will keep a reference to the component.</param>
         /// <returns>The same component instance</returns>
-        public static void RemoveKeepAliveBy<T>(this T thisArg, ICollectorHolder container) where T : IReferencable
+        public static void RemoveDisposeBy<T>(this T thisArg, ICollectorHolder container) where T : IReferencable
         {
             if (ReferenceEquals(thisArg, null))
                 return;
             container.Collector.Remove(thisArg);
-        }
-
-        /// <summary>
-        /// Keeps a component alive by adding it to a container.
-        /// </summary>
-        /// <typeparam name="T">A component</typeparam>
-        /// <param name="thisArg">The component to keep alive.</param>
-        /// <param name="container">The container that will keep a reference to the component.</param>
-        /// <returns>The same component instance</returns>
-        public static T KeepAliveBy<T>(this T thisArg, ICollectorHolder container) where T : IReferencable
-        {
-            if (ReferenceEquals(thisArg, null))
-                return thisArg;
-            return container.Collector.Add(thisArg);
-        }
-
-        /// <summary>
-        /// Keeps a component alive by adding it to a container.
-        /// </summary>
-        /// <typeparam name="T">A component</typeparam>
-        /// <param name="thisArg">The component to keep alive.</param>
-        /// <param name="collector">The collector.</param>
-        /// <returns>The same component instance</returns>
-        public static T KeepAliveBy<T>(this T thisArg, ObjectCollector collector) where T : IReferencable
-        {
-            if (ReferenceEquals(thisArg, null))
-                return thisArg;
-            return collector.Add(thisArg);
         }
 
         /// <summary>

@@ -43,15 +43,36 @@ namespace SiliconStudio.Paradox.Rendering.Skyboxes
 
             var skybox = skyboxProcessor.ActiveSkyboxBackground;
 
-            if (skybox != null)
-            {
-                // Copy camera/pass parameters
-                context.Parameters.CopySharedTo(skyboxEffect.Parameters);
+            // do not draw if no active skybox or the skybox is not included in the current entity group
+            if (skybox == null || !CurrentCullingMask.Contains(skybox.Entity.Group))
+                return;
 
-                // Show irradiance in the background
-                if (skybox.Background == SkyboxBackground.Irradiance)
+            // Copy camera/pass parameters
+            context.Parameters.CopySharedTo(skyboxEffect.Parameters);
+
+            // Show irradiance in the background
+            if (skybox.Background == SkyboxBackground.Irradiance)
+            {
+                foreach (var parameterKeyValue in skybox.Skybox.DiffuseLightingParameters)
                 {
-                    foreach (var parameterKeyValue in skybox.Skybox.DiffuseLightingParameters)
+                    if (parameterKeyValue.Key == SkyboxKeys.Shader)
+                    {
+                        skyboxEffect.Parameters.Set(SkyboxKeys.Shader, (ShaderSource)parameterKeyValue.Value);
+                    }
+                    else
+                    {
+                        skyboxEffect.Parameters.SetObject(parameterKeyValue.Key.ComposeWith("skyboxColor"), parameterKeyValue.Value);
+                    }
+                }
+            }
+            else
+            {
+                // TODO: Should we better use composition on "skyboxColor" for parameters?
+
+                // Copy Skybox parameters
+                if (skybox.Skybox != null)
+                {
+                    foreach (var parameterKeyValue in skybox.Skybox.Parameters)
                     {
                         if (parameterKeyValue.Key == SkyboxKeys.Shader)
                         {
@@ -59,34 +80,14 @@ namespace SiliconStudio.Paradox.Rendering.Skyboxes
                         }
                         else
                         {
-                            skyboxEffect.Parameters.SetObject(parameterKeyValue.Key.ComposeWith("skyboxColor"), parameterKeyValue.Value);
+                            skyboxEffect.Parameters.SetObject(parameterKeyValue.Key, parameterKeyValue.Value);
                         }
                     }
                 }
-                else
-                {
-                    // TODO: Should we better use composition on "skyboxColor" for parameters?
-
-                    // Copy Skybox parameters
-                    if (skybox.Skybox != null)
-                    {
-                        foreach (var parameterKeyValue in skybox.Skybox.Parameters)
-                        {
-                            if (parameterKeyValue.Key == SkyboxKeys.Shader)
-                            {
-                                skyboxEffect.Parameters.Set(SkyboxKeys.Shader, (ShaderSource)parameterKeyValue.Value);
-                            }
-                            else
-                            {
-                                skyboxEffect.Parameters.SetObject(parameterKeyValue.Key, parameterKeyValue.Value);
-                            }
-                        }
-                    }
-                }
-
-                // Fake as the skybox was in front of all others (as opaque are rendered back to front)
-                opaqueList.Add(new RenderItem(this, skybox, 0.0f));
             }
+
+            // Fake as the skybox was in front of all others (as opaque are rendered back to front)
+            opaqueList.Add(new RenderItem(this, skybox, 0.0f));
         }
 
         protected override void DrawCore(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)

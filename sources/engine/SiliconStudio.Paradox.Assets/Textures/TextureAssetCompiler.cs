@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
             // Get absolute path of asset source on disk
             var assetSource = GetAbsolutePath(assetAbsolutePath, asset.Source);
 
-            var parameter = new TextureConvertParameters(assetSource, asset, context.Platform, context.GetGraphicsPlatform(), context.GetGraphicsProfile(), context.GetTextureQuality(), false);
+            var parameter = new TextureConvertParameters(assetSource, asset, context.Platform, context.GetGraphicsPlatform(), context.GetGraphicsProfile(), context.GetTextureQuality());
             result.BuildSteps = new AssetBuildStep(AssetItem) { new TextureConvertCommand(urlInStorage, parameter) };
         }
 
@@ -47,14 +47,14 @@ namespace SiliconStudio.Paradox.Assets.Textures
             public override System.Collections.Generic.IEnumerable<ObjectUrl> GetInputFiles()
             {
                 // TODO dependency not working
-                yield return new ObjectUrl(UrlType.File, asset.SourcePathFromDisk);
+                yield return new ObjectUrl(UrlType.File, AssetParameters.SourcePathFromDisk);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                var texture = asset.Texture;
+                var texture = AssetParameters.Texture;
 
-                var importResult = TextureCommandHelper.ImportAndSaveTextureImage(asset.SourcePathFromDisk, Url, texture, asset, CancellationToken, commandContext.Logger);
+                var importResult = TextureCommandHelper.ImportAndSaveTextureImage(AssetParameters.SourcePathFromDisk, Url, texture, AssetParameters, CancellationToken, commandContext.Logger);
 
                 return Task.FromResult(importResult);
             }
@@ -86,8 +86,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
             PlatformType platform, 
             GraphicsPlatform graphicsPlatform, 
             GraphicsProfile graphicsProfile, 
-            TextureQuality textureQuality,
-            bool separateAlpha)
+            TextureQuality textureQuality)
         {
             SourcePathFromDisk = sourcePathFromDisk;
             Texture = texture;
@@ -95,7 +94,6 @@ namespace SiliconStudio.Paradox.Assets.Textures
             GraphicsPlatform = graphicsPlatform;
             GraphicsProfile = graphicsProfile;
             TextureQuality = textureQuality;
-            SeparateAlpha = separateAlpha;
         }
 
         public UFile SourcePathFromDisk;
@@ -109,7 +107,5 @@ namespace SiliconStudio.Paradox.Assets.Textures
         public GraphicsProfile GraphicsProfile;
 
         public TextureQuality TextureQuality;
-
-        public bool SeparateAlpha;
     }
 }

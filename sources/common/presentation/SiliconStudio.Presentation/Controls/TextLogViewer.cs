@@ -142,6 +142,14 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyProperty ShowFatalMessagesProperty = DependencyProperty.Register("ShowFatalMessages", typeof(bool), typeof(TextLogViewer), new PropertyMetadata(true, TextPropertyChanged));
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="TextLogViewer"/> class.
+        /// </summary>
+        public TextLogViewer()
+        {
+            Loaded += (s, e) => { if (AutoScroll && logTextBox != null) logTextBox.ScrollToEnd(); };
+        }
+
+        /// <summary>
         /// Gets or sets the collection of <see cref="ILogMessage"/> to display.
         /// </summary>
         public ICollection<ILogMessage> LogMessages { get { return (ICollection<ILogMessage>)GetValue(LogMessagesProperty); } set { SetValue(LogMessagesProperty, value); } }
@@ -501,7 +509,7 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         private void LogMessagesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            bool shouldScroll = AutoScroll && logTextBox != null && logTextBox.ExtentHeight - logTextBox.ViewportHeight - logTextBox.VerticalOffset < 1.0;
+            bool shouldScroll = AutoScroll && logTextBox != null && logTextBox.ViewportHeight - logTextBox.ExtentHeight - logTextBox.VerticalOffset < 1.0;
 
             if (e.Action == NotifyCollectionChangedAction.Add)
             {

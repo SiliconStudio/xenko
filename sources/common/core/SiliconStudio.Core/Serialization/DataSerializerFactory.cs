@@ -2,171 +2,187 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Core.Serialization
 {
-    public class DataSerializerFactory
+    public struct AssemblySerializerEntry
     {
-        private readonly List<Action<DataSerializerFactory>> serializationProfileInitializers;
-        private int serializationProfileInitializerCount; // Cached count so that we know if items are added
+        public ObjectId Id;
+        public Type ObjectType;
+        public Type SerializerType;
 
-        private readonly Dictionary<ObjectId, DataSerializer> dataSerializersById = new Dictionary<ObjectId, DataSerializer>();
-        private readonly Dictionary<Type, KeyValuePair<ObjectId, DataSerializer>> dataSerializersByType = new Dictionary<Type, KeyValuePair<ObjectId, DataSerializer>>();
-
-        public static readonly Dictionary<string, List<Action<DataSerializerFactory>>> SerializationProfileInitializers = new Dictionary<string, List<Action<DataSerializerFactory>>>();
-
-        public string ProfileName { get; private set; }
-
-        public static void RegisterSerializationProfile(string profileName, Action<DataSerializerFactory> serializationProfileInitializer)
+        public AssemblySerializerEntry(ObjectId id, Type objectType, Type serializerType)
         {
-            lock (SerializationProfileInitializers)
-            {
-                List<Action<DataSerializerFactory>> existingSerializationProfileInitializers;
+            Id = id;
+            ObjectType = objectType;
+            SerializerType = serializerType;
+        }
+    }
 
-                // If there was already existing delegate, combine it at the end
-                if (!SerializationProfileInitializers.TryGetValue(profileName, out existingSerializationProfileInitializers))
+    public class AssemblySerializersPerProfile : Collection<AssemblySerializerEntry>
+    {
+    }
+
+    public class AssemblySerializers
+    {
+        public AssemblySerializers(Assembly assembly)
+        {
+            Assembly = assembly;
+            Modules = new List<Module>();
+            Profiles = new Dictionary<string, AssemblySerializersPerProfile>();
+        }
+
+        public Assembly Assembly { get; private set; }
+
+        public List<Module> Modules { get; private set; }
+
+        public Dictionary<string, AssemblySerializersPerProfile> Profiles { get; private set; }
+
+        public override string ToString()
+        {
+            return Assembly.ToString();
+        }
+    }
+
+    public static class DataSerializerFactory
+    {
+        internal static object Lock = new object();
+
+        // List of all the factories
+        private static readonly List<WeakReference<SerializerSelector>> SerializerSelectors = new List<WeakReference<SerializerSelector>>();
+
+        // List of registered assemblies
+        private static readonly List<AssemblySerializers> AssemblySerializers = new List<AssemblySerializers>();
+
+        private static readonly Dictionary<Assembly, AssemblySerializers> AvailableAssemblySerializers = new Dictionary<Assembly, AssemblySerializers>();
+
+        // List of serializers per profile
+        internal static readonly Dictionary<string, Dictionary<Type, AssemblySerializerEntry>> DataSerializersPerProfile = new Dictionary<string, Dictionary<Type, AssemblySerializerEntry>>();
+
+        public static void RegisterSerializerSelector(SerializerSelector serializerSelector)
+        {
+            SerializerSelectors.Add(new WeakReference<SerializerSelector>(serializerSelector));
+        }
+
+        public static AssemblySerializerEntry GetSerializer(string profile, Type type)
+        {
+            lock (Lock)
+            {
+                Dictionary<Type, AssemblySerializerEntry> serializers;
+                AssemblySerializerEntry assemblySerializerEntry;
+                if (!DataSerializersPerProfile.TryGetValue(profile, out serializers) || !serializers.TryGetValue(type, out assemblySerializerEntry))
+                    return default(AssemblySerializerEntry);
+
+                return assemblySerializerEntry;
+            }
+        }
+
+        public static void RegisterSerializationAssembly(AssemblySerializers assemblySerializers)
+        {
+            lock (Lock)
+            {
+                // Register it (so that we can get it back if unregistered)
+                if (!AvailableAssemblySerializers.ContainsKey(assemblySerializers.Assembly))
+                    AvailableAssemblySerializers.Add(assemblySerializers.Assembly, assemblySerializers);
+
+                // Check if already loaded
+                if (AssemblySerializers.Contains(assemblySerializers))
+                    return;
+
+                // Update existing SerializerSelector
+                AssemblySerializers.Add(assemblySerializers);
+            }
+
+            // Run module ctor
+            foreach (var module in assemblySerializers.Modules)
+            {
+                ModuleRuntimeHelpers.RunModuleConstructor(module);
+            }
+
+            lock (Lock)
+            {
+                RegisterSerializers(assemblySerializers);
+            }
+
+            foreach (var weakSerializerSelector in SerializerSelectors)
+            {
+                SerializerSelector serializerSelector;
+                if (weakSerializerSelector.TryGetTarget(out serializerSelector))
                 {
-                    existingSerializationProfileInitializers = new List<Action<DataSerializerFactory>>();
-                    SerializationProfileInitializers.Add(profileName, existingSerializationProfileInitializers);
+                    serializerSelector.Invalidate();
+                }
+            }
+        }
+
+        public static void RegisterSerializationAssembly(Assembly assembly)
+        {
+            lock (Lock)
+            {
+                AssemblySerializers assemblySerializers;
+                if (AvailableAssemblySerializers.TryGetValue(assembly, out assemblySerializers))
+                    RegisterSerializationAssembly(assemblySerializers);
+            }
+        }
+
+        public static void UnregisterSerializationAssembly(Assembly assembly)
+        {
+            AssemblySerializers removedAssemblySerializer;
+
+            lock (Lock)
+            {
+                removedAssemblySerializer = AssemblySerializers.FirstOrDefault(x => x.Assembly == assembly);
+                if (removedAssemblySerializer == null)
+                    return;
+
+                AssemblySerializers.Remove(removedAssemblySerializer);
+
+                // Rebuild serializer list
+                // TODO: For now, we simply reregister all assemblies one-by-one, but it can easily be improved if it proves to be unefficient (for now it shouldn't happen often so probably not a big deal)
+                DataSerializersPerProfile.Clear();
+
+                foreach (var assemblySerializer in AssemblySerializers)
+                {
+                    RegisterSerializers(assemblySerializer);
+                }
+            }
+
+            foreach (var weakSerializerSelector in SerializerSelectors)
+            {
+                SerializerSelector serializerSelector;
+                if (weakSerializerSelector.TryGetTarget(out serializerSelector))
+                {
+                    serializerSelector.Invalidate();
+                }
+            }
+        }
+
+        private static void RegisterSerializers(AssemblySerializers assemblySerializers)
+        {
+            // Register serializers
+            foreach (var assemblySerializerPerProfile in assemblySerializers.Profiles)
+            {
+                var profile = assemblySerializerPerProfile.Key;
+
+                Dictionary<Type, AssemblySerializerEntry> dataSerializers;
+                if (!DataSerializersPerProfile.TryGetValue(profile, out dataSerializers))
+                {
+                    dataSerializers = new Dictionary<Type, AssemblySerializerEntry>();
+                    DataSerializersPerProfile.Add(profile, dataSerializers);
                 }
 
-                // Register new combined delegate
-                lock (existingSerializationProfileInitializers)
+                foreach (var assemblySerializer in assemblySerializerPerProfile.Value)
                 {
-                    existingSerializationProfileInitializers.Add(serializationProfileInitializer);
-                }
-            }
-        }
-
-        public static DataSerializerFactory CreateDataSerializerFactory(string profileName)
-        {
-            lock (SerializationProfileInitializers)
-            {
-                // Try to find the profile.
-                // If not existing yet, create an empty one.
-                List<Action<DataSerializerFactory>> serializationProfileInitializers;
-                if (!SerializationProfileInitializers.TryGetValue(profileName, out serializationProfileInitializers))
-                {
-                    serializationProfileInitializers = new List<Action<DataSerializerFactory>>();
-                    SerializationProfileInitializers.Add(profileName, serializationProfileInitializers);
-                }
-                var dataSerializerFactory = new DataSerializerFactory(profileName, serializationProfileInitializers);
-
-                return dataSerializerFactory;
-            }
-        }
-
-        public DataSerializerFactory(string profileName, List<Action<DataSerializerFactory>> serializationProfileInitializers)
-        {
-            this.ProfileName = profileName;
-            this.serializationProfileInitializers = serializationProfileInitializers;
-            this.serializationProfileInitializerCount = 0;
-        }
-
-        /// <summary>
-        /// Registers the serializer.
-        /// </summary>
-        /// <param name="serializer">The serializer.</param>
-        public void RegisterSerializer(ObjectId id, DataSerializer serializer)
-        {
-            lock (dataSerializersByType)
-            {
-                serializer.SerializationTypeId = id;
-                dataSerializersByType[serializer.SerializationType] = new KeyValuePair<ObjectId, DataSerializer>(id, serializer);
-                dataSerializersById[id] = serializer;
-            }
-        }
-
-        /// <summary>
-        /// Registers the type has having no serializer (useful for abstract types, interfaces and special types such as object).
-        /// </summary>
-        /// <param name="type">The type.</param>
-        public void RegisterNullSerializer(ObjectId id, Type type)
-        {
-            lock (dataSerializersByType)
-            {
-                dataSerializersByType[type] = new KeyValuePair<ObjectId, DataSerializer>(id, null);
-                dataSerializersById[id] = null;
-            }
-        }
-
-        /// <summary>
-        /// Should return true when factory is able to create a <see cref="DataSerializer{T}"/> for this type.
-        /// </summary>
-        /// <param name="type">The type to create a <see cref="DataSerializer{T}"/> for.</param>
-        /// <returns>
-        ///   <c>true</c> if this instance can serialize the specified type; otherwise, <c>false</c>.
-        /// </returns>
-        public bool CanSerialize(Type type)
-        {
-            CheckForNewAssemblies();
-
-            lock (dataSerializersByType)
-            {
-                return dataSerializersByType.ContainsKey(type);
-            }
-        }
-
-        /// <summary>
-        /// Should return true when factory is able to create a <see cref="DataSerializer{T}"/> for this type.
-        /// </summary>
-        /// <param name="typeId">The type ID to create a <see cref="DataSerializer{T}"/> for.</param>
-        /// <returns>
-        ///   <c>true</c> if this instance can serialize the specified type; otherwise, <c>false</c>.
-        /// </returns>
-        public bool CanSerialize(ref ObjectId typeId)
-        {
-            CheckForNewAssemblies();
-
-            lock (dataSerializersByType)
-            {
-                return dataSerializersById.ContainsKey(typeId);
-            }
-        }
-
-        private void CheckForNewAssemblies()
-        {
-            // New assemblies loaded?
-            lock (serializationProfileInitializers)
-            {
-                if (serializationProfileInitializers.Count > serializationProfileInitializerCount)
-                {
-                    var start = serializationProfileInitializerCount;
-                    serializationProfileInitializerCount = serializationProfileInitializers.Count;
-
-                    // Execute new serializer profile initializers appended at the end
-                    for (int i = start; i < serializationProfileInitializers.Count; ++i)
+                    if (!dataSerializers.ContainsKey(assemblySerializer.ObjectType))
                     {
-                        serializationProfileInitializers[i](this);
+                        dataSerializers.Add(assemblySerializer.ObjectType, assemblySerializer);
                     }
                 }
-            }
-        }
-
-        /// <summary>
-        /// Gets the (de)serializer. It should only be called if CanSerialize(type) is true.
-        /// </summary>
-        /// <param name="type">The type to create a serializer from.</param>
-        /// <returns>A <see cref="DataSerializer{T}"/> that can serialize this specific type.</returns>
-        public KeyValuePair<ObjectId, DataSerializer> GetSerializer(Type type)
-        {
-            lock (dataSerializersByType)
-            {
-                return dataSerializersByType[type];
-            }
-        }
-
-        /// <summary>
-        /// Gets the (de)serializer. It should only be called if CanSerialize(type) is true.
-        /// </summary>
-        /// <param name="type">The type to create a serializer from.</param>
-        /// <returns>A <see cref="DataSerializer{T}"/> that can serialize this specific type.</returns>
-        public DataSerializer GetSerializer(ref ObjectId typeId)
-        {
-            lock (dataSerializersByType)
-            {
-                return dataSerializersById[typeId];
             }
         }
     }

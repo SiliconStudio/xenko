@@ -5,8 +5,7 @@ using System;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Markup;
-
-using SiliconStudio.Presentation.Extensions;
+using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Presentation.Controls.Commands
 {

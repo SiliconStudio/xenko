@@ -10,17 +10,17 @@ namespace SiliconStudio.Paradox.Assets
     {
         public static GraphicsPlatform GetGraphicsPlatform(this AssetCompilerContext context)
         {
-            return context.Properties.Get(ParadoxConfig.GraphicsPlatform);
+            return context.PackageProperties.Get(ParadoxConfig.GraphicsPlatform);
         }
 
         public static TextureQuality GetTextureQuality(this AssetCompilerContext context)
         {
-            return context.Properties.Get(ParadoxConfig.TextureQuality);
+            return context.PackageProperties.Get(ParadoxConfig.TextureQuality);
         }
 
         public static GraphicsProfile GetGraphicsProfile(this AssetCompilerContext context)
         {
-            return context.Properties.Get(GameSettingsAsset.DefaultGraphicsProfile);
+            return context.PackageProperties.Get(GameSettingsAsset.DefaultGraphicsProfile);
         }
     }
 }

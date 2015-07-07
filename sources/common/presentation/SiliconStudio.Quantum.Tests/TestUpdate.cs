@@ -114,8 +114,9 @@ namespace SiliconStudio.Quantum.Tests
             var container = new ModelContainer();
             IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
             Console.WriteLine(model.PrintHierarchy());
-            model.GetChild("Struct").GetChild("FirstValue").Content.Value = 2.0;
-            model.GetChild("Struct").GetChild("SecondValue").Content.Value = "new value";
+            var structNode = model.GetChild("Struct").Content.Reference.AsObject.TargetNode;
+            structNode.GetChild("FirstValue").Content.Value = 2.0;
+            structNode.GetChild("SecondValue").Content.Value = "new value";
 
             Assert.That(obj.Struct.FirstValue, Is.EqualTo(2.0));
             Assert.That(obj.Struct.SecondValue, Is.EqualTo("new value"));
@@ -133,10 +134,12 @@ namespace SiliconStudio.Quantum.Tests
             var container = new ModelContainer();
             IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
             Console.WriteLine(model.PrintHierarchy());
-            model.GetChild("Struct").GetChild("FirstValue").Content.Value = 2.0;
-            model.GetChild("Struct").GetChild("SecondValue").Content.Value = "new value";
-            model.GetChild("Struct").GetChild("InnerStruct").GetChild("FirstValue").Content.Value = 7.0;
-            model.GetChild("Struct").GetChild("InnerStruct").GetChild("SecondValue").Content.Value = "new inner value";
+            var structNode = model.GetChild("Struct").Content.Reference.AsObject.TargetNode;
+            structNode.GetChild("FirstValue").Content.Value = 2.0;
+            structNode.GetChild("SecondValue").Content.Value = "new value";
+            structNode = structNode.GetChild("InnerStruct").Content.Reference.AsObject.TargetNode;
+            structNode.GetChild("FirstValue").Content.Value = 7.0;
+            structNode.GetChild("SecondValue").Content.Value = "new inner value";
 
             Assert.That(obj.Struct.FirstValue, Is.EqualTo(2.0));
             Assert.That(obj.Struct.SecondValue, Is.EqualTo("new value"));

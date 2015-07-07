@@ -64,7 +64,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
 #elif SILICONSTUDIO_PLATFORM_IOS
             result.Platform = "iOS";
             result.DeviceName = iOSDeviceType.Version.ToString();
-            result.Serial = MonoTouch.UIKit.UIDevice.CurrentDevice.Name;
+            result.Serial = UIKit.UIDevice.CurrentDevice.Name;
 #elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
 #if SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
             result.Platform = "WindowsPhone";
@@ -153,7 +153,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
         public string Platform;
         public string Serial;
         public string DeviceName;
-        public string BranchName;
+        public string BranchName = "";
         public ImageComparisonFlags Flags;
 
         public void Read(BinaryReader reader)

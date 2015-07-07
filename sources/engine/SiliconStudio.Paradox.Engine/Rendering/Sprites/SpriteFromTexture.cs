@@ -3,6 +3,7 @@
 
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Graphics;
@@ -91,6 +92,7 @@ namespace SiliconStudio.Paradox.Rendering.Sprites
         /// The texture of representing the sprite
         /// </summary>
         [DataMember(5)]
+        [InlineProperty]
         public Texture Texture
         {
             get { return texture; }
@@ -117,7 +119,7 @@ namespace SiliconStudio.Paradox.Rendering.Sprites
             sprite.IsTransparent = isTransparent;
             if (texture != null)
             {
-                sprite.Center = center + (centerFromMiddle ? new Vector2(texture.Width, texture.Height) : Vector2.Zero);
+                sprite.Center = center + (centerFromMiddle ? new Vector2(texture.Width, texture.Height) / 2 : Vector2.Zero);
                 sprite.Region = new RectangleF(0, 0, texture.Width, texture.Height);
             }
 
