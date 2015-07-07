@@ -12,6 +12,7 @@ Release date: 2015/XX/XX
 - Studio: Added a material selection mode. When active, it is possible to highlight different materials of a selected entity with the mouse cursor (in the scene editor and in the property grid), and select them in the asset view by clicking.
 - Studio: Added a button in the material properties of an entity to highlight them in the scene editor.
 - Studio: The sprite editor has been improved.
+- Studio: The 'F' key shortcut to focus on selection now also work when the hierarchy tree has the focus in the scene editor.
 - Studio: Setting a diffuse map/specular map on a material will also set the diffuse model/specular model of this material.
 - Studio: Keyboard shortcut to switch between transformation gizmos (W, E, R, Space by default)
 - Engine: Add the possibility to enable/disable the depth test in sprite component.
