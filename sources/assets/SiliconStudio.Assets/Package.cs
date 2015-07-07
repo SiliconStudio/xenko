@@ -19,6 +19,31 @@ using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Assets
 {
+    public enum PackageState
+    {
+        /// <summary>
+        /// Package has been deserialized. References and assets are not ready.
+        /// </summary>
+        Raw,
+
+        /// <summary>
+        /// Dependencies have all been resolved and are also in <see cref="DependenciesReady"/> state.
+        /// </summary>
+        DependenciesReady,
+
+        /// <summary>
+        /// Package upgrade has been failed (either error or denied by user).
+        /// Dependencies are ready, but not assets.
+        /// Should be manually switched back to DependenciesReady to try upgrade again.
+        /// </summary>
+        UpgradeFailed,
+
+        /// <summary>
+        /// Assembly references and assets have all been loaded.
+        /// </summary>
+        AssetsReady,
+    }
+
     /// <summary>
     /// A package managing assets.
     /// </summary>
@@ -200,6 +225,9 @@ namespace SiliconStudio.Assets
                 OnAssetDirtyChanged(this);
             }
         }
+
+        [DataMemberIgnore]
+        public PackageState State { get; set; }
 
         /// <summary>
         /// Gets the top directory of this package on the local disk.
@@ -546,6 +574,29 @@ namespace SiliconStudio.Assets
         /// filePath</exception>
         public static Package Load(ILogger log, string filePath, PackageLoadParameters loadParametersArg = null)
         {
+            var package = LoadRaw(log, filePath);
+            if (package != null)
+            {
+                if (!package.LoadAssembliesAndAssets(log, loadParametersArg))
+                    package = null;
+            }
+
+            return package;
+        }
+
+        /// <summary>
+        /// Performs first part of the loading sequence, by deserializing the package but without processing anything yet.
+        /// </summary>
+        /// <param name="log">The log.</param>
+        /// <param name="filePath">The file path.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// log
+        /// or
+        /// filePath
+        /// </exception>
+        internal static Package LoadRaw(ILogger log, string filePath)
+        {
             if (log == null) throw new ArgumentNullException("log");
             if (filePath == null) throw new ArgumentNullException("filePath");
 
@@ -557,40 +608,11 @@ namespace SiliconStudio.Assets
                 return null;
             }
 
-            var loadParameters = loadParametersArg ?? PackageLoadParameters.Default();
-
             try
             {
                 var package = AssetSerializer.Load<Package>(filePath);
                 package.FullPath = filePath;
                 package.IsDirty = false;
-
-                // Load assembly references
-                if (loadParameters.LoadAssemblyReferences)
-                {
-                    package.LoadAssemblyReferencesForPackage(log, loadParameters);
-                }
-
-                // Load assets
-                if (loadParameters.AutoLoadTemporaryAssets)
-                {
-                    package.LoadTemporaryAssets(log, loadParameters.CancelToken);
-                }
-
-                // Convert UPath to absolute
-                if (loadParameters.ConvertUPathToAbsolute)
-                {
-                    var analysis = new PackageAnalysis(package, new PackageAnalysisParameters()
-                        {
-                            ConvertUPathTo = UPathType.Absolute,
-                            IsProcessingUPaths = true, // This is done already by Package.Load
-                            SetDirtyFlagOnAssetWhenFixingAbsoluteUFile = true // When loading tag attributes that have an absolute file
-                        });
-                    analysis.Run(log);
-                }
-
-                // Load templates
-                package.LoadTemplates(log);
 
                 return package;
             }
@@ -600,6 +622,56 @@ namespace SiliconStudio.Assets
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Second part of the package loading process, when references, assets and package analysis is done.
+        /// </summary>
+        /// <param name="package">The package.</param>
+        /// <param name="log">The log.</param>
+        /// <param name="loadParametersArg">The load parameters argument.</param>
+        /// <returns></returns>
+        internal bool LoadAssembliesAndAssets(ILogger log, PackageLoadParameters loadParametersArg)
+        {
+            var loadParameters = loadParametersArg ?? PackageLoadParameters.Default();
+
+            try
+            {
+                // Load assembly references
+                if (loadParameters.LoadAssemblyReferences)
+                {
+                    LoadAssemblyReferencesForPackage(log, loadParameters);
+                }
+
+                // Load assets
+                if (loadParameters.AutoLoadTemporaryAssets)
+                {
+                    LoadTemporaryAssets(log, loadParameters.AssetFiles, loadParameters.CancelToken);
+                }
+
+                // Convert UPath to absolute
+                if (loadParameters.ConvertUPathToAbsolute)
+                {
+                    var analysis = new PackageAnalysis(this, new PackageAnalysisParameters()
+                    {
+                        ConvertUPathTo = UPathType.Absolute,
+                        IsProcessingUPaths = true, // This is done already by Package.Load
+                        SetDirtyFlagOnAssetWhenFixingAbsoluteUFile = true // When loading tag attributes that have an absolute file
+                    });
+                    analysis.Run(log);
+                }
+
+                // Load templates
+                LoadTemplates(log);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error while pre-loading package [{0}]", ex, FullPath);
+
+                return false;
+            }
         }
 
         public void ValidateAssets(bool alwaysGenerateNewAssetId = false)
@@ -645,12 +717,13 @@ namespace SiliconStudio.Assets
         /// Refreshes this package from the disk by loading or reloading all assets.
         /// </summary>
         /// <param name="log">The log.</param>
+        /// <param name="assetFiles">The asset files (loaded from <see cref="ListAssetFiles"/> if null).</param>
         /// <param name="cancelToken">The cancel token.</param>
         /// <returns>A logger that contains error messages while refreshing.</returns>
         /// <exception cref="System.InvalidOperationException">Package RootDirectory is null
         /// or
         /// Package RootDirectory [{0}] does not exist.ToFormat(RootDirectory)</exception>
-        public void LoadTemporaryAssets(ILogger log, CancellationToken? cancelToken = null)
+        public void LoadTemporaryAssets(ILogger log, IList<PackageLoadingAssetFile> assetFiles = null, CancellationToken? cancelToken = null)
         {
             if (log == null) throw new ArgumentNullException("log");
 
@@ -665,7 +738,8 @@ namespace SiliconStudio.Assets
             TemporaryAssets.Clear();
 
             // List all package files on disk
-            var listFiles = ListAssetFiles(log, this, cancelToken);
+            if (assetFiles == null)
+                assetFiles = ListAssetFiles(log, this, cancelToken);
 
             var progressMessage = String.Format("Loading Assets from Package [{0}]", FullPath.GetFileNameWithExtension());
 
@@ -677,10 +751,10 @@ namespace SiliconStudio.Assets
             }
 
             // Update step counter for log progress
-            for (int i = 0; i < listFiles.Count; i++)
+            for (int i = 0; i < assetFiles.Count; i++)
             {
-                var fileUPath = listFiles[i].Item1;
-                var sourceFolder = listFiles[i].Item2;
+                var fileUPath = assetFiles[i].FilePath;
+                var sourceFolder = assetFiles[i].SourceFolder;
                 if (cancelToken.HasValue && cancelToken.Value.IsCancellationRequested)
                 {
                     log.Warning("Skipping loading assets. PackageSession.Load cancelled");
@@ -690,7 +764,16 @@ namespace SiliconStudio.Assets
                 // Update the loading progress
                 if (loggerResult != null)
                 {
-                    loggerResult.Progress(progressMessage, i, listFiles.Count);
+                    loggerResult.Progress(progressMessage, i, assetFiles.Count);
+                }
+
+                AssetMigration.MigrateAssetIfNeeded(log, assetFiles[i]);
+
+                // Check if asset has been deleted by an upgrader
+                if (assetFiles[i].Deleted)
+                {
+                    Assets.IsDirty = true;
+                    continue;
                 }
 
                 // Try to load only if asset is not already in the package or assetRef.Asset is null
@@ -700,17 +783,20 @@ namespace SiliconStudio.Assets
                     // An exception can occur here, so we make sure that loading a single asset is not going to break 
                     // the loop
                     var assetFullPath = fileUPath.FullPath;
-                    var asset = LoadAsset(log, assetFullPath, assetPath, fileUPath);
+                    var assetContent = assetFiles[i].AssetContent;
+
+                    var asset = LoadAsset(log, assetFullPath, assetPath, fileUPath, assetContent);
 
                     // Create asset item
                     var assetItem = new AssetItem(assetPath, asset)
                     {
-                        IsDirty = false,
+                        IsDirty = assetContent != null,
                         Package = this,
                         SourceFolder = sourceFolder.MakeRelative(RootDirectory)
                     };
                     // Set the modified time to the time loaded from disk
-                    assetItem.ModifiedTime = File.GetLastWriteTime(assetFullPath);
+                    if (!assetItem.IsDirty)
+                        assetItem.ModifiedTime = File.GetLastWriteTime(assetFullPath);
 
                     FixAssetImport(assetItem);
 
@@ -748,11 +834,11 @@ namespace SiliconStudio.Assets
             }
         }
 
-        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, UFile fileUPath)
+        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, UFile fileUPath, byte[] assetContent)
         {
-            AssetMigration.MigrateAssetIfNeeded(log, assetFullPath);
-
-            var asset = AssetSerializer.Load<Asset>(assetFullPath);
+            var asset = assetContent != null
+                ? (Asset)AssetSerializer.Load(new MemoryStream(assetContent), Path.GetExtension(assetFullPath))
+                : AssetSerializer.Load<Asset>(assetFullPath);
 
             // Set location on source code asset
             var sourceCodeAsset = asset as SourceCodeAsset;
@@ -907,9 +993,9 @@ namespace SiliconStudio.Assets
             return existingAssetFolders;
         }
 
-        private static List<Tuple<UFile, UDirectory>> ListAssetFiles(ILogger log, Package package, CancellationToken? cancelToken)
+        public static List<PackageLoadingAssetFile> ListAssetFiles(ILogger log, Package package, CancellationToken? cancelToken)
         {
-            var listFiles = new List<Tuple<UFile, UDirectory>>();
+            var listFiles = new List<PackageLoadingAssetFile>();
 
             // TODO Check how to handle refresh correctly as a public API
             if (package.RootDirectory == null)
@@ -919,7 +1005,7 @@ namespace SiliconStudio.Assets
 
             if (!Directory.Exists(package.RootDirectory))
             {
-                throw new InvalidOperationException("Package RootDirectory [{0}] does not exist".ToFormat(package.RootDirectory));
+                return listFiles;
             }
 
             // Iterate on each source folders
@@ -951,7 +1037,7 @@ namespace SiliconStudio.Assets
                             continue;
                         }
 
-                        listFiles.Add(new Tuple<UFile, UDirectory>(fileUPath, sourceFolder));
+                        listFiles.Add(new PackageLoadingAssetFile(fileUPath, sourceFolder));
                     }
                 }
             }

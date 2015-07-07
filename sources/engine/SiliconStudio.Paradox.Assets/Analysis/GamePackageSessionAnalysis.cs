@@ -37,6 +37,10 @@ namespace SiliconStudio.Paradox.Assets.Analysis
 
             foreach (var package in Session.Packages)
             {
+                // Make sure package has its assets loaded
+                if (package.State < PackageState.AssetsReady)
+                    continue;
+
                 var hasGameExecutable = package.Profiles.SelectMany(profile => profile.ProjectReferences).Any(projectRef => projectRef.Type == ProjectType.Executable);
                 if (!hasGameExecutable)
                 {

@@ -130,13 +130,17 @@
     <Compile Include="PackageLoadedAssembly.cs" />
     <Compile Include="PackageDependency.cs" />
     <Compile Include="PackageExtensions.cs" />
+    <Compile Include="PackageLoadingAssetFile.cs" />
     <Compile Include="PackageSessionHelper.cs" />
+    <Compile Include="PackageSessionHelper.Solution.cs" />
     <Compile Include="PackageLoadParameters.cs" />
     <Compile Include="PackageSettings.cs" />
     <Compile Include="PackageStore.cs" />
     <Compile Include="PackageMeta.cs" />
     <Compile Include="PackageReference.cs" />
     <Compile Include="PackageStoreExtensions.cs" />
+    <Compile Include="PackageUpgrader.cs" />
+    <Compile Include="PackageUpgraderAttribute.cs" />
     <Compile Include="PackageVersion.cs" />
     <Compile Include="PackageVersionExtensions.cs" />
     <Compile Include="PackageVersionRange.cs" />
@@ -287,7 +291,6 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
