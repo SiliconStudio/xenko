@@ -116,7 +116,7 @@ namespace SiliconStudio.Paradox.Engine.Network
         {
             get
             {
-#if SILICONSTUDIO_PLATFORM_WINDOWS10 || SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
+#if SILICONSTUDIO_PLATFORM_WINDOWS_10 || SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
                 return RouterConnectionMode.ConnectThenListen;
 #elif SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS
                 return RouterConnectionMode.Listen;
