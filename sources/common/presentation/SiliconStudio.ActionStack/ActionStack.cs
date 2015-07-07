@@ -160,6 +160,12 @@ namespace SiliconStudio.ActionStack
 
                     action = actionItems[--CurrentIndex];
                     action.Undo();
+                    // If the action is still done after the undo, reset the current index to its initial value.
+                    if (action.IsDone)
+                    {
+                        ++CurrentIndex;
+                        return false;
+                    }
                 }
 
                 OnUndone(new ActionItemsEventArgs<IActionItem>(action));
@@ -185,6 +191,12 @@ namespace SiliconStudio.ActionStack
 
                     action = actionItems[CurrentIndex++];
                     action.Redo();
+                    // If the action is still done after the undo, reset the current index to its initial value.
+                    if (!action.IsDone)
+                    {
+                        --CurrentIndex;
+                        return false;
+                    }
                 }
                 OnRedone(new ActionItemsEventArgs<IActionItem>(action));
                 return true;
