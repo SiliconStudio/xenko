@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.Input.Tests
             await base.LoadContent();
 
             font = Asset.Load<SpriteFont>("Arial");
-            batch = new SpriteBatch(GraphicsDevice) { VirtualResolution = VirtualResolution };
+            batch = new SpriteBatch(GraphicsDevice);
 
             if (Input.Accelerometer.IsSupported)
                 Input.Accelerometer.IsEnabled = true;
@@ -69,42 +69,44 @@ namespace SiliconStudio.Paradox.Input.Tests
 
             GraphicsDevice.Clear(GraphicsDevice.BackBuffer, new Color4());
             GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            
+
+            var targetSize = new Vector2(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height);
+
             batch.Begin();
 
             var position = new Vector2(0.005f, 0.01f);
             var text = "Acceleration [{0}] = ({1})".ToFormat(Input.Accelerometer.IsEnabled ? "Enabled" : "Disabled", currentAcceleration);
-            var size = batch.MeasureString(font, text);
+            var size = batch.MeasureString(font, text, targetSize);
 
             batch.DrawString(font, text, position, Color.White);
 
             position.Y += size.Y;
             text = "Compass [{0}] = ({1})".ToFormat(Input.Compass.IsEnabled ? "Enabled" : "Disabled", currentHeading);
-            size = batch.MeasureString(font, text);
+            size = batch.MeasureString(font, text, targetSize);
 
             batch.DrawString(font, text, position, Color.White);
 
             position.Y += size.Y;
             text = "Gyroscope [{0}] = ({1})".ToFormat(Input.Gyroscope.IsEnabled ? "Enabled" : "Disabled", currentRotationRate);
-            size = batch.MeasureString(font, text);
+            size = batch.MeasureString(font, text, targetSize);
 
             batch.DrawString(font, text, position, Color.White);
 
             position.Y += size.Y;
             text = "UserAcceleration [{0}] = ({1})".ToFormat(Input.UserAcceleration.IsEnabled ? "Enabled" : "Disabled", currentUserAcceleration);
-            size = batch.MeasureString(font, text);
+            size = batch.MeasureString(font, text, targetSize);
 
             batch.DrawString(font, text, position, Color.White);
 
             position.Y += size.Y;
             text = "Gravity [{0}] = ({1})".ToFormat(Input.Gravity.IsEnabled ? "Enabled" : "Disabled", currentGravity);
-            size = batch.MeasureString(font, text);
+            size = batch.MeasureString(font, text, targetSize);
 
             batch.DrawString(font, text, position, Color.White);
 
             position.Y += size.Y;
             text = "Orientation [{0}] = ({1})".ToFormat(Input.Orientation.IsEnabled ? "Enabled" : "Disabled", currentYawPitchRoww);
-            size = batch.MeasureString(font, text);
+            size = batch.MeasureString(font, text, targetSize);
 
             batch.DrawString(font, text, position, Color.White);
             position.Y += size.Y;
