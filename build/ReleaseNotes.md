@@ -13,6 +13,7 @@ Release date: 2015/XX/XX
 - Studio: Added a button in the material properties of an entity to highlight them in the scene editor.
 - Studio: The sprite editor has been improved.
 - Studio: The 'F' key shortcut to focus on selection now also work when the hierarchy tree has the focus in the scene editor.
+- Studio: Moving the mouse forward/backward while LMB+RMB are down moves the camera upward/downward.
 - Studio: Setting a diffuse map/specular map on a material will also set the diffuse model/specular model of this material.
 - Studio: Keyboard shortcut to switch between transformation gizmos (W, E, R, Space by default)
 - Engine: Add the possibility to enable/disable the depth test in sprite component.
