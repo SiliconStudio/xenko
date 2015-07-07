@@ -18,12 +18,16 @@ namespace SiliconStudio.TextureConverter.Requests
         public PixelFormat DecompressedFormat { get; private set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DecompressingRequest"/> class.
+        /// Initializes a new instance of the <see cref="DecompressingRequest" /> class.
         /// </summary>
         /// <param name="isSRgb">Indicate if the input image is an sRGB image</param>
-        public DecompressingRequest(bool isSRgb)
+        /// <param name="pixelFormat">Input pixel format.</param>
+        public DecompressingRequest(bool isSRgb, PixelFormat pixelFormat = PixelFormat.None)
         {
-            DecompressedFormat = isSRgb ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm;
+            if (pixelFormat.IsHDR())
+                DecompressedFormat = PixelFormat.R16G16B16A16_Float;
+            else
+                DecompressedFormat = isSRgb ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm;
         }
     }
 }
