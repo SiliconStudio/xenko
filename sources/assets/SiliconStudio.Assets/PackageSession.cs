@@ -718,16 +718,18 @@ namespace SiliconStudio.Assets
                 package.IsSystem = isSystemPackage;
 
                 // Convert UPath to absolute (Package only)
-                if (loadParameters.ConvertUPathToAbsolute)
-                {
-                    var analysis = new PackageAnalysis(package, new PackageAnalysisParameters()
-                    {
-                        ConvertUPathTo = UPathType.Absolute,
-                        IsProcessingUPaths = true,
-                    });
-                    analysis.Run(log);
-                }
-
+                // Removed for now because it is called again in PackageSession.LoadAssembliesAndAssets (and running it twice result in dirty package)
+                // If we remove it from here (and call it only in the other method), templates are not loaded (Because they are loaded via the package store that do not use PreLoadPackage)
+                //if (loadParameters.ConvertUPathToAbsolute)
+                //{
+                //    var analysis = new PackageAnalysis(package, new PackageAnalysisParameters()
+                //    {
+                //        ConvertUPathTo = UPathType.Absolute,
+                //        SetDirtyFlagOnAssetWhenFixingAbsoluteUFile = true,
+                //        IsProcessingUPaths = true,
+                //    });
+                //    analysis.Run(log);
+                //}
 
                 // Add the package has loaded before loading dependencies
                 loadedPackages.Add(package);
