@@ -389,7 +389,7 @@ namespace SiliconStudio.TextureConverter
                 return;
             }
 
-            ExecuteRequest(image, new DecompressingRequest(isSRgb));
+            ExecuteRequest(image, new DecompressingRequest(isSRgb, image.Format));
         }
 
 
