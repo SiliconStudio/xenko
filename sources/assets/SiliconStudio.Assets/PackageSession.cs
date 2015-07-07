@@ -730,6 +730,12 @@ namespace SiliconStudio.Assets
                 //    });
                 //    analysis.Run(log);
                 //}
+                // If the package doesn't have a meta name, fix it here (This is supposed to be done in the above disabled analysis - but we still need to do it!)
+                if (string.IsNullOrWhiteSpace(package.Meta.Name) && package.FullPath != null)
+                {
+                    package.Meta.Name = package.FullPath.GetFileName();
+                    package.IsDirty = true;
+                }
 
                 // Add the package has loaded before loading dependencies
                 loadedPackages.Add(package);
