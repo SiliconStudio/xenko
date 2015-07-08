@@ -7,10 +7,13 @@ Release date: 2015/XX/XX
 #### Enhancements
 - Assets: Add `Auto` alpha format for automatic alpha detection in textures.
 - Effects: FXAA quality setting can be changed and it can now be properly disabled.
+- Studio: Add a menu to fix references when deleting an entity that is referenced by other entities of the scene.
 - Studio: When selecting a model, material or texture in the asset view, entities that use it will be highlighted in the scene editor
+- Studio: Added a material selection mode. When active, it is possible to highlight different materials of a selected entity with the mouse cursor (in the scene editor and in the property grid), and select them in the asset view by clicking.
 - Studio: Added a button in the material properties of an entity to highlight them in the scene editor.
-- Studio: Added a material selection mode. When active, it is possible to highlight different materials of a selected entity with the mouse cursor (in the scene editor and in the property grid), and select in the asset view them by clicking on them in the scene editor.
 - Studio: The sprite editor has been improved.
+- Studio: The 'F' key shortcut to focus on selection now also work when the hierarchy tree has the focus in the scene editor.
+- Studio: Moving the mouse forward/backward while LMB+RMB are down moves the camera upward/downward.
 - Studio: Setting a diffuse map/specular map on a material will also set the diffuse model/specular model of this material.
 - Studio: Keyboard shortcut to switch between transformation gizmos (W, E, R, Space by default)
 - Engine: Add the possibility to enable/disable the depth test in sprite component.
@@ -18,6 +21,8 @@ Release date: 2015/XX/XX
 
 #### Issues fixed
 - Studio: Fix the animation preview that where not properly updating when the source file was modified.
+- Studio: Fix an issue that was preventing selection by mouse click to work in the scene editor under some circumstances.
+- Studio: The pitch of the scene editor camera is now clamped between -90° and +90°
 - Engine: The center of sprites is now properly taken in account when rendered by the CameraRenderer.
 - Engine: Fixed an issue that prevented frustum culling from working.
 - Shaders: Ambient occlusion now correctly affects ambient light.

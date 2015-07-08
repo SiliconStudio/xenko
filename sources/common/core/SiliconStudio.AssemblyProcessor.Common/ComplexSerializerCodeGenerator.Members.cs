@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Runtime.Versioning;
 using SiliconStudio.AssemblyProcessor.Serializers;
+using SiliconStudio.Core.Diagnostics;
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
 using System.CodeDom.Compiler;
@@ -37,7 +38,7 @@ namespace SiliconStudio.AssemblyProcessor
             get { return serializerFactories; }
         }
 
-        public ComplexSerializerCodeGenerator(IAssemblyResolver assemblyResolver, AssemblyDefinition assembly)
+        public ComplexSerializerCodeGenerator(IAssemblyResolver assemblyResolver, AssemblyDefinition assembly, ILogger log)
         {
             this.assembly = assembly;
             this.assemblySerializerFactoryClassName = assembly.Name.Name.Replace(" ", string.Empty).Replace(".", string.Empty) + "SerializerFactory";
@@ -66,7 +67,7 @@ namespace SiliconStudio.AssemblyProcessor
             }
 
             // Prepare serializer processors
-            cecilSerializerContext = new CecilSerializerContext(assembly);
+            cecilSerializerContext = new CecilSerializerContext(assembly, log);
             var processors = new List<ICecilSerializerProcessor>();
 
             // Import list of serializer registered by referenced assemblies

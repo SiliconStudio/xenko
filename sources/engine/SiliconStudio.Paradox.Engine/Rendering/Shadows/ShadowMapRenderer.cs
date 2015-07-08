@@ -88,7 +88,7 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
             // Creates a model renderer for the shadows casters
             shadowModelComponentRenderer = new ModelComponentRenderer(effectName + ".ShadowMapCaster")
             {
-                Callbacks = 
+                Callbacks =
                 {
                     UpdateMeshes = FilterCasters,
                 }
@@ -196,7 +196,7 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
             {
                 throw new InvalidOperationException("ShadowMapRenderer expects to be used inside the context of a SceneInstance.Draw()");
             }
-            
+
             // Gets the current camera
             Camera = context.GetCurrentCamera();
             if (Camera == null)
@@ -255,40 +255,38 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
             var size = lightShadowMapTexture.Size;
 
             // Try to fit the shadow map into an existing atlas
+            ShadowMapAtlasTexture currentAtlas = null;
             foreach (var atlas in atlases)
             {
-                if (atlas.TryInsert(size, size, lightShadowMapTexture.CascadeCount))
+                if (atlas.TryInsert(size, size, lightShadowMapTexture.CascadeCount, (int index, ref Rectangle rectangle) => lightShadowMapTexture.SetRectangle(index, rectangle)))
                 {
-                    AssignRectangles(ref lightShadowMapTexture, atlas);
-                    return;
+                    currentAtlas = atlas;
+                    break;
                 }
             }
 
-            // TODO: handle FilterType texture creation here
-            // TODO: This does not work for Omni lights
-            
             // Allocate a new atlas texture
-            var texture = Texture.New2D(Context.GraphicsDevice, MaximumTextureSize, MaximumTextureSize, 1, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
-            var newAtlas = new ShadowMapAtlasTexture(texture, atlases.Count) { FilterType = lightShadowMapTexture.FilterType };
-            AssignRectangles(ref lightShadowMapTexture, newAtlas);
-            atlases.Add(newAtlas);
-        }
-
-        private void AssignRectangles(ref LightShadowMapTexture lightShadowMapTexture, ShadowMapAtlasTexture atlas)
-        {
-            // Make sure the atlas cleared (will be clear just once)
-            atlas.ClearRenderTarget(Context);
-
-            lightShadowMapTexture.TextureId = (byte)atlas.Id;
-            lightShadowMapTexture.Atlas = atlas;
-
-            var size = lightShadowMapTexture.Size;
-            for (int i = 0; i < lightShadowMapTexture.CascadeCount; i++)
+            if (currentAtlas == null)
             {
-                var rect = Rectangle.Empty;
-                atlas.Insert(size, size, ref rect);
-                lightShadowMapTexture.SetRectangle(i, rect);
+                // TODO: handle FilterType texture creation here
+                // TODO: This does not work for Omni lights
+
+                var texture = Texture.New2D(Context.GraphicsDevice, MaximumTextureSize, MaximumTextureSize, 1, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
+                currentAtlas = new ShadowMapAtlasTexture(texture, atlases.Count) { FilterType = lightShadowMapTexture.FilterType };
+                atlases.Add(currentAtlas);
+
+                for (int i = 0; i < lightShadowMapTexture.CascadeCount; i++)
+                {
+                    var rect = Rectangle.Empty;
+                    currentAtlas.Insert(size, size, ref rect);
+                    lightShadowMapTexture.SetRectangle(i, rect);
+                }
             }
+
+            // Make sure the atlas cleared (will be clear just once)
+            currentAtlas.ClearRenderTarget(Context);
+            lightShadowMapTexture.TextureId = (byte)currentAtlas.Id;
+            lightShadowMapTexture.Atlas = currentAtlas;
         }
 
         private void CollectShadowMaps()
@@ -323,7 +321,7 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
 
                 // Converts the importance into a shadow size factor
                 var sizeFactor = ComputeSizeFactor(shadowMap.Importance, shadowMap.Size);
-                    
+
                 // Compute the size of the final shadow map
                 // TODO: Handle GraphicsProfile
                 var shadowMapSize = (int)Math.Min(MaximumShadowSize * sizeFactor, MathUtil.NextPowerOfTwo(size * sizeFactor));

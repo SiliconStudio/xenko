@@ -718,16 +718,24 @@ namespace SiliconStudio.Assets
                 package.IsSystem = isSystemPackage;
 
                 // Convert UPath to absolute (Package only)
-                if (loadParameters.ConvertUPathToAbsolute)
+                // Removed for now because it is called again in PackageSession.LoadAssembliesAndAssets (and running it twice result in dirty package)
+                // If we remove it from here (and call it only in the other method), templates are not loaded (Because they are loaded via the package store that do not use PreLoadPackage)
+                //if (loadParameters.ConvertUPathToAbsolute)
+                //{
+                //    var analysis = new PackageAnalysis(package, new PackageAnalysisParameters()
+                //    {
+                //        ConvertUPathTo = UPathType.Absolute,
+                //        SetDirtyFlagOnAssetWhenFixingAbsoluteUFile = true,
+                //        IsProcessingUPaths = true,
+                //    });
+                //    analysis.Run(log);
+                //}
+                // If the package doesn't have a meta name, fix it here (This is supposed to be done in the above disabled analysis - but we still need to do it!)
+                if (string.IsNullOrWhiteSpace(package.Meta.Name) && package.FullPath != null)
                 {
-                    var analysis = new PackageAnalysis(package, new PackageAnalysisParameters()
-                    {
-                        ConvertUPathTo = UPathType.Absolute,
-                        IsProcessingUPaths = true,
-                    });
-                    analysis.Run(log);
+                    package.Meta.Name = package.FullPath.GetFileName();
+                    package.IsDirty = true;
                 }
-
 
                 // Add the package has loaded before loading dependencies
                 loadedPackages.Add(package);
@@ -846,6 +854,19 @@ namespace SiliconStudio.Assets
                 var newLoadParameters = loadParameters.Clone();
                 newLoadParameters.AssetFiles = assetFiles;
                 newLoadParameters.AssemblyContainer = session.assemblyContainer;
+                
+                // Default package version override
+                newLoadParameters.ExtraCompileProperties = new Dictionary<string, string>();
+                var defaultPackageOverride = NugetStore.GetPackageVersionVariable(PackageStore.Instance.DefaultPackageName) + "Override";
+                var defaultPackageVersion = PackageStore.Instance.DefaultPackageVersion.Version;
+                newLoadParameters.ExtraCompileProperties.Add(defaultPackageOverride, new Version(defaultPackageVersion.Major, defaultPackageVersion.Minor).ToString());
+                if (loadParameters.ExtraCompileProperties != null)
+                {
+                    foreach (var property in loadParameters.ExtraCompileProperties)
+                    {
+                        newLoadParameters.ExtraCompileProperties[property.Key] = property.Value;
+                    }
+                }
 
                 // Load assemblies and assets
                 package.LoadAssembliesAndAssets(log, newLoadParameters);
