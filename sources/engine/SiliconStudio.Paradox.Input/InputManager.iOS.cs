@@ -2,13 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 #if SILICONSTUDIO_PLATFORM_IOS
-
 using System;
 using CoreGraphics;
 using UIKit;
 using Foundation;
-using MonoTouch.CoreLocation;
-using MonoTouch.CoreMotion;
+using CoreLocation;
+using CoreMotion;
 using OpenTK.Platform.iPhoneOS;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
