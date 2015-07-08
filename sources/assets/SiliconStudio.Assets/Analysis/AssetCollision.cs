@@ -131,17 +131,18 @@ namespace SiliconStudio.Assets.Analysis
 
                     bool requireUpdate = false;
 
-                    if (idRemap.ContainsKey(newId))
+                    Tuple<Guid, UFile> newRemap;
+                    if (idRemap.TryGetValue(newId, out newRemap) && (newId != newRemap.Item1 || newLocation != newRemap.Item2))
                     {
-                        var newRemap = idRemap[newId];
                         newId = newRemap.Item1;
                         newLocation = newRemap.Item2;
                         requireUpdate = true;
                     }
 
-                    if (!requireUpdate && locationRemap.ContainsKey(newLocation))
+                    UFile remapLocation;
+                    if (!requireUpdate && locationRemap.TryGetValue(newLocation, out remapLocation))
                     {
-                        newLocation = locationRemap[newLocation];
+                        newLocation = remapLocation;
                         requireUpdate = true;
                     }
 

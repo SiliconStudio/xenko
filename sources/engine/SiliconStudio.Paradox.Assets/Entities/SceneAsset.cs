@@ -2,11 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Linq;
 
 using SharpYaml.Serialization;
 
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
@@ -23,9 +23,11 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [DataContract("SceneAsset")]
     [AssetDescription(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
-    [AssetFormatVersion(2)]
+    [ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName)]
+    [AssetFormatVersion(3)]
     [AssetUpgrader(0, 1, typeof(RemoveSourceUpgrader))]
     [AssetUpgrader(1, 2, typeof(RemoveBaseUpgrader))]
+    [AssetUpgrader(2, 3, typeof(RemoveModelDrawOrderUpgrader))]
     [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
@@ -75,6 +77,22 @@ namespace SiliconStudio.Paradox.Assets.Entities
                 asset.SerializedVersion = value;
                 // Ensure that it is stored right after the asset Id
                 asset.MoveChild("SerializedVersion", asset.IndexOf("Id") + 1);
+            }
+        }
+
+        public class RemoveModelDrawOrderUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Entities;
+                foreach (dynamic entity in entities)
+                {
+                    var components = entity.Components;
+                    var modelComponent = components["ModelComponent.Key"];
+                    if(modelComponent != null)
+                        modelComponent.RemoveChild("DrawOrder");
+                }
             }
         }
 

@@ -60,6 +60,19 @@
     <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-winphone\</NUnitLiteBinDir>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows10' ">
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion>10.0.10069.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10069.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_10;NET45;NETFX_CORE;WINDOWS_UAP</SiliconStudioPlatformDefines>
+    <ParadoxSharpDXSdkBinDir>$(ParadoxSharpDXSdkDir)\Bin\StoreApp</ParadoxSharpDXSdkBinDir>
+    <ParadoxSharpDXAudioSdkBinDir>$(ParadoxSharpDXSdkBinDir)</ParadoxSharpDXAudioSdkBinDir>
+    <ParadoxSharpDXInputSdkBinDir>$(ParadoxSharpDXSdkBinDir)</ParadoxSharpDXInputSdkBinDir>
+    <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-win10\</NUnitLiteBinDir>
+  </PropertyGroup>
   
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Android' ">
     <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>

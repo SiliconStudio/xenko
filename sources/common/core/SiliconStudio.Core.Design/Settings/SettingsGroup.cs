@@ -109,17 +109,7 @@ namespace SiliconStudio.Core.Settings
                 }
                 profile = new SettingsProfile(this, parent ?? defaultProfile) { FilePath = filePath };
 
-                foreach (var settings in settingsFile.Settings)
-                {
-                    SettingsKey key;
-                    var value = settings.Value;
-                    object finalValue = value;
-                    if (settingsKeys.TryGetValue(settings.Key, out key))
-                    {
-                        finalValue = key.ConvertValue(value);
-                    }
-                    profile.SetValue(settings.Key, finalValue);
-                }
+                DecodeSettings(settingsFile.Settings, profile);
             }
             catch (Exception e)
             {
@@ -163,17 +153,7 @@ namespace SiliconStudio.Core.Settings
                     settingsFile = (SettingsFile)YamlSerializer.Deserialize(stream);
                 }
 
-                foreach (var settings in settingsFile.Settings)
-                {
-                    SettingsKey key;
-                    var value = settings.Value;
-                    object finalValue = value;
-                    if (settingsKeys.TryGetValue(settings.Key, out key))
-                    {
-                        finalValue = key.ConvertValue(value);
-                    }
-                    profile.SetValue(settings.Key, finalValue);
-                }
+                DecodeSettings(settingsFile.Settings, profile);
             }
             catch (Exception e)
             {
@@ -215,19 +195,7 @@ namespace SiliconStudio.Core.Settings
                 Directory.CreateDirectory(filePath.GetFullDirectory());
 
                 var settingsFile = new SettingsFile();
-                foreach (var entry in profile.Settings.Values)
-                {
-                    try
-                    {
-                        // Find key
-                        SettingsKey key;
-                        settingsKeys.TryGetValue(entry.Name, out key);
-                        settingsFile.Settings.Add(entry.Name, entry.GetSerializableValue(key));
-                    }
-                    catch (Exception)
-                    {
-                    }
-                }
+                EncodeSettings(profile, settingsFile.Settings);
 
                 using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.Write))
                 {
@@ -244,6 +212,38 @@ namespace SiliconStudio.Core.Settings
                 profile.Saving = false;
             }
             return true;
+        }
+
+        internal void EncodeSettings(SettingsProfile profile, SettingsDictionary settingsDictionary)
+        {
+            foreach (var entry in profile.Settings.Values)
+            {
+                try
+                {
+                    // Find key
+                    SettingsKey key;
+                    settingsKeys.TryGetValue(entry.Name, out key);
+                    settingsDictionary.Add(entry.Name, entry.GetSerializableValue(key));
+                }
+                catch (Exception)
+                {
+                }
+            }
+        }
+
+        internal void DecodeSettings(SettingsDictionary settingsDictionary, SettingsProfile profile)
+        {
+            foreach (var settings in settingsDictionary)
+            {
+                SettingsKey key;
+                var value = settings.Value;
+                object finalValue = value;
+                if (settingsKeys.TryGetValue(settings.Key, out key))
+                {
+                    finalValue = key.ConvertValue(value);
+                }
+                profile.SetValue(settings.Key, finalValue);
+            }
         }
 
         /// <summary>

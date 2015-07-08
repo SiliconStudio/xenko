@@ -60,7 +60,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{72962F32-12A3-4A36-A003-AFE44FC239A3}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>libLZ4</RootNamespace>
+    <RootNamespace>libcore</RootNamespace>
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>NotSet</CharacterSet>	
     <PlatformToolset>v120</PlatformToolset>

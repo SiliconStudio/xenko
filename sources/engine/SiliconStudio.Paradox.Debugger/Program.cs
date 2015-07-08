@@ -70,7 +70,7 @@ namespace SiliconStudio.Paradox
                 }
 
                 // Open WCF channel with master builder
-                var namedPipeBinding = new NetNamedPipeBinding(NetNamedPipeSecurityMode.None) { SendTimeout = TimeSpan.FromSeconds(300.0) };
+                var namedPipeBinding = new NetNamedPipeBinding(NetNamedPipeSecurityMode.None) { SendTimeout = TimeSpan.FromSeconds(300.0), MaxReceivedMessageSize = int.MaxValue };
                 try
                 {
                     var gameDebuggerTarget = new GameDebuggerTarget();

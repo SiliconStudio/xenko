@@ -4,7 +4,6 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
 {
@@ -15,17 +14,10 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
     public abstract class ComputeKeyedBase : ComputeNode
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ComputeNode"/> class.
-        /// </summary>
-        protected ComputeKeyedBase()
-        {
-        }
-
-        /// <summary>
         /// Gets or sets a custom key associated to this node.
         /// </summary>
         /// <value>The key.</value>
-        [DataMember(100)]
+        [DataMemberIgnore]
         [DefaultValue(null)]
         public ParameterKey Key { get; set; }
 

@@ -57,7 +57,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the micro surface.
         /// </summary>
         /// <value>The micro surface.</value>
-        [Display("MicroSurface", null, "Geometry")]
+        [Display("MicroSurface", null, "Geometry", Expand = ExpandRule.Once)]
         [DefaultValue(null)]
         [DataMember(40)]
         public IMaterialMicroSurfaceFeature MicroSurface { get; set; }
@@ -66,7 +66,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the diffuse.
         /// </summary>
         /// <value>The diffuse.</value>
-        [Display("Diffuse", null, "Shading")]
+        [Display("Diffuse", null, "Shading", Expand = ExpandRule.Once)]
         [DefaultValue(null)]
         [DataMember(50)]
         public IMaterialDiffuseFeature Diffuse { get; set; }
@@ -84,7 +84,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the specular.
         /// </summary>
         /// <value>The specular.</value>
-        [Display("Specular", null, "Shading")]
+        [Display("Specular", null, "Shading", Expand = ExpandRule.Once)]
         [DefaultValue(null)]
         [DataMember(70)]
         public IMaterialSpecularFeature Specular { get; set; }
@@ -93,7 +93,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the specular model.
         /// </summary>
         /// <value>The specular model.</value>
-        [Display("Specular Model", null, "Shading")]
+        [Display("Specular Model", null, "Shading", Expand = ExpandRule.Once)]
         [DefaultValue(null)]
         [DataMember(80)]
         public IMaterialSpecularModelFeature SpecularModel { get; set; }

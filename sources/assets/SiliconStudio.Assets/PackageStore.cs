@@ -192,14 +192,15 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="packageName">Name of the package.</param>
         /// <param name="versionRange">The version range.</param>
+        /// <param name="constraintProvider">The package constraint provider.</param>
         /// <param name="allowPreleaseVersion">if set to <c>true</c> [allow prelease version].</param>
         /// <param name="allowUnlisted">if set to <c>true</c> [allow unlisted].</param>
         /// <returns>A location on the disk to the specified package or null if not found.</returns>
         /// <exception cref="System.ArgumentNullException">packageName</exception>
-        public UFile GetPackageFileName(string packageName, PackageVersionRange versionRange = null, bool allowPreleaseVersion = true, bool allowUnlisted = false)
+        public UFile GetPackageFileName(string packageName, PackageVersionRange versionRange = null, IPackageConstraintProvider constraintProvider = null, bool allowPreleaseVersion = true, bool allowUnlisted = false)
         {
             if (packageName == null) throw new ArgumentNullException("packageName");
-            var directory = GetPackageDirectory(packageName, versionRange, allowPreleaseVersion, allowUnlisted);
+            var directory = GetPackageDirectory(packageName, versionRange, constraintProvider, allowPreleaseVersion, allowUnlisted);
             return directory != null ? UPath.Combine(UPath.Combine(UPath.Combine(InstallationPath, (UDirectory)store.RepositoryPath), directory), new UFile(packageName + Package.PackageFileExtension)) : null;
         }
 
@@ -221,14 +222,14 @@ namespace SiliconStudio.Assets
             return new PackageLoadParameters { AutoLoadTemporaryAssets = false };
         }
 
-        private UDirectory GetPackageDirectory(string packageName, PackageVersionRange versionRange, bool allowPreleaseVersion = false, bool allowUnlisted = false)
+        private UDirectory GetPackageDirectory(string packageName, PackageVersionRange versionRange, IPackageConstraintProvider constraintProvider = null, bool allowPreleaseVersion = false, bool allowUnlisted = false)
         {
             if (packageName == null) throw new ArgumentNullException("packageName");
 
             if (store != null)
             {
                 var versionSpec = versionRange.ToVersionSpec();
-                var package = store.Manager.LocalRepository.FindPackage(packageName, versionSpec, allowPreleaseVersion, allowUnlisted);
+                var package = store.Manager.LocalRepository.FindPackage(packageName, versionSpec, constraintProvider ?? NullConstraintProvider.Instance, allowPreleaseVersion, allowUnlisted);
 
                 // If package was not found, 
                 if (package != null)
@@ -242,7 +243,15 @@ namespace SiliconStudio.Assets
             }
 
             // TODO: Check version for default package
-            return DefaultPackageName == packageName ? defaultPackageDirectory : null;
+            if (packageName == DefaultPackageName)
+            {
+                if (versionRange == null || versionRange.Contains(DefaultPackageVersion))
+                {
+                    return defaultPackageDirectory;
+                }
+            }
+
+            return null;
         }
     }
 }

@@ -40,7 +40,14 @@ namespace SiliconStudio.Presentation.Dialogs
 
         public MessageBoxResult ShowMessageBox(string message, string caption, MessageBoxButton button, MessageBoxImage image)
         {
-            return (MessageBoxResult)MessageBox.Show(message, caption, (System.Windows.MessageBoxButton)button, (System.Windows.MessageBoxImage)image);
+            var parentWindow = ParentWindow;
+            return dispatcher.Invoke(() =>
+            {
+                if (parentWindow != null)
+                    return (MessageBoxResult)MessageBox.Show(parentWindow, message, caption, (System.Windows.MessageBoxButton)button, (System.Windows.MessageBoxImage)image);
+
+                return (MessageBoxResult)MessageBox.Show(message, caption, (System.Windows.MessageBoxButton)button, (System.Windows.MessageBoxImage)image);
+            });
         }
 
         public void CloseCurrentWindow(bool? dialogResult = null)

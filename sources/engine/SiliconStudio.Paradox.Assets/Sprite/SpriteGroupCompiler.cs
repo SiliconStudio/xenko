@@ -23,8 +23,8 @@ namespace SiliconStudio.Paradox.Assets.Sprite
 
         internal class SpriteGroupCommand : ImageGroupCommand<SpriteGroupAsset, SpriteInfo, SpriteGroup, Graphics.Sprite>
         {
-            public SpriteGroupCommand(string url, ImageGroupParameters<SpriteGroupAsset> asset, Dictionary<SpriteInfo, int> imageToTextureIndex)
-                : base(url, asset, imageToTextureIndex)
+            public SpriteGroupCommand(string url, ImageGroupParameters<SpriteGroupAsset> assetParameters, Dictionary<SpriteInfo, int> imageToTextureIndex)
+                : base(url, assetParameters, imageToTextureIndex)
             {
             }
         

@@ -254,6 +254,27 @@ namespace SiliconStudio.AssemblyProcessor
 
                         break;
                     }
+
+                    case PlatformType.Windows10:
+                    {
+                        if (string.IsNullOrEmpty(TargetFramework))
+                        {
+                            throw new InvalidOperationException("Expecting option target framework for Windows10");
+                        }
+
+                        frameworkFolder = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Reference Assemblies\Microsoft\Framework\.NETCore", TargetFramework);
+                        assemblyResolver.AddSearchDirectory(frameworkFolder);
+
+                        // Add path to look for WinRT assemblies (Windows.Foundation.FoundationContract.winmd, etc...)
+                        assemblyResolver.WindowsKitsReferenceDirectory = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Windows Kits\10\References");
+
+                        // Add path to look for WinRT assemblies (Windows.winmd)
+                        var windowsAssemblyPath = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Windows Kits\8.1\References\CommonConfiguration\Neutral\", "Windows.winmd");
+                        var windowsAssembly = AssemblyDefinition.ReadAssembly(windowsAssemblyPath, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = false });
+                        assemblyResolver.Register(windowsAssembly);
+
+                        break;
+                    }
                 }
 
                 if (SerializationAssembly)

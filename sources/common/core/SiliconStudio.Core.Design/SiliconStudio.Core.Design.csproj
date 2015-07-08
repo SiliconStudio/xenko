@@ -21,7 +21,7 @@
   </ItemGroup>
   <!-- Include platform dependent assembly when specified -->
   <Choose>
-    <When Condition="'$(SiliconStudioPlatform)' == 'WindowsStore' or '$(SiliconStudioPlatform)' == 'WindowsPhone'">
+    <When Condition="'$(SiliconStudioPlatform)' == 'WindowsStore' or '$(SiliconStudioPlatform)' == 'WindowsPhone' or '$(SiliconStudioPlatform)' == 'Windows10'">
       <ItemGroup>
         <Reference Include="SharpDX">
           <SpecificVersion>False</SpecificVersion>
@@ -87,13 +87,14 @@
     <Compile Include="Settings\ChangesValidatedEventArgs.cs" />
     <Compile Include="Settings\FileModifiedEventArgs.cs" />
     <Compile Include="Settings\NamespaceDoc.cs" />
+    <Compile Include="Settings\SettingsCollection.cs" />
+    <Compile Include="Settings\SettingsDictionarySerializer.cs" />
     <Compile Include="Yaml\ParsingEventListEmitter.cs" />
     <Compile Include="Settings\SettingsEntry.cs" />
     <Compile Include="Settings\SettingsEntryValue.cs" />
     <Compile Include="Settings\SettingsFile.cs" />
     <Compile Include="Settings\SettingsFileLoadedEventArgs.cs" />
     <Compile Include="Settings\SettingsKey.cs" />
-    <Compile Include="Settings\SettingsKeyWrapper.cs" />
     <Compile Include="Settings\SettingsProfile.cs" />
     <Compile Include="Settings\SettingsGroup.cs" />
     <Compile Include="Settings\SettingsValueKey.cs" />

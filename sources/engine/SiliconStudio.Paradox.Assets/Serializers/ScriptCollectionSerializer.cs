@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using SharpYaml;
 using SharpYaml.Events;
 using SharpYaml.Serialization;
@@ -70,7 +72,9 @@ namespace SiliconStudio.Paradox.Assets.Serializers
             catch (YamlException)
             {
                 // There was a failure, let's keep this object so that it can be serialized back later
-                return new UnloadableScript(parsingEvents);
+                var startEvent = parsingEvents.FirstOrDefault() as MappingStart;
+                string typeName = startEvent != null && !string.IsNullOrEmpty(startEvent.Tag) ? startEvent.Tag.Substring(1) : null;
+                return new UnloadableScript(parsingEvents, typeName);
             }
             finally
             {

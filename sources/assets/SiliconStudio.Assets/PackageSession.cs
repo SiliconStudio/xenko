@@ -5,13 +5,14 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
-
+using NuGet;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.Core.Reflection;
+using ILogger = SiliconStudio.Core.Diagnostics.ILogger;
 
 namespace SiliconStudio.Assets
 {
@@ -20,6 +21,7 @@ namespace SiliconStudio.Assets
     /// </summary>
     public sealed class PackageSession : IDisposable, IDirtyable
     {
+        private readonly DefaultConstraintProvider constraintProvider = new DefaultConstraintProvider();
         private readonly PackageCollection packagesCopy;
         private readonly PackageCollection packages;
         private readonly AssemblyContainer assemblyContainer;
@@ -41,6 +43,8 @@ namespace SiliconStudio.Assets
         /// </summary>
         public PackageSession(Package package)
         {
+            constraintProvider.AddConstraint(PackageStore.Instance.DefaultPackageName, new VersionSpec(PackageStore.Instance.DefaultPackageVersion.ToSemanticVersion()));
+
             packages = new PackageCollection();
             packagesCopy = new PackageCollection();
             assemblyContainer = new AssemblyContainer();
@@ -244,6 +248,12 @@ namespace SiliconStudio.Assets
 
                 package = PreLoadPackage(this, logger, packagePath, false, packagesLoaded, loadParameters);
 
+                // Load all missing references/dependencies
+                LoadMissingReferences(logger, loadParameters);
+
+                // Load assets
+                TryLoadAssets(this, logger, package, loadParameters);
+
                 // Run analysis after
                 foreach (var packageToAdd in packagesLoaded)
                 {
@@ -377,11 +387,22 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Loads the missing references
+        /// Make sure packages have their dependencies and assets loaded.
+        /// </summary>
+        /// <param name="log">The log.</param>
+        /// <param name="loadParameters">The load parameters.</param>
+        public void LoadMissingReferences(ILogger log, PackageLoadParameters loadParameters = null)
+        {
+            LoadMissingDependencies(log, loadParameters);
+            LoadMissingAssets(log, loadParameters);
+        }
+
+        /// <summary>
+        /// Make sure packages have their dependencies loaded.
         /// </summary>
         /// <param name="log">The log.</param>
         /// <param name="loadParametersArg">The load parameters argument.</param>
-        public void LoadMissingReferences(ILogger log, PackageLoadParameters loadParametersArg = null)
+        public void LoadMissingDependencies(ILogger log, PackageLoadParameters loadParametersArg = null)
         {
             var loadParameters = loadParametersArg ?? PackageLoadParameters.Default();
 
@@ -400,6 +421,31 @@ namespace SiliconStudio.Assets
                 }
 
                 PreLoadPackageDependencies(this, log, package, packagesLoaded, loadParameters);
+            }
+        }
+
+        /// <summary>
+        /// Make sure packages have their assets loaded.
+        /// </summary>
+        /// <param name="log">The log.</param>
+        /// <param name="loadParametersArg">The load parameters argument.</param>
+        public void LoadMissingAssets(ILogger log, PackageLoadParameters loadParametersArg = null)
+        {
+            var loadParameters = loadParametersArg ?? PackageLoadParameters.Default();
+
+            var cancelToken = loadParameters.CancelToken;
+
+            // Make a copy of Packages as it can be modified by PreLoadPackageDependencies
+            var previousPackages = Packages.ToList();
+            foreach (var package in previousPackages)
+            {
+                // Output the session only if there is no cancellation
+                if (cancelToken.HasValue && cancelToken.Value.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                TryLoadAssets(this, log, package, loadParameters);
             }
         }
 
@@ -667,28 +713,45 @@ namespace SiliconStudio.Assets
                     return loadedPackages.Find(packageId);
                 }
 
-                // Load the package without loading assets
-                var newLoadParameters = loadParameters.Clone();
-                newLoadParameters.AssemblyContainer = session.assemblyContainer;
-
-                // Load the package
-                var package = Package.Load(log, filePath, newLoadParameters);
+                // Load the package without loading any assets
+                var package = Package.LoadRaw(log, filePath);
                 package.IsSystem = isSystemPackage;
+
+                // Convert UPath to absolute (Package only)
+                // Removed for now because it is called again in PackageSession.LoadAssembliesAndAssets (and running it twice result in dirty package)
+                // If we remove it from here (and call it only in the other method), templates are not loaded (Because they are loaded via the package store that do not use PreLoadPackage)
+                //if (loadParameters.ConvertUPathToAbsolute)
+                //{
+                //    var analysis = new PackageAnalysis(package, new PackageAnalysisParameters()
+                //    {
+                //        ConvertUPathTo = UPathType.Absolute,
+                //        SetDirtyFlagOnAssetWhenFixingAbsoluteUFile = true,
+                //        IsProcessingUPaths = true,
+                //    });
+                //    analysis.Run(log);
+                //}
+                // If the package doesn't have a meta name, fix it here (This is supposed to be done in the above disabled analysis - but we still need to do it!)
+                if (string.IsNullOrWhiteSpace(package.Meta.Name) && package.FullPath != null)
+                {
+                    package.Meta.Name = package.FullPath.GetFileName();
+                    package.IsDirty = true;
+                }
 
                 // Add the package has loaded before loading dependencies
                 loadedPackages.Add(package);
 
+                // Package has been loaded, register it in constraints so that we force each subsequent loads to use this one (or fails if version doesn't match)
+                session.constraintProvider.AddConstraint(package.Meta.Name, new VersionSpec(package.Meta.Version.ToSemanticVersion()));
+
                 // Load package dependencies
+                // This will perform necessary asset upgrades
+                // TODO: We should probably split package loading in two recursive top-level passes (right now those two passes are mixed, making it more difficult to make proper checks)
+                //   - First, load raw packages with their dependencies recursively, then resolve dependencies and constraints (and print errors/warnings)
+                //   - Then, if everything is OK, load the actual references and assets for each packages
                 PreLoadPackageDependencies(session, log, package, loadedPackages, loadParameters);
 
                 // Add the package to the session but don't freeze it yet
                 session.Packages.Add(package);
-
-                // Validate assets from package
-                package.ValidateAssets(loadParameters.GenerateNewAssetIds);
-
-                // Freeze the package after loading the assets
-                session.FreezePackage(package);
 
                 return package;
             }
@@ -700,6 +763,156 @@ namespace SiliconStudio.Assets
             return null;
         }
 
+        private static bool TryLoadAssets(PackageSession session, ILogger log, Package package, PackageLoadParameters loadParameters)
+        {
+            // Already loaded
+            if (package.State >= PackageState.AssetsReady)
+                return true;
+
+            // Dependencies could not properly be loaded
+            if (package.State < PackageState.DependenciesReady)
+                return false;
+
+            // A package upgrade has previously been tried and denied, so let's keep the package in this state
+            if (package.State == PackageState.UpgradeFailed)
+                return false;
+
+            try
+            {
+                // First, check that dependencies have their assets loaded
+                bool dependencyError = false;
+                foreach (var dependency in package.FindDependencies(false, false))
+                {
+                    if (!TryLoadAssets(session, log, dependency, loadParameters))
+                        dependencyError = true;
+                }
+
+                if (dependencyError)
+                    return false;
+
+                var pendingPackageUpgrades = new List<PendingPackageUpgrade>();
+
+                // Note: Default state is upgrade failed (for early exit on error/exceptions)
+                // We will update to success as soon as loading is finished.
+                package.State = PackageState.UpgradeFailed;
+
+                // Process store dependencies for upgraders
+                foreach (var packageDependency in package.Meta.Dependencies)
+                {
+                    var dependencyPackage = session.Packages.Find(packageDependency);
+                    if (dependencyPackage == null)
+                    {
+                        continue;
+                    }
+
+                    // Check for upgraders
+                    var packageUpgrader = session.CheckPackageUpgrade(log, package, packageDependency, dependencyPackage);
+                    if (packageUpgrader != null)
+                    {
+                        pendingPackageUpgrades.Add(new PendingPackageUpgrade(packageUpgrader, packageDependency, dependencyPackage));
+                    }
+                }
+
+                // Load list of assets
+                var assetFiles = Package.ListAssetFiles(log, package, loadParameters.CancelToken);
+
+                if (pendingPackageUpgrades.Count > 0)
+                {
+                    var upgradeAllowed = true;
+                    // Need upgrades, let's ask user confirmation
+                    if (loadParameters.PackageUpgradeRequested != null)
+                    {
+                        upgradeAllowed = loadParameters.PackageUpgradeRequested(package, pendingPackageUpgrades);
+                    }
+
+                    if (!upgradeAllowed)
+                    {
+                        log.Error("Necessary package migration for [{0}] has not been allowed", package.Meta.Name);
+                        return false;
+                    }
+
+                    // Perform upgrades
+                    foreach (var pendingPackageUpgrade in pendingPackageUpgrades)
+                    {
+                        var packageUpgrader = pendingPackageUpgrade.PackageUpgrader;
+                        var dependencyPackage = pendingPackageUpgrade.DependencyPackage;
+                        if (!packageUpgrader.Upgrade(session, log, package, pendingPackageUpgrade.Dependency, dependencyPackage, assetFiles))
+                        {
+                            log.Error("Error while upgrading package [{0}] for [{1}] from version [{2}] to [{3}]", package.Meta.Name, dependencyPackage.Meta.Name, pendingPackageUpgrade.Dependency.Version, dependencyPackage.Meta.Version);
+                            return false;
+                        }
+
+                        // Update dependency to reflect new requirement
+                        pendingPackageUpgrade.Dependency.Version = pendingPackageUpgrade.PackageUpgrader.Attribute.PackageUpdatedVersionRange;
+                    }
+
+                    // Mark package as dirty
+                    package.IsDirty = true;
+                }
+
+                // Process the package for assets
+                var newLoadParameters = loadParameters.Clone();
+                newLoadParameters.AssetFiles = assetFiles;
+                newLoadParameters.AssemblyContainer = session.assemblyContainer;
+
+                // Load assemblies and assets
+                package.LoadAssembliesAndAssets(log, newLoadParameters);
+
+                // Validate assets from package
+                package.ValidateAssets(newLoadParameters.GenerateNewAssetIds);
+
+                // Freeze the package after loading the assets
+                session.FreezePackage(package);
+
+                // Mark package as ready
+                package.State = PackageState.AssetsReady;
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error while loading package [{0}]", ex, package);
+                return false;
+            }
+        }
+
+        PackageUpgrader CheckPackageUpgrade(ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage)
+        {
+            // Don't do anything if source is a system (read-only) package for now
+            // We only want to process local packages
+            if (dependentPackage.IsSystem)
+                return null;
+
+            // Check if package might need upgrading
+            var dependentPackagePreviousMinimumVersion = dependency.Version.MinVersion;
+            if (dependentPackagePreviousMinimumVersion < dependencyPackage.Meta.Version)
+            {
+                // Find upgrader for given package
+                // Note: If no upgrader is found, we assume it is still compatible with previous versions, so do nothing
+                var packageUpgrader = AssetRegistry.GetPackageUpgrader(dependencyPackage.Meta.Name);
+                if (packageUpgrader != null)
+                {
+                    // Check if upgrade is necessary
+                    if (dependency.Version.MinVersion >= packageUpgrader.Attribute.PackageUpdatedVersionRange.MinVersion)
+                    {
+                        return null;
+                    }
+
+                    // Check if upgrade is allowed
+                    if (dependency.Version.MinVersion < packageUpgrader.Attribute.PackageMinimumVersion)
+                    {
+                        // Throw an exception, because the package update is not allowed and can't be done
+                        throw new InvalidOperationException(string.Format("Upgrading package [{0}] to use [{1}] from version [{2}] to [{3}] is not supported", dependentPackage.Meta.Name, dependencyPackage.Meta.Name, dependentPackagePreviousMinimumVersion, dependencyPackage.Meta.Version));
+                    }
+
+                    log.Info("Upgrading package [{0}] to use [{1}] from version [{2}] to [{3}] will be required", dependentPackage.Meta.Name, dependencyPackage.Meta.Name, dependentPackagePreviousMinimumVersion, dependencyPackage.Meta.Version);
+                    return packageUpgrader;
+                }
+            }
+
+            return null;
+        }
+        
         private static void PreLoadPackageDependencies(PackageSession session, ILogger log, Package package, PackageCollection loadedPackages, PackageLoadParameters loadParameters)
         {
             if (session == null) throw new ArgumentNullException("session");
@@ -707,27 +920,35 @@ namespace SiliconStudio.Assets
             if (package == null) throw new ArgumentNullException("package");
             if (loadParameters == null) throw new ArgumentNullException("loadParameters");
 
+            bool packageDependencyErrors = false;
+
+            // TODO: Remove and recheck Dependencies Ready if some secondary packages are removed?
+            if (package.State >= PackageState.DependenciesReady)
+                return;
+
             // 1. Load store package
             foreach (var packageDependency in package.Meta.Dependencies)
             {
                 var loadedPackage = session.Packages.Find(packageDependency);
-                if (loadedPackage != null)
+                if (loadedPackage == null)
                 {
-                    continue;
+                    var file = PackageStore.Instance.GetPackageFileName(packageDependency.Name, packageDependency.Version, session.constraintProvider);
+
+                    if (file == null)
+                    {
+                        // TODO: We need to support automatic download of packages. This is not supported yet when only Paradox
+                        // package is supposed to be installed, but It will be required for full store
+                        log.Error("Unable to find package {0} not installed", packageDependency);
+                        packageDependencyErrors = true;
+                        continue;
+                    }
+
+                    // Recursive load of the system package
+                    loadedPackage = PreLoadPackage(session, log, file, true, loadedPackages, loadParameters);
                 }
 
-                var file = PackageStore.Instance.GetPackageFileName(packageDependency.Name, packageDependency.Version);
-
-                if (file == null)
-                {
-                    // TODO: We need to support automatic download of packages. This is not supported yet when only Paradox
-                    // package is supposed to be installed, but It will be required for full store
-                    log.Error("Unable to find package {0} not installed", packageDependency);
-                    continue;
-                }
-
-                // Recursive load of the system package
-                PreLoadPackage(session, log, file, true, loadedPackages, loadParameters);
+                if (loadedPackage == null || loadedPackage.State < PackageState.DependenciesReady)
+                    packageDependencyErrors = true;
             }
 
             // 2. Load local packages
@@ -745,7 +966,30 @@ namespace SiliconStudio.Assets
                 var subPackageFilePath = package.RootDirectory != null ? UPath.Combine(package.RootDirectory, newLocation) : newLocation;
 
                 // Recursive load
-                PreLoadPackage(session, log, subPackageFilePath.FullPath, false, loadedPackages, loadParameters);
+                var loadedPackage = PreLoadPackage(session, log, subPackageFilePath.FullPath, false, loadedPackages, loadParameters);
+
+                if (loadedPackage == null || loadedPackage.State < PackageState.DependenciesReady)
+                    packageDependencyErrors = true;
+            }
+
+            // 3. Update package state
+            if (!packageDependencyErrors)
+            {
+                package.State = PackageState.DependenciesReady;
+            }
+        }
+
+        public class PendingPackageUpgrade
+        {
+            public readonly PackageUpgrader PackageUpgrader;
+            public readonly PackageDependency Dependency;
+            public readonly Package DependencyPackage;
+
+            public PendingPackageUpgrade(PackageUpgrader packageUpgrader, PackageDependency dependency, Package dependencyPackage)
+            {
+                PackageUpgrader = packageUpgrader;
+                Dependency = dependency;
+                DependencyPackage = dependencyPackage;
             }
         }
 

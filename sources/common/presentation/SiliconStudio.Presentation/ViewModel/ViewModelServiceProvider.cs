@@ -16,16 +16,12 @@ namespace SiliconStudio.Presentation.ViewModel
 
         public static IViewModelServiceProvider NullServiceProvider = new ViewModelServiceProvider(Enumerable.Empty<object>());
 
-        public ViewModelServiceProvider(IEnumerable<object> services)
+        public ViewModelServiceProvider(IEnumerable<object> services = null)
+            : this(null, services)
         {
-            foreach (var service in services)
-            {
-                RegisterService(service);
-            }
         }
 
-        public ViewModelServiceProvider(IViewModelServiceProvider parentProvider, IEnumerable<object> services)
-            : this(services)
+        public ViewModelServiceProvider(IViewModelServiceProvider parentProvider, IEnumerable<object> services = null)
         {
             // If the parent provider is a ViewModelServiceProvider, try to merge its service list instead of using composition.
             var parent = parentProvider as ViewModelServiceProvider;
@@ -36,6 +32,13 @@ namespace SiliconStudio.Presentation.ViewModel
             else
             {
                 this.parentProvider = parentProvider;
+            }
+            if (services != null)
+            {
+                foreach (var service in services)
+                {
+                    RegisterService(service);
+                }
             }
         }
 

@@ -8,6 +8,7 @@ namespace SiliconStudio.Assets.Compiler
     /// Attribute to define for a thumbnail compiler for an <see cref="Asset"/>.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
+    [Obsolete("The AssetThumbnailAttribute should be used instead")]
     public sealed class ThumbnailCompilerAttribute : CompilerAttribute
     {
         private readonly bool dynamicThumbnails;
