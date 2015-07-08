@@ -99,7 +99,8 @@ namespace SiliconStudio.AssemblyProcessor
                 { "d|directory=", "Additional search directory for assemblies", app.SearchDirectories.Add },
                 { "a|assembly=", "Additional assembly (for now, it will add the assembly directory to search path)", v => app.SearchDirectories.Add(Path.GetDirectoryName(v)) },
                 { "signkeyfile=", "Signing Key File", v => app.SignKeyFile = v },
-                { "serializationProjectReferencePaths=", "Project reference paths to auto-load by serialization module initializer (separated by semi-colon)", v => app.SerializationProjectReferences.AddRange(v.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)) }
+                { "serializationProjectReferencePaths=", "Project reference paths to auto-load by serialization module initializer (separated by semi-colon)", v => app.SerializationProjectReferences.AddRange(v.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)) },
+                { "Werror", "Promote warnings to errors", v => app.TreatWarningsAsErrors = true }
             };
 
             showHelp = localShowHelp;

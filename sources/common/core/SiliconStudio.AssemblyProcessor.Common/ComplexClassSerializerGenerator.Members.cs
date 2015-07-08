@@ -15,9 +15,12 @@ namespace SiliconStudio.AssemblyProcessor
         private TypeDefinition type;
         private bool hasParentSerializer;
         private static HashSet<string> forbiddenKeywords;
+        private static HashSet<IMemberDefinition> ignoredMembers; 
 
         static ComplexClassSerializerGenerator()
         {
+            ignoredMembers = new HashSet<IMemberDefinition>();
+
             forbiddenKeywords = new HashSet<string>(new[]
                 { "obj", "stream", "mode",
                     "abstract", "event", "new", "struct",
@@ -168,6 +171,11 @@ namespace SiliconStudio.AssemblyProcessor
             return type.Resolve().Methods.Any(x => x.IsConstructor && x.IsPublic && !x.IsStatic && x.Parameters.Count == 0);
         }
 
+        public static void IgnoreMember(IMemberDefinition memberInfo)
+        {
+            ignoredMembers.Add(memberInfo);
+        }
+
         public static IEnumerable<SerializableItem> GetSerializableItems(TypeReference type, bool serializeFields)
         {
             foreach (var serializableItemOriginal in GetSerializableItems(type.Resolve(), serializeFields))
@@ -191,7 +199,7 @@ namespace SiliconStudio.AssemblyProcessor
             var fields = new List<FieldDefinition>();
             var properties = new List<PropertyDefinition>();
 
-            var fieldEnum = type.Fields.Where(x => (x.IsPublic || (x.IsAssembly && x.CustomAttributes.Any(a => a.AttributeType.FullName == "SiliconStudio.Core.DataMemberAttribute"))) && !x.IsStatic);
+            var fieldEnum = type.Fields.Where(x => (x.IsPublic || (x.IsAssembly && x.CustomAttributes.Any(a => a.AttributeType.FullName == "SiliconStudio.Core.DataMemberAttribute"))) && !x.IsStatic && !ignoredMembers.Contains(x));
 
             // If there is a explicit or sequential layout, use offset, otherwise use name
             // (not sure if Cecil follow declaration order, in which case it could be OK to not sort;
@@ -223,6 +231,10 @@ namespace SiliconStudio.AssemblyProcessor
                     if (!property.CustomAttributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Core.DataMemberAttribute"))
                         continue;
                 }
+
+                // Ignore blacklisted properties
+                if (ignoredMembers.Contains(property))
+                    continue;
 
                 properties.Add(property);
             }
