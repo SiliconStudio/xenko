@@ -854,6 +854,19 @@ namespace SiliconStudio.Assets
                 var newLoadParameters = loadParameters.Clone();
                 newLoadParameters.AssetFiles = assetFiles;
                 newLoadParameters.AssemblyContainer = session.assemblyContainer;
+                
+                // Default package version override
+                newLoadParameters.ExtraCompileProperties = new Dictionary<string, string>();
+                var defaultPackageOverride = NugetStore.GetPackageVersionVariable(PackageStore.Instance.DefaultPackageName) + "Override";
+                var defaultPackageVersion = PackageStore.Instance.DefaultPackageVersion.Version;
+                newLoadParameters.ExtraCompileProperties.Add(defaultPackageOverride, new Version(defaultPackageVersion.Major, defaultPackageVersion.Minor).ToString());
+                if (loadParameters.ExtraCompileProperties != null)
+                {
+                    foreach (var property in loadParameters.ExtraCompileProperties)
+                    {
+                        newLoadParameters.ExtraCompileProperties[property.Key] = property.Value;
+                    }
+                }
 
                 // Load assemblies and assets
                 package.LoadAssembliesAndAssets(log, newLoadParameters);
