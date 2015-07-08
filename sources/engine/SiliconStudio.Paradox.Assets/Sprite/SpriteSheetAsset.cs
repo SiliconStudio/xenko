@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
         /// <summary>
         /// The default file extension used by the <see cref="SpriteSheetAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxsheet";
+        public const string FileExtension = ".pdxsheet;.pdxsprite;.pdxuiimage";
         
         /// <summary>
         /// Create an empty sprite sheet asset.

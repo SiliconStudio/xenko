@@ -62,6 +62,8 @@ namespace SiliconStudio.Assets
 
         private readonly List<PackageLoadedAssembly> loadedAssemblies;
 
+        private readonly List<UFile> filesToDelete = new List<UFile>();
+
         private PackageSession session;
 
         private UFile packagePath;
@@ -495,6 +497,23 @@ namespace SiliconStudio.Assets
                         log.Error(this, null, AssetMessageCode.PackageCannotSave, ex, FullPath);
                         return;
                     }
+                    
+                    // Delete obsolete files
+                    foreach (var file in filesToDelete)
+                    {
+                        if (File.Exists(file.FullPath))
+                        {
+                            try
+                            {
+                                File.Delete(file.FullPath);
+                            }
+                            catch (Exception ex)
+                            {
+                                log.Error(this, null, AssetMessageCode.AssetCannotDelete, ex, file.FullPath);
+                            }
+                        }
+                    }
+                    filesToDelete.Clear();
                 }
 
                 foreach (var asset in Assets)
@@ -767,14 +786,15 @@ namespace SiliconStudio.Assets
                     loggerResult.Progress(progressMessage, i, assetFiles.Count);
                 }
 
-                AssetMigration.MigrateAssetIfNeeded(log, assetFiles[i]);
-
                 // Check if asset has been deleted by an upgrader
                 if (assetFiles[i].Deleted)
                 {
-                    Assets.IsDirty = true;
+                    IsDirty = true;
+                    filesToDelete.Add(assetFiles[i].FilePath);
                     continue;
                 }
+
+                AssetMigration.MigrateAssetIfNeeded(log, assetFiles[i]);
 
                 // Try to load only if asset is not already in the package or assetRef.Asset is null
                 var assetPath = fileUPath.MakeRelative(sourceFolder).GetDirectoryAndFileName();

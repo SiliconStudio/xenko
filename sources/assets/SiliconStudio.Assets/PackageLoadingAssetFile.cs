@@ -9,8 +9,8 @@ namespace SiliconStudio.Assets
     /// </summary>
     public class PackageLoadingAssetFile
     {
-        public UFile FilePath;
-        public UDirectory SourceFolder;
+        public readonly UFile FilePath;
+        public readonly UDirectory SourceFolder;
 
         // If asset has been created or upgraded in place during package upgrade phase, it will be stored here
         public byte[] AssetContent;
