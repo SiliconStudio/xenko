@@ -4,7 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using SharpYaml.Serialization;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml;
+using LogLevel = SharpYaml.Serialization.Logging.LogLevel;
 
 namespace SiliconStudio.Assets.Serializers
 {
@@ -23,7 +26,7 @@ namespace SiliconStudio.Assets.Serializers
             RegisteredExtensions.Add(assetFileExtension, assetType);
         }
 
-        public object Load(Stream stream, string assetFileExtension)
+        public object Load(Stream stream, string assetFileExtension, ILogger log)
         {
             var type = RegisteredExtensions[assetFileExtension];
             var asset = (SourceCodeAsset)Activator.CreateInstance(type);
@@ -31,7 +34,7 @@ namespace SiliconStudio.Assets.Serializers
             return asset;
         }
 
-        public void Save(Stream stream, object asset)
+        public void Save(Stream stream, object asset, ILogger log)
         {
             using (var writer = new StreamWriter(stream, Encoding.UTF8, 16384, true))
             {
@@ -47,19 +50,46 @@ namespace SiliconStudio.Assets.Serializers
 
     internal class AssetYamlSerializer : IAssetSerializer, IAssetSerializerFactory
     {
-        public object Load(Stream stream, string assetFileExtension)
+        public object Load(Stream stream, string assetFileExtension, ILogger log)
         {
-            return YamlSerializer.Deserialize(stream);
+            return YamlSerializer.Deserialize(stream, null, new SerializerContextSettings() { Logger = log != null ? new Logger(log) : null });
         }
 
-        public void Save(Stream stream, object asset)
+        public void Save(Stream stream, object asset, ILogger log)
         {
-            YamlSerializer.Serialize(stream, asset);
+            YamlSerializer.Serialize(stream, asset, null, new SerializerContextSettings() { Logger = log != null ? new Logger(log) : null });
         }
 
         public IAssetSerializer TryCreate(string assetFileExtension)
         {
             return this;
+        }
+
+        class Logger : SharpYaml.Serialization.Logging.ILogger
+        {
+            private readonly ILogger logger;
+
+            public Logger(ILogger logger)
+            {
+                this.logger = logger;
+            }
+
+            public void Log(LogLevel level, Exception ex, string message)
+            {
+                LogMessageType levelConverted;
+                switch (level)
+                {
+                    case LogLevel.Error:
+                        levelConverted = LogMessageType.Error;
+                        break;
+                    case LogLevel.Warning:
+                        levelConverted = LogMessageType.Warning;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException("level");
+                }
+                logger.Log(new LogMessage("Asset", levelConverted, ex.Message));
+            }
         }
     }
 }
