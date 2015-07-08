@@ -865,8 +865,8 @@ namespace SiliconStudio.Assets
                     var fullProjectLocation = UPath.Combine(RootDirectory, projectReference.Location);
                     try
                     {
-                        assemblyPath = VSProjectHelper.GetOrCompileProjectAssembly(fullProjectLocation, log, loadParameters.AutoCompileProjects, extraProperties: loadParameters.ExtraCompileProperties, onlyErrors: true);
-
+                        var forwardingLogger = new ForwardingLoggerResult(log);
+                        assemblyPath = VSProjectHelper.GetOrCompileProjectAssembly(fullProjectLocation, forwardingLogger, loadParameters.AutoCompileProjects, extraProperties: loadParameters.ExtraCompileProperties, onlyErrors: true);
                         if (String.IsNullOrWhiteSpace(assemblyPath))
                         {
                             log.Error("Unable to locate assembly reference for project [{0}]", fullProjectLocation);
@@ -876,7 +876,7 @@ namespace SiliconStudio.Assets
                         var loadedAssembly = new PackageLoadedAssembly(projectReference, assemblyPath);
                         loadedAssemblies.Add(loadedAssembly);
 
-                        if (!File.Exists(assemblyPath))
+                        if (!File.Exists(assemblyPath) || forwardingLogger.HasErrors)
                         {
                             log.Error("Unable to build assembly reference [{0}]", assemblyPath);
                             continue;
