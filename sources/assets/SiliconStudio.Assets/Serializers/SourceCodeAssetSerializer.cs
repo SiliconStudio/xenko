@@ -88,6 +88,8 @@ namespace SiliconStudio.Assets.Serializers
                     default:
                         throw new ArgumentOutOfRangeException("level");
                 }
+
+                // No need to display message for now, usually ex.Message contains enough information
                 logger.Log(new LogMessage("Asset", levelConverted, ex.Message));
             }
         }
