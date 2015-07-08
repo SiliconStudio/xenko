@@ -407,7 +407,7 @@ namespace SiliconStudio.Assets.Diff
             }
             var value = nodes[index];
             index++;
-            if (index >= nodes.Count) index = -1;
+            if (index >= nodes.Count || (span.IsValid && index > span.To)) index = -1;
             return value;
         }
 
