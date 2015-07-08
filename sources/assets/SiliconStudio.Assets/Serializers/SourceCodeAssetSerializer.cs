@@ -7,7 +7,6 @@ using System.Text;
 using SharpYaml.Serialization;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml;
-using LogLevel = SharpYaml.Serialization.Logging.LogLevel;
 
 namespace SiliconStudio.Assets.Serializers
 {
@@ -52,46 +51,17 @@ namespace SiliconStudio.Assets.Serializers
     {
         public object Load(Stream stream, string assetFileExtension, ILogger log)
         {
-            return YamlSerializer.Deserialize(stream, null, new SerializerContextSettings() { Logger = log != null ? new Logger(log) : null });
+            return YamlSerializer.Deserialize(stream, null, log != null ? new SerializerContextSettings() { Logger = new YamlForwardLogger(log) } : null);
         }
 
         public void Save(Stream stream, object asset, ILogger log)
         {
-            YamlSerializer.Serialize(stream, asset, null, new SerializerContextSettings() { Logger = log != null ? new Logger(log) : null });
+            YamlSerializer.Serialize(stream, asset, null, log != null ? new SerializerContextSettings() { Logger = new YamlForwardLogger(log) } : null);
         }
 
         public IAssetSerializer TryCreate(string assetFileExtension)
         {
             return this;
-        }
-
-        class Logger : SharpYaml.Serialization.Logging.ILogger
-        {
-            private readonly ILogger logger;
-
-            public Logger(ILogger logger)
-            {
-                this.logger = logger;
-            }
-
-            public void Log(LogLevel level, Exception ex, string message)
-            {
-                LogMessageType levelConverted;
-                switch (level)
-                {
-                    case LogLevel.Error:
-                        levelConverted = LogMessageType.Error;
-                        break;
-                    case LogLevel.Warning:
-                        levelConverted = LogMessageType.Warning;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException("level");
-                }
-
-                // No need to display message for now, usually ex.Message contains enough information
-                logger.Log(new LogMessage("Asset", levelConverted, ex.Message));
-            }
         }
     }
 }

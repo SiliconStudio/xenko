@@ -75,6 +75,20 @@ namespace SiliconStudio.Core.Yaml
         /// <summary>
         /// Deserializes an object from the specified stream (expecting a YAML string).
         /// </summary>
+        /// <param name="eventReader">A YAML event reader.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="expectedType">The expected type.</param>
+        /// <param name="contextSettings">The context settings.</param>
+        /// <returns>An instance of the YAML data.</returns>
+        public static object Deserialize(EventReader eventReader, object value, Type expectedType, SerializerContextSettings contextSettings)
+        {
+            var serializer = GetYamlSerializer(false);
+            return serializer.Deserialize(eventReader, value, expectedType, contextSettings);
+        }
+
+        /// <summary>
+        /// Deserializes an object from the specified stream (expecting a YAML string).
+        /// </summary>
         /// <param name="stream">A YAML string from a stream .</param>
         /// <returns>An instance of the YAML data.</returns>
         public static IEnumerable<T> DeserializeMultiple<T>(Stream stream)
