@@ -26,6 +26,7 @@ namespace SiliconStudio.Core.MicroThreading
 
         internal PriorityNodeQueue<MicroThread> scheduledMicroThreads = new PriorityNodeQueue<MicroThread>();
         internal LinkedList<MicroThread> allMicroThreads = new LinkedList<MicroThread>();
+        internal List<MicroThreadCallbackNode> callbackNodePool = new List<MicroThreadCallbackNode>();
 
         private ThreadLocal<MicroThread> runningMicroThread = new ThreadLocal<MicroThread>();
 
@@ -124,18 +125,27 @@ namespace SiliconStudio.Core.MicroThreading
             int managedThreadId = Thread.CurrentThread.ManagedThreadId;
 #endif
 
+            MicroThreadCallbackList callbacks = default(MicroThreadCallbackList);
+
             while (true)
             {
-                Action callback;
                 MicroThread microThread;
                 lock (scheduledMicroThreads)
                 {
+                    // Reclaim callbacks of previous microthread
+                    MicroThreadCallbackNode callback;
+                    while (callbacks.TakeFirst(out callback))
+                    {
+                        callback.Clear();
+                        callbackNodePool.Add(callback);
+                    }
+
                     if (scheduledMicroThreads.Count == 0)
                         break;
                     microThread = scheduledMicroThreads.Dequeue();
 
-                    callback = microThread.Callback;
-                    microThread.Callback = null;
+                    callbacks = microThread.Callbacks;
+                    microThread.Callbacks = default(MicroThreadCallbackList);
                 }
 
                 // Since it can be reentrant, it should be restored after running the callback.
@@ -159,7 +169,14 @@ namespace SiliconStudio.Core.MicroThreading
 
                     using (Profiler.Begin(microThread.ProfilingKey))
                     {
-                        callback();
+                        var callback = callbacks.First;
+                        while (callback != null)
+                        {
+                            microThread.ThrowIfExceptionRequest();
+                            callback.Invoke();
+                            callback = callback.Next;
+                        }
+                        microThread.ThrowIfExceptionRequest();
                     }
                 }
                 catch (Exception e)

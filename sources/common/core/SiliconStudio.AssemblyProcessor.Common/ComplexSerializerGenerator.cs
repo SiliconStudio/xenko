@@ -15,6 +15,7 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.AssemblyProcessor
 {
@@ -25,7 +26,7 @@ namespace SiliconStudio.AssemblyProcessor
     {
         public static CodeDomProvider codeDomProvider = new Microsoft.CSharp.CSharpCodeProvider();
 
-        public static AssemblyDefinition GenerateSerializationAssembly(PlatformType platformType, BaseAssemblyResolver assemblyResolver, AssemblyDefinition assembly, string serializationAssemblyLocation, string signKeyFile, List<string> serializatonProjectReferencePaths)
+        public static AssemblyDefinition GenerateSerializationAssembly(PlatformType platformType, BaseAssemblyResolver assemblyResolver, AssemblyDefinition assembly, string serializationAssemblyLocation, string signKeyFile, List<string> serializatonProjectReferencePaths, ILogger log)
         {
             // Make sure all assemblies in serializatonProjectReferencePaths are referenced (sometimes they might be optimized out if no direct references)
             foreach (var serializatonProjectReferencePath in serializatonProjectReferencePaths)
@@ -43,7 +44,7 @@ namespace SiliconStudio.AssemblyProcessor
             }
 
             // Create the serializer code generator
-            var serializerGenerator = new ComplexSerializerCodeGenerator(assemblyResolver, assembly);
+            var serializerGenerator = new ComplexSerializerCodeGenerator(assemblyResolver, assembly, log);
 
             // Register default serialization profile (to help AOT generic instantiation of serializers)
             RegisterDefaultSerializationProfile(assemblyResolver, assembly, serializerGenerator);

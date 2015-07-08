@@ -291,6 +291,11 @@ namespace SiliconStudio.Assets
                 var packageVarSaved = packageVar + "Saved";
                 var packageVarInvalid = packageVar + "Invalid";
                 var packageVarRevision = packageVar + "Revision";
+                var packageVarOverride = packageVar + "Override";
+
+                // <SiliconStudioPackageParadoxVersion Condition="'$(SiliconStudioPackageParadoxVersionOverride)' != ''">$(SiliconStudioPackageParadoxVersionOverride)</SiliconStudioPackageParadoxVersion>
+                var versionFromOverrideProperty = commonPropertyGroup.AddProperty(packageVar, "$(" + packageVarOverride + ")");
+                versionFromOverrideProperty.Condition = "'$(" + packageVarOverride + ")' != ''";
 
                 // <SiliconStudioPackageParadoxVersionSaved>$(SiliconStudioPackageParadoxVersion)</SiliconStudioPackageParadoxVersionSaved>
                 commonPropertyGroup.AddProperty(packageVarSaved, "$(" + packageVar + ")");

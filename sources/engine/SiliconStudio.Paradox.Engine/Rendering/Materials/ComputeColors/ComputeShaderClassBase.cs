@@ -72,7 +72,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         /// <userdoc>
         /// The editables values of this shader. There is no need to edit the list, it is automatically filled when the shader is loaded.
         /// </userdoc>
-        [DataMember(50)]
+        [DataMemberIgnore]
         public Dictionary<ParameterKey, object> Members { get; set; }
 
         #endregion

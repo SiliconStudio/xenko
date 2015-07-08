@@ -219,7 +219,7 @@ namespace SiliconStudio.Assets
         private static PackageLoadParameters GetDefaultPackageLoadParameters()
         {
             // By default, we are not loading assets for installed packages
-            return new PackageLoadParameters { AutoLoadTemporaryAssets = false };
+            return new PackageLoadParameters { AutoLoadTemporaryAssets = false, LoadAssemblyReferences = false, AutoCompileProjects = false };
         }
 
         private UDirectory GetPackageDirectory(string packageName, PackageVersionRange versionRange, IPackageConstraintProvider constraintProvider = null, bool allowPreleaseVersion = false, bool allowUnlisted = false)
@@ -245,7 +245,7 @@ namespace SiliconStudio.Assets
             // TODO: Check version for default package
             if (packageName == DefaultPackageName)
             {
-                if (versionRange.Contains(DefaultPackageVersion))
+                if (versionRange == null || versionRange.Contains(DefaultPackageVersion))
                 {
                     return defaultPackageDirectory;
                 }

@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using Mono.Options;
 using SiliconStudio.Paradox.Engine.Network;
 
@@ -51,7 +52,11 @@ namespace SiliconStudio.Paradox.EffectCompilerServer
                 effectCompilerServer.TryConnect("127.0.0.1", RouterClient.DefaultPort);
 
                 // Forbid process to terminate (unless ctrl+c)
-                while (true) Console.Read();
+                while (true)
+                {
+                    Console.Read();
+                    Thread.Sleep(100);
+                }
             }
             catch (Exception e)
             {
