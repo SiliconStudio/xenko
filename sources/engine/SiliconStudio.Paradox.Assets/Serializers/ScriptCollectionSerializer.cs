@@ -9,6 +9,7 @@ using SharpYaml;
 using SharpYaml.Events;
 using SharpYaml.Serialization;
 using SharpYaml.Serialization.Descriptors;
+using SharpYaml.Serialization.Logging;
 using SharpYaml.Serialization.Serializers;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Engine;
@@ -69,11 +70,16 @@ namespace SiliconStudio.Paradox.Assets.Serializers
             {
                 return objectContext.ObjectSerializerBackend.ReadCollectionItem(ref objectContext, value, itemType);
             }
-            catch (YamlException)
+            catch (YamlException ex)
             {
                 // There was a failure, let's keep this object so that it can be serialized back later
                 var startEvent = parsingEvents.FirstOrDefault() as MappingStart;
                 string typeName = startEvent != null && !string.IsNullOrEmpty(startEvent.Tag) ? startEvent.Tag.Substring(1) : null;
+
+                var log = objectContext.SerializerContext.ContextSettings.Logger;
+                if (log != null)
+                    log.Log(LogLevel.Warning, ex, string.Format("Could not deserialize script {0}", typeName));
+
                 return new UnloadableScript(parsingEvents, typeName);
             }
             finally

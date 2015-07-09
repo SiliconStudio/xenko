@@ -37,6 +37,19 @@ namespace SiliconStudio.Core.Yaml
         /// <summary>
         /// Deserializes an object from the specified stream (expecting a YAML string).
         /// </summary>
+        /// <param name="stream">A YAML string from a stream .</param>
+        /// <param name="expectedType">The expected type.</param>
+        /// <param name="contextSettings">The context settings.</param>
+        /// <returns>An instance of the YAML data.</returns>
+        public static object Deserialize(Stream stream, Type expectedType, SerializerContextSettings contextSettings)
+        {
+            var serializer = GetYamlSerializer(false);
+            return serializer.Deserialize(stream, expectedType, contextSettings);
+        }
+
+        /// <summary>
+        /// Deserializes an object from the specified stream (expecting a YAML string).
+        /// </summary>
         /// <param name="eventReader">A YAML event reader.</param>
         /// <param name="expectedType">The expected type.</param>
         /// <returns>An instance of the YAML data.</returns>
@@ -57,6 +70,20 @@ namespace SiliconStudio.Core.Yaml
         {
             var serializer = GetYamlSerializer(false);
             return serializer.Deserialize(eventReader, value, expectedType);
+        }
+
+        /// <summary>
+        /// Deserializes an object from the specified stream (expecting a YAML string).
+        /// </summary>
+        /// <param name="eventReader">A YAML event reader.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="expectedType">The expected type.</param>
+        /// <param name="contextSettings">The context settings.</param>
+        /// <returns>An instance of the YAML data.</returns>
+        public static object Deserialize(EventReader eventReader, object value, Type expectedType, SerializerContextSettings contextSettings)
+        {
+            var serializer = GetYamlSerializer(false);
+            return serializer.Deserialize(eventReader, value, expectedType, contextSettings);
         }
 
         /// <summary>
@@ -105,6 +132,20 @@ namespace SiliconStudio.Core.Yaml
         {
             var serializer = GetYamlSerializer(keepOnlySealedOverrides);
             serializer.Serialize(stream, instance);
+        }
+
+        /// <summary>
+        /// Serializes an object to specified stream in YAML format.
+        /// </summary>
+        /// <param name="stream">The stream to receive the YAML representation of the object.</param>
+        /// <param name="instance">The instance.</param>
+        /// <param name="type">The type.</param>
+        /// <param name="contextSettings">The context settings.</param>
+        /// <param name="keepOnlySealedOverrides">if set to <c>true</c> [keep only sealed overrides].</param>
+        public static void Serialize(Stream stream, object instance, Type type, SerializerContextSettings contextSettings, bool keepOnlySealedOverrides = false)
+        {
+            var serializer = GetYamlSerializer(keepOnlySealedOverrides);
+            serializer.Serialize(stream, instance, type, contextSettings);
         }
 
         public static SerializerSettings GetSerializerSettings()

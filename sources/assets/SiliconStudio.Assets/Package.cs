@@ -610,7 +610,7 @@ namespace SiliconStudio.Assets
 
             try
             {
-                var package = AssetSerializer.Load<Package>(filePath);
+                var package = AssetSerializer.Load<Package>(filePath, log);
                 package.FullPath = filePath;
                 package.IsDirty = false;
 
@@ -837,8 +837,8 @@ namespace SiliconStudio.Assets
         private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, UFile fileUPath, byte[] assetContent)
         {
             var asset = assetContent != null
-                ? (Asset)AssetSerializer.Load(new MemoryStream(assetContent), Path.GetExtension(assetFullPath))
-                : AssetSerializer.Load<Asset>(assetFullPath);
+                ? (Asset)AssetSerializer.Load(new MemoryStream(assetContent), Path.GetExtension(assetFullPath), log)
+                : AssetSerializer.Load<Asset>(assetFullPath, log);
 
             // Set location on source code asset
             var sourceCodeAsset = asset as SourceCodeAsset;
