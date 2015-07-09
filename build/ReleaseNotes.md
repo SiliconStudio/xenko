@@ -32,6 +32,7 @@ Release date: 2015/XX/XX
 - Assets: The `SpriteGroupAsset` and the `UIImageGroupAsset` have been merged into one single `SpriteSheetAsset`. 
 - Engine: The `SpriteGroup` and `UIImageGroup` classes have been merged into one single `SpriteSheet` class.
 - Engine: The `Sprite` and `UIImage` classes have been merged into one single `Sprite` class.
+- Engine: The sprite `ExtrusionMethod` field have been removed and replaced by a `PixelsPerUnit` field in the sprites.
 - Engine: Sprites are drawn by default with depth test enabled.
 
 #### Known Issues
