@@ -59,7 +59,6 @@ namespace SiliconStudio.Paradox.Engine.Tests
             ballSprite1 = Asset.Load<SpriteSheet>("BallSprite1");
             ballSprite2 = Asset.Load<SpriteSheet>("BallSprite2");
             ball = new Entity { new SpriteComponent { SpriteProvider = new SpriteFromSheet { Sheet = Asset.Load<SpriteSheet>("BallSprite1") } } };
-            ball.Transform.Scale = new Vector3(150, 150, 1);
 
             // create fore/background entities
             foreground = new Entity();

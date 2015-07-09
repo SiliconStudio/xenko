@@ -2,13 +2,18 @@
 Id: f959170b-df62-40ff-869a-fd72304a8464
 SerializedVersion: 1
 Tags: []
+Type: Sprite2D
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Sprites:
     -   Source: ../../../data/tests/SpriteBackground.png
         Name: New frame
         TextureRegion: {X: 0, Y: 0, Width: 512, Height: 512}
+        PixelsPerUnit: 512
         Center: {X: 0, Y: 0}
+        Borders: {X: 0, Y: 0, Z: 0, W: 0}
     -   Source: ../../../data/tests/spriteForeground.png
         Name: null
         TextureRegion: {X: 0, Y: 0, Width: 256, Height: 256}
+        PixelsPerUnit: 256
         Center: {X: 128, Y: 128}
+        Borders: {X: 0, Y: 0, Z: 0, W: 0}
