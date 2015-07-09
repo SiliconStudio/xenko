@@ -316,7 +316,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.NugetPackageR
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.EffectCompilerServer", "..\sources\tools\SiliconStudio.Paradox.EffectCompilerServer\SiliconStudio.Paradox.EffectCompilerServer.csproj", "{E25E7778-0B2F-4A0B-BCD6-1DE95320B531}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SiliconStudio.Markdown", "..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.shproj", "{43B62674-AA8B-4531-BA27-855CA2580145}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{d0db401e-6f96-46d0-ba9b-493b9c0777f1}*SharedItemsImports = 4
+		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{43b62674-aa8b-4531-ba27-855ca2580145}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AppStore|Any CPU = AppStore|Any CPU
 		AppStore|Mixed Platforms = AppStore|Mixed Platforms
@@ -2019,5 +2025,6 @@ Global
 		{77E2FCC0-4CA6-436C-BE6F-9418CB807D45} = {1AE1AC60-5D2F-4CA7-AE20-888F44551185}
 		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65} = {860946E4-CC77-4FDA-A4FD-3DB2A502A696}
 		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531} = {1AE1AC60-5D2F-4CA7-AE20-888F44551185}
+		{43B62674-AA8B-4531-BA27-855CA2580145} = {75A820AB-0F21-40F2-9448-5D7F495B97A0}
 	EndGlobalSection
 EndGlobal
