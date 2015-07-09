@@ -7,7 +7,7 @@ using SiliconStudio.Paradox.Rendering;
 namespace SiliconStudio.Paradox.Engine.Tests
 {
     [TestFixture, Ignore]
-    public class TestParameterPath
+    public class ParameterPathTest
     {
         private static readonly ParameterKey<ParameterCollection> PropertyContainer = new ParameterKey<ParameterCollection>("ParameterCollection");
         private static readonly ParameterKey<float> PropertyFloat = new ParameterKey<float>("PropertyFloat");

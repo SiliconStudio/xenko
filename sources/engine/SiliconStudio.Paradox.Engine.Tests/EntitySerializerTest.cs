@@ -12,7 +12,7 @@ using SiliconStudio.Core.Storage;
 namespace SiliconStudio.Paradox.Engine.Tests
 {
     [TestFixture]
-    class TestEntitySerializer
+    class EntitySerializerTest
     {
         /// <summary>
         /// Initializes the asset database. Similar to <see cref="Game.InitializeAssetDatabase"/>, but accessible without using internals.

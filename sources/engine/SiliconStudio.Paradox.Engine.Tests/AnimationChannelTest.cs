@@ -8,7 +8,7 @@ using SiliconStudio.Paradox.Animations;
 namespace SiliconStudio.Paradox.Engine.Tests
 {
     [TestFixture]
-    public class TestAnimationChannel
+    public class AnimationChannelTest
     {
         [Test, Ignore]
         public void TestFitting()

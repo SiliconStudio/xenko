@@ -12,7 +12,7 @@ using SiliconStudio.Paradox.Rendering.Sprites;
 namespace SiliconStudio.Paradox.Engine.Tests
 {
     [TestFixture]
-    public class TestSpriteAnimation : Game
+    public class SpriteAnimationTest : Game
     {
         [Test]
         public void DefaultValues()

@@ -19,7 +19,7 @@ using SiliconStudio.Paradox.Input;
 namespace SiliconStudio.Paradox.Engine.Tests
 {
     [ReferenceToEffects]
-    public class TestTesselation : EngineTestBase
+    public class TesselationTest : EngineTestBase
     {
         private List<Entity> entities = new List<Entity>();
         private List<Material> materials = new List<Material>();
@@ -43,11 +43,11 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
         private bool debug;
 
-        public TestTesselation() : this(false)
+        public TesselationTest() : this(false)
         {
         }
 
-        public TestTesselation(bool isDebug)
+        public TesselationTest(bool isDebug)
         {
             CurrentVersion = 2;
             debug = isDebug;
@@ -209,12 +209,12 @@ namespace SiliconStudio.Paradox.Engine.Tests
         public void RunTestGame()
         {
             if (Platform.Type == PlatformType.Windows) // this test requires profile 11.0
-                RunGameTest(new TestTesselation());
+                RunGameTest(new TesselationTest());
         }
 
         static public void Main()
         {
-            using (var game = new TestTesselation(true))
+            using (var game = new TesselationTest(true))
             {
                 game.Run();
             }

@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
 {
     [TestFixture]
     [Description("Tests on ParameterCollection")]
-    class TestParameters
+    class ParametersTest
     {
         [TestFixtureSetUp] 
         public void Init()
