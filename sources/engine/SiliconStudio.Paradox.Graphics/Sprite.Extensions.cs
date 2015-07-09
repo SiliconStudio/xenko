@@ -53,5 +53,21 @@ namespace SiliconStudio.Paradox.Graphics
 
             spriteBatch.Draw(sprite.Texture, position, sprite.Region, color, rotation, sprite.Center, scales, spriteEffects, sprite.Orientation, depthLayer);
         }
+
+        /// <summary>
+        /// Draw a sprite in the 3D world using the provided 3D sprite batch, world matrix and color.
+        /// </summary>
+        /// <param name="sprite">The sprite</param>
+        /// <param name="spriteBatch">The sprite batch used to draw the sprite.</param>
+        /// <param name="worldMatrix">The world matrix of the sprite</param>
+        /// <param name="color">The color to apply on the sprite</param>
+        /// <remarks>This function must be called between the <see cref="SpriteBatch.Begin(SiliconStudio.Paradox.Graphics.SpriteSortMode,SiliconStudio.Paradox.Graphics.Effect)"/> 
+        /// and <see cref="SpriteBatch.End()"/> calls of the provided <paramref name="spriteBatch"/></remarks>
+        /// <exception cref="ArgumentException">The provided frame index is not valid.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The provided spriteBatch is null</exception>
+        public static void Draw3D(this Sprite sprite, Sprite3DBatch spriteBatch, ref Matrix worldMatrix, ref Color color)
+        {
+            spriteBatch.Draw(sprite.Texture, ref worldMatrix, ref sprite.RegionInternal, ref sprite.SizeInternal, ref color, sprite.Orientation);
+        }
     }
 }

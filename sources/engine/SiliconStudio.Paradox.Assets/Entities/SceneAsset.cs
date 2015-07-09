@@ -24,11 +24,12 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetDescription(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
     [ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName)]
-    [AssetFormatVersion(4)]
+    [AssetFormatVersion(5)]
     [AssetUpgrader(0, 1, typeof(RemoveSourceUpgrader))]
     [AssetUpgrader(1, 2, typeof(RemoveBaseUpgrader))]
     [AssetUpgrader(2, 3, typeof(RemoveModelDrawOrderUpgrader))]
     [AssetUpgrader(3, 4, typeof(RenameSpriteProviderUpgrader))]
+    [AssetUpgrader(4, 5, typeof(RemoveSpriteExtrusionMethodUpgrader))]
     [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
@@ -118,6 +119,22 @@ namespace SiliconStudio.Paradox.Assets.Entities
                             providerAsMap.Node.Tag = "!SpriteFromSheet";
                         }
                     }
+                }
+            }
+        }
+
+        public class RemoveSpriteExtrusionMethodUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Entities;
+                foreach (dynamic entity in entities)
+                {
+                    var components = entity.Components;
+                    var spriteComponent = components["SpriteComponent.Key"];
+                    if (spriteComponent != null)
+                        spriteComponent.RemoveChild("ExtrusionMethod");
                 }
             }
         }

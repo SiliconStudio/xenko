@@ -17,9 +17,11 @@ namespace SiliconStudio.Paradox.Graphics
     {
         private ImageOrientation orientation;
         private Vector2 sizeInPixels;
+        private Vector2 pixelsPerUnit;
         
         internal RectangleF RegionInternal;
         internal Vector4 BordersInternal;
+        internal Vector2 SizeInternal;
 
         internal event EventHandler<EventArgs> BorderChanged;
         internal event EventHandler<EventArgs> SizeChanged;
@@ -91,7 +93,7 @@ namespace SiliconStudio.Paradox.Graphics
             set
             {
                 RegionInternal = value;
-                UpdateSize();
+                UpdateSizes();
             }
         }
 
@@ -109,7 +111,7 @@ namespace SiliconStudio.Paradox.Graphics
             set
             {
                 orientation = value;
-                UpdateSize();
+                UpdateSizes();
             }
         }
         
@@ -138,7 +140,16 @@ namespace SiliconStudio.Paradox.Graphics
         /// Gets the value indicating if the image has unstretchable borders.
         /// </summary>
         public bool HasBorders { get; private set; }
-        
+
+        /// <summary>
+        /// Gets the size of the sprite in scene units.
+        /// Note that the orientation of the image is taken into account in this calculation.
+        /// </summary>
+        public Vector2 Size
+        {
+            get {  return SizeInternal; }
+        }
+
         /// <summary>
         /// Gets the size of the sprite in pixels. 
         /// Note that the orientation of the image is taken into account in this calculation.
@@ -159,13 +170,33 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-        private void UpdateSize()
+        /// <summary>
+        /// Gets or sets the pixels per scene unit of the sprite.
+        /// </summary>
+        public Vector2 PixelsPerUnit
         {
-            var size = new Vector2(RegionInternal.Width, RegionInternal.Height);
-            if(orientation == ImageOrientation.Rotated90)
-                Utilities.Swap(ref size.X, ref size.Y);
+            get { return pixelsPerUnit; }
+            set
+            {
+                if (pixelsPerUnit == value)
+                    return;
 
-            SizeInPixels = size;
+                pixelsPerUnit = value;
+                UpdateSizes();
+            }
+        }
+
+        private void UpdateSizes()
+        {
+            var pixelSize = new Vector2(RegionInternal.Width, RegionInternal.Height);
+            SizeInternal = new Vector2(pixelSize.X / pixelsPerUnit.X, pixelSize.Y / pixelsPerUnit.Y);
+            if (orientation == ImageOrientation.Rotated90)
+            {
+                Utilities.Swap(ref pixelSize.X, ref pixelSize.Y);
+                Utilities.Swap(ref SizeInternal.X, ref SizeInternal.Y);
+            }
+
+            SizeInPixels = pixelSize;
         }
 
         public override string ToString()

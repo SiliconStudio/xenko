@@ -43,6 +43,16 @@ namespace SiliconStudio.Paradox.Assets.Sprite
         public Rectangle TextureRegion;
 
         /// <summary>
+        /// The number of pixels representing an unit of 1 in the scene.
+        /// </summary>
+        /// <userdoc>
+        /// The number of pixels representing an unit of 1 in the scene.
+        /// </userdoc>
+        [DataMember(25)]
+        [DefaultValue(100)]
+        public float PixelsPerUnit;
+
+        /// <summary>
         /// Gets or sets the rotation to apply to the texture region when rendering the sprite
         /// </summary>
         /// <userdoc>
@@ -87,6 +97,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
         /// </summary>
         public SpriteInfo()
         {
+            PixelsPerUnit = 100;
             CenterFromMiddle = true;
         }
     }

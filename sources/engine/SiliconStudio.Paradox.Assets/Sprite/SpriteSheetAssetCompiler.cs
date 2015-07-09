@@ -77,85 +77,86 @@ namespace SiliconStudio.Paradox.Assets.Sprite
 
             if (!result.HasErrors)
                 result.BuildSteps.Add(new SpriteSheetCommand(urlInStorage, new SpriteSheetParameters(asset, context.Platform), imageToTextureIndex));
-        }   
-    }
-
-    /// <summary>
-    /// Command used to convert the texture in the storage
-    /// </summary>
-    public class SpriteSheetCommand : AssetCommand<SpriteSheetParameters>
-    {
-        protected readonly Dictionary<SpriteInfo, int> ImageToTextureIndex;
-
-        public SpriteSheetCommand(string url, SpriteSheetParameters assetParameters, Dictionary<SpriteInfo, int> imageToTextureIndex)
-            : base(url, assetParameters)
-        {
-            ImageToTextureIndex = imageToTextureIndex;
         }
 
-        public override IEnumerable<ObjectUrl> GetInputFiles()
+        /// <summary>
+        /// Command used to convert the texture in the storage
+        /// </summary>
+        public class SpriteSheetCommand : AssetCommand<SpriteSheetParameters>
         {
-            for (int i = 0; i < ImageToTextureIndex.Values.Distinct().Count(); i++)
-                yield return new ObjectUrl(UrlType.Internal, SpriteSheetAsset.BuildTextureUrl(Url, i));
-        }
+            protected readonly Dictionary<SpriteInfo, int> ImageToTextureIndex;
 
-        protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
-        {
-            var assetManager = new AssetManager();
-
-            var imageGroupData = new SpriteSheet { Sprites = new List<Graphics.Sprite>() };
-
-            // add the sprite data to the sprite list.
-            foreach (var image in AssetParameters.SheetAsset.Sprites)
+            public SpriteSheetCommand(string url, SpriteSheetParameters assetParameters, Dictionary<SpriteInfo, int> imageToTextureIndex)
+                : base(url, assetParameters)
             {
-                var newImage = new Graphics.Sprite
-                {
-                    Name = image.Name,
-                    Region = image.TextureRegion,
-                    IsTransparent = AssetParameters.SheetAsset.Alpha != AlphaFormat.None, // todo analyze texture region texture data to auto-determine alpha?
-                    Orientation = image.Orientation,
-                    Center = image.Center + (image.CenterFromMiddle ? new Vector2(image.TextureRegion.Width, image.TextureRegion.Height) / 2 : Vector2.Zero),
-                    Borders = image.Borders,
-                };
-
-                int imageIndex;
-                if (ImageToTextureIndex.TryGetValue(image, out imageIndex))
-                {
-                    newImage.Texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(Guid.Empty, SpriteSheetAsset.BuildTextureUrl(Url, ImageToTextureIndex[image]));
-                }
-                else
-                {
-                    commandContext.Logger.Warning("Image '{0}' has an invalid image source file '{1}', resulting texture will be null.", image.Name, image.Source);
-                }
-
-                imageGroupData.Sprites.Add(newImage);
+                ImageToTextureIndex = imageToTextureIndex;
             }
 
-            // save the imageData into the data base
-            assetManager.Save(Url, imageGroupData);
+            public override IEnumerable<ObjectUrl> GetInputFiles()
+            {
+                for (int i = 0; i < ImageToTextureIndex.Values.Distinct().Count(); i++)
+                    yield return new ObjectUrl(UrlType.Internal, SpriteSheetAsset.BuildTextureUrl(Url, i));
+            }
 
-            return Task.FromResult(ResultStatus.Successful);
+            protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
+            {
+                var assetManager = new AssetManager();
+
+                var imageGroupData = new SpriteSheet { Sprites = new List<Graphics.Sprite>() };
+
+                // add the sprite data to the sprite list.
+                foreach (var image in AssetParameters.SheetAsset.Sprites)
+                {
+                    var newImage = new Graphics.Sprite
+                    {
+                        Name = image.Name,
+                        Region = image.TextureRegion,
+                        IsTransparent = AssetParameters.SheetAsset.Alpha != AlphaFormat.None, // todo analyze texture region texture data to auto-determine alpha?
+                        Orientation = image.Orientation,
+                        Center = image.Center + (image.CenterFromMiddle ? new Vector2(image.TextureRegion.Width, image.TextureRegion.Height) / 2 : Vector2.Zero),
+                        Borders = image.Borders,
+                        PixelsPerUnit = new Vector2(image.PixelsPerUnit)
+                    };
+
+                    int imageIndex;
+                    if (ImageToTextureIndex.TryGetValue(image, out imageIndex))
+                    {
+                        newImage.Texture = AttachedReferenceManager.CreateSerializableVersion<Texture>(Guid.Empty, SpriteSheetAsset.BuildTextureUrl(Url, ImageToTextureIndex[image]));
+                    }
+                    else
+                    {
+                        commandContext.Logger.Warning("Image '{0}' has an invalid image source file '{1}', resulting texture will be null.", image.Name, image.Source);
+                    }
+
+                    imageGroupData.Sprites.Add(newImage);
+                }
+
+                // save the imageData into the data base
+                assetManager.Save(Url, imageGroupData);
+
+                return Task.FromResult(ResultStatus.Successful);
+            }
         }
-    }
 
-    /// <summary>
-    /// SharedParameters used for converting/processing the texture in the storage.
-    /// </summary>
-    [DataContract]
-    public class SpriteSheetParameters
-    {
-        public SpriteSheetParameters()
+        /// <summary>
+        /// SharedParameters used for converting/processing the texture in the storage.
+        /// </summary>
+        [DataContract]
+        public class SpriteSheetParameters
         {
-        }
+            public SpriteSheetParameters()
+            {
+            }
 
-        public SpriteSheetParameters(SpriteSheetAsset sheetAsset, PlatformType platform)
-        {
-            SheetAsset = sheetAsset;
-            Platform = platform;
-        }
+            public SpriteSheetParameters(SpriteSheetAsset sheetAsset, PlatformType platform)
+            {
+                SheetAsset = sheetAsset;
+                Platform = platform;
+            }
 
-        public SpriteSheetAsset SheetAsset;
+            public SpriteSheetAsset SheetAsset;
 
-        public PlatformType Platform;
+            public PlatformType Platform;
+        } 
     }
 }
