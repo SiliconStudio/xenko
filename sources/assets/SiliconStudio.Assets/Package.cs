@@ -629,7 +629,7 @@ namespace SiliconStudio.Assets
 
             try
             {
-                var package = AssetSerializer.Load<Package>(filePath);
+                var package = AssetSerializer.Load<Package>(filePath, log);
                 package.FullPath = filePath;
                 package.IsDirty = false;
 
@@ -857,8 +857,8 @@ namespace SiliconStudio.Assets
         private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, UFile fileUPath, byte[] assetContent)
         {
             var asset = assetContent != null
-                ? (Asset)AssetSerializer.Load(new MemoryStream(assetContent), Path.GetExtension(assetFullPath))
-                : AssetSerializer.Load<Asset>(assetFullPath);
+                ? (Asset)AssetSerializer.Load(new MemoryStream(assetContent), Path.GetExtension(assetFullPath), log)
+                : AssetSerializer.Load<Asset>(assetFullPath, log);
 
             // Set location on source code asset
             var sourceCodeAsset = asset as SourceCodeAsset;
@@ -885,8 +885,8 @@ namespace SiliconStudio.Assets
                     var fullProjectLocation = UPath.Combine(RootDirectory, projectReference.Location);
                     try
                     {
-                        assemblyPath = VSProjectHelper.GetOrCompileProjectAssembly(fullProjectLocation, log, loadParameters.AutoCompileProjects, extraProperties: loadParameters.ExtraCompileProperties, onlyErrors: true);
-
+                        var forwardingLogger = new ForwardingLoggerResult(log);
+                        assemblyPath = VSProjectHelper.GetOrCompileProjectAssembly(fullProjectLocation, forwardingLogger, loadParameters.AutoCompileProjects, extraProperties: loadParameters.ExtraCompileProperties, onlyErrors: true);
                         if (String.IsNullOrWhiteSpace(assemblyPath))
                         {
                             log.Error("Unable to locate assembly reference for project [{0}]", fullProjectLocation);
@@ -896,7 +896,7 @@ namespace SiliconStudio.Assets
                         var loadedAssembly = new PackageLoadedAssembly(projectReference, assemblyPath);
                         loadedAssemblies.Add(loadedAssembly);
 
-                        if (!File.Exists(assemblyPath))
+                        if (!File.Exists(assemblyPath) || forwardingLogger.HasErrors)
                         {
                             log.Error("Unable to build assembly reference [{0}]", assemblyPath);
                             continue;
