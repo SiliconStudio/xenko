@@ -189,15 +189,15 @@
     <Compile Include="EngineTestBase.cs" />
     <Compile Include="SpriteTestGame.cs" />
     <Compile Include="TestCamera.cs" />
-    <Compile Include="TestSpriteAnimation.cs" />
-    <Compile Include="TestTesselation.cs" />
+    <Compile Include="SpriteAnimationTest.cs" />
+    <Compile Include="TesselationTest.cs" />
     <None Include="Build\TestSerializer.cs" />
     <Compile Include="Build\TestStorage.cs" />
     <Compile Include="Module.cs" />
-    <Compile Include="TestAnimationChannel.cs" />
-    <Compile Include="TestEntitySerializer.cs" />
-    <Compile Include="TestParameterPath.cs" />
-    <Compile Include="TestParameters.cs" />
+    <Compile Include="AnimationChannelTest.cs" />
+    <Compile Include="EntitySerializerTest.cs" />
+    <Compile Include="ParameterPathTest.cs" />
+    <Compile Include="ParametersTest.cs" />
     <None Include="effects_test.xml">
       <SubType>Designer</SubType>
     </None>
