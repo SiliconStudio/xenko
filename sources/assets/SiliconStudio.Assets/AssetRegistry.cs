@@ -45,6 +45,20 @@ namespace SiliconStudio.Assets
         private static Func<object, string, string> stringExpander;
 
         /// <summary>
+        /// Gets the list of assemblies currently registered.
+        /// </summary>
+        public static IEnumerable<Assembly> Assemblies
+        {
+            get
+            {
+                lock (RegisteredAssemblies)
+                {
+                    return RegisteredAssemblies.ToList();
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the supported platforms.
         /// </summary>
         /// <value>The supported platforms.</value>
