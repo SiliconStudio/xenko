@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Rendering
             get { return nodeTransformations; }
         }
 
-        private static ModelNodeDefinition[] GetDefaultNodeDefinisions()
+        private static ModelNodeDefinition[] GetDefaultNodeDefinitions()
         {
             return new[] { new ModelNodeDefinition { Name = "Root", ParentIndex = -1, Transform = { Scaling = Vector3.One }, Flags = ModelNodeFlags.Default } };
         }
@@ -64,7 +64,7 @@ namespace SiliconStudio.Paradox.Rendering
                 return;
             }
 
-            this.nodes = newNodes ?? GetDefaultNodeDefinisions();
+            this.nodes = newNodes ?? GetDefaultNodeDefinitions();
 
             if (nodeTransformations == null || nodeTransformations.Length < this.nodes.Length)
                 nodeTransformations = new ModelNodeTransformation[this.nodes.Length];
