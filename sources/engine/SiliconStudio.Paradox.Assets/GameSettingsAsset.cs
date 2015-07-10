@@ -110,10 +110,10 @@ namespace SiliconStudio.Paradox.Assets
             if (platform != PlatformType.Shared)
             {
                 var platformProfile = package.Profiles.FirstOrDefault(o => o.Platform == platform);
-                if (platformProfile != null)
+                if (platformProfile != null && platformProfile.Properties.ContainsKey(DefaultGraphicsProfile))
                 {
                     var customProfile = platformProfile.Properties.Get(DefaultGraphicsProfile);
-                    if (customProfile > 0) result.DefaultGraphicsProfileUsed = customProfile;
+                    result.DefaultGraphicsProfileUsed = customProfile;
                 }
             }
 
