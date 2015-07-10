@@ -23,6 +23,7 @@ Release date: 2015/XX/XX
 - Studio: Fix the animation preview that where not properly updating when the source file was modified.
 - Studio: Fix an issue that was preventing selection by mouse click to work in the scene editor under some circumstances.
 - Studio: The pitch of the scene editor camera is now clamped between -90° and +90°
+- Studio: The rotation of the camera in the skybox preview have been fixed.
 - Engine: The center of sprites is now properly taken in account when rendered by the CameraRenderer.
 - Engine: Fixed an issue that prevented frustum culling from working.
 - Shaders: Ambient occlusion now correctly affects ambient light.
