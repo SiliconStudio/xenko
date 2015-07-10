@@ -23,12 +23,17 @@ Release date: 2015/XX/XX
 - Studio: Fix the animation preview that where not properly updating when the source file was modified.
 - Studio: Fix an issue that was preventing selection by mouse click to work in the scene editor under some circumstances.
 - Studio: The pitch of the scene editor camera is now clamped between -90° and +90°
+- Studio: The rotation of the camera in the skybox preview have been fixed.
 - Engine: The center of sprites is now properly taken in account when rendered by the CameraRenderer.
 - Engine: Fixed an issue that prevented frustum culling from working.
 - Shaders: Ambient occlusion now correctly affects ambient light.
 
 #### Breaking changes
 - Assets: Texture default transparency mode changes from `None` to `Auto`.
+- Assets: The `SpriteGroupAsset` and the `UIImageGroupAsset` have been merged into one single `SpriteSheetAsset`. 
+- Engine: The `SpriteGroup` and `UIImageGroup` classes have been merged into one single `SpriteSheet` class.
+- Engine: The `Sprite` and `UIImage` classes have been merged into one single `Sprite` class.
+- Engine: The sprite `ExtrusionMethod` field have been removed and replaced by a `PixelsPerUnit` field in the sprites.
 - Engine: Sprites are drawn by default with depth test enabled.
 
 #### Known Issues

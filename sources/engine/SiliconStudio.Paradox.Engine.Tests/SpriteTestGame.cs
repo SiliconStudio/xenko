@@ -17,8 +17,8 @@ namespace SiliconStudio.Paradox.Engine.Tests
     [TestFixture]
     public class SpriteTestGame : EngineTestBase
     {
-        private SpriteGroup ballSprite1;
-        private SpriteGroup ballSprite2;
+        private SpriteSheet ballSprite1;
+        private SpriteSheet ballSprite2;
 
         private Entity ball;
 
@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
         private Entity background;
 
-        private SpriteGroup groundSprites;
+        private SpriteSheet groundSprites;
 
         public SpriteTestGame()
         {   
@@ -55,17 +55,16 @@ namespace SiliconStudio.Paradox.Engine.Tests
             CameraComponent.ProjectionMatrix = Matrix.OrthoRH(areaSize.X, areaSize.Y, -2, 2);
 
             // Load assets
-            groundSprites = Asset.Load<SpriteGroup>("GroundSprite");
-            ballSprite1 = Asset.Load<SpriteGroup>("BallSprite1");
-            ballSprite2 = Asset.Load<SpriteGroup>("BallSprite2");
-            ball = new Entity { new SpriteComponent { SpriteProvider = new SpriteFromSpriteGroup { SpriteGroup = Asset.Load<SpriteGroup>("BallSprite1") } } };
-            ball.Transform.Scale = new Vector3(150, 150, 1);
+            groundSprites = Asset.Load<SpriteSheet>("GroundSprite");
+            ballSprite1 = Asset.Load<SpriteSheet>("BallSprite1");
+            ballSprite2 = Asset.Load<SpriteSheet>("BallSprite2");
+            ball = new Entity { new SpriteComponent { SpriteProvider = new SpriteFromSheet { Sheet = Asset.Load<SpriteSheet>("BallSprite1") } } };
 
             // create fore/background entities
             foreground = new Entity();
             background = new Entity();
-            foreground.Add(new SpriteComponent { SpriteProvider = new SpriteFromSpriteGroup { SpriteGroup = groundSprites }, CurrentFrame = 1 });
-            background.Add(new SpriteComponent { SpriteProvider = new SpriteFromSpriteGroup { SpriteGroup = groundSprites }, CurrentFrame = 0 });
+            foreground.Add(new SpriteComponent { SpriteProvider = new SpriteFromSheet { Sheet = groundSprites }, CurrentFrame = 1 });
+            background.Add(new SpriteComponent { SpriteProvider = new SpriteFromSheet { Sheet = groundSprites }, CurrentFrame = 0 });
 
             Scene.AddChild(ball);
             Scene.AddChild(foreground);
@@ -93,9 +92,9 @@ namespace SiliconStudio.Paradox.Engine.Tests
             FrameGameSystem.Update(() => SetSpriteImage(ballSprite2)).TakeScreenshot();
         }
 
-        private void SetSpriteImage(SpriteGroup sprite)
+        private void SetSpriteImage(SpriteSheet sprite)
         {
-            spriteComponent.SpriteProvider = new SpriteFromSpriteGroup { SpriteGroup = sprite };
+            spriteComponent.SpriteProvider = new SpriteFromSheet { Sheet = sprite };
         }
 
         protected override void Update(GameTime time)

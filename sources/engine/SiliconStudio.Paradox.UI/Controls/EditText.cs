@@ -103,17 +103,17 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// <summary>
         /// The key to the ActiveImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<UIImage> ActiveImagePropertyKey = new PropertyKey<UIImage>("EditActiveImageKey", typeof(EditText), DefaultValueMetadata.Static<UIImage>(null));
+        public static readonly PropertyKey<Sprite> ActiveImagePropertyKey = new PropertyKey<Sprite>("EditActiveImageKey", typeof(EditText), DefaultValueMetadata.Static<Sprite>(null));
 
         /// <summary>
         /// The key to the InactiveImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<UIImage> InactiveImagePropertyKey = new PropertyKey<UIImage>("EditInactiveImageKey", typeof(EditText), DefaultValueMetadata.Static<UIImage>(null));
+        public static readonly PropertyKey<Sprite> InactiveImagePropertyKey = new PropertyKey<Sprite>("EditInactiveImageKey", typeof(EditText), DefaultValueMetadata.Static<Sprite>(null));
 
         /// <summary>
         /// The key to the MouseOverImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<UIImage> MouseOverImagePropertyKey = new PropertyKey<UIImage>("MouseOverImageModeKey", typeof(EditText), DefaultValueMetadata.Static<UIImage>(null));
+        public static readonly PropertyKey<Sprite> MouseOverImagePropertyKey = new PropertyKey<Sprite>("MouseOverImageModeKey", typeof(EditText), DefaultValueMetadata.Static<Sprite>(null));
 
         private static void CheckStrictlyPositive(ref int value)
         {
@@ -384,7 +384,7 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// <summary>
         /// Gets or sets the image that is displayed in background when the edit is active
         /// </summary>
-        public UIImage ActiveImage
+        public Sprite ActiveImage
         {
             get { return DependencyProperties.Get(ActiveImagePropertyKey); }
             set { DependencyProperties.Set(ActiveImagePropertyKey, value); }
@@ -393,7 +393,7 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// <summary>
         /// Gets or sets the image that is displayed in background when the edit is inactive
         /// </summary>
-        public UIImage InactiveImage
+        public Sprite InactiveImage
         {
             get { return DependencyProperties.Get(InactiveImagePropertyKey); }
             set { DependencyProperties.Set(InactiveImagePropertyKey, value); }
@@ -402,7 +402,7 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// <summary>
         /// Gets or sets the image that the button displays when the mouse is over it
         /// </summary>
-        public UIImage MouseOverImage
+        public Sprite MouseOverImage
         {
             get { return DependencyProperties.Get(MouseOverImagePropertyKey); }
             set { DependencyProperties.Set(MouseOverImagePropertyKey, value); }

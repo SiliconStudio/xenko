@@ -128,6 +128,16 @@
     <Compile Include="Direct3D\InputLayoutManager.cs" />
     <Compile Include="Direct3D\Rational.Direct3D.cs" />
     <Compile Include="DepthStencilStateSerializer.cs" />
+    <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.Direct3D11.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGL.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGLES.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\BackgroundEffect.Extensions.cs" />
+    <Compile Include="Shaders\BackgroundEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>BackgroundEffect.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Sprite3DBatch.cs" />
     <Compile Include="Shaders\ShaderBaseStream.cs">
       <DependentUpon>ShaderBaseStream.pdxsl</DependentUpon>
@@ -145,8 +155,8 @@
     <Compile Include="GraphicsResourceAllocatorExtensions.cs" />
     <Compile Include="GraphicsResourceLink.cs" />
     <Compile Include="GraphicsResourceRecyclePolicyDelegate.cs" />
-    <Compile Include="ImageFragment.cs" />
-    <Compile Include="ImageGroup.cs" />
+    <Compile Include="Sprite.cs" />
+    <Compile Include="SpriteSheet.cs" />
     <Compile Include="ImageOrientation.cs" />
     <Compile Include="OpenGL\OpenGLUtils.cs" />
     <Compile Include="OpenGL\GraphicsOutput.OpenGL.cs" />
@@ -256,12 +266,11 @@
       <DependentUpon>UIEffect.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Shaders.Bytecodes\UIEffectSeparateAlpha.Extensions.cs" />
-    <Compile Include="Sprite.cs" />
+    <Compile Include="Sprite.Extensions.cs" />
     <Compile Include="SpriteBatch.cs" />
     <Compile Include="SpriteEffects.cs" />
     <Compile Include="SpriteFont.cs" />
     <Compile Include="SpriteFrame.cs" />
-    <Compile Include="SpriteGroup.cs" />
     <Compile Include="SpriteSortMode.cs" />
     <Compile Include="DeviceCreationFlags.cs" />
     <Compile Include="GraphicsDeviceStatus.cs" />
@@ -480,6 +489,10 @@
     <None Include="Shaders.Bytecodes\CompileShaders.cmd" />
     <None Include="Shaders.Bytecodes\Graphics.pdxpkg" />
     <None Include="Shaders.Bytecodes\Shaders.pdxeffectlog" />
+    <None Include="Shaders\BackgroundEffect.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>BackgroundEffect.cs</LastGenOutput>
+    </None>
     <None Include="Shaders\ShaderBaseStream.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShaderBaseStream.cs</LastGenOutput>

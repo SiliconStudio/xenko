@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using NUnit.Framework;
 
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.UI.Controls;
 
 namespace SiliconStudio.Paradox.UI.Tests.Layering
@@ -29,8 +30,8 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
         public void TestBasicInvalidations()
         {
             // - test the properties that are not supposed to invalidate the object layout state
-            UIElementLayeringTests.TestNoInvalidation(this, () => PressedImage = new UIImage());
-            UIElementLayeringTests.TestNoInvalidation(this, () => NotPressedImage = new UIImage());
+            UIElementLayeringTests.TestNoInvalidation(this, () => PressedImage = new Sprite());
+            UIElementLayeringTests.TestNoInvalidation(this, () => NotPressedImage = new Sprite());
         }
     }
 }

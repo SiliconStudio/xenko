@@ -28,3 +28,11 @@ UsedParameters:
     EffectSourceCode.Enable: true
     EffectSourceCode.Namespace: SiliconStudio.Paradox.Graphics
     EffectSourceCode.ClassDeclaration: internal partial
+---
+!EffectCompileRequest
+EffectName: BackgroundEffect
+UsedParameters:
+    CompilerParameters.DebugKey: true
+    EffectSourceCode.Enable: true
+    EffectSourceCode.Namespace: SiliconStudio.Paradox.Graphics
+    EffectSourceCode.ClassDeclaration: internal partial
