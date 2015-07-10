@@ -69,18 +69,35 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
         /// Set the solution to use, when resolving the package containing the remote commands.
         /// </summary>
         /// <param name="solutionPath">The full path to the solution file.</param>
-        public static void InitialzeFromSolution(string solutionPath)
+        /// <param name="domain">The AppDomain to set the solution on, or null the current AppDomain.</param>
+        public static void InitialzeFromSolution(string solutionPath, AppDomain domain = null)
         {
-            lock (computedParadoxPackageInfoLock)
+            if (domain == null)
             {
-                // Set the new solution and clear the package info, so it will be recomputed
-                solution = solutionPath;
-                computedParadoxPackageInfo = new PackageInfo();
-            }
+                lock (computedParadoxPackageInfoLock)
+                {
+                    // Set the new solution and clear the package info, so it will be recomputed
+                    solution = solutionPath;
+                    computedParadoxPackageInfo = new PackageInfo();
+                }
 
-            lock (paradoxCommandProxyLock)
+                lock (paradoxCommandProxyLock)
+                {
+                    solutionChanged = true;
+                }
+            }
+            else
             {
-                solutionChanged = true;
+                var initializationHelper = (InitializationHelper)domain.CreateInstanceFromAndUnwrap(typeof(InitializationHelper).Assembly.Location, typeof(InitializationHelper).FullName);
+                initializationHelper.Initialze(solutionPath);
+            }
+        }
+
+        private class InitializationHelper : MarshalByRefObject
+        {
+            public void Initialze(string solutionPath)
+            {
+                InitialzeFromSolution(solutionPath);
             }
         }
 
@@ -125,6 +142,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
                     }
 
                     currentAppDomain = CreateParadoxDomain();
+                    InitialzeFromSolution(solution, currentAppDomain);
                     currentInstance = CreateProxy(currentAppDomain);
                     solutionChanged = false;
                 }
@@ -152,7 +170,12 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
             return (ParadoxCommandsProxy)domain.CreateInstanceFromAndUnwrap(typeof(ParadoxCommandsProxy).Assembly.Location, typeof(ParadoxCommandsProxy).FullName);
         }
 
-        public void Initialize(string dumb)
+        public void Initialize(string paradoxSdkDir)
+        {
+            Initialize();
+        }
+
+        public void Initialize()
         {
             remote.Initialize(ParadoxPackageInfo.SdkPath);
         }
@@ -187,6 +210,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
 
         public byte[] GenerateShaderKeys(string inputFileName, string inputFileContent)
         {
+            Debugger.Launch();
             return remote.GenerateShaderKeys(inputFileName, inputFileContent);
         }
 
@@ -201,7 +225,9 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
             // This assembly resolve is only used to resolve the GetExecutingAssembly on the Default Domain
             // when casting to ParadoxCommandsProxy in the ParadoxCommandsProxy.GetProxy method
             var executingAssembly = Assembly.GetExecutingAssembly();
-            if (args.Name == executingAssembly.FullName)
+
+            var assemblyName = new AssemblyName(args.Name);
+            if (assemblyName.Name == executingAssembly.GetName().Name)
                 return executingAssembly;
 
             return null;
