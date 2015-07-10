@@ -89,6 +89,7 @@
     <Compile Include="Settings\NamespaceDoc.cs" />
     <Compile Include="Settings\SettingsCollection.cs" />
     <Compile Include="Settings\SettingsDictionarySerializer.cs" />
+    <Compile Include="Windows\GlobalMutex.cs" />
     <Compile Include="Yaml\ParsingEventListEmitter.cs" />
     <Compile Include="Settings\SettingsEntry.cs" />
     <Compile Include="Settings\SettingsEntryValue.cs" />

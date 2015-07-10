@@ -5,11 +5,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Threading;
-
 using Microsoft.Build.Evaluation;
 
 using NuGet;
+using SiliconStudio.Core.Windows;
 
 namespace SiliconStudio.Assets
 {
@@ -255,10 +254,10 @@ namespace SiliconStudio.Assets
             var newPackageId = packageId.Replace(".", String.Empty);
             return "SiliconStudioPackage" + newPackageId + "Version";
         }
-
-        private GlobalMutexLocker GetLocalRepositoryLocker()
+        
+        private IDisposable GetLocalRepositoryLocker()
         {
-            return new GlobalMutexLocker("LauncherApp-" + RootDirectory);
+            return GlobalMutex.Wait("ParadoxLauncher-{1F6F92C3-B1CF-4E40-A8D5-4D1F1EB66285}-" + RootDirectory);
         }
 
         private List<IPackage> UpdateTargetsInternal()
@@ -397,33 +396,6 @@ namespace SiliconStudio.Assets
             return (((ex is WebException) ||
                 (ex.InnerException is WebException) ||
                 (ex.InnerException is InvalidOperationException)));
-        }
-
-        private class GlobalMutexLocker : IDisposable
-        {
-            private Mutex mutex;
-            private readonly bool owned;
-
-            public GlobalMutexLocker(string name)
-            {
-                name = name.Replace(":", "_");
-                name = name.Replace("/", "_");
-                name = name.Replace("\\", "_");
-                mutex = new Mutex(true, name, out owned);
-                if (!owned)
-                {
-                    owned = mutex.WaitOne();
-                }
-            }
-
-            public void Dispose()
-            {
-                if (owned)
-                {
-                    mutex.ReleaseMutex();
-                }
-                mutex = null;
-            }
         }
 
         public static bool IsStoreDirectory(string directory)
