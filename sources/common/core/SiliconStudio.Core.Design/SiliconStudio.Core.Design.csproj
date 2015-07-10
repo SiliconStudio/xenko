@@ -168,6 +168,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\deps\SharpYaml\SharpYaml.dll</HintPath>
     </Reference>
+    <Reference Include="System.Management" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
   </ItemGroup>
