@@ -6,7 +6,6 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Paradox.Rendering.Materials;
 using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
 
 namespace SiliconStudio.Paradox.Rendering.Materials
@@ -16,7 +15,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
     /// </summary>
     [DataContract("MaterialSpecularMapFeature")]
     [Display("Specular Map")]
-    public class MaterialSpecularMapFeature : IMaterialSpecularFeature, IMaterialStreamProvider
+    public class MaterialSpecularMapFeature : MaterialFeature, IMaterialSpecularFeature, IMaterialStreamProvider
     {
         private static readonly MaterialStreamDescriptor SpecularStream = new MaterialStreamDescriptor("Specular", "matSpecular", MaterialKeys.SpecularValue.PropertyType);
 
@@ -57,7 +56,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         [Display("Is Energy Conservative?")]
         public bool IsEnergyConservative { get; set; }
 
-        public void Visit(MaterialGeneratorContext context)
+        public override void VisitFeature(MaterialGeneratorContext context)
         {
             context.SetStream(SpecularStream.Stream, SpecularMap, MaterialKeys.SpecularMap, MaterialKeys.SpecularValue);
             context.SetStream("matSpecularIntensity", Intensity, null, MaterialKeys.SpecularIntensityValue);

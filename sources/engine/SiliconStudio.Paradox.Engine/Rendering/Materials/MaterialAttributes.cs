@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
     [CategoryOrder(5, "Geometry")]
     [CategoryOrder(10, "Shading")]
     [CategoryOrder(15, "Misc")]
-    public class MaterialAttributes : IMaterialAttributes
+    public class MaterialAttributes : MaterialFeature, IMaterialAttributes
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialAttributes"/> class.
@@ -133,7 +133,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         [DataMember(120)]
         public MaterialOverrides Overrides { get; private set; }
 
-        public void Visit(MaterialGeneratorContext context)
+        public override void VisitFeature(MaterialGeneratorContext context)
         {
             // Push overrides of this attributes
             context.PushOverrides(Overrides);

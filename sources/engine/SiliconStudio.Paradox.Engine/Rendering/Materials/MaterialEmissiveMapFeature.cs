@@ -7,7 +7,6 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Paradox.Rendering.Materials;
 using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
 using SiliconStudio.Paradox.Shaders;
 
@@ -15,7 +14,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
 {
     [DataContract("MaterialEmissiveMapFeature")]
     [Display("Emissive Map")]
-    public class MaterialEmissiveMapFeature : IMaterialEmissiveFeature, IMaterialStreamProvider
+    public class MaterialEmissiveMapFeature : MaterialFeature, IMaterialEmissiveFeature, IMaterialStreamProvider
     {
         private static readonly MaterialStreamDescriptor EmissiveStream = new MaterialStreamDescriptor("Emissive", "matEmissive", MaterialKeys.EmissiveValue.PropertyType);
 
@@ -73,7 +72,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
             }
         }
 
-        public void Visit(MaterialGeneratorContext context)
+        public override void VisitFeature(MaterialGeneratorContext context)
         {
             context.SetStream(EmissiveStream.Stream, EmissiveMap, MaterialKeys.EmissiveMap, MaterialKeys.EmissiveValue);
             context.SetStream("matEmissiveIntensity", Intensity, MaterialKeys.EmissiveIntensityMap, MaterialKeys.EmissiveIntensity);

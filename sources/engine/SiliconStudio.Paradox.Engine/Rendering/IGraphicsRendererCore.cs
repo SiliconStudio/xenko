@@ -3,8 +3,6 @@
 
 using System;
 
-using SiliconStudio.Paradox.Rendering;
-
 namespace SiliconStudio.Paradox.Rendering
 {
     /// <summary>

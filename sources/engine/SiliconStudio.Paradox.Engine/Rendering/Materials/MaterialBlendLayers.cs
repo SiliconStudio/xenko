@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
+using System.ComponentModel;
 
 using SiliconStudio.Core;
 
@@ -19,10 +20,18 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// </summary>
         public MaterialBlendLayers()
         {
+            Enabled = true;
         }
+
+        [DataMember(-20)]
+        [DefaultValue(true)]
+        public bool Enabled { get; set; }
 
         public virtual void Visit(MaterialGeneratorContext context)
         {
+            if (!Enabled)
+                return;
+
             foreach (var layer in this)
             {
                 layer.Visit(context);
