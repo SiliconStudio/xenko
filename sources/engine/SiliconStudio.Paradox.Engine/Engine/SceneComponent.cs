@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("SceneComponent")]
     [DefaultEntityComponentProcessor(typeof(SceneProcessor))]
-    [Display(-100, "Scene", Expand = ExpandRule.Once)]
+    [Display(10000, "Scene", Expand = ExpandRule.Once)]
     public sealed class SceneComponent : EntityComponent
     {
         public readonly static PropertyKey<SceneComponent> Key = new PropertyKey<SceneComponent>("Key", typeof(SceneComponent),

@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
         public static SceneAsset Create()
         {
             // Create a new root entity, and make sure transformation component is created
-            var rootEntity = new Scene { Name = "Root" };
+            var rootEntity = new Scene { Name = "Scene" };
             rootEntity.GetOrCreate(TransformComponent.Key);
 
             return new SceneAsset
