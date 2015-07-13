@@ -24,8 +24,11 @@ Release date: 2015/XX/XX
 - Studio: Fix an issue that was preventing selection by mouse click to work in the scene editor under some circumstances.
 - Studio: The pitch of the scene editor camera is now clamped between -90° and +90°
 - Studio: The rotation of the camera in the skybox preview have been fixed.
+- Studio: The material preview now properly displays textures mapped to coordinates other than TexCoord0.
 - Engine: The center of sprites is now properly taken in account when rendered by the CameraRenderer.
 - Engine: Fixed an issue that prevented frustum culling from working.
+- Engine: Fixed a crash when members of scripts could not be serialized. The members are now ignored and a warning is generated. ([#228](https://github.com/SiliconStudio/paradox/issues/228)).
+- Engine: Fixed an issue where space in shadow maps would not be correcly allocated.
 - Shaders: Ambient occlusion now correctly affects ambient light.
 
 #### Breaking changes
