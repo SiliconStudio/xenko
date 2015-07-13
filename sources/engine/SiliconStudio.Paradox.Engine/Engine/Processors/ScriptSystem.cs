@@ -73,6 +73,13 @@ namespace SiliconStudio.Paradox.Engine.Processors
             // Run current micro threads
             Scheduler.Run();
 
+            // Flag scripts as not being live reloaded after starting/executing them for the first time
+            foreach (var script in scriptsToStartCopy)
+            {
+                if (script.IsLiveReloading)
+                    script.IsLiveReloading = false;
+            }
+
             syncScriptsCopy.Clear();
             syncScriptsCopy.AddRange(syncScripts);
 
@@ -157,6 +164,20 @@ namespace SiliconStudio.Paradox.Engine.Processors
             }
 
             registeredScripts.Remove(script);
+        }
+
+        /// <summary>
+        /// Called by a live scripting debugger to notify the ScriptSystem about reloaded scripts.
+        /// </summary>
+        /// <param name="oldScript">The old script</param>
+        /// <param name="newScript">The new script</param>
+        public void LiveReload(Script oldScript, Script newScript)
+        {
+            // Set live reloading mode for the rest of it's lifetime
+            oldScript.IsLiveReloading = true;
+
+            // Set live reloading mode until after being started
+            newScript.IsLiveReloading = true;
         }
     }
 }
