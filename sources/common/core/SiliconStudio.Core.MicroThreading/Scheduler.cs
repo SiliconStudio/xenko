@@ -41,8 +41,18 @@ namespace SiliconStudio.Core.MicroThreading
         /// </summary>
         public Scheduler()
         {
+            PropagateExceptions = true;
             FrameChannel = new Channel<int> { Preference = ChannelPreference.PreferSender };
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether microthread exceptions are propagated (and crashes the process). Default to true.
+        /// This can be overridden to false per <see cref="MicroThread"/> by using <see cref="MicroThreadFlags.IgnoreExceptions"/>.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [propagate exceptions]; otherwise, <c>false</c>.
+        /// </value>
+        public bool PropagateExceptions { get; set; }
 
         /// <summary>
         /// Gets the current running micro thread in this scheduler through <see cref="Run"/>.
@@ -206,7 +216,7 @@ namespace SiliconStudio.Core.MicroThreading
                                 // Nothing was listening on the micro thread and it crashed
                                 // Let's treat it as unhandled exception and propagate it
                                 // Use ExceptionDispatchInfo.Capture to not overwrite callstack
-                                if ((microThread.Flags & MicroThreadFlags.IgnoreExceptions) != MicroThreadFlags.IgnoreExceptions)
+                                if (PropagateExceptions && (microThread.Flags & MicroThreadFlags.IgnoreExceptions) != MicroThreadFlags.IgnoreExceptions)
                                     ExceptionDispatchInfo.Capture(microThread.Exception).Throw();
                             }
 

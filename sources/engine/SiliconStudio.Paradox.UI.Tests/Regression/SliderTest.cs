@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Games;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Input;
 using SiliconStudio.Paradox.UI.Controls;
 using SiliconStudio.Paradox.UI.Panels;
@@ -20,7 +21,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     {
         private Slider slider;
         private UniformGrid grid;
-        private UIImageGroup sliderImages;
+        private SpriteSheet sliderImages;
 
         private bool isRotatedImages;
 
@@ -33,7 +34,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            sliderImages = Asset.Load<UIImageGroup>("DebugSlider");
+            sliderImages = Asset.Load<SpriteSheet>("DebugSlider");
 
             slider = new Slider { TrackStartingOffsets = new Vector2(10, 6), TickOffset = 10 };
             SetSliderImages(isRotatedImages);

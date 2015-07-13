@@ -2,6 +2,7 @@ using System;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.UI.Controls;
 
 namespace SiliconStudio.Paradox.UI.Renderers
@@ -27,10 +28,10 @@ namespace SiliconStudio.Paradox.UI.Renderers
             if (image == null || image.Texture == null)
                 return;
             
-            Batch.DrawImage(image.Texture, image.TextureAlpha, ref toggleButton.WorldMatrixInternal, ref image.RegionInternal, ref toggleButton.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, image.Orientation);
+            Batch.DrawImage(image.Texture, null, ref toggleButton.WorldMatrixInternal, ref image.RegionInternal, ref toggleButton.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, image.Orientation);
         }
 
-        private UIImage GetToggleStateImage(ToggleButton toggleButton)
+        private Sprite GetToggleStateImage(ToggleButton toggleButton)
         {
             switch (toggleButton.State)
             {

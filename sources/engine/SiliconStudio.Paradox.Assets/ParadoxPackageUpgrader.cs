@@ -3,6 +3,8 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
@@ -27,7 +29,53 @@ namespace SiliconStudio.Paradox.Assets
 
             // Nothing to do for now, most of the work is already done by individual asset upgraders
             // We can later add logic here for package-wide upgrades (i.e. GameSettingsAsset)
+            if (dependency.Version.MinVersion < new PackageVersion("1.2.0-beta"))
+            {
+                // UIImageGroups and SpriteGroups asset have been merged into a single SpriteSheet => rename the assets and modify the tag
+                var uiImageGroups = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".pdxuiimage");
+                var spitesGroups = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".pdxsprite");
+                RenameAndChangeTag(assetFiles, uiImageGroups, "!UIImageGroup");
+                RenameAndChangeTag(assetFiles, spitesGroups, "!SpriteGroup");
+            }
+
             return true;
+        }
+
+        private void ChangeFileExtension(IList<PackageLoadingAssetFile> assetFiles, PackageLoadingAssetFile file, string newExtension)
+        {
+            // Create the new file
+            var newFileName = new UFile(file.FilePath.FullPath.Replace(file.FilePath.GetFileExtension(), ".pdxsheet"));
+            var newFile = new PackageLoadingAssetFile(newFileName, file.SourceFolder) { AssetContent = file.AssetContent };
+
+            // Add the new file
+            assetFiles.Add(newFile);
+
+            // Mark the old file as "To Delete"
+            file.Deleted = true;
+        }
+
+        private void RenameAndChangeTag( IList<PackageLoadingAssetFile> assetFiles, IEnumerable<PackageLoadingAssetFile> groupFiles, string oldTag)
+        {
+            var oldTagLength = System.Text.Encoding.UTF8.GetBytes(oldTag).Length;
+            var newTagBuffer = System.Text.Encoding.UTF8.GetBytes("!SpriteSheet");
+            
+            foreach (var file in groupFiles.ToArray())
+            {
+                // set the content of the new asset (replace the tags)
+                using (var stream = new FileStream(file.FilePath.FullPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    file.AssetContent = new byte[stream.Length + newTagBuffer.Length - oldTagLength];
+                    using (var memoryStream = new MemoryStream(file.AssetContent))
+                    {
+                        memoryStream.Write(newTagBuffer, 0, newTagBuffer.Length);
+                        stream.Position = oldTagLength;
+                        stream.CopyTo(memoryStream);
+                    }
+                }
+
+                // rename the file
+                ChangeFileExtension(assetFiles, file, ".pdxsheet");
+            }
         }
     }
 }

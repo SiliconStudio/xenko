@@ -183,6 +183,11 @@
     <Compile Include="..\..\common\core\SiliconStudio.Core\Diagnostics\CallerInfo.cs">
       <Link>CallerInfo.cs</Link>
     </Compile>
+    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Windows\GlobalMutex.cs">
+      <Link>Core\Design\Windows\GlobalMutex.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>	
     <Compile Include="Assets\AssetObjectClassificationColorManager.cs" />
     <Compile Include="Assets\AssetObjectDefinitions.cs" />
     <Compile Include="Assets\AssetObjectEditorFormat.cs" />
@@ -301,7 +306,6 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup />
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>

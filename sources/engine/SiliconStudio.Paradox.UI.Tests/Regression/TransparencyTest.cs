@@ -36,18 +36,18 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            var uiImages = Asset.Load<UIImageGroup>("UIImages");
+            var Sprites = Asset.Load<SpriteSheet>("UIImages");
             element1 = new Button { Name = "1", Width = 300, Height = 150 };
-            element1.PressedImage = uiImages["Logo"];
-            element1.NotPressedImage = uiImages["BorderButton"];
+            element1.PressedImage = Sprites["Logo"];
+            element1.NotPressedImage = Sprites["BorderButton"];
             element1.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(350, 300, 0));
             element1.DependencyProperties.Set(Panel.ZIndexPropertyKey, 1);
 
             element2 = new Button { Name = "2", Width = 600, Height = 300 };
             element2.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(200, 100, -50));
             element2.DependencyProperties.Set(Panel.ZIndexPropertyKey, 0);
-            element2.PressedImage = new UIImage(Asset.Load<Texture>("ImageButtonPressed"));
-            element2.NotPressedImage = new UIImage(Asset.Load<Texture>("ImageButtonNotPressed"));
+            element2.PressedImage = new Sprite(Asset.Load<Texture>("ImageButtonPressed"));
+            element2.NotPressedImage = new Sprite(Asset.Load<Texture>("ImageButtonNotPressed"));
 
             var canvas = new Canvas();
             canvas.Children.Add(element1);

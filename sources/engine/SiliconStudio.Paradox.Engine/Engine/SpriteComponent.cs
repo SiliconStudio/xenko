@@ -59,14 +59,6 @@ namespace SiliconStudio.Paradox.Engine
         public SpriteType SpriteType;
 
         /// <summary>
-        /// Gets or set the sprite extrusion method.
-        /// </summary>
-        [DataMember(30)]
-        [DefaultValue(SpriteExtrusionMethod.UnitHeightSpriteRatio)]
-        [Display("Extrusion")]
-        public SpriteExtrusionMethod ExtrusionMethod { get; set; }
-
-        /// <summary>
         /// The color to apply on the sprite.
         /// </summary>
         /// <userdoc>The color to apply to the sprite.</userdoc>
@@ -99,8 +91,7 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         public SpriteComponent()
         {
-            SpriteProviderInternal = new SpriteFromSpriteGroup();
-            ExtrusionMethod = SpriteExtrusionMethod.UnitHeightSpriteRatio;
+            SpriteProviderInternal = new SpriteFromSheet();
             PremultipliedAlpha = true;
         }
 

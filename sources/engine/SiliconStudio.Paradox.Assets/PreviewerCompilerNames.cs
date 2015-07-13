@@ -36,9 +36,7 @@ namespace SiliconStudio.Paradox.Assets
         [Obsolete]
         public const string FontThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "FontThumbnailCompiler" + PreviewAssemblyQualifiedName;
         [Obsolete]
-        public const string UIImageGroupThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "UIImageGroupThumbnailCompiler" + PreviewAssemblyQualifiedName;
-        [Obsolete]
-        public const string SpriteGroupThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "SpriteGroupThumbnailCompiler" + PreviewAssemblyQualifiedName;
+        public const string SpriteSheetThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "SpriteSheetThumbnailCompiler" + PreviewAssemblyQualifiedName;
         [Obsolete]
         public const string ProceduralModelThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "ProceduralModelThumbnailCompiler" + PreviewAssemblyQualifiedName;
     }

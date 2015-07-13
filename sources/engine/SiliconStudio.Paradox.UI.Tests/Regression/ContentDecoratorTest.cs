@@ -41,7 +41,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
                 Content = textBlock, 
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                BackgroundImage = new UIImage(Asset.Load<Texture>("DumbWhite"))
+                BackgroundImage = new Sprite(Asset.Load<Texture>("DumbWhite"))
             };
 
             UIComponent.RootElement = decorator;

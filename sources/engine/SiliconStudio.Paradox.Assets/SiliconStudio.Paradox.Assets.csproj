@@ -166,9 +166,9 @@
     <Compile Include="ParadoxPackageUpgrader.cs" />
     <Compile Include="ProceduralModels\ProceduralModelAsset.cs" />
     <Compile Include="ProceduralModels\ProceduralModelAssetCompiler.cs" />
-    <Compile Include="ImageGroupAsset.cs" />
-    <Compile Include="ImageGroupCompiler.cs" />
-    <Compile Include="ImageInfo.cs" />
+    <Compile Include="Sprite\SpriteSheetAsset.cs" />
+    <Compile Include="Sprite\SpriteSheetAssetCompiler.cs" />
+    <Compile Include="Sprite\SpriteInfo.cs" />
     <Compile Include="Materials\MaterialAsset.cs" />
     <Compile Include="Materials\MaterialAssetCompiler.cs" />
     <Compile Include="Audio\SoundMusicAsset.cs" />
@@ -188,9 +188,7 @@
     <Compile Include="Skyboxes\SkyboxCubeMapModel.cs" />
     <Compile Include="Skyboxes\SkyboxGenerator.cs" />
     <Compile Include="Skyboxes\SkyboxPreFilteringDiffuseOrder.cs" />
-    <Compile Include="Sprite\SpriteInfo.cs" />
-    <Compile Include="Sprite\SpriteGroupAsset.cs" />
-    <Compile Include="Sprite\SpriteGroupCompiler.cs" />
+    <Compile Include="Sprite\SpriteSheetType.cs" />
     <Compile Include="Textures\TextureCommandHelper.cs" />
     <Compile Include="Textures\TextureHint.cs" />
     <Compile Include="Textures\TextureQuality.cs" />
@@ -219,9 +217,6 @@
     <Compile Include="Textures\TextureFormat.cs" />
     <Compile Include="Textures\TextureImporter.cs" />
     <Compile Include="PreviewerCompilerNames.cs" />
-    <Compile Include="UIImage\UIImageGroupCompiler.cs" />
-    <Compile Include="UIImage\UIImageGroupAsset.cs" />
-    <Compile Include="UIImage\UIImageInfo.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />

@@ -5,6 +5,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Games;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.UI.Controls;
 
 namespace SiliconStudio.Paradox.UI.Tests.Layering
@@ -37,8 +38,8 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
 
             // - test the properties that are not supposed to invalidate the object layout state
             UIElementLayeringTests.TestNoInvalidation(edit, () => edit.IsReadOnly = !edit.IsReadOnly);
-            UIElementLayeringTests.TestNoInvalidation(edit, () => edit.ActiveImage = new UIImage());
-            UIElementLayeringTests.TestNoInvalidation(edit, () => edit.InactiveImage = new UIImage());
+            UIElementLayeringTests.TestNoInvalidation(edit, () => edit.ActiveImage = new Sprite());
+            UIElementLayeringTests.TestNoInvalidation(edit, () => edit.InactiveImage = new Sprite());
             UIElementLayeringTests.TestNoInvalidation(edit, () => edit.TextColor = new Color(1, 2, 3, 4));
             UIElementLayeringTests.TestNoInvalidation(edit, () => edit.SelectionColor = new Color(1, 2, 3, 4));
             UIElementLayeringTests.TestNoInvalidation(edit, () => edit.CaretColor = new Color(1, 7, 3, 4));

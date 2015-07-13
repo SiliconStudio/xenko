@@ -102,16 +102,21 @@ namespace SiliconStudio.Presentation.Collections
         }
 
         /// <summary>
-        /// Search the index of key in the collection, using a provided function to compare items to the key.
+        /// Searches the index of key in the collection, using a provided function to compare items to the key.
         /// </summary>
         /// <typeparam name="TSearch">The type of the key to search.</typeparam>
         /// <param name="key">The key to search in the collection.</param>
-        /// <param name="compareFunc">A comparison function that can compare a key to an item of the collection.</param>
-        /// <returns></returns>
-        public int BinarySearch<TSearch>(TSearch key, Func<T, TSearch, int> compareFunc)
+        /// <param name="compareFunc">A comparison function that can compare a key to an item of the collection. Can be null if <typeparamref name="{T}"/> implements <see cref="IComparable{TSearch}"/>.</param>
+        /// <returns>The index corresponding to the key in the collection, or -1 if it could not be found.</returns>
+        public int BinarySearch<TSearch>(TSearch key, Func<T, TSearch, int> compareFunc = null)
         {
             if (compareFunc == null)
-                throw new ArgumentNullException("compareFunc");
+            {
+                if (typeof(T).GetInterfaces().Contains(typeof(IComparable<TSearch>)))
+                    compareFunc = (item1, item2) => ((IComparable<TSearch>)item1).CompareTo(item2);
+                else
+                    throw new ArgumentNullException("compareFunc");
+            }
 
             return GetIndex(key, false, compareFunc);
         }

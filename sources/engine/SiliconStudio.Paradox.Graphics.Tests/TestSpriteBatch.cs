@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         private float timeInSeconds;
 
-        private SpriteGroup rotatedImages;
+        private SpriteSheet rotatedImages;
 
         public TestSpriteBatch()
         {
@@ -33,8 +33,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             base.RegisterTests();
 
-            FrameGameSystem.Draw(()=>SetTimeAndDrawScene(0)).TakeScreenshot();
-            FrameGameSystem.Draw(()=>SetTimeAndDrawScene(0.27f)).TakeScreenshot();
+            FrameGameSystem.Draw(() => SetTimeAndDrawScene(0)).TakeScreenshot();
+            FrameGameSystem.Draw(() => SetTimeAndDrawScene(0.27f)).TakeScreenshot();
         }
 
         protected override async Task LoadContent()
@@ -43,7 +43,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
             sphere = Asset.Load<Texture>("Sphere");
-            rotatedImages = Asset.Load<SpriteGroup>("RotatedImages");
+            rotatedImages = Asset.Load<SpriteSheet>("RotatedImages");
         }
 
         protected override void Draw(GameTime gameTime)
@@ -52,7 +52,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             timeInSeconds += 1 / 60f; // frame dependent for graphic unit testing.
 
-            if(!ScreenShotAutomationEnabled)
+            if (!ScreenShotAutomationEnabled)
                 DrawScene();
         }
 
@@ -111,7 +111,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             spriteBatch.Draw(rotation90.Texture, pos, rotation90.Region, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipBoth, ImageOrientation.Rotated90);
             pos.Y -= 3 * height;
             pos.X += width;
-            
+
             // Test with scales
             spriteBatch.Draw(rotation90.Texture, pos, rotation90.Region, Color.White, 0, Vector2.Zero, new Vector2(0.66f, 1.33f), SpriteEffects.None, ImageOrientation.Rotated90);
             pos.X += 0.66f * width;
@@ -159,10 +159,10 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         /// <returns>The region from the sphere texture to display</returns>
         private Rectangle GetSphereAnimation(float time)
         {
-            var sphereIndex = MathUtil.Clamp((int)((time%1.0f)*SphereTotalCount), 0, SphereTotalCount);
+            var sphereIndex = MathUtil.Clamp((int)((time % 1.0f) * SphereTotalCount), 0, SphereTotalCount);
 
             int sphereX = sphereIndex % SphereCountPerRow;
-            int sphereY = sphereIndex/SphereCountPerRow;
+            int sphereY = sphereIndex / SphereCountPerRow;
             return new Rectangle(sphereX * (SphereWidth + SphereSpace), sphereY * (SphereHeight + SphereSpace), SphereWidth, SphereHeight);
         }
 

@@ -153,6 +153,8 @@ namespace SiliconStudio.Paradox.Debugger.Target
                     {
                         using (game)
                         {
+                            // Allow scripts to crash, we will still restart them
+                            game.Script.Scheduler.PropagateExceptions = false;
                             game.Run();
                         }
                     }
