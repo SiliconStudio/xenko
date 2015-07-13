@@ -26,6 +26,9 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Paradox.Assets.Presentation/Templates/ProjectExecutable.pdxtpl
         - sources/editor/SiliconStudio.Paradox.Assets.Presentation/Templates/ProjectLibrary.pdxtpl
         - sources/editor/SiliconStudio.Paradox.Assets.Presentation/Templates/UpdatePlatforms.pdxtpl
+    - Path: sources/data/images/NewGame
+      Group: Core
+      Exclude: "**/*.psd;**/*.md"
     - Path: samples
       Group: Samples
       Exclude: "**/.git/**;**/_ReSharper.*/**;**/Bin/**;**/obj/**;**/*.sln;**/*.suo;**/*.GhostDoc.xml;**/samples2/readme.md;**/samples2/.gitignore;**/*.psess;**/*.vspx;**/*.userprefs"

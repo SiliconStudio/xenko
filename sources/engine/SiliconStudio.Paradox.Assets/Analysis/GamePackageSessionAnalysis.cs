@@ -59,7 +59,7 @@ namespace SiliconStudio.Paradox.Assets.Analysis
 
                     // Creates a new default scene
                     // Checks we don't overwrite an existing asset
-                    const string defaultSceneLocation = "MainScene";
+                    const string defaultSceneLocation = GameSettingsAsset.DefaultSceneLocation;
                     var existingDefault = package.Assets.Find(defaultSceneLocation);
                     if (existingDefault != null && existingDefault.Asset is SceneAsset)
                     {
