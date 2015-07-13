@@ -3,7 +3,7 @@ namespace SiliconStudio.Paradox.Engine
     /// <summary>
     /// A script whose <see cref="Update"/> will be called every frame.
     /// </summary>
-    public abstract class SyncScript : Script
+    public abstract class SyncScript : StartupScript
     {
         /// <summary>
         /// Called every frame.

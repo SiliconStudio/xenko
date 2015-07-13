@@ -55,7 +55,11 @@ namespace SiliconStudio.Paradox.Engine.Processors
             foreach (var script in scriptsToStartCopy)
             {
                 // Start the script
-                script.Start();
+                var startupScript = script as StartupScript;
+                if (startupScript != null)
+                {
+                    startupScript.Start();
+                }
 
                 // Start a microthread with execute method if it's an async script
                 var asyncScript = script as AsyncScript;
@@ -135,7 +139,16 @@ namespace SiliconStudio.Paradox.Engine.Processors
         public void Remove(Script script)
         {
             // Make sure it's not registered in any pending list
-            scriptsToStart.Remove(script);
+            var startWasPending = scriptsToStart.Remove(script);
+            if (!startWasPending)
+            {
+                // Cancel scripts that were already started
+                var startupScript = script as StartupScript;
+                if (startupScript != null)
+                    startupScript.Cancel();
+
+                // TODO: Cancel async script execution
+            }
 
             var syncScript = script as SyncScript;
             if (syncScript != null)
