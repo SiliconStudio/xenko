@@ -182,7 +182,7 @@ namespace SiliconStudio.Paradox.Rendering
 
                 graphicsDevice.SetBlendState(graphicsDevice.BlendStates.AlphaBlend);
                 graphicsDevice.SetRasterizerState(EnableBackColor || ShowBackface ? graphicsDevice.RasterizerStates.WireFrame : graphicsDevice.RasterizerStates.WireFrameCullBack);
-                graphicsDevice.SetDepthStencilState(graphicsDevice.DepthStencilStates.None);
+                graphicsDevice.SetDepthStencilState(graphicsDevice.DepthStencilStates.Default);
 
                 base.DrawCore(context);
             }
