@@ -256,7 +256,7 @@ namespace SiliconStudio.Paradox.Rendering
                     var projectedZ = projectedPosition.Z / projectedPosition.W;
 
                     // TODO: Should this be set somewhere else?
-                    var rasterizerState = cameraRenderMode != null ? cameraRenderMode.GetDefaultRasterizerState(renderMesh.RenderModel.IsGeometryInverted) : null;
+                    var rasterizerState = cameraRenderMode != null ? cameraRenderMode.GetDefaultRasterizerState(renderMesh.IsGeometryInverted) : null;
                     renderMesh.RasterizerState = RasterizerState ?? rasterizerState;
 
                     renderMesh.UpdateMaterial();

@@ -154,10 +154,11 @@ namespace SiliconStudio.Paradox.Engine
             }
         }
 
-        internal void Update(ref Matrix worldMatrix)
+        internal void Update(ref Matrix worldMatrix, bool isScalingNegative)
         {
             // Update model view hierarchy node matrices
             modelViewHierarchy.NodeTransformations[0].LocalMatrix = worldMatrix;
+            modelViewHierarchy.NodeTransformations[0].IsScalingNegative = isScalingNegative;
             modelViewHierarchy.UpdateMatrices();
 
             // Update the bounding sphere / bounding box in world space
