@@ -41,6 +41,7 @@ Release date: 2015/07/XX
 - Engine: Fixed an issue where space in shadow maps would not be correcly allocated.
 - Engine: Meshes inside a model with negative scaling did not have their faces inverted.
 - Shaders: Ambient occlusion now correctly affects ambient light.
+- VisualStudio: The SDK version used by the extension is changed based on the version of the package associated with the current solutions. ([#224](https://github.com/SiliconStudio/paradox/issues/224)).
 
 #### Breaking changes
 - Assets: Texture default transparency mode changes from `None` to `Auto`.
@@ -49,6 +50,7 @@ Release date: 2015/07/XX
 - Engine: The `Sprite` and `UIImage` classes have been merged into one single `Sprite` class.
 - Engine: The sprite `ExtrusionMethod` field have been removed and replaced by a `PixelsPerUnit` field in the sprites.
 - Engine: Sprites are drawn by default with depth test enabled.
+- Engine: Script (and AsyncScript) no longer provide a Start method. Start is now part of the StartupScript class.
 
 #### Known Issues
 - UI: EditText is not implemented on Windows Store and Windows Phone.
