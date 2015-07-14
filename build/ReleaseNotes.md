@@ -29,6 +29,7 @@ Release date: 2015/XX/XX
 - Engine: Fixed an issue that prevented frustum culling from working.
 - Engine: Fixed a crash when members of scripts could not be serialized. The members are now ignored and a warning is generated. ([#228](https://github.com/SiliconStudio/paradox/issues/228)).
 - Engine: Fixed an issue where space in shadow maps would not be correcly allocated.
+- Engine: Meshes inside a model with negative scaling did not have their faces inverted.
 - Shaders: Ambient occlusion now correctly affects ambient light.
 
 #### Breaking changes
