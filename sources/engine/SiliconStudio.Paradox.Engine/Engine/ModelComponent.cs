@@ -121,7 +121,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets the parameters used to render this mesh.
         /// </summary>
         /// <value>The parameters.</value>
-        [DataMember(50)]
+        [DataMemberIgnore]
         public ParameterCollection Parameters { get; private set; }
 
         /// <summary>
