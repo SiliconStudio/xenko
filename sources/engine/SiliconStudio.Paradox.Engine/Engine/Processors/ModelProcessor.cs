@@ -127,7 +127,12 @@ namespace SiliconStudio.Paradox.Engine.Processors
 
                 var links = renderModel.Links;
 
-                modelComponent.Update(ref transformationComponent.WorldMatrix);
+                Vector3 scale, translation;
+                Matrix rotation;
+                bool isScalingNegative = false;
+                if (transformationComponent.WorldMatrix.Decompose(out scale, out rotation, out translation))
+                    isScalingNegative = scale.X * scale.Y * scale.Z < 0.0f;
+                modelComponent.Update(ref transformationComponent.WorldMatrix, isScalingNegative);
 
                 if (links != null)
                 {
