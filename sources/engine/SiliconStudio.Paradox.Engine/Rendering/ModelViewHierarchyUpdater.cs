@@ -127,6 +127,7 @@ namespace SiliconStudio.Paradox.Rendering
                 if (enabled)
                 {
                     renderMesh.WorldMatrix = nodeTransformationsLocal[nodeIndex].WorldMatrix;
+                    renderMesh.IsGeometryInverted = nodeTransformationsLocal[nodeIndex].IsScalingNegative;
                 }
             }
         }
@@ -146,7 +147,9 @@ namespace SiliconStudio.Paradox.Rendering
             // Compute LocalMatrix
             if ((node.Flags & ModelNodeFlags.EnableTransform) == ModelNodeFlags.EnableTransform)
             {
-                TransformComponent.CreateMatrixTRS(ref node.Transform.Translation, ref node.Transform.Rotation, ref node.Transform.Scaling, out node.LocalMatrix);
+                var scaling = node.Transform.Scaling;
+                TransformComponent.CreateMatrixTRS(ref node.Transform.Translation, ref node.Transform.Rotation, ref scaling, out node.LocalMatrix);
+                node.IsScalingNegative = scaling.X * scaling.Y * scaling.Z < 0.0f;
             }
 
             var nodeTransformationsLocal = this.nodeTransformations;
@@ -164,7 +167,11 @@ namespace SiliconStudio.Paradox.Rendering
             {
                 // Compute WorldMatrix
                 if (parentIndex != -1)
+                {
                     Matrix.Multiply(ref node.LocalMatrix, ref nodeTransformationsLocal[parentIndex].WorldMatrix, out node.WorldMatrix);
+                    if (nodeTransformationsLocal[parentIndex].IsScalingNegative)
+                        node.IsScalingNegative = !node.IsScalingNegative;
+                }
                 else
                     node.WorldMatrix = node.LocalMatrix;
             }

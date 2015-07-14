@@ -37,8 +37,9 @@ namespace SiliconStudio.Paradox.Rendering.Sprites
         }
 
         /// <summary>
-        /// The texture of representing the sprite
+        /// Gets or sets the texture of representing the sprite
         /// </summary>
+        /// <userdoc>Specify the texture to use as sprite</userdoc>
         [DataMember(5)]
         [InlineProperty]
         public Texture Texture
@@ -52,11 +53,10 @@ namespace SiliconStudio.Paradox.Rendering.Sprites
         }
 
         /// <summary>
-        /// The position of the center of the image in pixels.
+        /// Gets or sets the value specifying the size of one pixel in scene units
         /// </summary>
         /// <userdoc>
-        /// The position of the center of the sprite in pixels. 
-        /// Depending on the value of 'CenterFromMiddle', it is the offset from the top/left corner or the middle of the image.
+        /// Specify the size in pixels of one unit in the scene.
         /// </userdoc>
         [DataMember(8)]
         [DefaultValue(100)]

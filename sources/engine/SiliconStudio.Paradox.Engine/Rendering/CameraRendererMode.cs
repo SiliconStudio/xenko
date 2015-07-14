@@ -3,10 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Design;
 using SiliconStudio.Paradox.Graphics;
@@ -44,6 +42,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// Gets or sets the effect to use to render the models in the scene.
         /// </summary>
         /// <value>The main model effect.</value>
+        /// <userdoc>The name of the effect to use to render models (a '.pdxsl' or '.pdxfx' filename without the extension).</userdoc>
         [DataMember(10)]
         public abstract string ModelEffect { get; set; }// TODO: This is not a good extensibility point. Check how to improve this
 

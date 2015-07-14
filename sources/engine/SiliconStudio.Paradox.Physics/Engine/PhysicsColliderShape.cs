@@ -7,7 +7,6 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Design;
 
 namespace SiliconStudio.Paradox.Physics

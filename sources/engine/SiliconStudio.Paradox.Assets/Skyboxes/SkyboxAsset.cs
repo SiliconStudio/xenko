@@ -44,6 +44,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
         /// Gets or sets the type of skybox.
         /// </summary>
         /// <value>The type of skybox.</value>
+        /// <userdoc>The source to use as skybox</userdoc>
         [DataMember(10)]
         [NotNull]
         [Display("Type", Expand = ExpandRule.Always)]
@@ -53,6 +54,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
         /// Gets or sets the diffuse sh order.
         /// </summary>
         /// <value>The diffuse sh order.</value>
+        /// <userdoc>Specify the order of the accuracy of spherical harmonics used to calculate the irradiance of the skybox</userdoc>
         [DefaultValue(SkyboxPreFilteringDiffuseOrder.Order3)]
         [Display("Diffuse SH Order")]
         [DataMember(20)]
@@ -62,6 +64,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
         /// Gets or sets the diffuse sh order.
         /// </summary>
         /// <value>The diffuse sh order.</value>
+        /// <userdoc>Specify the size of the irradiance cube map used for the specular lighting</userdoc>
         [DefaultValue(256)]
         [Display("Specular CubeMap Size")]
         [DataMember(30)]

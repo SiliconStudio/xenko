@@ -1,5 +1,6 @@
 !MaterialAsset
 Id: 3c6d4404-3e52-47a7-9161-9341e5ccba93
+SerializedVersion: 1
 Tags: []
 Attributes:
     Tessellation: !MaterialTessellationPNFeature
@@ -20,4 +21,3 @@ Attributes:
     Overrides:
         UVScale: {X: 1, Y: 1}
 Layers: []
-Parameters: {}

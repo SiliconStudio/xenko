@@ -3,7 +3,7 @@
 
 using System;
 
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Rendering
 {
@@ -14,6 +14,12 @@ namespace SiliconStudio.Paradox.Rendering
     {
         public virtual bool SupportPicking { get { return false; } }
 
+        /// <summary>
+        /// Gets the current culling mask.
+        /// </summary>
+        /// <value>The current culling mask.</value>
+        public EntityGroupMask CurrentCullingMask { get; set; }
+
         public void Prepare(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
             if (Context == null)
@@ -23,6 +29,11 @@ namespace SiliconStudio.Paradox.Rendering
             else if (Context != context)
             {
                 throw new InvalidOperationException("Cannot use a different context between Load and Draw");
+            }
+
+            if (SceneCameraRenderer != null)
+            {
+                CurrentCullingMask = SceneCameraRenderer.CullingMask;
             }
 
             PrepareCore(context, opaqueList, transparentList);

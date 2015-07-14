@@ -27,10 +27,10 @@ namespace SiliconStudio.Paradox.Engine.Design
         }
 
         /// <summary>
-        /// Gets or sets the color of the background.
+        /// Gets or sets the color of the grid.
         /// </summary>
-        /// <value>The color of the background.</value>
-        /// <userdoc>The background color used by the editor view</userdoc>
+        /// <value>The color of the grid.</value>
+        /// <userdoc>The color of the grid used in scene editor</userdoc>
         [DataMember(5)]
         public Color3 GridColor { get; set; }
 
@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Engine.Design
         /// Gets or sets the scene unit, used to scale entity gizmos and camera speed.
         /// </summary>
         /// <value>The color of the background.</value>
-        /// <userdoc>The scene unit, used to scale entity gizmos and camera speed.</userdoc>
+        /// <userdoc>The scene unit, used to scale gizmos and camera speed.</userdoc>
         [DataMember(7)]
         public float SceneUnit { get; set; }
 
@@ -46,6 +46,7 @@ namespace SiliconStudio.Paradox.Engine.Design
         /// Gets or sets the camera.
         /// </summary>
         /// <value>The camera.</value>
+        /// <userdoc>The settings for the camera used in the scene editor</userdoc>
         [DataMember(10)]
         [NotNull]
         [Display("Camera", Expand = ExpandRule.Always)]
@@ -55,7 +56,7 @@ namespace SiliconStudio.Paradox.Engine.Design
         /// Gets or sets a value indicating whether to use HDR when displaying a scene in the editor.
         /// </summary>
         /// <value><c>true</c> if [use HDR]; otherwise, <c>false</c>.</value>
-        /// <userdoc>Use HDR rendering when displaying a scene in the editor</userdoc>
+        /// <userdoc>Specifies the type of rendering used in the scene editor. Basically, specifies if the scene editor should run in LDR or HDR mode.</userdoc>
         [DataMember(20)]
         [NotNull]
         [Display("Rendering Mode", Expand = ExpandRule.Always)]

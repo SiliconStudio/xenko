@@ -41,6 +41,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets the child scene.
         /// </summary>
         /// <value>The scene.</value>
+        /// <userdoc>The reference to the scene to render. Any scene can be selected except the containing one.</userdoc>
         [DataMember(10)]
         public Scene Scene { get; set; }
 

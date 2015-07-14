@@ -45,6 +45,7 @@ namespace SiliconStudio.Paradox.Rendering
         public RasterizerState RasterizerState;
 
         public bool HasTransparency { get; private set; }
+        public bool IsGeometryInverted;
 
         public Matrix WorldMatrix;
 

@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("SceneComponent")]
     [DefaultEntityComponentProcessor(typeof(SceneProcessor))]
-    [Display(-100, "Scene", Expand = ExpandRule.Once)]
+    [Display(10000, "Scene", Expand = ExpandRule.Once)]
     public sealed class SceneComponent : EntityComponent
     {
         public readonly static PropertyKey<SceneComponent> Key = new PropertyKey<SceneComponent>("Key", typeof(SceneComponent),
@@ -35,6 +35,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets the graphics composer for this scene.
         /// </summary>
         /// <value>The graphics composer.</value>
+        /// <userdoc>The compositor in charge of creating the graphic pipeline</userdoc>
         [DataMember(10)]
         [Display("Graphics Composition", Expand = ExpandRule.Always)]
         [NotNull]
@@ -45,6 +46,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets the editor settings.
         /// </summary>
         /// <value>The editor settings.</value>
+        /// <userdoc>Settings for the scene editor</userdoc>
         [DataMember(20)]
         [Display("Editor Settings", Expand = ExpandRule.Always)]
         [Category]

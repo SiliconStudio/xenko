@@ -3,10 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Games;
@@ -18,6 +18,8 @@ namespace SiliconStudio.Paradox.Engine.Processors
     /// </summary>
     public sealed class ScriptSystem : GameSystemBase
     {
+        public readonly static Logger Log = GlobalLogger.GetLogger("ScriptSystem");
+
         /// <summary>
         /// Contains all currently executed scripts
         /// </summary>
@@ -55,7 +57,18 @@ namespace SiliconStudio.Paradox.Engine.Processors
             foreach (var script in scriptsToStartCopy)
             {
                 // Start the script
-                script.Start();
+                var startupScript = script as StartupScript;
+                if (startupScript != null)
+                {
+                    try
+                    {
+                        startupScript.Start();
+                    }
+                    catch (Exception exception)
+                    {
+                        HandleSynchonousException(script, exception);
+                    }
+                }
 
                 // Start a microthread with execute method if it's an async script
                 var asyncScript = script as AsyncScript;
@@ -69,13 +82,27 @@ namespace SiliconStudio.Paradox.Engine.Processors
             // Run current micro threads
             Scheduler.Run();
 
+            // Flag scripts as not being live reloaded after starting/executing them for the first time
+            foreach (var script in scriptsToStartCopy)
+            {
+                if (script.IsLiveReloading)
+                    script.IsLiveReloading = false;
+            }
+
             syncScriptsCopy.Clear();
             syncScriptsCopy.AddRange(syncScripts);
 
             // Execute sync scripts
             foreach (var script in syncScriptsCopy)
             {
-                script.Update();
+                try
+                {
+                    script.Update();
+                }
+                catch (Exception exception)
+                {
+                    HandleSynchonousException(script, exception);
+                }
             }
         }
 
@@ -135,8 +162,49 @@ namespace SiliconStudio.Paradox.Engine.Processors
         public void Remove(Script script)
         {
             // Make sure it's not registered in any pending list
-            scriptsToStart.Remove(script);
+            var startWasPending = scriptsToStart.Remove(script);
+            var wasRegistered = registeredScripts.Remove(script);
 
+            if (!startWasPending && wasRegistered)
+            {
+                // Cancel scripts that were already started
+                var startupScript = script as StartupScript;
+                if (startupScript != null)
+                    startupScript.Cancel();
+
+                // TODO: Cancel async script execution
+            }
+
+            var syncScript = script as SyncScript;
+            if (syncScript != null)
+            {
+                syncScripts.Remove(syncScript);
+            }
+        }
+
+        /// <summary>
+        /// Called by a live scripting debugger to notify the ScriptSystem about reloaded scripts.
+        /// </summary>
+        /// <param name="oldScript">The old script</param>
+        /// <param name="newScript">The new script</param>
+        public void LiveReload(Script oldScript, Script newScript)
+        {
+            // Set live reloading mode for the rest of it's lifetime
+            oldScript.IsLiveReloading = true;
+
+            // Set live reloading mode until after being started
+            newScript.IsLiveReloading = true;
+        }
+
+        private void HandleSynchonousException(Script script, Exception exception)
+        {
+            Log.Error("Unexpected exception while executing a script. Reason: {0}", new object[] { exception });
+
+            // Only crash if live scripting debugger is not listening
+            if (Scheduler.PropagateExceptions)
+                ExceptionDispatchInfo.Capture(exception).Throw();
+
+            // Remove script from all lists
             var syncScript = script as SyncScript;
             if (syncScript != null)
             {

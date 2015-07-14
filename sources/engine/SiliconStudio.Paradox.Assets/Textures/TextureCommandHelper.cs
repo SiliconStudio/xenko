@@ -143,16 +143,12 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// Determine the output format of the texture depending on the platform and asset properties.
         /// </summary>
         /// <param name="parameters">The conversion request parameters</param>
-        /// <param name="platform">The platform for which the texture is compiled</param>
-        /// <param name="graphicsPlatform">The graphics platform</param>
-        /// <param name="graphicsProfile">The graphics profile</param>
         /// <param name="imageSize">The texture output size</param>
         /// <param name="inputImageFormat">The pixel format of the input image</param>
         /// <param name="textureAsset">The texture asset</param>
         /// <param name="alphaDepth">The depth of the alpha channel</param>
         /// <returns>The pixel format to use as output</returns>
-        public static PixelFormat DetermineOutputFormat(TextureAsset textureAsset, TextureConvertParameters parameters, Int2 imageSize, PixelFormat inputImageFormat, PlatformType platform, GraphicsPlatform graphicsPlatform,
-            GraphicsProfile graphicsProfile, int alphaDepth)
+        public static PixelFormat DetermineOutputFormat(TextureAsset textureAsset, TextureConvertParameters parameters, Int2 imageSize, PixelFormat inputImageFormat, int alphaDepth)
         {
             if (textureAsset.SRgb && ((int)parameters.GraphicsProfile < (int)GraphicsProfile.Level_9_2 && parameters.GraphicsPlatform != GraphicsPlatform.Direct3D11))
                 throw new NotSupportedException("sRGB is not supported on OpenGl profile level {0}".ToFormat(parameters.GraphicsProfile));
@@ -194,7 +190,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                             }
                             else
                             {
-                                switch (graphicsProfile)
+                                switch (parameters.GraphicsProfile)
                                 {
                                     case GraphicsProfile.Level_9_1:
                                     case GraphicsProfile.Level_9_2:
@@ -210,7 +206,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                                         outputFormat = alphaMode == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.ETC2_RGBA;
                                         break;
                                     default:
-                                        throw new ArgumentOutOfRangeException("graphicsProfile");
+                                        throw new ArgumentOutOfRangeException("GraphicsProfile");
                                 }
                             }
                             break;
@@ -325,7 +321,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                                     }
                                     else
                                     {
-                                        switch (graphicsProfile)
+                                        switch (parameters.GraphicsProfile)
                                         {
                                             case GraphicsProfile.Level_9_1:
                                             case GraphicsProfile.Level_9_2:
@@ -341,7 +337,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                                                 outputFormat = alphaMode == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.ETC2_RGBA;
                                                 break;
                                             default:
-                                                throw new ArgumentOutOfRangeException("graphicsProfile");
+                                                throw new ArgumentOutOfRangeException("GraphicsProfile");
                                         }
                                     }
                                     break;
@@ -407,7 +403,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                 // Resize the image
                 if (textureAsset.IsSizeInPercentage)
                 {
-                    targetSize = new Size2((int)(fromSize.Width * (float)textureAsset.Width / 100.0f), (int)(fromSize.Height * (float) textureAsset.Height / 100.0f));
+                    targetSize = new Size2((int)(fromSize.Width * textureAsset.Width / 100.0f), (int)(fromSize.Height * textureAsset.Height / 100.0f));
                 }
 
                 // Find the target size
@@ -454,7 +450,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
 
                 // Convert/Compress to output format
                 // TODO: Change alphaFormat depending on actual image content (auto-detection)?
-                var outputFormat = DetermineOutputFormat(textureAsset, parameters, textureSize, texImage.Format, parameters.Platform, parameters.GraphicsPlatform, parameters.GraphicsProfile, texImage.GetAlphaDepth());
+                var outputFormat = DetermineOutputFormat(textureAsset, parameters, textureSize, texImage.Format, texImage.GetAlphaDepth());
                 texTool.Compress(texImage, outputFormat, (TextureConverter.Requests.TextureQuality)parameters.TextureQuality);
 
                 if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded

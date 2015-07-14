@@ -14,11 +14,13 @@ namespace SiliconStudio.Paradox.Engine.Processors
         /// <summary>
         /// A perspective projection.
         /// </summary>
+        /// <userdoc>A perspective projection (usually used for 3D games).</userdoc>
         Perspective,
 
         /// <summary>
         /// An orthographic projection.
         /// </summary>
+        /// <userdoc>An orthographic projection (usually used for 2D games).</userdoc>
         Orthographic
     }
 }

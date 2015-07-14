@@ -3,7 +3,6 @@
 
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
-using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Rendering
 {

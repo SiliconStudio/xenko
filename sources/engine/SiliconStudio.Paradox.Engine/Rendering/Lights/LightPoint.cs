@@ -23,13 +23,14 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         public LightPoint()
         {
             Radius = 1.0f;
-            Shadow = new LightStandardShadowMap() { Importance = LightShadowImportance.Low };
+            Shadow = new LightStandardShadowMap { Importance = LightShadowImportance.Low };
         }
 
         /// <summary>
         /// Gets or sets the radius of influence of this light.
         /// </summary>
         /// <value>The range.</value>
+        /// <userdoc>The radius range of the point light in scene units.</userdoc>
         [DataMember(10)]
         [DefaultValue(1.0f)]
         public float Radius{ get; set; }

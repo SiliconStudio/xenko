@@ -86,6 +86,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// Gets the gamma transform that is applied after all <see cref="Transforms"/>
         /// </summary>
         /// <value>The gamma transform.</value>
+        /// <userdoc>Converts the colors from the linear-space to the gamma-space. This re-adjusts the levels white and black to properly display on monitors and TV screens.</userdoc>
         [DataMember(20)]
         public GammaTransform GammaTransform
         {

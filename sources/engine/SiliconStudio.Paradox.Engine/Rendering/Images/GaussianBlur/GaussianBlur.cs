@@ -5,7 +5,6 @@ using System;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Rendering.Images
@@ -66,6 +65,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// Gets or sets the radius.
         /// </summary>
         /// <value>The radius.</value>
+        /// <userdoc>The radius of the Gaussian in pixels</userdoc>
         [DataMember(10)]
         public int Radius
         {
@@ -93,6 +93,8 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// formula is <c>sigma = radius / SigmaRatio</c>. The default value is 2.0f.
         /// </summary>
         /// <value>The sigma ratio.</value>
+        /// <userdoc>The sigma ratio of the Gaussian. The sigma ratio is used to calculate the sigma of the Gaussian. 
+        /// The actual formula is <c>sigma = radius / SigmaRatio</c></userdoc>
         [DataMember(20)]
         public float SigmaRatio
         {

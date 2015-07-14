@@ -47,18 +47,21 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// The translation relative to the parent transformation.
         /// </summary>
+        /// <userdoc>The translation of the entity with regard to its parent</userdoc>
         [DataMember(10)]
         public Vector3 Position;
 
         /// <summary>
         /// The rotation relative to the parent transformation.
         /// </summary>
+        /// <userdoc>The rotation of the entity with regard to its parent</userdoc>
         [DataMember(20)]
         public Quaternion Rotation;
 
         /// <summary>
         /// The scaling relative to the parent transformation.
         /// </summary>
+        /// <userdoc>The scale of the entity with regard to its parent</userdoc>
         [DataMember(30)]
         public Vector3 Scale;
 

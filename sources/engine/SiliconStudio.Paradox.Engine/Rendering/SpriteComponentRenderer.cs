@@ -144,7 +144,7 @@ namespace SiliconStudio.Paradox.Rendering
                 }
 
                 // apply the offset due to the center of the sprite
-                var normalizedCenter = new Vector2(sprite.SizeInternal.X * (sprite.Center.X / sourceRegion.Width - 0.5f), sprite.SizeInternal.Y * (sprite.Center.Y / sourceRegion.Height - 0.5f));
+                var normalizedCenter = new Vector2(sprite.SizeInternal.X * (sprite.Center.X / sourceRegion.Width - 0.5f), sprite.SizeInternal.Y * (0.5f - sprite.Center.Y / sourceRegion.Height));
                 worldMatrix.M41 -= normalizedCenter.X * worldMatrix.M11 + normalizedCenter.Y * worldMatrix.M21;
                 worldMatrix.M42 -= normalizedCenter.X * worldMatrix.M12 + normalizedCenter.Y * worldMatrix.M22;
                 worldMatrix.M43 -= normalizedCenter.X * worldMatrix.M13 + normalizedCenter.Y * worldMatrix.M23; 

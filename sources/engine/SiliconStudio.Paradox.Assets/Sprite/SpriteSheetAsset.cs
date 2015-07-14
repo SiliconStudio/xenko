@@ -129,7 +129,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
         /// Gets or sets the sprites of the sheet.
         /// </summary>
         /// <userdoc>
-        /// The list of images of the sheet to import.
+        /// The list of sprites composing the sheet.
         /// </userdoc>
         [DataMember(150)]
         [Category]

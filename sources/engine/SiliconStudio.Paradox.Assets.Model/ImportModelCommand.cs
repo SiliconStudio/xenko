@@ -189,6 +189,19 @@ namespace SiliconStudio.Paradox.Assets.Model
                             {
                                 var transformationMatrix = GetMatrixFromIndex(model.Hierarchy.Nodes, hierarchyUpdater, meshList.Key, mesh.NodeIndex);
                                 mesh.Draw.VertexBuffers[0].TransformBuffer(ref transformationMatrix);
+
+                                // Check if geometry is inverted, to know if we need to reverse winding order
+                                // TODO: What to do if there is no index buffer? We should create one... (not happening yet)
+                                if (mesh.Draw.IndexBuffer == null)
+                                    throw new InvalidOperationException();
+
+                                Matrix rotation;
+                                Vector3 scale, translation;
+                                if (transformationMatrix.Decompose(out scale, out rotation, out translation)
+                                    && scale.X*scale.Y*scale.Z < 0)
+                                {
+                                    mesh.Draw.ReverseWindingOrder();
+                                }
                             }
 
                             // refine the groups base on several tests
