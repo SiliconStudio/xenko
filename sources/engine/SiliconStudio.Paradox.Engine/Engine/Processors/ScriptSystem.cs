@@ -3,8 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.MicroThreading;
@@ -58,7 +57,14 @@ namespace SiliconStudio.Paradox.Engine.Processors
                 var startupScript = script as StartupScript;
                 if (startupScript != null)
                 {
-                    startupScript.Start();
+                    try
+                    {
+                        startupScript.Start();
+                    }
+                    catch (Exception exception)
+                    {
+                        HandleSynchonousException(script, exception);
+                    }
                 }
 
                 // Start a microthread with execute method if it's an async script
@@ -86,7 +92,14 @@ namespace SiliconStudio.Paradox.Engine.Processors
             // Execute sync scripts
             foreach (var script in syncScriptsCopy)
             {
-                script.Update();
+                try
+                {
+                    script.Update();
+                }
+                catch (Exception exception)
+                {
+                    HandleSynchonousException(script, exception);
+                }
             }
         }
 
@@ -147,7 +160,9 @@ namespace SiliconStudio.Paradox.Engine.Processors
         {
             // Make sure it's not registered in any pending list
             var startWasPending = scriptsToStart.Remove(script);
-            if (!startWasPending)
+            var wasRegistered = registeredScripts.Remove(script);
+
+            if (!startWasPending && wasRegistered)
             {
                 // Cancel scripts that were already started
                 var startupScript = script as StartupScript;
@@ -162,8 +177,6 @@ namespace SiliconStudio.Paradox.Engine.Processors
             {
                 syncScripts.Remove(syncScript);
             }
-
-            registeredScripts.Remove(script);
         }
 
         /// <summary>
@@ -178,6 +191,22 @@ namespace SiliconStudio.Paradox.Engine.Processors
 
             // Set live reloading mode until after being started
             newScript.IsLiveReloading = true;
+        }
+
+        private void HandleSynchonousException(Script script, Exception exception)
+        {
+            // Only crash if live scripting debugger is not listening
+            if (Scheduler.PropagateExceptions)
+                ExceptionDispatchInfo.Capture(exception).Throw();
+
+            // Remove script from all lists
+            var syncScript = script as SyncScript;
+            if (syncScript != null)
+            {
+                syncScripts.Remove(syncScript);
+            }
+
+            registeredScripts.Remove(script);
         }
     }
 }
