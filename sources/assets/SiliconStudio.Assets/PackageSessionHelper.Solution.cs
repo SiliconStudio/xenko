@@ -12,7 +12,7 @@ using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets
 {
-    public partial class PackageSessionHelper
+    internal partial class PackageSessionHelper
     {
         private const string SiliconStudioPackage = "SiliconStudioPackage";
 

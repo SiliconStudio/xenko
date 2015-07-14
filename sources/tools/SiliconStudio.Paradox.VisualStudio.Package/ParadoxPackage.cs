@@ -235,26 +235,34 @@ namespace SiliconStudio.Paradox.VisualStudio
             var paradoxPackageInfo = ParadoxCommandsProxy.ParadoxPackageInfo;
             if (paradoxPackageInfo.ExpectedVersion != null && paradoxPackageInfo.ExpectedVersion != paradoxPackageInfo.LoadedVersion)
             {
-                if (paradoxPackageInfo.LoadedVersion == null)
+                if (paradoxPackageInfo.ExpectedVersion < ParadoxCommandsProxy.MinimumVersion)
                 {
+                    // The package version is deprecated
+                    generalOutputPane.OutputStringThreadSafe(string.Format("Could not initialize Paradox extension for package with version {0}. Versions earlier than {1} are not supported. Loading latest version {2} instead.\r\n",  paradoxPackageInfo.ExpectedVersion, ParadoxCommandsProxy.MinimumVersion, paradoxPackageInfo.LoadedVersion));
+                    generalOutputPane.Activate();
+                }
+                else if (paradoxPackageInfo.LoadedVersion == null)
+                {
+                    // No version found
                     generalOutputPane.OutputStringThreadSafe("Could not find Paradox SDK directory.");
                     generalOutputPane.Activate();
                 }
                 else
                 {
-                    generalOutputPane.OutputStringThreadSafe(string.Format("Could not find SDK directory for Paradox version {0}. Version {1} is loaded instead.\r\n", paradoxPackageInfo.ExpectedVersion, paradoxPackageInfo.LoadedVersion));
+                    // The package version was not found
+                    generalOutputPane.OutputStringThreadSafe(string.Format("Could not find SDK directory for Paradox version {0}. Loading latest version {1} instead.\r\n", paradoxPackageInfo.ExpectedVersion, paradoxPackageInfo.LoadedVersion));
                     generalOutputPane.Activate();
                 }
             }
 
             try
             {
-                // Start PackageBuildMonitorRemote in a separate app domain (and unload the domain of the previous solution)
+                // Start PackageBuildMonitorRemote in a separate app domain
                 if (buildMonitorDomain != null)
                     AppDomain.Unload(buildMonitorDomain);
 
-                // This is using the commands assembly of the latest package
                 buildMonitorDomain = ParadoxCommandsProxy.CreateParadoxDomain();
+                ParadoxCommandsProxy.InitialzeFromSolution(solutionPath, buildMonitorDomain);
                 var remoteCommands = ParadoxCommandsProxy.CreateProxy(buildMonitorDomain);
                 remoteCommands.StartRemoteBuildLogServer(new BuildMonitorCallback(dte2), buildLogPipeGenerator.LogPipeUrl);
             }

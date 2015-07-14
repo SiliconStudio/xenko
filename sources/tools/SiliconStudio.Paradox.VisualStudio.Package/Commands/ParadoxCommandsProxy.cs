@@ -17,6 +17,8 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
     /// </summary>
     public class ParadoxCommandsProxy : MarshalByRefObject, IParadoxCommands
     {
+        public static readonly Version MinimumVersion = new Version(1, 1);
+
         public struct PackageInfo
         {
             public string SdkPath;
@@ -210,7 +212,6 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
 
         public byte[] GenerateShaderKeys(string inputFileName, string inputFileContent)
         {
-            Debugger.Launch();
             return remote.GenerateShaderKeys(inputFileName, inputFileContent);
         }
 
@@ -226,6 +227,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
             // when casting to ParadoxCommandsProxy in the ParadoxCommandsProxy.GetProxy method
             var executingAssembly = Assembly.GetExecutingAssembly();
 
+            // Redirect requests for earlier package versions to the current one
             var assemblyName = new AssemblyName(args.Name);
             if (assemblyName.Name == executingAssembly.GetName().Name)
                 return executingAssembly;
@@ -253,7 +255,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
 
             // PCL System assemblies are using version 2.0.5.0 while we have a 4.0
             // Redirect the PCL to use the 4.0 from the current app domain.
-            if (assemblyName.Name.StartsWith("System"))
+            if (assemblyName.Name.StartsWith("System") && (assemblyName.Flags & AssemblyNameFlags.Retargetable) != 0)
             {
                 var systemCoreAssembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(assembly => assembly.GetName().Name == assemblyName.Name);
                 return systemCoreAssembly;
@@ -309,7 +311,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
                 IPackage paradoxPackage = null;
 
                 // Try to find the package with the expected version
-                if (packageInfo.ExpectedVersion != null)
+                if (packageInfo.ExpectedVersion != null && packageInfo.ExpectedVersion >= MinimumVersion)
                     paradoxPackage = store.GetPackagesInstalled(store.MainPackageId).FirstOrDefault(package => GetVersion(package) == packageInfo.ExpectedVersion);
 
                 // If the expected version is not found, get the latest package

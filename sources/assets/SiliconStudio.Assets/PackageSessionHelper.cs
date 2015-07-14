@@ -14,7 +14,7 @@ namespace SiliconStudio.Assets
     /// <summary>
     /// Helper class to load/save a VisualStudio solution.
     /// </summary>
-    public partial class PackageSessionHelper
+    internal partial class PackageSessionHelper
     {
         private const string SolutionHeader = @"Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
