@@ -64,9 +64,9 @@ namespace SiliconStudio.Paradox.Engine.Processors
                     {
                         startupScript.Start();
                     }
-                    catch (Exception exception)
+                    catch (Exception e)
                     {
-                        HandleSynchonousException(script, exception);
+                        HandleSynchronousException(script, e);
                     }
                 }
 
@@ -99,9 +99,9 @@ namespace SiliconStudio.Paradox.Engine.Processors
                 {
                     script.Update();
                 }
-                catch (Exception exception)
+                catch (Exception e)
                 {
-                    HandleSynchonousException(script, exception);
+                    HandleSynchronousException(script, e);
                 }
             }
         }
@@ -170,7 +170,16 @@ namespace SiliconStudio.Paradox.Engine.Processors
                 // Cancel scripts that were already started
                 var startupScript = script as StartupScript;
                 if (startupScript != null)
-                    startupScript.Cancel();
+                {
+                    try
+                    {
+                        startupScript.Cancel();
+                    }
+                    catch (Exception e)
+                    {
+                        HandleSynchronousException(script, e);
+                    }
+                }
 
                 // TODO: Cancel async script execution
             }
@@ -196,13 +205,13 @@ namespace SiliconStudio.Paradox.Engine.Processors
             newScript.IsLiveReloading = true;
         }
 
-        private void HandleSynchonousException(Script script, Exception exception)
+        private void HandleSynchronousException(Script script, Exception e)
         {
-            Log.Error("Unexpected exception while executing a script. Reason: {0}", new object[] { exception });
+            Log.Error("Unexpected exception while executing a script. Reason: {0}", new object[] { e });
 
             // Only crash if live scripting debugger is not listening
             if (Scheduler.PropagateExceptions)
-                ExceptionDispatchInfo.Capture(exception).Throw();
+                ExceptionDispatchInfo.Capture(e).Throw();
 
             // Remove script from all lists
             var syncScript = script as SyncScript;
