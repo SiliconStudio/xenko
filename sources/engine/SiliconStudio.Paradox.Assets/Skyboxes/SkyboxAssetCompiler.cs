@@ -4,12 +4,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
+using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Paradox.Assets.Textures;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Assets.Skyboxes
 {
@@ -17,18 +19,38 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SkyboxAsset asset, AssetCompilerResult result)
         {
-            result.ShouldWaitForPreviousBuilds = true;
-            result.BuildSteps = new AssetBuildStep(AssetItem) { new SkyboxCompileCommand(urlInStorage, asset, context.Package) };
+            result.BuildSteps = new AssetBuildStep(AssetItem);
+
+            // build the textures for windows (needed for skybox compilation)
+            foreach (var dependency in asset.Model.GetDependencies())
+            {
+                var assetItem = context.Package.Assets.Find(dependency.Id);
+                if (assetItem != null && assetItem.Asset is TextureAsset)
+                {
+                    var textureAsset = (TextureAsset)assetItem.Asset;
+
+                    // Get absolute path of asset source on disk
+                    var assetSource = GetAbsolutePath(assetItem.Location.GetDirectoryAndFileName(), textureAsset.Source);
+
+                    // Create a synthetic url
+                    var textureUrl = SkyboxGenerator.BuildTextureForSkyboxGenerationLocation(assetItem.Location);
+
+                    // Create and add the texture command.
+                    var textureParameters = new TextureConvertParameters(assetSource, textureAsset, PlatformType.Windows, GraphicsPlatform.Direct3D11, GraphicsProfile.Level_10_0, context.GetTextureQuality());
+                    result.BuildSteps.Add(new AssetBuildStep(AssetItem) { new TextureAssetCompiler.TextureConvertCommand(textureUrl, textureParameters) });
+                }
+            }
+
+            // add the skybox command itself.
+            result.BuildSteps.Add(new WaitBuildStep());
+            result.BuildSteps.Add(new SkyboxCompileCommand(urlInStorage, asset));
         }
 
         private class SkyboxCompileCommand : AssetCommand<SkyboxAsset>
         {
-            private readonly Package package;
-
-            public SkyboxCompileCommand(string url, SkyboxAsset assetParameters, Package package)
+            public SkyboxCompileCommand(string url, SkyboxAsset assetParameters)
                 : base(url, assetParameters)
             {
-                this.package = package;
             }
 
             /// <inheritdoc/>

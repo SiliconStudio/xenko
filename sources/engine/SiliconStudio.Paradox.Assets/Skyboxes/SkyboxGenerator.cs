@@ -78,7 +78,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
 
                 // load the skybox texture from the asset.
                 var reference = AttachedReferenceManager.GetAttachedReference(cubemap);
-                var skyboxTexture = context.Assets.Load<Texture>(reference.Url);
+                var skyboxTexture = context.Assets.Load<Texture>(BuildTextureForSkyboxGenerationLocation(reference.Url));
                 if (skyboxTexture.Dimension != TextureDimension.TextureCube)
                 {
                     result.Error("SkyboxGenerator: The texture used as skybox should be a Cubemap.");
@@ -180,6 +180,11 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
             }
 
             return result;
+        }
+
+        public static string BuildTextureForSkyboxGenerationLocation(string textureLocation)
+        {
+            return textureLocation + "__ForSkyboxCompilation__";
         }
     }
 }
