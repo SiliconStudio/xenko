@@ -110,6 +110,51 @@ namespace SiliconStudio.Paradox.Assets
 
             solutionPlatforms.Add(windowsStorePlatform);
 
+            // Windows 10
+            var windows10Platform = new SolutionPlatform()
+            {
+                Name = PlatformType.Windows10.ToString(),
+                DisplayName = "Windows 10",
+                Type = PlatformType.Windows10,
+                IsAvailable = IsFileInProgramFilesx86Exist(Windows10UniversalRuntimeBuild),
+                UseWithExecutables = false,
+                IncludeInSolution = false,
+            };
+
+            windows10Platform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS");
+            windows10Platform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME");
+            windows10Platform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS_10");
+            windows10Platform.Properties[GraphicsPlatform] = Graphics.GraphicsPlatform.Direct3D11;
+            windows10Platform.Configurations.Add(new SolutionConfiguration("Testing"));
+            windows10Platform.Configurations.Add(new SolutionConfiguration("AppStore"));
+            windows10Platform.Configurations["Release"].Properties.Add("<NoWarn>;2008</NoWarn>");
+            windows10Platform.Configurations["Debug"].Properties.Add("<NoWarn>;2008</NoWarn>");
+            windows10Platform.Configurations["Testing"].Properties.Add("<NoWarn>;2008</NoWarn>");
+            windows10Platform.Configurations["AppStore"].Properties.Add("<NoWarn>;2008</NoWarn>");
+
+            windows10Platform.Configurations["Release"].Properties.Add("<UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>");
+            windows10Platform.Configurations["Testing"].Properties.Add("<UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>");
+            windows10Platform.Configurations["AppStore"].Properties.Add("<UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>");
+
+            foreach (var cpu in new[] { "x86", "x64", "ARM" })
+            {
+                var windows10PlatformCpu = new SolutionPlatformPart(windows10Platform.Name + "-" + cpu)
+                {
+                    LibraryProjectName = windows10Platform.Name,
+                    ExecutableProjectName = cpu,
+                    Cpu = cpu,
+                    InheritConfigurations = true,
+                    UseWithLibraries = false,
+                    UseWithExecutables = true,
+                };
+                windows10PlatformCpu.Configurations.Clear();
+                windows10PlatformCpu.Configurations.AddRange(windows10Platform.Configurations);
+
+                windows10Platform.PlatformsPart.Add(windows10PlatformCpu);
+            }
+
+            solutionPlatforms.Add(windows10Platform);
+
             // Windows Phone
             var windowsPhonePlatform = new SolutionPlatform()
             {
@@ -240,51 +285,6 @@ namespace SiliconStudio.Paradox.Assets
                     "<MtouchLink>None</MtouchLink>",
                     "<MtouchArch>i386, x86_64</MtouchArch>"
                 });
-
-            // Windows 10
-            var windows10Platform = new SolutionPlatform()
-            {
-                Name = PlatformType.Windows10.ToString(),
-                DisplayName = "Windows 10",
-                Type = PlatformType.Windows10,
-                IsAvailable = IsFileInProgramFilesx86Exist(Windows10UniversalRuntimeBuild),
-                UseWithExecutables = false,
-                IncludeInSolution = false,
-            };
-
-            windows10Platform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS");
-            windows10Platform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME");
-            windows10Platform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS_10");
-            windows10Platform.Properties[GraphicsPlatform] = Graphics.GraphicsPlatform.Direct3D11;
-            windows10Platform.Configurations.Add(new SolutionConfiguration("Testing"));
-            windows10Platform.Configurations.Add(new SolutionConfiguration("AppStore"));
-            windows10Platform.Configurations["Release"].Properties.Add("<NoWarn>;2008</NoWarn>");
-            windows10Platform.Configurations["Debug"].Properties.Add("<NoWarn>;2008</NoWarn>");
-            windows10Platform.Configurations["Testing"].Properties.Add("<NoWarn>;2008</NoWarn>");
-            windows10Platform.Configurations["AppStore"].Properties.Add("<NoWarn>;2008</NoWarn>");
-
-            windows10Platform.Configurations["Release"].Properties.Add("<UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>");
-            windows10Platform.Configurations["Testing"].Properties.Add("<UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>");
-            windows10Platform.Configurations["AppStore"].Properties.Add("<UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>");
-
-            foreach (var cpu in new[] { "x86", "x64", "ARM" })
-            {
-                var windows10PlatformCpu = new SolutionPlatformPart(windows10Platform.Name + "-" + cpu)
-                {
-                    LibraryProjectName = windows10Platform.Name,
-                    ExecutableProjectName = cpu,
-                    Cpu = cpu,
-                    InheritConfigurations = true,
-                    UseWithLibraries = false,
-                    UseWithExecutables = true,
-                };
-                windows10PlatformCpu.Configurations.Clear();
-                windows10PlatformCpu.Configurations.AddRange(windows10Platform.Configurations);
-
-                windows10Platform.PlatformsPart.Add(windows10PlatformCpu);
-            }
-
-            solutionPlatforms.Add(windows10Platform);
 
             AssetRegistry.RegisterSupportedPlatforms(solutionPlatforms);
         }
