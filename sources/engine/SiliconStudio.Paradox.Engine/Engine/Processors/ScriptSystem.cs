@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Games;
@@ -17,6 +18,8 @@ namespace SiliconStudio.Paradox.Engine.Processors
     /// </summary>
     public sealed class ScriptSystem : GameSystemBase
     {
+        public readonly static Logger Log = GlobalLogger.GetLogger("ScriptSystem");
+
         /// <summary>
         /// Contains all currently executed scripts
         /// </summary>
@@ -195,6 +198,8 @@ namespace SiliconStudio.Paradox.Engine.Processors
 
         private void HandleSynchonousException(Script script, Exception exception)
         {
+            Log.Error("Unexpected exception while executing a script. Reason: {0}", new object[] { exception });
+
             // Only crash if live scripting debugger is not listening
             if (Scheduler.PropagateExceptions)
                 ExceptionDispatchInfo.Capture(exception).Throw();
