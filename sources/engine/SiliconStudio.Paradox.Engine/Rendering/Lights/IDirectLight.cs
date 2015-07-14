@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Rendering.Lights
 {
@@ -15,18 +14,21 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         /// A low importance means that the shadow has a low visual impact. 
         /// (e.g shadows from point lights)
         /// </summary>
+        /// <userdoc>A low importance means that the shadow has a low visual impact (e.g shadows from point lights).</userdoc>
         Low,
 
         /// <summary>
         /// A medium importance shadow means the shadow has a medium visual impact. 
         /// (e.g shadows from spot lights)
         /// </summary>
+        /// <userdoc>A medium importance shadow means the shadow has a medium visual impact (e.g shadows from spot lights).</userdoc>
         Medium,
 
         /// <summary>
         /// A high importance means the shadow has a high visual impact.
         /// (e.g shadows from directional lights)
         /// </summary>
+        /// <userdoc>A high importance means the shadow has a high visual impact (e.g shadows from directional lights).</userdoc>
         High
     }
 

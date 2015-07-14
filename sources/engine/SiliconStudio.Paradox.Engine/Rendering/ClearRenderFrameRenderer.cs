@@ -5,7 +5,6 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Rendering
@@ -33,6 +32,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// Gets or sets the clear flags.
         /// </summary>
         /// <value>The clear flags.</value>
+        /// <userdoc>Flag indicating which buffers to clear.</userdoc>
         [DataMember(10)]
         [DefaultValue(ClearRenderFrameFlags.Color)]
         [Display("Clear Flags")]
@@ -42,6 +42,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// Gets or sets the clear color.
         /// </summary>
         /// <value>The clear color.</value>
+        /// <userdoc>The color value to use when clearing the render targets</userdoc>
         [DataMember(20)]
         [Display("Color")]
         public Color4 Color { get; set; }
@@ -52,6 +53,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// <value>
         /// The depth value used to clear the depth stencil buffer.
         /// </value>
+        /// <userdoc>The depth value to use when clearing the depth buffer</userdoc>
         [DataMember(30)]
         [DefaultValue(1.0f)]
         [Display("Depth Value")]
@@ -63,6 +65,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// <value>
         /// The stencil value used to clear the depth stencil buffer.
         /// </value>
+        /// <userdoc>The stencil value to use when clearing the stencil buffer</userdoc>
         [DataMember(40)]
         [DefaultValue(0)]
         [Display("Stencil Value")]

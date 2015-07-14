@@ -1,27 +1,15 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
-using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Rendering.Materials;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.ComputeEffect.GGXPrefiltering;
-using SiliconStudio.Paradox.Rendering.ComputeEffect.LambertianPrefiltering;
-using SiliconStudio.Paradox.Rendering.Images;
-using SiliconStudio.Paradox.Rendering.Skyboxes;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Data;
-using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Assets.Skyboxes
 {

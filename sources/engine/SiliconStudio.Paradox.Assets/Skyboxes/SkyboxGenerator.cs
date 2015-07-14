@@ -2,9 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.IO;
 
-using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization;
@@ -12,7 +10,6 @@ using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Rendering.ComputeEffect.GGXPrefiltering;
 using SiliconStudio.Paradox.Rendering.ComputeEffect.LambertianPrefiltering;
-using SiliconStudio.Paradox.Rendering.Images;
 using SiliconStudio.Paradox.Rendering.Skyboxes;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;

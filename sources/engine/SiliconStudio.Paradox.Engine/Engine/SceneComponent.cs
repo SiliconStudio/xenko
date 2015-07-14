@@ -35,6 +35,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets the graphics composer for this scene.
         /// </summary>
         /// <value>The graphics composer.</value>
+        /// <userdoc>The compositor in charge of creating the graphic pipeline</userdoc>
         [DataMember(10)]
         [Display("Graphics Composition", Expand = ExpandRule.Always)]
         [NotNull]
@@ -45,6 +46,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets the editor settings.
         /// </summary>
         /// <value>The editor settings.</value>
+        /// <userdoc>Settings for the scene editor</userdoc>
         [DataMember(20)]
         [Display("Editor Settings", Expand = ExpandRule.Always)]
         [Category]

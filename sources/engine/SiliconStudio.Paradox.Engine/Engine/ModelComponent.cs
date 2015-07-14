@@ -52,6 +52,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The model.
         /// </value>
+        /// <userdoc>The reference to the model asset to attach to this entity</userdoc>
         [DataMemberCustomSerializer]
         [DataMember(10)]
         public Model Model
@@ -74,6 +75,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The materials overriding <see cref="SiliconStudio.Paradox.Rendering.Model.Materials"/> ones.
         /// </value>
+        /// <userdoc>The list of materials to use with the model. This list overrides the default materials of the model.</userdoc>
         [DataMember(20)]
         public List<Material> Materials
         {
@@ -99,6 +101,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets a boolean indicating if this model component is casting shadows.
         /// </summary>
         /// <value>A boolean indicating if this model component is casting shadows.</value>
+        /// <userdoc>If checked, the model generates a shadow when enabling shadow maps.</userdoc>
         [DataMember(30)]
         [DefaultValue(true)]
         [Display("Cast Shadows?")]
@@ -108,6 +111,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets a boolean indicating if this model component is receiving shadows.
         /// </summary>
         /// <value>A boolean indicating if this model component is receiving shadows.</value>
+        /// <userdoc>If checked, the model can be covered by the shadow of another model.</userdoc>
         [DataMember(40)]
         [DefaultValue(true)]
         [Display("Receive Shadows?")]

@@ -44,6 +44,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The skybox.
         /// </value>
+        /// <userdoc>The skybox to use as input</userdoc>
         [DataMember(20)]
         [DefaultValue(null)]
         public Skybox Skybox { get; set; }
@@ -52,6 +53,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets the background.
         /// </summary>
         /// <value>The background.</value>
+        /// <userdoc>Specify how to display skybox in the background</userdoc>
         [DataMember(30)]
         [DefaultValue(SkyboxBackground.Color)]
         public SkyboxBackground Background { get; set; }
@@ -60,6 +62,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets the intensity.
         /// </summary>
         /// <value>The intensity.</value>
+        /// <userdoc>The light intensity of the skybox</userdoc>
         [DataMember(40)]
         [DefaultValue(1.0f)]
         [DataMemberRange(0.0, 100.0, 0.01f, 1.0f)]

@@ -116,6 +116,7 @@ namespace SiliconStudio.Core.Mathematics
         /// Gets or sets the X position.
         /// </summary>
         /// <value>The X position.</value>
+        /// <userdoc>The beginning of the rectangle along the Ox axis.</userdoc>
         [DataMember(0)]
         public float X
         {
@@ -133,6 +134,7 @@ namespace SiliconStudio.Core.Mathematics
         /// Gets or sets the Y position.
         /// </summary>
         /// <value>The Y position.</value>
+        /// <userdoc>The beginning of the rectangle along the Oy axis.</userdoc>
         [DataMember(1)]
         public float Y
         {
@@ -150,6 +152,7 @@ namespace SiliconStudio.Core.Mathematics
         /// Gets or sets the width.
         /// </summary>
         /// <value>The width.</value>
+        /// <userdoc>The width of the rectangle.</userdoc>
         [DataMember(2)]
         public float Width
         {
@@ -161,6 +164,7 @@ namespace SiliconStudio.Core.Mathematics
         /// Gets or sets the height.
         /// </summary>
         /// <value>The height.</value>
+        /// <userdoc>The height of the rectangle.</userdoc>
         [DataMember(3)]
         public float Height
         {

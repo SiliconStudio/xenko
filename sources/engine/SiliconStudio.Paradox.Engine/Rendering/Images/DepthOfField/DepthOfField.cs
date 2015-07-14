@@ -8,7 +8,6 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 using System.Collections.Generic;
-using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Rendering.Images
 {
@@ -33,6 +32,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// Instead you should set it once for your scene and play with the DOF areas / lens parameters 
         /// to make out-of-focus objects create bigger bokeh shapes.
         /// </remarks>
+        /// <userdoc>Specify the maximum size of the bokehs. This value is resolution-independent (proportional to the screen width in percentage).</userdoc>
         [DataMember(10)]
         [DefaultValue(0.1f)]
         [DataMemberRange(0.01f, 1.0f, 0.01f, 0.1f, 2)]
@@ -43,6 +43,8 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// Areas of the depth of field: [nearStart, nearEnd, farStart, farEnd] expressed as a 
         /// distance from the camera.
         /// </summary>
+        /// <userdoc>Specify the area focused by the depth of field (eg. the not blurred area). 
+        /// It is expressed as distances from the camera: [nearStart, nearEnd, farStart, farEnd].</userdoc>
         [DataMember(20)]
         public Vector4 DOFAreas { get; set; } // TODO provide an alternative control with physical lens parameters
 
@@ -50,6 +52,8 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// Affects a preset quality setting, between 0 (lowest quality) and 1 (highest quality).
         /// This auto-configures <cref name="LevelCoCValues"/> and <cref name="LevelDownscaleFactors"/>.
         /// </summary>
+        /// <userdoc>The quality of the effect where 0 represents the worst quality and 1 the best one.
+        /// Note that increase the quality of the effect significantly increase the rendering time.</userdoc>
         [DataMember(30)]
         [DefaultValue(0.5f)]
         [DataMemberRange(0f, 1f, 0.01f, 0.1f, 2)]
@@ -71,14 +75,14 @@ namespace SiliconStudio.Paradox.Rendering.Images
                 {
                     case 0:
                         // Single level, at 1/4 resolution
-                        LevelCoCValues = new float[] { 1f };
-                        LevelDownscaleFactors = new int[] { 2 };
+                        LevelCoCValues = new [] { 1f };
+                        LevelDownscaleFactors = new [] { 2 };
                         break;
 
                     case 1:
                         // Single level, at half the resolution
-                        LevelCoCValues = new float[] { 1f };
-                        LevelDownscaleFactors = new int[] { 1 };
+                        LevelCoCValues = new [] { 1f };
+                        LevelDownscaleFactors = new [] { 1 };
                         break;
 
                     default:
@@ -103,6 +107,8 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// <remarks>
         /// This influences the bokeh shape (circular, hexagonal...) as well as the performance.
         /// </remarks>
+        /// <userdoc>Specify the technique used to calculate the bokehs.
+        /// This influences both the shape of the bokehs and the performances of the effect.</userdoc>
         [DataMember(40)]
         [DefaultValue(BokehTechnique.HexagonalTripleRhombi)]
         public BokehTechnique Technique
@@ -122,6 +128,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// <summary>
         /// Auto-focus on the pixel at the center of the screen. 
         /// </summary>
+        /// <userdoc>If checked, the depth of field area is automatically adjusted to the pixel at the center of the screen.</userdoc>
         [DataMember(50)]
         [DefaultValue(true)]
         public bool AutoFocus { get; set; }

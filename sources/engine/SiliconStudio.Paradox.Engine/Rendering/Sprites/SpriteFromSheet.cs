@@ -18,6 +18,7 @@ namespace SiliconStudio.Paradox.Rendering.Sprites
         /// <summary>
         /// Gets or sets the <see cref="Sheet"/> of the provider.
         /// </summary>
+        /// <userdoc>The sheet that provides the sprites</userdoc>
         [InlineProperty]
         public SpriteSheet Sheet { get; set; }
 

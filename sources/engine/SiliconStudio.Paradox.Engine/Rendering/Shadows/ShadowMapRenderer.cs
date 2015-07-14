@@ -9,7 +9,6 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Rendering.Lights;
 using SiliconStudio.Paradox.Shaders;
@@ -146,7 +145,7 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
 
             this.visibleLights = visibleLights;
 
-            using (var t1 = context.PushTagAndRestore(Current, this))
+            using (context.PushTagAndRestore(Current, this))
             {
                 PreDrawCoreInternal(context);
                 DrawCore(context);

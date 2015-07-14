@@ -12,6 +12,10 @@ namespace SiliconStudio.Paradox.Engine.Design
     /// </summary>
     public abstract class SceneEditorGraphicsModeSettingsBase : ISceneEditorGraphicsModeSettings
     {
+        /// <summary>
+        /// Gets or sets the color of the background.
+        /// </summary>
+        /// <userdoc>The color used as the scene editor background.</userdoc>
         [DataMember(10)]
         public Color3 BackgroundColor { get; set; }
 

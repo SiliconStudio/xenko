@@ -7,7 +7,6 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
@@ -48,6 +47,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// Gets or sets a value indicating whether this <see cref="EntityComponentRendererBase"/> is enabled.
         /// </summary>
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
+        /// <userdoc>Enabled if checked, disable otherwise</userdoc>
         [DataMember(-20)]
         [DefaultValue(true)]
         public virtual bool Enabled { get; set; }

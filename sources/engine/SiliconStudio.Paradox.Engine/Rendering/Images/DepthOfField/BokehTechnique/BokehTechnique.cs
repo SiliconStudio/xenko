@@ -3,11 +3,6 @@
 
 using System;
 
-using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
-using System.Collections.Generic;
-
 namespace SiliconStudio.Paradox.Rendering.Images
 {
 
@@ -18,21 +13,25 @@ namespace SiliconStudio.Paradox.Rendering.Images
     public enum BokehTechnique
     {
         /// <summary>
-        /// Circular blur using a gaussian. 
+        /// Circular blur using a Gaussian. 
         /// </summary>
         /// <remarks>
         /// Fast and cheap technique but the final bokeh shapes are not very realistic.
         /// </remarks>
+        /// <userdoc>Use circular Gaussian blur to render the bokehs. This technique produce circular bokehs.
+        /// It is fast and cheap technique but not very realistic.</userdoc>
         CircularGaussian,
 
         /// <summary>
         /// Hexagonal blur using the McIntosh technique.
         /// </summary>
+        /// <userdoc>Use the McIntosh hexagonal blur to render the bokehs. This technique produce hexagonal bokehs</userdoc>
         HexagonalMcIntosh,
 
         /// <summary>
         /// Hexagonal blur using a combination of 3 rhombi blurs. 
         /// </summary>
+        /// <userdoc>Use a combination of 3 rhombi blurs to render the bokehs. This technique produce hexagonal bokehs</userdoc>
         HexagonalTripleRhombi
     }
 

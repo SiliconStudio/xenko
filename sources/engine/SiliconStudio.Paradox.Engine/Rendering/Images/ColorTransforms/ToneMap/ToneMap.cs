@@ -47,6 +47,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// Gets or sets the operator used for tonemap.
         /// </summary>
         /// <value>The operator.</value>
+        /// <userdoc>The method used to perform the HDR to LDR tone mapping</userdoc>
         [DataMember(10)]
         [NotNull]
         public ToneMapOperator Operator { get; set; }
