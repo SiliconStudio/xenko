@@ -1,6 +1,7 @@
 ## Paradox 1.1
 
 Highlights:
+
 - A brand new **scene editor** that is now the central piece of Paradox to assemble your game levels, test the rendering, script your entities.
 - **Physically Based Rendering** with Layered Material System
 - **Scene rendering compositor**, offering a new way to define precisely how to render scenes in your game, apply post effects...etc.

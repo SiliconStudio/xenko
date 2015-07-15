@@ -1,6 +1,7 @@
 ## Paradox 1.2
 
 Highlights:
+
 - **Windows 10** Universal Apps (Store and Phone) are now supported.
 - **Script reloading**: edit C# scripts and have them reloaded live in Game Studio. Previous public values will be kept as much as possible.
 - **Live scripting**: Run your game from GameStudio in live-scripting mode; as soon as you update C# scripts, they will be reloaded inside your current running game (with previous public values kept when possible). This allow almost instant iteration on your gameplay code! Powered by Roslyn.
