@@ -3,10 +3,23 @@
 Highlights:
 
 - **Windows 10** Universal Apps (Store and Phone) are now supported.
+
 - **Script reloading**: edit C# scripts and have them reloaded live in Game Studio. Previous public values will be kept as much as possible.
+
 - **Live scripting**: Run your game from GameStudio in live-scripting mode; as soon as you update C# scripts, they will be reloaded inside your current running game (with previous public values kept when possible). This allow almost instant iteration on your gameplay code! Powered by Roslyn.
+
 - **Default scene**: Creating a new game is now easier than ever, as it comes with a simple scene and graphics pipeline already setup for you!
-- **Model and material highlighting**: When selecting a model, material or texture, it will be highlighted in the scene. You can also mouse pick a specific material within a model by using the "Material selection mode".
+
+- When you work on the materials of your scene, sometimes you want to be able to see where exactly is a material used on a model. In this release, we added a new material highlight feature, which allows you to easily see the different materials in the viewport and in the property grid by moving the mouse over a selected model. It is also possible to highlight a material from the property grid, to identify which part of the model it covers.
+
+<img src="C:\Projects\Paradox\sources\data\images\ReleaseNotes\1.2\Material-highlight0.png" align="center" width="500"/>
+
+<img src="C:\Projects\Paradox\sources\data\images\ReleaseNotes\1.2\Material-highlight1.png" align="center" width="500"/>
+
+In a similar way, when browsing your assets, you might want to see visually were it is used in the scene. When you select an asset, be it a model, a material, a texture..., the objects using it will be shortly highlighted.
+
+<img src="C:\Projects\Paradox\sources\data\images\ReleaseNotes\1.2\Material-highlight2.png" align="center" width="500"/>
+
 - Many **Usability** fixes for scene editor, sprite editor, UX, etc...
 
 ### Version 1.2.0-beta
