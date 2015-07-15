@@ -12,13 +12,13 @@ Highlights:
 
 - When you work on the materials of your scene, sometimes you want to be able to see where exactly is a material used on a model. In this release, we added a new material highlight feature, which allows you to easily see the different materials in the viewport and in the property grid by moving the mouse over a selected model. It is also possible to highlight a material from the property grid, to identify which part of the model it covers.
 
-<img src="C:\Projects\Paradox\sources\data\images\ReleaseNotes\1.2\Material-highlight0.png" align="center" width="500"/>
+<img src="rn_images/Material-highlight0.png" align="center" width="500"/>
 
-<img src="C:\Projects\Paradox\sources\data\images\ReleaseNotes\1.2\Material-highlight1.png" align="center" width="500"/>
+<img src="rn_images/Material-highlight1.png" align="center" width="500"/>
 
 In a similar way, when browsing your assets, you might want to see visually were it is used in the scene. When you select an asset, be it a model, a material, a texture..., the objects using it will be shortly highlighted.
 
-<img src="C:\Projects\Paradox\sources\data\images\ReleaseNotes\1.2\Material-highlight2.png" align="center" width="500"/>
+<img src="rn_images/Material-highlight2.png" align="center" width="500"/>
 
 - Many **Usability** fixes for scene editor, sprite editor, UX, etc...
 
