@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.Engine.Processors
     /// </summary>
     public sealed class ScriptSystem : GameSystemBase
     {
-        public readonly static Logger Log = GlobalLogger.GetLogger("ScriptSystem");
+        internal readonly static Logger Log = GlobalLogger.GetLogger("ScriptSystem");
 
         /// <summary>
         /// Contains all currently executed scripts

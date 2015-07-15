@@ -115,7 +115,17 @@ namespace SiliconStudio.Paradox.Debugger.Target
                     assembliesToUnregister.Select(x => loadedAssemblies[x]).ToList(),
                     assembliesToRegister.Select(x => loadedAssemblies[x]).ToList());
 
-                assemblyReloader.Reload();
+                if (game != null)
+                {
+                    lock (game.TickLock)
+                    {
+                        assemblyReloader.Reload();
+                    }
+                }
+                else
+                {
+                    assemblyReloader.Reload();
+                }
             }
             return true;
         }

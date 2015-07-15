@@ -11,3 +11,4 @@ using System.Runtime.CompilerServices;
 
 // Make internals Paradox.Framework.visible to all Paradox.Framework.assemblies
 [assembly: InternalsVisibleTo("SiliconStudio.Core.MicroThreading.Serializers" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Debugger" + SiliconStudio.PublicKeys.Default)]

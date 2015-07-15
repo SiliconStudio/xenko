@@ -19,7 +19,7 @@ namespace SiliconStudio.Core.MicroThreading
     /// </remarks>
     public class Scheduler
     {
-        public readonly static Logger Log = GlobalLogger.GetLogger("Scheduler");
+        internal readonly static Logger Log = GlobalLogger.GetLogger("Scheduler");
 
         // An ever-increasing counter that will be used to have a "stable" microthread scheduling (first added is first scheduled)
         internal long SchedulerCounter;
