@@ -1,3 +1,5 @@
+## Paradox 1.0
+
 ### Version 1.0.0-beta10
 
 Release date: 2015/02/12

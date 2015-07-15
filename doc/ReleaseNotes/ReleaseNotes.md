@@ -1,16 +1,32 @@
-## Paradox 1.2
+# Highlights
 
-Highlights:
+## Windows 10
 
-- **Windows 10** Universal Apps (Store and Phone) are now supported.
+Windows 10 Universal Apps (Store and Phone) are now supported. Add it to your existing projects by right-clicking on your package in Solution Explorer, select "Update Package" and then "Update Platforms".
 
-- **Script reloading**: edit C# scripts and have them reloaded live in Game Studio. Previous public values will be kept as much as possible.
+<img src="rn_images/Windows10.png" align="center" width="500"/>
 
-- **Live scripting**: Run your game from GameStudio in live-scripting mode; as soon as you update C# scripts, they will be reloaded inside your current running game (with previous public values kept when possible). This allow almost instant iteration on your gameplay code! Powered by Roslyn.
+## Script reloading and live scripting
 
-- **Default scene**: Creating a new game is now easier than ever, as it comes with a simple scene and graphics pipeline already setup for you!
+**Script reloading**: edit C# scripts and have them reloaded live in Game Studio. Previous public values will be kept as much as possible.
 
-- When you work on the materials of your scene, sometimes you want to be able to see where exactly is a material used on a model. In this release, we added a new material highlight feature, which allows you to easily see the different materials in the viewport and in the property grid by moving the mouse over a selected model. It is also possible to highlight a material from the property grid, to identify which part of the model it covers.
+<img src="rn_images/ScriptReloading1.png" align="center"/>
+
+<img src="rn_images/ScriptReloading2.png" align="center"/>
+
+**Live scripting**: Run your game from GameStudio in live-scripting mode; as soon as you update C# scripts, they will be reloaded inside your current running game (with previous public values kept when possible). This allow almost instant iteration on your gameplay code! Powered by Roslyn.
+
+<img src="rn_images/LiveScripting.png" align="center" width="500"/>
+
+## Default scene
+
+Creating a new game is now easier than ever, as it comes with a simple scene and graphics pipeline already setup for you!
+
+<img src="rn_images/DefaultScene.png" align="center" width="500"/>
+
+## Material and model highlighting
+
+When you work on the materials of your scene, sometimes you want to be able to see where exactly is a material used on a model. In this release, we added a new material highlight feature, which allows you to easily see the different materials in the viewport and in the property grid by moving the mouse over a selected model. It is also possible to highlight a material from the property grid, to identify which part of the model it covers.
 
 <img src="rn_images/Material-highlight0.png" align="center" width="500"/>
 
@@ -20,15 +36,24 @@ In a similar way, when browsing your assets, you might want to see visually were
 
 <img src="rn_images/Material-highlight2.png" align="center" width="500"/>
 
-- Many **Usability** fixes for scene editor, sprite editor, UX, etc...
+## Usability
 
-### Version 1.2.0-beta
+Many **Usability** fixes for scene editor, sprite editor, UX, etc...
 
-Release date: 2015/07/XX
+# Breaking changes
+- Assets: Texture default transparency mode changes from `None` to `Auto`.
+- Assets: The `SpriteGroupAsset` and the `UIImageGroupAsset` have been merged into one single `SpriteSheetAsset`. 
+- Engine: The `SpriteGroup` and `UIImageGroup` classes have been merged into one single `SpriteSheet` class.
+- Engine: The `Sprite` and `UIImage` classes have been merged into one single `Sprite` class.
+- Engine: The sprite `ExtrusionMethod` field have been removed and replaced by a `PixelsPerUnit` field in the sprites.
+- Engine: Sprites are drawn by default with depth test enabled.
+- Engine: Script (and AsyncScript) no longer provide a Start method. Start is now part of the StartupScript class.
 
-#### New Features
+# Version 1.2.0-beta
 
-#### Enhancements
+Release date: 2015/07/16
+
+## Enhancements
 - Assets: Add `Auto` alpha format for automatic alpha detection in textures.
 - Effects: FXAA quality setting can be changed and it can now be properly disabled.
 - Studio: Add a menu to fix references when deleting an entity that is referenced by other entities of the scene.
@@ -43,7 +68,7 @@ Release date: 2015/07/XX
 - Engine: Add the possibility to enable/disable the depth test in sprite component.
 - Engine: Add a `PremultiplyAlpha` field to `ComputeColor` to be able to easily set pre-multiplied colors from the editor.
 
-#### Issues fixed
+## Issues fixed
 - Studio: Fix the animation preview that where not properly updating when the source file was modified.
 - Studio: Fix an issue that was preventing selection by mouse click to work in the scene editor under some circumstances.
 - Studio: The pitch of the scene editor camera is now clamped between -90° and +90°
@@ -57,16 +82,7 @@ Release date: 2015/07/XX
 - Shaders: Ambient occlusion now correctly affects ambient light.
 - VisualStudio: The SDK version used by the extension is changed based on the version of the package associated with the current solutions. ([#224](https://github.com/SiliconStudio/paradox/issues/224)).
 
-#### Breaking changes
-- Assets: Texture default transparency mode changes from `None` to `Auto`.
-- Assets: The `SpriteGroupAsset` and the `UIImageGroupAsset` have been merged into one single `SpriteSheetAsset`. 
-- Engine: The `SpriteGroup` and `UIImageGroup` classes have been merged into one single `SpriteSheet` class.
-- Engine: The `Sprite` and `UIImage` classes have been merged into one single `Sprite` class.
-- Engine: The sprite `ExtrusionMethod` field have been removed and replaced by a `PixelsPerUnit` field in the sprites.
-- Engine: Sprites are drawn by default with depth test enabled.
-- Engine: Script (and AsyncScript) no longer provide a Start method. Start is now part of the StartupScript class.
-
-#### Known Issues
+# Known Issues
 - UI: EditText is not implemented on Windows Store and Windows Phone.
 - Android: Physics engine is not working properly.
 - Samples: Material Sample does not work properly on some mob
