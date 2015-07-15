@@ -52,7 +52,7 @@ namespace SiliconStudio.Core.MicroThreading
         /// <value>
         ///   <c>true</c> if [propagate exceptions]; otherwise, <c>false</c>.
         /// </value>
-        public bool PropagateExceptions { get; set; }
+        internal bool PropagateExceptions { get; set; }
 
         /// <summary>
         /// Gets the current running micro thread in this scheduler through <see cref="Run"/>.
