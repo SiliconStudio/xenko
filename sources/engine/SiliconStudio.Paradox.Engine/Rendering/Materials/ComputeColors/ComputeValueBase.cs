@@ -35,7 +35,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         /// The property to access the internal value
         /// </summary>
         /// <userdoc>
-        /// The default value.
+        /// The value.
         /// </userdoc>
         [DataMember(20)]
         [InlineProperty]

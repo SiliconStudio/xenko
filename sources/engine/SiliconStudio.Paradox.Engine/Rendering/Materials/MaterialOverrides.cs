@@ -84,6 +84,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the scale u and v.
         /// </summary>
         /// <value>The scale u.</value>
+        /// <userdoc>The scales to apply on the layered material texture coordinates.</userdoc>
         [DataMember(80)]
         [Display("UV Scale")]
         public Vector2 UVScale { get; set; }

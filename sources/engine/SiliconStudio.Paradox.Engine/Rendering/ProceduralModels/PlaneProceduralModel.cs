@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// Gets or sets the tessellation of the plane.
         /// </summary>
         /// <value>The tessellation x.</value>
-        /// <userdoc>The tessellation of the plane along the X/Y axis. That is the number rectangles the plane is made of.</userdoc>
+        /// <userdoc>The tessellation of the plane along the X/Y axis. That is the number polygons the plane is made of.</userdoc>
         [DataMember(20)]
         [DefaultValue(1)]
         [Display("Tessellation")]
@@ -52,23 +52,25 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// Gets or sets the UV scales.
         /// </summary>
         /// <value>The UV scales</value>
-        /// <userdoc>The scales to apply to the UV coordinates of the plane.</userdoc>
+        /// <userdoc>The scales to apply to the UV coordinates of the plane. This can be used to tile a texture on it.</userdoc>
         [DataMember(30)]
         [DefaultValue(1.0f)]
         [Display("UV Scales")]
         public Vector2 UVScales { get; set; }
-
-
+        
+        /// <summary>
+        /// Gets or sets the normal direction of the plane.
+        /// </summary>
+        /// <userdoc>The direction of the normal of the plane. This changes the default orientation of the plane.</userdoc>
         [DataMember(40)]
         [DefaultValue(NormalDirection.UpZ)]
         [Display("Normal")]
         public NormalDirection Normal { get; set; }
 
-
         /// <summary>
         /// Gets or sets value indicating if a back face should be added.
         /// </summary>
-        /// <userdoc>Check the this combo box to generate a back face to the plane</userdoc>
+        /// <userdoc>Check this combo box to generate a back face to the plane</userdoc>
         [DataMember(50)]
         [DefaultValue(1.0f)]
         [Display("Back Face")]

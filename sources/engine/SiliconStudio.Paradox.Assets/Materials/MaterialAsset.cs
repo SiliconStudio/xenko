@@ -56,6 +56,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// Gets or sets the material attributes.
         /// </summary>
         /// <value>The material attributes.</value>
+        /// <userdoc>The base attributes of the material.</userdoc>
         [DataMember(10)]
         [NotNull]
         [Display("Attributes", Expand = ExpandRule.Always)]
@@ -66,6 +67,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// Gets or sets the material compositor.
         /// </summary>
         /// <value>The material compositor.</value>
+        /// <userdoc>The layers overriding the base attributes of the material. Layers are displayed from bottom to top.</userdoc>
         [DefaultValue(null)]
         [DataMember(20)]
         [NotNull]

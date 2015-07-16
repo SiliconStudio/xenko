@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.ComponentModel;
-
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
@@ -29,6 +27,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// Gets or sets the size of the cube.
         /// </summary>
         /// <value>The size.</value>
+        /// <userdoc>The size of the cube along the Ox, Oy and Oz axis.</userdoc>
         [DataMember(10)]
         public Vector3 Size { get; set; }
 

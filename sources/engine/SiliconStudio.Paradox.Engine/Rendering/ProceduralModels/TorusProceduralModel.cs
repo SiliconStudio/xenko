@@ -30,6 +30,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// Gets or sets the size of this Torus.
         /// </summary>
         /// <value>The diameter.</value>
+        /// <userdoc>The major diameter of the torus.</userdoc>
         [DataMember(10)]
         [DefaultValue(1.0f)]
         public float Diameter { get; set; }
@@ -37,7 +38,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// <summary>
         /// Gets or sets the thickness.
         /// </summary>
-        /// <value>The thickness.</value>
+        /// <value>The minor diameter of the torus. That is the diameter of the ring.</value>
         [DataMember(20)]
         [DefaultValue(3.3f)]
         public float Thickness { get; set; }
@@ -46,6 +47,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// Gets or sets the tessellation factor (default: 3.0)
         /// </summary>
         /// <value>The tessellation.</value>
+        /// <userdoc>The tessellation of the torus. That is the number of polygons composing it.</userdoc>
         [DataMember(30)]
         [DefaultValue(32)]
         public int Tessellation { get; set; }

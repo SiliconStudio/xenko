@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the alpha.
         /// </summary>
         /// <value>The alpha.</value>
-        /// <userdoc>An additional alpha multiplying factor</userdoc>
+        /// <userdoc>An additional factor that can be used to modulate original alpha of the material.</userdoc>
         [NotNull]
         [DataMember(10)]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
@@ -43,7 +43,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the tint color.
         /// </summary>
         /// <value>The tint.</value>
-        /// <userdoc>A color to tint the transparency color</userdoc>
+        /// <userdoc>The tint color to apply on the material during the blend.</userdoc>
         [NotNull]
         [DataMember(20)]
         public IComputeColor Tint { get; set; }

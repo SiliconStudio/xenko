@@ -6,9 +6,6 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Materials;
 using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
 using SiliconStudio.Paradox.Shaders;
 
@@ -37,6 +34,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets a value indicating whether this <see cref="MaterialBlendLayer"/> is enabled.
         /// </summary>
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
+        /// <userdoc>If checked, the layer in taken into account. Otherwise it is ignored.</userdoc>
         [DefaultValue(true)]
         [DataMember(10)]
         public bool Enabled { get; set; }
@@ -45,6 +43,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the name of this blend layer.
         /// </summary>
         /// <value>The name.</value>
+        /// <userdoc>The name of the material layer.</userdoc>
         [DefaultValue(null)]
         [DataMember(20)]
         public string Name { get; set; }
@@ -53,6 +52,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the material.
         /// </summary>
         /// <value>The material.</value>
+        /// <userdoc>The reference to the material asset to layer.</userdoc>
         [DefaultValue(null)]
         [DataMember(30)]
         public Material Material { get; set; }
@@ -61,6 +61,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the blend map.
         /// </summary>
         /// <value>The blend map.</value>
+        /// <userdoc>The blend map specifying how to blend the material with the previous layer.</userdoc>
         [Display("Blend Map")]
         [DefaultValue(null)]
         [DataMember(40)]
@@ -71,6 +72,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the material overrides.
         /// </summary>
         /// <value>The overrides.</value>
+        /// <userdoc>When layering materials, specifies how to override the previous layer material properties.</userdoc>
         [DataMember(50)]
         [Category]
         [Display("Layer Overrides")]
