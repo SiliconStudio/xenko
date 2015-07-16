@@ -144,7 +144,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the overrides.
         /// </summary>
         /// <value>The overrides.</value>
-        /// <userdoc>When layering materials, specifies how to override the underneath material properties.</userdoc>
+        /// <userdoc>Can be used to override some of the properties of the current material.</userdoc>
         [Display("Overrides", null, "Misc")]
         [DataMember(120)]
         public MaterialOverrides Overrides { get; private set; }
