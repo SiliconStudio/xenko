@@ -43,11 +43,11 @@ Windows 10 Universal Apps (Store and Phone) are now supported. Add it to your ex
 <img src="rn_images/Windows10.png" align="center" width="500"/>
 
 # Breaking changes
-- Assets: Texture default transparency mode changes from `None` to `Auto`.
-- Assets: The `SpriteGroupAsset` and the `UIImageGroupAsset` have been merged into one single `SpriteSheetAsset`. 
-- Engine: The `SpriteGroup` and `UIImageGroup` classes have been merged into one single `SpriteSheet` class.
-- Engine: The `Sprite` and `UIImage` classes have been merged into one single `Sprite` class.
-- Engine: The sprite `ExtrusionMethod` field have been removed and replaced by a `PixelsPerUnit` field in the sprites.
+- Assets: Texture default transparency mode changes from *None* to *Auto*.
+- Assets: The *SpriteGroupAsset* and the *UIImageGroupAsset* have been merged into one single *SpriteSheetAsset*. 
+- Engine: The *SpriteGroup* and *UIImageGroup* classes have been merged into one single *SpriteSheet* class.
+- Engine: The *Sprite* and *UIImage* classes have been merged into one single *Sprite* class.
+- Engine: The sprite *ExtrusionMethod* field have been removed and replaced by a *PixelsPerUnit* field in the sprites.
 - Engine: Sprites are drawn by default with depth test enabled.
 - Engine: Script (and AsyncScript) no longer provide a Start method. Start is now part of the StartupScript class.
 
@@ -56,7 +56,7 @@ Windows 10 Universal Apps (Store and Phone) are now supported. Add it to your ex
 Release date: 2015/07/16
 
 ## Enhancements
-- Assets: Add `Auto` alpha format for automatic alpha detection in textures.
+- Assets: Add *Auto* alpha format for automatic alpha detection in textures.
 - Effects: FXAA quality setting can be changed and it can now be properly disabled.
 - Studio: Add a menu to fix references when deleting an entity that is referenced by other entities of the scene.
 - Studio: When selecting a model, material or texture in the asset view, entities that use it will be highlighted in the scene editor
@@ -68,7 +68,7 @@ Release date: 2015/07/16
 - Studio: Setting a diffuse map/specular map on a material will also set the diffuse model/specular model of this material.
 - Studio: Keyboard shortcut to switch between transformation gizmos (W, E, R, Space by default)
 - Engine: Add the possibility to enable/disable the depth test in sprite component.
-- Engine: Add a `PremultiplyAlpha` field to `ComputeColor` to be able to easily set pre-multiplied colors from the editor.
+- Engine: Add a *PremultiplyAlpha* field to *ComputeColor* to be able to easily set pre-multiplied colors from the editor.
 
 ## Issues fixed
 - Studio: Fix the animation preview that where not properly updating when the source file was modified.
