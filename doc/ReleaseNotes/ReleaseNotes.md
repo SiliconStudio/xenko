@@ -1,10 +1,10 @@
 # Highlights
 
-## Windows 10
+## Default scene
 
-Windows 10 Universal Apps (Store and Phone) are now supported. Add it to your existing projects by right-clicking on your package in Solution Explorer, select "Update Package" and then "Update Platforms".
+Creating a new game is now easier than ever, as it comes with a simple scene and graphics pipeline already setup for you!
 
-<img src="rn_images/Windows10.png" align="center" width="500"/>
+<img src="rn_images/DefaultScene.png" align="center" width="500"/>
 
 ## Script reloading and live scripting
 
@@ -18,11 +18,11 @@ Windows 10 Universal Apps (Store and Phone) are now supported. Add it to your ex
 
 <img src="rn_images/LiveScripting.png" align="center" width="500"/>
 
-## Default scene
+## Inline documentation
 
-Creating a new game is now easier than ever, as it comes with a simple scene and graphics pipeline already setup for you!
+More detailed documentation has been added to many object properties and settings. It is now easily accessible in a dedicated area just below the property grid, when pointing at an item.
 
-<img src="rn_images/DefaultScene.png" align="center" width="500"/>
+<img src="rn_images/UserDoc.png" align="center" width="500"/>
 
 ## Material and model highlighting
 
@@ -36,15 +36,11 @@ In a similar way, when browsing your assets, you might want to see visually were
 
 <img src="rn_images/Material-highlight2.png" align="center" width="500"/>
 
-## User documentation
+## Windows 10
 
-More detailed documentation has been added to many object properties and settings. It is now easily accessible in a dedicated area just below the property grid, when pointing at an item.
+Windows 10 Universal Apps (Store and Phone) are now supported. Add it to your existing projects by right-clicking on your package in Solution Explorer, select "Update Package" and then "Update Platforms".
 
-<img src="rn_images/UserDoc.png" align="center" width="500"/>
-
-## Usability
-
-Many **Usability** fixes for scene editor, sprite editor, UX, etc...
+<img src="rn_images/Windows10.png" align="center" width="500"/>
 
 # Breaking changes
 - Assets: Texture default transparency mode changes from `None` to `Auto`.
