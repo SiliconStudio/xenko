@@ -4,43 +4,43 @@
 
 Creating a new game is now easier than ever, as it comes with a simple scene and graphics pipeline already setup for you!
 
-<img src="rn_images/DefaultScene.png" align="center" width="500"/>
+<img src="http://doc.paradox3d.net/1.2/rn_images/DefaultScene.png" align="center" width="500"/>
 
 ## Script reloading and live scripting
 
 **Script reloading**: edit C# scripts and have them reloaded live in Game Studio. Previous public values will be kept as much as possible.
 
-<img src="rn_images/ScriptReloading1.png" align="center"/>
+<img src="http://doc.paradox3d.net/1.2/rn_images/ScriptReloading1.png" align="center"/>
 
-<img src="rn_images/ScriptReloading2.png" align="center"/>
+<img src="http://doc.paradox3d.net/1.2/rn_images/ScriptReloading2.png" align="center"/>
 
 **Live scripting**: Run your game from GameStudio in live-scripting mode; as soon as you update C# scripts, they will be reloaded inside your current running game (with previous public values kept when possible). This allow almost instant iteration on your gameplay code! Powered by Roslyn.
 
-<img src="rn_images/LiveScripting.png" align="center" width="500"/>
+<img src="http://doc.paradox3d.net/1.2/rn_images/LiveScripting.png" align="center" width="500"/>
 
 ## Inline documentation
 
 More detailed documentation has been added to many object properties and settings. It is now easily accessible in a dedicated area just below the property grid, when pointing at an item.
 
-<img src="rn_images/UserDoc.png" align="center" width="500"/>
+<img src="http://doc.paradox3d.net/1.2/rn_images/UserDoc.png" align="center" width="500"/>
 
 ## Material and model highlighting
 
 When you work on the materials of your scene, sometimes you want to be able to see where exactly a material is used on a model. In this release, we added a new material highlight feature, which allows you to easily see the different materials in the viewport and in the property grid by moving the mouse over a selected model. It is also possible to highlight a material from the property grid, to identify which part of the model it covers.
 
-<img src="rn_images/Material-highlight0.png" align="center" width="500"/>
+<img src="http://doc.paradox3d.net/1.2/rn_images/Material-highlight0.png" align="center" width="500"/>
 
-<img src="rn_images/Material-highlight1.png" align="center" width="500"/>
+<img src="http://doc.paradox3d.net/1.2/rn_images/Material-highlight1.png" align="center" width="500"/>
 
 In a similar way, when browsing your assets, you might want to see visually were it is used in the scene. When you select an asset, be it a model, a material, a texture..., the objects using it will be shortly highlighted.
 
-<img src="rn_images/Material-highlight2.png" align="center" width="500"/>
+<img src="http://doc.paradox3d.net/1.2/rn_images/Material-highlight2.png" align="center" width="500"/>
 
 ## Windows 10
 
 Windows 10 Universal Apps (Store and Phone) are now supported. Add it to your existing projects by right-clicking on your package in Solution Explorer, select "Update Package" and then "Update Platforms".
 
-<img src="rn_images/Windows10.png" align="center" width="500"/>
+<img src="http://doc.paradox3d.net/1.2/rn_images/Windows10.png" align="center" width="500"/>
 
 # Breaking changes
 - Assets: Texture default transparency mode changes from *None* to *Auto*.
