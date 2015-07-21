@@ -2,7 +2,7 @@
 
 ## Default scene
 
-Creating a new game is now easier than ever, as it comes with a simple scene and graphics pipeline already setup for you!
+Creating a new game is now easier, as it comes with a simple scene and graphics pipeline already setup for you!
 
 <img src="http://doc.paradox3d.net/1.2/rn_images/DefaultScene.png" align="center" width="500"/>
 
@@ -26,7 +26,7 @@ More detailed documentation has been added to many object properties and setting
 
 ## Material and model highlighting
 
-When you work on the materials of your scene, sometimes you want to be able to see where exactly a material is used on a model. In this release, we added a new material highlight feature, which allows you to easily see the different materials in the viewport and in the property grid by moving the mouse over a selected model. It is also possible to highlight a material from the property grid, to identify which part of the model it covers.
+When you work on the materials in your scene, sometimes you want to be able to see where exactly a material is used on a model. In this release, we added a new material highlight feature, which allows you to easily see the different materials in the viewport and in the property grid by moving the mouse over a selected model. It is also possible to highlight a material from the property grid, to identify which part of the model it covers.
 
 <img src="http://doc.paradox3d.net/1.2/rn_images/Material-highlight0.png" align="center" width="500"/>
 
@@ -39,8 +39,6 @@ In a similar way, when browsing your assets, you might want to see visually were
 ## Windows 10
 
 Windows 10 Universal Apps (Store and Phone) are now supported. Add it to your existing projects by right-clicking on your package in Solution Explorer, select "Update Package" and then "Update Platforms".
-
-<img src="http://doc.paradox3d.net/1.2/rn_images/Windows10.png" align="center" width="500"/>
 
 # Breaking changes
 - Assets: Texture default transparency mode changes from *None* to *Auto*.

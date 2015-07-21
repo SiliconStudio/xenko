@@ -494,6 +494,18 @@ namespace SiliconStudio {
 								auto flAnimChannel = ProcessAnimationCurveVector<float>(animationClip, "Camera.FieldOfViewVertical", 1, curves, 0.01f);
 								ComputeFovFromFL(flAnimChannel, camera);
 							}
+
+							if (camera->NearPlane.GetCurve(animLayer))
+							{
+								curves[0] = camera->NearPlane.GetCurve(animLayer);
+								ProcessAnimationCurveVector<float>(animationClip, "Camera.NearPlane", 1, curves, 0.01f);
+							}
+
+							if (camera->FarPlane.GetCurve(animLayer))
+							{
+								curves[0] = camera->FarPlane.GetCurve(animLayer);
+								ProcessAnimationCurveVector<float>(animationClip, "Camera.FarPlane", 1, curves, 0.01f);
+							}
 						}
 
 						for (int i = 0; i < pNode->GetChildCount(); ++i)
