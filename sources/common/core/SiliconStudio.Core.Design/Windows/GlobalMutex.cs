@@ -82,11 +82,13 @@ namespace SiliconStudio.Core.Windows
             name = name.Replace("/", "_");
             name = name.Replace("\\", "_");
             string mutexId = string.Format("Global\\{0}", name);
-            var allowEveryoneRule = new MutexAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null), MutexRights.FullControl, AccessControlType.Allow);
-            var securitySettings = new MutexSecurity();
-            securitySettings.AddAccessRule(allowEveryoneRule);
+            // Benlitz: I suspect the MutexSecurity object to be responible of some issues such as this one: https://github.com/SiliconStudio/paradox/issues/252 so I'm disabling it.
+            //var allowEveryoneRule = new MutexAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null), MutexRights.FullControl, AccessControlType.Allow);
+            //var securitySettings = new MutexSecurity();
+            //securitySettings.AddAccessRule(allowEveryoneRule);
             bool createdNew;
-            var mutex = new Mutex(false, mutexId, out createdNew, securitySettings);
+            //var mutex = new Mutex(false, mutexId, out createdNew, securitySettings);
+            var mutex = new Mutex(false, mutexId, out createdNew);
             return mutex;
         }
     }
