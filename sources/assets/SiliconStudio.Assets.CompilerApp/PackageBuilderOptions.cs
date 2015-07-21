@@ -107,6 +107,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 case PlatformType.Windows:
                 case PlatformType.WindowsPhone:
                 case PlatformType.WindowsStore:
+                case PlatformType.Windows10:
                     return Paradox.Graphics.GraphicsPlatform.Direct3D11;
                 case PlatformType.Android:
                 case PlatformType.iOS:

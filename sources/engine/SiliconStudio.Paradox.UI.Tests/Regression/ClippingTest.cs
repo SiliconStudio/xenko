@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Games;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Input;
 using SiliconStudio.Paradox.UI.Controls;
 using SiliconStudio.Paradox.UI.Panels;
@@ -31,7 +32,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            var uiGroup = Asset.Load<UIImageGroup>("UIImages");
+            var uiGroup = Asset.Load<SpriteSheet>("UIImages");
 
             element4 = new ContentDecorator
             {

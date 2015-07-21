@@ -126,7 +126,13 @@
     
     <!-- Run assembly processor -->
     <Message Importance="High" Text="SiliconStudio AssemblyProcessor: $(SiliconStudioAssemblyProcessorCommand)"/>
-    <Exec Command="$(SiliconStudioAssemblyProcessorCommand)" ContinueOnError='false'/>
+    <Exec Command="$(SiliconStudioAssemblyProcessorCommand)" ContinueOnError="True">
+      <Output TaskParameter="ExitCode" PropertyName="SiliconStudioAssemblyProcessorErrorCode"/>
+    </Exec>
+
+    <!-- If assembly processor failed, delete file (to make sure non-processed assemblies are never used) and emit error -->
+    <Delete Condition="$(SiliconStudioAssemblyProcessorErrorCode) != 0" Files="$(TargetPath)"/>
+    <Error Condition="$(SiliconStudioAssemblyProcessorErrorCode) != 0" Text='AssemblyProcessor command "$(SiliconStudioAssemblyProcessorCommand)" exited with error $(SiliconStudioAssemblyProcessorErrorCode)'/>
 
     <!-- Copy back *.dll from bin/Debug|Release to obj/Debug/Release directory -->
     <Copy SourceFiles="@(MainAssembly)" DestinationFolder="$(IntermediateOutputPath)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="$(OverwriteReadOnlyFiles)"/>

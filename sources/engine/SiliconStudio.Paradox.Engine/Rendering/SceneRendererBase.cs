@@ -3,7 +3,6 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Rendering.Composers;
 
@@ -21,6 +20,10 @@ namespace SiliconStudio.Paradox.Rendering
             Parameters = new ParameterCollection();
         }
 
+        /// <summary>
+        /// Gets or sets the output of the scene renderer
+        /// </summary>
+        /// <userdoc>Specify the render frame to use as output of the scene renderer</userdoc>
         [DataMember(100)]
         [NotNull]
         public ISceneRendererOutput Output { get; set; }

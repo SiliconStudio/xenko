@@ -37,6 +37,10 @@ namespace SiliconStudio.Paradox.Assets.Analysis
 
             foreach (var package in Session.Packages)
             {
+                // Make sure package has its assets loaded
+                if (package.State < PackageState.AssetsReady)
+                    continue;
+
                 var hasGameExecutable = package.Profiles.SelectMany(profile => profile.ProjectReferences).Any(projectRef => projectRef.Type == ProjectType.Executable);
                 if (!hasGameExecutable)
                 {
@@ -55,7 +59,7 @@ namespace SiliconStudio.Paradox.Assets.Analysis
 
                     // Creates a new default scene
                     // Checks we don't overwrite an existing asset
-                    const string defaultSceneLocation = "MainScene";
+                    const string defaultSceneLocation = GameSettingsAsset.DefaultSceneLocation;
                     var existingDefault = package.Assets.Find(defaultSceneLocation);
                     if (existingDefault != null && existingDefault.Asset is SceneAsset)
                     {

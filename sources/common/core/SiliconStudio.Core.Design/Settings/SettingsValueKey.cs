@@ -2,6 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using SharpYaml;
 using SharpYaml.Events;
 using SiliconStudio.Core.Extensions;
@@ -15,7 +17,16 @@ namespace SiliconStudio.Core.Settings
     /// </summary>
     /// <typeparam name="T">The type of value contained in this settings key.</typeparam>
     public class SettingsValueKey<T> : SettingsKey
-    {       
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SettingsValueKey{T}"/> class.
+        /// </summary>
+        /// <param name="name">The name of the settings key. Must be unique amongst an application.</param>
+        /// <param name="group">The <see cref="SettingsGroup"/> containing this <see cref="SettingsKey"/>.</param>
+        public SettingsValueKey(UFile name, SettingsGroup group) : this(name, group, default(T))
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsValueKey{T}"/> class.
         /// </summary>
@@ -46,10 +57,19 @@ namespace SiliconStudio.Core.Settings
         /// </summary>
         public T DefaultValue { get { return DefaultObjectValueCallback != null ? (T)DefaultObjectValueCallback() : (T)DefaultObjectValue; } }
 
+        /// <inheritdoc/>
+        public override object DefaultValueObject
+        {
+            get { return DefaultValue; }
+        }
+
         /// <summary>
         /// Gets or sets a function that returns an enumation of acceptable values for this <see cref="SettingsValueKey{T}"/>.
         /// </summary>
         public Func<IEnumerable<T>> GetAcceptableValues { get; set; }
+
+        /// <inheritdoc/>
+        public override IEnumerable<object> AcceptableValues { get { return GetAcceptableValues != null ? (IEnumerable<object>)GetAcceptableValues() : Enumerable.Empty<object>(); } }
 
         /// <summary>
         /// Gets the value of this settings key in the given profile.

@@ -2,17 +2,13 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Threading;
-using System.Xml.Linq;
 using Microsoft.Build.Evaluation;
-using Microsoft.Build.Logging;
-using Microsoft.Win32;
+
 using NuGet;
+using SiliconStudio.Core.Windows;
 
 namespace SiliconStudio.Assets
 {
@@ -191,6 +187,7 @@ namespace SiliconStudio.Assets
             }
         }
 
+        [Obsolete]
         public void UpdatePackage(IPackage package)
         {
             using (GetLocalRepositoryLocker())
@@ -201,7 +198,7 @@ namespace SiliconStudio.Assets
                 UpdateTargetsInternal();
 
                 // Install vsix
-                InstallVsix(GetLatestPackageInstalled(package.Id));
+                //InstallVsix(GetLatestPackageInstalled(package.Id));
             }
         }
 
@@ -257,10 +254,10 @@ namespace SiliconStudio.Assets
             var newPackageId = packageId.Replace(".", String.Empty);
             return "SiliconStudioPackage" + newPackageId + "Version";
         }
-
-        private GlobalMutexLocker GetLocalRepositoryLocker()
+        
+        private IDisposable GetLocalRepositoryLocker()
         {
-            return new GlobalMutexLocker("LauncherApp-" + RootDirectory);
+            return GlobalMutex.Wait("ParadoxLauncher-{1F6F92C3-B1CF-4E40-A8D5-4D1F1EB66285}-" + RootDirectory);
         }
 
         private List<IPackage> UpdateTargetsInternal()
@@ -293,6 +290,11 @@ namespace SiliconStudio.Assets
                 var packageVarSaved = packageVar + "Saved";
                 var packageVarInvalid = packageVar + "Invalid";
                 var packageVarRevision = packageVar + "Revision";
+                var packageVarOverride = packageVar + "Override";
+
+                // <SiliconStudioPackageParadoxVersion Condition="'$(SiliconStudioPackageParadoxVersionOverride)' != ''">$(SiliconStudioPackageParadoxVersionOverride)</SiliconStudioPackageParadoxVersion>
+                var versionFromOverrideProperty = commonPropertyGroup.AddProperty(packageVar, "$(" + packageVarOverride + ")");
+                versionFromOverrideProperty.Condition = "'$(" + packageVarOverride + ")' != ''";
 
                 // <SiliconStudioPackageParadoxVersionSaved>$(SiliconStudioPackageParadoxVersion)</SiliconStudioPackageParadoxVersionSaved>
                 commonPropertyGroup.AddProperty(packageVarSaved, "$(" + packageVar + ")");
@@ -389,172 +391,11 @@ namespace SiliconStudio.Assets
             packages.Remove(packageToTrack);
         }
 
-        public void InstallVsix(IPackage package)
-        {
-            if (package == null)
-            {
-                return;
-            }
-
-            var packageDirectory = PathResolver.GetInstallPath(package);
-            InstallVsixFromPackageDirectory(packageDirectory);
-        }
-
-        internal void InstallVsixFromPackageDirectory(string packageDirectory)
-        {
-            var vsixInstallerPath = FindLatestVsixInstaller();
-            if (vsixInstallerPath == null)
-            {
-                return;
-            }
-
-            var files = Directory.EnumerateFiles(packageDirectory, "*.vsix", SearchOption.AllDirectories);
-            foreach (var file in files)
-            {
-                InstallVsix(vsixInstallerPath, file);
-            }
-        }
-
-        private void InstallVsix(string vsixInstallerPath, string pathToVsix)
-        {
-            // Uninstall previous vsix
-
-            var vsixId = GetVsixId(pathToVsix);
-            if (vsixId == Guid.Empty)
-            {
-                throw new InvalidOperationException(string.Format("Invalid VSIX package [{0}]", pathToVsix));
-            }
-
-            var vsixName = Path.GetFileNameWithoutExtension(pathToVsix);
-            
-            // Log just one message when installing the visual studio package
-            Logger.Log(MessageLevel.Info, "Installing Visual Studio Package [{0}]", vsixName);
-
-            RunVsixInstaller(vsixInstallerPath, "/q /uninstall:" + vsixId.ToString("D", CultureInfo.InvariantCulture));
-
-            // Install new vsix
-            RunVsixInstaller(vsixInstallerPath, "/q \"" + pathToVsix + "\"");
-        }
-
-        private static bool RunVsixInstaller(string pathToVsixInstaller, string arguments)
-        {
-            try
-            {
-                var process = Process.Start(pathToVsixInstaller, arguments);
-                if (process == null)
-                {
-                    return false;
-                }
-                process.WaitForExit();
-                return process.ExitCode == 0;
-            }
-            catch (Exception)
-            {
-            }
-
-            return false;
-        }
-
-        private static Guid GetVsixId(string pathToVsix)
-        {
-            if (pathToVsix == null) throw new ArgumentNullException("pathToVsix");
-
-            var id = Guid.Empty;
-            using (var stream = File.OpenRead(pathToVsix))
-            {
-                var package = System.IO.Packaging.Package.Open(stream);
-
-                var uri = System.IO.Packaging.PackUriHelper.CreatePartUri(new Uri("extension.vsixmanifest", UriKind.Relative));
-                var manifest = package.GetPart(uri);
-
-                var doc = XElement.Load(manifest.GetStream());
-                var identity = doc.Descendants().FirstOrDefault(element => element.Name.LocalName == "Identity");
-                if (identity != null)
-                {
-                    var idAttribute = identity.Attribute("Id");
-                    if (idAttribute != null)
-                    {
-                        Guid.TryParse(idAttribute.Value, out id);
-                    }
-                }
-            }
-
-            return id;
-        }
-
-        private static string FindLatestVsixInstaller()
-        {
-            var key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
-            var subKey = key.OpenSubKey(@"SOFTWARE\Microsoft\VisualStudio\");
-            if (subKey == null)
-            {
-                return null;
-            }
-
-            var versions = new Dictionary<Version, string>();
-            foreach (var subKeyName in subKey.GetSubKeyNames())
-            {
-                Version version;
-                if (Version.TryParse(subKeyName, out version))
-                {
-                    versions.Add(version, subKeyName);
-                }
-            }
-
-            foreach (var version in versions.Keys.OrderByDescending(v => v))
-            {
-                var subKeyName = versions[version];
-                
-                var vsKey = subKey.OpenSubKey(subKeyName);
-
-                var installDirValue = vsKey.GetValue("InstallDir");
-                if (installDirValue != null)
-                {
-                    var installDir = installDirValue.ToString();
-                    var vsixInstallerPath = Path.Combine(installDir, "VSIXInstaller.exe");
-                    if (File.Exists(vsixInstallerPath))
-                    {
-                        return vsixInstallerPath;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-
         public static bool IsSourceUnavailableException(Exception ex)
         {
             return (((ex is WebException) ||
                 (ex.InnerException is WebException) ||
                 (ex.InnerException is InvalidOperationException)));
-        }
-
-        private class GlobalMutexLocker : IDisposable
-        {
-            private Mutex mutex;
-            private readonly bool owned;
-
-            public GlobalMutexLocker(string name)
-            {
-                name = name.Replace(":", "_");
-                name = name.Replace("/", "_");
-                name = name.Replace("\\", "_");
-                mutex = new Mutex(true, name, out owned);
-                if (!owned)
-                {
-                    owned = mutex.WaitOne();
-                }
-            }
-
-            public void Dispose()
-            {
-                if (owned)
-                {
-                    mutex.ReleaseMutex();
-                }
-                mutex = null;
-            }
         }
 
         public static bool IsStoreDirectory(string directory)

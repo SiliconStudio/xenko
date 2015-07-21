@@ -34,9 +34,6 @@ namespace SiliconStudio.Paradox.Graphics
         private Matrix viewProjectionMatrix;
 
         private Vector4 vector4LeftTop = new Vector4(-0.5f, -0.5f, -0.5f, 1);
-        private Vector4 vector4UnitX = Vector4.UnitX;
-        private Vector4 vector4UnitY = Vector4.UnitY;
-        private Vector4 vector4UnitZ = Vector4.UnitZ;
 
         private readonly Vector4[] shiftVectorX = new Vector4[4];
         private readonly Vector4[] shiftVectorY = new Vector4[4];
@@ -214,8 +211,9 @@ namespace SiliconStudio.Paradox.Graphics
 
             Matrix worldViewProjection;
             Matrix.Multiply(ref matrix, ref viewProjectionMatrix, out worldViewProjection);
-            Vector4.Transform(ref vector4UnitX, ref worldViewProjection, out drawInfo.UnitXWorld);
-            Vector4.Transform(ref vector4UnitY, ref worldViewProjection, out drawInfo.UnitYWorld);
+            drawInfo.UnitXWorld = worldViewProjection.Row1;
+            drawInfo.UnitYWorld = worldViewProjection.Row2;
+            drawInfo.UnitZWorld = worldViewProjection.Row3;
             Vector4.Transform(ref vector4LeftTop, ref worldViewProjection, out drawInfo.LeftTopCornerWorld);
 
             var elementInfo = new ElementInfo(4, 6, ref drawInfo, depthBias);
@@ -274,9 +272,9 @@ namespace SiliconStudio.Paradox.Graphics
 
             Matrix worldViewProjection;
             Matrix.Multiply(ref matrix, ref viewProjectionMatrix, out worldViewProjection);
-            Vector4.Transform(ref vector4UnitX, ref worldViewProjection, out drawInfo.UnitXWorld);
-            Vector4.Transform(ref vector4UnitY, ref worldViewProjection, out drawInfo.UnitYWorld);
-            Vector4.Transform(ref vector4UnitZ, ref worldViewProjection, out drawInfo.UnitZWorld);
+            drawInfo.UnitXWorld = worldViewProjection.Row1;
+            drawInfo.UnitYWorld = worldViewProjection.Row2;
+            drawInfo.UnitZWorld = worldViewProjection.Row3;
             Vector4.Transform(ref vector4LeftTop, ref worldViewProjection, out drawInfo.LeftTopCornerWorld);
 
             var elementInfo = new ElementInfo(8, 6 * 6, ref drawInfo, depthBias);
@@ -351,8 +349,8 @@ namespace SiliconStudio.Paradox.Graphics
 
             Matrix worldViewProjection;
             Matrix.Multiply(ref matrix, ref viewProjectionMatrix, out worldViewProjection);
-            Vector4.Transform(ref vector4UnitX, ref worldViewProjection, out drawInfo.UnitXWorld);
-            Vector4.Transform(ref vector4UnitY, ref worldViewProjection, out drawInfo.UnitYWorld);
+            drawInfo.UnitXWorld = worldViewProjection.Row1;
+            drawInfo.UnitYWorld = worldViewProjection.Row2;
 
             // rotate origin and unit axis if need.
             var leftTopCorner = vector4LeftTop;
@@ -378,6 +376,45 @@ namespace SiliconStudio.Paradox.Graphics
             Draw(texture, texture1, ref elementInfo);
         }
 
+        internal void DrawCharacter(Texture texture, ref Matrix worldViewProjectionMatrix, ref RectangleF sourceRectangle, ref Color color, int depthBias, SwizzleMode swizzle)
+        {
+            // Check that texture is not null
+            if (texture == null)
+                throw new ArgumentNullException("texture");
+
+            // End the current batching session and change the effect if required
+            if (separateAlphaEffectBinded)
+            {
+                End();
+                separateAlphaEffectBinded = !separateAlphaEffectBinded;
+                Begin(separateAlphaEffectBinded ? uiSeparateAlphaEffect : null, separateAlphaEffectBinded ? uiSeparateAlphaParameterCollectionGroup : null, SortMode, BlendState, SamplerState, DepthStencilState, RasterizerState, StencilReferenceValue);
+            }
+
+            // Calculate the information needed to draw.
+            var drawInfo = new UIImageDrawInfo
+            {
+                Source =
+                {
+                    X = sourceRectangle.X / texture.ViewWidth,
+                    Y = sourceRectangle.Y / texture.ViewHeight,
+                    Width = sourceRectangle.Width / texture.ViewWidth,
+                    Height = sourceRectangle.Height / texture.ViewHeight
+                },
+                DepthBias = depthBias,
+                Color = color,
+                Swizzle = swizzle,
+                Primitive = PrimitiveType.Rectangle,
+                VertexShift = Vector4.Zero,
+                UnitXWorld = worldViewProjectionMatrix.Row1,
+                UnitYWorld = worldViewProjectionMatrix.Row2,
+                LeftTopCornerWorld = worldViewProjectionMatrix.Row4,
+            };
+
+            var elementInfo = new ElementInfo(4, 6, ref drawInfo, depthBias);
+
+            Draw(texture, null, ref elementInfo);
+        }
+
         /// <summary>
         /// Batch the draws required to display the provided text to the draw list.
         /// </summary>
@@ -396,7 +433,7 @@ namespace SiliconStudio.Paradox.Graphics
         {
             var drawCommand = new SpriteFont.InternalUIDrawCommand
                 {
-                    WorldMatrix = worldMatrix, 
+                    Matrix = worldMatrix, 
                     Batch = this, 
                     Color = color, 
                     DepthBias = depthBias, 
@@ -421,9 +458,35 @@ namespace SiliconStudio.Paradox.Graphics
 
             // shift the string position so that it is written from the left/top corner of the element
             var offsets = drawCommand.Size / 2;
-            drawCommand.WorldMatrix.M41 -= drawCommand.WorldMatrix.M11 * offsets.X + drawCommand.WorldMatrix.M21 * offsets.Y;
-            drawCommand.WorldMatrix.M42 -= drawCommand.WorldMatrix.M12 * offsets.X + drawCommand.WorldMatrix.M22 * offsets.Y;
-            drawCommand.WorldMatrix.M43 -= drawCommand.WorldMatrix.M13 * offsets.X + drawCommand.WorldMatrix.M23 * offsets.Y;
+            var worldMatrix = drawCommand.Matrix;
+            worldMatrix.M41 -= worldMatrix.M11 * offsets.X + worldMatrix.M21 * offsets.Y;
+            worldMatrix.M42 -= worldMatrix.M12 * offsets.X + worldMatrix.M22 * offsets.Y;
+            worldMatrix.M43 -= worldMatrix.M13 * offsets.X + worldMatrix.M23 * offsets.Y;
+
+            // transform the world matrix into the world view project matrix
+            Matrix.MultiplyTo(ref worldMatrix, ref viewProjectionMatrix, out drawCommand.Matrix);
+
+            // do not snap static fonts when real/virtual resolution does not match.
+            if (!font.IsDynamic && (drawCommand.FontScale.X != 1 || drawCommand.FontScale.Y != 1)) 
+            {
+                drawCommand.SnapText = false;   // we don't want snapping of the resolution of the screen does not match virtual resolution. (character alignment problems)
+                drawCommand.FontScale = Vector2.One; // ensure that static font are not scaled internally
+            }
+
+            // snap draw start position to prevent characters to be drawn in between two pixels
+            if (drawCommand.SnapText)
+            {
+                var invW = 1.0f / drawCommand.Matrix.M44;
+                var backBufferHalfWidth = GraphicsDevice.BackBuffer.ViewWidth / 2;
+                var backBufferHalfHeight = GraphicsDevice.BackBuffer.ViewHeight / 2;
+
+                drawCommand.Matrix.M41 *= invW;
+                drawCommand.Matrix.M42 *= invW;
+                drawCommand.Matrix.M41 = (float)(Math.Round(drawCommand.Matrix.M41 * backBufferHalfWidth) / backBufferHalfWidth);
+                drawCommand.Matrix.M42 = (float)(Math.Round(drawCommand.Matrix.M42 * backBufferHalfHeight) / backBufferHalfHeight);
+                drawCommand.Matrix.M41 /= invW;
+                drawCommand.Matrix.M42 /= invW;
+            }
 
             font.InternalUIDraw(ref proxy, ref drawCommand);
         }
@@ -551,16 +614,15 @@ namespace SiliconStudio.Paradox.Graphics
 
         private unsafe void CalculateRectangleVertices(UIImageDrawInfo* drawInfo, VertexPositionColorTextureSwizzle* vertex)
         {
-            // TODO this should be replaced by the size of the render target.
-            var backBufferHalfWidth = GraphicsDevice.BackBuffer.ViewWidth / 2;
-            var backBufferHalfHeight = GraphicsDevice.BackBuffer.ViewHeight / 2;
-
             var currentPosition = drawInfo->LeftTopCornerWorld;
 
             // snap first pixel to prevent possible problems when left/top is in the middle of a pixel
             if (drawInfo->SnapImage)
             {
                 var invW = 1.0f / currentPosition.W;
+                var backBufferHalfWidth = GraphicsDevice.BackBuffer.ViewWidth / 2;
+                var backBufferHalfHeight = GraphicsDevice.BackBuffer.ViewHeight / 2;
+
                 currentPosition.X *= invW;
                 currentPosition.Y *= invW;
                 currentPosition.X = (float)(Math.Round(currentPosition.X * backBufferHalfWidth) / backBufferHalfWidth);
@@ -589,6 +651,8 @@ namespace SiliconStudio.Paradox.Graphics
 
                     if (drawInfo->SnapImage)
                     {
+                        var backBufferHalfWidth = GraphicsDevice.BackBuffer.ViewWidth / 2;
+                        var backBufferHalfHeight = GraphicsDevice.BackBuffer.ViewHeight / 2;
                         vertex->Position.X = (float)(Math.Round(vertex->Position.X * backBufferHalfWidth) / backBufferHalfWidth);
                         vertex->Position.Y = (float)(Math.Round(vertex->Position.Y * backBufferHalfHeight) / backBufferHalfHeight);
                     }

@@ -9,6 +9,7 @@ using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.UI.Controls;
 
 namespace SiliconStudio.Paradox.UI.Tests.Regression
@@ -22,7 +23,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public InSceneUITest()
         {
-            CurrentVersion = 4;
+            CurrentVersion = 5;
         }
 
         protected override async Task LoadContent()
@@ -35,12 +36,12 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             Script.Add(camera);
 
             UIRoot.Transform.Rotation = Quaternion.RotationX(MathUtil.Pi / 3f);
-            UIComponent.RootElement = new ImageElement { Source = new UIImage(Asset.Load<Texture>("uv"))};
+            UIComponent.RootElement = new ImageElement { Source = new Sprite(Asset.Load<Texture>("uv"))};
             UIComponent.IsFullScreen = false;
             UIComponent.IsBillboard = false;
             UIComponent.VirtualResolution = new Vector3(200, 200, 100);
 
-            var cube = Asset.Load<Entity>("cube");
+            var cube = new Entity { new ModelComponent { Model = Asset.Load<Model>("cube Model") } };
             cube.Transform.Scale = new Vector3(10000);
             cube.Transform.Position = new Vector3(0, 0, 10);
             Scene.AddChild(cube);

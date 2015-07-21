@@ -14,11 +14,13 @@ namespace SiliconStudio.Paradox.Rendering
         /// <summary>
         /// Clears the Color and DepthStencil buffer.
         /// </summary>
+        /// <userdoc>Clears both the Color and DepthStencil buffers</userdoc>
         Color,
 
         /// <summary>
         /// Clears only the depth.
         /// </summary>
+        /// <userdoc>Clears only the DepthStencil buffer</userdoc>
         DepthOnly,
     }
 }

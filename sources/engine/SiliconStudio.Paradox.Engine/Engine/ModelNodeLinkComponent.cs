@@ -8,7 +8,7 @@ using SiliconStudio.Paradox.Engine.Processors;
 namespace SiliconStudio.Paradox.Engine
 {
     [DataContract("ModelNodeLinkComponent")]
-    [Display(15, "Model Node Link")]
+    [Display(15, "Model Node Link", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(ModelNodeLinkProcessor))]
     public sealed class ModelNodeLinkComponent : EntityComponent
     {
@@ -25,6 +25,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The model which contains the hierarchy to use.
         /// </value>
+        /// <userdoc>The reference to the target entity to which attach the current entity.</userdoc>
         public ModelComponent Target
         {
             get
@@ -44,6 +45,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The name of the node.
         /// </value>
+        /// <userdoc>The name of node of the model of the target entity to which attach the current entity.</userdoc>
         public string NodeName
         {
             get

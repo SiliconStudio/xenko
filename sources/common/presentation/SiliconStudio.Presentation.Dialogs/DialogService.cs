@@ -21,7 +21,7 @@ namespace SiliconStudio.Presentation.Dialogs
             ParentWindow = parentWindow;
         }
 
-        public Window ParentWindow { get; private set; }
+        public Window ParentWindow { get; set; }
 
         public IFileOpenModalDialog CreateFileOpenModalDialog()
         {
@@ -40,7 +40,14 @@ namespace SiliconStudio.Presentation.Dialogs
 
         public MessageBoxResult ShowMessageBox(string message, string caption, MessageBoxButton button, MessageBoxImage image)
         {
-            return (MessageBoxResult)MessageBox.Show(message, caption, (System.Windows.MessageBoxButton)button, (System.Windows.MessageBoxImage)image);
+            var parentWindow = ParentWindow;
+            return dispatcher.Invoke(() =>
+            {
+                if (parentWindow != null)
+                    return (MessageBoxResult)MessageBox.Show(parentWindow, message, caption, (System.Windows.MessageBoxButton)button, (System.Windows.MessageBoxImage)image);
+
+                return (MessageBoxResult)MessageBox.Show(message, caption, (System.Windows.MessageBoxButton)button, (System.Windows.MessageBoxImage)image);
+            });
         }
 
         public void CloseCurrentWindow(bool? dialogResult = null)
@@ -51,7 +58,10 @@ namespace SiliconStudio.Presentation.Dialogs
                 ParentWindow.DialogResult = dialogResult;
             }
             ParentWindow.Close();
-            ParentWindow = null;
+            if (!ParentWindow.IsLoaded)
+            {
+                ParentWindow = null;
+            }
         }
     }
 }

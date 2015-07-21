@@ -3,10 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Games;
@@ -18,6 +18,8 @@ namespace SiliconStudio.Paradox.Engine.Processors
     /// </summary>
     public sealed class ScriptSystem : GameSystemBase
     {
+        internal readonly static Logger Log = GlobalLogger.GetLogger("ScriptSystem");
+
         /// <summary>
         /// Contains all currently executed scripts
         /// </summary>
@@ -55,7 +57,18 @@ namespace SiliconStudio.Paradox.Engine.Processors
             foreach (var script in scriptsToStartCopy)
             {
                 // Start the script
-                script.Start();
+                var startupScript = script as StartupScript;
+                if (startupScript != null)
+                {
+                    try
+                    {
+                        startupScript.Start();
+                    }
+                    catch (Exception e)
+                    {
+                        HandleSynchronousException(script, e);
+                    }
+                }
 
                 // Start a microthread with execute method if it's an async script
                 var asyncScript = script as AsyncScript;
@@ -69,13 +82,27 @@ namespace SiliconStudio.Paradox.Engine.Processors
             // Run current micro threads
             Scheduler.Run();
 
+            // Flag scripts as not being live reloaded after starting/executing them for the first time
+            foreach (var script in scriptsToStartCopy)
+            {
+                if (script.IsLiveReloading)
+                    script.IsLiveReloading = false;
+            }
+
             syncScriptsCopy.Clear();
             syncScriptsCopy.AddRange(syncScripts);
 
             // Execute sync scripts
             foreach (var script in syncScriptsCopy)
             {
-                script.Update();
+                try
+                {
+                    script.Update();
+                }
+                catch (Exception e)
+                {
+                    HandleSynchronousException(script, e);
+                }
             }
         }
 
@@ -135,8 +162,58 @@ namespace SiliconStudio.Paradox.Engine.Processors
         public void Remove(Script script)
         {
             // Make sure it's not registered in any pending list
-            scriptsToStart.Remove(script);
+            var startWasPending = scriptsToStart.Remove(script);
+            var wasRegistered = registeredScripts.Remove(script);
 
+            if (!startWasPending && wasRegistered)
+            {
+                // Cancel scripts that were already started
+                var startupScript = script as StartupScript;
+                if (startupScript != null)
+                {
+                    try
+                    {
+                        startupScript.Cancel();
+                    }
+                    catch (Exception e)
+                    {
+                        HandleSynchronousException(script, e);
+                    }
+                }
+
+                // TODO: Cancel async script execution
+            }
+
+            var syncScript = script as SyncScript;
+            if (syncScript != null)
+            {
+                syncScripts.Remove(syncScript);
+            }
+        }
+
+        /// <summary>
+        /// Called by a live scripting debugger to notify the ScriptSystem about reloaded scripts.
+        /// </summary>
+        /// <param name="oldScript">The old script</param>
+        /// <param name="newScript">The new script</param>
+        public void LiveReload(Script oldScript, Script newScript)
+        {
+            // Set live reloading mode for the rest of it's lifetime
+            oldScript.IsLiveReloading = true;
+
+            // Set live reloading mode until after being started
+            newScript.IsLiveReloading = true;
+        }
+
+        private void HandleSynchronousException(Script script, Exception e)
+        {
+            Log.Error("Unexpected exception while executing a script. Reason: {0}", new object[] { e });
+
+            // Only crash if live scripting debugger is not listening
+            if (Scheduler.PropagateExceptions)
+                ExceptionDispatchInfo.Capture(e).Throw();
+
+            // Remove script from all lists
             var syncScript = script as SyncScript;
             if (syncScript != null)
             {
@@ -144,103 +221,6 @@ namespace SiliconStudio.Paradox.Engine.Processors
             }
 
             registeredScripts.Remove(script);
-        }
-
-        public void ProcessAssemblyLoad(Assembly assembly)
-        {
-            // Check unloaded scripts if anything can be reloaded (note: making a copy since this collection will be modified)
-            foreach (var script in registeredScripts.ToArray())
-            {
-                // We only care about unloaded scripts
-                if (!script.Unloaded)
-                    continue;
-
-                // Check if same script type existing in newly loaded assembly
-                var scriptType = assembly.GetType(script.GetType().FullName);
-                if (scriptType == null)
-                    continue;
-
-                // Found a match, let's replace it with an instance of this new type
-                var newScript = (Script)Activator.CreateInstance(scriptType);
-
-                // Transpose old properties/fields to new instance?
-                // TODO: Currently only handle simple case (properties of same type), this need to be improved! (reuse an existing system?)
-                foreach (var targetProperty in scriptType.GetTypeInfo().DeclaredProperties)
-                {
-                    if (!CheckPropertyIsTransferable(targetProperty))
-                        continue;
-
-                    // Find a matching property (same name, type, readable & writeable)
-                    var sourceProperty = script.GetType().GetTypeInfo().GetDeclaredProperty(targetProperty.Name);
-                    if (sourceProperty == null || !CheckPropertyIsTransferable(sourceProperty) || sourceProperty.PropertyType != targetProperty.PropertyType)
-                        continue;
-
-                    // Copy value
-                    targetProperty.SetValue(newScript, sourceProperty.GetValue(script));
-                }
-
-                // Register script in script component, or rerun it manually
-                if (script.ScriptComponent != null)
-                {
-                    var oldScriptIndex = script.ScriptComponent.Scripts.IndexOf(script);
-                    if (oldScriptIndex != -1)
-                    {
-                        script.ScriptComponent.Scripts[oldScriptIndex] = newScript;
-                    }
-                }
-                else
-                {
-                    Add(script);
-                }
-            }
-        }
-
-        private static bool CheckPropertyIsTransferable(PropertyInfo targetProperty)
-        {
-            // Check that there is a getter and setter
-            if (!targetProperty.CanRead || !targetProperty.CanWrite)
-                return false;
-
-            // Only public non-static properties
-            if (!targetProperty.GetMethod.IsPublic || !targetProperty.SetMethod.IsPublic || !targetProperty.GetMethod.IsStatic)
-                return false;
-
-            // Does it contain DataMemberIgnoreAttribute?
-            if (targetProperty.GetCustomAttribute<DataMemberIgnoreAttribute>() != null)
-                return false;
-
-            return true;
-        }
-
-        public void ProcessAssemblyUnload(Assembly assembly)
-        {
-            // Check list of running script if any should be "paused"
-            foreach (var script in registeredScripts)
-            {
-                if (script.GetType().GetTypeInfo().Assembly != assembly)
-                    continue;
-
-                // Unregister it from launches (in case it wasn't done yet)
-                scriptsToStart.Remove(script);
-
-                // Dispose script (if it applies)
-                script.Dispose();
-
-                if (script.MicroThread != null && !script.MicroThread.IsOver)
-                {
-                    // Force the script to be cancelled
-                    script.MicroThread.RaiseException(new Exception("Cancelled"));
-                }
-                else if (script.ScriptComponent == null)
-                {
-                    // We only care about currently running script, or script being part of a ScriptComponent (not launched manually)
-                    // Script launched manually and already finished can be ignored
-                    continue;
-                }
-
-                // Mark script as unloaded
-                script.Unloaded = true;
-            }
         }
     }
 }

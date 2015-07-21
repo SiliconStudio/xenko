@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Threading;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Assets
 {

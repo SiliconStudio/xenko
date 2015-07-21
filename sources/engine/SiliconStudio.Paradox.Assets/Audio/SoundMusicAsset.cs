@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Assets.Audio
     [AssetDescription(FileExtension)]
     [ObjectFactory(typeof(SoundMusicFactory))]
     [AssetCompiler(typeof(SoundAssetCompiler))]
-    [ThumbnailCompiler(PreviewerCompilerNames.SoundThumbnailCompilerQualifiedName)]
+    [ThumbnailCompiler(PreviewerCompilerNames.SoundMusicThumbnailCompilerQualifiedName)]
     [Display(125, "Sound Music", "A music track")]
     public class SoundMusicAsset : SoundAsset
     {

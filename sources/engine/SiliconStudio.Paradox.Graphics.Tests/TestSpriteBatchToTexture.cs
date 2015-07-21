@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         private SpriteBatch spriteBatch;
 
         private Texture uv;
-        private SpriteGroup spheres;
+        private SpriteSheet spheres;
 
         private SpriteFont arial;
 
@@ -51,7 +51,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             depthBuffer = Texture.New2D(GraphicsDevice, OfflineWidth, OfflineHeight, PixelFormat.D16_UNorm, TextureFlags.DepthStencil).DisposeBy(this);
 
             uv = Asset.Load<Texture>("uv");
-            spheres = Asset.Load<SpriteGroup>("SpriteSphere");
+            spheres = Asset.Load<SpriteSheet>("SpriteSphere");
 
             arial = Asset.Load<SpriteFont>("StaticFonts/Arial13");
 
@@ -81,9 +81,9 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             spriteBatch.End();
 
             // copy texture on screen
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsDevice.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsDevice.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
             spriteBatch.Begin();
             spriteBatch.Draw(offlineTarget, new RectangleF(0, 0, width, height), Color.White);

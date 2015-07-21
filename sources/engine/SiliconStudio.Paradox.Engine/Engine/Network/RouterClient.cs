@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace SiliconStudio.Paradox.Engine.Network
@@ -71,28 +70,33 @@ namespace SiliconStudio.Paradox.Engine.Network
 
             Task.Run(async () =>
             {
-                // Keep trying to establish connections until no errors
-                bool hasErrors;
-                do
+                // If connecting as a client, try once, otherwise try to listen multiple time (in case port is shared)
+                switch (ConnectionMode)
                 {
-                    try
-                    {
-                        hasErrors = false;
-                        if (PlatformIsPortForward)
-                            await socketContext.StartServer(DefaultListenPort, true);
-                        else
+                    case RouterConnectionMode.Connect:
+                        await socketContext.StartClient("127.0.0.1", DefaultPort);
+                        break;
+                    case RouterConnectionMode.Listen:
+                        await socketContext.StartServer(DefaultListenPort, true, 10);
+                        break;
+                    case RouterConnectionMode.ConnectThenListen:
+                        bool clientException = false;
+                        try
+                        {
                             await socketContext.StartClient("127.0.0.1", DefaultPort);
-                    }
-                    catch (Exception)
-                    {
-                        hasErrors = true;
-                    }
-                    if (hasErrors)
-                    {
-                        // Wait a little bit before next try
-                        await Task.Delay(100);
-                    }
-                } while (hasErrors);
+                        }
+                        catch (Exception) // Ideally we should filter SocketException, but not available on some platforms (maybe it should be wrapped in a type available on all paltforms?)
+                        {
+                            clientException = true;
+                        }
+                        if (clientException)
+                        {
+                            await socketContext.StartServer(DefaultListenPort, true, 10);
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             });
 
             // Wait for server to connect to us (as a Task)
@@ -108,16 +112,37 @@ namespace SiliconStudio.Paradox.Engine.Network
         /// <summary>
         /// Gets a value indicating whether this platform initiates connections by listening on a port and wait for router (true) or connecting to router (false).
         /// </summary>
-        private static bool PlatformIsPortForward
+        private static RouterConnectionMode ConnectionMode
         {
             get
             {
-#if SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_WINDOWS_PHONE || SILICONSTUDIO_PLATFORM_IOS
-                return true;
+#if SILICONSTUDIO_PLATFORM_WINDOWS_10 || SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
+                return RouterConnectionMode.ConnectThenListen;
+#elif SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS
+                return RouterConnectionMode.Listen;
 #else
-                return false;
+                return RouterConnectionMode.Connect;
 #endif
             }
+        }
+
+        private enum RouterConnectionMode
+        {
+            /// <summary>
+            /// Tries to connect to the router.
+            /// </summary>
+            Connect = 1,
+
+            /// <summary>
+            /// Tries to listen from a router connection.
+            /// </summary>
+            Listen = 2,
+
+            /// <summary>
+            /// First, tries to connect, and if not possible, listen for a router connection.
+            /// This is useful for platform where we can't be sure (no way to determine if emulator and/or run in desktop or remotely, such as UWP).
+            /// </summary>
+            ConnectThenListen = 3,
         }
     }
 }

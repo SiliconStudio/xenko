@@ -6,7 +6,7 @@ namespace SiliconStudio.Paradox.Engine.Design
     [DataContract]
     public class ScriptCollection : TrackingCollection<Script>
     {
-        internal ScriptCollection()
+        public ScriptCollection()
         {
         }
     }

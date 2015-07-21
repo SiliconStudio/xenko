@@ -4,7 +4,6 @@
 using System;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Processors;
 using SiliconStudio.Paradox.Graphics;
@@ -19,11 +18,14 @@ namespace SiliconStudio.Paradox.Rendering
     public class BackgroundComponentRenderer : EntityComponentRendererBase
     {
         private SpriteBatch spriteBatch;
-        
+
+        private Effect backgroundEffect;
+
         protected override void InitializeCore()
         {
             base.InitializeCore();
 
+            backgroundEffect = new Effect(Context.GraphicsDevice, BackgroundEffect.Bytecode) { Name = "BackgroundEffect" };
             spriteBatch = new SpriteBatch(Context.GraphicsDevice) { VirtualResolution = new Vector3(1)};
         }
 
@@ -39,7 +41,7 @@ namespace SiliconStudio.Paradox.Rendering
                 if (!CurrentCullingMask.Contains(backgroundComponent.Entity.Group))
                     continue;
 
-                opaqueList.Add(new RenderItem(this, backgroundComponent, 0.0f)); // render background first so that it can replace a clear frame
+                opaqueList.Add(new RenderItem(this, backgroundComponent, float.NegativeInfinity)); // render background first so that it can replace a clear frame
                 return; // draw only one background by group
             }
         }
@@ -49,24 +51,28 @@ namespace SiliconStudio.Paradox.Rendering
             var graphicsDevice = context.GraphicsDevice;
             var destination = new RectangleF(0, 0, 1, 1);
 
-            spriteBatch.Begin(SpriteSortMode.FrontToBack, graphicsDevice.BlendStates.Opaque, graphicsDevice.SamplerStates.LinearClamp, graphicsDevice.DepthStencilStates.None);
-
-            for(var i = fromIndex; i <= toIndex; ++i)
+            // find the last background to display with valid texture
+            BackgroundComponent background = null;
+            for (var i = toIndex; i >= fromIndex; --i)
             {
-                var background = (BackgroundComponent)renderItems[i].DrawContext;
-                var texture = background.Texture;
-                if (texture == null)
-                    continue;
-                
-                var target = CurrentRenderFrame;
-
-                var imageBufferMinRatio = Math.Min(texture.ViewWidth / (float)target.Width, texture.ViewHeight / (float)target.Height);
-                var sourceSize = new Vector2(target.Width * imageBufferMinRatio, target.Height * imageBufferMinRatio);
-                var source = new RectangleF((texture.ViewWidth - sourceSize.X) / 2, (texture.ViewHeight - sourceSize.Y) / 2, sourceSize.X, sourceSize.Y);
-
-                spriteBatch.Draw(texture, destination, source, Color.White, 0, Vector2.Zero);
+                background = (BackgroundComponent)renderItems[i].DrawContext;
+                if (background.Texture != null)
+                    break;
             }
 
+            // Abort if not valid background component
+            if (background == null || background.Texture == null)
+                return;
+
+            var texture = background.Texture;
+            var target = CurrentRenderFrame;
+            var imageBufferMinRatio = Math.Min(texture.ViewWidth / (float)target.Width, texture.ViewHeight / (float)target.Height);
+            var sourceSize = new Vector2(target.Width * imageBufferMinRatio, target.Height * imageBufferMinRatio);
+            var source = new RectangleF((texture.ViewWidth - sourceSize.X) / 2, (texture.ViewHeight - sourceSize.Y) / 2, sourceSize.X, sourceSize.Y);
+
+            spriteBatch.Parameters.Add(BackgroundEffectKeys.Intensity, background.Intensity);
+            spriteBatch.Begin(SpriteSortMode.FrontToBack, graphicsDevice.BlendStates.Opaque, graphicsDevice.SamplerStates.LinearClamp, graphicsDevice.DepthStencilStates.None, null, backgroundEffect);
+            spriteBatch.Draw(texture, destination, source, Color.White, 0, Vector2.Zero);
             spriteBatch.End();
         }
     }

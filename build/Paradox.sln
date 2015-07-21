@@ -24,7 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets", "00-Targets", 
 		..\sources\targets\Paradox.PostSettings.User.targets = ..\sources\targets\Paradox.PostSettings.User.targets
 		..\sources\targets\Paradox.PreSettings.targets = ..\sources\targets\Paradox.PreSettings.targets
 		..\sources\targets\Paradox.PreSettings.User.targets = ..\sources\targets\Paradox.PreSettings.User.targets
-		ReleaseNotes.md = ReleaseNotes.md
+		..\doc\ReleaseNotes\ReleaseNotes.md = ..\doc\ReleaseNotes\ReleaseNotes.md
 		..\sources\common\targets\SiliconStudio.Android.CSharp.targets = ..\sources\common\targets\SiliconStudio.Android.CSharp.targets
 		SiliconStudio.GlobalSettings.Local.targets = SiliconStudio.GlobalSettings.Local.targets
 		..\sources\common\targets\SiliconStudio.GlobalSettings.targets = ..\sources\common\targets\SiliconStudio.GlobalSettings.targets
@@ -34,6 +34,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets", "00-Targets", 
 		..\sources\common\targets\SiliconStudio.PreSettings.targets = ..\sources\common\targets\SiliconStudio.PreSettings.targets
 		..\sources\common\targets\SiliconStudio.Windows.Cpp.targets = ..\sources\common\targets\SiliconStudio.Windows.Cpp.targets
 		..\sources\common\targets\SiliconStudio.Windows.CSharp.targets = ..\sources\common\targets\SiliconStudio.Windows.CSharp.targets
+		..\sources\common\targets\SiliconStudio.Windows10.Cpp.targets = ..\sources\common\targets\SiliconStudio.Windows10.Cpp.targets
+		..\sources\common\targets\SiliconStudio.Windows10.CSharp.targets = ..\sources\common\targets\SiliconStudio.Windows10.CSharp.targets
 		..\sources\common\targets\SiliconStudio.WindowsPhone.Cpp.targets = ..\sources\common\targets\SiliconStudio.WindowsPhone.Cpp.targets
 		..\sources\common\targets\SiliconStudio.WindowsPhone.CSharp.targets = ..\sources\common\targets\SiliconStudio.WindowsPhone.CSharp.targets
 		..\sources\common\targets\SiliconStudio.WindowsStore.Cpp.targets = ..\sources\common\targets\SiliconStudio.WindowsStore.Cpp.targets
@@ -70,6 +72,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-UserTargets", "00-UserTa
 		..\Targets\Paradox.iOS.targets = ..\Targets\Paradox.iOS.targets
 		..\Targets\Paradox.targets = ..\Targets\Paradox.targets
 		..\Targets\Paradox.Windows.targets = ..\Targets\Paradox.Windows.targets
+		..\Targets\Paradox.Windows10.targets = ..\Targets\Paradox.Windows10.targets
 		..\Targets\Paradox.WindowsPhone.targets = ..\Targets\Paradox.WindowsPhone.targets
 		..\Targets\Paradox.WindowsStore.targets = ..\Targets\Paradox.WindowsStore.targets
 		..\Targets\SiliconStudio.Common.targets = ..\Targets\SiliconStudio.Common.targets
@@ -258,8 +261,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.ImageComparer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.Design.Tests", "..\sources\common\core\SiliconStudio.Core.Design.Tests\SiliconStudio.Core.Design.Tests.csproj", "{4D13D69B-C8E8-4675-8198-1BE2785FFB6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.LauncherApp", "..\sources\install\SiliconStudio.LauncherApp\SiliconStudio.LauncherApp.csproj", "{D0DB401E-6F96-46D0-BA9B-493B9C0777F1}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.VisualStudio.Commands", "..\sources\tools\SiliconStudio.Paradox.VisualStudio.Commands\SiliconStudio.Paradox.VisualStudio.Commands.csproj", "{E136B568-3E3F-498F-A8B4-2877B7768560}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Physics", "..\sources\engine\SiliconStudio.Paradox.Physics\SiliconStudio.Paradox.Physics.csproj", "{DD592516-B341-40FE-9100-1B0FA784A060}"
@@ -279,7 +280,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.NugetPackageR
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.EffectCompilerServer", "..\sources\tools\SiliconStudio.Paradox.EffectCompilerServer\SiliconStudio.Paradox.EffectCompilerServer.csproj", "{E25E7778-0B2F-4A0B-BCD6-1DE95320B531}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SiliconStudio.Markdown", "..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.shproj", "{43B62674-AA8B-4531-BA27-855CA2580145}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{43b62674-aa8b-4531-ba27-855ca2580145}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AppStore|Any CPU = AppStore|Any CPU
 		AppStore|Mixed Platforms = AppStore|Mixed Platforms
@@ -1597,26 +1603,6 @@ Global
 		{4D13D69B-C8E8-4675-8198-1BE2785FFB6D}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{4D13D69B-C8E8-4675-8198-1BE2785FFB6D}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
 		{4D13D69B-C8E8-4675-8198-1BE2785FFB6D}.Testing|Win32.ActiveCfg = Release|Any CPU
-		{D0DB401E-6F96-46D0-BA9B-493B9C0777F1}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
-		{D0DB401E-6F96-46D0-BA9B-493B9C0777F1}.AppStore|Any CPU.Build.0 = Release|Any CPU
-		{D0DB401E-6F96-46D0-BA9B-493B9C0777F1}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{D0DB401E-6F96-46D0-BA9B-493B9C0777F1}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
-		{D0DB401E-6F96-46D0-BA9B-493B9C0777F1}.AppStore|Win32.ActiveCfg = Release|Any CPU
-		{D0DB401E-6F96-46D0-BA9B-493B9C0777F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D0DB401E-6F96-46D0-BA9B-493B9C0777F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D0DB401E-6F96-46D0-BA9B-493B9C0777F1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{D0DB401E-6F96-46D0-BA9B-493B9C0777F1}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{D0DB401E-6F96-46D0-BA9B-493B9C0777F1}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{D0DB401E-6F96-46D0-BA9B-493B9C0777F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D0DB401E-6F96-46D0-BA9B-493B9C0777F1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D0DB401E-6F96-46D0-BA9B-493B9C0777F1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{D0DB401E-6F96-46D0-BA9B-493B9C0777F1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{D0DB401E-6F96-46D0-BA9B-493B9C0777F1}.Release|Win32.ActiveCfg = Release|Any CPU
-		{D0DB401E-6F96-46D0-BA9B-493B9C0777F1}.Testing|Any CPU.ActiveCfg = Release|Any CPU
-		{D0DB401E-6F96-46D0-BA9B-493B9C0777F1}.Testing|Any CPU.Build.0 = Release|Any CPU
-		{D0DB401E-6F96-46D0-BA9B-493B9C0777F1}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{D0DB401E-6F96-46D0-BA9B-493B9C0777F1}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
-		{D0DB401E-6F96-46D0-BA9B-493B9C0777F1}.Testing|Win32.ActiveCfg = Release|Any CPU
 		{E136B568-3E3F-498F-A8B4-2877B7768560}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
 		{E136B568-3E3F-498F-A8B4-2877B7768560}.AppStore|Any CPU.Build.0 = Release|Any CPU
 		{E136B568-3E3F-498F-A8B4-2877B7768560}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
@@ -1677,26 +1663,6 @@ Global
 		{4FAC003A-2532-42F3-AED7-A296D1A1615E}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{4FAC003A-2532-42F3-AED7-A296D1A1615E}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
 		{4FAC003A-2532-42F3-AED7-A296D1A1615E}.Testing|Win32.ActiveCfg = Release|Any CPU
-		{E879AC9E-A483-4A57-ABA4-3E50EB362ADA}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
-		{E879AC9E-A483-4A57-ABA4-3E50EB362ADA}.AppStore|Any CPU.Build.0 = Release|Any CPU
-		{E879AC9E-A483-4A57-ABA4-3E50EB362ADA}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{E879AC9E-A483-4A57-ABA4-3E50EB362ADA}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
-		{E879AC9E-A483-4A57-ABA4-3E50EB362ADA}.AppStore|Win32.ActiveCfg = Release|Any CPU
-		{E879AC9E-A483-4A57-ABA4-3E50EB362ADA}.Testing|Any CPU.ActiveCfg = Release|Any CPU
-		{E879AC9E-A483-4A57-ABA4-3E50EB362ADA}.Testing|Any CPU.Build.0 = Release|Any CPU
-		{E879AC9E-A483-4A57-ABA4-3E50EB362ADA}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{E879AC9E-A483-4A57-ABA4-3E50EB362ADA}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
-		{E879AC9E-A483-4A57-ABA4-3E50EB362ADA}.Testing|Win32.ActiveCfg = Release|Any CPU
-		{A02CCE00-8BE5-49A6-B23C-756CA7DDFF1F}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
-		{A02CCE00-8BE5-49A6-B23C-756CA7DDFF1F}.AppStore|Any CPU.Build.0 = Release|Any CPU
-		{A02CCE00-8BE5-49A6-B23C-756CA7DDFF1F}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{A02CCE00-8BE5-49A6-B23C-756CA7DDFF1F}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
-		{A02CCE00-8BE5-49A6-B23C-756CA7DDFF1F}.AppStore|Win32.ActiveCfg = Release|Any CPU
-		{A02CCE00-8BE5-49A6-B23C-756CA7DDFF1F}.Testing|Any CPU.ActiveCfg = Release|Any CPU
-		{A02CCE00-8BE5-49A6-B23C-756CA7DDFF1F}.Testing|Any CPU.Build.0 = Release|Any CPU
-		{A02CCE00-8BE5-49A6-B23C-756CA7DDFF1F}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{A02CCE00-8BE5-49A6-B23C-756CA7DDFF1F}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
-		{A02CCE00-8BE5-49A6-B23C-756CA7DDFF1F}.Testing|Win32.ActiveCfg = Release|Any CPU
 		{FDF801D9-90CC-4CBD-9F53-7F32F7EDF4F1}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
 		{FDF801D9-90CC-4CBD-9F53-7F32F7EDF4F1}.AppStore|Any CPU.Build.0 = Release|Any CPU
 		{FDF801D9-90CC-4CBD-9F53-7F32F7EDF4F1}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
@@ -1872,7 +1838,6 @@ Global
 		{A5DC820B-9554-45B6-9677-6A2F902E7787} = {1AE1AC60-5D2F-4CA7-AE20-888F44551185}
 		{6F5B53E9-39C8-4CAD-B07C-588B0968C238} = {1AE1AC60-5D2F-4CA7-AE20-888F44551185}
 		{4D13D69B-C8E8-4675-8198-1BE2785FFB6D} = {2E93E2B5-4500-4E47-9B65-E705218AB578}
-		{D0DB401E-6F96-46D0-BA9B-493B9C0777F1} = {A2A4342E-024B-4063-B10C-1DA96CA3046D}
 		{E136B568-3E3F-498F-A8B4-2877B7768560} = {E4508D15-6503-4A29-ADC4-27B3A5E99545}
 		{DD592516-B341-40FE-9100-1B0FA784A060} = {4C142567-C42B-40F5-B092-798882190209}
 		{4FAC003A-2532-42F3-AED7-A296D1A1615E} = {75A820AB-0F21-40F2-9448-5D7F495B97A0}
@@ -1881,5 +1846,6 @@ Global
 		{77E2FCC0-4CA6-436C-BE6F-9418CB807D45} = {1AE1AC60-5D2F-4CA7-AE20-888F44551185}
 		{AE89CBF7-FC49-4030-94C2-E0EA501F8E65} = {860946E4-CC77-4FDA-A4FD-3DB2A502A696}
 		{E25E7778-0B2F-4A0B-BCD6-1DE95320B531} = {1AE1AC60-5D2F-4CA7-AE20-888F44551185}
+		{43B62674-AA8B-4531-BA27-855CA2580145} = {75A820AB-0F21-40F2-9448-5D7F495B97A0}
 	EndGlobalSection
 EndGlobal

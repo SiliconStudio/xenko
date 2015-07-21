@@ -6,7 +6,6 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Paradox.Rendering.Materials;
 using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
 using SiliconStudio.Paradox.Shaders;
 
@@ -51,6 +50,8 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets a value indicating whether this <see cref="MaterialGlossinessMapFeature"/> is invert.
         /// </summary>
         /// <value><c>true</c> if invert; otherwise, <c>false</c>.</value>
+        /// <userdoc>When checked, considers the map as a roughness map instead of a glossiness map. 
+        /// A roughness value of 1.0 corresponds to a glossiness value of 0.0 and vice-versa.</userdoc>
         [Display("Invert")]
         [DefaultValue(false)]
         public bool Invert { get; set; }

@@ -40,16 +40,16 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
         public ProceduralModelAsset()
         {
             Type = new CubeProceduralModel();
-            SerializedVersion = AssetFormatVersion;
         }
 
         /// <summary>
         /// Gets or sets the type.
         /// </summary>
         /// <value>The type.</value>
+        /// <userdoc>The type of procedural model to generate</userdoc>
         [DataMember(10)]
         [NotNull]
-        [Display("Type", AlwaysExpand = true)]
+        [Display("Type", Expand = ExpandRule.Always)]
         public IProceduralModel Type { get; set; }
 
         /// <inheritdoc/>

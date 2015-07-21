@@ -389,7 +389,7 @@ namespace SiliconStudio.TextureConverter
                 return;
             }
 
-            ExecuteRequest(image, new DecompressingRequest(isSRgb));
+            ExecuteRequest(image, new DecompressingRequest(isSRgb, image.Format));
         }
 
 
@@ -1153,7 +1153,7 @@ namespace SiliconStudio.TextureConverter
                 ITexLibrary library;
                 if ((library = FindLibrary(image, request)) != null)
                 {
-                    if (image.Format.IsInBGRAOrder() && !library.SupportBGRAOrder())
+                    if (image.Format.IsBGRAOrder() && !library.SupportBGRAOrder())
                     {
                         SwitchChannel(image);
                     }

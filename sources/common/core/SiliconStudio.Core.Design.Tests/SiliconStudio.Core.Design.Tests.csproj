@@ -27,6 +27,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestHelpers.cs" />
     <Compile Include="TestMemberPath.cs" />
     <Compile Include="TestDataMemberVisitor.cs" />
     <Compile Include="TestMemberPathBase.cs" />

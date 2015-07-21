@@ -17,6 +17,7 @@ namespace SiliconStudio.Paradox.Rendering
         // TODO this is temporary code. this should disappear from here later when materials on sprite will be available
         public static PropertyKey<bool> IsEntitySelected = new PropertyKey<bool>("IsEntitySelected", typeof(SpriteComponentRenderer));
         private Effect selectedSpriteEffect;
+        private Effect pickingSpriteEffect;
 
         private Sprite3DBatch sprite3DBatch;
 
@@ -73,15 +74,14 @@ namespace SiliconStudio.Paradox.Rendering
 
         protected override void DrawCore(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
         {
-            // TODO: Check how to integrate sprites in a Camera renderer instead of this
             var viewParameters = context.Parameters;
 
             var device = context.GraphicsDevice;
-            var cullMode = device.RasterizerStates.CullNone;
             var viewInverse = Matrix.Invert(viewParameters.Get(TransformationKeys.View));
             var viewProjection = viewParameters.Get(TransformationKeys.ViewProjection);
 
             BlendState previousBlendState = null;
+            DepthStencilState previousDepthStencilState= null;
             Effect previousEffect = null;
 
             var isPicking = context.IsPicking();
@@ -93,6 +93,7 @@ namespace SiliconStudio.Paradox.Rendering
                 var spriteState = (SpriteProcessor.SpriteComponentState)renderItem.DrawContext;
                 var spriteComp = spriteState.SpriteComponent;
                 var transfoComp = spriteState.TransformComponent;
+                var depthStencilState = spriteState.SpriteComponent.IgnoreDepth ? device.DepthStencilStates.None : device.DepthStencilStates.Default;
 
                 var sprite = spriteComp.CurrentSprite;
                 if (sprite == null)
@@ -100,43 +101,30 @@ namespace SiliconStudio.Paradox.Rendering
 
                 // Update the sprite batch
                 var blendState = isPicking ? device.BlendStates.Opaque : renderItems.HasTransparency ? (spriteComp.PremultipliedAlpha ? device.BlendStates.AlphaBlend : device.BlendStates.NonPremultiplied) : device.BlendStates.Opaque;
-                var currentEffect = (!isPicking && spriteComp.Tags.Get(IsEntitySelected)) ? GetOrCreateSelectedSpriteEffect(): null; // TODO remove this code when material are available
-                if (previousEffect != currentEffect || blendState != previousBlendState)
+                var currentEffect = isPicking? GetOrCreatePickingSpriteEffect(): spriteComp.Tags.Get(IsEntitySelected)? GetOrCreateSelectedSpriteEffect(): null; // TODO remove this code when material are available
+                if (previousEffect != currentEffect || blendState != previousBlendState || depthStencilState != previousDepthStencilState)
                 {
                     if (hasBegin)
                     {
                         sprite3DBatch.End();
                     }
-                    sprite3DBatch.Begin(viewProjection, SpriteSortMode.Deferred, blendState, null, context.GraphicsDevice.DepthStencilStates.None, cullMode, currentEffect);
+                    sprite3DBatch.Begin(viewProjection, SpriteSortMode.Deferred, blendState, null, depthStencilState, device.RasterizerStates.CullNone, currentEffect);
                     hasBegin = true;
                 }
                 previousEffect = currentEffect;
                 previousBlendState = blendState;
+                previousDepthStencilState = depthStencilState;
 
                 var sourceRegion = sprite.Region; 
                 var texture = sprite.Texture;
                 var color = spriteComp.Color;
                 if (isPicking) // TODO move this code corresponding to picking out of the runtime code.
-                {
-                    texture = device.GetSharedWhiteTexture();
                     color = (Color)new Color4(spriteComp.Id);
-                }
 
                 // skip the sprite if no texture is set.
                 if (texture == null)
                     continue;
-
-                // determine the size of the element depending on the extrusion method.
-                var elementSize = Vector2.One;
-                if (spriteComp.ExtrusionMethod == SpriteExtrusionMethod.UnitHeightSpriteRatio)
-                {
-                    elementSize.X = sourceRegion.Width / sourceRegion.Height;
-                }
-                else if (spriteComp.ExtrusionMethod == SpriteExtrusionMethod.UnitWidthSpriteRatio)
-                {
-                    elementSize.Y = sourceRegion.Height / sourceRegion.Width;
-                }
-
+                
                 // determine the element world matrix depending on the type of sprite
                 var worldMatrix = transfoComp.WorldMatrix;
                 if (spriteComp.SpriteType == SpriteType.Billboard)
@@ -154,9 +142,15 @@ namespace SiliconStudio.Paradox.Rendering
                     // set the position
                     worldMatrix.TranslationVector = transfoComp.WorldMatrix.TranslationVector;
                 }
-                
+
+                // apply the offset due to the center of the sprite
+                var normalizedCenter = new Vector2(sprite.SizeInternal.X * (sprite.Center.X / sourceRegion.Width - 0.5f), sprite.SizeInternal.Y * (0.5f - sprite.Center.Y / sourceRegion.Height));
+                worldMatrix.M41 -= normalizedCenter.X * worldMatrix.M11 + normalizedCenter.Y * worldMatrix.M21;
+                worldMatrix.M42 -= normalizedCenter.X * worldMatrix.M12 + normalizedCenter.Y * worldMatrix.M22;
+                worldMatrix.M43 -= normalizedCenter.X * worldMatrix.M13 + normalizedCenter.Y * worldMatrix.M23; 
+
                 // draw the sprite
-                sprite3DBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref elementSize, ref color, sprite.Orientation, SwizzleMode.None, renderItem.Depth);
+                sprite3DBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref sprite.SizeInternal, ref color, sprite.Orientation, SwizzleMode.None, renderItem.Depth);
             }
 
             sprite3DBatch.End();
@@ -168,6 +162,14 @@ namespace SiliconStudio.Paradox.Rendering
                 selectedSpriteEffect = EffectSystem.LoadEffect("SelectedSprite").WaitForResult();
 
             return selectedSpriteEffect;
+        }
+
+        private Effect GetOrCreatePickingSpriteEffect()
+        {
+            if (pickingSpriteEffect == null)
+                pickingSpriteEffect = EffectSystem.LoadEffect("SpritePicking").WaitForResult();
+
+            return pickingSpriteEffect;
         }
 
         protected override void Unload()

@@ -3,7 +3,6 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Rendering.Images;
 
 namespace SiliconStudio.Paradox.Rendering
@@ -27,12 +26,17 @@ namespace SiliconStudio.Paradox.Rendering
         /// Gets or sets the input of this effect.
         /// </summary>
         /// <value>The input.</value>
+        /// <userdoc>Specify the render frame to use as input of the renderer</userdoc>
         [DataMember(10)]
         [NotNull]
         public IImageEffectRendererInput Input { get; set; }
 
+        /// <summary>
+        /// Gets or sets the effect to render.
+        /// </summary>
+        /// <userdoc>Specifies the effect to render onto the input</userdoc>
         [DataMember(20)]
-        [Display("Effect", AlwaysExpand = true)]
+        [Display("Effect", Expand = ExpandRule.Always)]
         public IImageEffectRenderer Effect { get; set; }
 
         protected override void Destroy()

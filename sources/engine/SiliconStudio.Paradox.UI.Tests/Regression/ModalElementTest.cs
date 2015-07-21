@@ -29,20 +29,20 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         private TextBlock modalButton2Text;
 
-        private UIImageGroup uiImages;
+        private SpriteSheet Sprites;
 
         public ModalElementTest()
         {
-            CurrentVersion = 5;
+            CurrentVersion = 6;
         }
 
         protected override async Task LoadContent()
         {
             await base.LoadContent();
 
-            uiImages = Asset.Load<UIImageGroup>("UIImages");
+            Sprites = Asset.Load<SpriteSheet>("UIImages");
 
-            var lifeBar = new ImageElement { Source = uiImages["Logo"], HorizontalAlignment = HorizontalAlignment.Center };
+            var lifeBar = new ImageElement { Source = Sprites["Logo"], HorizontalAlignment = HorizontalAlignment.Center };
             lifeBar.DependencyProperties.Set(GridBase.ColumnSpanPropertyKey, 3);
 
             var quitGameButton = new Button
@@ -120,7 +120,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         {
             base.SpecificDrawBeforeUI(context, renderFrame);
 
-            GraphicsDevice.DrawTexture(uiImages["GameScreen"].Texture);
+            GraphicsDevice.DrawTexture(Sprites["GameScreen"].Texture);
         }
 
         protected override void Update(GameTime gameTime)

@@ -38,6 +38,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -50,7 +51,7 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Paradox.Graphics.Tests.TestMultipleRenderTargets</StartupObject>
+    <StartupObject>SiliconStudio.Paradox.Graphics.Tests.TestSpriteBatch3D</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
@@ -266,6 +267,7 @@
     <Compile Include="TestRadiancePrefilteringGGX.cs" />
     <Compile Include="TestScene.cs" />
     <Compile Include="TestSprite.cs" />
+    <Compile Include="TestSpriteBatch3D.cs" />
     <Compile Include="TestSpriteBatchResolution.cs" />
     <Compile Include="TestSpriteBatchToTexture.cs" />
     <Compile Include="TestSpriteFont.cs" />

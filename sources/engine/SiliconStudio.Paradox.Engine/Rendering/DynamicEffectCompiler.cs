@@ -257,7 +257,7 @@ namespace SiliconStudio.Paradox.Rendering
             {
                 // Same effect than previous one
 
-                effectInstance.UpdaterDefinition.UpdateCounter(usedParameters);
+                effectInstance.UpdaterDefinition.UpdatedUsedParameters(compiledEffect, usedParameters);
             }
 
             UpdateLevels(effectInstance, passParameters);

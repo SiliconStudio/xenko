@@ -8,7 +8,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
-using SiliconStudio.Paradox.Rendering.Materials;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Rendering.Materials

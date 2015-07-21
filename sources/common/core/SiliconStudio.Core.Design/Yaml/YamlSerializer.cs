@@ -18,7 +18,7 @@ namespace SiliconStudio.Core.Yaml
     public static class YamlSerializer
     {
         // TODO: This code is not robust in case of reloading assemblies into the same process
-        private static readonly HashSet<Assembly> RegisteredAssemblies = new HashSet<Assembly>();
+        private static readonly List<Assembly> RegisteredAssemblies = new List<Assembly>();
         private static readonly object Lock = new object();
         private static Serializer globalSerializer;
         private static Serializer globalSerializerKeepOnlySealedOverrides;
@@ -37,6 +37,19 @@ namespace SiliconStudio.Core.Yaml
         /// <summary>
         /// Deserializes an object from the specified stream (expecting a YAML string).
         /// </summary>
+        /// <param name="stream">A YAML string from a stream .</param>
+        /// <param name="expectedType">The expected type.</param>
+        /// <param name="contextSettings">The context settings.</param>
+        /// <returns>An instance of the YAML data.</returns>
+        public static object Deserialize(Stream stream, Type expectedType, SerializerContextSettings contextSettings)
+        {
+            var serializer = GetYamlSerializer(false);
+            return serializer.Deserialize(stream, expectedType, contextSettings);
+        }
+
+        /// <summary>
+        /// Deserializes an object from the specified stream (expecting a YAML string).
+        /// </summary>
         /// <param name="eventReader">A YAML event reader.</param>
         /// <param name="expectedType">The expected type.</param>
         /// <returns>An instance of the YAML data.</returns>
@@ -44,6 +57,33 @@ namespace SiliconStudio.Core.Yaml
         {
             var serializer = GetYamlSerializer(false);
             return serializer.Deserialize(eventReader, expectedType);
+        }
+
+        /// <summary>
+        /// Deserializes an object from the specified stream (expecting a YAML string).
+        /// </summary>
+        /// <param name="eventReader">A YAML event reader.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="expectedType">The expected type.</param>
+        /// <returns>An instance of the YAML data.</returns>
+        public static object Deserialize(EventReader eventReader, object value, Type expectedType)
+        {
+            var serializer = GetYamlSerializer(false);
+            return serializer.Deserialize(eventReader, value, expectedType);
+        }
+
+        /// <summary>
+        /// Deserializes an object from the specified stream (expecting a YAML string).
+        /// </summary>
+        /// <param name="eventReader">A YAML event reader.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="expectedType">The expected type.</param>
+        /// <param name="contextSettings">The context settings.</param>
+        /// <returns>An instance of the YAML data.</returns>
+        public static object Deserialize(EventReader eventReader, object value, Type expectedType, SerializerContextSettings contextSettings)
+        {
+            var serializer = GetYamlSerializer(false);
+            return serializer.Deserialize(eventReader, value, expectedType, contextSettings);
         }
 
         /// <summary>
@@ -94,6 +134,20 @@ namespace SiliconStudio.Core.Yaml
             serializer.Serialize(stream, instance);
         }
 
+        /// <summary>
+        /// Serializes an object to specified stream in YAML format.
+        /// </summary>
+        /// <param name="stream">The stream to receive the YAML representation of the object.</param>
+        /// <param name="instance">The instance.</param>
+        /// <param name="type">The type.</param>
+        /// <param name="contextSettings">The context settings.</param>
+        /// <param name="keepOnlySealedOverrides">if set to <c>true</c> [keep only sealed overrides].</param>
+        public static void Serialize(Stream stream, object instance, Type type, SerializerContextSettings contextSettings, bool keepOnlySealedOverrides = false)
+        {
+            var serializer = GetYamlSerializer(keepOnlySealedOverrides);
+            serializer.Serialize(stream, instance, type, contextSettings);
+        }
+
         public static SerializerSettings GetSerializerSettings()
         {
             return GetYamlSerializer(false).Settings;
@@ -123,8 +177,9 @@ namespace SiliconStudio.Core.Yaml
                         EmitShortTypeName = true,
                     };
 
-                foreach (var registeredAssembly in RegisteredAssemblies)
+                for (int index = RegisteredAssemblies.Count - 1; index >= 0; index--)
                 {
+                    var registeredAssembly = RegisteredAssemblies[index];
                     config.RegisterAssembly(registeredAssembly);
                 }
 
@@ -208,6 +263,7 @@ namespace SiliconStudio.Core.Yaml
         internal static void Initialize()
         {
             AssemblyRegistry.AssemblyRegistered += AssemblyRegistry_AssemblyRegistered;
+            AssemblyRegistry.AssemblyUnregistered += AssemblyRegistry_AssemblyUnregistered;
             foreach (var assembly in AssemblyRegistry.FindAll())
             {
                 RegisteredAssemblies.Add(assembly);
@@ -219,6 +275,18 @@ namespace SiliconStudio.Core.Yaml
             lock (Lock)
             {
                 RegisteredAssemblies.Add(e.Assembly);
+
+                // Reset the current serializer as the set of assemblies has changed
+                globalSerializer = null;
+                globalSerializerKeepOnlySealedOverrides = null;
+            }
+        }
+
+        private static void AssemblyRegistry_AssemblyUnregistered(object sender, AssemblyRegisteredEventArgs e)
+        {
+            lock (Lock)
+            {
+                RegisteredAssemblies.Remove(e.Assembly);
 
                 // Reset the current serializer as the set of assemblies has changed
                 globalSerializer = null;

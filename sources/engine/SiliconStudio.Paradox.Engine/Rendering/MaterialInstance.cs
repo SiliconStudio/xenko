@@ -37,6 +37,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// Gets or sets the material.
         /// </summary>
         /// <value>The material.</value>
+        /// <userdoc>The reference to the material asset to used for this material slot name.</userdoc>
         [DataMember(10)]
         [InlineProperty]
         public Material Material { get; set; }
@@ -45,6 +46,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// Gets or sets if this instance is casting shadows.
         /// </summary>
         /// <value>A boolean indicating whether this instance is casting shadows. Default is <c>true</c>.</value>
+        /// <userdoc>If checked, the model generates a shadow when enabling shadow maps.</userdoc>
         [DataMember(20)]
         [Display("Cast Shadows?")]
         [DefaultValue(true)]
@@ -54,6 +56,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// Gets or sets if this instance is receiving shadows.
         /// </summary>
         /// <value>A boolean indicating whether this instance is receiving shadows. Default is <c>true</c>.</value>
+        /// <userdoc>If checked, the model can be covered by the shadow of another model.</userdoc>
         [DataMember(30)]
         [Display("Receive Shadows?")]
         [DefaultValue(true)]

@@ -17,7 +17,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="SharpYaml, Version=1.0.2.26673, Culture=neutral, PublicKeyToken=1ced8108e942bc02, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\deps\SharpYaml\SharpYaml.dll</HintPath>
+      <HintPath>..\..\common\deps\SharpYaml\SharpYaml.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -131,6 +131,7 @@
     <Compile Include="Audio\RawSoundAssetImporter.cs" />
     <Compile Include="Audio\SoundAsset.cs" />
     <Compile Include="Audio\RawMusicAssetImporter.cs" />
+    <Compile Include="Debugging\AssemblyReloader.cs" />
     <Compile Include="Effect\EffectByteCodeToSourceCodeWriter.cs" />
     <Compile Include="Effect\EffectCompileCommand.cs" />
     <Compile Include="Effect\EffectCompositorAsset.cs" />
@@ -162,11 +163,12 @@
     <Compile Include="Materials\MaterialStreamFactory.cs" />
     <Compile Include="Materials\ShaderGeneratorContextExtensions.cs" />
     <Compile Include="IModelAsset.cs" />
+    <Compile Include="ParadoxPackageUpgrader.cs" />
     <Compile Include="ProceduralModels\ProceduralModelAsset.cs" />
     <Compile Include="ProceduralModels\ProceduralModelAssetCompiler.cs" />
-    <Compile Include="ImageGroupAsset.cs" />
-    <Compile Include="ImageGroupCompiler.cs" />
-    <Compile Include="ImageInfo.cs" />
+    <Compile Include="Sprite\SpriteSheetAsset.cs" />
+    <Compile Include="Sprite\SpriteSheetAssetCompiler.cs" />
+    <Compile Include="Sprite\SpriteInfo.cs" />
     <Compile Include="Materials\MaterialAsset.cs" />
     <Compile Include="Materials\MaterialAssetCompiler.cs" />
     <Compile Include="Audio\SoundMusicAsset.cs" />
@@ -186,9 +188,7 @@
     <Compile Include="Skyboxes\SkyboxCubeMapModel.cs" />
     <Compile Include="Skyboxes\SkyboxGenerator.cs" />
     <Compile Include="Skyboxes\SkyboxPreFilteringDiffuseOrder.cs" />
-    <Compile Include="Sprite\SpriteInfo.cs" />
-    <Compile Include="Sprite\SpriteGroupAsset.cs" />
-    <Compile Include="Sprite\SpriteGroupCompiler.cs" />
+    <Compile Include="Sprite\SpriteSheetType.cs" />
     <Compile Include="Textures\TextureCommandHelper.cs" />
     <Compile Include="Textures\TextureHint.cs" />
     <Compile Include="Textures\TextureQuality.cs" />
@@ -217,9 +217,6 @@
     <Compile Include="Textures\TextureFormat.cs" />
     <Compile Include="Textures\TextureImporter.cs" />
     <Compile Include="PreviewerCompilerNames.cs" />
-    <Compile Include="UIImage\UIImageGroupCompiler.cs" />
-    <Compile Include="UIImage\UIImageGroupAsset.cs" />
-    <Compile Include="UIImage\UIImageInfo.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />

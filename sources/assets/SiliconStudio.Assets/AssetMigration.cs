@@ -4,6 +4,7 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Text;
 
 using SharpYaml;
 using SharpYaml.Events;
@@ -19,8 +20,10 @@ namespace SiliconStudio.Assets
     /// </summary>
     static class AssetMigration
     {
-        public static bool MigrateAssetIfNeeded(ILogger log, string assetFullPath)
+        public static bool MigrateAssetIfNeeded(ILogger log, PackageLoadingAssetFile loadAsset)
         {
+            var assetFullPath = loadAsset.FilePath.FullPath;
+
             // Determine if asset was Yaml or not
             var assetFileExtension = Path.GetExtension(assetFullPath);
             if (assetFileExtension == null)
@@ -39,7 +42,8 @@ namespace SiliconStudio.Assets
 
             // Read from Yaml file the asset version and its type (to get expected version)
             // Note: It tries to read as few as possible (SerializedVersion is expected to be right after Id, so it shouldn't try to read further than that)
-            using (var streamReader = new StreamReader(assetFullPath))
+            using (var assetStream = loadAsset.OpenStream())
+            using (var streamReader = new StreamReader(assetStream))
             {
                 var yamlEventReader = new EventReader(new Parser(streamReader));
 
@@ -82,8 +86,16 @@ namespace SiliconStudio.Assets
                 // Perform asset upgrade
                 log.Verbose("{0} needs update, from version {1} to version {2}", Path.GetFullPath(assetFullPath), serializedVersion, expectedVersion);
 
+                // transform the stream into string.
+                string assetAsString;
+                using (var assetStream = loadAsset.OpenStream())
+                using (var assetStreamReader = new StreamReader(assetStream, Encoding.UTF8))
+                {
+                    assetAsString = assetStreamReader.ReadToEnd();
+                }
+
                 // Load the asset as a YamlNode object
-                var input = new StringReader(File.ReadAllText(assetFullPath));
+                var input = new StringReader(assetAsString);
                 var yamlStream = new YamlStream();
                 yamlStream.Load(input);
                 var yamlRootNode = (YamlMappingNode)yamlStream.Documents[0].RootNode;
@@ -124,8 +136,14 @@ namespace SiliconStudio.Assets
                 var preferredIndent = YamlSerializer.GetSerializerSettings().PreferredIndent;
 
                 // Save asset back to disk
-                using (var streamWriter = new StreamWriter(assetFullPath))
-                    yamlStream.Save(streamWriter, true, preferredIndent);
+                using (var memoryStream = new MemoryStream())
+                {
+                    using (var streamWriter = new StreamWriter(memoryStream))
+                    {
+                        yamlStream.Save(streamWriter, true, preferredIndent);
+                    }
+                    loadAsset.AssetContent = memoryStream.ToArray();
+                }
 
                 return true;
             }

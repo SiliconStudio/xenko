@@ -6,6 +6,7 @@ using System.IO;
 using SharpDX.Text;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Settings;
 using SiliconStudio.Core.VisualStudio;
 using SiliconStudio.Paradox.Assets.Textures;
 using SiliconStudio.Paradox.Graphics;
@@ -18,13 +19,14 @@ namespace SiliconStudio.Paradox.Assets
         private const string XamariniOSBuild = @"MSBuild\Xamarin\iOS\Xamarin.iOS.CSharp.targets";
         private const string XamarinAndroidBuild = @"MSBuild\Xamarin\Android\Xamarin.Android.CSharp.targets";
         private const string WindowsRuntimeBuild = @"MSBuild\Microsoft\WindowsXaml\v12.0\8.1\Microsoft.Windows.UI.Xaml.Common.Targets";
+        private const string Windows10UniversalRuntimeBuild = @"MSBuild\Microsoft\WindowsXaml\v14.0\8.2\Microsoft.Windows.UI.Xaml.Common.Targets";
         private static readonly string ProgramFilesX86 = Environment.GetEnvironmentVariable(Environment.Is64BitOperatingSystem ? "ProgramFiles(x86)" : "ProgramFiles");
 
-        public static PropertyKey<DisplayOrientation> DisplayOrientation = new PropertyKey<DisplayOrientation>("DisplayOrientation", typeof(ParadoxConfig));
+        public static SettingsValueKey<DisplayOrientation> DisplayOrientation = new SettingsValueKey<DisplayOrientation>("Paradox.DisplayOrientation", PackageProfile.SettingsGroup);
 
-        public static PropertyKey<GraphicsPlatform> GraphicsPlatform = new PropertyKey<GraphicsPlatform>("GraphicsPlatform", typeof(ParadoxConfig));
+        public static SettingsValueKey<GraphicsPlatform> GraphicsPlatform = new SettingsValueKey<GraphicsPlatform>("Paradox.GraphicsPlatform", PackageProfile.SettingsGroup);
 
-        public static PropertyKey<TextureQuality> TextureQuality = new PropertyKey<TextureQuality>("TextureQuality", typeof(ParadoxConfig));
+        public static SettingsValueKey<TextureQuality> TextureQuality = new SettingsValueKey<TextureQuality>("Paradox.TextureQuality", PackageProfile.SettingsGroup);
 
         public static readonly PackageVersion LatestPackageVersion = new PackageVersion(ParadoxVersion.CurrentAsText);
 
@@ -67,8 +69,6 @@ namespace SiliconStudio.Paradox.Assets
             }
             solutionPlatforms.Add(windowsPlatform);
 
-            var parts = windowsPlatform.GetParts();
-
             // Windows Store
             var windowsStorePlatform = new SolutionPlatform()
             {
@@ -91,46 +91,69 @@ namespace SiliconStudio.Paradox.Assets
             windowsStorePlatform.Configurations["Testing"].Properties.Add("<NoWarn>;2008</NoWarn>");
             windowsStorePlatform.Configurations["AppStore"].Properties.Add("<NoWarn>;2008</NoWarn>");
 
-            var windowsStorePlatformx86 = new SolutionPlatformPart(windowsStorePlatform.Name + "-x86")
+            foreach (var cpu in new[] { "x86", "x64", "ARM" })
             {
-                LibraryProjectName = windowsStorePlatform.Name,
-                ExecutableProjectName = "x86",
-                Cpu = "x86",
-                InheritConfigurations = true,
-                UseWithLibraries = false,
-                UseWithExecutables = true,
-            };
-            windowsStorePlatformx86.Configurations.Clear();
-            windowsStorePlatformx86.Configurations.AddRange(windowsStorePlatform.Configurations);
+                var windowsStorePlatformCpu = new SolutionPlatformPart(windowsStorePlatform.Name + "-" + cpu)
+                {
+                    LibraryProjectName = windowsStorePlatform.Name,
+                    ExecutableProjectName = cpu,
+                    Cpu = cpu,
+                    InheritConfigurations = true,
+                    UseWithLibraries = false,
+                    UseWithExecutables = true,
+                };
+                windowsStorePlatformCpu.Configurations.Clear();
+                windowsStorePlatformCpu.Configurations.AddRange(windowsStorePlatform.Configurations);
 
-            var windowsStorePlatformx64 = new SolutionPlatformPart(windowsStorePlatform.Name + "-x64")
-            {
-                LibraryProjectName = windowsStorePlatform.Name,
-                ExecutableProjectName = "x64",
-                Cpu = "x64",
-                InheritConfigurations = true,
-                UseWithLibraries = false,
-                UseWithExecutables = true
-            };
-            windowsStorePlatformx64.Configurations.Clear();
-            windowsStorePlatformx64.Configurations.AddRange(windowsStorePlatform.Configurations);
+                windowsStorePlatform.PlatformsPart.Add(windowsStorePlatformCpu);
+            }
 
-            var windowsStorePlatformARM = new SolutionPlatformPart(windowsStorePlatform.Name + "-ARM")
-            {
-                LibraryProjectName = windowsStorePlatform.Name,
-                ExecutableProjectName = "ARM",
-                Cpu = "ARM",
-                InheritConfigurations = true,
-                UseWithLibraries = false,
-                UseWithExecutables = true
-            };
-            windowsStorePlatformARM.Configurations.Clear();
-            windowsStorePlatformARM.Configurations.AddRange(windowsStorePlatform.Configurations);
-
-            windowsStorePlatform.PlatformsPart.Add(windowsStorePlatformx86);
-            windowsStorePlatform.PlatformsPart.Add(windowsStorePlatformx64);
-            windowsStorePlatform.PlatformsPart.Add(windowsStorePlatformARM);
             solutionPlatforms.Add(windowsStorePlatform);
+
+            // Windows 10
+            var windows10Platform = new SolutionPlatform()
+            {
+                Name = PlatformType.Windows10.ToString(),
+                DisplayName = "Windows 10",
+                Type = PlatformType.Windows10,
+                IsAvailable = IsFileInProgramFilesx86Exist(Windows10UniversalRuntimeBuild),
+                UseWithExecutables = false,
+                IncludeInSolution = false,
+            };
+
+            windows10Platform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS");
+            windows10Platform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME");
+            windows10Platform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS_10");
+            windows10Platform.Properties[GraphicsPlatform] = Graphics.GraphicsPlatform.Direct3D11;
+            windows10Platform.Configurations.Add(new SolutionConfiguration("Testing"));
+            windows10Platform.Configurations.Add(new SolutionConfiguration("AppStore"));
+            windows10Platform.Configurations["Release"].Properties.Add("<NoWarn>;2008</NoWarn>");
+            windows10Platform.Configurations["Debug"].Properties.Add("<NoWarn>;2008</NoWarn>");
+            windows10Platform.Configurations["Testing"].Properties.Add("<NoWarn>;2008</NoWarn>");
+            windows10Platform.Configurations["AppStore"].Properties.Add("<NoWarn>;2008</NoWarn>");
+
+            windows10Platform.Configurations["Release"].Properties.Add("<UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>");
+            windows10Platform.Configurations["Testing"].Properties.Add("<UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>");
+            windows10Platform.Configurations["AppStore"].Properties.Add("<UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>");
+
+            foreach (var cpu in new[] { "x86", "x64", "ARM" })
+            {
+                var windows10PlatformCpu = new SolutionPlatformPart(windows10Platform.Name + "-" + cpu)
+                {
+                    LibraryProjectName = windows10Platform.Name,
+                    ExecutableProjectName = cpu,
+                    Cpu = cpu,
+                    InheritConfigurations = true,
+                    UseWithLibraries = false,
+                    UseWithExecutables = true,
+                };
+                windows10PlatformCpu.Configurations.Clear();
+                windows10PlatformCpu.Configurations.AddRange(windows10Platform.Configurations);
+
+                windows10Platform.PlatformsPart.Add(windows10PlatformCpu);
+            }
+
+            solutionPlatforms.Add(windows10Platform);
 
             // Windows Phone
             var windowsPhonePlatform = new SolutionPlatform()
@@ -155,32 +178,23 @@ namespace SiliconStudio.Paradox.Assets
             windowsPhonePlatform.Configurations["Testing"].Properties.Add("<NoWarn>;2008</NoWarn>");
             windowsPhonePlatform.Configurations["AppStore"].Properties.Add("<NoWarn>;2008</NoWarn>");
 
-            var windowsPhonePlatformx86 = new SolutionPlatformPart(windowsPhonePlatform.Name + "-x86")
+            foreach (var cpu in new[] { "x86", "ARM" })
             {
-                LibraryProjectName = windowsPhonePlatform.Name,
-                ExecutableProjectName = "x86",
-                Cpu = "x86", 
-                InheritConfigurations = true, 
-                UseWithLibraries = false, 
-                UseWithExecutables = true
-            };
-            windowsPhonePlatformx86.Configurations.Clear();
-            windowsPhonePlatformx86.Configurations.AddRange(windowsPhonePlatform.Configurations);
+                var windowsPhonePlatformCpu = new SolutionPlatformPart(windowsPhonePlatform.Name + "-" + cpu)
+                {
+                    LibraryProjectName = windowsPhonePlatform.Name,
+                    ExecutableProjectName = cpu,
+                    Cpu = cpu,
+                    InheritConfigurations = true,
+                    UseWithLibraries = false,
+                    UseWithExecutables = true
+                };
+                windowsPhonePlatformCpu.Configurations.Clear();
+                windowsPhonePlatformCpu.Configurations.AddRange(windowsPhonePlatform.Configurations);
 
-            var windowsPhonePlatformARM = new SolutionPlatformPart(windowsPhonePlatform.Name + "-ARM")
-            {
-                LibraryProjectName = windowsPhonePlatform.Name,
-                ExecutableProjectName = "ARM",
-                Cpu = "ARM", 
-                InheritConfigurations = true, 
-                UseWithLibraries = false, 
-                UseWithExecutables = true
-            };
-            windowsPhonePlatformARM.Configurations.Clear();
-            windowsPhonePlatformARM.Configurations.AddRange(windowsPhonePlatform.Configurations);
+                windowsPhonePlatform.PlatformsPart.Add(windowsPhonePlatformCpu);
+            }
 
-            windowsPhonePlatform.PlatformsPart.Add(windowsPhonePlatformx86);
-            windowsPhonePlatform.PlatformsPart.Add(windowsPhonePlatformARM);
             solutionPlatforms.Add(windowsPhonePlatform);
 
             // Android

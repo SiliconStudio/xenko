@@ -7,6 +7,7 @@ using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Core.Settings;
 using SiliconStudio.Paradox.Assets.Entities;
 using SiliconStudio.Paradox.Engine.Design;
 using SiliconStudio.Paradox.Graphics;
@@ -20,14 +21,15 @@ namespace SiliconStudio.Paradox.Assets
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
     public class GameSettingsAsset
     {
+        public const string DefaultSceneLocation = "MainScene";
 
-        public static readonly PropertyKey<AssetReference<SceneAsset>> DefaultScene = new PropertyKey<AssetReference<SceneAsset>>("DefaultScene", typeof(GameSettingsAsset));
+        public static readonly SettingsValueKey<AssetReference<SceneAsset>> DefaultScene = new SettingsValueKey<AssetReference<SceneAsset>>("GameSettingsAsset.DefaultScene", PackageProfile.SettingsGroup);
 
-        public static readonly PropertyKey<int> BackBufferWidth = new PropertyKey<int>("BackBufferWidth", typeof(GameSettingsAsset));
+        public static readonly SettingsValueKey<int> BackBufferWidth = new SettingsValueKey<int>("GameSettingsAsset.BackBufferWidth", PackageProfile.SettingsGroup, 1280);
 
-        public static readonly PropertyKey<int> BackBufferHeight = new PropertyKey<int>("BackBufferHeight", typeof(GameSettingsAsset));
+        public static readonly SettingsValueKey<int> BackBufferHeight = new SettingsValueKey<int>("GameSettingsAsset.BackBufferHeight", PackageProfile.SettingsGroup, 720);
 
-        public static readonly PropertyKey<GraphicsProfile> DefaultGraphicsProfile = new PropertyKey<GraphicsProfile>("DefaultGraphicsProfile", typeof(GameSettingsAsset));
+        public static readonly SettingsValueKey<GraphicsProfile> DefaultGraphicsProfile = new SettingsValueKey<GraphicsProfile>("GameSettingsAsset.DefaultGraphicsProfile", PackageProfile.SettingsGroup, GraphicsProfile.Level_10_0);
 
 
         // Gets the default scene from a package properties
@@ -109,10 +111,10 @@ namespace SiliconStudio.Paradox.Assets
             if (platform != PlatformType.Shared)
             {
                 var platformProfile = package.Profiles.FirstOrDefault(o => o.Platform == platform);
-                if (platformProfile != null)
+                if (platformProfile != null && platformProfile.Properties.ContainsKey(DefaultGraphicsProfile))
                 {
                     var customProfile = platformProfile.Properties.Get(DefaultGraphicsProfile);
-                    if (customProfile > 0) result.DefaultGraphicsProfileUsed = customProfile;
+                    result.DefaultGraphicsProfileUsed = customProfile;
                 }
             }
 
@@ -126,7 +128,7 @@ namespace SiliconStudio.Paradox.Assets
             return result;
         }
 
-        public static void CreateAndSetDefaultScene(Package package, String location = "MainScene")
+        public static void CreateAndSetDefaultScene(Package package, String location = DefaultSceneLocation)
         {
             var defaultSceneAsset = SceneAsset.Create();
 

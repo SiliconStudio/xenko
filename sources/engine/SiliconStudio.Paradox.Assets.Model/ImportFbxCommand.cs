@@ -5,14 +5,12 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using SiliconStudio.BuildEngine;
-using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Animations;
-using SiliconStudio.Paradox.Rendering.Data;
 
 namespace SiliconStudio.Paradox.Assets.Model
 {
-    [CommandDependsOn(typeof(Paradox.Importer.FBX.MeshConverter))]
+    [CommandDependsOn(typeof(Importer.FBX.MeshConverter))]
     [Description("Import FBX")]
     public class ImportFbxCommand : ImportModelCommand
     {
@@ -26,7 +24,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 
         protected override Rendering.Model LoadModel(ICommandContext commandContext, AssetManager assetManager)
         {
-            var meshConverter = this.CreateMeshConverter(commandContext, assetManager);
+            var meshConverter = CreateMeshConverter(commandContext);
             var materialMapping = Materials.Select((s, i) => new { Value = s, Index = i }).ToDictionary(x => x.Value.Name, x => x.Index);
             var sceneData = meshConverter.Convert(SourcePath, Location, materialMapping);
             return sceneData;
@@ -34,18 +32,18 @@ namespace SiliconStudio.Paradox.Assets.Model
 
         protected override AnimationClip LoadAnimation(ICommandContext commandContext, AssetManager assetManager)
         {
-            var meshConverter = this.CreateMeshConverter(commandContext, assetManager);
+            var meshConverter = CreateMeshConverter(commandContext);
             var sceneData = meshConverter.ConvertAnimation(SourcePath, Location);
             return sceneData;
         }
 
-        private Paradox.Importer.FBX.MeshConverter CreateMeshConverter(ICommandContext commandContext, AssetManager assetManager)
+        private Importer.FBX.MeshConverter CreateMeshConverter(ICommandContext commandContext)
         {
-            return new Paradox.Importer.FBX.MeshConverter(commandContext.Logger)
+            return new Importer.FBX.MeshConverter(commandContext.Logger)
                 {
-                    TextureTagSymbol = this.TextureTagSymbol,
-                    AllowUnsignedBlendIndices = this.AllowUnsignedBlendIndices,
-                    ScaleImport = this.ScaleImport
+                    TextureTagSymbol = TextureTagSymbol,
+                    AllowUnsignedBlendIndices = AllowUnsignedBlendIndices,
+                    ScaleImport = ScaleImport
                 };
         }
 

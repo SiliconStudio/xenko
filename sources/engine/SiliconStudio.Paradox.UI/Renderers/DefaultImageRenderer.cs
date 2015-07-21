@@ -25,8 +25,8 @@ namespace SiliconStudio.Paradox.UI.Renderers
 
             if(image.Source == null)
                 return;
-            
-            Batch.DrawImage(image.Source.Texture, image.Source.TextureAlpha, ref image.WorldMatrixInternal, ref image.Source.RegionInternal,
+
+            Batch.DrawImage(image.Source.Texture, null, ref image.WorldMatrixInternal, ref image.Source.RegionInternal,
                 ref element.RenderSizeInternal, ref image.Source.BordersInternal, ref imageColor, context.DepthBias, image.Source.Orientation);
         }
     }

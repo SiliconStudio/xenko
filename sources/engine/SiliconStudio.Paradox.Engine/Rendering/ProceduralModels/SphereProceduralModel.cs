@@ -31,6 +31,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// Gets or sets the diameter of this sphere.
         /// </summary>
         /// <value>The diameter.</value>
+        /// <userdoc>The diameter of the sphere.</userdoc>
         [DataMember(10)]
         [DefaultValue(1.0f)]
         public float Diameter { get; set; }
@@ -39,6 +40,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// Gets or sets the tessellation factor (default: 3.0)
         /// </summary>
         /// <value>The tessellation.</value>
+        /// <userdoc>The tessellation of the sphere. That is the number of polygons composing it.</userdoc>
         [DataMember(20)]
         [DefaultValue(16)]
         public int Tessellation { get; set; }
@@ -47,7 +49,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// Gets or sets the UV scales.
         /// </summary>
         /// <value>The UV scales</value>
-        /// <userdoc>The scales to apply to the UV coordinates of the plane.</userdoc>
+        /// <userdoc>The scales to apply onto the UV coordinates of the sphere. This can be used to tile a texture on it.</userdoc>
         [DataMember(30)]
         [DefaultValue(1.0f)]
         [Display("UV Scales")]

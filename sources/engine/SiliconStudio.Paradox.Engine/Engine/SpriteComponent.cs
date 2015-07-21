@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Engine
     /// Add a <see cref="Sprite"/> to an <see cref="Entity"/>. It could be an animated sprite.
     /// </summary>
     [DataContract("SpriteComponent")]
-    [Display(100, "Sprite")]
+    [Display(100, "Sprite", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(SpriteComponentRenderer))]
     [DefaultEntityComponentProcessor(typeof(SpriteProcessor))]
     public sealed class SpriteComponent : EntityComponent
@@ -59,28 +59,29 @@ namespace SiliconStudio.Paradox.Engine
         public SpriteType SpriteType;
 
         /// <summary>
-        /// Gets or set the sprite extrusion method.
-        /// </summary>
-        [DataMember(15)]
-        [DefaultValue(SpriteExtrusionMethod.UnitHeightSpriteRatio)]
-        [Display("Extrusion")]
-        public SpriteExtrusionMethod ExtrusionMethod { get; set; }
-
-        /// <summary>
         /// The color to apply on the sprite.
         /// </summary>
         /// <userdoc>The color to apply to the sprite.</userdoc>
-        [DataMember(20)]
+        [DataMember(40)]
         [Display("Color")]
         public Color Color = Color.White;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the sprite is a premultiplied alpha (default is true).
+        /// Gets or sets a value indicating whether the sprite is a pre-multiplied alpha (default is true).
         /// </summary>
-        /// <value><c>true</c> if the texture is premultiplied by alpha; otherwise, <c>false</c>.</value>
-        [DataMember(30)]
+        /// <value><c>true</c> if the texture is pre-multiplied by alpha; otherwise, <c>false</c>.</value>
+        [DataMember(50)]
         [DefaultValue(true)]
         public bool PremultipliedAlpha { get; set; }
+
+        /// <summary>
+        /// Ignore the depth of other elements of the scene when rendering the sprite by disabling the depth test.
+        /// </summary>
+        /// <userdoc>Ignore the depth of other elements of the scene when rendering the sprite. When checked, the sprite is always put on top of previous elements.</userdoc>
+        [DataMember(60)]
+        [DefaultValue(false)]
+        [Display("Ignore Depth")]
+        public bool IgnoreDepth;
 
         [DataMemberIgnore]
         internal double ElapsedTime;
@@ -90,8 +91,7 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         public SpriteComponent()
         {
-            SpriteProviderInternal = new SpriteFromSpriteGroup();
-            ExtrusionMethod = SpriteExtrusionMethod.UnitHeightSpriteRatio;
+            SpriteProviderInternal = new SpriteFromSheet();
             PremultipliedAlpha = true;
         }
 

@@ -44,7 +44,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
                 FontSize = scrollingText.TextSize,
                 Batch = Batch,
                 SnapText = context.ShouldSnapText && !scrollingText.DoNotSnapText,
-                WorldMatrix = textWorldMatrix,
+                Matrix = textWorldMatrix,
                 Alignment = TextAlignment.Left,
                 Size = new Vector2(scrollingText.ActualWidth, scrollingText.ActualHeight)
             };

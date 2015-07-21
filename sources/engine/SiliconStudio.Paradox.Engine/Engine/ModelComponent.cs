@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Engine
     /// Add a <see cref="Model"/> to an <see cref="Entity"/>, that will be used during rendering.
     /// </summary>
     [DataContract("ModelComponent")]
-    [Display(110, "Model")]
+    [Display(110, "Model", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(ModelComponentAndPickingRenderer))]
     [DefaultEntityComponentProcessor(typeof(ModelProcessor))]
     public sealed class ModelComponent : EntityComponent, IModelInstance
@@ -52,6 +52,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The model.
         /// </value>
+        /// <userdoc>The reference to the model asset to attach to this entity</userdoc>
         [DataMemberCustomSerializer]
         [DataMember(10)]
         public Model Model
@@ -74,6 +75,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The materials overriding <see cref="SiliconStudio.Paradox.Rendering.Model.Materials"/> ones.
         /// </value>
+        /// <userdoc>The list of materials to use with the model. This list overrides the default materials of the model.</userdoc>
         [DataMember(20)]
         public List<Material> Materials
         {
@@ -96,19 +98,11 @@ namespace SiliconStudio.Paradox.Engine
         }
 
         /// <summary>
-        /// Gets or sets the draw order (from lowest to highest).
-        /// </summary>
-        /// <value>
-        /// The draw order.
-        /// </value>
-        [DataMember(30)]
-        public float DrawOrder { get; set; }
-
-        /// <summary>
         /// Gets or sets a boolean indicating if this model component is casting shadows.
         /// </summary>
         /// <value>A boolean indicating if this model component is casting shadows.</value>
-        [DataMember(40)]
+        /// <userdoc>If checked, the model generates a shadow when enabling shadow maps.</userdoc>
+        [DataMember(30)]
         [DefaultValue(true)]
         [Display("Cast Shadows?")]
         public bool IsShadowCaster { get; set; }
@@ -117,6 +111,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets a boolean indicating if this model component is receiving shadows.
         /// </summary>
         /// <value>A boolean indicating if this model component is receiving shadows.</value>
+        /// <userdoc>If checked, the model can be covered by the shadow of another model.</userdoc>
         [DataMember(40)]
         [DefaultValue(true)]
         [Display("Receive Shadows?")]
@@ -126,7 +121,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets the parameters used to render this mesh.
         /// </summary>
         /// <value>The parameters.</value>
-        [DataMember(50)]
+        [DataMemberIgnore]
         public ParameterCollection Parameters { get; private set; }
 
         /// <summary>
@@ -159,10 +154,11 @@ namespace SiliconStudio.Paradox.Engine
             }
         }
 
-        internal void Update(ref Matrix worldMatrix)
+        internal void Update(ref Matrix worldMatrix, bool isScalingNegative)
         {
             // Update model view hierarchy node matrices
             modelViewHierarchy.NodeTransformations[0].LocalMatrix = worldMatrix;
+            modelViewHierarchy.NodeTransformations[0].IsScalingNegative = isScalingNegative;
             modelViewHierarchy.UpdateMatrices();
 
             // Update the bounding sphere / bounding box in world space

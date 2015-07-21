@@ -9,7 +9,7 @@ namespace SiliconStudio.Paradox.Engine
     /// Script component.
     /// </summary>
     [DataContract("ScriptComponent")]
-    [Display(10, "Scripts")]
+    [Display(10, "Scripts", Expand = ExpandRule.Once)]
     public sealed class ScriptComponent : EntityComponent
     {
         public static PropertyKey<ScriptComponent> Key = new PropertyKey<ScriptComponent>("Key", typeof(ScriptComponent));
@@ -41,7 +41,8 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The scripts.
         /// </value>
-        [Display("Script", AlwaysExpand = true)]
+        /// <userdoc>The list of scripts attached to the entity</userdoc>
+        [Display("Script", Expand = ExpandRule.Always)]
         public TrackingCollection<Script> Scripts { get; private set; }
 
         /// <inheritdoc/>

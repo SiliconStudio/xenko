@@ -3,6 +3,7 @@
 
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Graphics;
@@ -16,6 +17,7 @@ namespace SiliconStudio.Paradox.Rendering.Sprites
     [Display("Texture")]
     public class SpriteFromTexture : ISpriteProvider
     {
+        private float pixelsPerUnit;
         private Vector2 center;
         private Texture texture;
         private bool isTransparent;
@@ -29,8 +31,43 @@ namespace SiliconStudio.Paradox.Rendering.Sprites
         /// </summary>
         public SpriteFromTexture()
         {
+            PixelsPerUnit = 100;
             CenterFromMiddle = true;
             IsTransparent = true;
+        }
+
+        /// <summary>
+        /// Gets or sets the texture of representing the sprite
+        /// </summary>
+        /// <userdoc>Specify the texture to use as sprite</userdoc>
+        [DataMember(5)]
+        [InlineProperty]
+        public Texture Texture
+        {
+            get { return texture; }
+            set
+            {
+                texture = value;
+                isSpriteDirty = true;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the value specifying the size of one pixel in scene units
+        /// </summary>
+        /// <userdoc>
+        /// Specify the size in pixels of one unit in the scene.
+        /// </userdoc>
+        [DataMember(8)]
+        [DefaultValue(100)]
+        public float PixelsPerUnit
+        {
+            get { return pixelsPerUnit; }
+            set
+            {
+                pixelsPerUnit = value;
+                isSpriteDirty = true;
+            }
         }
 
         /// <summary>
@@ -87,20 +124,6 @@ namespace SiliconStudio.Paradox.Rendering.Sprites
             }
         }
 
-        /// <summary>
-        /// The texture of representing the sprite
-        /// </summary>
-        [DataMember(5)]
-        public Texture Texture
-        {
-            get { return texture; }
-            set
-            {
-                texture = value;
-                isSpriteDirty = true;
-            }
-        }
-
         public Sprite GetSprite(int index)
         {
             if(isSpriteDirty)
@@ -115,9 +138,10 @@ namespace SiliconStudio.Paradox.Rendering.Sprites
         {
             sprite.Texture = texture;
             sprite.IsTransparent = isTransparent;
+            sprite.PixelsPerUnit = new Vector2(PixelsPerUnit);
             if (texture != null)
             {
-                sprite.Center = center + (centerFromMiddle ? new Vector2(texture.Width, texture.Height) : Vector2.Zero);
+                sprite.Center = center + (centerFromMiddle ? new Vector2(texture.Width, texture.Height) / 2 : Vector2.Zero);
                 sprite.Region = new RectangleF(0, 0, texture.Width, texture.Height);
             }
 

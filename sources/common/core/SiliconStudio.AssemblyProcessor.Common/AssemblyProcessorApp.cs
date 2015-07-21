@@ -13,6 +13,7 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using MethodAttributes = Mono.Cecil.MethodAttributes;
 using TypeAttributes = Mono.Cecil.TypeAttributes;
 
@@ -20,6 +21,8 @@ namespace SiliconStudio.AssemblyProcessor
 {
     public class AssemblyProcessorApp
     {
+        private Logger log;
+
         public AssemblyProcessorApp()
         {
             SearchDirectories = new List<string>();
@@ -50,6 +53,8 @@ namespace SiliconStudio.AssemblyProcessor
         public string SignKeyFile { get; set; }
 
         public bool UseSymbols { get; set; }
+
+        public bool TreatWarningsAsErrors { get; set; }
 
         public Action<string, Exception> OnErrorEvent;
 
@@ -111,6 +116,8 @@ namespace SiliconStudio.AssemblyProcessor
 
         public bool Run(ref AssemblyDefinition assemblyDefinition, ref bool readWriteSymbols, out bool modified)
         {
+            log = new Logger(assemblyDefinition.Name.Name, TreatWarningsAsErrors);
+
             modified = false;
 
             try
@@ -144,7 +151,7 @@ namespace SiliconStudio.AssemblyProcessor
 
                 if (SerializationAssembly)
                 {
-                    processors.Add(new SerializationProcessor(SignKeyFile, SerializationProjectReferences));
+                    processors.Add(new SerializationProcessor(SignKeyFile, SerializationProjectReferences, log));
                 }
 
                 if (GenerateUserDocumentation)
@@ -242,6 +249,27 @@ namespace SiliconStudio.AssemblyProcessor
 
                         // Add path to look for WinRT assemblies (Windows.winmd)
                         var windowsAssemblyPath = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Windows Phone Kits\8.1\References\CommonConfiguration\Neutral\", "Windows.winmd");
+                        var windowsAssembly = AssemblyDefinition.ReadAssembly(windowsAssemblyPath, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = false });
+                        assemblyResolver.Register(windowsAssembly);
+
+                        break;
+                    }
+
+                    case PlatformType.Windows10:
+                    {
+                        if (string.IsNullOrEmpty(TargetFramework))
+                        {
+                            throw new InvalidOperationException("Expecting option target framework for Windows10");
+                        }
+
+                        frameworkFolder = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Reference Assemblies\Microsoft\Framework\.NETCore", TargetFramework);
+                        assemblyResolver.AddSearchDirectory(frameworkFolder);
+
+                        // Add path to look for WinRT assemblies (Windows.Foundation.FoundationContract.winmd, etc...)
+                        assemblyResolver.WindowsKitsReferenceDirectory = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Windows Kits\10\References");
+
+                        // Add path to look for WinRT assemblies (Windows.winmd)
+                        var windowsAssemblyPath = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Windows Kits\8.1\References\CommonConfiguration\Neutral\", "Windows.winmd");
                         var windowsAssembly = AssemblyDefinition.ReadAssembly(windowsAssemblyPath, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = false });
                         assemblyResolver.Register(windowsAssembly);
 
@@ -401,6 +429,27 @@ namespace SiliconStudio.AssemblyProcessor
             else
             {
                 OnInfoEvent(infoMessage);
+            }
+        }
+
+        private class Logger : ILogger
+        {
+            private readonly bool treatWarningsAsErrors;
+
+            public string Module { get; private set; }
+
+            public Logger(string module, bool treatWarningsAsErrors)
+            {
+                Module = module;
+                this.treatWarningsAsErrors = treatWarningsAsErrors;
+            }
+
+            public void Log(ILogMessage logMessage)
+            {
+                if (treatWarningsAsErrors && logMessage.Type == LogMessageType.Warning)
+                    logMessage.Type = LogMessageType.Error;
+
+                Console.WriteLine(logMessage);
             }
         }
     }

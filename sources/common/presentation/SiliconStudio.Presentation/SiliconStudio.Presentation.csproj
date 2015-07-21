@@ -42,6 +42,7 @@
     <Compile Include="Behaviors\ChangeCursorOnSliderThumbBehavior.cs" />
     <Compile Include="Behaviors\CloseWindowBehavior.cs" />
     <Compile Include="Behaviors\DoubleClickCloseWindowBehavior.cs" />
+    <Compile Include="Behaviors\HyperlinkCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\ListBoxBindableSelectedItemsBehavior.cs" />
     <Compile Include="Behaviors\MenuItemCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\NumericTextBoxTransactionalRepeatButtonsBehavior.cs" />
@@ -97,9 +98,16 @@
     <Compile Include="Core\Utils.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
+    <Compile Include="MarkupExtensions\FalseExtension.cs" />
+    <Compile Include="MarkupExtensions\IntExtension.cs" />
+    <Compile Include="MarkupExtensions\TrueExtension.cs" />
+    <Compile Include="ValueConverters\EnumToDisplayName.cs" />
+    <Compile Include="ValueConverters\FormatString.cs" />
     <Compile Include="ValueConverters\ItemToIndex.cs" />
+    <Compile Include="ValueConverters\MatchType.cs" />
     <Compile Include="ValueConverters\MaxNum.cs" />
     <Compile Include="ValueConverters\MinNum.cs" />
+    <Compile Include="ValueConverters\MultiplyMultiConverter.cs" />
     <Compile Include="ViewModel\ActionStack\AnonymousViewModelActionItem.cs" />
     <Compile Include="ViewModel\IViewModelServiceProvider.cs" />
     <Compile Include="ViewModel\ViewModelServiceProvider.cs" />
@@ -159,7 +167,6 @@
     <Compile Include="Controls\ScaleBar.cs" />
     <Compile Include="Extensions\DependencyObjectExtensions.cs" />
     <Compile Include="Controls\KeyValueGrid.cs" />
-    <Compile Include="MarkupExtensions\BoolExtension.cs" />
     <Compile Include="MarkupExtensions\PriorityBinding.cs" />
     <Compile Include="MarkupExtensions\SizeExtension.cs" />
     <Compile Include="MarkupExtensions\ThicknessExtension.cs" />

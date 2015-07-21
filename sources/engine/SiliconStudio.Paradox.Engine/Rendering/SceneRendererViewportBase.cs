@@ -5,7 +5,6 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Rendering
@@ -26,6 +25,8 @@ namespace SiliconStudio.Paradox.Rendering
         /// Gets or sets the viewport in percentage or pixel.
         /// </summary>
         /// <value>The viewport in percentage or pixel.</value>
+        /// <userdoc>Specify the region of the output target in which to draw. 
+        /// Those values are either in pixels or relative depending on status of 'Viewport in %'.</userdoc>
         [DataMember(110)]
         public RectangleF Viewport { get; set; }
 

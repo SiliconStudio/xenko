@@ -20,15 +20,15 @@ namespace SiliconStudio.Paradox.Assets.RenderFrames
 
         private class RenderFrameCompileCommand : AssetCommand<RenderFrameAsset>
         {
-            public RenderFrameCompileCommand(string url, RenderFrameAsset asset)
-                : base(url, asset)
+            public RenderFrameCompileCommand(string url, RenderFrameAsset assetParameters)
+                : base(url, assetParameters)
             {
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var assetManager = new AssetManager();
-                assetManager.Save(Url, RenderFrame.NewFake(asset.Descriptor));
+                assetManager.Save(Url, RenderFrame.NewFake(AssetParameters.Descriptor));
 
                 return Task.FromResult(ResultStatus.Successful);
             }

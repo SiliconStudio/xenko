@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public TextBlockWrappingTest()
         {
-            CurrentVersion = 5;
+            CurrentVersion = 6;
         }
 
         protected override async Task LoadContent()
@@ -48,7 +48,7 @@ Does it work with kanjis too? let's see that in the following line. Here we goes
                 Content = textBlock, 
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                BackgroundImage = new UIImage(Asset.Load<Texture>("DumbWhite"))
+                BackgroundImage = new Sprite(Asset.Load<Texture>("DumbWhite"))
             };
 
             UIComponent.RootElement = decorator;

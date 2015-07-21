@@ -8,9 +8,11 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Rendering.Materials;
 using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
@@ -25,6 +27,8 @@ namespace SiliconStudio.Paradox.Assets.Materials
     [ThumbnailCompiler(PreviewerCompilerNames.MaterialThumbnailCompilerQualifiedName, true, Priority = -5000)]
     [AssetCompiler(typeof(MaterialAssetCompiler))]
     [ObjectFactory(typeof(MaterialFactory))]
+    [AssetFormatVersion(1)]
+    [AssetUpgrader(0, 1, typeof(RemoveParametersUpgrader))]
     [Display(115, "Material", "A material")]
     public sealed class MaterialAsset : Asset, IMaterialDescriptor, IAssetCompileTimeDependencies
     {
@@ -52,9 +56,10 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// Gets or sets the material attributes.
         /// </summary>
         /// <value>The material attributes.</value>
+        /// <userdoc>The base attributes of the material.</userdoc>
         [DataMember(10)]
         [NotNull]
-        [Display("Attributes", AlwaysExpand = true)]
+        [Display("Attributes", Expand = ExpandRule.Always)]
         public MaterialAttributes Attributes { get; set; }
 
 
@@ -62,6 +67,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// Gets or sets the material compositor.
         /// </summary>
         /// <value>The material compositor.</value>
+        /// <userdoc>The layers overriding the base attributes of the material. Layers are displayed from bottom to top.</userdoc>
         [DefaultValue(null)]
         [DataMember(20)]
         [NotNull]
@@ -72,7 +78,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// Gets or sets the parameters.
         /// </summary>
         /// <value>The parameters.</value>
-        [DataMember(30)]
+        [DataMemberIgnore]
         public ParameterCollection Parameters { get; set; }
 
         public IEnumerable<AssetReference<MaterialAsset>> FindMaterialReferences()
@@ -127,6 +133,15 @@ namespace SiliconStudio.Paradox.Assets.Materials
             foreach (var materialReference in FindMaterialReferences())
             {
                 yield return materialReference;
+            }
+        }
+
+
+        public class RemoveParametersUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                asset.Parameters = DynamicYamlEmpty.Default;
             }
         }
     }

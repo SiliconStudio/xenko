@@ -10,8 +10,12 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Paradox.Assets.Debugging;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Engine.Processors;
 
 namespace SiliconStudio.Paradox.Debugger.Target
 {
@@ -38,6 +42,10 @@ namespace SiliconStudio.Paradox.Debugger.Target
         public GameDebuggerTarget()
         {
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+
+            // Make sure this assembly is registered (it contains custom Yaml serializers such as CloneReferenceSerializer)
+            // Note: this assembly should not be registered when run by Game Studio
+            AssemblyRegistry.Register(typeof(Program).GetTypeInfo().Assembly, AssemblyCommonCategories.Assets);
         }
 
         Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
@@ -66,7 +74,6 @@ namespace SiliconStudio.Paradox.Debugger.Target
                     return DebugAssembly.Empty;
                 }
 
-                AssemblyOnLoad(assembly);
                 return CreateDebugAssembly(assembly);
             }
             catch (Exception ex)
@@ -84,7 +91,6 @@ namespace SiliconStudio.Paradox.Debugger.Target
                 lock (loadedAssemblies)
                 {
                     var assembly = Assembly.Load(peData, pdbData);
-                    AssemblyOnLoad(assembly);
                     return CreateDebugAssembly(assembly);
                 }
             }
@@ -96,38 +102,32 @@ namespace SiliconStudio.Paradox.Debugger.Target
         }
 
         /// <inheritdoc/>
-        public bool AssemblyUnload(DebugAssembly debugAssembly)
+        public bool AssemblyUpdate(List<DebugAssembly> assembliesToUnregister, List<DebugAssembly> assembliesToRegister)
         {
-            // Unload assembly in assemblyContainer
+            Log.Info("Reloading assemblies and updating scripts");
+
+            // Unload and load assemblies in assemblyContainer, serialization, etc...
             lock (loadedAssemblies)
             {
-                Assembly assembly;
-                if (!loadedAssemblies.TryGetValue(debugAssembly, out assembly))
-                    return false;
+                var assemblyReloader = new LiveAssemblyReloader(
+                    game,
+                    assemblyContainer,
+                    assembliesToUnregister.Select(x => loadedAssemblies[x]).ToList(),
+                    assembliesToRegister.Select(x => loadedAssemblies[x]).ToList());
 
-                assemblyContainer.UnloadAssembly(assembly);
-                loadedAssemblies.Remove(debugAssembly);
-                AssemblyOnUnload(assembly);
+                if (game != null)
+                {
+                    lock (game.TickLock)
+                    {
+                        assemblyReloader.Reload();
+                    }
+                }
+                else
+                {
+                    assemblyReloader.Reload();
+                }
             }
             return true;
-        }
-
-        private void AssemblyOnLoad(Assembly assembly)
-        {
-            // Ensure module ctor has run (register serializers, etc...)
-            RuntimeHelpers.RunModuleConstructor(assembly.ManifestModule.ModuleHandle);
-
-            if (game != null)
-            {
-                game.Script.ProcessAssemblyLoad(assembly);
-            }
-        }
-        private void AssemblyOnUnload(Assembly assembly)
-        {
-            if (game != null)
-            {
-                game.Script.ProcessAssemblyUnload(assembly);
-            }
         }
 
         /// <inheritdoc/>
@@ -144,6 +144,8 @@ namespace SiliconStudio.Paradox.Debugger.Target
         {
             try
             {
+                Log.Info("Running game with type {0}", gameTypeName);
+
                 Type gameType;
                 lock (loadedAssemblies)
                 {
@@ -163,13 +165,14 @@ namespace SiliconStudio.Paradox.Debugger.Target
                     {
                         using (game)
                         {
+                            // Allow scripts to crash, we will still restart them
+                            game.Script.Scheduler.PropagateExceptions = false;
                             game.Run();
                         }
                     }
                     catch (Exception e)
                     {
-                        // Mute exceptions
-                        // TODO: Transfer them back to listening process?
+                        Log.Error("Exception while running game", e);
                     }
 
                     host.OnGameExited();
@@ -200,7 +203,9 @@ namespace SiliconStudio.Paradox.Debugger.Target
 
         private IEnumerable<Type> GameEnumerateTypesHelper()
         {
-            return loadedAssemblies.SelectMany(assembly => assembly.Value.GetTypes().Where(x => typeof(Game).IsAssignableFrom(x)));
+            // We enumerate custom games, and then typeof(Game) as fallback
+            return loadedAssemblies.SelectMany(assembly => assembly.Value.GetTypes().Where(x => typeof(Game).IsAssignableFrom(x)))
+                .Concat(Enumerable.Repeat(typeof(Game), 1));
         }
 
         private DebugAssembly CreateDebugAssembly(Assembly assembly)
@@ -214,10 +219,37 @@ namespace SiliconStudio.Paradox.Debugger.Target
         {
             host = gameDebuggerHost;
             host.RegisterTarget();
+
+            Log.MessageLogged += Log_MessageLogged;
+
+            // Log suppressed exceptions in scripts
+            ScriptSystem.Log.MessageLogged += Log_MessageLogged;
+            Scheduler.Log.MessageLogged += Log_MessageLogged;
+
+            Log.Info("Starting debugging session");
+
             while (!requestedExit)
             {
                 Thread.Sleep(10);
             }
+        }
+
+        void Log_MessageLogged(object sender, MessageLoggedEventArgs e)
+        {
+            var message = e.Message;
+            var serializableMessage = message as SerializableLogMessage;
+            if (serializableMessage == null)
+            {
+                var logMessage = message as LogMessage;
+                serializableMessage = logMessage != null ? new SerializableLogMessage(logMessage) : null;
+            }
+
+            if (serializableMessage == null)
+            {
+                throw new InvalidOperationException(@"Unable to process the given log message.");
+            }
+
+            host.OnLogMessage(serializableMessage);
         }
     }
 }

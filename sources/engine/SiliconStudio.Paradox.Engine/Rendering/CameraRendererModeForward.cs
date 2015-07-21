@@ -4,7 +4,6 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Rendering.Materials;
 using SiliconStudio.Paradox.Shaders;
 

@@ -29,6 +29,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// Gets or sets the gamma value.
         /// </summary>
         /// <value>The value.</value>
+        /// <userdoc>The value of the gamma transformation.</userdoc>
         [DataMember(10)]
         [DefaultValue(2.2333333f)]
         public float Value

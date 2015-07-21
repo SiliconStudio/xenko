@@ -37,11 +37,26 @@ namespace SiliconStudio.Assets
         private static readonly Dictionary<Type, AssetUpgraderCollection> RegisteredAssetUpgraders = new Dictionary<Type, AssetUpgraderCollection>();
         private static readonly Dictionary<string, List<IAssetImporter>> RegisterImportExtensions = new Dictionary<string, List<IAssetImporter>>(StringComparer.InvariantCultureIgnoreCase);
         private static readonly HashSet<string> RegisteredAssetFileExtensions = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+        private static readonly Dictionary<string, PackageUpgrader> RegisteredPackageUpgraders = new Dictionary<string, PackageUpgrader>();
         private static readonly HashSet<Assembly> RegisteredAssemblies = new HashSet<Assembly>();
         private static readonly HashSet<IYamlSerializableFactory> RegisteredSerializerFactories = new HashSet<IYamlSerializableFactory>();
         private static readonly List<IDataCustomVisitor> RegisteredDataVisitNodes = new List<IDataCustomVisitor>();
         private static readonly List<IDataCustomVisitor> RegisteredDataVisitNodeBuilders = new List<IDataCustomVisitor>();
         private static Func<object, string, string> stringExpander;
+
+        /// <summary>
+        /// Gets the list of assemblies currently registered.
+        /// </summary>
+        public static IEnumerable<Assembly> Assemblies
+        {
+            get
+            {
+                lock (RegisteredAssemblies)
+                {
+                    return RegisteredAssemblies.ToList();
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the supported platforms.
@@ -133,7 +148,7 @@ namespace SiliconStudio.Assets
         /// <returns>System.String.</returns>
         public static string GetDefaultExtension(Type assetType)
         {
-            AssertAssetType(assetType);
+            IsAssetType(assetType, true);
             lock (RegisteredAssetFileExtensions)
             {
                 string extension;
@@ -149,7 +164,7 @@ namespace SiliconStudio.Assets
         /// <returns>The current format version of this asset.</returns>
         public static int GetCurrentFormatVersion(Type assetType)
         {
-            AssertAssetType(assetType);
+            IsAssetType(assetType, true);
             lock (RegisteredFormatVersions)
             {
                 Tuple<int, int> version;
@@ -165,7 +180,7 @@ namespace SiliconStudio.Assets
         /// <returns>The current format version of this asset.</returns>
         public static int GetMinimalFormatVersion(Type assetType)
         {
-            AssertAssetType(assetType);
+            IsAssetType(assetType, true);
             lock (RegisteredFormatVersions)
             {
                 Tuple<int, int> version;
@@ -181,12 +196,22 @@ namespace SiliconStudio.Assets
         /// <returns>The <see cref="AssetUpgraderCollection"/> of an asset type if available, or <c>null</c> otherwise.</returns>
         public static AssetUpgraderCollection GetAssetUpgraders(Type assetType)
         {
-            AssertAssetType(assetType);
+            IsAssetType(assetType, true);
             lock (RegisteredAssetUpgraders)
             {
                 AssetUpgraderCollection upgraders;
                 RegisteredAssetUpgraders.TryGetValue(assetType, out upgraders);
                 return upgraders;
+            }
+        }
+
+        public static PackageUpgrader GetPackageUpgrader(string packageName)
+        {
+            lock (RegisteredPackageUpgraders)
+            {
+                PackageUpgrader upgrader;
+                RegisteredPackageUpgraders.TryGetValue(packageName, out upgrader);
+                return upgrader;
             }
         }
 
@@ -226,7 +251,7 @@ namespace SiliconStudio.Assets
         /// <returns><c>true</c> if [has dynamic thumbnail] [the specified asset type]; otherwise, <c>false</c>.</returns>
         public static bool HasDynamicThumbnail(Type assetType)
         {
-            AssertAssetType(assetType);
+            IsAssetType(assetType, true);
             lock (RegisteredDynamicThumbnails)
             {
                 bool hasThumbnail;
@@ -364,7 +389,7 @@ namespace SiliconStudio.Assets
         /// <exception cref="System.ArgumentNullException">description</exception>
         private static void RegisterDynamicThumbnail(Type assetType, bool isDynamicThumbnail)
         {
-            AssertAssetType(assetType);
+            IsAssetType(assetType, true);
             lock (RegisteredDynamicThumbnails)
             {
                 RegisteredDynamicThumbnails[assetType] = isDynamicThumbnail;
@@ -471,6 +496,23 @@ namespace SiliconStudio.Assets
                     RegisteredPackageSessionAnalysisTypes.Add(type);
                 }
 
+                {
+                    var packageUpgraderAttribute = type.GetCustomAttribute<PackageUpgraderAttribute>();
+                    if (packageUpgraderAttribute != null)
+                    {
+                        try
+                        {
+                            var packageUpgrader = (PackageUpgrader)Activator.CreateInstance(type);
+                            packageUpgrader.Attribute = packageUpgraderAttribute;
+                            RegisteredPackageUpgraders[packageUpgraderAttribute.PackageName] = packageUpgrader;
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error("Unable to instantiate package upgrader [{0}]", ex, type.Name);
+                        }
+                    }
+                }
+
                 // Only process Asset types
                 var assetType = type;
                 if (!typeof(Asset).IsAssignableFrom(assetType) || !assetType.IsClass)
@@ -565,13 +607,18 @@ namespace SiliconStudio.Assets
             }
         }
 
-        internal static void AssertAssetType(Type assetType)
+        public static bool IsAssetType(Type assetType, bool throwException = false)
         {
             if (assetType == null)
                 throw new ArgumentNullException("assetType");
 
-            if (!typeof(Asset).IsAssignableFrom(assetType)) 
-                throw new ArgumentException("Type [{0}] must be assignable to Asset".ToFormat(assetType), "assetType");
+            if (!typeof(Asset).IsAssignableFrom(assetType))
+            {
+                if (throwException)
+                    throw new ArgumentException("Type [{0}] must be assignable to Asset".ToFormat(assetType), "assetType");
+                return false;
+            }
+            return true;
         }
 
         static AssetRegistry()

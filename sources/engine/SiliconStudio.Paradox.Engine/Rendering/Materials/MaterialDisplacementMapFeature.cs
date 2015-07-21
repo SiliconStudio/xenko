@@ -5,7 +5,6 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Paradox.Rendering.Materials;
 using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
 using SiliconStudio.Paradox.Shaders;
 
@@ -43,7 +42,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// </summary>
         /// <value>The displacement map.</value>
         /// <userdoc>
-        /// The displacement map.
+        /// The map containing the displacement offsets to apply onto the model vertex positions.
         /// </userdoc>
         [DataMember(10)]
         [Display("Displacement Map")]
@@ -55,7 +54,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// </summary>
         /// <value>The displacement map.</value>
         /// <userdoc>
-        /// The displacement map.
+        /// The intensity factor of the displacement. This scales the offset introduced by displacement map.
         /// </userdoc>
         [DataMember(20)]
         [Display("Intensity")]

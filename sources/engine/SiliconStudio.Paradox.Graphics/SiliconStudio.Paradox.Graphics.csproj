@@ -27,7 +27,7 @@
         <Reference Include="SharpDX.Desktop">
           <SpecificVersion>False</SpecificVersion>
           <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.Desktop.dll</HintPath>
-        </Reference>        
+        </Reference>
       </ItemGroup>
     </When>
   </Choose>
@@ -80,22 +80,22 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'WindowsStore' Or '$(SiliconStudioPlatform)' == 'WindowsPhone'">
+  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'WindowsStore' Or '$(SiliconStudioPlatform)' == 'WindowsPhone' Or '$(SiliconStudioPlatform)' == 'Windows10'">
     <Reference Include="SharpFont">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ParadoxDependenciesDir)SharpFont\Windows\$(Configuration)\SharpFont.dll</HintPath>
+      <HintPath>$(ParadoxDependenciesDir)SharpFont\Windows\Release\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS'">
     <Reference Include="SharpFont">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ParadoxDependenciesDir)SharpFont\iOS\$(Configuration)\SharpFont.dll</HintPath>
+      <HintPath>$(ParadoxDependenciesDir)SharpFont\iOS\Release\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Android'">
     <Reference Include="SharpFont">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ParadoxDependenciesDir)SharpFont\Android\$(Configuration)\SharpFont.dll</HintPath>
+      <HintPath>$(ParadoxDependenciesDir)SharpFont\Android\Release\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
   <!-- Files for Direct3D  -->
@@ -128,6 +128,16 @@
     <Compile Include="Direct3D\InputLayoutManager.cs" />
     <Compile Include="Direct3D\Rational.Direct3D.cs" />
     <Compile Include="DepthStencilStateSerializer.cs" />
+    <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.Direct3D11.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGL.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGLES.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\BackgroundEffect.Extensions.cs" />
+    <Compile Include="Shaders\BackgroundEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>BackgroundEffect.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Sprite3DBatch.cs" />
     <Compile Include="Shaders\ShaderBaseStream.cs">
       <DependentUpon>ShaderBaseStream.pdxsl</DependentUpon>
@@ -136,7 +146,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="VertexHelper.cs" />
-    <Compile Include="TransformationSpace.cs" />
     <Compile Include="Font\FontAntiAliasMode.cs" />
     <Compile Include="Font\FontStyleExtensions.cs" />
     <Compile Include="GeometricPrimitives\GeometricPrimitive.Cone.cs" />
@@ -146,8 +155,8 @@
     <Compile Include="GraphicsResourceAllocatorExtensions.cs" />
     <Compile Include="GraphicsResourceLink.cs" />
     <Compile Include="GraphicsResourceRecyclePolicyDelegate.cs" />
-    <Compile Include="ImageFragment.cs" />
-    <Compile Include="ImageGroup.cs" />
+    <Compile Include="Sprite.cs" />
+    <Compile Include="SpriteSheet.cs" />
     <Compile Include="ImageOrientation.cs" />
     <Compile Include="OpenGL\OpenGLUtils.cs" />
     <Compile Include="OpenGL\GraphicsOutput.OpenGL.cs" />
@@ -257,12 +266,11 @@
       <DependentUpon>UIEffect.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Shaders.Bytecodes\UIEffectSeparateAlpha.Extensions.cs" />
-    <Compile Include="Sprite.cs" />
+    <Compile Include="Sprite.Extensions.cs" />
     <Compile Include="SpriteBatch.cs" />
     <Compile Include="SpriteEffects.cs" />
     <Compile Include="SpriteFont.cs" />
     <Compile Include="SpriteFrame.cs" />
-    <Compile Include="SpriteGroup.cs" />
     <Compile Include="SpriteSortMode.cs" />
     <Compile Include="DeviceCreationFlags.cs" />
     <Compile Include="GraphicsDeviceStatus.cs" />
@@ -480,7 +488,11 @@
   <ItemGroup>
     <None Include="Shaders.Bytecodes\CompileShaders.cmd" />
     <None Include="Shaders.Bytecodes\Graphics.pdxpkg" />
-    <None Include="Shaders.Bytecodes\Shaders.pdxfxlib" />
+    <None Include="Shaders.Bytecodes\Shaders.pdxeffectlog" />
+    <None Include="Shaders\BackgroundEffect.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>BackgroundEffect.cs</LastGenOutput>
+    </None>
     <None Include="Shaders\ShaderBaseStream.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ShaderBaseStream.cs</LastGenOutput>

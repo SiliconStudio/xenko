@@ -4,7 +4,6 @@
 using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Rendering.Images
@@ -42,6 +41,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// Gets or sets the threshold relative to the <see cref="WhitePoint"/>.
         /// </summary>
         /// <value>The threshold.</value>
+        /// <userdoc>The value of the intensity threshold used to identify bright areas</userdoc>
         [DataMember(10)]
         [DefaultValue(1.0f)]
         public float Threshold { get; set; }
@@ -50,7 +50,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// Modulate the bloom by a certain color.
         /// </summary>
         /// <value>The color.</value>
-        /// <userdoc>Modulates the bloom/lightstreak by a color</userdoc>
+        /// <userdoc>Modulates bright areas with the provided color. It affects the color of sub-sequent bloom, light-streak effects.</userdoc>
         [DataMember(20)]
         public Color3 Color { get; set; }
 

@@ -5,13 +5,10 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering.Materials;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Processors;
-using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Rendering
 {
@@ -259,7 +256,7 @@ namespace SiliconStudio.Paradox.Rendering
                     var projectedZ = projectedPosition.Z / projectedPosition.W;
 
                     // TODO: Should this be set somewhere else?
-                    var rasterizerState = cameraRenderMode != null ? cameraRenderMode.GetDefaultRasterizerState(renderMesh.RenderModel.IsGeometryInverted) : null;
+                    var rasterizerState = cameraRenderMode != null ? cameraRenderMode.GetDefaultRasterizerState(renderMesh.IsGeometryInverted) : null;
                     renderMesh.RasterizerState = RasterizerState ?? rasterizerState;
 
                     renderMesh.UpdateMaterial();
@@ -397,13 +394,6 @@ namespace SiliconStudio.Paradox.Rendering
             return renderMeshes;
         }
 
-        private void DefaultSort(RenderContext context, FastList<RenderMesh> meshes)
-        {
-            // Sort based on ModelComponent.DrawOrder
-            meshes.Sort(ModelComponentSorter.Default);
-        }
-
-
         /// <summary>
         /// Create or update the Effect of the effect mesh.
         /// </summary>
@@ -458,44 +448,5 @@ namespace SiliconStudio.Paradox.Rendering
                 return arg2 != null;
             }
         }
-
-        #region Helper class
-
-        private class ModelComponentSorter : IComparer<RenderMesh>
-        {
-            #region Constants and Fields
-
-            public static readonly ModelComponentSorter Default = new ModelComponentSorter();
-
-            #endregion
-
-            public int Compare(RenderMesh left, RenderMesh right)
-            {
-                var xModelComponent = left.RenderModel.ModelComponent;
-                var yModelComponent = right.RenderModel.ModelComponent;
-
-                // Ignore if no associated mesh component
-                if (xModelComponent == null || yModelComponent == null)
-                    return 0;
-
-                // TODO: Add a kind of associated data to an effect mesh to speed up this test?
-                var leftMaterial = left.Material;
-                var isLeftTransparent = (leftMaterial != null && leftMaterial.HasTransparency);
-
-                var rightMaterial = right.Material;
-                var isRightTransparent = (rightMaterial != null && rightMaterial.HasTransparency);
-
-                if (isLeftTransparent && !isRightTransparent)
-                    return 1;
-
-                if (!isLeftTransparent && isRightTransparent)
-                    return -1;
-
-                // Use draw order
-                return Math.Sign(xModelComponent.DrawOrder - yModelComponent.DrawOrder);
-            }
-        }
-
-        #endregion
     }
 }

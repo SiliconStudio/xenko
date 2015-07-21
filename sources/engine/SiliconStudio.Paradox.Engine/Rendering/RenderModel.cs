@@ -37,17 +37,8 @@ namespace SiliconStudio.Paradox.Rendering
 
         public EntityGroup Group { get; private set; }
 
-        public bool IsGeometryInverted { get; private set; }
-
         internal void Update()
         {
-            Vector3 scale;
-            Vector3 translation;
-            Quaternion rotation;
-
-            TransformComponent.WorldMatrix.Decompose(out scale, out rotation, out translation);
-            IsGeometryInverted = scale.X * scale.Y * scale.Z < 0;
-
             Group = Entity.Group;
             var previousModel = Model;
             Model = ModelComponent.Model;

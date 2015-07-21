@@ -1,14 +1,6 @@
 ﻿using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SiliconStudio.Paradox.Rendering.Images
 {
@@ -37,6 +29,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// <summary>
         /// Amount of grain.
         /// </summary>
+        /// <userdoc>The strength of the effect</userdoc>
         [DataMember(10)]
         [DefaultValue(0.25f)]
         [DataMemberRange(0f, 1f, 0.01f, 0.1f)]
@@ -46,6 +39,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// <summary>
         /// Grain size.
         /// </summary>
+        /// <userdoc>The size of the grains (in pixels)</userdoc>
         [DataMember(20)]
         [DefaultValue(1.6f)]
         [DataMemberRange(0f, 10f, 0.01f, 0.1f)]
@@ -54,6 +48,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// <summary>
         /// Animates the film grain.
         /// </summary>
+        /// <userdoc>When checked, the procedural pattern changes at each frame.</userdoc>
         [DataMember(30)]
         [DefaultValue(false)]
         public bool Animate { get; set; }
@@ -61,6 +56,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// <summary>
         /// How the luminance influences the amount of grain.
         /// </summary>
+        /// <userdoc>Specifies how strongly the original pixel luminance is affected by the grain pattern.</userdoc>
         [DataMember(40)]
         [DefaultValue(1.0)]
         [DataMemberRange(0f, 1f, 0.01f, 0.1f)]

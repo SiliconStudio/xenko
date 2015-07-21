@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
@@ -28,6 +27,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// Gets the material instance.
         /// </summary>
         /// <value>The material instance.</value>
+        /// <userdoc>The reference material asset to use with this model.</userdoc>
         [DataMember(500)]
         [NotNull]
         [Display("Material")]

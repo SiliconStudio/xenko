@@ -74,6 +74,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// <summary>
         /// Amount of light streak (intensity).
         /// </summary>
+        /// <userdoc>The strength of the effect</userdoc>
         [DataMember(10)]
         [DefaultValue(1f)]
         public float Amount { get; set; }
@@ -81,6 +82,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// <summary>
         /// Strength of the color aberration.
         /// </summary>
+        /// <userdoc>The strength of the color aberrations happening along the streaks and the halo.</userdoc>
         [DataMember(20)]
         [DefaultValue(0.2f)]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
@@ -103,6 +105,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// <summary>
         /// Halo factor when the camera is pointing exactly at a light source.
         /// </summary>
+        /// <userdoc>Specifies the intensity of halo effect.</userdoc>
         [DataMember(20)]
         [DefaultValue(1f)]
         public float HaloFactor { get; set; }

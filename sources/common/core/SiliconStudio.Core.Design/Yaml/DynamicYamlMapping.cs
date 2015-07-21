@@ -48,7 +48,8 @@ namespace SiliconStudio.Core.Yaml
         {
             var yamlKey = ConvertFromDynamic(key);
             var keyPosition = node.Children.IndexOf(yamlKey);
-            node.Children.RemoveAt(keyPosition);
+            if (keyPosition != -1)
+                node.Children.RemoveAt(keyPosition);
         }
 
         public int IndexOf(object key)

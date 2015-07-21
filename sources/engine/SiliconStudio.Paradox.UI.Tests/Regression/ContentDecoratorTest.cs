@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public ContentDecoratorTest()
         {
-            CurrentVersion = 4;
+            CurrentVersion = 5;
         }
 
         protected override async Task LoadContent()
@@ -41,7 +41,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
                 Content = textBlock, 
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                BackgroundImage = new UIImage(Asset.Load<Texture>("DumbWhite"))
+                BackgroundImage = new Sprite(Asset.Load<Texture>("DumbWhite"))
             };
 
             UIComponent.RootElement = decorator;

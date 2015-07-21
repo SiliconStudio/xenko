@@ -5,6 +5,7 @@ using System;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Input;
 using SiliconStudio.Paradox.UI.Events;
 
@@ -24,27 +25,27 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// <summary>
         /// The key to the TrackBackgroundImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<UIImage> TrackBackgroundImagePropertyKey = new PropertyKey<UIImage>("TrackBackgroundImageKey", typeof(Slider), DefaultValueMetadata.Static<UIImage>(null), ObjectInvalidationMetadata.New<UIImage>(InvalidateTrackBackground));
+        public static readonly PropertyKey<Sprite> TrackBackgroundImagePropertyKey = new PropertyKey<Sprite>("TrackBackgroundImageKey", typeof(Slider), DefaultValueMetadata.Static<Sprite>(null), ObjectInvalidationMetadata.New<Sprite>(InvalidateTrackBackground));
 
         /// <summary>
         /// The key to the TrackForegroundImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<UIImage> TrackForegroundImagePropertyKey = new PropertyKey<UIImage>("TrackForegroundImageKey", typeof(Slider), DefaultValueMetadata.Static<UIImage>(null));
+        public static readonly PropertyKey<Sprite> TrackForegroundImagePropertyKey = new PropertyKey<Sprite>("TrackForegroundImageKey", typeof(Slider), DefaultValueMetadata.Static<Sprite>(null));
 
         /// <summary>
         /// The key to the ThumbImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<UIImage> ThumbImagePropertyKey = new PropertyKey<UIImage>("ThumbImageKey", typeof(Slider), DefaultValueMetadata.Static<UIImage>(null));
+        public static readonly PropertyKey<Sprite> ThumbImagePropertyKey = new PropertyKey<Sprite>("ThumbImageKey", typeof(Slider), DefaultValueMetadata.Static<Sprite>(null));
 
         /// <summary>
         /// The key to the TickImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<UIImage> TickImagePropertyKey = new PropertyKey<UIImage>("ThickImageKey", typeof(Slider), DefaultValueMetadata.Static<UIImage>(null));
+        public static readonly PropertyKey<Sprite> TickImagePropertyKey = new PropertyKey<Sprite>("ThickImageKey", typeof(Slider), DefaultValueMetadata.Static<Sprite>(null));
 
         /// <summary>
         /// The key to the MouseOverThumbImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<UIImage> MouseOverThumbImagePropertyKey = new PropertyKey<UIImage>("MouseOverThumbImageKey", typeof(Slider), DefaultValueMetadata.Static<UIImage>(null));
+        public static readonly PropertyKey<Sprite> MouseOverThumbImagePropertyKey = new PropertyKey<Sprite>("MouseOverThumbImageKey", typeof(Slider), DefaultValueMetadata.Static<Sprite>(null));
 
         /// <summary>
         /// The key to the Minimum dependency property.
@@ -76,20 +77,20 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// </summary>
         public static readonly PropertyKey<Vector2> TrackStartingOffsetsrPropertyKey = new PropertyKey<Vector2>("TrackStartingOffsetKey", typeof(Slider), DefaultValueMetadata.Static(new Vector2()));
 
-        private static void InvalidateTrackBackground(object propertyowner, PropertyKey<UIImage> propertykey, UIImage propertyoldvalue)
+        private static void InvalidateTrackBackground(object propertyowner, PropertyKey<Sprite> propertykey, Sprite propertyoldvalue)
         {
             var slider = (Slider)propertyowner;
 
             slider.InvalidateMeasure();
 
             if (propertyoldvalue != null)
-                propertyoldvalue.IdealSizeChanged -= slider.OnIdealSizeChanged;
+                propertyoldvalue.SizeChanged -= slider.OnSizeChanged;
 
             if(slider.TrackBackgroundImage != null)
-                slider.TrackBackgroundImage.IdealSizeChanged += slider.OnIdealSizeChanged;
+                slider.TrackBackgroundImage.SizeChanged += slider.OnSizeChanged;
         }
 
-        private void OnIdealSizeChanged(object sender, EventArgs e)
+        private void OnSizeChanged(object sender, EventArgs e)
         {
             InvalidateMeasure();
         }
@@ -136,7 +137,7 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// <summary>
         /// Gets or sets the image to display as Track background.
         /// </summary>
-        public UIImage TrackBackgroundImage
+        public Sprite TrackBackgroundImage
         {
             get { return DependencyProperties.Get(TrackBackgroundImagePropertyKey); }
             set { DependencyProperties.Set(TrackBackgroundImagePropertyKey, value); }
@@ -145,7 +146,7 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// <summary>
         /// Gets or sets the image to display as Track foreground.
         /// </summary>
-        public UIImage TrackForegroundImage
+        public Sprite TrackForegroundImage
         {
             get { return DependencyProperties.Get(TrackForegroundImagePropertyKey); }
             set { DependencyProperties.Set(TrackForegroundImagePropertyKey, value); }
@@ -154,7 +155,7 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// <summary>
         /// Gets or sets the image to display as slider thumb (button).
         /// </summary>
-        public UIImage ThumbImage
+        public Sprite ThumbImage
         {
             get { return DependencyProperties.Get(ThumbImagePropertyKey); }
             set { DependencyProperties.Set(ThumbImagePropertyKey, value); }
@@ -163,7 +164,7 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// <summary>
         /// Gets or sets the image to display as slider thumb (button) when the mouse is over the slider.
         /// </summary>
-        public UIImage MouseOverThumbImage
+        public Sprite MouseOverThumbImage
         {
             get { return DependencyProperties.Get(MouseOverThumbImagePropertyKey); }
             set { DependencyProperties.Set(MouseOverThumbImagePropertyKey, value); }
@@ -172,7 +173,7 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// <summary>
         /// Gets or sets the image to display as tick.
         /// </summary>
-        public UIImage TickImage
+        public Sprite TickImage
         {
             get { return DependencyProperties.Get(TickImagePropertyKey); }
             set { DependencyProperties.Set(TickImagePropertyKey, value); }
@@ -340,7 +341,7 @@ namespace SiliconStudio.Paradox.UI.Controls
             if (image == null)
                 return base.MeasureOverride(availableSizeWithoutMargins);
 
-            var idealSize = image.ImageIdealSize.Y;
+            var idealSize = image.SizeInPixels.Y;
             var desiredSize = new Vector3(idealSize, idealSize, 0);
             desiredSize[(int)Orientation] = availableSizeWithoutMargins[(int)Orientation];
 

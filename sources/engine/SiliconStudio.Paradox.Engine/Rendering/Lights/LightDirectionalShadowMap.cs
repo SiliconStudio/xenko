@@ -5,7 +5,6 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Paradox.Rendering.Shadows;
 
 namespace SiliconStudio.Paradox.Rendering.Lights
 {
@@ -31,10 +30,15 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         /// Gets or Sets the number of cascades for this shadow (valid only for directional lights)
         /// </summary>
         /// <value>The number of cascades for this shadow.</value>
+        /// <userdoc>The number of cascades for the shadows.</userdoc>
         [DataMember(50)]
         [DefaultValue(LightShadowMapCascadeCount.FourCascades)]
         public LightShadowMapCascadeCount CascadeCount { get; set; }
 
+        /// <summary>
+        /// Gets or Sets the stabilization mode of the shadow map
+        /// </summary>
+        /// <userdoc>The technique used to stabilize the shadow map</userdoc>
         [DataMember(60)]
         [DefaultValue(LightShadowMapStabilizationMode.ProjectionSnapping)]
         public LightShadowMapStabilizationMode StabilizationMode { get; set; }
@@ -45,7 +49,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         /// <value>The depth range mode.</value>
         [DataMember(80)]
         [NotNull]
-        [Display("Depth Range", AlwaysExpand = true)]
+        [Display("Depth Range", Expand = ExpandRule.Always)]
         public DepthRangeParameters DepthRange { get; private set; }
 
         /// <summary>

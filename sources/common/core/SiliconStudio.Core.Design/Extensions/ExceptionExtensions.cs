@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Linq;
+using System.Text;
 
 namespace SiliconStudio.Core.Extensions
 {
@@ -34,7 +35,7 @@ namespace SiliconStudio.Core.Extensions
             {
                 exception = exception.InnerException;
             }
-            var stackTrace = ExtractStackTrace(exception, MaxStackTraceLines);
+            var stackTrace = ExtractStackTrace(exception, 0, MaxStackTraceLines);
             return string.Format("{0}{1}{2}{3}", startWithNewLine ? Environment.NewLine : "", exception.Message, Environment.NewLine, stackTrace);
         }
 
@@ -43,35 +44,69 @@ namespace SiliconStudio.Core.Extensions
         /// expand <see cref="Exception.InnerException"/>, and does not limit the number of line of the resulting string.
         /// </summary>
         /// <param name="exception">The exception to format</param>
+        /// <param name="indentIncrement">The number of spaces to add to the current indent when printing an inner exception.</param>
+        /// <param name="indent">The number of spaces to insert at the beginning of each line.</param>
         /// <returns>A string representing the exception formatted for log or report.</returns>
-        public static string FormatForReport(this Exception exception)
+        public static string FormatForReport(this Exception exception, int indentIncrement = 2, int indent = 0)
         {
-            var message = string.Format("{0}{1}{2}{3}", exception.Message, Environment.NewLine, ExtractStackTrace(exception), Environment.NewLine);
-            var aggregateException = exception as AggregateException;
-            if (aggregateException != null)
-            {
-                message += "AggregateException - InnerExceptions:" + Environment.NewLine;
-                message += aggregateException.InnerExceptions.Aggregate(message, (current, innerException) => current + FormatForReport(exception));
-            }
-
-            if (exception.InnerException != null)
-            {
-                message += "InnerException:" + Environment.NewLine;
-                message += FormatForReport(exception.InnerException);
-            }
-            return message;
+            var stringBuilder = new StringBuilder();
+            FormatForReportRecursively(stringBuilder, exception, indentIncrement, indent);
+            return stringBuilder.ToString();
         }
 
         /// <summary>
         /// Extracts the stack trace from an exception, formatting it correctly and limiting the number of lines if needed.
         /// </summary>
         /// <param name="exception">The exception from which to extract the stack trace.</param>
+        /// <param name="indent">The number of spaces to insert at the beginning of each line.</param>
         /// <param name="maxLines">The maximum number of lines to return in the resulting string. Zero or negative numbers mean no limit.</param>
         /// <returns>A properly formated string containing the stack trace.</returns>
-        public static string ExtractStackTrace(this Exception exception, int maxLines = -1)
+        public static string ExtractStackTrace(this Exception exception, int indent = 0, int maxLines = -1)
         {
+            var sb = new StringBuilder();
+            ExtractStackTrace(sb, exception, indent, maxLines);
+            return sb.ToString();
+        }
+
+        private static void FormatForReportRecursively(StringBuilder sb, Exception exception, int indentIncrement, int indent)
+        {
+            var indentString = "".PadLeft(indent);
+            sb.Append(indentString);
+            sb.Append(exception.GetType().Name);
+            sb.Append(": ");
+            sb.AppendLine(exception.Message);
+            ExtractStackTrace(sb, exception, indent, -1);
+
+            var aggregateException = exception as AggregateException;
+            if (aggregateException != null)
+            {
+                sb.AppendLine();
+                sb.Append(indentString);
+                sb.AppendLine("AggregateException - InnerExceptions:");
+                foreach (var innerException in aggregateException.InnerExceptions)
+                {
+                    FormatForReportRecursively(sb, innerException, indentIncrement, indent + indentIncrement);
+                }
+            }
+
+            if (exception.InnerException != null)
+            {
+                sb.AppendLine();
+                sb.Append(indentString);
+                sb.AppendLine("InnerException:");
+                FormatForReportRecursively(sb, exception.InnerException, indentIncrement, indent + indentIncrement);
+            }
+        }
+
+        private static void ExtractStackTrace(StringBuilder sb, Exception exception, int indent, int maxLines)
+        {
+            var indentString = "".PadLeft(indent);
             var stackTraceArray = exception.StackTrace.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-            return string.Join(Environment.NewLine, maxLines > 0 ? stackTraceArray.Take(maxLines) : stackTraceArray);
+            foreach (var line in maxLines > 0 ? stackTraceArray.Take(maxLines) : stackTraceArray)
+            {
+                sb.Append(indentString);
+                sb.AppendLine(line);
+            }
         }
     }
 }

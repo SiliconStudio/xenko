@@ -4,7 +4,6 @@
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Rendering.Composers

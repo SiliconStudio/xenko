@@ -74,3 +74,4 @@ libcore.a
 libbulletc.a
 *.CachedGlyphs
 *.CachedImage
+sources/engine/SiliconStudio.Paradox.Graphics/Shaders.Bytecodes/log/

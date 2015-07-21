@@ -11,7 +11,6 @@ using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Assets.ProceduralModels;
 using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Assets.Model
@@ -35,7 +34,6 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// </summary>
         public ModelAsset()
         {
-            SerializedVersion = AssetFormatVersion;
             ScaleImport = 1.0f;
             Materials = new List<ModelMaterial>();
             Nodes = new List<NodeInformation>();
@@ -64,7 +62,10 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// List that stores if a node should be preserved
         /// </summary>
         /// <userdoc>
-        /// The nodes of the model.
+        /// The mesh nodes of the model.
+        /// When checked, the nodes are kept in the runtime version of the model. 
+        /// Otherwise, all the meshes of model are merged and the node information is lost.
+        /// Nodes should be preserved in order to be animated or linked to entities.
         /// </userdoc>
         [DataMember(50), DiffUseAsset2]
         public List<NodeInformation> Nodes { get; private set; }

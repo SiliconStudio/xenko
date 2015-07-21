@@ -1,5 +1,6 @@
 !MaterialAsset
 Id: 6bacdf7e-6538-4cfa-a035-0807aee89e2c
+SerializedVersion: 1
 Tags: []
 Attributes:
     Surface: !MaterialNormalMapFeature
@@ -27,11 +28,11 @@ Attributes:
     Overrides:
         UVScale: {X: 1, Y: 1}
 Layers: []
-Parameters: {}
 ~Base:
     Location: --import--
     Asset: !MaterialAsset
         Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: 1
         Tags: []
         Attributes:
             Surface: !MaterialNormalMapFeature
@@ -59,4 +60,3 @@ Parameters: {}
             Overrides:
                 UVScale: {X: 1, Y: 1}
         Layers: []
-        Parameters: {}

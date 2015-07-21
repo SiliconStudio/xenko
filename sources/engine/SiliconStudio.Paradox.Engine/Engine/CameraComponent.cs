@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Engine
     /// Describes the camera projection and view.
     /// </summary>
     [DataContract("CameraComponent")]
-    [Display(130, "Camera")]
+    [Display(130, "Camera", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(CameraComponentRenderer), -1000)]
     public sealed class CameraComponent : EntityComponent
     {
@@ -62,6 +62,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets the projection.
         /// </summary>
         /// <value>The projection.</value>
+        /// <userdoc>The type of projection used by the camera.</userdoc>
         [DataMember(0)]
         [NotNull]
         public CameraProjectionMode Projection { get; set; }
@@ -72,6 +73,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The vertical field of view.
         /// </value>
+        /// <userdoc>The vertical field-of-view used by the camera (in degrees).</userdoc>
         [DataMember(5)]
         [DefaultValue(DefaultVerticalFieldOfView)]
         [Display("Field Of View")]
@@ -79,11 +81,12 @@ namespace SiliconStudio.Paradox.Engine
         public float VerticalFieldOfView { get; set; }
 
         /// <summary>
-        /// Gets or sets the vertical field of view in degrees.
+        /// Gets or sets the height of the orthographic projection.
         /// </summary>
         /// <value>
-        /// The vertical field of view.
+        /// The height of the orthographic projection.
         /// </value>
+        /// <userdoc>The height of the orthographic projection (the width is automatically calculated based on the target ratio).</userdoc>
         [DataMember(10)]
         [DefaultValue(DefaultOrthographicSize)]
         [Display("Orthographic Size")]
@@ -95,6 +98,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The near plane distance.
         /// </value>
+        /// <userdoc>The value of the near clip plane.</userdoc>
         [DataMember(20)]
         [DefaultValue(DefaultNearClipPlane)]
         public float NearClipPlane { get; set; }
@@ -105,6 +109,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The far plane distance.
         /// </value>
+        /// <userdoc>The value of the far clip plane.</userdoc>
         [DataMember(30)]
         [DefaultValue(DefaultFarClipPlane)]
         public float FarClipPlane { get; set; }
@@ -113,6 +118,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets a value indicating whether to use a custom <see cref="AspectRatio"/>. Default is <c>false</c>, meaning that the aspect ratio is calculated from the ratio of the current viewport when rendering.
         /// </summary>
         /// <value>The use custom aspect ratio.</value>
+        /// <userdoc>If checked, use the value contained in 'Aspect Ratio' to calculate the projection matrices. Otherwise, automatically adjust the aspect ratio to the ratio of the render target.</userdoc>
         [DataMember(35)]
         [DefaultValue(false)]
         [Display("Custom Aspect Ratio?")]
@@ -124,6 +130,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The aspect ratio.
         /// </value>
+        /// <userdoc>The aspect ratio used to build the projection matrices when 'Custom Aspect Ratio?' is checked.</userdoc>
         [DataMember(40)]
         [DefaultValue(DefaultAspectRatio)]
         public float AspectRatio { get; set; }

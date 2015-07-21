@@ -1,8 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.ComponentModel;
-
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
@@ -16,19 +14,12 @@ namespace SiliconStudio.Paradox.Rendering.Lights
     public abstract class DirectLightBase : ColorLightBase, IDirectLight
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DirectLightBase"/> class.
-        /// </summary>
-        protected DirectLightBase()
-        {
-        }
-
-        /// <summary>
         /// Gets or sets the shadow.
         /// </summary>
         /// <value>The shadow.</value>
-        [Category]
+        /// <userdoc>The settings of the light shadow</userdoc>
         [DataMember(200)]
-        public LightShadowMap Shadow { get; set; }
+        public LightShadowMap Shadow { get; protected set; }
 
         public abstract bool HasBoundingBox { get; }
 

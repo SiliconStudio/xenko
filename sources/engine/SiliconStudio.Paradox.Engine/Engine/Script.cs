@@ -15,14 +15,17 @@ namespace SiliconStudio.Paradox.Engine
         internal ScriptComponent ScriptComponent;
         [DataMemberIgnore]
         internal MicroThread MicroThread;
-        [DataMemberIgnore]
-        internal bool Unloaded;
 
         /// <summary>
         /// The script identifier.
         /// </summary>
         [Browsable(false)]
         public new Guid Id;
+
+        /// <summary>
+        /// Determines whether the script is currently undergoing live reloading.
+        /// </summary>
+        public bool IsLiveReloading { get; internal set; }
 
         protected Script()
         {
@@ -45,13 +48,6 @@ namespace SiliconStudio.Paradox.Engine
         {
             // Note: we might want to make this property public?
             get { return ScriptComponent != null ? ScriptComponent.Entity : null; }
-        }
-
-        /// <summary>
-        /// Called before any other method in the script.
-        /// </summary>
-        public virtual void Start()
-        {
         }
     }
 }
