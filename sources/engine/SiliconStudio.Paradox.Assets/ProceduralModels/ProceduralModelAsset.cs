@@ -46,6 +46,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
         /// Gets or sets the type.
         /// </summary>
         /// <value>The type.</value>
+        /// <userdoc>The type of procedural model to generate</userdoc>
         [DataMember(10)]
         [NotNull]
         [Display("Type", Expand = ExpandRule.Always)]

@@ -7,8 +7,6 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Materials;
 using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
 using SiliconStudio.Paradox.Shaders;
 

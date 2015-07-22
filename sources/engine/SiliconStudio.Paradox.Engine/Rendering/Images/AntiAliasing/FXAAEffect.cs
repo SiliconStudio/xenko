@@ -28,6 +28,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// <summary>
         /// Animates the film grain.
         /// </summary>
+        /// <userdoc>The quality of the anti-alising filter.</userdoc>
         [DataMember(10)]
         [DefaultValue(DefaultQuality)]
         [DataMemberRange(10, 39, 1, 5, 0)]

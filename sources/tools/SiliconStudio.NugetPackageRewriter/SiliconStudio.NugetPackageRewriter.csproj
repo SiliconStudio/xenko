@@ -19,7 +19,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Options">
-      <HintPath>..\..\..\Bin\Windows-Direct3D11\Mono.Options.dll</HintPath>
+      <HintPath>$(SiliconStudioDependenciesDir)Mono.Options\Mono.Options.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

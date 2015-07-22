@@ -14,18 +14,21 @@ namespace SiliconStudio.Paradox.Rendering
         /// <summary>
         /// No render target.
         /// </summary>
+        /// <userdoc>No render target.</userdoc>
         [Display("None")]
         None,
 
         /// <summary>
         /// The rendering target is a 32bits bits targets (4 x 16 bits half floats per RGBA component).
         /// </summary>
+        /// <userdoc>The rendering target is a 32bits bits targets (4 x 16 bits half floats per RGBA component).</userdoc>
         [Display("Low Dynamic Range")]
         LDR,
 
         /// <summary>
         /// The rendering target is a floating point 64 bits targets (4 x 16 bits half floats per RGBA component).
         /// </summary>
+        /// <userdoc>The rendering target is a floating point 64 bits targets (4 x 16 bits half floats per RGBA component).</userdoc>
         [Display("High Dynamic Range")]
         HDR,
     }

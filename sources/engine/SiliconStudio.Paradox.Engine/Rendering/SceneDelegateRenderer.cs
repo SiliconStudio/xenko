@@ -5,7 +5,6 @@ using System;
 using System.ComponentModel;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Rendering
 {

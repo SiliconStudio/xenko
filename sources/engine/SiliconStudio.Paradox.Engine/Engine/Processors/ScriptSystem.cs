@@ -3,10 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Games;
@@ -18,6 +18,8 @@ namespace SiliconStudio.Paradox.Engine.Processors
     /// </summary>
     public sealed class ScriptSystem : GameSystemBase
     {
+        internal readonly static Logger Log = GlobalLogger.GetLogger("ScriptSystem");
+
         /// <summary>
         /// Contains all currently executed scripts
         /// </summary>
@@ -58,7 +60,14 @@ namespace SiliconStudio.Paradox.Engine.Processors
                 var startupScript = script as StartupScript;
                 if (startupScript != null)
                 {
-                    startupScript.Start();
+                    try
+                    {
+                        startupScript.Start();
+                    }
+                    catch (Exception e)
+                    {
+                        HandleSynchronousException(script, e);
+                    }
                 }
 
                 // Start a microthread with execute method if it's an async script
@@ -86,7 +95,14 @@ namespace SiliconStudio.Paradox.Engine.Processors
             // Execute sync scripts
             foreach (var script in syncScriptsCopy)
             {
-                script.Update();
+                try
+                {
+                    script.Update();
+                }
+                catch (Exception e)
+                {
+                    HandleSynchronousException(script, e);
+                }
             }
         }
 
@@ -147,12 +163,23 @@ namespace SiliconStudio.Paradox.Engine.Processors
         {
             // Make sure it's not registered in any pending list
             var startWasPending = scriptsToStart.Remove(script);
-            if (!startWasPending)
+            var wasRegistered = registeredScripts.Remove(script);
+
+            if (!startWasPending && wasRegistered)
             {
                 // Cancel scripts that were already started
                 var startupScript = script as StartupScript;
                 if (startupScript != null)
-                    startupScript.Cancel();
+                {
+                    try
+                    {
+                        startupScript.Cancel();
+                    }
+                    catch (Exception e)
+                    {
+                        HandleSynchronousException(script, e);
+                    }
+                }
 
                 // TODO: Cancel async script execution
             }
@@ -162,8 +189,6 @@ namespace SiliconStudio.Paradox.Engine.Processors
             {
                 syncScripts.Remove(syncScript);
             }
-
-            registeredScripts.Remove(script);
         }
 
         /// <summary>
@@ -178,6 +203,24 @@ namespace SiliconStudio.Paradox.Engine.Processors
 
             // Set live reloading mode until after being started
             newScript.IsLiveReloading = true;
+        }
+
+        private void HandleSynchronousException(Script script, Exception e)
+        {
+            Log.Error("Unexpected exception while executing a script. Reason: {0}", new object[] { e });
+
+            // Only crash if live scripting debugger is not listening
+            if (Scheduler.PropagateExceptions)
+                ExceptionDispatchInfo.Capture(e).Throw();
+
+            // Remove script from all lists
+            var syncScript = script as SyncScript;
+            if (syncScript != null)
+            {
+                syncScripts.Remove(syncScript);
+            }
+
+            registeredScripts.Remove(script);
         }
     }
 }

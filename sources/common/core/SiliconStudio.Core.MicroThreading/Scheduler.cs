@@ -19,7 +19,7 @@ namespace SiliconStudio.Core.MicroThreading
     /// </remarks>
     public class Scheduler
     {
-        internal static Logger Log = GlobalLogger.GetLogger("Scheduler");
+        internal readonly static Logger Log = GlobalLogger.GetLogger("Scheduler");
 
         // An ever-increasing counter that will be used to have a "stable" microthread scheduling (first added is first scheduled)
         internal long SchedulerCounter;
@@ -52,7 +52,7 @@ namespace SiliconStudio.Core.MicroThreading
         /// <value>
         ///   <c>true</c> if [propagate exceptions]; otherwise, <c>false</c>.
         /// </value>
-        public bool PropagateExceptions { get; set; }
+        internal bool PropagateExceptions { get; set; }
 
         /// <summary>
         /// Gets the current running micro thread in this scheduler through <see cref="Run"/>.

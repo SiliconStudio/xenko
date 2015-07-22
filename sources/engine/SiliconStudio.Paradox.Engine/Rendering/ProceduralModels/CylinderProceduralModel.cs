@@ -33,6 +33,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// Gets or sets the height.
         /// </summary>
         /// <value>The height.</value>
+        /// <userdoc>The height of the cylinder.</userdoc>
         [DataMember(10)]
         [DefaultValue(1.0f)]
         public float Height { get; set; }
@@ -41,6 +42,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// Gets or sets the diameter of the base of the cylinder.
         /// </summary>
         /// <value>The diameter.</value>
+        /// <userdoc>The diameter of the cylinder.</userdoc>
         [DataMember(20)]
         [DefaultValue(1.0f)]
         public float Diameter { get; set; }
@@ -49,6 +51,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// Gets or sets the tessellation factor.
         /// </summary>
         /// <value>The tessellation.</value>
+        /// <userdoc>The tessellation of the cylinder. That is the number of polygons composing it.</userdoc>
         [DataMember(30)]
         [DefaultValue(32)]
         public int Tessellation { get; set; }
@@ -57,6 +60,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// Gets or sets the scale to apply on texcoord uv.
         /// </summary>
         /// <value>The scale uv.</value>
+        /// <userdoc>The scales to apply onto the UV coordinates of the cylinder. This can be used to tile a texture on it.</userdoc>
         [DataMember(40)]
         [DefaultValue(1.0f)]
         public float ScaleUV { get; set; }

@@ -10,10 +10,12 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Assets.Debugging;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Engine.Processors;
 
 namespace SiliconStudio.Paradox.Debugger.Target
 {
@@ -113,7 +115,17 @@ namespace SiliconStudio.Paradox.Debugger.Target
                     assembliesToUnregister.Select(x => loadedAssemblies[x]).ToList(),
                     assembliesToRegister.Select(x => loadedAssemblies[x]).ToList());
 
-                assemblyReloader.Reload();
+                if (game != null)
+                {
+                    lock (game.TickLock)
+                    {
+                        assemblyReloader.Reload();
+                    }
+                }
+                else
+                {
+                    assemblyReloader.Reload();
+                }
             }
             return true;
         }
@@ -209,6 +221,10 @@ namespace SiliconStudio.Paradox.Debugger.Target
             host.RegisterTarget();
 
             Log.MessageLogged += Log_MessageLogged;
+
+            // Log suppressed exceptions in scripts
+            ScriptSystem.Log.MessageLogged += Log_MessageLogged;
+            Scheduler.Log.MessageLogged += Log_MessageLogged;
 
             Log.Info("Starting debugging session");
 

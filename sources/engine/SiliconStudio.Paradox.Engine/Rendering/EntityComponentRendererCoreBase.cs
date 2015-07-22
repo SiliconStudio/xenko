@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Rendering
@@ -37,12 +36,6 @@ namespace SiliconStudio.Paradox.Rendering
         public SceneCameraRenderer SceneCameraRenderer { get; private set; }
 
         /// <summary>
-        /// Gets the current culling mask.
-        /// </summary>
-        /// <value>The current culling mask.</value>
-        public EntityGroupMask CurrentCullingMask { get; set; }
-
-        /// <summary>
         /// Gets the current render frame. Only valid from <see cref="RendererBase.DrawCore"/> method.
         /// </summary>
         /// <value>The current render frame.</value>
@@ -55,10 +48,6 @@ namespace SiliconStudio.Paradox.Rendering
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
             SceneInstance = SceneInstance.GetCurrent(Context);
             SceneCameraRenderer = Context.Tags.Get(SceneCameraRenderer.Current);
-            if (SceneCameraRenderer != null)
-            {
-                CurrentCullingMask = SceneCameraRenderer.CullingMask;
-            }
         }
 
         protected override void PreDrawCore(RenderContext context)

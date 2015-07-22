@@ -41,6 +41,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The scripts.
         /// </value>
+        /// <userdoc>The list of scripts attached to the entity</userdoc>
         [Display("Script", Expand = ExpandRule.Always)]
         public TrackingCollection<Script> Scripts { get; private set; }
 

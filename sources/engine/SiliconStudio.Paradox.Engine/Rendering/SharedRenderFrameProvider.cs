@@ -4,7 +4,6 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Rendering.Composers;
 
 namespace SiliconStudio.Paradox.Rendering
@@ -20,6 +19,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// Gets or sets the shared RenderFrame.
         /// </summary>
         /// <value>The shared RenderFrame.</value>
+        /// <userdoc>The render frame asset to use.</userdoc>
         [DataMember(10)]
         [DefaultValue(null)]
         public RenderFrame RenderFrame { get; set; }

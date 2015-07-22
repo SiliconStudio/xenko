@@ -29,6 +29,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// Gets or sets the scale import.
         /// </summary>
         /// <value>The scale import.</value>
+        /// <userdoc>The scale factor to apply to the imported animation.</userdoc>
         [DataMember(10)]
         [DefaultValue(1.0f)]
         public float ScaleImport { get; set; }
@@ -37,6 +38,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// Gets or sets the animation repeat mode.
         /// </summary>
         /// <value>The repeat mode</value>
+        /// <userdoc>Specifies how the animation should be played. That is played once and stop, infinitely loop, etc...</userdoc>
         [DataMember(20)]
         public AnimationRepeatMode RepeatMode { get; set; }
 

@@ -3,7 +3,6 @@
 
 using System;
 
-using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
@@ -27,9 +26,11 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// Gets or sets the path to the base source animation model when using additive animation.
         /// </summary>
         /// <value>The source.</value>
+        /// <userdoc>The source file for the base animation.</userdoc>
         [DataMember(30)]
         public UFile BaseSource { get; set; }
 
+        /// <userdoc>Specifies how to use the base animation.</userdoc>
         [DataMember(40)]
         public AdditiveAnimationBaseMode Mode { get; set; }
 

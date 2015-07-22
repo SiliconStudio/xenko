@@ -44,6 +44,8 @@ namespace SiliconStudio.Paradox.Rendering
         /// Gets or sets the mode.
         /// </summary>
         /// <value>The mode.</value>
+        /// <userdoc>Specifies how the size of the render frame should be determined. 
+        /// Fixed to have a frame of fixed size in pixels. Relative to have frame size relative to the size of the bound back buffer.</userdoc>
         [DataMember(10)]
         [DefaultValue(RenderFrameSizeMode.Relative)]
         public RenderFrameSizeMode Mode { get; set; }
@@ -53,6 +55,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// or in percentage when <see cref="RenderFrameSizeMode.Relative"/>
         /// </summary>
         /// <value>The width.</value>
+        /// <userdoc>The width of the render frame, in pixels or percentage depending on the render target 'Mode'.</userdoc>
         [DataMember(20)]
         [DefaultValue(100)]
         public int Width { get; set; }
@@ -62,6 +65,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// or in percentage when <see cref="RenderFrameSizeMode.Relative"/>
         /// </summary>
         /// <value>The height.</value>
+        /// <userdoc>The height of the render frame, in pixels or percentage depending on the render target 'Mode'.</userdoc>
         [DataMember(30)]
         [DefaultValue(100)]
         public int Height { get; set; }
@@ -70,6 +74,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// Gets or sets the pixel format of this render frame.
         /// </summary>
         /// <value>The format.</value>
+        /// <userdoc>Specifies the pixel format of the color render target.</userdoc>
         [DataMember(40)]
         [DefaultValue(RenderFrameFormat.LDR)]
         public RenderFrameFormat Format { get; set; }
@@ -78,6 +83,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// Gets or sets the depth format.
         /// </summary>
         /// <value>The depth format.</value>
+        /// <userdoc>Specifies the depth format of the depth buffer. 'Shared' uses the currently bound depth buffer.</userdoc>
         [DataMember(50)]
         [DefaultValue(RenderFrameDepthFormat.Shared)]
         public RenderFrameDepthFormat DepthFormat { get; set; }

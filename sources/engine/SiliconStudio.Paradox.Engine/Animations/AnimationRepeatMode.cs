@@ -14,10 +14,13 @@ namespace SiliconStudio.Paradox.Animations
         /// <summary>
         /// The animation play once, and then stops.
         /// </summary>
+        /// <userdoc>The animation play once, and then stops.</userdoc>
         PlayOnce,
+
         /// <summary>
         /// The animation loop for always.
         /// </summary>
+        /// <userdoc>The animation loop for always.</userdoc>
         LoopInfinite,
     }
 }

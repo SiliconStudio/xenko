@@ -15,5 +15,6 @@ Sprites:
         Name: null
         TextureRegion: {X: 0, Y: 0, Width: 256, Height: 256}
         PixelsPerUnit: 256
-        Center: {X: 128, Y: 128}
+        Center: {X: 256, Y: 0}
+        CenterFromMiddle: false
         Borders: {X: 0, Y: 0, Z: 0, W: 0}

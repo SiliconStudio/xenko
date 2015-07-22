@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Physics
         public Quaternion LocalRotation = Quaternion.Identity;
 
         /// <userdoc>
-        /// Half Extent size of the box.
+        /// The half Extent size of the box.
         /// </userdoc>
         [DataMember(30)] 
         public Vector2 HalfExtent = Vector2.One;

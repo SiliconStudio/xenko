@@ -23,6 +23,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         /// Gets or sets the light color.
         /// </summary>
         /// <value>The color.</value>
+        /// <userdoc>The color emitted by the light.</userdoc>
         [DataMember(-10)]
         [NotNull]
         public ILightColor Color { get; set; }

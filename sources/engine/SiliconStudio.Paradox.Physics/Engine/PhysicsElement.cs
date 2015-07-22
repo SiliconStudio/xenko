@@ -25,22 +25,13 @@ namespace SiliconStudio.Paradox.Physics
         /// <userdoc>
         /// The physics type of this element. 
         /// </userdoc>
+        [DataMember(10)]
         public Types Type { get; set; }
 
-        /// <summary>
-        /// Gets or sets the link (usually a bone).
-        /// </summary>
-        /// <value>
-        /// The mesh's linked bone name
-        /// </value>
         /// <userdoc>
-        /// In the case of skinned mesh this must be the bone node name linked with this element.
+        /// The reference to the collider Shape of this element.
         /// </userdoc>
-        public string LinkedBoneName { get; set; }
-
-        /// <userdoc>
-        /// the Collider Shape of this element.
-        /// </userdoc>
+        [DataMember(20)]
         public PhysicsColliderShape Shape { get; set; }
 
         public enum CollisionFilterGroups //needed for the editor as this is not tagged as flag...
@@ -89,6 +80,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <userdoc>
         /// The collision group of this element, default is AllFilter.
         /// </userdoc>
+        [DataMember(30)]
         public CollisionFilterGroups CollisionGroup { get; set; }
 
         /// <summary>
@@ -100,7 +92,20 @@ namespace SiliconStudio.Paradox.Physics
         /// <userdoc>
         /// Which collider groups this element can collide with, when nothing is selected AllFilter is intended to be default.
         /// </userdoc>
+        [DataMember(40)]
         public CollisionFilterGroupFlags CanCollideWith { get; set; }
+
+        /// <summary>
+        /// Gets or sets the link (usually a bone).
+        /// </summary>
+        /// <value>
+        /// The mesh's linked bone name
+        /// </value>
+        /// <userdoc>
+        /// In the case of skinned mesh this must be the bone node name linked with this element.
+        /// </userdoc>
+        [DataMember(50)]
+        public string LinkedBoneName { get; set; }
 
         /// <summary>
         /// Gets or sets the height of the character step.
@@ -111,6 +116,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <userdoc>
         /// Only valid for CharacterController type, describes the max slope height a character can climb.
         /// </userdoc>
+        [DataMember(60)]
         public float StepHeight { get; set; }
 
         #region Ignore or Private/Internal

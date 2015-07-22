@@ -74,6 +74,8 @@ namespace SiliconStudio.Paradox.Games
 
         internal bool SlowDownDrawCalls;
 
+        internal object TickLock = new object();
+
         #endregion
 
         #region Constructors and Destructors
@@ -489,6 +491,14 @@ namespace SiliconStudio.Paradox.Games
         /// Updates the game's clock and calls Update and Draw.
         /// </summary>
         public void Tick()
+        {
+            lock (TickLock)
+            {
+                TickInternal();
+            }
+        }
+
+        private void TickInternal()
         {
             try
             {

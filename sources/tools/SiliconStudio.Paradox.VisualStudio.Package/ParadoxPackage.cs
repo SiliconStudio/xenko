@@ -6,16 +6,11 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.ServiceModel;
-using System.Text;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.Build.Evaluation;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.CommandBars;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Package;
 using Microsoft.VisualStudio.Shell;
@@ -79,6 +74,7 @@ namespace SiliconStudio.Paradox.VisualStudio
         private AppDomain buildMonitorDomain;
         private BuildLogPipeGenerator buildLogPipeGenerator;
         private SolutionEventsListener solutionEventsListener;
+        private ErrorListProvider errorListProvider;
         private uint m_componentID;
 
         /// <summary>
@@ -140,7 +136,7 @@ namespace SiliconStudio.Paradox.VisualStudio
 
             // Register the C# language service
             var serviceContainer = this as IServiceContainer;
-            var errorListProvider = new ErrorListProvider(this)
+            errorListProvider = new ErrorListProvider(this)
             {
                 ProviderGuid = new Guid("ad1083c5-32ad-403d-af3d-32fee7abbdf1"),
                 ProviderName = "Paradox Shading Language"
@@ -157,50 +153,6 @@ namespace SiliconStudio.Paradox.VisualStudio
                 ParadoxCommands.ServiceProvider = this;
                 ParadoxCommands.RegisterCommands(mcs);
             }
-
-            // Get General Output pane (for error logging)
-            var generalOutputPane = GetGeneralOutputPane();
-
-            var paradoxSdkDir = ParadoxCommandsProxy.ParadoxSdkDir;
-            if (paradoxSdkDir == null)
-            {
-                generalOutputPane.OutputStringThreadSafe("Could not find Paradox SDK directory.\r\n");
-                generalOutputPane.Activate();
-            }
-
-            // Start PackageBuildMonitorRemote in a separate app domain
-            buildMonitorDomain = ParadoxCommandsProxy.CreateParadoxDomain();
-            try
-            {
-                var remoteCommands = ParadoxCommandsProxy.CreateProxy(buildMonitorDomain);
-                remoteCommands.StartRemoteBuildLogServer(new BuildMonitorCallback(dte2), buildLogPipeGenerator.LogPipeUrl);
-            }
-            catch (Exception e)
-            {
-                generalOutputPane.OutputStringThreadSafe(string.Format("Error loading Paradox SDK: {0}\r\n", e));
-                generalOutputPane.Activate();
-
-                // Unload domain right away
-                AppDomain.Unload(buildMonitorDomain);
-                buildMonitorDomain = null;
-            }
-
-            // Preinitialize the parser in a separate thread
-            var thread = new System.Threading.Thread(
-                () =>
-                {
-                    try
-                    {
-                        ParadoxCommandsProxy.GetProxy().Initialize(null);
-                    }
-                    catch (Exception ex)
-                    {
-                        generalOutputPane.OutputStringThreadSafe(string.Format("Error Initializing Paradox Language Service: {0}\r\n", ex.InnerException ?? ex));
-                        generalOutputPane.Activate();
-                        errorListProvider.Tasks.Add(new ErrorTask(ex.InnerException ?? ex));
-                    }
-                });
-            thread.Start();
 
             // Register a timer to call our language service during
             // idle periods.
@@ -222,6 +174,8 @@ namespace SiliconStudio.Paradox.VisualStudio
 
         private void solutionEventsListener_AfterSolutionBackgroundLoadComplete()
         {
+            InitializeCommandProxy();
+
             var solution = (IVsSolution)Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(IVsSolution));
             var updatedProjects = new List<string>();
 
@@ -265,6 +219,79 @@ namespace SiliconStudio.Paradox.VisualStudio
                     }
                 }
             }
+        }
+
+        private void InitializeCommandProxy()
+        {
+            // Initialize the command proxy from the current solution's package
+            var dte = (DTE)GetService(typeof(DTE));
+            var solutionPath = dte.Solution.FullName;
+            ParadoxCommandsProxy.InitialzeFromSolution(solutionPath);
+
+            // Get General Output pane (for error logging)
+            var generalOutputPane = GetGeneralOutputPane();
+
+            // If a package is associated with the solution, check if the correct version was found
+            var paradoxPackageInfo = ParadoxCommandsProxy.ParadoxPackageInfo;
+            if (paradoxPackageInfo.ExpectedVersion != null && paradoxPackageInfo.ExpectedVersion != paradoxPackageInfo.LoadedVersion)
+            {
+                if (paradoxPackageInfo.ExpectedVersion < ParadoxCommandsProxy.MinimumVersion)
+                {
+                    // The package version is deprecated
+                    generalOutputPane.OutputStringThreadSafe(string.Format("Could not initialize Paradox extension for package with version {0}. Versions earlier than {1} are not supported. Loading latest version {2} instead.\r\n",  paradoxPackageInfo.ExpectedVersion, ParadoxCommandsProxy.MinimumVersion, paradoxPackageInfo.LoadedVersion));
+                    generalOutputPane.Activate();
+                }
+                else if (paradoxPackageInfo.LoadedVersion == null)
+                {
+                    // No version found
+                    generalOutputPane.OutputStringThreadSafe("Could not find Paradox SDK directory.");
+                    generalOutputPane.Activate();
+                }
+                else
+                {
+                    // The package version was not found
+                    generalOutputPane.OutputStringThreadSafe(string.Format("Could not find SDK directory for Paradox version {0}. Loading latest version {1} instead.\r\n", paradoxPackageInfo.ExpectedVersion, paradoxPackageInfo.LoadedVersion));
+                    generalOutputPane.Activate();
+                }
+            }
+
+            try
+            {
+                // Start PackageBuildMonitorRemote in a separate app domain
+                if (buildMonitorDomain != null)
+                    AppDomain.Unload(buildMonitorDomain);
+
+                buildMonitorDomain = ParadoxCommandsProxy.CreateParadoxDomain();
+                ParadoxCommandsProxy.InitialzeFromSolution(solutionPath, buildMonitorDomain);
+                var remoteCommands = ParadoxCommandsProxy.CreateProxy(buildMonitorDomain);
+                remoteCommands.StartRemoteBuildLogServer(new BuildMonitorCallback(dte2), buildLogPipeGenerator.LogPipeUrl);
+            }
+            catch (Exception e)
+            {
+                generalOutputPane.OutputStringThreadSafe(string.Format("Error loading Paradox SDK: {0}\r\n", e));
+                generalOutputPane.Activate();
+
+                // Unload domain right away
+                AppDomain.Unload(buildMonitorDomain);
+                buildMonitorDomain = null;
+            }
+
+            // Preinitialize the parser in a separate thread
+            var thread = new System.Threading.Thread(
+                () =>
+                {
+                    try
+                    {
+                        ParadoxCommandsProxy.GetProxy().Initialize(null);
+                    }
+                    catch (Exception ex)
+                    {
+                        generalOutputPane.OutputStringThreadSafe(string.Format("Error Initializing Paradox Language Service: {0}\r\n", ex.InnerException ?? ex));
+                        generalOutputPane.Activate();
+                        errorListProvider.Tasks.Add(new ErrorTask(ex.InnerException ?? ex));
+                    }
+                });
+            thread.Start();
         }
 
         protected override void Dispose(bool disposing)

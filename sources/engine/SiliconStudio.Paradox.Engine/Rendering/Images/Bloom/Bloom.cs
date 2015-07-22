@@ -36,6 +36,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// <summary>
         /// Radius of the bloom.
         /// </summary>
+        /// <userdoc>The range of the bloom effect around bright regions. Note that high values can import performances</userdoc>
         [DataMember(10)]
         [DefaultValue(10)]
         [DataMemberRange(1.0, 100.0, 1.0, 10.0, 1)]
@@ -45,14 +46,16 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// Gets or sets the amount.
         /// </summary>
         /// <value>The amount.</value>
+        /// <userdoc>The strength of the bloom effect.</userdoc>
         [DataMember(20)]
         [DefaultValue(0.3f)]
         public float Amount { get; set; }
 
         /// <summary>
-        /// Gets or sets the amount.
+        /// Gets or sets the sigma ratio.
         /// </summary>
-        /// <value>The amount.</value>
+        /// <value>The ratio</value>
+        /// <userdoc>The standard deviation used for the blur of the effect. This impact the fall-off of the bloom.</userdoc>
         [DataMember(30)]
         [DefaultValue(3.5f)]
         public float SigmaRatio { get; set; }
@@ -61,6 +64,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// Vertical or horizontal distortion to apply.
         /// (1, 2) means the bloom will be stretched twice longer horizontally than vertically.
         /// </summary>
+        /// <userdoc>Apply vertical of horizontal distortion on the effect</userdoc>
         [DataMember(40)]
         public Vector2 Distortion
         {
@@ -80,6 +84,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// <summary>
         /// Gets the afterimage effect/>
         /// </summary>
+        /// <userdoc>When enabled, it simulates some persistence effects of the light points (trails) on the next frames. </userdoc>
         [DataMember(50)]
         public Afterimage Afterimage
         {

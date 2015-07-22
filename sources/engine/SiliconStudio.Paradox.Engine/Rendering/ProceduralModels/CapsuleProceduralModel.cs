@@ -30,6 +30,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// Gets or sets the height.
         /// </summary>
         /// <value>The height.</value>
+        /// <userdoc>The height of the capsule. That is the distance between the two round extremities.</userdoc>
         [DataMember(10)]
         [DefaultValue(1.0f)]
         public float Height { get; set; }
@@ -38,6 +39,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// Gets or sets the diameter of the base of the Capsule.
         /// </summary>
         /// <value>The diameter.</value>
+        /// <userdoc>The radius of the capsule.</userdoc>
         [DataMember(20)]
         [DefaultValue(1.0f)]
         public float Radius { get; set; }
@@ -45,7 +47,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// <summary>
         /// Gets or sets the tessellation factor.
         /// </summary>
-        /// <value>The tessellation.</value>
+        /// <userdoc>The tessellation of the capsule. That is the number of polygons composing it.</userdoc>
         [DataMember(30)]
         [DefaultValue(16)]
         public int Tessellation { get; set; }
