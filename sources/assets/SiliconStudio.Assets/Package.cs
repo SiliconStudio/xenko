@@ -819,7 +819,11 @@ namespace SiliconStudio.Assets
                     if (!assetItem.IsDirty)
                         assetItem.ModifiedTime = File.GetLastWriteTime(assetFullPath);
 
-                    FixAssetImport(assetItem);
+                    // TODO: Let's review that when we rework import process
+                    // Not fixing asset import anymore, as it was only meant for upgrade
+                    // However, it started to make asset dirty, for ex. when we create a new texture, choose a file and reload the scene later
+                    // since there was no importer id and base.
+                    //FixAssetImport(assetItem);
 
                     // Add to temporary assets
                     TemporaryAssets.Add(assetItem);
