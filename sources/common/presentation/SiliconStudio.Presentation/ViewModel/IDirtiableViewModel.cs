@@ -11,6 +11,8 @@ namespace SiliconStudio.Presentation.ViewModel
     {
         Save,
         UndoRedo,
+        Added,
+        Discarded,
     }
 
     /// <summary>

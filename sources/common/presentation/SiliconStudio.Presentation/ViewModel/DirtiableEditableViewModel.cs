@@ -51,7 +51,6 @@ namespace SiliconStudio.Presentation.ViewModel
         {
             if (changes.Contains(actionItem)) throw new ArgumentException(@"The given action item is already registered.", "actionItem");
             changes.Add(actionItem);
-            UpdateDirtiness();
         }
 
         /// <inheritdoc/>
@@ -59,7 +58,6 @@ namespace SiliconStudio.Presentation.ViewModel
         {
             bool removed = changes.Remove(actionItem);
             if (!removed) throw new ArgumentException(@"The given action item was not registered.", "actionItem");
-            UpdateDirtiness();
         }
 
         /// <inheritdoc/>
