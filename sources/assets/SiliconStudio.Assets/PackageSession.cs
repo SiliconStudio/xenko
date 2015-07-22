@@ -668,6 +668,10 @@ namespace SiliconStudio.Assets
             if (package.IsSystem)
                 return;
 
+            // Freeze only when assets are loaded
+            if (package.State < PackageState.AssetsReady)
+                return;
+
             packagesCopy.Add(package.Clone(false));
         }
 
@@ -874,11 +878,11 @@ namespace SiliconStudio.Assets
                 // Validate assets from package
                 package.ValidateAssets(newLoadParameters.GenerateNewAssetIds);
 
-                // Freeze the package after loading the assets
-                session.FreezePackage(package);
-
                 // Mark package as ready
                 package.State = PackageState.AssetsReady;
+
+                // Freeze the package after loading the assets
+                session.FreezePackage(package);
 
                 return true;
             }
