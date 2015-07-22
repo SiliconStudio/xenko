@@ -20,6 +20,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SkyboxAsset asset, AssetCompilerResult result)
         {
             result.BuildSteps = new AssetBuildStep(AssetItem);
+            result.ShouldWaitForPreviousBuilds = true;
 
             // build the textures for windows (needed for skybox compilation)
             foreach (var dependency in asset.Model.GetDependencies())

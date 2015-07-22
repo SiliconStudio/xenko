@@ -40,7 +40,7 @@ namespace SiliconStudio.Core.Serialization
                         }
                     }
 
-                    if (obj == null)
+                    if (obj == null && contentSerializerContext.LoadContentReferences)
                     {
                         // First time, let's create it
                         obj = (T)AttachedReferenceManager.CreateSerializableVersion(typeof(T), contentReference.Id, contentReference.Location);

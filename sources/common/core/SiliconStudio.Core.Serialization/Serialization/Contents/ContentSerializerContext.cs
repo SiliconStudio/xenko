@@ -40,6 +40,7 @@ namespace SiliconStudio.Core.Serialization.Contents
         public bool RegenerateUrls { get; set; }
 
         internal AssetManager.AssetReference AssetReference { get; set; }
+        public bool LoadContentReferences { get; set; }
 
         internal ContentSerializerContext(string url, ArchiveMode mode, AssetManager assetManager)
         {
