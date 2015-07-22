@@ -51,6 +51,7 @@
     <Compile Include="Behaviors\SliderDragFromTrackBehavior.cs" />
     <Compile Include="Behaviors\TextBoxCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\ThumbTransactionalDragBehavior.cs" />
+    <Compile Include="Controls\Trimming.cs" />
     <Compile Include="Collections\IObservableCollection.cs" />
     <Compile Include="Collections\IReadOnlyObservableCollection.cs" />
     <Compile Include="Collections\NonGenericObservableListWrapper.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="Controls\RectangleFEditor.cs" />
     <Compile Include="Controls\RotationEditor.cs" />
     <Compile Include="Controls\TextBoxBase.cs" />
+    <Compile Include="Controls\TrimmingSource.cs" />
     <Compile Include="Controls\VectorEditor.cs" />
     <Compile Include="Core\AnonymousComparer.cs" />
     <Compile Include="Core\AnonymousEqualityComparer.cs" />
