@@ -80,6 +80,13 @@ Release date: 2015/07/16
 - Shaders: Ambient occlusion now correctly affects ambient light.
 - VisualStudio: The SDK version used by the extension is changed based on the version of the package associated with the current solutions. ([#224](https://github.com/SiliconStudio/paradox/issues/224)).
 
+# Version 1.2.1-beta
+
+Release date: 2015/07/24
+
+## Enhancements
+- Android: Add support for x86, x86_64 and arm64-v8a processors.
+
 # Known Issues
 - UI: EditText is not implemented on Windows Store and Windows Phone.
 - Android: Physics engine is not working properly.
