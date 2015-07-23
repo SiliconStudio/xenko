@@ -115,6 +115,10 @@ namespace SiliconStudio.Presentation.Controls
             {
                 return text;
             }
+            if (sizes.Length == 0)
+            {
+                return text;
+            }
 
             List<string> words;
 
