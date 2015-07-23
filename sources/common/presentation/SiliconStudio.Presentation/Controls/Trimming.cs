@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
@@ -16,7 +16,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// The string used as ellipsis for trimming.
         /// </summary>
-        public const string Ellipsis = "�";
+        public const string Ellipsis = "…";
 
         /// <summary>
         /// Identifies the <see cref="TextTrimming"/> dependency property.
