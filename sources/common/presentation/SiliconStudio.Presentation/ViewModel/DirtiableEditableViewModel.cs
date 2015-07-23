@@ -63,7 +63,10 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <inheritdoc/>
         public virtual void NotifyActionStackChange(ActionStackChange change)
         {
-            UpdateDirtiness();
+            if (change != ActionStackChange.Discarded)
+            {
+                UpdateDirtiness();
+            }
         }
 
         /// <inheritdoc/>
