@@ -4349,6 +4349,14 @@
         </Setter>
     </Style>
 
+    <Pen x:Key="GlyphPen" Brush="{StaticResource GlyphBrush}"/>
+
+    <Style TargetType="{x:Type ctrl:ScaleBar}">
+        <Setter Property="Foreground" Value="{StaticResource GlyphBrush}"/>
+        <Setter Property="SmallTickPen" Value="{StaticResource GlyphPen}"/>
+        <Setter Property="LargeTickPen" Value="{StaticResource GlyphPen}"/>
+    </Style>
+    
     <Style TargetType="{x:Type Image}">
         <Setter Property="RenderOptions.BitmapScalingMode" Value="NearestNeighbor"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
