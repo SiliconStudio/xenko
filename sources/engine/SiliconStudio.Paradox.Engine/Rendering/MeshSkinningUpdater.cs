@@ -32,8 +32,11 @@ namespace SiliconStudio.Paradox.Rendering
 
                     if (skinning == null)
                     {
-                        // For unskinned meshes the bounding box is already correct
-                        renderMesh.BoundingBox = (BoundingBoxExt)mesh.BoundingBox;
+                        // For unskinned meshes, use the original bounding box
+                        var boundingBoxExt = (BoundingBoxExt)mesh.BoundingBox;
+                        boundingBoxExt.Transform(renderMesh.WorldMatrix);
+                        renderMesh.BoundingBox = boundingBoxExt;
+
                         continue;
                     }
 
@@ -51,9 +54,7 @@ namespace SiliconStudio.Paradox.Rendering
                         var nodeIndex = bones[index].NodeIndex;
 
                         // Compute bone matrix
-                        Matrix boneMatrix;
-                        Matrix.Multiply(ref bones[index].LinkToMeshMatrix, ref hierarchy.NodeTransformations[nodeIndex].WorldMatrix, out boneMatrix);
-                        boneMatrices[index] = boneMatrix;
+                        Matrix.Multiply(ref bones[index].LinkToMeshMatrix, ref hierarchy.NodeTransformations[nodeIndex].WorldMatrix, out boneMatrices[index]);
 
                         // Calculate and extend bounding box for each bone
                         // TODO: Move runtime bounding box into ModelViewHierarchyUpdater?
@@ -61,7 +62,7 @@ namespace SiliconStudio.Paradox.Rendering
                         // Fast AABB transform: http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
                         // Compute transformed AABB (by world)
                         var boundingBoxExt = bindPoseBoundingBox;
-                        boundingBoxExt.Transform(boneMatrix);
+                        boundingBoxExt.Transform(boneMatrices[index]);
                         BoundingBoxExt.Merge(ref renderMesh.BoundingBox, ref boundingBoxExt, out renderMesh.BoundingBox);
                     }
 

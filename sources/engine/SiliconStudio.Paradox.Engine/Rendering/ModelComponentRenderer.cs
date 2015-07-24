@@ -228,8 +228,6 @@ namespace SiliconStudio.Paradox.Rendering
                         continue;
                     }
 
-                    var worldMatrix = renderMesh.WorldMatrix;
-
                     // Perform frustum culling
                     if (cullingMode == CullingMode.Frustum)
                     {
@@ -246,7 +244,7 @@ namespace SiliconStudio.Paradox.Rendering
 
                     // Project the position
                     // TODO: This could be done in a SIMD batch, but we need to figure-out how to plugin in with RenderMesh object
-                    var worldPosition = new Vector4(worldMatrix.TranslationVector, 1.0f);
+                    var worldPosition = new Vector4(renderMesh.WorldMatrix.TranslationVector, 1.0f);
                     Vector4 projectedPosition;
                     Vector4.Transform(ref worldPosition, ref viewProjectionMatrix, out projectedPosition);
                     var projectedZ = projectedPosition.Z / projectedPosition.W;
