@@ -13,7 +13,7 @@ namespace SiliconStudio.Core.Serialization
     public abstract class DataSerializer
     {
         // Binary format version, needs to be bumped in case of big changes in serialization formats (i.e. primitive types).
-        public const int BinaryFormatVersion = 9;
+        public const int BinaryFormatVersion = 10;
 
         public ObjectId SerializationTypeId;
 
