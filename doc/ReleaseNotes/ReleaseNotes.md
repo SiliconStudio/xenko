@@ -47,6 +47,22 @@ Windows 10 Universal Apps (Store and Phone) are now supported. Add it to your ex
 - Sprites: Sprites are drawn by default with depth test enabled.
 - Scripts: *Script* (and *AsyncScript*) no longer provide a *Start* method. Start is now part of the *StartupScript* class.
 
+# Version 1.2.1-beta
+
+Release date: 2015/07/24
+
+## Enhancements
+- Android: Add support for x86, x86_64 and arm64-v8a processors.
+- Engine: Handles FBX animation discontinuities.
+
+## Issues fixed
+- Studio: Editor would crash with Intel GPU ([#250](https://github.com/SiliconStudio/paradox/issues/250)).
+- Studio: Deleting items in editor was causing crashes: multiples bugs and behaviors have been fixed ([#253](https://github.com/SiliconStudio/paradox/issues/253)).
+- Studio: Blank project wouldn't compile because of reference to Profiler code without using clause ([#255](https://github.com/SiliconStudio/paradox/issues/255)).
+- Studio: Scene assets and texture assets were considered dirty when reopening scene second time (displaying a message about updating from version 0 to 6 when reopening scene).
+- Studio: Improved Material asset display in property grid, especially Layer Overrides that are not in a category anymore.
+- Engine: Bounding box for skinned meshes were not properly working.
+
 # Version 1.2.0-beta
 
 Release date: 2015/07/16
@@ -79,13 +95,6 @@ Release date: 2015/07/16
 - Engine: Meshes inside a model with negative scaling did not have their faces inverted.
 - Shaders: Ambient occlusion now correctly affects ambient light.
 - VisualStudio: The SDK version used by the extension is changed based on the version of the package associated with the current solutions. ([#224](https://github.com/SiliconStudio/paradox/issues/224)).
-
-# Version 1.2.1-beta
-
-Release date: 2015/07/24
-
-## Enhancements
-- Android: Add support for x86, x86_64 and arm64-v8a processors.
 
 # Known Issues
 - UI: EditText is not implemented on Windows Store and Windows Phone.
