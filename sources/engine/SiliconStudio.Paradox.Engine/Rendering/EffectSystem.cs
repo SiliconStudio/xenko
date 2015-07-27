@@ -109,7 +109,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// <returns></returns>
         public static IEffectCompiler CreateEffectCompiler(TaskSchedulerSelector taskSchedulerSelector = null)
         {
-            return CreateEffectCompiler(null, null, EffectCompilationMode.Local, false);
+            return CreateEffectCompiler(null, null, EffectCompilationMode.Local, false, taskSchedulerSelector);
         }
 
         public override void Update(GameTime gameTime)
@@ -382,7 +382,7 @@ namespace SiliconStudio.Paradox.Rendering
             return null;
         }
 
-        internal static IEffectCompiler CreateEffectCompiler(EffectSystem effectSystem, Guid? packageId, EffectCompilationMode effectCompilationMode, bool recordEffectRequested)
+        internal static IEffectCompiler CreateEffectCompiler(EffectSystem effectSystem, Guid? packageId, EffectCompilationMode effectCompilationMode, bool recordEffectRequested, TaskSchedulerSelector taskSchedulerSelector = null)
         {
             EffectCompilerBase compiler = null;
 
@@ -424,7 +424,7 @@ namespace SiliconStudio.Paradox.Rendering
                 compiler = new NullEffectCompiler();
             }
 
-            return new EffectCompilerCache(compiler);
+            return new EffectCompilerCache(compiler, taskSchedulerSelector);
         }
     }
 }
