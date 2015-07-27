@@ -81,27 +81,27 @@ namespace SiliconStudio.Paradox.Physics
             if (type == typeof(Box2DColliderShapeDesc))
             {
                 var boxDesc = (Box2DColliderShapeDesc)desc;
-                shape = new Box2DColliderShape(boxDesc.HalfExtent) { LocalOffset = boxDesc.LocalOffset, LocalRotation = boxDesc.LocalRotation };
+                shape = new Box2DColliderShape(boxDesc.Size) { LocalOffset = boxDesc.LocalOffset, LocalRotation = boxDesc.LocalRotation };
             }
             else if (type == typeof(BoxColliderShapeDesc))
             {
                 var boxDesc = (BoxColliderShapeDesc)desc;
-                shape = new BoxColliderShape(boxDesc.HalfExtents) { LocalOffset = boxDesc.LocalOffset, LocalRotation = boxDesc.LocalRotation };
+                shape = new BoxColliderShape(boxDesc.Size) { LocalOffset = boxDesc.LocalOffset, LocalRotation = boxDesc.LocalRotation };
             }
             else if (type == typeof(CapsuleColliderShapeDesc))
             {
                 var capsuleDesc = (CapsuleColliderShapeDesc)desc;
-                shape = new CapsuleColliderShape(capsuleDesc.Is2D, capsuleDesc.Radius, capsuleDesc.Height, capsuleDesc.UpAxis) { LocalOffset = capsuleDesc.LocalOffset, LocalRotation = capsuleDesc.LocalRotation };
+                shape = new CapsuleColliderShape(capsuleDesc.Is2D, capsuleDesc.Radius, capsuleDesc.Length, capsuleDesc.Orientation) { LocalOffset = capsuleDesc.LocalOffset, LocalRotation = capsuleDesc.LocalRotation };
             }
             else if (type == typeof(CylinderColliderShapeDesc))
             {
                 var cylinderDesc = (CylinderColliderShapeDesc)desc;
-                shape = new CylinderColliderShape(cylinderDesc.HalfExtents, cylinderDesc.UpAxis) { LocalOffset = cylinderDesc.LocalOffset, LocalRotation = cylinderDesc.LocalRotation };
+                shape = new CylinderColliderShape(cylinderDesc.Height, cylinderDesc.Diameter, cylinderDesc.Orientation) { LocalOffset = cylinderDesc.LocalOffset, LocalRotation = cylinderDesc.LocalRotation };
             }
             else if (type == typeof(SphereColliderShapeDesc))
             {
                 var sphereDesc = (SphereColliderShapeDesc)desc;
-                shape = new SphereColliderShape(sphereDesc.Is2D, sphereDesc.Radius) { LocalOffset = sphereDesc.LocalOffset };
+                shape = new SphereColliderShape(sphereDesc.Is2D, sphereDesc.Diameter) { LocalOffset = sphereDesc.LocalOffset };
             }
             else if (type == typeof(StaticPlaneColliderShapeDesc))
             {

@@ -12,15 +12,15 @@ namespace SiliconStudio.Paradox.Physics
         /// <summary>
         /// Initializes a new instance of the <see cref="BoxColliderShape"/> class.
         /// </summary>
-        /// <param name="halfExtents">The half extents.</param>
-        public BoxColliderShape(Vector3 halfExtents)
+        /// <param name="size">The size of the cube</param>
+        public BoxColliderShape(Vector3 size)
         {
             Type = ColliderShapeTypes.Box;
             Is2D = false;
 
-            InternalShape = new BulletSharp.BoxShape(halfExtents);
+            InternalShape = new BulletSharp.BoxShape(size/2);
 
-            DebugPrimitiveMatrix = Matrix.Scaling((halfExtents * 2.0f) * 1.01f);
+            DebugPrimitiveMatrix = Matrix.Scaling(size * 1.01f);
         }
 
         public override GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)

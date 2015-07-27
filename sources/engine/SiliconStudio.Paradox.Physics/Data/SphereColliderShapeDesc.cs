@@ -16,15 +16,15 @@ namespace SiliconStudio.Paradox.Physics
         public bool Is2D;
 
         /// <userdoc>
-        /// The offset with the real graphic mesh.
+        /// The diameter of the sphere/circle.
         /// </userdoc>
         [DataMember(20)]
-        public Vector3 LocalOffset;
+        public float Diameter = 1.0f;
 
         /// <userdoc>
-        /// The radius of the sphere/circle.
+        /// The offset with the real graphic mesh.
         /// </userdoc>
-        [DataMember(30)] 
-        public float Radius = 1.0f;
+        [DataMember(30)]
+        public Vector3 LocalOffset;
     }
 }
