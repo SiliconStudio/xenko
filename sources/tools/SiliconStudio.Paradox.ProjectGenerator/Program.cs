@@ -166,7 +166,7 @@ namespace SiliconStudio.Paradox.ProjectGenerator
                 return;
             }
 
-            var sharedProfile = package.Profiles[PlatformType.Shared];
+            var sharedProfile = package.Profiles.FindSharedProfile();
 
             // Setup the assets folder
             Directory.CreateDirectory(UPath.Combine(outputDirectory, (UDirectory)"Assets/Shared"));

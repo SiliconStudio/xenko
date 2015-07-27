@@ -16,7 +16,7 @@ namespace SiliconStudio.Assets
     /// A collection of <see cref="PackageProfile"/>.
     /// </summary>
     [DataContract("PackageProfileCollection")]
-    public sealed class PackageProfileCollection : KeyedCollection<PlatformType, PackageProfile>
+    public sealed class PackageProfileCollection : KeyedCollection<string, PackageProfile>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PackageProfileCollection"/> class.
@@ -27,9 +27,9 @@ namespace SiliconStudio.Assets
             // renaming PackageProfile will work)
         }
 
-        protected override PlatformType GetKeyForItem(PackageProfile item)
+        protected override string GetKeyForItem(PackageProfile item)
         {
-            return item.Platform;
+            return item.Name;
         }
 
         /// <summary>
