@@ -14,6 +14,7 @@ using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Serialization.Assets;
 
 using System.Threading;
+using SiliconStudio.Paradox.Assets;
 
 namespace SiliconStudio.Assets.CompilerApp
 {
@@ -57,6 +58,12 @@ namespace SiliconStudio.Assets.CompilerApp
 
         private BuildResultCode BuildMaster()
         {
+            // Only querying graphics platform, let's load package, print it and exit
+            if (builderOptions.GetGraphicsPlatform)
+            {
+                return BuildGetGraphicsPlatform();
+            }
+
             assetLogger = new RemoteLogForwarder(builderOptions.Logger, builderOptions.LogPipeNames);
             GlobalLogger.GlobalMessageLogged += assetLogger;
 
@@ -144,6 +151,32 @@ namespace SiliconStudio.Assets.CompilerApp
             assetLogger.Dispose();
             
             return result;
+        }
+
+        private BuildResultCode BuildGetGraphicsPlatform()
+        {
+            var localLogger = new LoggerResult();
+            var simplePackage = Package.Load(localLogger, builderOptions.PackageFile, new PackageLoadParameters { AutoLoadTemporaryAssets = false, LoadAssemblyReferences = false, AutoCompileProjects = false });
+            if (simplePackage == null
+                || localLogger.HasErrors)
+            {
+                localLogger.CopyTo(builderOptions.Logger);
+                return BuildResultCode.BuildError;
+            }
+
+            var buildProfile = simplePackage.Profiles.FirstOrDefault(pair => pair.Name == builderOptions.BuildProfile);
+            if (buildProfile == null)
+            {
+                builderOptions.Logger.Error("Package {0} did not contain platform {1}", builderOptions.PackageFile, builderOptions.BuildProfile);
+                return BuildResultCode.BuildError;
+            }
+
+            var graphicsPlatform = buildProfile.Properties.ContainsKey(ParadoxConfig.GraphicsPlatform)
+                ? buildProfile.Properties.Get(ParadoxConfig.GraphicsPlatform)
+                : builderOptions.GetDefaultGraphicsPlatform();
+
+            Console.WriteLine(graphicsPlatform);
+            return BuildResultCode.Successful;
         }
 
         private void RegisterBuildStepProcessedHandler(object sender, AssetCompiledArgs e)
