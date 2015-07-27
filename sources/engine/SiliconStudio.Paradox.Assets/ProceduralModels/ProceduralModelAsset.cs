@@ -25,8 +25,9 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
     [ThumbnailCompiler(PreviewerCompilerNames.ProceduralModelThumbnailCompilerQualifiedName, true)]
     [AssetCompiler(typeof(ProceduralModelAssetCompiler))]
     [Display(185, "Procedural Model", "A procedural model")]
-    [AssetFormatVersion(2)]
+    [AssetFormatVersion(3)]
     [AssetUpgrader(0, 1, 2, typeof(Upgrader))]
+    [AssetUpgrader(2, 3, typeof(RenameCapsuleHeight))]
     public sealed class ProceduralModelAsset : Asset, IModelAsset
     {
         /// <summary>
@@ -56,7 +57,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
         [DataMemberIgnore]
         public IEnumerable<KeyValuePair<string, MaterialInstance>> MaterialInstances { get { return Type != null ? Type.MaterialInstances : Enumerable.Empty<KeyValuePair<string, MaterialInstance>>(); } }
 
-        class Upgrader : AssetUpgraderBase
+        private class Upgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
             {
@@ -84,6 +85,19 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
                         vecSize.Style = YamlStyle.Flow;
                         asset.Type.Size = vecSize;
                     }
+                }
+            }
+        }
+
+        class RenameCapsuleHeight : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                var proceduralType = asset.Type;
+                if (proceduralType.Node.Tag == "!CapsuleProceduralModel" && proceduralType.Height != null)
+                {
+                    proceduralType.Length = proceduralType.Height;
+                    proceduralType.Height = DynamicYamlEmpty.Default;
                 }
             }
         }
