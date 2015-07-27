@@ -113,6 +113,7 @@ namespace SiliconStudio.Paradox.Graphics
             SamplerStates.Dispose();
             BlendStates.Dispose();
             RasterizerStates.Dispose();
+            DepthStencilStates.Dispose();
             if (DepthStencilBuffer != null)
                 DepthStencilBuffer.Dispose();
             primitiveQuad.Dispose();
