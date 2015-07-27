@@ -4,6 +4,7 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Paradox.Engine
@@ -13,6 +14,7 @@ namespace SiliconStudio.Paradox.Engine
     /// </summary>
     [DataContract("Scene")]
     [ContentSerializer(typeof(DataContentSerializerWithReuse<Scene>))]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<Scene>), Profile = "Asset")]
     public sealed class Scene : ComponentBase
     {
         private SceneSettings settings;

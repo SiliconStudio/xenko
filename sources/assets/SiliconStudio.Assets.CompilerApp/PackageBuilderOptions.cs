@@ -104,22 +104,5 @@ namespace SiliconStudio.Assets.CompilerApp
                 }
             }
         }
-
-        public Paradox.Graphics.GraphicsPlatform GetDefaultGraphicsPlatform()
-        {
-            switch (Platform)
-            {
-                case PlatformType.Windows:
-                case PlatformType.WindowsPhone:
-                case PlatformType.WindowsStore:
-                case PlatformType.Windows10:
-                    return Paradox.Graphics.GraphicsPlatform.Direct3D11;
-                case PlatformType.Android:
-                case PlatformType.iOS:
-                    return Paradox.Graphics.GraphicsPlatform.OpenGLES;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
     }
 }

@@ -9,7 +9,9 @@ using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Assets.Entities;
+using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Assets.Analysis
 {
@@ -18,15 +20,6 @@ namespace SiliconStudio.Paradox.Assets.Analysis
     /// </summary>
     public sealed class GamePackageSessionAnalysis : PackageSessionAnalysisBase
     {
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GamePackageSessionAnalysis" /> class.
-        /// </summary>
-        public GamePackageSessionAnalysis()
-            : base()
-        {
-        }
-
         /// <summary>
         /// Checks if a default scene exists for this game package.
         /// </summary>
@@ -47,50 +40,68 @@ namespace SiliconStudio.Paradox.Assets.Analysis
                     continue;
                 }
 
-                var sharedProfile = package.Profiles.FindSharedProfile();
-                if (sharedProfile == null) continue;
+                // Find game settings
+                var gameSettingsAssetItem = package.Assets.Find(GameSettingsAsset.GameSettingsLocation);
+                AssetItem defaultScene = null;
 
-                var defaultScene = sharedProfile.Properties.Get(GameSettingsAsset.DefaultScene);
+                // If game settings is found, try to find default scene inside
+                if (gameSettingsAssetItem != null)
+                {
+                    var defaultSceneRuntime = ((GameSettingsAsset)gameSettingsAssetItem.Asset).DefaultScene;
+                    if (defaultSceneRuntime != null)
+                    {
+                        var defaultSceneReference = AttachedReferenceManager.GetAttachedReference(defaultSceneRuntime);
+                        if (defaultSceneReference != null)
+                        {
+                            // Find it either by Url or Id
+                            defaultScene = package.Assets.Find(defaultSceneReference.Id) ?? package.Assets.Find(defaultSceneReference.Url);
 
-                // If the pdxpkg does not reference any scene
+                            // Check it is actually a scene asset
+                            if (defaultScene != null && !(defaultScene.Asset is SceneAsset))
+                                defaultScene = null;
+                        }
+                    }
+                }
+
+                // Find or create default scene
+                if (defaultScene == null)
+                {
+                    defaultScene = package.Assets.Find(GameSettingsAsset.DefaultSceneLocation);
+                    if (defaultScene != null && !(defaultScene.Asset is SceneAsset))
+                        defaultScene = null;
+                }
+
+                // Otherwise, try to find any scene
+                if (defaultScene == null)
+                    defaultScene = package.Assets.FirstOrDefault(x => x.Asset is SceneAsset);
+
+                // Nothing found, let's create an empty one
                 if (defaultScene == null)
                 {
                     log.Error(package, null, AssetMessageCode.DefaultSceneNotFound, null);
 
-                    // Creates a new default scene
-                    // Checks we don't overwrite an existing asset
-                    const string defaultSceneLocation = GameSettingsAsset.DefaultSceneLocation;
-                    var existingDefault = package.Assets.Find(defaultSceneLocation);
-                    if (existingDefault != null && existingDefault.Asset is SceneAsset)
-                    {
-                        // A scene at the default location already exists among the assets, let's reference it as the default scene
-                        var sceneAsset = new AssetReference<SceneAsset>(existingDefault.Id, existingDefault.Location);
-                        GameSettingsAsset.SetDefaultScene(package, sceneAsset);
-                    }
-                    else if (existingDefault != null)
-                    {
-                        // Very rare case: the default scene location is occupied by another asset which is not a scene
-                        // Compute a new default name to not overwrite the existing asset
-                        var newName = NamingHelper.ComputeNewName(defaultSceneLocation, package.Assets, a => a.Location);
-                        GameSettingsAsset.CreateAndSetDefaultScene(package, newName);
-                    } 
-                    else
-                    {
-                        // Creates a new default scene asset
-                        GameSettingsAsset.CreateAndSetDefaultScene(package, defaultSceneLocation);
-                    }
+                    var defaultSceneName = NamingHelper.ComputeNewName(GameSettingsAsset.DefaultSceneLocation, package.Assets, a => a.Location);
+                    var defaultSceneAsset = SceneAsset.Create();
 
-                    continue;
+                    defaultScene = new AssetItem(defaultSceneName, defaultSceneAsset);
+                    package.Assets.Add(defaultScene);
+                    defaultScene.IsDirty = true;
                 }
 
-                // The pdxpkg references an asset
-                var defaultAsset = package.Assets.Find(defaultScene.Location);
+                // Create game settings if not done yet
+                if (gameSettingsAssetItem == null)
+                {
+                    log.Error(package, null, AssetMessageCode.AssetNotFound, GameSettingsAsset.GameSettingsLocation);
 
-                if (defaultAsset != null) continue; // Default scene exists and is referenced
+                    var gameSettingsAsset = new GameSettingsAsset();
 
-                // The asset referenced does not exist, create it
-                log.Error(package, defaultScene, AssetMessageCode.AssetNotFound, defaultScene);
-                GameSettingsAsset.CreateAndSetDefaultScene(package);
+                    gameSettingsAsset.DefaultScene = AttachedReferenceManager.CreateSerializableVersion<Scene>(defaultScene.Id, defaultScene.Location);
+
+                    gameSettingsAssetItem = new AssetItem(GameSettingsAsset.GameSettingsLocation, gameSettingsAsset);
+                    package.Assets.Add(gameSettingsAssetItem);
+
+                    gameSettingsAssetItem.IsDirty = true;
+                }
             }
         }
    }
