@@ -173,7 +173,7 @@
     
     <!-- Get the real graphics platform from .pdxpkg -->
     <Exec WorkingDirectory="$(TargetDir)" ConsoleToMSBuild="true"
-          Command="&quot;$(SiliconStudioParadoxCompileAssetCommand)&quot; --profile=$(SiliconStudioBuildProfile) --package-file=&quot;$(SiliconStudioCurrentPackagePath)&quot; --get-graphics-platform">
+          Command="&quot;$(SiliconStudioParadoxCompileAssetCommand)&quot; --platform=$(SiliconStudioPlatform) --profile=$(SiliconStudioBuildProfile) --package-file=&quot;$(SiliconStudioCurrentPackagePath)&quot; --get-graphics-platform">
       <Output TaskParameter="ConsoleOutput" PropertyName="SiliconStudioParadoxGraphicsApiComputed" />
     </Exec>
     
