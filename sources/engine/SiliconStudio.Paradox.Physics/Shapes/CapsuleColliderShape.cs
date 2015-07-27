@@ -11,40 +11,42 @@ namespace SiliconStudio.Paradox.Physics
 {
     public class CapsuleColliderShape : ColliderShape
     {
+        private float capsuleLength;
+        private float capsuleRadius;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CapsuleColliderShape"/> class.
         /// </summary>
         /// <param name="is2D">if set to <c>true</c> [is2 d].</param>
         /// <param name="radius">The radius.</param>
-        /// <param name="height">The height.</param>
+        /// <param name="length">The length of the capsule.</param>
         /// <param name="upAxis">Up axis.</param>
-        public CapsuleColliderShape(bool is2D, float radius, float height, Vector3 upAxis)
+        public CapsuleColliderShape(bool is2D, float radius, float length, Vector3 upAxis)
         {
             Type = ColliderShapeTypes.Capsule;
             Is2D = is2D;
 
-            BulletSharp.CapsuleShape shape;
+            capsuleLength = length;
+            capsuleRadius = radius;
 
             Matrix rotation;
-
-            //http://en.wikipedia.org/wiki/Capsule_(geometry)
-            var h = radius * 2 + height;
+            BulletSharp.CapsuleShape shape;
 
             if (upAxis == Vector3.UnitX)
             {
-                shape = new BulletSharp.CapsuleShapeX(radius, height);
+                shape = new BulletSharp.CapsuleShapeX(radius, length);
 
                 rotation = Matrix.RotationZ((float)Math.PI / 2.0f);
             }
             else if (upAxis == Vector3.UnitZ)
             {
-                shape = new BulletSharp.CapsuleShapeZ(radius, height);
+                shape = new BulletSharp.CapsuleShapeZ(radius, length);
 
                 rotation = Matrix.RotationX((float)Math.PI / 2.0f);
             }
             else //default to Y
             {
-                shape = new BulletSharp.CapsuleShape(radius, height);
+                shape = new BulletSharp.CapsuleShape(radius, length);
 
                 rotation = Matrix.Identity;
             }
@@ -58,12 +60,12 @@ namespace SiliconStudio.Paradox.Physics
                 InternalShape = shape;
             }
 
-            DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(radius * 2, h / 2, Is2D ? 1.0f : radius * 2) * 1.01f) * rotation;
+            DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(1.01f)) * rotation;
         }
 
         public override GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
         {
-            return GeometricPrimitive.Capsule.New(device);
+            return GeometricPrimitive.Capsule.New(device, capsuleLength, capsuleRadius);
         }
     }
 }
