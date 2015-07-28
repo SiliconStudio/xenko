@@ -22,11 +22,6 @@ namespace SiliconStudio.Assets.Compiler
         /// </summary>
         protected T Asset;
 
-        /// <summary>
-        /// The asset item session where all the <see cref="AssetItem"/> references can be found.
-        /// </summary>
-        protected PackageSession AssetsSession;
-
         public virtual AssetCompilerResult Compile(CompilerContext context, AssetItem assetItem)
         {
             if (context == null) throw new ArgumentNullException("context");
@@ -37,14 +32,12 @@ namespace SiliconStudio.Assets.Compiler
 
             var compilerResult = new AssetCompilerResult();
 
-            // TODO: Workaround in case an asset item has been removed from its package
             if (AssetItem.Package == null)
             {
                 compilerResult.Warning("Asset [{0}] is not attached to a package", AssetItem);
                 return compilerResult;
             }
 
-            AssetsSession = AssetItem.Package.Session;
             CompileOverride((AssetCompilerContext)context, compilerResult);
 
             return compilerResult;
@@ -53,14 +46,17 @@ namespace SiliconStudio.Assets.Compiler
         protected abstract AssetCompilerResult CompileOverride(AssetCompilerContext context, AssetCompilerResult compilationResult);
 
         /// <summary>
-        /// Add to the current compilation result the compilation steps required to compile the <see cref="AssetItem"/> dependencies.
+        /// Clones the given asset and its dependencies, generates the build steps corresponding to all these assets and adds them to the given <see cref="AssetCompilerResult"/>.
         /// </summary>
-        /// <param name="context">A compiler context.</param>
-        /// <param name="result">The current result of the compilation</param>
-        protected BuildStep AddDependenciesBuildStepsToResult(AssetCompilerContext context, AssetCompilerResult result)
+        /// <param name="session">The session where the asset and its dependencies can be found.</param>
+        /// <param name="assetItem">The asset to clone with its dependencies.</param>
+        /// <param name="context">The compiler context.</param>
+        /// <param name="result">The result of the compilation in which the generated build steps will be added.</param>
+        /// <returns>The generated build steps.</returns>
+        protected static BuildStep AddDependenciesBuildStepsToResult(PackageSession session, AssetItem assetItem, AssetCompilerContext context, AssetCompilerResult result)
         {
             // create the fake package used to compile the dependences
-            var dependenciesCompilePackage = AssetsSession.CreateCompilePackageFromAsset(AssetItem);
+            var dependenciesCompilePackage = session.CreateCompilePackageFromAsset(assetItem);
 
             // compile the fake package (create the build steps)
             var assetPackageCompiler = new PackageCompiler();

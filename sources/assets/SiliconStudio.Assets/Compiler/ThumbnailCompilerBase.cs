@@ -49,22 +49,6 @@ namespace SiliconStudio.Assets.Compiler
             }
         }
 
-        public sealed override AssetCompilerResult Compile(CompilerContext context, AssetItem assetItem)
-        {
-            // This method is overriden only because of the issue in assignment of the AssetsSession property in the base method.
-            // In this implementation, the assignment is deferred in the try/catch block of the CompileOverride method.
-            // TODO: Remove this override once the issue in the bas method is fixed (and seal the base method if possible)
-            if (context == null) throw new ArgumentNullException("context");
-            if (assetItem == null) throw new ArgumentNullException("assetItem");
-
-            Asset = (T)assetItem.Asset;
-            AssetItem = assetItem;
-
-            var compilerResult = new AssetCompilerResult();
-            CompileOverride((AssetCompilerContext)context, compilerResult);
-            return compilerResult;
-        }
-
         protected virtual string BuildThumbnailStoreName()
         {
             return AssetItem.Location.GetDirectoryAndFileName().Insert(0, ThumbnailStorageNamePrefix);
@@ -84,11 +68,8 @@ namespace SiliconStudio.Assets.Compiler
 
             try
             {
-                // TODO: fix failures here (see TODOs in Compile and base.Compile)
-                AssetsSession = AssetItem.Package.Session;
-
                 // Only use the path to the asset without its extension
-                Compile(thumbnailCompilerContext, thumbnailStorageUrl, AssetItem.FullPath, compilerResult);
+                Compile(thumbnailCompilerContext, thumbnailStorageUrl, AssetItem.Package.Session, AssetItem, compilerResult);
             }
             catch (Exception)
             {
@@ -180,8 +161,9 @@ namespace SiliconStudio.Assets.Compiler
         /// </summary>
         /// <param name="context">The thumbnail compile context</param>
         /// <param name="thumbnailStorageUrl">The absolute URL to the asset's thumbnail, relative to the storage.</param>
-        /// <param name="assetAbsolutePath">Absolute path of the asset on the disk</param>
+        /// <param name="session"></param>
+        /// <param name="assetItem"></param>
         /// <param name="result">The result where the commands and logs should be output.</param>
-        protected abstract void Compile(ThumbnailCompilerContext context, string thumbnailStorageUrl, UFile assetAbsolutePath, AssetCompilerResult result);
+        protected abstract void Compile(ThumbnailCompilerContext context, string thumbnailStorageUrl, PackageSession session, AssetItem assetItem, AssetCompilerResult result);
     }
 }
