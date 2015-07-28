@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Contexts;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using SiliconStudio.Core.Diagnostics;
