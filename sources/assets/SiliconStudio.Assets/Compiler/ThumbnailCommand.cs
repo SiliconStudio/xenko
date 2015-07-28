@@ -1,7 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-
+using System.Collections.Generic;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
@@ -14,21 +14,19 @@ namespace SiliconStudio.Assets.Compiler
     /// This command overrides <see cref="GetInputFiles"/> so that it automatically returns all the item asset reference files.
     /// By doing so the thumbnail is re-generated every time one of the dependencies changes.
     /// </summary>
-    /// <typeparam name="T">The type of the asset parameter</typeparam>
-    public abstract class ThumbnailCommand<T> : AssetCommand<T>
+    public abstract class ThumbnailCommand : AssetCommand<ThumbnailCommandParameters>
     {
         private readonly AssetItem assetItem;
-        private readonly PackageSession assetsSession;
 
-        protected ThumbnailCommand(string url, PackageSession assetsSession, AssetItem assetItem, T assetParameters)
+        protected ThumbnailCommand(string url, AssetItem assetItem, ThumbnailCommandParameters assetParameters)
             : base(url, assetParameters)
         {
-            if (assetsSession == null) throw new ArgumentNullException("assetsSession");
             if (assetItem == null) throw new ArgumentNullException("assetItem");
+            if (assetItem.Package == null) throw new ArgumentException("assetItem is not attached to a package");
+            if (assetItem.Package.Session == null) throw new ArgumentException("assetItem is not attached to a package session");
             if (url == null) throw new ArgumentNullException("url");
 
             this.assetItem = assetItem;
-            this.assetsSession = assetsSession;
         }
 
         protected UFile AssetUrl { get { return assetItem.Location; } }
@@ -36,7 +34,7 @@ namespace SiliconStudio.Assets.Compiler
         protected override void ComputeParameterHash(BinarySerializationWriter writer)
         {
             base.ComputeParameterHash(writer);
-            var dependencies = assetsSession.DependencyManager.ComputeDependencies(assetItem, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive);
+            var dependencies = assetItem.Package.Session.DependencyManager.ComputeDependencies(assetItem, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive);
             foreach (var assetReference in dependencies.LinksOut)
             {
                 var refAsset = assetReference.Item.Asset;
@@ -44,9 +42,9 @@ namespace SiliconStudio.Assets.Compiler
             }
         }
 
-        public override System.Collections.Generic.IEnumerable<ObjectUrl> GetInputFiles()
+        public override IEnumerable<ObjectUrl> GetInputFiles()
         {
-            var dependencies = assetsSession.DependencyManager.ComputeDependencies(assetItem, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive);
+            var dependencies = assetItem.Package.Session.DependencyManager.ComputeDependencies(assetItem, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive);
             foreach (var assetReference in dependencies.LinksOut)
                 yield return new ObjectUrl(UrlType.Internal, assetReference.Item.Location);
 

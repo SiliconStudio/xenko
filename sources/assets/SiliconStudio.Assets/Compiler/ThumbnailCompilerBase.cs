@@ -25,11 +25,6 @@ namespace SiliconStudio.Assets.Compiler
         protected const string ThumbnailStorageNamePrefix = "__THUMBNAIL__";
 
         /// <summary>
-        /// The item asset to compile
-        /// </summary>
-        protected AssetItem AssetItem;
-
-        /// <summary>
         /// The typed asset associated to <see cref="AssetItem"/>
         /// </summary>
         protected T Asset;
@@ -64,10 +59,9 @@ namespace SiliconStudio.Assets.Compiler
         /// </summary>
         /// <param name="context">The thumbnail compile context</param>
         /// <param name="thumbnailStorageUrl">The absolute URL to the asset's thumbnail, relative to the storage.</param>
-        /// <param name="session"></param>
-        /// <param name="assetItem"></param>
+        /// <param name="assetItem">The asset to compile</param>
         /// <param name="result">The result where the commands and logs should be output.</param>
-        protected abstract void CompileThumbnail(ThumbnailCompilerContext context, string thumbnailStorageUrl, PackageSession session, AssetItem assetItem, AssetCompilerResult result);
+        protected abstract void CompileThumbnail(ThumbnailCompilerContext context, string thumbnailStorageUrl, AssetItem assetItem, AssetCompilerResult result);
         
         protected virtual string BuildThumbnailStoreName(UFile assetUrl)
         {
@@ -76,12 +70,11 @@ namespace SiliconStudio.Assets.Compiler
 
         protected sealed override void CompileWithDependencies(AssetCompilerContext context, AssetItem assetItem, AssetCompilerResult compilerResult)
         {
-            AssetItem = assetItem;
-            Asset = (T)AssetItem.Asset;
+            Asset = (T)assetItem.Asset;
             var thumbnailCompilerContext = (ThumbnailCompilerContext)context;
 
             // Build the path of the thumbnail in the storage
-            var thumbnailStorageUrl = BuildThumbnailStoreName(AssetItem.Location);
+            var thumbnailStorageUrl = BuildThumbnailStoreName(assetItem.Location);
 
             // Check if this asset produced any error
             // (dependent assets errors are generally ignored as long as thumbnail could be generated,
@@ -90,12 +83,12 @@ namespace SiliconStudio.Assets.Compiler
 
             try
             {
-                CompileThumbnail(thumbnailCompilerContext, thumbnailStorageUrl, AssetItem.Package.Session, AssetItem, compilerResult);
+                CompileThumbnail(thumbnailCompilerContext, thumbnailStorageUrl, assetItem, compilerResult);
             }
             catch (Exception)
             {
                 // If an exception occurs, ensure that the build of thumbnail will fail.
-                compilerResult.Error(string.Format("An exception occurred while compiling the asset [{0}]", AssetItem.Location));
+                compilerResult.Error(string.Format("An exception occurred while compiling the asset [{0}]", assetItem.Location));
             }
 
             foreach (var logMessage in compilerResult.Messages)
@@ -115,7 +108,7 @@ namespace SiliconStudio.Assets.Compiler
                 }
 
                 // If it was an asset log message, check it concerns current asset
-                if (assetLogMessage.AssetReference != null && assetLogMessage.AssetReference.Location == AssetItem.Location)
+                if (assetLogMessage.AssetReference != null && assetLogMessage.AssetReference.Location == assetItem.Location)
                 {
                     currentAssetHasErrors = true;
                     break;
@@ -127,7 +120,7 @@ namespace SiliconStudio.Assets.Compiler
                 compilerResult.BuildSteps.Add(new ThumbnailFailureBuildStep(compilerResult.Messages));
             }
 
-            var currentAsset = AssetItem; // copy the current asset item and embrace it in the callback
+            var currentAsset = assetItem; // copy the current asset item and embrace it in the callback
             compilerResult.BuildSteps.StepProcessed += (_, buildStepArgs) => OnThumbnailStepProcessed(thumbnailCompilerContext, currentAsset, thumbnailStorageUrl, buildStepArgs);
         }
 

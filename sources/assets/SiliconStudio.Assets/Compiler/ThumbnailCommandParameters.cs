@@ -15,12 +15,15 @@ namespace SiliconStudio.Assets.Compiler
         {
         }
 
-        public ThumbnailCommandParameters(string thumbnailUrl, Int2 thumbnailSize)
+        public ThumbnailCommandParameters(Asset asset, string thumbnailUrl, Int2 thumbnailSize)
         {
+            Asset = asset;
             ThumbnailUrl = thumbnailUrl;
             ThumbnailSize = thumbnailSize;
         }
 
+        public Asset Asset;
+        
         public string ThumbnailUrl; // needed to force re-calculation of thumbnails when asset file is move
 
         public Int2 ThumbnailSize;
@@ -28,24 +31,5 @@ namespace SiliconStudio.Assets.Compiler
         public Vector3 UpAxis = Vector3.UnitY;
 
         public Vector3 FrontAxis = Vector3.UnitZ;
-    }
-
-    /// <summary>
-    /// The parameters of a build command containing a typed reference to the asset to build.
-    /// </summary>
-    [DataContract]
-    public class ThumbnailCommandParameters<T> : ThumbnailCommandParameters where T : Asset
-    {
-        public ThumbnailCommandParameters()
-        {
-        }
-
-        public ThumbnailCommandParameters(T asset, string thumbnailUrl, Int2 thumbnailSize)
-            : base(thumbnailUrl, thumbnailSize)
-        {
-            Asset = asset;
-        }
-
-        public T Asset;
     }
 }
