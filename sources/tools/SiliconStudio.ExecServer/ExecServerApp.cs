@@ -53,6 +53,8 @@ namespace SiliconStudio.ExecServer
 
             host.Open();
 
+            Console.WriteLine("Server [{0}] is running", executablePath);
+
             // Wait for the server to finish
             execServerApp.Wait(host);
         }

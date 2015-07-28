@@ -42,11 +42,13 @@ namespace SiliconStudio.ExecServer
 
         public int Run(string[] args)
         {
+            Console.WriteLine("Run Received {0}", string.Join(" ", args));
+
             lock (singleton)
             {
                 upTime.Restart();
                 var assembly = Assembly.LoadFile(executablePath);
-                var result = (int)assembly.EntryPoint.Invoke(null, args);
+                var result = (int)assembly.EntryPoint.Invoke(null, new object[] { args } );
                 return result;
             }
         }
