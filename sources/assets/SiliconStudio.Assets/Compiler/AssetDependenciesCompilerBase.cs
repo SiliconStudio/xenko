@@ -22,10 +22,12 @@ namespace SiliconStudio.Assets.Compiler
         /// </summary>
         protected T Asset;
 
-        public virtual AssetCompilerResult Compile(CompilerContext context, AssetItem assetItem)
+        public AssetCompilerResult Compile(CompilerContext context, AssetItem assetItem)
         {
             if (context == null) throw new ArgumentNullException("context");
             if (assetItem == null) throw new ArgumentNullException("assetItem");
+
+            assetItem = assetItem.Package.Session.DependencyManager.FindDependencySet(assetItem.Id).Item;
 
             Asset = (T)assetItem.Asset;
             AssetItem = assetItem;

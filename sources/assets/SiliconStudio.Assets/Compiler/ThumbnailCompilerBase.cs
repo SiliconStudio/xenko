@@ -68,7 +68,6 @@ namespace SiliconStudio.Assets.Compiler
 
             try
             {
-                // Only use the path to the asset without its extension
                 Compile(thumbnailCompilerContext, thumbnailStorageUrl, AssetItem.Package.Session, AssetItem, compilerResult);
             }
             catch (Exception)
