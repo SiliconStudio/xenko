@@ -156,89 +156,105 @@ namespace SiliconStudio.Assets.CompilerApp
 
             logger.Info("Generate bundles: Compress and save bundles to HDD...");
 
+            var vfsToDisposeList = new List<IVirtualFileProvider>();
             // Mount VFS for output database (currently disabled because already done in ProjectBuilder.CopyBuildToOutput)
-            VirtualFileSystem.MountFileSystem("/data_output", outputDirectory);
-            VirtualFileSystem.CreateDirectory("/data_output/db");
-
-            // Mount output database and delete previous bundles that shouldn't exist anymore (others should be overwritten)
-            var outputDatabase = new ObjectDatabase("/data_output/db", loadDefaultBundle: false);
-            try
+            using (var provider = VirtualFileSystem.MountFileSystem("/data_output", outputDirectory))
             {
-                outputDatabase.LoadBundle("default").GetAwaiter().GetResult();
-            }
-            catch (Exception)
-            {
-                logger.Info("Generate bundles: Tried to load previous 'default' bundle but it was invalid. Deleting it...");
-                outputDatabase.BundleBackend.DeleteBundles(x => Path.GetFileNameWithoutExtension(x) == "default");
-            }
-            var outputBundleBackend = outputDatabase.BundleBackend;
+                VirtualFileSystem.CreateDirectory("/data_output/db");
 
-            var outputGroupBundleBackends = new Dictionary<string, BundleOdbBackend>();
-
-            if (profile != null && profile.OutputGroupDirectories != null)
-            {
-                var rootPackage = packageSession.LocalPackages.First();
-
-                foreach (var item in profile.OutputGroupDirectories)
+                // Mount output database and delete previous bundles that shouldn't exist anymore (others should be overwritten)
+                var outputDatabase = new ObjectDatabase("/data_output/db", loadDefaultBundle: false);
+                try
                 {
-                    var path = Path.Combine(rootPackage.RootDirectory, item.Value);
-                    var vfsPath = "/data_group_" + item.Key;
-                    var vfsDatabasePath = vfsPath + "/db";
-
-                    // Mount VFS for output database (currently disabled because already done in ProjectBuilder.CopyBuildToOutput)
-                    VirtualFileSystem.MountFileSystem(vfsPath, path);
-                    VirtualFileSystem.CreateDirectory(vfsDatabasePath);
-
-                    outputGroupBundleBackends.Add(item.Key, new BundleOdbBackend(vfsDatabasePath));
+                    outputDatabase.LoadBundle("default").GetAwaiter().GetResult();
                 }
-            }
-
-            // Pass7: Assign bundle backends
-            foreach (var bundle in sortedBundles)
-            {
-                BundleOdbBackend bundleBackend;
-                if (bundle.Source.OutputGroup == null)
+                catch (Exception)
                 {
-                    // No output group, use OutputDirectory
-                    bundleBackend = outputBundleBackend;
+                    logger.Info("Generate bundles: Tried to load previous 'default' bundle but it was invalid. Deleting it...");
+                    outputDatabase.BundleBackend.DeleteBundles(x => Path.GetFileNameWithoutExtension(x) == "default");
                 }
-                else if (!outputGroupBundleBackends.TryGetValue(bundle.Source.OutputGroup, out bundleBackend))
+                var outputBundleBackend = outputDatabase.BundleBackend;
+
+                var outputGroupBundleBackends = new Dictionary<string, BundleOdbBackend>();
+
+                if (profile != null && profile.OutputGroupDirectories != null)
                 {
-                    // Output group not found in OutputGroupDirectories, let's issue a warning and fallback to OutputDirectory
-                    logger.Warning("Generate bundles: Could not find OutputGroup {0} for bundle {1} in ProjectBuildProfile.OutputGroupDirectories", bundle.Source.OutputGroup, bundle.Name);
-                    bundleBackend = outputBundleBackend;
+                    var rootPackage = packageSession.LocalPackages.First();
+
+                    foreach (var item in profile.OutputGroupDirectories)
+                    {
+                        var path = Path.Combine(rootPackage.RootDirectory, item.Value);
+                        var vfsPath = "/data_group_" + item.Key;
+                        var vfsDatabasePath = vfsPath + "/db";
+
+                        // Mount VFS for output database (currently disabled because already done in ProjectBuilder.CopyBuildToOutput)
+                        vfsToDisposeList.Add(VirtualFileSystem.MountFileSystem(vfsPath, path));
+                        VirtualFileSystem.CreateDirectory(vfsDatabasePath);
+
+                        outputGroupBundleBackends.Add(item.Key, new BundleOdbBackend(vfsDatabasePath));
+                    }
                 }
 
-                bundle.BundleBackend = bundleBackend;
-            }
-
-            CleanUnknownBundles(outputBundleBackend, resolvedBundles);
-
-            foreach (var bundleBackend in outputGroupBundleBackends)
-            {
-                CleanUnknownBundles(bundleBackend.Value, resolvedBundles);
-            }
-
-            // Pass8: Pack actual data
-            foreach (var bundle in sortedBundles)
-            {
-                // Compute dependencies (by bundle names)
-                var dependencies = bundle.Dependencies.Select(x => x.Name).Distinct().ToList();
-
-                BundleOdbBackend bundleBackend;
-                if (bundle.Source.OutputGroup == null)
+                // Pass7: Assign bundle backends
+                foreach (var bundle in sortedBundles)
                 {
-                    // No output group, use OutputDirectory
-                    bundleBackend = outputBundleBackend;
-                }
-                else if (!outputGroupBundleBackends.TryGetValue(bundle.Source.OutputGroup, out bundleBackend))
-                {
-                    // Output group not found in OutputGroupDirectories, let's issue a warning and fallback to OutputDirectory
-                    logger.Warning("Generate bundles: Could not find OutputGroup {0} for bundle {1} in ProjectBuildProfile.OutputGroupDirectories", bundle.Source.OutputGroup, bundle.Name);
-                    bundleBackend = outputBundleBackend;
+                    BundleOdbBackend bundleBackend;
+                    if (bundle.Source.OutputGroup == null)
+                    {
+                        // No output group, use OutputDirectory
+                        bundleBackend = outputBundleBackend;
+                    }
+                    else if (!outputGroupBundleBackends.TryGetValue(bundle.Source.OutputGroup, out bundleBackend))
+                    {
+                        // Output group not found in OutputGroupDirectories, let's issue a warning and fallback to OutputDirectory
+                        logger.Warning("Generate bundles: Could not find OutputGroup {0} for bundle {1} in ProjectBuildProfile.OutputGroupDirectories", bundle.Source.OutputGroup, bundle.Name);
+                        bundleBackend = outputBundleBackend;
+                    }
+
+                    bundle.BundleBackend = bundleBackend;
                 }
 
-                objDatabase.CreateBundle(bundle.ObjectIds.ToArray(), bundle.Name, bundleBackend, disableCompressionIds, bundle.IndexMap, dependencies);
+                CleanUnknownBundles(outputBundleBackend, resolvedBundles);
+
+                foreach (var bundleBackend in outputGroupBundleBackends)
+                {
+                    CleanUnknownBundles(bundleBackend.Value, resolvedBundles);
+                }
+
+                // Pass8: Pack actual data
+                foreach (var bundle in sortedBundles)
+                {
+                    // Compute dependencies (by bundle names)
+                    var dependencies = bundle.Dependencies.Select(x => x.Name).Distinct().ToList();
+
+                    BundleOdbBackend bundleBackend;
+                    if (bundle.Source.OutputGroup == null)
+                    {
+                        // No output group, use OutputDirectory
+                        bundleBackend = outputBundleBackend;
+                    }
+                    else if (!outputGroupBundleBackends.TryGetValue(bundle.Source.OutputGroup, out bundleBackend))
+                    {
+                        // Output group not found in OutputGroupDirectories, let's issue a warning and fallback to OutputDirectory
+                        logger.Warning("Generate bundles: Could not find OutputGroup {0} for bundle {1} in ProjectBuildProfile.OutputGroupDirectories", bundle.Source.OutputGroup, bundle.Name);
+                        bundleBackend = outputBundleBackend;
+                    }
+
+                    objDatabase.CreateBundle(bundle.ObjectIds.ToArray(), bundle.Name, bundleBackend, disableCompressionIds, bundle.IndexMap, dependencies);
+                }
+
+                // Dispose VFS created for groups
+                foreach (var vfsToDispose in vfsToDisposeList)
+                {
+                    try
+                    {
+                        vfsToDispose.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Error("Unable to dispose VFS [{0}]", ex, vfsToDispose.RootPath);
+                    }
+                }
             }
 
             logger.Info("Generate bundles: Done");
