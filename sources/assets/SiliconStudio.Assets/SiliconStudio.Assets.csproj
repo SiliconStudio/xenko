@@ -114,7 +114,6 @@
     <Compile Include="Diff\AssetMerge.cs" />
     <Compile Include="Diff\Diff3ChangeType.cs" />
     <Compile Include="Compiler\FailedCommand.cs" />
-    <Compile Include="Compiler\ThumbnailCommandParameters.cs" />
     <Compile Include="Diff\MergeResult.cs" />
     <Compile Include="IAssetCompileTimeDependencies.cs" />
     <Compile Include="IAssetUpgrader.cs" />
@@ -155,12 +154,7 @@
     <Compile Include="Compiler\ImportStreamCommand.cs" />
     <Compile Include="Compiler\ItemListCompiler.cs" />
     <Compile Include="Compiler\PackageCompiler.cs" />
-    <Compile Include="Compiler\ThumbnailCommand.cs" />
-    <Compile Include="Compiler\ThumbnailBuiltEventArgs.cs" />
     <Compile Include="Compiler\ThumbnailCompilerAttribute.cs" />
-    <Compile Include="Compiler\ThumbnailCompilerBase.cs" />
-    <Compile Include="Compiler\ThumbnailCompilerContext.cs" />
-    <Compile Include="Compiler\ThumbnailCompilerRegistry.cs" />
     <Compile Include="AssetBaseChangedEvent.cs" />
     <Compile Include="AssetBase.cs" />
     <Compile Include="PackageSessionProfilingKeys.cs" />
