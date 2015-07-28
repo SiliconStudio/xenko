@@ -143,6 +143,9 @@ namespace SiliconStudio.Paradox.Assets.Entities
             if (objectContext.Descriptor.Type == typeof(ScriptComponent))
                 levelSinceScriptComponent = 0;
 
+            if (objectContext.Descriptor.Type == typeof(SceneSettings))
+                recursionLevel++;
+
             try
             {
                 var result = base.ReadYaml(ref objectContext);
@@ -157,6 +160,8 @@ namespace SiliconStudio.Paradox.Assets.Entities
             }
             finally
             {
+                if (objectContext.Descriptor.Type == typeof(SceneSettings))
+                    recursionLevel--;
                 recursionLevel--;
                 levelSinceScriptComponent--;
             }
@@ -164,7 +169,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
 
         public bool CanVisit(Type type)
         {
-            return type == typeof(EntityHierarchyData) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type) || typeof(Script).IsAssignableFrom(type);
+            return type == typeof(EntityHierarchyData) || type == typeof(SceneSettings) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type) || typeof(Script).IsAssignableFrom(type);
         }
 
         //public void Visit(ref VisitorContext context)

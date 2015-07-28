@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Serialization;
@@ -14,14 +15,19 @@ namespace SiliconStudio.Paradox.Engine.Design
     public class EntityHierarchyData
     {
         [DataMember(10)]
-        public Guid RootEntity { get; set; }
+        public List<Guid> RootEntities { get; private set; }
 
         [DataMember(20)]
         public EntityCollection Entities { get; private set; }
 
+        [DataMember(30)]
+        public SceneSettings SceneSettings { get; private set; }
+
         public EntityHierarchyData()
         {
+            RootEntities = new List<Guid>();
             Entities = new EntityCollection(this);
+            SceneSettings = new SceneSettings();
         }
 
         [DataSerializer(typeof(KeyedSortedListSerializer<EntityCollection, Guid, Entity>))]

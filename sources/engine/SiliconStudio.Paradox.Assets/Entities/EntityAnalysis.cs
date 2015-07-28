@@ -134,8 +134,11 @@ namespace SiliconStudio.Paradox.Assets.Entities
             Guid newId;
 
             // Remap entities in asset2 with new Id
-            if (idRemapping.TryGetValue(entityHierarchy.RootEntity, out newId))
-                entityHierarchy.RootEntity = newId;
+            for (int i = 0; i < entityHierarchy.RootEntities.Count; ++i)
+            {
+                if (idRemapping.TryGetValue(entityHierarchy.RootEntities[i], out newId))
+                    entityHierarchy.RootEntities[i] = newId;
+            }
 
             foreach (var entity in entityHierarchy.Entities)
             {
@@ -196,7 +199,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
                     processObject = false;
                 }
 
-                if (obj is EntityComponent)
+                if (obj is EntityComponent || obj is SceneSettings)
                     componentDepth++;
 
                 if (obj is ScriptComponent)
@@ -205,7 +208,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
                 if (processObject)
                     base.VisitObject(obj, descriptor, visitMembers);
 
-                if (obj is EntityComponent)
+                if (obj is EntityComponent || obj is SceneSettings)
                     componentDepth--;
 
                 --scriptComponentDepth;
@@ -217,6 +220,9 @@ namespace SiliconStudio.Paradox.Assets.Entities
                     return true;
 
                 if (obj is Script)
+                    return true;
+
+                if (obj is SceneSettings)
                     return true;
 
                 return base.CanVisit(obj);

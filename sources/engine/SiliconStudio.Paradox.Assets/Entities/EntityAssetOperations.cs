@@ -23,13 +23,13 @@ namespace SiliconStudio.Paradox.Assets.Entities
 
             // create the hierarchy of the sub-tree
             var subTreeRoot = source.Hierarchy.Entities[sourceRootEntity];
-            var subTreeHierarchy = new EntityHierarchyData { Entities = { subTreeRoot }, RootEntity = sourceRootEntity };
+            var subTreeHierarchy = new EntityHierarchyData { Entities = { subTreeRoot }, RootEntities = { sourceRootEntity } };
             foreach (var subTreeEntity in subTreeRoot.EnumerateChildren(true))
                 subTreeHierarchy.Entities.Add(subTreeEntity);
 
             // clone the entities of the sub-tree
             var clonedHierarchy = (EntityHierarchyData)AssetCloner.Clone(subTreeHierarchy);
-            clonedHierarchy.Entities[clonedHierarchy.RootEntity].Transform.Parent = null;
+            clonedHierarchy.Entities[sourceRootEntity].Transform.Parent = null;
 
             // set to null reference outside of the sub-tree
             EntityAnalysis.FixupEntityReferences(clonedHierarchy);

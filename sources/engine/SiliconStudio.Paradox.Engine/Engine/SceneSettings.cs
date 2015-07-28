@@ -14,18 +14,14 @@ namespace SiliconStudio.Paradox.Engine
     /// <summary>
     /// A component used internally to tag a Scene.
     /// </summary>
-    [DataContract("SceneComponent")]
-    [DefaultEntityComponentProcessor(typeof(SceneProcessor))]
+    [DataContract("SceneSettings")]
     [Display(10000, "Scene", Expand = ExpandRule.Once)]
-    public sealed class SceneComponent : EntityComponent
+    public sealed class SceneSettings : ComponentBase
     {
-        public readonly static PropertyKey<SceneComponent> Key = new PropertyKey<SceneComponent>("Key", typeof(SceneComponent),
-            new AccessorMetadata(OnSceneComponentGet, OnSceneComponentSet));
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="SceneComponent"/> class.
+        /// Initializes a new instance of the <see cref="SceneSettings"/> class.
         /// </summary>
-        public SceneComponent()
+        public SceneSettings()
         {
             GraphicsCompositor = new SceneGraphicsCompositorLayers();
             EditorSettings = new SceneEditorSettings();
@@ -51,37 +47,5 @@ namespace SiliconStudio.Paradox.Engine
         [Display("Editor Settings", Expand = ExpandRule.Always)]
         [Category]
         public SceneEditorSettings EditorSettings { get; set; }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
-        }
-
-        private static object OnSceneComponentGet(ref PropertyContainer props)
-        {
-            var scene = props.Owner as Scene;
-            if (scene != null)
-            {
-                return scene.Settings;
-            }
-            return null;
-        }
-
-        private static void OnSceneComponentSet(ref PropertyContainer props, object value)
-        {
-            var scene = props.Owner as Scene;
-            if (scene == null)
-            {
-                throw new InvalidOperationException("A SceneComponent is only valid for the Scene object");
-            }
-
-            //// TODO: Check if this is possible with serialization? // Not working with Yaml
-            //if (scene.Settings != null)
-            //{
-            //    throw new InvalidOperationException("A SceneComponent cannot be changed");
-            //}
-
-            scene.Settings = (SceneComponent)value;
-        }
     }
 }

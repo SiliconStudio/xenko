@@ -143,7 +143,7 @@
     <Compile Include="Entities\ConvertedDescriptor.cs" />
     <Compile Include="Entities\EntityAnalysis.cs" />
     <Compile Include="Entities\EntityAsset.cs" />
-    <Compile Include="Entities\EntityAssetCompiler.cs" />
+    <Compile Include="Entities\SceneAssetCompiler.cs" />
     <Compile Include="Entities\EntityAssetOperations.cs" />
     <Compile Include="Entities\EntityComponentReference.cs" />
     <Compile Include="Entities\EntityDiffNode.cs" />

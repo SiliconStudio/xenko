@@ -65,5 +65,10 @@ namespace SiliconStudio.Core.Yaml
         {
             node.Children.Add(ConvertFromDynamic(value));
         }
+
+        public void RemoveAt(int index)
+        {
+            node.Children.RemoveAt(index);
+        }
     }
 }
