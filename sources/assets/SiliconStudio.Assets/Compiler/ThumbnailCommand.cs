@@ -3,6 +3,7 @@
 using System;
 
 using SiliconStudio.Assets.Analysis;
+using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 
@@ -16,9 +17,8 @@ namespace SiliconStudio.Assets.Compiler
     /// <typeparam name="T">The type of the asset parameter</typeparam>
     public abstract class ThumbnailCommand<T> : AssetCommand<T>
     {
-        protected readonly AssetItem AssetItem;
-
-        protected readonly PackageSession AssetsSession;
+        private readonly AssetItem assetItem;
+        private readonly PackageSession assetsSession;
 
         protected ThumbnailCommand(string url, PackageSession assetsSession, AssetItem assetItem, T assetParameters)
             : base(url, assetParameters)
@@ -27,14 +27,16 @@ namespace SiliconStudio.Assets.Compiler
             if (assetItem == null) throw new ArgumentNullException("assetItem");
             if (url == null) throw new ArgumentNullException("url");
 
-            AssetItem = assetItem;
-            AssetsSession = assetsSession;
+            this.assetItem = assetItem;
+            this.assetsSession = assetsSession;
         }
+
+        protected UFile AssetUrl { get { return assetItem.Location; } }
 
         protected override void ComputeParameterHash(BinarySerializationWriter writer)
         {
             base.ComputeParameterHash(writer);
-            var dependencies = AssetsSession.DependencyManager.ComputeDependencies(AssetItem, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive);
+            var dependencies = assetsSession.DependencyManager.ComputeDependencies(assetItem, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive);
             foreach (var assetReference in dependencies.LinksOut)
             {
                 var refAsset = assetReference.Item.Asset;
@@ -44,7 +46,7 @@ namespace SiliconStudio.Assets.Compiler
 
         public override System.Collections.Generic.IEnumerable<ObjectUrl> GetInputFiles()
         {
-            var dependencies = AssetsSession.DependencyManager.ComputeDependencies(AssetItem, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive);
+            var dependencies = assetsSession.DependencyManager.ComputeDependencies(assetItem, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive);
             foreach (var assetReference in dependencies.LinksOut)
                 yield return new ObjectUrl(UrlType.Internal, assetReference.Item.Location);
 
