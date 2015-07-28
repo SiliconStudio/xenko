@@ -86,7 +86,7 @@
     <Compile Include="Bundle.cs" />
     <Compile Include="BundleCollection.cs" />
     <Compile Include="Compiler\AssetBuildStep.cs" />
-    <Compile Include="Compiler\AssetDependenciesCompilerBase.cs" />
+    <Compile Include="Compiler\AssetDependenciesCompiler.cs" />
     <Compile Include="AssetImporterBase.cs" />
     <Compile Include="AssetToImport.cs" />
     <Compile Include="AssetImportSession.cs" />

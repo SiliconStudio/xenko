@@ -7,21 +7,12 @@ using SiliconStudio.BuildEngine;
 namespace SiliconStudio.Assets.Compiler
 {
     /// <summary>
-    /// A base class for the compilers that need to recursively compile an asset's dependencies.
+    /// An implementation of <see cref="IAssetCompiler"/> that will compile an asset with all its dependencies.
     /// </summary>
-    /// <typeparam name="T">The type of asset that the builder build</typeparam>
-    public abstract class AssetDependenciesCompilerBase<T> : IAssetCompiler where T : Asset
+    /// <remarks>This class is stateless and can reused or be shared amongst multiple asset compilation</remarks>
+    public class AssetDependenciesCompiler : IAssetCompiler
     {
-        /// <summary>
-        /// The item asset to compile
-        /// </summary>
-        protected AssetItem AssetItem;
-
-        /// <summary>
-        /// The typed asset associated to <see cref="AssetItem"/>
-        /// </summary>
-        protected T Asset;
-
+        /// <inheritdoc/>
         public AssetCompilerResult Compile(CompilerContext context, AssetItem assetItem)
         {
             if (context == null) throw new ArgumentNullException("context");
@@ -29,23 +20,29 @@ namespace SiliconStudio.Assets.Compiler
 
             assetItem = assetItem.Package.Session.DependencyManager.FindDependencySet(assetItem.Id).Item;
 
-            Asset = (T)assetItem.Asset;
-            AssetItem = assetItem;
-
             var compilerResult = new AssetCompilerResult();
 
-            if (AssetItem.Package == null)
+            if (assetItem.Package == null)
             {
-                compilerResult.Warning("Asset [{0}] is not attached to a package", AssetItem);
+                compilerResult.Warning("Asset [{0}] is not attached to a package", assetItem);
                 return compilerResult;
             }
 
-            CompileOverride((AssetCompilerContext)context, compilerResult);
+            CompileWithDependencies((AssetCompilerContext)context, assetItem, compilerResult);
 
             return compilerResult;
         }
 
-        protected abstract AssetCompilerResult CompileOverride(AssetCompilerContext context, AssetCompilerResult compilationResult);
+        /// <summary>
+        /// Compiles the given asset with its dependencies.
+        /// </summary>
+        /// <param name="context">The asset compiler context.</param>
+        /// <param name="assetItem">The asset to compile with its dependencies.</param>
+        /// <param name="compilationResult">The result of the compilation.</param>
+        protected virtual void CompileWithDependencies(AssetCompilerContext context, AssetItem assetItem, AssetCompilerResult compilationResult)
+        {
+            AddDependenciesBuildStepsToResult(assetItem.Package.Session, assetItem, context, compilationResult);
+        }
 
         /// <summary>
         /// Clones the given asset and its dependencies, generates the build steps corresponding to all these assets and adds them to the given <see cref="AssetCompilerResult"/>.

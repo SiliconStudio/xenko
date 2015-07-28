@@ -20,9 +20,19 @@ namespace SiliconStudio.Assets.Compiler
     /// Base implementation for <see cref="IAssetCompiler"/> suitable to build a thumbnail of a single type of <see cref="Asset"/>.
     /// </summary>
     /// <typeparam name="T">Type of the asset</typeparam>
-    public abstract class ThumbnailCompilerBase<T> : AssetDependenciesCompilerBase<T> where T : Asset
+    public abstract class ThumbnailCompilerBase<T> : AssetDependenciesCompiler where T : Asset
     {
         protected const string ThumbnailStorageNamePrefix = "__THUMBNAIL__";
+
+        /// <summary>
+        /// The item asset to compile
+        /// </summary>
+        protected AssetItem AssetItem;
+
+        /// <summary>
+        /// The typed asset associated to <see cref="AssetItem"/>
+        /// </summary>
+        protected T Asset;
 
         private class ThumbnailFailureBuildStep : BuildStep
         {
@@ -49,17 +59,29 @@ namespace SiliconStudio.Assets.Compiler
             }
         }
 
-        protected virtual string BuildThumbnailStoreName()
+        /// <summary>
+        /// Compiles the asset from the specified package.
+        /// </summary>
+        /// <param name="context">The thumbnail compile context</param>
+        /// <param name="thumbnailStorageUrl">The absolute URL to the asset's thumbnail, relative to the storage.</param>
+        /// <param name="session"></param>
+        /// <param name="assetItem"></param>
+        /// <param name="result">The result where the commands and logs should be output.</param>
+        protected abstract void CompileThumbnail(ThumbnailCompilerContext context, string thumbnailStorageUrl, PackageSession session, AssetItem assetItem, AssetCompilerResult result);
+        
+        protected virtual string BuildThumbnailStoreName(UFile assetUrl)
         {
-            return AssetItem.Location.GetDirectoryAndFileName().Insert(0, ThumbnailStorageNamePrefix);
+            return assetUrl.GetDirectoryAndFileName().Insert(0, ThumbnailStorageNamePrefix);
         }
 
-        protected sealed override AssetCompilerResult CompileOverride(AssetCompilerContext context, AssetCompilerResult compilerResult)
+        protected sealed override void CompileWithDependencies(AssetCompilerContext context, AssetItem assetItem, AssetCompilerResult compilerResult)
         {
+            AssetItem = assetItem;
+            Asset = (T)AssetItem.Asset;
             var thumbnailCompilerContext = (ThumbnailCompilerContext)context;
 
             // Build the path of the thumbnail in the storage
-            var thumbnailStorageUrl = BuildThumbnailStoreName();
+            var thumbnailStorageUrl = BuildThumbnailStoreName(AssetItem.Location);
 
             // Check if this asset produced any error
             // (dependent assets errors are generally ignored as long as thumbnail could be generated,
@@ -68,7 +90,7 @@ namespace SiliconStudio.Assets.Compiler
 
             try
             {
-                Compile(thumbnailCompilerContext, thumbnailStorageUrl, AssetItem.Package.Session, AssetItem, compilerResult);
+                CompileThumbnail(thumbnailCompilerContext, thumbnailStorageUrl, AssetItem.Package.Session, AssetItem, compilerResult);
             }
             catch (Exception)
             {
@@ -107,7 +129,6 @@ namespace SiliconStudio.Assets.Compiler
 
             var currentAsset = AssetItem; // copy the current asset item and embrace it in the callback
             compilerResult.BuildSteps.StepProcessed += (_, buildStepArgs) => OnThumbnailStepProcessed(thumbnailCompilerContext, currentAsset, thumbnailStorageUrl, buildStepArgs);
-            return compilerResult;
         }
 
         private static void OnThumbnailStepProcessed(ThumbnailCompilerContext context, AssetItem assetItem, string thumbnailStorageUrl, BuildStepEventArgs buildStepEventArgs)
@@ -154,15 +175,5 @@ namespace SiliconStudio.Assets.Compiler
                 }
             }
         }
-
-        /// <summary>
-        /// Compiles the asset from the specified package.
-        /// </summary>
-        /// <param name="context">The thumbnail compile context</param>
-        /// <param name="thumbnailStorageUrl">The absolute URL to the asset's thumbnail, relative to the storage.</param>
-        /// <param name="session"></param>
-        /// <param name="assetItem"></param>
-        /// <param name="result">The result where the commands and logs should be output.</param>
-        protected abstract void Compile(ThumbnailCompilerContext context, string thumbnailStorageUrl, PackageSession session, AssetItem assetItem, AssetCompilerResult result);
     }
 }
