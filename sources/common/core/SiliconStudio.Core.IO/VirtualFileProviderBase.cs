@@ -102,5 +102,10 @@ namespace SiliconStudio.Core.IO
         {
             throw new NotImplementedException();
         }
+
+        public void Dispose()
+        {
+            VirtualFileSystem.UnregisterProvider(this);
+        }
     }
 }
