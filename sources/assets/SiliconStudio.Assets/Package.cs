@@ -7,6 +7,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
+
+using Microsoft.Build.Utilities;
+
 using SharpYaml;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Diagnostics;
@@ -16,6 +20,8 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Storage;
+
+using Logger = SiliconStudio.Core.Diagnostics.Logger;
 
 namespace SiliconStudio.Assets
 {
@@ -656,12 +662,12 @@ namespace SiliconStudio.Assets
 
             try
             {
+
                 // Load assembly references
                 if (loadParameters.LoadAssemblyReferences)
                 {
                     LoadAssemblyReferencesForPackage(log, loadParameters);
                 }
-
                 // Load assets
                 if (loadParameters.AutoLoadTemporaryAssets)
                 {
@@ -770,90 +776,115 @@ namespace SiliconStudio.Assets
             }
 
             // Update step counter for log progress
+            var tasks = new List<System.Threading.Tasks.Task>();
             for (int i = 0; i < assetFiles.Count; i++)
             {
-                var fileUPath = assetFiles[i].FilePath;
-                var sourceFolder = assetFiles[i].SourceFolder;
-                if (cancelToken.HasValue && cancelToken.Value.IsCancellationRequested)
-                {
-                    log.Warning("Skipping loading assets. PackageSession.Load cancelled");
-                    break;
-                }
-
+                var assetFile = assetFiles[i];
                 // Update the loading progress
                 if (loggerResult != null)
                 {
                     loggerResult.Progress(progressMessage, i, assetFiles.Count);
                 }
 
-                // Check if asset has been deleted by an upgrader
-                if (assetFiles[i].Deleted)
-                {
-                    IsDirty = true;
-                    filesToDelete.Add(assetFiles[i].FilePath);
-                    continue;
-                }
+                var task = cancelToken.HasValue ?
+                    System.Threading.Tasks.Task.Factory.StartNew(() => LoadAsset(log, assetFile, loggerResult), cancelToken.Value) : 
+                    System.Threading.Tasks.Task.Factory.StartNew(() => LoadAsset(log, assetFile, loggerResult));
+
+                tasks.Add(task);
+            }
+
+            if (cancelToken.HasValue)
+            {
+                System.Threading.Tasks.Task.WaitAll(tasks.ToArray(), cancelToken.Value);
+            }
+            else
+            {
+                System.Threading.Tasks.Task.WaitAll(tasks.ToArray());
+            }
+
+            // DEBUG
+            // StaticLog.Info("[{0}] Assets files loaded in {1}", assetFiles.Count, clock.ElapsedMilliseconds);
+
+            if (cancelToken.HasValue && cancelToken.Value.IsCancellationRequested)
+            {
+                log.Warning("Skipping loading assets. PackageSession.Load cancelled");
+            }
+        }
+
+        private void LoadAsset(ILogger log, PackageLoadingAssetFile assetFile, LoggerResult loggerResult)
+        {
+            var fileUPath = assetFile.FilePath;
+            var sourceFolder = assetFile.SourceFolder;
+
+            // Check if asset has been deleted by an upgrader
+            if (assetFile.Deleted)
+            {
+                IsDirty = true;
+                filesToDelete.Add(assetFile.FilePath);
+            }
 
                 // An exception can occur here, so we make sure that loading a single asset is not going to break 
                 // the loop
-                try
-                {
-                    AssetMigration.MigrateAssetIfNeeded(log, assetFiles[i]);
+            try
+            {
+                AssetMigration.MigrateAssetIfNeeded(log, assetFile);
 
-                    // Try to load only if asset is not already in the package or assetRef.Asset is null
-                    var assetPath = fileUPath.MakeRelative(sourceFolder).GetDirectoryAndFileName();
+                // Try to load only if asset is not already in the package or assetRef.Asset is null
+                var assetPath = fileUPath.MakeRelative(sourceFolder).GetDirectoryAndFileName();
 
-                    var assetFullPath = fileUPath.FullPath;
-                    var assetContent = assetFiles[i].AssetContent;
+                var assetFullPath = fileUPath.FullPath;
+                var assetContent = assetFile.AssetContent;
 
-                    var asset = LoadAsset(log, assetFullPath, assetPath, fileUPath, assetContent);
+                var asset = LoadAsset(log, assetFullPath, assetPath, fileUPath, assetContent);
 
-                    // Create asset item
+                // Create asset item
                     var assetItem = new AssetItem(assetPath, asset, this)
-                    {
-                        IsDirty = assetContent != null,
-                        SourceFolder = sourceFolder.MakeRelative(RootDirectory)
-                    };
-                    // Set the modified time to the time loaded from disk
-                    if (!assetItem.IsDirty)
-                        assetItem.ModifiedTime = File.GetLastWriteTime(assetFullPath);
+                {
+                    IsDirty = assetContent != null,
+                    SourceFolder = sourceFolder.MakeRelative(RootDirectory)
+                };
+                // Set the modified time to the time loaded from disk
+                if (!assetItem.IsDirty)
+                    assetItem.ModifiedTime = File.GetLastWriteTime(assetFullPath);
 
-                    // TODO: Let's review that when we rework import process
-                    // Not fixing asset import anymore, as it was only meant for upgrade
-                    // However, it started to make asset dirty, for ex. when we create a new texture, choose a file and reload the scene later
-                    // since there was no importer id and base.
-                    //FixAssetImport(assetItem);
+                // TODO: Let's review that when we rework import process
+                // Not fixing asset import anymore, as it was only meant for upgrade
+                // However, it started to make asset dirty, for ex. when we create a new texture, choose a file and reload the scene later
+                // since there was no importer id and base.
+                //FixAssetImport(assetItem);
 
-                    // Add to temporary assets
+                // Add to temporary assets
+                lock (TemporaryAssets)
+                {
                     TemporaryAssets.Add(assetItem);
                 }
-                catch (Exception ex)
+            }
+            catch (Exception ex)
+            {
+                int row = 1;
+                int column = 1;
+                var yamlException = ex as YamlException;
+                if (yamlException != null)
                 {
-                    int row = 1;
-                    int column = 1;
-                    var yamlException = ex as YamlException;
-                    if (yamlException != null)
-                    {
-                        row = yamlException.Start.Line + 1;
-                        column = yamlException.Start.Column;
-                    }
+                    row = yamlException.Start.Line + 1;
+                    column = yamlException.Start.Column;
+                }
 
-                    var module = log.Module;
+                var module = log.Module;
 
-                    var assetReference = new AssetReference<Asset>(Guid.Empty, fileUPath.FullPath);
+                var assetReference = new AssetReference<Asset>(Guid.Empty, fileUPath.FullPath);
 
-                    // TODO: Change this instead of patching LoggerResult.Module, use a proper log message
-                    if (loggerResult != null)
-                    {
-                        loggerResult.Module = "{0}({1},{2})".ToFormat(Path.GetFullPath(fileUPath.FullPath), row, column);
-                    }
+                // TODO: Change this instead of patching LoggerResult.Module, use a proper log message
+                if (loggerResult != null)
+                {
+                    loggerResult.Module = "{0}({1},{2})".ToFormat(Path.GetFullPath(fileUPath.FullPath), row, column);
+                }
 
-                    log.Error(this, assetReference, AssetMessageCode.AssetLoadingFailed, ex, fileUPath, ex.Message);
+                log.Error(this, assetReference, AssetMessageCode.AssetLoadingFailed, ex, fileUPath, ex.Message);
 
-                    if (loggerResult != null)
-                    {
-                        loggerResult.Module = module;
-                    }
+                if (loggerResult != null)
+                {
+                    loggerResult.Module = module;
                 }
             }
         }
