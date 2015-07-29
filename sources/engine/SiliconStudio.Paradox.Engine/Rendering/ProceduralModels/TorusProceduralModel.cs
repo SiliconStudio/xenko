@@ -21,26 +21,26 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// </summary>
         public TorusProceduralModel()
         {
-            Diameter = 0.75f;
-            Thickness = 0.25f;
+            Radius = 0.375f;
+            Thickness = 0.125f;
             Tessellation = 32;
         }
 
         /// <summary>
         /// Gets or sets the size of this Torus.
         /// </summary>
-        /// <value>The diameter.</value>
-        /// <userdoc>The major diameter of the torus.</userdoc>
+        /// <value>The radius.</value>
+        /// <userdoc>The major radius of the torus.</userdoc>
         [DataMember(10)]
-        [DefaultValue(0.75f)]
-        public float Diameter { get; set; }
+        [DefaultValue(0.375f)]
+        public float Radius { get; set; }
 
         /// <summary>
         /// Gets or sets the thickness.
         /// </summary>
-        /// <value>The minor diameter of the torus. That is the diameter of the ring.</value>
+        /// <value>The minor radius of the torus. That is the radius of the ring.</value>
         [DataMember(20)]
-        [DefaultValue(0.25f)]
+        [DefaultValue(0.125f)]
         public float Thickness { get; set; }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
 
         protected override GeometricMeshData<VertexPositionNormalTexture> CreatePrimitiveMeshData()
         {
-            return GeometricPrimitive.Torus.New(Diameter, Thickness, Tessellation);
+            return GeometricPrimitive.Torus.New(Radius, Thickness, Tessellation);
         }
     }
 }

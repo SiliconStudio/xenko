@@ -96,12 +96,12 @@ namespace SiliconStudio.Paradox.Physics
             else if (type == typeof(CylinderColliderShapeDesc))
             {
                 var cylinderDesc = (CylinderColliderShapeDesc)desc;
-                shape = new CylinderColliderShape(cylinderDesc.Height, cylinderDesc.Diameter, cylinderDesc.Orientation) { LocalOffset = cylinderDesc.LocalOffset, LocalRotation = cylinderDesc.LocalRotation };
+                shape = new CylinderColliderShape(cylinderDesc.Height, cylinderDesc.Radius, cylinderDesc.Orientation) { LocalOffset = cylinderDesc.LocalOffset, LocalRotation = cylinderDesc.LocalRotation };
             }
             else if (type == typeof(SphereColliderShapeDesc))
             {
                 var sphereDesc = (SphereColliderShapeDesc)desc;
-                shape = new SphereColliderShape(sphereDesc.Is2D, sphereDesc.Diameter) { LocalOffset = sphereDesc.LocalOffset };
+                shape = new SphereColliderShape(sphereDesc.Is2D, sphereDesc.Radius) { LocalOffset = sphereDesc.LocalOffset };
             }
             else if (type == typeof(StaticPlaneColliderShapeDesc))
             {

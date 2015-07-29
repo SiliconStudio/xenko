@@ -73,7 +73,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             materials.Add(Asset.Load<Material>("PNTessellationDisplAE"));
 
             var cube = new Entity("Cube") { new ModelComponent(new ProceduralModelDescriptor(new CubeProceduralModel { Size = new Vector3(80), MaterialInstance = { Material = materials[0] } }).GenerateModel(Services)) };
-            var sphere = new Entity("Sphere") { new ModelComponent(new ProceduralModelDescriptor(new SphereProceduralModel { Diameter = 100, Tessellation = 5, MaterialInstance = { Material = materials[0] }} ).GenerateModel(Services)) };
+            var sphere = new Entity("Sphere") { new ModelComponent(new ProceduralModelDescriptor(new SphereProceduralModel { Radius = 100, Tessellation = 5, MaterialInstance = { Material = materials[0] }} ).GenerateModel(Services)) };
 
             var megalodon = new Entity { new ModelComponent { Model = Asset.Load<Model>("megalodon Model") } };
             megalodon.Transform.Position= new Vector3(0, -30f, -10f);

@@ -19,11 +19,11 @@ namespace SiliconStudio.Paradox.Physics
         public float Height = 1f;
 
         /// <userdoc>
-        /// The diameter of the cylinder
+        /// The radius of the cylinder
         /// </userdoc>
         [DataMember(20)]
-        [DefaultValue(1f)]
-        public float Diameter = 1f;
+        [DefaultValue(0.5f)]
+        public float Radius = 0.5f;
 
         /// <userdoc>
         /// The orientation of the cylinder.

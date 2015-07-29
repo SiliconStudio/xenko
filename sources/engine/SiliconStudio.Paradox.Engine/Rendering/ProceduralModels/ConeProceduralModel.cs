@@ -36,10 +36,10 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         public float Height { get; set; }
 
         /// <summary>
-        /// Gets or sets the diameter of the base of the Cone.
+        /// Gets or sets the radius of the base of the Cone.
         /// </summary>
-        /// <value>The diameter.</value>
-        /// <userdoc>The diameter of the cone.</userdoc>
+        /// <value>The radius.</value>
+        /// <userdoc>The radius of the cone.</userdoc>
         [DataMember(20)]
         [DefaultValue(0.5f)]
         public float Radius { get; set; }

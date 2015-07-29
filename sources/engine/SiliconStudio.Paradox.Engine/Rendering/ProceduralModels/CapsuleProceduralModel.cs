@@ -36,9 +36,9 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         public float Length { get; set; }
 
         /// <summary>
-        /// Gets or sets the diameter of the base of the Capsule.
+        /// Gets or sets the radius of the base of the Capsule.
         /// </summary>
-        /// <value>The diameter.</value>
+        /// <value>The radius.</value>
         /// <userdoc>The radius of the capsule.</userdoc>
         [DataMember(20)]
         [DefaultValue(0.25f)]

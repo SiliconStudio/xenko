@@ -1,4 +1,6 @@
-﻿using SiliconStudio.Core;
+﻿using System.ComponentModel;
+
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 
@@ -16,10 +18,11 @@ namespace SiliconStudio.Paradox.Physics
         public bool Is2D;
 
         /// <userdoc>
-        /// The diameter of the sphere/circle.
+        /// The radius of the sphere/circle.
         /// </userdoc>
         [DataMember(20)]
-        public float Diameter = 1.0f;
+        [DefaultValue(0.5f)]
+        public float Radius = 0.5f;
 
         /// <userdoc>
         /// The offset with the real graphic mesh.

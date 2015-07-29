@@ -22,12 +22,10 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         public CylinderProceduralModel()
         {
             Height = 1.0f;
-            Diameter = 1.0f;
+            Radius = 0.5f;
             Tessellation = 32;
             ScaleUV = 1;
         }
-
-        //float height = 1.0f, float diameter = 1.0f, int tessellation = 32, float textureTiling = 1,
 
         /// <summary>
         /// Gets or sets the height.
@@ -39,13 +37,13 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         public float Height { get; set; }
 
         /// <summary>
-        /// Gets or sets the diameter of the base of the cylinder.
+        /// Gets or sets the radius of the base of the cylinder.
         /// </summary>
-        /// <value>The diameter.</value>
-        /// <userdoc>The diameter of the cylinder.</userdoc>
+        /// <value>The radius.</value>
+        /// <userdoc>The radius of the cylinder.</userdoc>
         [DataMember(20)]
-        [DefaultValue(1.0f)]
-        public float Diameter { get; set; }
+        [DefaultValue(0.5f)]
+        public float Radius { get; set; }
 
         /// <summary>
         /// Gets or sets the tessellation factor.
@@ -67,7 +65,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
 
         protected override GeometricMeshData<VertexPositionNormalTexture> CreatePrimitiveMeshData()
         {
-            return GeometricPrimitive.Cylinder.New(Height, Diameter, Tessellation, ScaleUV);
+            return GeometricPrimitive.Cylinder.New(Height, Radius, Tessellation, ScaleUV);
         }
     }
 }

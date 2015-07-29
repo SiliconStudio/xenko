@@ -144,29 +144,29 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// </summary>
             /// <param name="device">The device.</param>
             /// <param name="height">The height.</param>
-            /// <param name="diameter">The diameter.</param>
+            /// <param name="radius">The radius.</param>
             /// <param name="tessellation">The tessellation.</param>
             /// <param name="textureTiling">The texture tiling.</param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
             /// <returns>A cylinder primitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;tessellation must be &gt;= 3</exception>
-            public static GeometricPrimitive New(GraphicsDevice device, float height = 1.0f, float diameter = 1.0f, int tessellation = 32, float textureTiling = 1, bool toLeftHanded = false)
+            public static GeometricPrimitive New(GraphicsDevice device, float height = 1.0f, float radius = 0.5f, int tessellation = 32, float textureTiling = 1, bool toLeftHanded = false)
             {
                 // Create the primitive object.
-                return new GeometricPrimitive(device, New(height, diameter, tessellation, textureTiling, toLeftHanded));
+                return new GeometricPrimitive(device, New(height, radius, tessellation, textureTiling, toLeftHanded));
             }
 
             /// <summary>
             /// Creates a cylinder primitive.
             /// </summary>
             /// <param name="height">The height.</param>
-            /// <param name="diameter">The diameter.</param>
+            /// <param name="radius">The radius.</param>
             /// <param name="tessellation">The tessellation.</param>
             /// <param name="textureTiling">The texture tiling.</param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
             /// <returns>A cylinder primitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;tessellation must be &gt;= 3</exception>
-            public static GeometricMeshData<VertexPositionNormalTexture> New(float height = 1.0f, float diameter = 1.0f, int tessellation = 32, float textureTiling = 1, bool toLeftHanded = false)
+            public static GeometricMeshData<VertexPositionNormalTexture> New(float height = 1.0f, float radius = 0.5f, int tessellation = 32, float textureTiling = 1, bool toLeftHanded = false)
             {
                 if (tessellation < 3)
                     tessellation = 3;
@@ -178,7 +178,6 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
 
                 var topOffset = Vector3.UnitY*height;
 
-                float radius = diameter/2;
                 int stride = tessellation + 1;
 
                 // Create a ring of triangles around the outside of the cylinder.
@@ -188,7 +187,7 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
 
                     var sideOffset = normal*radius;
 
-                    var textureCoordinate = new Vector2(textureTiling * (float) i/tessellation, 0);
+                    var textureCoordinate = new Vector2(textureTiling * i/tessellation, 0);
                     
                     vertices.Add(new VertexPositionNormalTexture(sideOffset + topOffset, normal, textureCoordinate));
                     vertices.Add(new VertexPositionNormalTexture(sideOffset - topOffset, normal, textureCoordinate + Vector2.UnitY));

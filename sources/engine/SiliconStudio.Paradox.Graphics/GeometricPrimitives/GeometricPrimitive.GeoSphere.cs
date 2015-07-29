@@ -92,7 +92,7 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             // Geodesic sphere
             //--------------------------------------------------------------------------------------
 
-            private static readonly Vector3[] OctahedronVertices = new Vector3[]
+            private static readonly Vector3[] OctahedronVertices =
             {
                                       // when looking down the negative z-axis (into the screen)
                 new Vector3( 0,  1,  0), // 0 top
@@ -103,7 +103,7 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
                 new Vector3( 0, -1,  0), // 5 bottom
             };
 
-            private static readonly int[] OctahedronIndices = new int[]
+            private static readonly int[] OctahedronIndices =
             {
                 0, 1, 2, // top front-right face
                 0, 2, 3, // top back-right face
@@ -119,30 +119,26 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// Creates a Geodesic sphere.
             /// </summary>
             /// <param name="graphicsDevice">The graphics device.</param>
-            /// <param name="diameter">The diameter.</param>
+            /// <param name="radius">The radius.</param>
             /// <param name="tessellation">The tessellation.</param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
-            /// <param name="uScale">The scale to apply on the u component of the texture coordinates</param>
-            /// <param name="vScale">The scale to apply on the v component of the texture coordinates</param>
             /// <returns>A Geodesic sphere.</returns>
-            public static GeometricPrimitive New(GraphicsDevice graphicsDevice, float diameter = 1.0f, int tessellation = 3, bool toLeftHanded = false)
+            public static GeometricPrimitive New(GraphicsDevice graphicsDevice, float radius = 0.5f, int tessellation = 3, bool toLeftHanded = false)
             {
-                return new GeometricPrimitive(graphicsDevice, New(diameter, tessellation,  toLeftHanded));
+                return new GeometricPrimitive(graphicsDevice, New(radius, tessellation,  toLeftHanded));
             }
 
             /// <summary>
             /// Creates a Geodesic sphere.
             /// </summary>
-            /// <param name="diameter">The diameter.</param>
+            /// <param name="radius">The radius.</param>
             /// <param name="tessellation">The tessellation.</param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
-            /// <param name="uScale">The scale to apply on the u component of the texture coordinates</param>
-            /// <param name="vScale">The scale to apply on the v component of the texture coordinates</param>
             /// <returns>A Geodesic sphere.</returns>
-            public static GeometricMeshData<VertexPositionNormalTexture> New(float diameter = 1.0f, int tessellation = 3, bool toLeftHanded = false)
+            public static GeometricMeshData<VertexPositionNormalTexture> New(float radius = 0.5f, int tessellation = 3, bool toLeftHanded = false)
             {
                 var sphere = new GeoSphereData();
-                return sphere.Create(diameter, tessellation, toLeftHanded);
+                return sphere.Create(radius, tessellation, toLeftHanded);
             }
 
             private struct GeoSphereData
@@ -163,20 +159,16 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
                 /// <summary>
                 /// Creates a Geodesic sphere.
                 /// </summary>
-                /// <param name="diameter">The diameter.</param>
+                /// <param name="radius">The radius.</param>
                 /// <param name="tessellation">The tessellation.</param>
-                /// <param name="uScale">The scale to apply on the u component of the texture coordinates</param>
-                /// <param name="vScale">The scale to apply on the v component of the texture coordinates</param>
                 /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
                 /// <returns>A Geodesic sphere.</returns>
-                public unsafe GeometricMeshData<VertexPositionNormalTexture> Create(float diameter = 1.0f, int tessellation = 3, bool toLeftHanded = false)
+                public unsafe GeometricMeshData<VertexPositionNormalTexture> Create(float radius = 0.5f, int tessellation = 3, bool toLeftHanded = false)
                 {
                     if (tessellation < 3)
                         tessellation = 3;
 
                     subdividedEdges = new Dictionary<UndirectedEdge, int>();
-
-                    float radius = diameter / 2.0f;
 
                     // Start with an octahedron; copy the data into the vertex/index collection.
                     vertexPositions = new List<Vector3>(OctahedronVertices);

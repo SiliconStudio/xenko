@@ -8,6 +8,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Physics;
@@ -62,31 +63,36 @@ namespace SiliconStudio.Paradox.Assets.Physics
                 {
                     if (colliderShape.Node.Tag == "!Box2DColliderShapeDesc")
                     {
-                        colliderShape.Size = colliderShape.HalfExtent;
+                        var size = 2f * DynamicYamlExtensions.ConvertTo<Vector2>(colliderShape.HalfExtent);
+                        colliderShape.Size = DynamicYamlExtensions.ConvertFrom(size);
                         colliderShape.HalfExtent = DynamicYamlEmpty.Default;
                     }
                     if (colliderShape.Node.Tag == "!BoxColliderShapeDesc")
                     {
-                        colliderShape.Size = colliderShape.HalfExtents;
+                        var size = 2f * DynamicYamlExtensions.ConvertTo<Vector3>(colliderShape.HalfExtents);
+                        colliderShape.Size = DynamicYamlExtensions.ConvertFrom(size);
                         colliderShape.HalfExtents = DynamicYamlEmpty.Default;
-                    }
-                    if (colliderShape.Node.Tag == "!CapsuleColliderShapeDesc" && colliderShape.Height != null)
-                    {
-                        colliderShape.Length = colliderShape.Height;
-                        colliderShape.Height = DynamicYamlEmpty.Default;
                     }
                     if (colliderShape.Node.Tag == "!CapsuleColliderShapeDesc" || colliderShape.Node.Tag == "!CylinderColliderShapeDesc")
                     {
+                        var upVector = DynamicYamlExtensions.ConvertTo <Vector3>( colliderShape.UpAxis);
+                        if (upVector == Vector3.UnitX)
+                            colliderShape.Orientation = ShapeOrientation.UpX;
+                        if (upVector == Vector3.UnitZ)
+                            colliderShape.Orientation = ShapeOrientation.UpZ;
+
                         colliderShape.UpAxis = DynamicYamlEmpty.Default;
+                    }
+                    if (colliderShape.Node.Tag == "!CapsuleColliderShapeDesc" && colliderShape.Height != null)
+                    {
+                        colliderShape.Length = 2f * (float)colliderShape.Height;
+                        colliderShape.Height = DynamicYamlEmpty.Default;
                     }
                     if (colliderShape.Node.Tag == "!CylinderColliderShapeDesc")
                     {
+                        colliderShape.Radius = (float)colliderShape.HalfExtents.X;
+                        colliderShape.Height = 2f * (float)colliderShape.HalfExtents.Y;
                         colliderShape.HalfExtents = DynamicYamlEmpty.Default;
-                    }
-                    if (colliderShape.Node.Tag == "!SphereColliderShapeDesc" && colliderShape.Radius != null)
-                    {
-                        colliderShape.Diameter = colliderShape.Radius;
-                        colliderShape.Radius = DynamicYamlEmpty.Default;
                     }
                 }
             }

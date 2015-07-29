@@ -42,19 +42,21 @@ Windows 10 Universal Apps (Store and Phone) are now supported. Add it to your ex
 
 # Breaking changes
 - Assets: Texture default transparency mode changes from *None* to *Auto*.
-- Assets: The default size the capsule, cone and torus have been modified.
 - Assets: The physic collider shape parameters and default values have been modified to match procedural models.
 - Sprites: The *UIImage* and *Sprite* concepts have been merged together. More precisely, for the assets: the *UIImageGroupAsset* and *SpriteGroupAsset* are now included into a single asset named *SpriteSheetAsset*. For the runtime: *UIImageGroup* and *SpriteGroup* have been merged into the *SpriteSheet* class, and *UIImage* and *Sprite* have been merged into the *Sprite* class.
 - Sprites: The way the sprites are sized in the scene have changed. A *PixelsPerUnit* field have been added to the sprites. It dictates the size of the sprite in the scene based on their size in pixels. The sprite *ExtrusionMethod* field have been removed. To reproduce the previous sizing behavior, one can enter the size (height or width depending on *ExtrusionMethod*) of the sprite in the *PixelsPerUnits* field.
 - Sprites: Sprites are drawn by default with depth test enabled.
 - Scripts: *Script* (and *AsyncScript*) no longer provide a *Start* method. Start is now part of the *StartupScript* class.
+- ProceduralModels: The default size the capsule, cone and torus have been modified.
+- ProceduralModels: The *Diameter* fields of the Sphere and Geosphere have been transformed into *Radius*.
+- Physics: Collider shape parameter default values and names have been modified to match the procedural models.
 
 # Version 1.2.2-beta
 
 Release date: 2015/08/??
 
 ## Enhancements
-- Assets: The collider shape and procedural model parameter and default values have been standardized.
+- Assets: The collider shape and procedural model parameters and default values have been standardized.
 
 ## Issues fixed
 - Engine: The uv coordinates and the size of the capsule geometric primitive have been fixed.

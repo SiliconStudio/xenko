@@ -15,35 +15,34 @@ namespace SiliconStudio.Paradox.Physics
         /// Initializes a new instance of the <see cref="CylinderColliderShape"/> class.
         /// </summary>
         /// <param name="orientation">Up axis.</param>
-        /// <param name="diameter">The diameter of the cylinder</param>
+        /// <param name="radius">The radius of the cylinder</param>
         /// <param name="height">The height of the cylinder</param>
-        public CylinderColliderShape(float height, float diameter, ShapeOrientation orientation)
+        public CylinderColliderShape(float height, float radius, ShapeOrientation orientation)
         {
             Type = ColliderShapeTypes.Cylinder;
             Is2D = false; //always false for cylinders
 
             Matrix rotation;
-            var scaling = new Vector3(diameter, height, diameter);
 
             switch (orientation)
             {
                 case ShapeOrientation.UpX:
-                    InternalShape = new BulletSharp.CylinderShapeX(new Vector3(height / 2, diameter / 2, 0));
+                    InternalShape = new BulletSharp.CylinderShapeX(new Vector3(height/2, radius, 0));
                     rotation = Matrix.RotationZ((float)Math.PI / 2.0f);
                     break;
                 case ShapeOrientation.UpY:
-                    InternalShape = new BulletSharp.CylinderShape(new Vector3(diameter/2, height/2, 0));
+                    InternalShape = new BulletSharp.CylinderShape(new Vector3(radius, height/2, 0));
                     rotation = Matrix.Identity;
                     break;
                 case ShapeOrientation.UpZ:
-                    InternalShape = new BulletSharp.CylinderShapeZ(new Vector3(diameter / 2, 0, height / 2));
+                    InternalShape = new BulletSharp.CylinderShapeZ(new Vector3(radius, 0, height/2));
                     rotation = Matrix.RotationX((float)Math.PI / 2.0f);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("orientation");
             }
 
-            DebugPrimitiveMatrix = Matrix.Scaling(scaling * 1.01f) * rotation;
+            DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(2*radius, height, 2*radius) * 1.01f) * rotation;
         }
 
         public override GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)

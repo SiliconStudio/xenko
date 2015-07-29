@@ -13,13 +13,13 @@ namespace SiliconStudio.Paradox.Physics
         /// Initializes a new instance of the <see cref="SphereColliderShape"/> class.
         /// </summary>
         /// <param name="is2D">if set to <c>true</c> [is2 d].</param>
-        /// <param name="diameter">The diameter.</param>
-        public SphereColliderShape(bool is2D, float diameter)
+        /// <param name="radius">The radius.</param>
+        public SphereColliderShape(bool is2D, float radius)
         {
             Type = ColliderShapeTypes.Sphere;
             Is2D = is2D;
 
-            var shape = new BulletSharp.SphereShape(diameter/2);
+            var shape = new BulletSharp.SphereShape(radius);
 
             if (Is2D)
             {
@@ -30,7 +30,11 @@ namespace SiliconStudio.Paradox.Physics
                 InternalShape = shape;
             }
 
-            DebugPrimitiveMatrix = Is2D ? Matrix.Scaling(new Vector3(diameter * 1.01f, diameter * 1.01f, 1.0f)) : Matrix.Scaling(diameter * 1.01f);
+            DebugPrimitiveMatrix = Matrix.Scaling(2 * radius * 1.01f);
+            if (Is2D)
+            {
+                DebugPrimitiveMatrix.M33 = 0f;
+            }
         }
 
         public override GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
