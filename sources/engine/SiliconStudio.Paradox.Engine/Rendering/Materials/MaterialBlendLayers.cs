@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
             Enabled = true;
         }
 
-        [DataMember(-20)]
+        [DataMemberIgnore]
         [DefaultValue(true)]
         public bool Enabled { get; set; }
 
