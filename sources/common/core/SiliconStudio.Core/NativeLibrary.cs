@@ -11,7 +11,7 @@ namespace SiliconStudio.Core
     {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         [DllImport("kernel32", EntryPoint = "LoadLibrary", SetLastError = true, CharSet = CharSet.Unicode)]
-        static extern IntPtr LoadLibrary(string lpFileName);
+        internal static extern IntPtr LoadLibrary(string lpFileName);
 #elif SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
         [DllImport("PhoneAppModelHost", CharSet = CharSet.Unicode, SetLastError = true)]
         private static extern IntPtr LoadPackagedLibrary(string libraryName, uint reserved);

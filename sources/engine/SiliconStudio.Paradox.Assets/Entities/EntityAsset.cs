@@ -38,7 +38,6 @@ namespace SiliconStudio.Paradox.Assets.Entities
 
         public EntityAsset()
         {
-            SerializedVersion = AssetFormatVersion;
             Hierarchy = new EntityHierarchyData();
         }
 

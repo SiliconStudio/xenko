@@ -2,11 +2,14 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using SharpYaml;
 using SharpYaml.Events;
 using SharpYaml.Serialization;
+
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using AttributeRegistry = SharpYaml.Serialization.AttributeRegistry;
 
@@ -17,6 +20,8 @@ namespace SiliconStudio.Core.Yaml
     /// </summary>
     public static class YamlSerializer
     {
+        private static readonly Logger Log = GlobalLogger.GetLogger(typeof(YamlSerializer).Name);
+
         // TODO: This code is not robust in case of reloading assemblies into the same process
         private static readonly List<Assembly> RegisteredAssemblies = new List<Assembly>();
         private static readonly object Lock = new object();
@@ -69,7 +74,7 @@ namespace SiliconStudio.Core.Yaml
         public static object Deserialize(EventReader eventReader, object value, Type expectedType)
         {
             var serializer = GetYamlSerializer(false);
-            return serializer.Deserialize(eventReader, value, expectedType);
+            return serializer.Deserialize(eventReader, expectedType, value);
         }
 
         /// <summary>
@@ -83,7 +88,7 @@ namespace SiliconStudio.Core.Yaml
         public static object Deserialize(EventReader eventReader, object value, Type expectedType, SerializerContextSettings contextSettings)
         {
             var serializer = GetYamlSerializer(false);
-            return serializer.Deserialize(eventReader, value, expectedType, contextSettings);
+            return serializer.Deserialize(eventReader, expectedType, value, contextSettings);
         }
 
         /// <summary>
@@ -148,9 +153,26 @@ namespace SiliconStudio.Core.Yaml
             serializer.Serialize(stream, instance, type, contextSettings);
         }
 
+        /// <summary>
+        /// Gets the serializer settings.
+        /// </summary>
+        /// <returns>SerializerSettings.</returns>
         public static SerializerSettings GetSerializerSettings()
         {
             return GetYamlSerializer(false).Settings;
+        }
+
+        /// <summary>
+        /// Reset the assembly cache used by this class.
+        /// </summary>
+        public static void ResetCache()
+        {
+            lock (Lock)
+            {
+                // Reset the current serializer as the set of assemblies has changed
+                globalSerializer = null;
+                globalSerializerKeepOnlySealedOverrides = null;
+            }
         }
 
         private static Serializer GetYamlSerializer(bool keepOnlySealedOverrides)
@@ -168,6 +190,8 @@ namespace SiliconStudio.Core.Yaml
         {
             if (localSerializer == null)
             {
+                // var clock = Stopwatch.StartNew();
+
                 var config = new SerializerSettings()
                     {
                         EmitAlias = false,
@@ -185,6 +209,8 @@ namespace SiliconStudio.Core.Yaml
 
                 localSerializer = new Serializer(config);
                 localSerializer.Settings.ObjectSerializerBackend = new OverrideKeyMappingTransform(TypeDescriptorFactory.Default, keepOnlySealedOverrides);
+
+                // Log.Info("New YAML serializer created in {0}ms", clock.ElapsedMilliseconds);
             }
 
             return localSerializer;

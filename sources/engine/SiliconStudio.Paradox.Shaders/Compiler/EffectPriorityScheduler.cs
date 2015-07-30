@@ -37,6 +37,8 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             this.maximumConcurrencyLevel = maximumConcurrencyLevel;
         }
 
+        public int QueuedTaskCount { get { return taskPriorityQueue.Count; } }
+
         /// <inheritdoc/>
         public override int MaximumConcurrencyLevel
         {

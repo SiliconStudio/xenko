@@ -85,6 +85,7 @@ namespace SiliconStudio.Assets.CompilerApp
                     { "project-configuration=", "Project configuration", v => options.ProjectConfiguration = v },
                     { "platform=", "Platform name", v => options.Platform = (PlatformType)Enum.Parse(typeof(PlatformType), v) },
                     { "graphics-platform=", "Graphics Platform name", v => options.GraphicsPlatform = (GraphicsPlatform)Enum.Parse(typeof(GraphicsPlatform), v) },
+                    { "get-graphics-platform", "Get Graphics Platform name (needs a pdxpkg and a profile)", v => options.GetGraphicsPlatform = v != null },
                     { "solution-file=", "Solution File Name", v => options.SolutionFile = v },
                     { "package-id=", "Package Id from the solution file", v => options.PackageId = Guid.Parse(v) },
                     { "package-file=", "Input Package File Name", v => options.PackageFile = v },
@@ -189,8 +190,11 @@ namespace SiliconStudio.Assets.CompilerApp
                         fileLogListener = new TextWriterLogListener(new FileStream(logFileName, FileMode.Create)) { TextFormatter = FormatLog };
                         GlobalLogger.GlobalMessageLogged += fileLogListener;
                     }
-                    options.Logger.Info("BuildEngine arguments: " + string.Join(" ", args));
-                    options.Logger.Info("Starting builder.");
+                    if (!options.GetGraphicsPlatform)
+                    {
+                        options.Logger.Info("BuildEngine arguments: " + string.Join(" ", args));
+                        options.Logger.Info("Starting builder.");
+                    }
                 }
 
                 if (showHelp)

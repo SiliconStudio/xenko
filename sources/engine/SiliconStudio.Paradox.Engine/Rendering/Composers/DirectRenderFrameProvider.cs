@@ -25,6 +25,7 @@ namespace SiliconStudio.Paradox.Rendering.Composers
         /// Gets or sets the render frame.
         /// </summary>
         /// <value>The render frame.</value>
+        /// <userdoc>The render frame to use.</userdoc>
         public RenderFrame RenderFrame { get; set; }
 
         public override RenderFrame GetRenderFrame(RenderContext context)

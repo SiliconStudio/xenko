@@ -350,9 +350,9 @@ namespace SiliconStudio.Assets
 
         internal UDirectory GetDefaultAssetFolder()
         {
-            if (Profiles.Contains(PlatformType.Shared))
+            var sharedProfile = Profiles.FindSharedProfile();
+            if (sharedProfile != null)
             {
-                var sharedProfile = Profiles[PlatformType.Shared];
                 var folder = sharedProfile.AssetFolders.FirstOrDefault();
                 if (folder != null && folder.Path != null)
                 {
@@ -794,12 +794,13 @@ namespace SiliconStudio.Assets
                     continue;
                 }
 
-                AssetMigration.MigrateAssetIfNeeded(log, assetFiles[i]);
-
-                // Try to load only if asset is not already in the package or assetRef.Asset is null
-                var assetPath = fileUPath.MakeRelative(sourceFolder).GetDirectoryAndFileName();
                 try
                 {
+                    AssetMigration.MigrateAssetIfNeeded(log, assetFiles[i]);
+
+                    // Try to load only if asset is not already in the package or assetRef.Asset is null
+                    var assetPath = fileUPath.MakeRelative(sourceFolder).GetDirectoryAndFileName();
+
                     // An exception can occur here, so we make sure that loading a single asset is not going to break 
                     // the loop
                     var assetFullPath = fileUPath.FullPath;
@@ -818,7 +819,11 @@ namespace SiliconStudio.Assets
                     if (!assetItem.IsDirty)
                         assetItem.ModifiedTime = File.GetLastWriteTime(assetFullPath);
 
-                    FixAssetImport(assetItem);
+                    // TODO: Let's review that when we rework import process
+                    // Not fixing asset import anymore, as it was only meant for upgrade
+                    // However, it started to make asset dirty, for ex. when we create a new texture, choose a file and reload the scene later
+                    // since there was no importer id and base.
+                    //FixAssetImport(assetItem);
 
                     // Add to temporary assets
                     TemporaryAssets.Add(assetItem);
@@ -933,15 +938,11 @@ namespace SiliconStudio.Assets
             }
 
             // Make sure there is a shared profile at least
-            PackageProfile sharedProfile;
-            if (!Profiles.Contains(PlatformType.Shared))
+            var sharedProfile = Profiles.FindSharedProfile();
+            if (sharedProfile == null)
             {
                 sharedProfile = PackageProfile.NewShared();
                 Profiles.Add(sharedProfile);
-            }
-            else
-            {
-                sharedProfile = Profiles[PlatformType.Shared];
             }
 
             // Use by default the first asset folders if not defined on the asset item

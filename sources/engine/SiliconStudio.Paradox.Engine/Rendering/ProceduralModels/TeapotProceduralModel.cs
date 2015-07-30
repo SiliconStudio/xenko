@@ -28,7 +28,8 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// <summary>
         /// Gets or sets the size of this teapot.
         /// </summary>
-        /// <value>The diameter.</value>
+        /// <value>The size.</value>
+        /// <userdoc>The size of the teapot.</userdoc>
         [DataMember(10)]
         [DefaultValue(1.0f)]
         public float Size { get; set; }
@@ -36,7 +37,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// <summary>
         /// Gets or sets the tessellation factor (default: 3.0)
         /// </summary>
-        /// <value>The tessellation.</value>
+        /// <value>The tessellation of the teapot. That is the number of polygons composing it.</value>
         [DataMember(20)]
         [DefaultValue(8)]
         public int Tessellation { get; set; }

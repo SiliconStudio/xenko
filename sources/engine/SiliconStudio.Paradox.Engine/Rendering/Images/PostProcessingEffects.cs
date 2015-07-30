@@ -5,8 +5,6 @@ using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Rendering.Composers;
 using SiliconStudio.Paradox.Graphics;
 
@@ -66,6 +64,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// Gets or sets the camera.
         /// </summary>
         /// <value>The camera.</value>
+        /// <userdoc>Specifies the camera to use for the sequence of post-effects</userdoc>
         [DataMember(5)]
         public SceneCameraSlotIndex Camera { get; set; }
 
@@ -73,6 +72,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// Gets the depth of field effect.
         /// </summary>
         /// <value>The depth of field.</value>
+        /// <userdoc>The depth of field post-effect allows you to accentuate some regions of your image by blurring object in foreground or background.</userdoc>
         [DataMember(10)]
         [Category]
         public DepthOfField DepthOfField
@@ -87,6 +87,8 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// Gets the bright pass-filter.
         /// </summary>
         /// <value>The bright filter.</value>
+        /// <userdoc>The parameters for the bright filter. The bright filter is not an effect by itself. 
+        /// It just extracts the brightest areas of the image and gives it to other effect that need it (eg. bloom, light streaks, lens-flares).</userdoc>
         [DataMember(20)]
         [Category]
         public BrightFilter BrightFilter
@@ -101,6 +103,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// Gets the bloom effect.
         /// </summary>
         /// <value>The bloom.</value>
+        /// <userdoc>Produces a bleeding effect of bright areas onto their surrounding.</userdoc>
         [DataMember(30)]
         [Category]
         public Bloom Bloom
@@ -115,6 +118,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// Gets the light streak effect.
         /// </summary>
         /// <value>The light streak.</value>
+        /// <userdoc>Produces a bleeding effect of the brightest points of the image along streaks.</userdoc>
         [DataMember(40)]
         [Category]
         public LightStreak LightStreak
@@ -129,6 +133,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// Gets the lens flare effect.
         /// </summary>
         /// <value>The lens flare.</value>
+        /// <userdoc>Simulates the artifacts produced by the internal reflection or scattering of the light within camera lens.</userdoc>
         [DataMember(50)]
         [Category]
         public LensFlare LensFlare
@@ -143,6 +148,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// Gets the final color transforms.
         /// </summary>
         /// <value>The color transforms.</value>
+        /// <userdoc>Performs a transformation onto the image colors.</userdoc>
         [DataMember(60)]
         [Category]
         public ColorTransformGroup ColorTransforms
@@ -157,6 +163,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// Gets the antialiasing effect.
         /// </summary>
         /// <value>The antialiasing.</value>
+        /// <userdoc>Performs anti-aliasing filtering on the image. This smoothes the jagged edges of models.</userdoc>
         [DataMember(70)]
         [Display("Type", null, "Antialiasing")]
         public IScreenSpaceAntiAliasingEffect Antialiasing

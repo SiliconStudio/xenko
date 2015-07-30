@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// Gets or sets the texture to use as background
         /// </summary>
-        /// <userdoc>The texture to use as background</userdoc>
+        /// <userdoc>The reference to the texture to use as background</userdoc>
         [DataMember(10)]
         [Display("Texture")]
         public Texture Texture { get; set; }

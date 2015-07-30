@@ -43,7 +43,20 @@ namespace SiliconStudio.Presentation.ViewModel.ActionStack
             var savePoint = base.CreateSavePoint(markActionsAsSaved);
             if (markActionsAsSaved)
             {
-                discardedActionItems.ForEach(x => x.Dirtiables.ForEach(y => y.DiscardActionItem(x)));
+                var dirtiables = new HashSet<IDirtiableViewModel>();
+                foreach (var viewModelActionItem in EnumerateViewModelActionItems(discardedActionItems))
+                {
+                    var viewModelActionItemCopy = viewModelActionItem;
+                    viewModelActionItem.Dirtiables.ForEach(dirtiable =>
+                    {
+                        dirtiable.DiscardActionItem(viewModelActionItemCopy);
+                        dirtiables.Add(dirtiable);
+                    });
+                }
+                foreach (var dirtiable in dirtiables)
+                {
+                    dirtiable.NotifyActionStackChange(ActionStackChange.Discarded);
+                }
                 discardedActionItems.Clear();
             }
             return savePoint;
@@ -61,44 +74,68 @@ namespace SiliconStudio.Presentation.ViewModel.ActionStack
             base.OnActionItemsDiscarded(e);
         }
 
-        private static void RegisterActionItemsRecursively(IEnumerable<IActionItem> actionItems)
+        private static IEnumerable<ViewModelActionItem> EnumerateViewModelActionItems(IEnumerable<IActionItem> actionItems)
         {
             foreach (var actionItem in actionItems)
             {
                 var viewModelActionItem = actionItem as ViewModelActionItem;
                 if (viewModelActionItem != null)
                 {
-                    viewModelActionItem.Dirtiables.ForEach(x => x.RegisterActionItem(viewModelActionItem));
+                    yield return viewModelActionItem;
                 }
                 var aggregateActionItem = actionItem as IAggregateActionItem;
                 if (aggregateActionItem != null)
                 {
-                    RegisterActionItemsRecursively(aggregateActionItem.ActionItems);
+                    foreach (var viewModelActionItem2 in EnumerateViewModelActionItems(aggregateActionItem.ActionItems))
+                    {
+                        yield return viewModelActionItem2;
+                    }
                 }
+            }
+        }
+
+        private static void RegisterActionItemsRecursively(IEnumerable<IActionItem> actionItems)
+        {
+            var dirtiables = new HashSet<IDirtiableViewModel>();
+            foreach (var viewModelActionItem in EnumerateViewModelActionItems(actionItems))
+            {
+                var viewModelActionItemCopy = viewModelActionItem;
+                viewModelActionItem.Dirtiables.ForEach(dirtiable =>
+                {
+                    dirtiable.RegisterActionItem(viewModelActionItemCopy);
+                    dirtiables.Add(dirtiable);
+                });
+            }
+
+            foreach (var dirtiable in dirtiables)
+            {
+                dirtiable.NotifyActionStackChange(ActionStackChange.Added);
             }
         }
 
         private void DiscardActionItemsRecursively(IEnumerable<IActionItem> actionItems, ActionItemDiscardType discardType)
         {
-            foreach (var actionItem in actionItems)
+            var dirtiables = new HashSet<IDirtiableViewModel>();
+            foreach (var viewModelActionItem in EnumerateViewModelActionItems(actionItems))
             {
-                var viewModelActionItem = actionItem as ViewModelActionItem;
-                if (viewModelActionItem != null)
+                if (discardType == ActionItemDiscardType.Swallowed)
                 {
-                    if (discardType == ActionItemDiscardType.Swallowed)
-                    {
-                        discardedActionItems.Add(viewModelActionItem);
-                    }
-                    else if (discardType != ActionItemDiscardType.UndoRedoInProgress)
-                    {
-                        viewModelActionItem.Dirtiables.ForEach(x => x.DiscardActionItem(viewModelActionItem));
-                    }
+                    discardedActionItems.Add(viewModelActionItem);
                 }
-                var aggregateActionItem = actionItem as IAggregateActionItem;
-                if (aggregateActionItem != null)
+                else if (discardType != ActionItemDiscardType.UndoRedoInProgress)
                 {
-                    DiscardActionItemsRecursively(aggregateActionItem.ActionItems, discardType);
+                    var viewModelActionItemCopy = viewModelActionItem;
+                    viewModelActionItem.Dirtiables.ForEach(dirtiable =>
+                    {
+                        dirtiable.DiscardActionItem(viewModelActionItemCopy);
+                        dirtiables.Add(dirtiable);
+                    });
                 }
+            }
+
+            foreach (var dirtiable in dirtiables)
+            {
+                dirtiable.NotifyActionStackChange(ActionStackChange.Discarded);
             }
         }
     }

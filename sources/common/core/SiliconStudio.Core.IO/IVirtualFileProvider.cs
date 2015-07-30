@@ -8,7 +8,7 @@ namespace SiliconStudio.Core.IO
     /// <summary>
     /// A virtual file provider, that can returns a Stream for a given path.
     /// </summary>
-    public interface IVirtualFileProvider
+    public interface IVirtualFileProvider : IDisposable
     {
         /// <summary>
         /// Gets or sets the root path of this provider. See remarks.

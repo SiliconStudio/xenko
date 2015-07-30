@@ -445,7 +445,7 @@ namespace SiliconStudio.Core.Serialization.Assets
                 var serializer = Serializer.GetSerializer(headerObjType, objType);
                 if (serializer == null)
                     throw new InvalidOperationException(string.Format("Content serializer for {0}/{1} could not be found.", headerObjType, objType));
-                contentSerializerContext = new ContentSerializerContext(url, ArchiveMode.Deserialize, this);
+                contentSerializerContext = new ContentSerializerContext(url, ArchiveMode.Deserialize, this) { LoadContentReferences = settings.LoadContentReferences };
 
                 // Read chunk references
                 if (chunkHeader != null && chunkHeader.OffsetToReferences != -1)

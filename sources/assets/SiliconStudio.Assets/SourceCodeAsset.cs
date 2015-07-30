@@ -6,7 +6,6 @@ using System.ComponentModel;
 using System.Text;
 
 using SiliconStudio.Core;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Assets

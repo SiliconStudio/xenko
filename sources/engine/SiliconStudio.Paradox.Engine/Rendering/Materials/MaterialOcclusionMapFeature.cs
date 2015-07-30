@@ -36,6 +36,8 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the occlusion map.
         /// </summary>
         /// <value>The occlusion map.</value>
+        /// <userdoc>The map specifying the ambient occlusion of the material. This modulates the amount of incoming ambient light to the material (0 => no ambient, 1 => full ambient).
+        /// Ambient occlusions are generally used to produce coarse occlusions on the material (shadows, etc...). It is geometry related and thus ignores possible UV scale overrides.</userdoc>
         [Display("Occlusion Map")]
         [DataMember(10)]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
@@ -45,6 +47,8 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets how much the occlusion map can influence direct lighting (default: 0).
         /// </summary>
         /// <value>The direct lighting factor.</value>
+        /// <userdoc>Specify how much the occlusion map should influence the direct lighting (non ambient lightings). 
+        /// Usually the occlusion maps are used only to affect ambient lighting, but using this parameter one can also have it partially affecting the direct lighting.</userdoc>
         [Display("Direct Lighting Influence")]
         [DataMember(15)]
         [NotNull]
@@ -55,6 +59,8 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the cavity map.
         /// </summary>
         /// <value>The cavity map.</value>
+        /// <userdoc>The map specifying the cavity occlusions of the material. This modulates the amount of incoming direct (non-ambient) light to the material (0 => no light, 1 => full light).
+        /// Cavity occlusions are generally used to produce fine grained artifacts on the material.</userdoc>
         [Display("Cavity Map")]
         [DataMember(20)]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
@@ -64,6 +70,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the diffuse cavity influence.
         /// </summary>
         /// <value>The diffuse cavity.</value>
+        /// <userdoc>Specify the influence of the cavity map on the diffuse lighting (0 => no influence, 1 => full influence).</userdoc>
         [Display("Diffuse Cavity")]
         [DataMember(30)]
         [NotNull]
@@ -74,6 +81,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the specular cavity.
         /// </summary>
         /// <value>The specular cavity.</value>
+        /// <userdoc>Specify the influence of the cavity map on the specular lighting (0 => no influence, 1 => full influence).</userdoc>
         [Display("Specular Cavity")]
         [DataMember(40)]
         [NotNull]

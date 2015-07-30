@@ -46,7 +46,11 @@ namespace SiliconStudio.Paradox.Rendering
 
         public bool HasTransparency { get; private set; }
 
+        public bool IsGeometryInverted;
+
         public Matrix WorldMatrix;
+
+        public BoundingBoxExt BoundingBox;
 
         private readonly ParameterCollection parameters;
         private readonly FastList<ParameterCollection> parameterCollections = new FastList<ParameterCollection>();

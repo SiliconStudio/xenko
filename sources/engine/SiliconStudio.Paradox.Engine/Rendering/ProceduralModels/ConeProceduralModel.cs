@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         public ConeProceduralModel()
         {
             Height = 1.0f;
-            Radius = 1.0f;
+            Radius = 0.5f;
             Tessellation = 16;
         }
 
@@ -30,22 +30,25 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// Gets or sets the height.
         /// </summary>
         /// <value>The height.</value>
+        /// <userdoc>The height of the cone.</userdoc>
         [DataMember(10)]
         [DefaultValue(1.0f)]
         public float Height { get; set; }
 
         /// <summary>
-        /// Gets or sets the diameter of the base of the Cone.
+        /// Gets or sets the radius of the base of the Cone.
         /// </summary>
-        /// <value>The diameter.</value>
+        /// <value>The radius.</value>
+        /// <userdoc>The radius of the cone.</userdoc>
         [DataMember(20)]
-        [DefaultValue(1.0f)]
+        [DefaultValue(0.5f)]
         public float Radius { get; set; }
 
         /// <summary>
         /// Gets or sets the tessellation factor.
         /// </summary>
         /// <value>The tessellation.</value>
+        /// <userdoc>The tessellation of the cone. That is the number of polygons composing it.</userdoc>
         [DataMember(30)]
         [DefaultValue(16)]
         public int Tessellation { get; set; }

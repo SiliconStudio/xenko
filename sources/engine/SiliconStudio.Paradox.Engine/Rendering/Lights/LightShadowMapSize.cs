@@ -15,16 +15,19 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         /// <summary>
         /// Use a small size.
         /// </summary>
+        /// <userodc>A small shadow map</userodc>
         Small = 0, // NOTE: Number are used to compute the size, do not change them
 
         /// <summary>
         /// Use a medium size.
         /// </summary>
+        /// <userodc>A medium shadow map</userodc>
         Medium = 1,
             
         /// <summary>
         /// Use a large size.
         /// </summary>
+        /// <userodc>A large shadow map</userodc>
         Large = 2,
     }
 }

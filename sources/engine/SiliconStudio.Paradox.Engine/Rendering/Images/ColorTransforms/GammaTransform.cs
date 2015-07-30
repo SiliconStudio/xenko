@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System.ComponentModel;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.Rendering.Images
@@ -29,6 +31,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// Gets or sets the gamma value.
         /// </summary>
         /// <value>The value.</value>
+        /// <userdoc>The value of the gamma transformation.</userdoc>
         [DataMember(10)]
         [DefaultValue(2.2333333f)]
         public float Value

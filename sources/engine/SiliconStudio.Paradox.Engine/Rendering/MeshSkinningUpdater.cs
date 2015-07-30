@@ -29,8 +29,16 @@ namespace SiliconStudio.Paradox.Rendering
                 {
                     var mesh = renderMesh.Mesh;
                     var skinning = mesh.Skinning;
+
                     if (skinning == null)
+                    {
+                        // For unskinned meshes, use the original bounding box
+                        var boundingBoxExt = (BoundingBoxExt)mesh.BoundingBox;
+                        boundingBoxExt.Transform(renderMesh.WorldMatrix);
+                        renderMesh.BoundingBox = boundingBoxExt;
+
                         continue;
+                    }
 
                     var bones = skinning.Bones;
 
@@ -38,12 +46,24 @@ namespace SiliconStudio.Paradox.Rendering
                     if (boneMatrices == null || bones.Length > boneMatrices.Length)
                         staticBoneMatrices = boneMatrices = new Matrix[bones.Length];
 
+                    var bindPoseBoundingBox = new BoundingBoxExt(renderMesh.Mesh.BoundingBox);
+                    renderMesh.BoundingBox = BoundingBoxExt.Empty;
+
                     for (int index = 0; index < bones.Length; index++)
                     {
                         var nodeIndex = bones[index].NodeIndex;
 
                         // Compute bone matrix
                         Matrix.Multiply(ref bones[index].LinkToMeshMatrix, ref hierarchy.NodeTransformations[nodeIndex].WorldMatrix, out boneMatrices[index]);
+
+                        // Calculate and extend bounding box for each bone
+                        // TODO: Move runtime bounding box into ModelViewHierarchyUpdater?
+
+                        // Fast AABB transform: http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
+                        // Compute transformed AABB (by world)
+                        var boundingBoxExt = bindPoseBoundingBox;
+                        boundingBoxExt.Transform(boneMatrices[index]);
+                        BoundingBoxExt.Merge(ref renderMesh.BoundingBox, ref boundingBoxExt, out renderMesh.BoundingBox);
                     }
 
                     // Upload bones

@@ -228,35 +228,29 @@ namespace SiliconStudio.Paradox.Rendering
                         continue;
                     }
 
-                    var worldMatrix = renderMesh.WorldMatrix;
-
                     // Perform frustum culling
                     if (cullingMode == CullingMode.Frustum)
                     {
                         // Always render meshes with unspecified bounds
                         // TODO: This should not be necessary. Add proper bounding boxes to gizmos etc.
-                        var boundingBox = renderMesh.Mesh.BoundingBox;
-                        if (boundingBox.Extent != Vector3.Zero)
+                        if (renderMesh.BoundingBox.Extent != Vector3.Zero)
                         {
                             // Fast AABB transform: http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
                             // Compute transformed AABB (by world)
-                            var boundingBoxExt = new BoundingBoxExt(boundingBox);
-                            boundingBoxExt.Transform(worldMatrix);
-
-                            if (!frustum.Contains(ref boundingBoxExt))
+                            if (!frustum.Contains(ref renderMesh.BoundingBox))
                                 continue;
                         }
                     }
 
                     // Project the position
                     // TODO: This could be done in a SIMD batch, but we need to figure-out how to plugin in with RenderMesh object
-                    var worldPosition = new Vector4(worldMatrix.TranslationVector, 1.0f);
+                    var worldPosition = new Vector4(renderMesh.WorldMatrix.TranslationVector, 1.0f);
                     Vector4 projectedPosition;
                     Vector4.Transform(ref worldPosition, ref viewProjectionMatrix, out projectedPosition);
                     var projectedZ = projectedPosition.Z / projectedPosition.W;
 
                     // TODO: Should this be set somewhere else?
-                    var rasterizerState = cameraRenderMode != null ? cameraRenderMode.GetDefaultRasterizerState(renderMesh.RenderModel.IsGeometryInverted) : null;
+                    var rasterizerState = cameraRenderMode != null ? cameraRenderMode.GetDefaultRasterizerState(renderMesh.IsGeometryInverted) : null;
                     renderMesh.RasterizerState = RasterizerState ?? rasterizerState;
 
                     renderMesh.UpdateMaterial();

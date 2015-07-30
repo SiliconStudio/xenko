@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the desired triangle size.
         /// </summary>
         /// <userdoc>
-        /// The desired triangles' size. This drives the tessellation factor.
+        /// The desired triangles' size in pixels. This drives the tessellation factor.
         /// </userdoc>
         [DataMember(10)]
         [DataMemberRange(1, 100, 1, 5)]

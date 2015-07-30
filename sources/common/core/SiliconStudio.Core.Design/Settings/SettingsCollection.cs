@@ -81,6 +81,11 @@ namespace SiliconStudio.Core.Settings
             return key.ContainsKey(profile);
         }
 
+        public bool Remove(SettingsKey key)
+        {
+            return key.Remove(profile);
+        }
+
         public void CopyTo(SettingsCollection settings, bool overrideValues)
         {
             foreach (var setting in profile.Settings)

@@ -36,6 +36,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the metalness map.
         /// </summary>
         /// <value>The metalness map.</value>
+        /// <userdoc>The map specifying the metalness of the material.</userdoc>
         [Display("Metalness Map")]
         [NotNull]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1)]

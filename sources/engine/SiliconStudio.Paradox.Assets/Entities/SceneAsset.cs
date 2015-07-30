@@ -24,12 +24,13 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetDescription(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
     [ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName)]
-    [AssetFormatVersion(5)]
+    [AssetFormatVersion(6)]
     [AssetUpgrader(0, 1, typeof(RemoveSourceUpgrader))]
     [AssetUpgrader(1, 2, typeof(RemoveBaseUpgrader))]
     [AssetUpgrader(2, 3, typeof(RemoveModelDrawOrderUpgrader))]
     [AssetUpgrader(3, 4, typeof(RenameSpriteProviderUpgrader))]
     [AssetUpgrader(4, 5, typeof(RemoveSpriteExtrusionMethodUpgrader))]
+    [AssetUpgrader(5, 6, typeof(RemoveModelParametersUpgrader))]
     [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
@@ -38,7 +39,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
         public static SceneAsset Create()
         {
             // Create a new root entity, and make sure transformation component is created
-            var rootEntity = new Scene { Name = "Root" };
+            var rootEntity = new Scene { Name = "Scene" };
             rootEntity.GetOrCreate(TransformComponent.Key);
 
             return new SceneAsset
@@ -135,6 +136,22 @@ namespace SiliconStudio.Paradox.Assets.Entities
                     var spriteComponent = components["SpriteComponent.Key"];
                     if (spriteComponent != null)
                         spriteComponent.RemoveChild("ExtrusionMethod");
+                }
+            }
+        }
+
+        public class RemoveModelParametersUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Entities;
+                foreach (dynamic entity in entities)
+                {
+                    var components = entity.Components;
+                    var spriteComponent = components["ModelComponent.Key"];
+                    if (spriteComponent != null)
+                        spriteComponent.RemoveChild("Parameters");
                 }
             }
         }

@@ -34,6 +34,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         /// Gets or sets the size of the filter.
         /// </summary>
         /// <value>The size of the filter.</value>
+        /// <userdoc>The size of the filter (size of the kernel).</userdoc>
         [DataMember(10)]
         [DefaultValue(LightShadowMapFilterTypePcfSize.Filter3x3)]
         public LightShadowMapFilterTypePcfSize FilterSize { get; set; }

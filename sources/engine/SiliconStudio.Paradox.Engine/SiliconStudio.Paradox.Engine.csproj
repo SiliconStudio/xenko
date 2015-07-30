@@ -91,6 +91,7 @@
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ICommsInterface.cs" />
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketClient.cs" />
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketListener.cs" />
+    <Compile Include="Engine\StartupScript.cs" />
     <Compile Include="Rendering\Composers\DirectRenderFrameProvider.cs" />
     <Compile Include="Rendering\CullingMode.cs" />
     <Compile Include="Rendering\Images\AntiAliasing\FXAAShaderEffect.cs">

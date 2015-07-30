@@ -91,27 +91,27 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// Creates a torus primitive.
             /// </summary>
             /// <param name="device">The device.</param>
-            /// <param name="diameter">The diameter.</param>
-            /// <param name="thickness">The thickness.</param>
+            /// <param name="majorRadius">The majorRadius.</param>
+            /// <param name="minorRadius">The minorRadius.</param>
             /// <param name="tessellation">The tessellation.</param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
             /// <returns>A Torus primitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;tessellation parameter out of range</exception>
-            public static GeometricPrimitive New(GraphicsDevice device, float diameter = 1.0f, float thickness = 0.33333f, int tessellation = 32, bool toLeftHanded = false)
+            public static GeometricPrimitive New(GraphicsDevice device, float majorRadius = 0.5f, float minorRadius = 0.16666f, int tessellation = 32, bool toLeftHanded = false)
             {
-                return new GeometricPrimitive(device, New(diameter, thickness, tessellation, toLeftHanded));
+                return new GeometricPrimitive(device, New(majorRadius, minorRadius, tessellation, toLeftHanded));
             }
 
             /// <summary>
             /// Creates a torus primitive.
             /// </summary>
-            /// <param name="diameter">The diameter.</param>
-            /// <param name="thickness">The thickness.</param>
+            /// <param name="majorRadius">The major radius of the torus.</param>
+            /// <param name="minorRadius">The minor radius of the torus.</param>
             /// <param name="tessellation">The tessellation.</param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
             /// <returns>A Torus primitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;tessellation parameter out of range</exception>
-            public static GeometricMeshData<VertexPositionNormalTexture> New(float diameter = 1.0f, float thickness = 0.33333f, int tessellation = 32, bool toLeftHanded = false)
+            public static GeometricMeshData<VertexPositionNormalTexture> New(float majorRadius = 0.5f, float minorRadius = 0.16666f, int tessellation = 32, bool toLeftHanded = false)
             {
                 var vertices = new List<VertexPositionNormalTexture>();
                 var indices = new List<int>();
@@ -130,7 +130,7 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
 
                     // Create a transform matrix that will align geometry to
                     // slice perpendicularly though the current ring position.
-                    var transform = Matrix.Translation(diameter/2, 0, 0)*Matrix.RotationY(outerAngle);
+                    var transform = Matrix.Translation(majorRadius, 0, 0)*Matrix.RotationY(outerAngle);
 
                     // Now we loop along the other axis, around the side of the tube.
                     for (int j = 0; j <= tessellation; j++)
@@ -142,7 +142,7 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
 
                         // Create a vertex.
                         var normal = new Vector3(dx, dy, 0);
-                        var position = normal*thickness/2;
+                        var position = normal*minorRadius;
                         var textureCoordinate = new Vector2(u, v);
 
                         Vector3.TransformCoordinate(ref position, ref transform, out position);

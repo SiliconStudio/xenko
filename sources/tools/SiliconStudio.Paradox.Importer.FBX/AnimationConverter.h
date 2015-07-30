@@ -290,7 +290,8 @@ namespace SiliconStudio {
 
 						for (int i = 0; i < numCurves; ++i)
 						{
-							currentKeyIndices[i] = 0;
+							// Start with current key at -1, so we properly advance to key 0 in the first iteration
+							currentKeyIndices[i] = -1;
 							currentEvaluationIndices[i] = 0;
 							isConstant[i] = false;
 						}
@@ -312,8 +313,8 @@ namespace SiliconStudio {
 
 							key.Time = FBXTimeToTimeSpan(time);
 
-							bool hasDiscontinuity = false;
-							bool needUpdate = false;
+							bool hasAnyDiscontinuity = false;
+							bool hasDiscontinuity[4];
 
 							for (int i = 0; i < numCurves; ++i)
 							{
@@ -326,25 +327,27 @@ namespace SiliconStudio {
 									FbxAnimCurveKey curveKey;
 
 									// Advance to appropriate key that should be active during this frame
-									while (curve->KeyGetTime(currentIndex) <= time && currentIndex + 1 < curve->KeyGetCount())
+									// (The current key is the latest key at or before the current time)
+									bool wasConstant = false;
+									while (currentIndex + 1 < curve->KeyGetCount() && curve->KeyGetTime(currentIndex + 1) <= time)
 									{
 										++currentIndex;
 
-										// If new key over constant, there is a discontinuity
-										bool wasConstant = isConstant[i];
-										hasDiscontinuity |= wasConstant;
+										// If we reached a new key and the previous one was constant, we have a discontinuity
+										wasConstant = isConstant[i];
 
 										auto interpolation = curve->KeyGetInterpolation(currentIndex);
 										isConstant[i] = interpolation == FbxAnimCurveDef::eInterpolationConstant;
 									}
 
 									currentKeyIndices[i] = currentIndex;
+									hasDiscontinuity[i] = wasConstant;
+									hasAnyDiscontinuity |= wasConstant;
 
 									// Update non-constant values
-									if (!isConstant[i])
+									if (!wasConstant)
 									{
 										values[i] = curve->Evaluate(time, &currentEvaluationIndices[i]);
-										needUpdate = true;
 									}
 								}
 								else
@@ -353,12 +356,8 @@ namespace SiliconStudio {
 								}
 							}
 
-							// No need to update values, they are same as previous frame
-							//if (!needUpdate && !hasDiscontinuity)
-							//	continue;
-
 							// If discontinuity, we need to add previous values twice (with updated time), and new values twice (with updated time) to ignore any implicit tangents
-							if (hasDiscontinuity)
+							if (hasAnyDiscontinuity)
 							{
 								keyFrames->Add(key);
 								keyFrames->Add(key);
@@ -368,12 +367,13 @@ namespace SiliconStudio {
 							for (int i = 0; i < numCurves; ++i)
 							{
 								auto curve = curves[i];
-								if (isConstant[i])
+								if (hasDiscontinuity[i])
 									values[i] = curve == nullptr ? 0 : curve->Evaluate(time, &currentEvaluationIndices[i]);
 							}
 
 							keyFrames->Add(key);
-							if (hasDiscontinuity)
+
+							if (hasAnyDiscontinuity)
 								keyFrames->Add(key);
 						}
 
@@ -493,6 +493,18 @@ namespace SiliconStudio {
 								curves[0] = camera->FocalLength.GetCurve(animLayer);
 								auto flAnimChannel = ProcessAnimationCurveVector<float>(animationClip, "Camera.FieldOfViewVertical", 1, curves, 0.01f);
 								ComputeFovFromFL(flAnimChannel, camera);
+							}
+
+							if (camera->NearPlane.GetCurve(animLayer))
+							{
+								curves[0] = camera->NearPlane.GetCurve(animLayer);
+								ProcessAnimationCurveVector<float>(animationClip, "Camera.NearPlane", 1, curves, 0.01f);
+							}
+
+							if (camera->FarPlane.GetCurve(animLayer))
+							{
+								curves[0] = camera->FarPlane.GetCurve(animLayer);
+								ProcessAnimationCurveVector<float>(animationClip, "Camera.FarPlane", 1, curves, 0.01f);
 							}
 						}
 

@@ -91,7 +91,41 @@ namespace SiliconStudio.AssemblyProcessor
                 }
             }
 
+            if (parameters == null)
+                parameters = new ReaderParameters();
+
+            // Check .winmd files as well
+            var assembly = SearchDirectoryExtra(name, GetSearchDirectories(), parameters);
+            if (assembly != null)
+                return assembly;
+
             return base.Resolve(name, parameters);
+        }
+
+        // Copied from BaseAssemblyResolver
+        AssemblyDefinition SearchDirectoryExtra(AssemblyNameReference name, IEnumerable<string> directories, ReaderParameters parameters)
+        {
+            var extensions = new[] { ".winmd" };
+            foreach (var directory in directories)
+            {
+                foreach (var extension in extensions)
+                {
+                    string file = Path.Combine(directory, name.Name + extension);
+                    if (File.Exists(file))
+                        return GetAssembly(file, parameters);
+                }
+            }
+
+            return null;
+        }
+
+        // Copied from BaseAssemblyResolver
+        AssemblyDefinition GetAssembly(string file, ReaderParameters parameters)
+        {
+            if (parameters.AssemblyResolver == null)
+                parameters.AssemblyResolver = this;
+
+            return ModuleDefinition.ReadModule(file, parameters).Assembly;
         }
     }
 }

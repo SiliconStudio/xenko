@@ -90,29 +90,29 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// Creates a sphere primitive.
             /// </summary>
             /// <param name="device">The device.</param>
-            /// <param name="diameter">The diameter.</param>
+            /// <param name="radius">The radius.</param>
             /// <param name="tessellation">The tessellation.</param>
             /// <param name="uScale">The u scale.</param>
             /// <param name="vScale">The v scale.</param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
             /// <returns>A sphere primitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;Must be &gt;= 3</exception>
-            public static GeometricPrimitive New(GraphicsDevice device, float diameter = 1.0f, int tessellation = 16, float uScale = 1.0f, float vScale = 1.0f, bool toLeftHanded = false)
+            public static GeometricPrimitive New(GraphicsDevice device, float radius = 0.5f, int tessellation = 16, float uScale = 1.0f, float vScale = 1.0f, bool toLeftHanded = false)
             {
-                return new GeometricPrimitive(device, New(diameter, tessellation, uScale, vScale, toLeftHanded));
+                return new GeometricPrimitive(device, New(radius, tessellation, uScale, vScale, toLeftHanded));
             }
 
             /// <summary>
             /// Creates a sphere primitive.
             /// </summary>
-            /// <param name="diameter">The diameter.</param>
+            /// <param name="radius">The radius.</param>
             /// <param name="tessellation">The tessellation.</param>
             /// <param name="uScale">The u scale.</param>
             /// <param name="vScale">The v scale.</param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
             /// <returns>A sphere primitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;Must be &gt;= 3</exception>
-            public static GeometricMeshData<VertexPositionNormalTexture> New(float diameter = 1.0f, int tessellation = 16, float uScale = 1.0f, float vScale = 1.0f, bool toLeftHanded = false)
+            public static GeometricMeshData<VertexPositionNormalTexture> New(float radius = 0.5f, int tessellation = 16, float uScale = 1.0f, float vScale = 1.0f, bool toLeftHanded = false)
             {
                 if (tessellation < 3) tessellation = 3;
 
@@ -122,15 +122,13 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
                 var vertices = new VertexPositionNormalTexture[(verticalSegments + 1) * (horizontalSegments + 1)];
                 var indices = new int[(verticalSegments) * (horizontalSegments + 1) * 6];
 
-                float radius = diameter / 2;
-
                 int vertexCount = 0;
 
                 // generate the first extremity points
                 for (int j = 0; j <= horizontalSegments; j++)
                 {
                     var normal = new Vector3(0, -1, 0);
-                    var textureCoordinate = new Vector2(uScale * j / (float)horizontalSegments, vScale);
+                    var textureCoordinate = new Vector2(uScale * j / horizontalSegments, vScale);
                     vertices[vertexCount++] = new VertexPositionNormalTexture(normal * radius, normal, textureCoordinate);
                 }
 
@@ -175,7 +173,7 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
                 for (int j = 0; j <= horizontalSegments; j++)
                 {
                     var normal = new Vector3(0, 1, 0);
-                    var textureCoordinate = new Vector2(uScale * j / (float)horizontalSegments, 0f);
+                    var textureCoordinate = new Vector2(uScale * j / horizontalSegments, 0f);
                     vertices[vertexCount++] = new VertexPositionNormalTexture(normal * radius, normal, textureCoordinate);
                 }
 

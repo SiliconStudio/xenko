@@ -63,7 +63,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                 if (isThereAnyDevices && !checkIfPortMappingIsSetup)
                 {
 
-                    using (var ipOverUsb = Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\IpOverUsb"))
+                    using (var ipOverUsb = Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\IpOverUsb") ?? Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\IpOverUsbSdk"))
                     {
                         if (ipOverUsb != null)
                         {
@@ -127,7 +127,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             Log.Info("Installing Windows Phone IpOverUsb port mapping");
 
             // Add Windows Phone port mapping to registry
-            using (var ipOverUsb = Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\IpOverUsb", true))
+            using (var ipOverUsb = Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\IpOverUsb", true) ?? Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\IpOverUsbSdk", true))
             {
                 if (ipOverUsb == null)
                 {

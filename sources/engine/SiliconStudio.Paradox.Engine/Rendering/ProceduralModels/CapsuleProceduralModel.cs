@@ -21,38 +21,40 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// </summary>
         public CapsuleProceduralModel()
         {
-            Height = 1.0f;
-            Radius = 1.0f;
-            Tessellation = 16;
+            Length = 0.5f;
+            Radius = 0.25f;
+            Tessellation = 8;
         }
 
         /// <summary>
-        /// Gets or sets the height.
+        /// Gets or sets the length.
         /// </summary>
-        /// <value>The height.</value>
+        /// <value>The length.</value>
+        /// <userdoc>The length of the capsule. That is the distance between the center of two extremity spheres.</userdoc>
         [DataMember(10)]
-        [DefaultValue(1.0f)]
-        public float Height { get; set; }
+        [DefaultValue(0.5f)]
+        public float Length { get; set; }
 
         /// <summary>
-        /// Gets or sets the diameter of the base of the Capsule.
+        /// Gets or sets the radius of the base of the Capsule.
         /// </summary>
-        /// <value>The diameter.</value>
+        /// <value>The radius.</value>
+        /// <userdoc>The radius of the capsule.</userdoc>
         [DataMember(20)]
-        [DefaultValue(1.0f)]
+        [DefaultValue(0.25f)]
         public float Radius { get; set; }
 
         /// <summary>
         /// Gets or sets the tessellation factor.
         /// </summary>
-        /// <value>The tessellation.</value>
+        /// <userdoc>The tessellation of the capsule. That is the number of polygons composing it.</userdoc>
         [DataMember(30)]
-        [DefaultValue(16)]
+        [DefaultValue(8)]
         public int Tessellation { get; set; }
 
         protected override GeometricMeshData<VertexPositionNormalTexture> CreatePrimitiveMeshData()
         {
-            return GeometricPrimitive.Capsule.New(Height, Radius, Tessellation);
+            return GeometricPrimitive.Capsule.New(Length, Radius, Tessellation);
         }
     }
 }

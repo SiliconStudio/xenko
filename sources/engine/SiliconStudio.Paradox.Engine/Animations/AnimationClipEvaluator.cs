@@ -101,6 +101,11 @@ namespace SiliconStudio.Paradox.Animations
                     *structureStart = channel.Factor;
                 }
 
+                if (curveEvaluatorOptimizedFloat != null)
+                {
+                    curveEvaluatorOptimizedFloat.Evaluate(newTime, (IntPtr)structures);
+                }
+                
                 if (curveEvaluatorOptimizedVector3 != null)
                 {
                     curveEvaluatorOptimizedVector3.Evaluate(newTime, (IntPtr)structures);
@@ -146,7 +151,9 @@ namespace SiliconStudio.Paradox.Animations
                 if (clipChannel.CurveIndex != -1)
                 {
                     curve = clip.Curves[clipChannel.CurveIndex];
-                    if (clipChannel.ElementType == typeof(Vector3))
+                    if (clipChannel.ElementType == typeof(float))
+                        curveEvaluatorFloat.AddChannel(curve, channel.Offset + sizeof(float));
+                    else if (clipChannel.ElementType == typeof(Vector3))
                         curveEvaluatorVector3.AddChannel(curve, channel.Offset + sizeof(float));
                     else if (clipChannel.ElementType == typeof(Quaternion))
                         curveEvaluatorQuaternion.AddChannel(curve, channel.Offset + sizeof(float));
@@ -155,7 +162,9 @@ namespace SiliconStudio.Paradox.Animations
                 }
                 else
                 {
-                    if (clipChannel.ElementType == typeof(Vector3))
+                    if (clipChannel.ElementType == typeof(float))
+                        curveEvaluatorOptimizedFloat.AddChannel(channel.PropertyName, channel.Offset + sizeof(float));
+                    else if (clipChannel.ElementType == typeof(Vector3))
                         curveEvaluatorOptimizedVector3.AddChannel(channel.PropertyName, channel.Offset + sizeof(float));
                     else if (clipChannel.ElementType == typeof(Quaternion))
                         curveEvaluatorOptimizedQuaternion.AddChannel(channel.PropertyName, channel.Offset + sizeof(float));

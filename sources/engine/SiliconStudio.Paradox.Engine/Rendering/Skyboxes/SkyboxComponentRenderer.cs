@@ -87,7 +87,7 @@ namespace SiliconStudio.Paradox.Rendering.Skyboxes
             }
 
             // Fake as the skybox was in front of all others (as opaque are rendered back to front)
-            opaqueList.Add(new RenderItem(this, skybox, 0.0f));
+            opaqueList.Add(new RenderItem(this, skybox, float.NegativeInfinity));
         }
 
         protected override void DrawCore(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)

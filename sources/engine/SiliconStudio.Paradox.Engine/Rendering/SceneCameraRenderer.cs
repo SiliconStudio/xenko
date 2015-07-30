@@ -7,7 +7,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Rendering.Composers;
 
 namespace SiliconStudio.Paradox.Rendering
@@ -40,6 +39,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// Gets or sets the mode.
         /// </summary>
         /// <value>The mode.</value>
+        /// <userdoc>The type of rendering to  perform</userdoc>
         [DataMember(10)]
         [NotNull]
         public CameraRendererMode Mode { get; set; }
@@ -48,6 +48,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// Gets or sets the camera.
         /// </summary>
         /// <value>The camera.</value>
+        /// <userdoc>The camera to use to render the scene.</userdoc>
         [DataMember(20)]
         public SceneCameraSlotIndex Camera { get; set; }
 
@@ -55,6 +56,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// Gets or sets the culling mask.
         /// </summary>
         /// <value>The culling mask.</value>
+        /// <userdoc>The groups of entities that should be rendered by the renderer.</userdoc>
         [DataMember(30)]
         [DefaultValue(EntityGroupMask.All)]
         public EntityGroupMask CullingMask { get; set; }
@@ -63,6 +65,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// Gets or sets the culling mode.
         /// </summary>
         /// <value>The culling mode.</value>
+        /// <userdoc>The type of culling to perform on entities. Culling consist into skipping not visible or insignificant entities during rendering in order to improve performances.</userdoc>
         [DataMember(40)]
         [DefaultValue(CullingMode.Frustum)]
         public CullingMode CullingMode { get; set; }

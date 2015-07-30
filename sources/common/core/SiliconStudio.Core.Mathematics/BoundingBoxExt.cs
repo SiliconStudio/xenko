@@ -13,6 +13,11 @@ namespace SiliconStudio.Core.Mathematics
     public struct BoundingBoxExt : IEquatable<BoundingBoxExt>
     {
         /// <summary>
+        /// A <see cref="BoundingBoxExt"/> which represents an empty space.
+        /// </summary>
+        public static readonly BoundingBoxExt Empty = new BoundingBoxExt(BoundingBox.Empty);
+
+        /// <summary>
         /// The center of this bounding box.
         /// </summary>
         public Vector3 Center;
@@ -106,6 +111,21 @@ namespace SiliconStudio.Core.Mathematics
             }
 
             Vector3.TransformNormal(ref extent, ref world, out Extent);
+        }
+
+        /// <summary>
+        /// Constructs a <see cref="SiliconStudio.Core.Mathematics.BoundingBoxExt"/> that is as large as the total combined area of the two specified boxes.
+        /// </summary>
+        /// <param name="value1">The first box to merge.</param>
+        /// <param name="value2">The second box to merge.</param>
+        /// <param name="result">When the method completes, contains the newly constructed bounding box.</param>
+        public static void Merge(ref BoundingBoxExt value1, ref BoundingBoxExt value2, out BoundingBoxExt result)
+        {
+            var maximum = Vector3.Max(value1.Maximum, value2.Maximum);
+            var minimum = Vector3.Min(value1.Minimum, value2.Minimum);
+
+            result.Center = (minimum + maximum) / 2;
+            result.Extent = (maximum - minimum) / 2;
         }
 
         public bool Equals(BoundingBoxExt other)
