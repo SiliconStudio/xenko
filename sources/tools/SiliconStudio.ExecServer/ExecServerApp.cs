@@ -79,20 +79,21 @@ namespace SiliconStudio.ExecServer
                 {
                     service.Check();
                 }
-                catch (Exception exception)
+                catch (EndpointNotFoundException ex)
                 {
                     hasException = true;
                     if (!tryToRunServerProcess)
                     {
+                        // The server is not running, we need to run it
                         RunServerProcess(executablePath);
                         tryToRunServerProcess = true;
                     }
-                    // The server is not running, we need to runit
                 }
 
                 if (!hasException)
                 {
-                    return service.Run(args.ToArray());
+                    var result = service.Run(args.ToArray());
+                    return result;
                 }
 
                 // Wait for 
