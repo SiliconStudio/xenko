@@ -76,6 +76,9 @@ namespace SiliconStudio.Presentation.Extensions
         [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", CharSet = CharSet.Unicode)]
         private static extern IntPtr SetWindowLongPtr64(HandleRef hwnd, WindowLongType index, IntPtr wndProc);
 
+        [DllImport("user32.dll", EntryPoint = "SetWindowPos", SetLastError = true)]
+        public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+
         #endregion Methods
 
         #region Structures
@@ -141,6 +144,27 @@ namespace SiliconStudio.Presentation.Extensions
         #endregion Structures
 
         #region Constants
+
+        public static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
+        public static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);
+        public static readonly IntPtr HWND_TOP = new IntPtr(0);
+        public static readonly IntPtr HWND_BOTTOM = new IntPtr(1);
+
+        public const int SWP_NOSIZE = 0x0001;
+        public const int SWP_NOMOVE = 0x0002;
+        public const int SWP_NOZORDER = 0x0004;
+        public const int SWP_NOREDRAW = 0x0008;
+        public const int SWP_NOACTIVATE = 0x0010;
+        public const int SWP_DRAWFRAME = 0x0020;
+        public const int SWP_FRAMECHANGED = 0x0020;
+        public const int SWP_SHOWWINDOW = 0x0040;
+        public const int SWP_HIDEWINDOW = 0x0080;
+        public const int SWP_NOCOPYBITS = 0x0100;
+        public const int SWP_NOOWNERZORDER = 0x0200;
+        public const int SWP_NOREPOSITION = 0x0200;
+        public const int SWP_NOSENDCHANGING = 0x0400;
+        public const int SWP_DEFERERASE = 0x2000;
+        public const int SWP_ASYNCWINDOWPOS = 0x4000;
 
         public const int GWL_EXSTYLE = unchecked((int)0xFFFFFFEC);
         public const int GWL_HINSTANCE = unchecked((int)0xFFFFFFFA);

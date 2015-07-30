@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Rendering
     /// <summary>
     /// Base implementation for a <see cref="ISceneRenderer"/>.
     /// </summary>
-    [DataContract]
+    [DataContract(Inherited = true)]
     public abstract class SceneRendererBase : RendererBase, ISceneRenderer
     {
         protected SceneRendererBase()

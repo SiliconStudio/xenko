@@ -171,5 +171,15 @@ namespace SiliconStudio.Core.Settings
             object value;
             return profile.GetValue(Name, out value, false, false);
         }
+
+        /// <summary>
+        /// Determines whether the specified profile contains key (without checking parent profiles).
+        /// </summary>
+        /// <param name="profile">The profile.</param>
+        /// <returns></returns>
+        public bool Remove(SettingsProfile profile)
+        {
+            return profile.Remove(Name);
+        }
     }
 }

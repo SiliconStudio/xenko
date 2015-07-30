@@ -146,6 +146,10 @@
   *****************************************************************************************************************************
   -->
   <PropertyGroup Condition="'$(SiliconStudioCurrentPackagePath)' != ''">
+    <ResolveReferencesDependsOn>
+      SiliconStudioUpdateGraphicsPlatform;
+      $(ResolveReferencesDependsOn);
+    </ResolveReferencesDependsOn>
     <PrepareForRunDependsOn>
       $(PrepareForRunDependsOn);
       SiliconStudioCompileAsset;
@@ -162,9 +166,42 @@
 
     <SiliconStudioParadoxCompileAssetCommand Condition="'$(SiliconStudioParadoxCompileAssetCommand)' == ''">$(SiliconStudioPackageParadoxSdkBin)\SiliconStudio.Assets.CompilerApp.exe</SiliconStudioParadoxCompileAssetCommand>
   </PropertyGroup>
+  
+  <Target Name="SiliconStudioGetGraphicsPlatform" Inputs="$(SiliconStudioCurrentPackagePath)" Outputs="$(IntermediateOutputPath)ParadoxGraphicsPlatform.cache" Condition="'$(SiliconStudioCurrentPackagePath)' != ''">
+    <Error Condition="'$(SiliconStudioBuildProfile)' == ''" Text="The asset compiler is requiring the property (SiliconStudioBuildProfile) to be defined"/>
+    <Error Condition="!Exists('$(SiliconStudioCurrentPackagePath)')" Text="Unable to find package decription from path [$(SiliconStudioCurrentPackagePath)]"/>
+    
+    <!-- Get the real graphics platform from .pdxpkg -->
+    <Exec WorkingDirectory="$(TargetDir)" ConsoleToMSBuild="true"
+          Command="&quot;$(SiliconStudioParadoxCompileAssetCommand)&quot; --platform=$(SiliconStudioPlatform) --profile=$(SiliconStudioBuildProfile) --package-file=&quot;$(SiliconStudioCurrentPackagePath)&quot; --get-graphics-platform">
+      <Output TaskParameter="ConsoleOutput" PropertyName="SiliconStudioParadoxGraphicsApiComputed" />
+    </Exec>
+    
+    <!-- Write result back to disk -->
+    <WriteLinesToFile File="$(IntermediateOutputPath)ParadoxGraphicsPlatform.cache" Lines="$(SiliconStudioParadoxGraphicsApiComputed)" Overwrite="true" />
+  </Target>
+  
+  <Target Name="SiliconStudioUpdateGraphicsPlatform" DependsOnTargets="SiliconStudioGetGraphicsPlatform" Condition="'$(SiliconStudioCurrentPackagePath)' != ''">
+    <ReadLinesFromFile File="$(IntermediateOutputPath)ParadoxGraphicsPlatform.cache">
+      <Output TaskParameter="Lines" PropertyName="SiliconStudioParadoxGraphicsApi"/>
+    </ReadLinesFromFile>
+    <Message Importance="Normal" Text="Detected Graphics Platform $(SiliconStudioParadoxGraphicsApi)"/>
+    <PropertyGroup>
+      <SiliconStudioPlatformFullNameOriginal>$(SiliconStudioPlatformFullName)</SiliconStudioPlatformFullNameOriginal>
+      <SiliconStudioPlatformFullName>$(SiliconStudioPlatform)-$(SiliconStudioParadoxGraphicsApi)</SiliconStudioPlatformFullName>
+    </PropertyGroup>
+    
+    <!-- Rewrite dependencies -->
+    <ItemGroup>
+      <CustomAdditionalCompileInputs Include="$(IntermediateOutputPath)ParadoxGraphicsPlatform.cache" />
+      <Reference Condition="$([System.String]::new('%(Reference.HintPath)').Contains('$(SiliconStudioPlatformFullNameOriginal)'))">
+        <HintPath>$([System.String]::new('%(Reference.HintPath)').Replace('$(SiliconStudioPlatformFullNameOriginal)','$(SiliconStudioPlatformFullName)'))</HintPath>
+      </Reference>
+    </ItemGroup>
+  </Target>
 
   <!--Compile assets for all SiliconStudioPackage items and only for an executable-->
-  <Target Name="SiliconStudioCompileAsset" Condition="'$(SiliconStudioCurrentPackagePath)' != '' and '$(SiliconStudioIsExecutable)' == 'true'">
+  <Target Name="SiliconStudioCompileAsset" DependsOnTargets="SiliconStudioUpdateGraphicsPlatform" Condition="'$(SiliconStudioCurrentPackagePath)' != '' and '$(SiliconStudioIsExecutable)' == 'true'">
     <!--Check that the package file actually exist-->
     <Error Condition="'$(SiliconStudioBuildProfile)' == ''" Text="The asset compiler is requiring the property (SiliconStudioBuildProfile) to be defined"/>
     <Error Condition="!Exists('$(SiliconStudioCurrentPackagePath)')" Text="Unable to find package decription from path [$(SiliconStudioCurrentPackagePath)]"/>

@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections.Generic;
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-
 using System;
 using System.Runtime.InteropServices;
 
@@ -13,6 +13,9 @@ namespace SiliconStudio.Core.Diagnostics
     /// </summary>
     public static class VTuneProfiler
     {
+        private const string VTune2015DllName = "ittnotify_collector.dll";
+        private static readonly Dictionary<string, StringHandle> StringHandles = new Dictionary<string, StringHandle>();
+
         /// <summary>
         /// Resumes the profiler.
         /// </summary>
@@ -41,11 +44,132 @@ namespace SiliconStudio.Core.Diagnostics
             }
         }
 
-        [DllImport("libittnotify.dll")]
+        public static readonly bool IsAvailable = NativeLibrary.LoadLibrary(VTune2015DllName) != IntPtr.Zero;
+
+        public static Event CreateEvent(string eventName)
+        {
+            if (eventName == null) throw new ArgumentNullException("eventName");
+            return IsAvailable ? __itt_event_createW(eventName, eventName.Length) : new Event();
+        }
+
+        public static Domain CreateDomain(string domaiName)
+        {
+            if (domaiName == null) throw new ArgumentNullException("domaiName");
+            return IsAvailable ? __itt_domain_createW(domaiName) : new Domain();
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Event
+        {
+            private readonly int id;
+
+            public void Start()
+            {
+                if (id == 0)
+                    return;
+                __itt_event_start(this);
+            }
+
+            public void End()
+            {
+                if (id == 0)
+                    return;
+                __itt_event_end(this);
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Domain
+        {
+            internal readonly IntPtr Pointer;
+
+            public void BeginFrame()
+            {
+                if (Pointer == IntPtr.Zero)
+                    return;
+                __itt_frame_begin_v3(this, IntPtr.Zero);
+            }
+
+            public void BeginTask(string taskName)
+            {
+                if (Pointer == IntPtr.Zero)
+                    return;
+                __itt_task_begin(this, new IttId(), new IttId(), GetStringHandle(taskName));
+            }
+
+            public void EndTask()
+            {
+                if (Pointer == IntPtr.Zero)
+                    return;
+                __itt_task_end(this);
+            }
+
+            public void EndFrame()
+            {
+                if (Pointer == IntPtr.Zero)
+                    return;
+                __itt_frame_end_v3(this, IntPtr.Zero);
+            }
+        }
+
+        private static StringHandle GetStringHandle(string text)
+        {
+            StringHandle result;
+            lock (StringHandles)
+            {
+                if (!StringHandles.TryGetValue(text, out result))
+                {
+                    result = __itt_string_handle_createW(text);
+                    StringHandles.Add(text, result);
+                }
+            }
+            return result;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct StringHandle
+        {
+            private readonly IntPtr ptr;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 8)]
+        private struct IttId
+        {
+            private readonly long d1, d2, d3;
+        };
+
+        [DllImport(VTune2015DllName, CallingConvention = CallingConvention.Cdecl)]
         private static extern void __itt_resume();
 
-        [DllImport("libittnotify.dll")]
+        [DllImport(VTune2015DllName, CallingConvention = CallingConvention.Cdecl)]
         private static extern void __itt_pause();
+
+        [DllImport(VTune2015DllName, CallingConvention = CallingConvention.Cdecl)] // not working
+        private static extern void __itt_frame_begin_v3(Domain domain, IntPtr id);
+
+        [DllImport(VTune2015DllName, CallingConvention = CallingConvention.Cdecl)] // not working
+        private static extern void __itt_frame_end_v3(Domain domain, IntPtr id);
+
+        [DllImport(VTune2015DllName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Domain __itt_domain_createW([MarshalAs(UnmanagedType.LPWStr)] string domainName);
+
+        [DllImport(VTune2015DllName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Event __itt_event_createW([MarshalAs(UnmanagedType.LPWStr)] string eventName, int eventNameLength);
+
+        [DllImport(VTune2015DllName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int __itt_event_start(Event eventHandler);
+
+        [DllImport(VTune2015DllName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int __itt_event_end(Event eventHandler);
+
+        [DllImport(VTune2015DllName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern StringHandle __itt_string_handle_createW([MarshalAs(UnmanagedType.LPWStr)] string text);
+
+        [DllImport(VTune2015DllName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void __itt_task_begin(Domain domain, IttId taskid, IttId parentid, StringHandle name);
+
+        [DllImport(VTune2015DllName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void __itt_task_end(Domain domain);
     }
 }
 

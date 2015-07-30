@@ -350,9 +350,9 @@ namespace SiliconStudio.Assets
 
         internal UDirectory GetDefaultAssetFolder()
         {
-            if (Profiles.Contains(PlatformType.Shared))
+            var sharedProfile = Profiles.FindSharedProfile();
+            if (sharedProfile != null)
             {
-                var sharedProfile = Profiles[PlatformType.Shared];
                 var folder = sharedProfile.AssetFolders.FirstOrDefault();
                 if (folder != null && folder.Path != null)
                 {
@@ -938,15 +938,11 @@ namespace SiliconStudio.Assets
             }
 
             // Make sure there is a shared profile at least
-            PackageProfile sharedProfile;
-            if (!Profiles.Contains(PlatformType.Shared))
+            var sharedProfile = Profiles.FindSharedProfile();
+            if (sharedProfile == null)
             {
                 sharedProfile = PackageProfile.NewShared();
                 Profiles.Add(sharedProfile);
-            }
-            else
-            {
-                sharedProfile = Profiles[PlatformType.Shared];
             }
 
             // Use by default the first asset folders if not defined on the asset item

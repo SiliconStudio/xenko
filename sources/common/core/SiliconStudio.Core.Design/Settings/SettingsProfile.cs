@@ -148,6 +148,16 @@ namespace SiliconStudio.Core.Settings
         }
 
         /// <summary>
+        /// Removes the entry that match the given name.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns>True if value was removed, false otherwise.</returns>
+        internal bool Remove(UFile name)
+        {
+            return Settings.Remove(name);
+        }
+
+        /// <summary>
         /// Notifies that the entry with the given name has changed.
         /// </summary>
         /// <param name="name">The name of the entry that has changed.</param>
