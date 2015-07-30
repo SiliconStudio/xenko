@@ -30,7 +30,11 @@ namespace SiliconStudio.Paradox.Physics
                 InternalShape = shape;
             }
 
-            DebugPrimitiveMatrix = Is2D ? Matrix.Scaling(new Vector3(radius * 2 * 1.01f, radius * 2 * 1.01f, 1.0f)) : Matrix.Scaling(radius * 2 * 1.01f);
+            DebugPrimitiveMatrix = Matrix.Scaling(2 * radius * 1.01f);
+            if (Is2D)
+            {
+                DebugPrimitiveMatrix.M33 = 0f;
+            }
         }
 
         public override GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)

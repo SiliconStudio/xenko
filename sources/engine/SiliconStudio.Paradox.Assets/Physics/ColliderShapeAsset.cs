@@ -7,7 +7,10 @@ using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Physics;
 using System;
 
@@ -17,6 +20,8 @@ namespace SiliconStudio.Paradox.Assets.Physics
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(ColliderShapeAssetCompiler))]
     [ObjectFactory(typeof(ColliderShapeFactory))]
+    [AssetFormatVersion(1)]
+    [AssetUpgrader(0, 1, typeof(UpgraderShapeDescriptions))]
     [Display("Collider Shape", "A physics collider shape")]
     public class ColliderShapeAsset : Asset
     {
@@ -44,6 +49,52 @@ namespace SiliconStudio.Paradox.Assets.Physics
             public object New(Type type)
             {
                 return new ColliderShapeAsset();
+            }
+        }
+
+        class UpgraderShapeDescriptions : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                if (asset.ColliderShapes == null)
+                    return;
+
+                foreach (var colliderShape in asset.ColliderShapes)
+                {
+                    if (colliderShape.Node.Tag == "!Box2DColliderShapeDesc")
+                    {
+                        var size = 2f * DynamicYamlExtensions.ConvertTo<Vector2>(colliderShape.HalfExtent);
+                        colliderShape.Size = DynamicYamlExtensions.ConvertFrom(size);
+                        colliderShape.HalfExtent = DynamicYamlEmpty.Default;
+                    }
+                    if (colliderShape.Node.Tag == "!BoxColliderShapeDesc")
+                    {
+                        var size = 2f * DynamicYamlExtensions.ConvertTo<Vector3>(colliderShape.HalfExtents);
+                        colliderShape.Size = DynamicYamlExtensions.ConvertFrom(size);
+                        colliderShape.HalfExtents = DynamicYamlEmpty.Default;
+                    }
+                    if (colliderShape.Node.Tag == "!CapsuleColliderShapeDesc" || colliderShape.Node.Tag == "!CylinderColliderShapeDesc")
+                    {
+                        var upVector = DynamicYamlExtensions.ConvertTo <Vector3>( colliderShape.UpAxis);
+                        if (upVector == Vector3.UnitX)
+                            colliderShape.Orientation = ShapeOrientation.UpX;
+                        if (upVector == Vector3.UnitZ)
+                            colliderShape.Orientation = ShapeOrientation.UpZ;
+
+                        colliderShape.UpAxis = DynamicYamlEmpty.Default;
+                    }
+                    if (colliderShape.Node.Tag == "!CapsuleColliderShapeDesc" && colliderShape.Height != null)
+                    {
+                        colliderShape.Length = 2f * (float)colliderShape.Height;
+                        colliderShape.Height = DynamicYamlEmpty.Default;
+                    }
+                    if (colliderShape.Node.Tag == "!CylinderColliderShapeDesc")
+                    {
+                        colliderShape.Radius = (float)colliderShape.HalfExtents.X;
+                        colliderShape.Height = 2f * (float)colliderShape.HalfExtents.Y;
+                        colliderShape.HalfExtents = DynamicYamlEmpty.Default;
+                    }
+                }
             }
         }
     }

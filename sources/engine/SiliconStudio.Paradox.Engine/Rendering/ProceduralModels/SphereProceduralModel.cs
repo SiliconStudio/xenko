@@ -22,19 +22,19 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// </summary>
         public SphereProceduralModel()
         {
-            Diameter = 1.0f;
+            Radius = 0.5f;
             Tessellation = 16;
             UVScales = new Vector2(1);
         }
 
         /// <summary>
-        /// Gets or sets the diameter of this sphere.
+        /// Gets or sets the radius of this sphere.
         /// </summary>
-        /// <value>The diameter.</value>
-        /// <userdoc>The diameter of the sphere.</userdoc>
+        /// <value>The radius.</value>
+        /// <userdoc>The radius of the sphere.</userdoc>
         [DataMember(10)]
-        [DefaultValue(1.0f)]
-        public float Diameter { get; set; }
+        [DefaultValue(0.5f)]
+        public float Radius { get; set; }
 
         /// <summary>
         /// Gets or sets the tessellation factor (default: 3.0)
@@ -57,7 +57,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
 
         protected override GeometricMeshData<VertexPositionNormalTexture> CreatePrimitiveMeshData()
         {
-            return GeometricPrimitive.Sphere.New(Diameter, Tessellation, UVScales.X, UVScales.Y);
+            return GeometricPrimitive.Sphere.New(Radius, Tessellation, UVScales.X, UVScales.Y);
         }
     }
 }

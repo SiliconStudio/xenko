@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// <summary>
         /// Gets or sets the size of this teapot.
         /// </summary>
-        /// <value>The diameter.</value>
+        /// <value>The size.</value>
         /// <userdoc>The size of the teapot.</userdoc>
         [DataMember(10)]
         [DefaultValue(1.0f)]

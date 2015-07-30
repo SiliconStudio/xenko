@@ -90,49 +90,59 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// Creates a sphere primitive.
             /// </summary>
             /// <param name="device">The device.</param>
-            /// <param name="height">The height.</param>
-            /// <param name="radius">The radius.</param>
+            /// <param name="length">The length. That is the distance between the two sphere centers.</param>
+            /// <param name="radius">The radius of the capsule.</param>
             /// <param name="tessellation">The tessellation.</param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
             /// <returns>A sphere primitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;Must be &gt;= 3</exception>
-            public static GeometricPrimitive New(GraphicsDevice device, float height = 1.0f, float radius = 0.5f, int tessellation = 16, bool toLeftHanded = false)
+            public static GeometricPrimitive New(GraphicsDevice device, float length = 1.0f, float radius = 0.5f, int tessellation = 8, bool toLeftHanded = false)
             {
-                return new GeometricPrimitive(device, New(height, radius, tessellation, toLeftHanded));
+                return new GeometricPrimitive(device, New(length, radius, tessellation, toLeftHanded));
             }
 
             /// <summary>
             /// Creates a sphere primitive.
             /// </summary>
-            /// <param name="height">The height.</param>
-            /// <param name="radius">The radius.</param>
+            /// <param name="length">The length of the capsule. That is the distance between the two sphere centers.</param>
+            /// <param name="radius">The radius of the capsule.</param>
             /// <param name="tessellation">The tessellation.</param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
             /// <returns>A sphere primitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;Must be &gt;= 3</exception>
-            public static GeometricMeshData<VertexPositionNormalTexture> New(float height = 1.0f, float radius = 0.5f, int tessellation = 16, bool toLeftHanded = false)
+            public static GeometricMeshData<VertexPositionNormalTexture> New(float length = 1.0f, float radius = 0.5f, int tessellation = 8, bool toLeftHanded = false)
             {
                 if (tessellation < 3) tessellation = 3;
 
-                int verticalSegments = tessellation;
-                int horizontalSegments = tessellation * 2;
+                int verticalSegments = 2 * tessellation;
+                int horizontalSegments = 4 * tessellation;
 
-                var vertices = new VertexPositionNormalTexture[(verticalSegments + 1) * (horizontalSegments + 1)];
-                var indices = new int[(verticalSegments) * (horizontalSegments + 1) * 6];
+                var vertices = new VertexPositionNormalTexture[verticalSegments * (horizontalSegments + 1)];
+                var indices = new int[(verticalSegments-1) * (horizontalSegments + 1) * 6];
 
-                var middle = verticalSegments / 2;
-
-                int vertexCount = 0;
+                var vertexCount = 0;
                 // Create rings of vertices at progressively higher latitudes.
-                for (int i = 0; i <= verticalSegments; i++)
+                for (int i = 0; i < verticalSegments; i++)
                 {
-                    float v = 1.0f - (float)i / verticalSegments;
+                    float v;
+                    float deltaY;
+                    float latitude;
+                    if (i < verticalSegments / 2)
+                    {
+                        deltaY = -length / 2;
+                        v = 1.0f - (0.25f * i / (tessellation - 1));
+                        latitude = (float)((i * Math.PI / (verticalSegments-2)) - Math.PI / 2.0);
+                    }
+                    else
+                    {
+                        deltaY = length / 2;
+                        v = 0.5f - (0.25f * (i - 1) / (tessellation - 1));
+                        latitude = (float)(((i - 1) * Math.PI / (verticalSegments - 2)) - Math.PI / 2.0);
+                    }
 
-                    var latitude = (float)((i * Math.PI / verticalSegments) - Math.PI / 2.0);
                     var dy = (float)Math.Sin(latitude);
                     var dxz = (float)Math.Cos(latitude);
 
-                    var deltaY = latitude <= 0.0f ? -height : height;
 
                     // Create a single ring of vertices at this latitude.
                     for (int j = 0; j <= horizontalSegments; j++)
@@ -158,7 +168,7 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
                 int stride = horizontalSegments + 1;
 
                 int indexCount = 0;
-                for (int i = 0; i < verticalSegments; i++)
+                for (int i = 0; i < verticalSegments-1; i++)
                 {
                     for (int j = 0; j <= horizontalSegments; j++)
                     {

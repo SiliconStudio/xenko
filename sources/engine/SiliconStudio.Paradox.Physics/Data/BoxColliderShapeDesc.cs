@@ -12,21 +12,21 @@ namespace SiliconStudio.Paradox.Physics
     public class BoxColliderShapeDesc : IColliderShapeDesc
     {
         /// <userdoc>
-        /// The offset with the real graphic mesh.
+        /// The size of one edge of the box.
         /// </userdoc>
         [DataMember(10)]
+        public Vector3 Size = Vector3.One;
+
+        /// <userdoc>
+        /// The offset with the real graphic mesh.
+        /// </userdoc>
+        [DataMember(20)]
         public Vector3 LocalOffset;
 
         /// <userdoc>
         /// The local rotation of the collider shape.
         /// </userdoc>
-        [DataMember(20)]
+        [DataMember(30)]
         public Quaternion LocalRotation = Quaternion.Identity;
-
-        /// <userdoc>
-        /// Half Extent size of the box.
-        /// </userdoc>
-        [DataMember(30)] 
-        public Vector3 HalfExtents = Vector3.One;
     }
 }
