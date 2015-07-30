@@ -21,6 +21,10 @@ body,html {
 	margin:0 auto;
 	min-width: 700px;
 }
+.oss-input-div {
+margin-top: 8px;
+margin-bottom: 4px;
+}
 .osscmnrdr { font-family: arial,sans-serif;
 font-size: 14px;
  }
