@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
     /// </summary>
     [DataContract("MaterialSpecularMicrofacetModelFeature")]
     [Display("Microfacet")]
-    public class MaterialSpecularMicrofacetModelFeature : IMaterialSpecularModelFeature, IEquatable<MaterialSpecularMicrofacetModelFeature>
+    public class MaterialSpecularMicrofacetModelFeature : MaterialFeature, IMaterialSpecularModelFeature, IEquatable<MaterialSpecularMicrofacetModelFeature>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialSpecularMicrofacetModelFeature"/> class.
@@ -55,7 +55,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         [NotNull]
         public IMaterialSpecularMicrofacetNormalDistributionFunction NormalDistribution { get; set; }
 
-        public virtual void Visit(MaterialGeneratorContext context)
+        public override void VisitFeature(MaterialGeneratorContext context)
         {
             var shaderSource = new ShaderMixinSource();
             shaderSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceShadingSpecularMicrofacet"));

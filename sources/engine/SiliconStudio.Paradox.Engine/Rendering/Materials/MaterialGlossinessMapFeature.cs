@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
     /// </summary>
     [DataContract("MaterialGlossinessMapFeature")]
     [Display("Glossiness Map")]
-    public class MaterialGlossinessMapFeature : IMaterialMicroSurfaceFeature, IMaterialStreamProvider
+    public class MaterialGlossinessMapFeature : MaterialFeature, IMaterialMicroSurfaceFeature, IMaterialStreamProvider
     {
         private static readonly MaterialStreamDescriptor GlossinessStream = new MaterialStreamDescriptor("Glossiness", "matGlossiness", MaterialKeys.GlossinessValue.PropertyType);
 
@@ -56,7 +56,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         [DefaultValue(false)]
         public bool Invert { get; set; }
 
-        public void Visit(MaterialGeneratorContext context)
+        public override void VisitFeature(MaterialGeneratorContext context)
         {
             if (GlossinessMap != null)
             {

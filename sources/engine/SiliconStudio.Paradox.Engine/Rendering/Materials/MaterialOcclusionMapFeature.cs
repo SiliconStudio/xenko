@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
     /// </summary>
     [DataContract("MaterialOcclusionMapFeature")]
     [Display("Occlusion Map")]
-    public class MaterialOcclusionMapFeature : IMaterialOcclusionFeature, IMaterialStreamProvider
+    public class MaterialOcclusionMapFeature : MaterialFeature, IMaterialOcclusionFeature, IMaterialStreamProvider
     {
         private static readonly MaterialStreamDescriptor OcclusionStream = new MaterialStreamDescriptor("Occlusion", "matAmbientOcclusion", MaterialKeys.AmbientOcclusionValue.PropertyType);
         private static readonly MaterialStreamDescriptor CavityStream = new MaterialStreamDescriptor("Cavity", "matCavity", MaterialKeys.CavityValue.PropertyType);
@@ -89,7 +89,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         public IComputeScalar SpecularCavity { get; set; }
 
 
-        public void Visit(MaterialGeneratorContext context)
+        public override void VisitFeature(MaterialGeneratorContext context)
         {
             // Exclude ambient occlusion from uv-scale overrides
             var revertOverrides = new MaterialOverrides();

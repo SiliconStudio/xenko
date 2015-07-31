@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
     /// </summary>
     [DataContract("MaterialNormalMapFeature")]
     [Display("Normal Map")]
-    public class MaterialNormalMapFeature : IMaterialSurfaceFeature, IMaterialStreamProvider
+    public class MaterialNormalMapFeature : MaterialFeature, IMaterialSurfaceFeature, IMaterialStreamProvider
     {
         private static readonly MaterialStreamDescriptor NormalStream = new MaterialStreamDescriptor("Normal", "matNormal", MaterialKeys.NormalValue.PropertyType);
 
@@ -74,7 +74,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         [Display("Normal xy")]
         public bool IsXYNormal { get; set; }
 
-        public void Visit(MaterialGeneratorContext context)
+        public override void VisitFeature(MaterialGeneratorContext context)
         {
             if (NormalMap != null)
             {
