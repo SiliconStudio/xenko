@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Engine
     [Display(120, "Light", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(LightComponentRenderer), -10)]
     [DefaultEntityComponentProcessor(typeof(LightProcessor))]
-    public sealed class LightComponent : EntityComponent
+    public sealed class LightComponent : ActivableEntityComponent
     {
         public static PropertyKey<LightComponent> Key = new PropertyKey<LightComponent>("Key", typeof(LightComponent));
 

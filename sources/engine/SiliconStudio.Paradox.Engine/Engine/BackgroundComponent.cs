@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Engine
     [Display(96, "Background", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(BackgroundComponentRenderer))]
     [DefaultEntityComponentProcessor(typeof(BackgroundComponentProcessor))]
-    public class BackgroundComponent : EntityComponent
+    public class BackgroundComponent : ActivableEntityComponent
     {
         public static PropertyKey<BackgroundComponent> Key = new PropertyKey<BackgroundComponent>("Key", typeof(BackgroundComponent));
 

@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Engine
     [DataContract("ChildSceneComponent")]
     [Display(112, "Child scene", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(ChildSceneProcessor))]
-    public sealed class ChildSceneComponent : EntityComponent
+    public sealed class ChildSceneComponent : ActivableEntityComponent
     {
         // Used by the ChildSceneProcessor
         [DataMemberIgnore]

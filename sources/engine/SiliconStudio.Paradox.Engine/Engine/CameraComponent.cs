@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Engine
     [DataContract("CameraComponent")]
     [Display(130, "Camera", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(CameraComponentRenderer), -1000)]
-    public sealed class CameraComponent : EntityComponent
+    public sealed class CameraComponent : ActivableEntityComponent
     {
         public const float DefaultAspectRatio = 16.0f / 9.0f;
 

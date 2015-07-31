@@ -2,27 +2,19 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Paradox.Engine
 {
+    /// <summary>
+    /// Base class for <see cref="Entity"/> components.
+    /// </summary>
     [DataSerializer(typeof(EntityComponent.Serializer))]
     [DataContract]
     public abstract class EntityComponent : ComponentBase
     {
-        private bool enabled;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EntityComponent"/> class.
-        /// </summary>
-        protected EntityComponent()
-        {
-            Enabled = true;
-        }
-
         /// <summary>
         /// Gets or sets the owner entity.
         /// </summary>
@@ -31,26 +23,6 @@ namespace SiliconStudio.Paradox.Engine
         /// </value>
         [DataMemberIgnore]
         public Entity Entity { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="EntityComponent"/> is enabled.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if enabled; otherwise, <c>false</c>.
-        /// </value>
-        [DataMember(-10)]
-        [DefaultValue(true)]
-        public bool Enabled
-        {
-            get
-            {
-                return enabled;
-            }
-            set
-            {
-                enabled = value;
-            }
-        }
 
         /// <summary>
         /// Gets the entity and throws an exception if the entity is null.
@@ -97,7 +69,6 @@ namespace SiliconStudio.Paradox.Engine
 
                 // Force containing Entity to be collected by serialization, no need to reassign it to EntityComponent.Entity
                 stream.SerializeExtended(ref entity, mode);
-                stream.Serialize(ref obj.enabled, mode);
             }
         }
     }

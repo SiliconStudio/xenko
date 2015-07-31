@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Engine
     [Display(100, "Sprite", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(SpriteComponentRenderer))]
     [DefaultEntityComponentProcessor(typeof(SpriteProcessor))]
-    public sealed class SpriteComponent : EntityComponent
+    public sealed class SpriteComponent : ActivableEntityComponent
     {
         public static PropertyKey<SpriteComponent> Key = new PropertyKey<SpriteComponent>("Key", typeof(SpriteComponent));
         

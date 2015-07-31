@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.Engine
     [Display(110, "Model", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(ModelComponentAndPickingRenderer))]
     [DefaultEntityComponentProcessor(typeof(ModelProcessor))]
-    public sealed class ModelComponent : EntityComponent, IModelInstance
+    public sealed class ModelComponent : ActivableEntityComponent, IModelInstance
     {
         public static PropertyKey<ModelComponent> Key = new PropertyKey<ModelComponent>("Key", typeof(ModelComponent));
 
