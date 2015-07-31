@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading;
+using SiliconStudio.Core.ReferenceCounting;
 
 namespace SiliconStudio.Core
 {
@@ -28,12 +29,8 @@ namespace SiliconStudio.Core
         {
             if (!IsDisposed)
             {
-                int newcounter = Interlocked.Decrement(ref counter);
-                if (newcounter != 0)
-                    throw new InvalidOperationException(FrameworkResources.ReleaseReferenceError);
-                Destroy();
+                this.ReleaseInternal();
             }
-            IsDisposed = true;
         }
 
         /// <summary>
@@ -85,8 +82,8 @@ namespace SiliconStudio.Core
             int newCounter = Interlocked.Decrement(ref counter);
             if (newCounter == 0)
             {
-                Destroy();
                 IsDisposed = true;
+                Destroy();
             }
             else if (newCounter < 0)
             {
