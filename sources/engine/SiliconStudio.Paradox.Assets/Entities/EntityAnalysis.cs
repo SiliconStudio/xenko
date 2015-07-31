@@ -155,7 +155,10 @@ namespace SiliconStudio.Paradox.Assets.Entities
 
             private int scriptComponentDepth;
 
-            private Entity currentReferencer;
+            /// <summary>
+            /// The current referencer, should be either an <see cref="Entity"/> or a <see cref="SceneSettings"/>.
+            /// </summary>
+            private ComponentBase currentReferencer;
 
             public EntityReferenceAnalysis()
             {
@@ -191,6 +194,9 @@ namespace SiliconStudio.Paradox.Assets.Entities
                     var entity = obj as Entity;
                     if (entity != null)
                         currentReferencer = entity;
+                    var settings = obj as SceneSettings;
+                    if (settings != null)
+                        currentReferencer = settings;
                 }
                 if (scriptComponentDepth != 2 && obj is Script)
                 {
@@ -230,13 +236,13 @@ namespace SiliconStudio.Paradox.Assets.Entities
 
         public struct EntityLink
         {
-            public readonly Entity Referencer;
+            public readonly ComponentBase Referencer;
             public readonly Entity Entity;
             public readonly EntityComponent EntityComponent;
             public readonly Script EntityScript;
             public readonly MemberPath Path;
 
-            public EntityLink(Entity referencer, Entity entity, MemberPath path)
+            public EntityLink(ComponentBase referencer, Entity entity, MemberPath path)
             {
                 Referencer = referencer;
                 Entity = entity;
@@ -245,7 +251,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
                 Path = path;
             }
 
-            public EntityLink(Entity referencer, EntityComponent entityComponent, MemberPath path)
+            public EntityLink(ComponentBase referencer, EntityComponent entityComponent, MemberPath path)
             {
                 Referencer = referencer;
                 Entity = null;
@@ -254,7 +260,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
                 Path = path;
             }
 
-            public EntityLink(Entity referencer, Script script, MemberPath path)
+            public EntityLink(ComponentBase referencer, Script script, MemberPath path)
             {
                 Referencer = referencer;
                 Entity = null;

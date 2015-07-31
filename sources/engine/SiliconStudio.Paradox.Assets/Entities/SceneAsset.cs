@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetDescription(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
     [ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName)]
-    [AssetFormatVersion(8)]
+    [AssetFormatVersion(7)]
     [AssetUpgrader(0, 1, typeof(RemoveSourceUpgrader))]
     [AssetUpgrader(1, 2, typeof(RemoveBaseUpgrader))]
     [AssetUpgrader(2, 3, typeof(RemoveModelDrawOrderUpgrader))]
@@ -32,7 +32,6 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetUpgrader(4, 5, typeof(RemoveSpriteExtrusionMethodUpgrader))]
     [AssetUpgrader(5, 6, typeof(RemoveModelParametersUpgrader))]
     [AssetUpgrader(6, 7, typeof(SceneIsNotEntityUpgrader))]
-    [AssetUpgrader(7, 8, typeof(SceneGuidUpgrader))]
     [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
@@ -50,10 +49,6 @@ namespace SiliconStudio.Paradox.Assets.Entities
                 }
             };
         }
-
-        [Browsable(false)]
-        [DataMember(1000)]
-        public Guid SceneId { get; set; }
 
         class RemoveSourceUpgrader : AssetUpgraderBase
         {
@@ -203,13 +198,6 @@ namespace SiliconStudio.Paradox.Assets.Entities
             }
         }
 
-        class SceneGuidUpgrader : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
-            {
-                asset.SceneId = Guid.NewGuid();
-            }
-        }
         private class SceneFactory : IObjectFactory
         {
             public object New(Type type)
@@ -217,6 +205,5 @@ namespace SiliconStudio.Paradox.Assets.Entities
                 return Create();
             }
         }
-
     }
 }
