@@ -114,13 +114,14 @@ namespace SiliconStudio.Core.Storage
                 dataStream.Seek(0, SeekOrigin.Begin);
             }
 
+            string tmpFileName = vfsTempUrl + Guid.NewGuid() + ".tmp";
+
             var url = BuildUrl(vfsRootUrl, objectId);
 
             if (!forceWrite && virtualFileProvider.FileExists(url))
                 return objectId;
 
-            virtualFileProvider.CreateDirectory(ExtractPath(url));
-            using (var file = virtualFileProvider.OpenStream(url, VirtualFileMode.Create, VirtualFileAccess.Write))
+            using (var file = virtualFileProvider.OpenStream(tmpFileName, VirtualFileMode.Create, VirtualFileAccess.Write))
             {
                 // TODO: Fast case for NativeStream. However we still need a file implementation of NativeStream.
                 var buffer = new byte[WriteBufferSize];
@@ -135,6 +136,8 @@ namespace SiliconStudio.Core.Storage
                 }
             }
 
+            MoveToDatabase(tmpFileName, objectId);
+
             return objectId;
         }
 
@@ -146,16 +149,13 @@ namespace SiliconStudio.Core.Storage
 
             string tmpFileName = vfsTempUrl + Guid.NewGuid() + ".tmp";
             Stream stream = virtualFileProvider.OpenStream(tmpFileName, VirtualFileMode.Create, VirtualFileAccess.Write);
-            return new DigestStream(stream, tmpFileName) { Disposed = x => SaveStream(x) };
+            return new DigestStream(stream, tmpFileName) { Disposed = x => MoveToDatabase(x.TemporaryName, x.CurrentHash) };
         }
 
         /// <inheritdoc/>
-        private ObjectId SaveStream(OdbStreamWriter stream)
+        private ObjectId MoveToDatabase(string temporaryFilePath, ObjectId objId)
         {
-            ObjectId objId = stream.CurrentHash;
             string fileUrl = BuildUrl(vfsRootUrl, objId);
-
-            string temporaryFilePath = stream.TemporaryName;
 
             lock (LockOnMove)
             {
