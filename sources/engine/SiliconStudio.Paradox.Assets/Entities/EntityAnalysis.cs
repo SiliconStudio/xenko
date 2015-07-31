@@ -4,9 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-
 using SiliconStudio.Assets.Visitors;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Design;
@@ -30,12 +29,12 @@ namespace SiliconStudio.Paradox.Assets.Entities
             return entityReferenceVistor.Result;
         }
 
-        public static Result Visit(Entity entity)
+        public static Result Visit(ComponentBase componentBase)
         {
-            if (entity == null) throw new ArgumentNullException("entity");
+            if (componentBase == null) throw new ArgumentNullException("componentBase");
 
             var entityReferenceVistor = new EntityReferenceAnalysis();
-            entityReferenceVistor.Visit(entity);
+            entityReferenceVistor.Visit(componentBase);
 
             return entityReferenceVistor.Result;
         }
