@@ -697,6 +697,8 @@ namespace SiliconStudio.Paradox.Games
 
         protected override void Destroy()
         {
+            base.Destroy();
+
             lock (this)
             {
                 if (Window != null && Window.IsActivated) // force the window to be in an correct state during destroy (Deactivated events are sometimes dropped on windows)
@@ -726,8 +728,6 @@ namespace SiliconStudio.Paradox.Games
                     gamePlatform.Release();
                 }
             }
-
-            base.Destroy();
         }
 
         /// <summary>
