@@ -20,18 +20,6 @@ using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Assets
 {
-    public static class GameSettingsAssetExtensions
-    {
-        public static GameSettingsAsset GetGameSettingsAsset(this Package package)
-        {
-            var gameSettingsAsset = package.Assets.Find(GameSettingsAsset.GameSettingsLocation);
-            if (gameSettingsAsset == null)
-                return null;
-
-            return gameSettingsAsset.Asset as GameSettingsAsset;
-        }
-    }
-
     /// <summary>
     /// Settings for a game with the default scene, resolution, graphics profile...
     /// </summary>

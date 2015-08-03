@@ -158,6 +158,7 @@
     <Compile Include="GameSettingsAsset.cs" />
     <Compile Include="Entities\SceneAsset.cs" />
     <Compile Include="GameSettingsAssetCompiler.cs" />
+    <Compile Include="GameSettingsAssetExtensions.cs" />
     <Compile Include="GameUserSettings.cs" />
     <Compile Include="Materials\ComputeShaderBaseExtensions.cs" />
     <Compile Include="Materials\MaterialNodeClassLoader.cs" />
