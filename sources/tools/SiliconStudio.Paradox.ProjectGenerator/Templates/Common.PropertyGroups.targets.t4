@@ -41,7 +41,7 @@ foreach(var platform in Properties.Platforms)
     <Optimize>true</Optimize>
     <DefineConstants>TRACE;<#= string.Join(";", platform.DefineConstants) #></DefineConstants>
 <#  } #>
-    <OutputPath><#= Properties.ParadoxSdkRelativeDir #>\Bin\<#= platform.Type #>-<#= platform.Properties[SiliconStudio.Paradox.Assets.ParadoxConfig.GraphicsPlatform] #>\</OutputPath>
+    <OutputPath><#= Properties.ParadoxSdkRelativeDir #>\Bin\<#= platform.Type #>\</OutputPath>
     <IntermediateOutputPath>obj\<#= platform.Type #>\<#= config.Name #>\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
