@@ -169,6 +169,7 @@ namespace SiliconStudio.Paradox.Graphics
 
         public void Dispose()
         {
+            isDisposed = true;
             EGLContext.Dispose();
             EGLSurface.Dispose();
         }

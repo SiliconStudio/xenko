@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
     /// </summary>
     [DataContract("MaterialDiffuseMapFeature")]
     [Display("Diffuse Map")]
-    public class MaterialDiffuseMapFeature : IMaterialDiffuseFeature, IMaterialStreamProvider
+    public class MaterialDiffuseMapFeature : MaterialFeature, IMaterialDiffuseFeature, IMaterialStreamProvider
     {
         public static readonly MaterialStreamDescriptor DiffuseStream = new MaterialStreamDescriptor("Diffuse", "matDiffuse", MaterialKeys.DiffuseValue.PropertyType);
         public static readonly MaterialStreamDescriptor ColorBaseStream = new MaterialStreamDescriptor("Color Base", "matColorBase", MaterialKeys.DiffuseValue.PropertyType);
@@ -49,7 +49,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         [DataMemberCustomSerializer]
         public IComputeColor DiffuseMap { get; set; }
 
-        public void Visit(MaterialGeneratorContext context)
+        public override void VisitFeature(MaterialGeneratorContext context)
         {
             if (DiffuseMap != null)
             {

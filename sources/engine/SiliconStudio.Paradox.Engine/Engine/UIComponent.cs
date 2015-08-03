@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.Engine
     [Display(98, "UI", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(UIComponentRenderer))]
     [DefaultEntityComponentProcessor(typeof(UIComponentProcessor))]
-    public class UIComponent : EntityComponent
+    public class UIComponent : ActivableEntityComponent
     {
         public static PropertyKey<UIComponent> Key = new PropertyKey<UIComponent>("Key", typeof(UIComponent));
 

@@ -13,9 +13,9 @@ namespace SiliconStudio.Paradox.Rendering.Materials
     [Display("Point Normal Tessellation")]
     public class MaterialTessellationPNFeature : MaterialTessellationBaseFeature
     {
-        public override void Visit(MaterialGeneratorContext context)
+        public override void VisitFeature(MaterialGeneratorContext context)
         {
-            base.Visit(context);
+            base.VisitFeature(context);
 
             if (HasAlreadyTessellationFeature) 
                 return;

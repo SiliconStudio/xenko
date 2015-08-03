@@ -11,15 +11,8 @@ namespace SiliconStudio.Paradox.Rendering.Materials
     /// </summary>
     [DataContract("MaterialDiffuseLambertModelFeature")]
     [Display("Lambert")]
-    public class MaterialDiffuseLambertModelFeature : IMaterialDiffuseModelFeature
+    public class MaterialDiffuseLambertModelFeature : MaterialFeature, IMaterialDiffuseModelFeature
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialDiffuseLambertModelFeature"/> class.
-        /// </summary>
-        public MaterialDiffuseLambertModelFeature()
-        {
-        }
-
         public bool IsLightDependent
         {
             get
@@ -32,7 +25,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         [DataMemberIgnore]
         internal bool IsEnergyConservative { get; set; }
 
-        public virtual void Visit(MaterialGeneratorContext context)
+        public override void VisitFeature(MaterialGeneratorContext context)
         {
             var shaderSource = new ShaderClassSource("MaterialSurfaceShadingDiffuseLambert", IsEnergyConservative);
             context.AddShading(this, shaderSource);

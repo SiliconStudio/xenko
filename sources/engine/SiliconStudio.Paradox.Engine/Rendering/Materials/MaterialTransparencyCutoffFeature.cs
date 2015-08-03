@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
     /// </summary>
     [DataContract("MaterialTransparencyCutoffFeature")]
     [Display("Cutoff")]
-    public class MaterialTransparencyCutoffFeature : IMaterialTransparencyFeature
+    public class MaterialTransparencyCutoffFeature : MaterialFeature, IMaterialTransparencyFeature
     {
         private const float DefaultAlpha = 0.5f;
 
@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
         public IComputeScalar Alpha { get; set; }
 
-        public void Visit(MaterialGeneratorContext context)
+        public override void VisitFeature(MaterialGeneratorContext context)
         {
             var alpha = Alpha ?? new ComputeFloat(DefaultAlpha);
             context.SetStream(AlphaDiscardStream.Stream, alpha, MaterialKeys.AlphaDiscardMap, MaterialKeys.AlphaDiscardValue, new Color(DefaultAlpha));

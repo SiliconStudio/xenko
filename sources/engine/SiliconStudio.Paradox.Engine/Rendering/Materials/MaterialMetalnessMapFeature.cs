@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
     /// </summary>
     [DataContract("MaterialMetalnessMapFeature")]
     [Display("Metalness Map")]
-    public class MaterialMetalnessMapFeature : IMaterialSpecularFeature
+    public class MaterialMetalnessMapFeature : MaterialFeature, IMaterialSpecularFeature
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialMetalnessMapFeature"/> class.
@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
         public IComputeScalar MetalnessMap { get; set; }
 
-        public void Visit(MaterialGeneratorContext context)
+        public override void VisitFeature(MaterialGeneratorContext context)
         {
             if (MetalnessMap != null)
             {

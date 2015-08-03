@@ -2,8 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Materials;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Rendering.Materials
@@ -15,9 +13,9 @@ namespace SiliconStudio.Paradox.Rendering.Materials
     [Display("Flat Tessellation")]
     public class MaterialTessellationFlatFeature : MaterialTessellationBaseFeature
     {
-        public override void Visit(MaterialGeneratorContext context)
+        public override void VisitFeature(MaterialGeneratorContext context)
         {
-            base.Visit(context);
+            base.VisitFeature(context);
 
             if (HasAlreadyTessellationFeature)
                 return;

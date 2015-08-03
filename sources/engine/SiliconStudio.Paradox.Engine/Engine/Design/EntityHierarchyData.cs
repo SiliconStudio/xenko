@@ -20,6 +20,7 @@ namespace SiliconStudio.Paradox.Engine.Design
         [DataMember(20)]
         public EntityCollection Entities { get; private set; }
 
+        // Note: only for SceneAsset; need a better split (we can review that when implementing entity prefabs)
         [DataMember(30)]
         public SceneSettings SceneSettings { get; private set; }
 

@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
     /// </summary>
     [DataContract("MaterialDisplacementMapFeature")]
     [Display("Displacement Map")]
-    public class MaterialDisplacementMapFeature : IMaterialDisplacementFeature
+    public class MaterialDisplacementMapFeature : MaterialFeature, IMaterialDisplacementFeature
     {
         public const string DisplacementStream = "matDisplacement";
         /// <summary>
@@ -84,7 +84,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         [Display("Shader Stage")]
         public DisplacementMapStage Stage { get; set; }
 
-        public void Visit(MaterialGeneratorContext context)
+        public override void VisitFeature(MaterialGeneratorContext context)
         {
             if (DisplacementMap == null)
                 return;

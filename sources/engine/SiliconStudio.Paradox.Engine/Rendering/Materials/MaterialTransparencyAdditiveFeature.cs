@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
     /// </summary>
     [DataContract("MaterialTransparencyAdditiveFeature")]
     [Display("Additive")]
-    public class MaterialTransparencyAdditiveFeature : IMaterialTransparencyFeature
+    public class MaterialTransparencyAdditiveFeature : MaterialFeature, IMaterialTransparencyFeature
     {
         private static readonly MaterialStreamDescriptor AlphaBlendStream = new MaterialStreamDescriptor("DiffuseSpecularAlphaBlend", "matDiffuseSpecularAlphaBlend", MaterialKeys.DiffuseSpecularAlphaBlendValue.PropertyType);
 
@@ -51,7 +51,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         [DataMember(20)]
         public IComputeColor Tint { get; set; }
 
-        public void Visit(MaterialGeneratorContext context)
+        public override void VisitFeature(MaterialGeneratorContext context)
         {
             var alpha = Alpha ?? new ComputeFloat(0.5f);
             var tint = Tint ?? new ComputeColor(Color.White);

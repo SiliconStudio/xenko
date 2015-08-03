@@ -50,6 +50,7 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Engine\ActivableEntityComponent.cs" />
     <Compile Include="Engine\AsyncScript.cs" />
     <Compile Include="Animations\AnimationBlendOperation.cs" />
     <Compile Include="Animations\AnimationBlender.cs" />
@@ -100,6 +101,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>FXAAShaderEffect.pdxfx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Materials\MaterialFeature.cs" />
     <Compile Include="Rendering\Materials\MaterialTransparencyBlendFeature.cs" />
     <Compile Include="Shaders.Compiler\RemoteEffectCompiler.cs" />
     <Compile Include="Engine\Processors\BackgroundComponentProcessor.cs" />

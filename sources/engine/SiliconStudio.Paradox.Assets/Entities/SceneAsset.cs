@@ -24,14 +24,15 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetDescription(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
     [ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName)]
-    [AssetFormatVersion(7)]
+    [AssetFormatVersion(8)]
     [AssetUpgrader(0, 1, typeof(RemoveSourceUpgrader))]
     [AssetUpgrader(1, 2, typeof(RemoveBaseUpgrader))]
     [AssetUpgrader(2, 3, typeof(RemoveModelDrawOrderUpgrader))]
     [AssetUpgrader(3, 4, typeof(RenameSpriteProviderUpgrader))]
     [AssetUpgrader(4, 5, typeof(RemoveSpriteExtrusionMethodUpgrader))]
     [AssetUpgrader(5, 6, typeof(RemoveModelParametersUpgrader))]
-    [AssetUpgrader(6, 7, typeof(SceneIsNotEntityUpgrader))]
+    [AssetUpgrader(6, 7, typeof(RemoveEnabledFromIncompatibleComponent))]
+    [AssetUpgrader(7, 8, typeof(SceneIsNotEntityUpgrader))]
     [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
@@ -61,7 +62,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
             }
         }
 
-        public class RemoveBaseUpgrader : IAssetUpgrader
+        class RemoveBaseUpgrader : IAssetUpgrader
         {
             public void Upgrade(int currentVersion, int targetVersion, ILogger log, YamlMappingNode yamlAssetNode)
             {
@@ -81,7 +82,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
             }
         }
 
-        public class RemoveModelDrawOrderUpgrader : AssetUpgraderBase
+        class RemoveModelDrawOrderUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
             {
@@ -97,7 +98,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
             }
         }
 
-        public class RenameSpriteProviderUpgrader : AssetUpgraderBase
+        class RenameSpriteProviderUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
             {
@@ -122,7 +123,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
             }
         }
 
-        public class RemoveSpriteExtrusionMethodUpgrader : AssetUpgraderBase
+        class RemoveSpriteExtrusionMethodUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
             {
@@ -138,7 +139,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
             }
         }
 
-        public class RemoveModelParametersUpgrader : AssetUpgraderBase
+        class RemoveModelParametersUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
             {
@@ -150,6 +151,33 @@ namespace SiliconStudio.Paradox.Assets.Entities
                     var spriteComponent = components["ModelComponent.Key"];
                     if (spriteComponent != null)
                         spriteComponent.RemoveChild("Parameters");
+                }
+            }
+        }
+
+        class RemoveEnabledFromIncompatibleComponent : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Entities;
+                foreach (dynamic entity in entities)
+                {
+                    foreach (var component in entity.Components)
+                    {
+                        // All components not in this list won't have Enabled anymore
+                        if (component.Key != "BackgroundComponent.Key"
+                            && component.Key != "CameraComponent.Key"
+                            && component.Key != "ChildSceneComponent.Key"
+                            && component.Key != "LightComponent.Key"
+                            && component.Key != "ModelComponent.Key"
+                            && component.Key != "SkyboxComponent.Key"
+                            && component.Key != "SpriteComponent.Key"
+                            && component.Key != "UIComponent.Key")
+                        {
+                            component.Value.RemoveChild("Enabled");
+                        }
+                    }
                 }
             }
         }

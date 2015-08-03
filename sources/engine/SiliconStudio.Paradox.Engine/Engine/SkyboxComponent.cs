@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Engine
     [Display(115, "Skybox", Expand = ExpandRule.Once)]  // More important than lights, as usually the Skybox is associated with a light
     [DefaultEntityComponentRenderer(typeof(SkyboxComponentRenderer), -100)]
     [DefaultEntityComponentProcessor(typeof(SkyboxProcessor))]
-    public sealed class SkyboxComponent : EntityComponent
+    public sealed class SkyboxComponent : ActivableEntityComponent
     {
         public static PropertyKey<SkyboxComponent> Key = new PropertyKey<SkyboxComponent>("Key", typeof(SkyboxComponent));
 
