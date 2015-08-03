@@ -170,7 +170,7 @@ namespace SiliconStudio.Paradox.Graphics
             foreach (var message in reflectionResult.Messages)
                 Console.WriteLine(message);
             if (reflectionResult.HasErrors)
-                throw new Exception("Exception");
+                throw new Exception(reflectionResult.Messages.Select(x=>x.ToString()).Aggregate((x,y)=>x+"\n"+y));
         }
 
         public EffectInputSignature InputSignature
