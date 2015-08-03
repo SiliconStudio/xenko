@@ -104,36 +104,7 @@ namespace SiliconStudio.Paradox.Assets
             public static readonly SettingsValueKey<int> BackBufferHeight = new SettingsValueKey<int>("GameSettingsAsset.BackBufferHeight", PackageProfile.SettingsGroup, 720);
 
             public static readonly SettingsValueKey<GraphicsProfile> DefaultGraphicsProfile = new SettingsValueKey<GraphicsProfile>("GameSettingsAsset.DefaultGraphicsProfile", PackageProfile.SettingsGroup, GraphicsProfile.Level_10_0);
-
-            // Gets the default scene from a package properties
-            public static AssetReference<SceneAsset> GetDefaultScene(Package package)
-            {
-                var packageSharedProfile = package.Profiles.FindSharedProfile();
-                if (packageSharedProfile == null) return null;
-                return packageSharedProfile.Properties.Get(DefaultScene);
-            }
-
-            public static int GetBackBufferWidth(Package package)
-            {
-                var packageSharedProfile = package.Profiles.FindSharedProfile();
-                if (packageSharedProfile == null) return 0;
-                return packageSharedProfile.Properties.Get(BackBufferWidth);
-            }
-
-            public static int GetBackBufferHeight(Package package)
-            {
-                var packageSharedProfile = package.Profiles.FindSharedProfile();
-                if (packageSharedProfile == null) return 0;
-                return packageSharedProfile.Properties.Get(BackBufferHeight);
-            }
-
-            public static GraphicsProfile GetGraphicsProfile(Package package)
-            {
-                var packageSharedProfile = package.Profiles.FindSharedProfile();
-                if (packageSharedProfile == null) return 0;
-                return packageSharedProfile.Properties.Get(DefaultGraphicsProfile);
-            }
-
+            
             public static bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
             {
                 var packageSharedProfile = dependentPackage.Profiles.FindSharedProfile();
