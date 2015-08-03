@@ -23,6 +23,7 @@ namespace SiliconStudio.Paradox.Graphics
             : base(device)
         {
             effectBytecode = bytecode;
+            Reflection = effectBytecode.Reflection;
             CreateShaders();
         }
 

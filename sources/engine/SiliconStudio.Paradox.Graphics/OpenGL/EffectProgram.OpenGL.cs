@@ -70,6 +70,21 @@ namespace SiliconStudio.Paradox.Graphics
             : base(device)
         {
             effectBytecode = bytecode;
+
+            // make a copy of the effect's reflection before modifying it.
+            Reflection = new EffectReflection
+            {
+                // The members that are not modified and can be shallowly copied.
+                SamplerStates = effectBytecode.Reflection.SamplerStates,
+                ShaderStreamOutputDeclarations = effectBytecode.Reflection.ShaderStreamOutputDeclarations,
+                StreamOutputRasterizedStream = effectBytecode.Reflection.StreamOutputRasterizedStream,
+                StreamOutputStrides = effectBytecode.Reflection.StreamOutputStrides,
+
+                // The members that are modified and should be deeply copied.
+                ConstantBuffers = effectBytecode.Reflection.ConstantBuffers.Select(cb => cb.Clone()).ToList(),
+                ResourceBindings = new List<EffectParameterResourceData>(effectBytecode.Reflection.ResourceBindings),
+            };
+
             CreateShaders();
         }
 
@@ -158,11 +173,11 @@ namespace SiliconStudio.Paradox.Graphics
                     }
                 }
 
-                CreateReflection(effectBytecode.Reflection, effectBytecode.Stages[0].Stage); // need to regenerate the Uniforms on OpenGL ES
+                CreateReflection(Reflection, effectBytecode.Stages[0].Stage); // need to regenerate the Uniforms on OpenGL ES
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 // Allocate a buffer that can cache all the bound parameters
-                BoundUniforms = new byte[effectBytecode.Reflection.ConstantBuffers[0].Size];
+                BoundUniforms = new byte[Reflection.ConstantBuffers[0].Size];
 #endif
             }
 
@@ -361,7 +376,7 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 // Register "NoSampler", required by HLSL=>GLSL translation to support HLSL such as texture.Load().
                 var noSampler = new EffectParameterResourceData { Param = { RawName = "NoSampler", KeyName = "NoSampler", Class = EffectParameterClass.Sampler }, SlotStart = -1 };
-                effectBytecode.Reflection.ResourceBindings.Add(noSampler);
+                Reflection.ResourceBindings.Add(noSampler);
                 bool usingSamplerNoSampler = false;
 
                 int activeUniformCount;
