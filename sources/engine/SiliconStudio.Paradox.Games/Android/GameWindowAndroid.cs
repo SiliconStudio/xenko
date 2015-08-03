@@ -213,10 +213,13 @@ namespace SiliconStudio.Paradox.Games
                 paradoxGameForm.Unload -= gameForm_Unload;
                 paradoxGameForm.RenderFrame -= gameForm_RenderFrame;
 
-                paradoxGameForm.GraphicsContext.MakeCurrent(null);
-                paradoxGameForm.GraphicsContext.Dispose();
+                if (paradoxGameForm.GraphicsContext != null)
+                {
+                    paradoxGameForm.GraphicsContext.MakeCurrent(null);
+                    paradoxGameForm.GraphicsContext.Dispose();
+                }
                 ((AndroidWindow)paradoxGameForm.WindowInfo).TerminateDisplay();
-                //paradoxGameForm.Close();
+                //paradoxGameForm.Close(); // bug in xamarin
                 paradoxGameForm.Holder.RemoveCallback(paradoxGameForm);
                 paradoxGameForm.Dispose();
                 paradoxGameForm = null;
