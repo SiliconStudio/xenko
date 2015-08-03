@@ -49,6 +49,8 @@ namespace SiliconStudio.Paradox.Graphics.Font
         public void Unload()
         {
             // TODO possibly save generated characters bitmaps on the disk
+            FontManager.Dispose();
+            FontCacheManager.Dispose();
 
             // Dispose create sprite fonts
             foreach (var allocatedSpriteFont in AllocatedSpriteFonts.ToArray())
