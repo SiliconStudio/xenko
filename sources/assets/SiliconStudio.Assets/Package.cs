@@ -794,6 +794,8 @@ namespace SiliconStudio.Assets
                     continue;
                 }
 
+                // An exception can occur here, so we make sure that loading a single asset is not going to break 
+                // the loop
                 try
                 {
                     AssetMigration.MigrateAssetIfNeeded(log, assetFiles[i]);
@@ -801,8 +803,6 @@ namespace SiliconStudio.Assets
                     // Try to load only if asset is not already in the package or assetRef.Asset is null
                     var assetPath = fileUPath.MakeRelative(sourceFolder).GetDirectoryAndFileName();
 
-                    // An exception can occur here, so we make sure that loading a single asset is not going to break 
-                    // the loop
                     var assetFullPath = fileUPath.FullPath;
                     var assetContent = assetFiles[i].AssetContent;
 
