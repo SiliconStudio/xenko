@@ -95,19 +95,18 @@ namespace SiliconStudio.Presentation.Controls
 
         public static string ProcessTrimming(Control control, string text, double availableWidth)
         {
-            var trimming = GetTextTrimming(control);
-            var source = GetTrimmingSource(control);
-            var wordSeparators = GetWordSeparators(control);
+            TextTrimming trimming = GetTextTrimming(control);
+            TrimmingSource source = GetTrimmingSource(control);
+            string wordSeparators = GetWordSeparators(control);
+            return ProcessTrimming(control, text, availableWidth, trimming, source, wordSeparators);
+        }
 
+        private static string ProcessTrimming(Control control, string text, double availableWidth, TextTrimming trimming, TrimmingSource source, string wordSeparators)
+        {
             if (trimming == TextTrimming.None)
             {
                 return text;
             }
-            // TODO: optim
-            //// Don't process the text if the current available width is the same that the current trimmed text width
-            //double epsilon = GetTextWidth(".");
-            //if (Math.Abs(availableWidth - trimmedTextWidth) < epsilon)
-            //    return arrangedSize;
 
             double[] sizes;
             var textWidth = GetTextWidth(control, text, trimming, out sizes);
@@ -134,82 +133,89 @@ namespace SiliconStudio.Presentation.Controls
                     throw new ArgumentException("Invalid 'TextTrimming' argument.");
             }
 
+            bool firstWord = true;
+            
             switch (source)
             {
                 case TrimmingSource.Begin:
                 {
-                    var n = words.Count - 1;
-                    var sb = new StringBuilder();
+                    var currentWidth = GetTextWidth(control, Ellipsis, trimming);
 
-                    //for (var i = 0; i < Offset; i++)
-                    //    sb.Append(text[i]);
-                    sb.Append(Ellipsis);
-
-                    var starting = sb.ToString();
-                    sb.Clear();
-                    var currentWidth = GetTextWidth(control, starting, trimming);
-
-                    for (; ; )
+                    var ending = new StringBuilder();
+                    for (int i = words.Count - 1; i >= 0; --i)
                     {
-                        var test = currentWidth + sizes[n];
+                        var test = currentWidth + sizes[i];
 
                         if (test > availableWidth)
+                        {
+                            // If there's not enough room for a single word, fall back on character trimming from the beginning
+                            if (trimming == TextTrimming.WordEllipsis && firstWord)
+                            {
+                                return ProcessTrimming(control, words[i], availableWidth, TextTrimming.CharacterEllipsis, TrimmingSource.Begin, wordSeparators);
+                            }
                             break;
-
-                        sb.Insert(0, words[n--]);
+                        }
+                        ending.Insert(0, words[i]);
                         currentWidth = test;
+                        firstWord = false;
                     }
 
-                    return string.Format("{0}{1}", starting, sb);
+                    return string.Format("{0}{1}", Ellipsis, ending);
                 }
                 case TrimmingSource.Middle:
                 {
                     var currentWidth = GetTextWidth(control, Ellipsis, trimming);
-                    var n1 = 0;
-                    var n2 = words.Count - 1;
 
                     var begin = new StringBuilder();
-                    var end = new StringBuilder();
-
-                    while (true)
+                    var ending = new StringBuilder();
+                    for (int i = 0, j = words.Count - 1; i <= j; ++i, --j)
                     {
-                        var test = currentWidth + sizes[n1] + sizes[n2];
+                        var test = currentWidth + sizes[i] + (i != j ? sizes[j] : 0);
 
                         if (test > availableWidth)
+                        {
+                            // If there's not enough room for a single word, fall back on character trimming from the end
+                            if (trimming == TextTrimming.WordEllipsis && firstWord)
+                            {
+                                return ProcessTrimming(control, words[j], availableWidth, TextTrimming.CharacterEllipsis, TrimmingSource.End, wordSeparators);
+                            }
                             break;
-
-                        begin.Append(words[n1++]);
-                        end.Insert(0, words[n2--]);
+                        }
+                        begin.Append(words[i]);
+                        if (i != j)
+                            ending.Insert(0, words[j]);
 
                         currentWidth = test;
+                        firstWord = false;
                     }
 
-                    return string.Format("{0}{2}{1}", begin, end, Ellipsis);
+                    return string.Format("{0}{2}{1}", begin, ending, Ellipsis);
                 }
                 case TrimmingSource.End:
                 {
-                    var n = 0;
-                    var sb = new StringBuilder();
-                    // TODO: allow to skip some characters before trimming (ie. keep the extension at the end for instance)
-                    //for (var i = 0; i < Offset; i++)
-                    //    sb.Insert(0, text[text.Length - i - 1]);
-                    sb.Insert(0, Ellipsis);
-                    var ending = sb.ToString();
-                    sb.Clear();
-                    var currentWidth = GetTextWidth(control, ending, trimming);
+                    var currentWidth = GetTextWidth(control, Ellipsis, trimming);
 
-                    while (true)
+                    var begin = new StringBuilder();
+                    for (int i = 0; i < words.Count; ++i)
                     {
-                        var test = currentWidth + sizes[n];
+                        var test = currentWidth + sizes[i];
 
                         if (test > availableWidth)
+                        {
+                            // If there's not enough room for a single word, fall back on character trimming from the end
+                            if (trimming == TextTrimming.WordEllipsis && firstWord)
+                            {
+                                return ProcessTrimming(control, words[i], availableWidth, TextTrimming.CharacterEllipsis, TrimmingSource.Begin, wordSeparators);
+                            }
                             break;
+                        }
 
-                        sb.Append(words[n++]);
+                        begin.Append(words[i]);
                         currentWidth = test;
+                        firstWord = false;
                     }
 
-                    return string.Format("{0}{1}", sb, ending);
+                    return string.Format("{0}{1}", begin, Ellipsis);
                 }
                 default:
                     throw new ArgumentOutOfRangeException();
