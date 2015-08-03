@@ -81,7 +81,10 @@ namespace SiliconStudio.Paradox.Graphics.Regression
                 });
 #elif SILICONSTUDIO_PLATFORM_ANDROID
                 // Start activity
-                AndroidGameTestActivity.Game = game;
+                lock (AndroidGameTestActivity.GamesToStart)
+                {
+                    AndroidGameTestActivity.GamesToStart.Enqueue(game);
+                }
                 AndroidGameTestActivity.Destroyed += gameFinishedCallback;
                 PlatformAndroid.Context.StartActivity(typeof (AndroidGameTestActivity));
 #endif
@@ -110,7 +113,6 @@ namespace SiliconStudio.Paradox.Graphics.Regression
                     rootNavigationController.PopViewController(false);
                 });
 #elif SILICONSTUDIO_PLATFORM_ANDROID
-                AndroidGameTestActivity.Game = null;
                 AndroidGameTestActivity.Destroyed -= gameFinishedCallback;
 #endif
 
