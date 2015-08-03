@@ -9,7 +9,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 {
     public class TestGraphicsResourceAllocator : GraphicsUnitTestBatch
     {
-        [Test]
+        [Test, Ignore]
         public void TestFake()
         {
             RunDrawTest(
