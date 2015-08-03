@@ -45,16 +45,48 @@ namespace SiliconStudio.Paradox.Assets
             DefaultGraphicsProfile = GraphicsProfile.Level_10_0;
         }
 
+        /// <summary>
+        /// Gets or sets the default scene.
+        /// </summary>
+        /// <userdoc>The default scene that will be loaded at game startup.</userdoc>
         public Scene DefaultScene { get; set; }
 
+        /// <summary>
+        /// Gets or sets the width of the back buffer.
+        /// </summary>
+        /// <userdoc>
+        /// The desired back buffer width.
+        /// Might be overriden depending on actual device resolution and/or ratio.
+        /// On Windows, it will be the window size. On Android/iOS, it will be the off-screen target resolution.
+        /// </userdoc>
         public int BackBufferWidth { get; set; }
 
+        /// <summary>
+        /// Gets or sets the height of the back buffer.
+        /// </summary>
+        /// <userdoc>
+        /// The desired back buffer height.
+        /// Might be overriden depending on actual device resolution and/or ratio.
+        /// On Windows, it will be the window size. On Android/iOS, it will be the off-screen target resolution.
+        /// </userdoc>
         public int BackBufferHeight { get; set; }
 
+        /// <summary>
+        /// Gets or sets the default graphics profile.
+        /// </summary>
+        /// <userdoc>The graphics feature level this game require.</userdoc>
         public GraphicsProfile DefaultGraphicsProfile { get; set; }
 
+        /// <summary>
+        /// Gets or sets the display orientation.
+        /// </summary>
+        /// <userdoc>The display orientations this game support.</userdoc>
         public DisplayOrientation DisplayOrientation { get; set; }
 
+        /// <summary>
+        /// Gets or sets the texture quality.
+        /// </summary>
+        /// <userdoc>The texture quality when encoding textures. Higher settings might result in much slower build depending on the target platform.</userdoc>
         public TextureQuality TextureQuality { get; set; }
 
         internal class UpgraderVersion122
