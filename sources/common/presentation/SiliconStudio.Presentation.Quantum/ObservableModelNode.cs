@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Presentation.ViewModel.ActionStack;
 using SiliconStudio.Quantum;
@@ -20,6 +21,11 @@ namespace SiliconStudio.Presentation.Quantum
         private IModelNode targetNode;
         private bool isInitialized;
         private int? customOrder;
+
+        static ObservableModelNode()
+        {
+            typeof(ObservableModelNode).GetProperties().Select(x => x.Name).ForEach(x => ReservedNames.Add(x));
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObservableModelNode"/> class.
