@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
 using SiliconStudio.Core;
@@ -217,14 +218,30 @@ namespace SiliconStudio.Paradox.Engine
             // Initialize processors
             if (enableScripting)
                 AddProcessor(new ScriptProcessor());   // Order: -100000
-            AddProcessor(new SceneProcessor(this));    // Order: -10000
             AddProcessor(new HierarchicalProcessor()); // Order: -1000  - Important to pre-register this processor
             AddProcessor(new TransformProcessor());    // Order: -100
             AddProcessor(new CameraProcessor());       // Order: -10    - By default, as a scene without a camera is not really possible
-            Add(Scene);
+            foreach (var entity in Scene.Entities)
+                Add(entity);
+
+            // Listen to future changes in Scene.Entities
+            scene.Entities.CollectionChanged += Entities_CollectionChanged;
 
             // TODO: RendererTypes could be done outside this instance.
             HandleRendererTypes();
+        }
+
+        private void Entities_CollectionChanged(object sender, Core.Collections.TrackingCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    Add((Entity)e.Item);
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    Remove((Entity)e.Item);
+                    break;
+            }
         }
 
         private void HandleRendererTypes()

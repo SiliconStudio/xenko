@@ -56,7 +56,10 @@ namespace SiliconStudio.Paradox.Assets.Entities
             {
                 // "Garbage collect" entities that are not referenced in hierarchy tree anymore
                 var entityHashes = new HashSet<Guid>();
-                CollectEntities(entityHashes, source.RootEntity);
+                foreach (var rootEntity in source.RootEntities)
+                {
+                    CollectEntities(entityHashes, rootEntity);
+                }
 
                 source.Entities.Clear();
                 foreach (var item in this)

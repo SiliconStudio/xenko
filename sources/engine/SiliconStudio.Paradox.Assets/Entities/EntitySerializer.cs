@@ -116,12 +116,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
 
         public override void WriteYaml(ref ObjectContext objectContext)
         {
-            if (recursionLevel++ == 0)
-                SetupMaxExpectedDepth(objectContext);
-
-            ++levelSinceScriptComponent;
-            if (objectContext.Descriptor.Type == typeof(ScriptComponent))
-                levelSinceScriptComponent = 0;
+            EnterNode(ref objectContext);
 
             try
             {
@@ -129,19 +124,13 @@ namespace SiliconStudio.Paradox.Assets.Entities
             }
             finally
             {
-                recursionLevel--;
-                levelSinceScriptComponent--;
+                LeaveNode(ref objectContext);
             }
         }
 
         public override object ReadYaml(ref ObjectContext objectContext)
         {
-            if (recursionLevel++ == 0)
-                SetupMaxExpectedDepth(objectContext);
-
-            ++levelSinceScriptComponent;
-            if (objectContext.Descriptor.Type == typeof(ScriptComponent))
-                levelSinceScriptComponent = 0;
+            EnterNode(ref objectContext);
 
             try
             {
@@ -157,14 +146,35 @@ namespace SiliconStudio.Paradox.Assets.Entities
             }
             finally
             {
-                recursionLevel--;
-                levelSinceScriptComponent--;
+                LeaveNode(ref objectContext);
             }
+        }
+
+        private static void EnterNode(ref ObjectContext objectContext)
+        {
+            if (recursionLevel++ == 0)
+                SetupMaxExpectedDepth(objectContext);
+
+            ++levelSinceScriptComponent;
+            if (objectContext.Descriptor.Type == typeof(ScriptComponent))
+                levelSinceScriptComponent = 0;
+
+            // SceneSettings: Pretend we are already inside an entity so add one level
+            if (objectContext.Descriptor.Type == typeof(SceneSettings))
+                recursionLevel++;
+        }
+
+        private static void LeaveNode(ref ObjectContext objectContext)
+        {
+            if (objectContext.Descriptor.Type == typeof(SceneSettings))
+                recursionLevel--;
+            recursionLevel--;
+            levelSinceScriptComponent--;
         }
 
         public bool CanVisit(Type type)
         {
-            return type == typeof(EntityHierarchyData) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type) || typeof(Script).IsAssignableFrom(type);
+            return type == typeof(EntityHierarchyData) || type == typeof(SceneSettings) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type) || typeof(Script).IsAssignableFrom(type);
         }
 
         //public void Visit(ref VisitorContext context)

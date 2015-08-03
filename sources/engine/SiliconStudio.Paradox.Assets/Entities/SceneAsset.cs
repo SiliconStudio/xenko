@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-
+using System.ComponentModel;
 using SharpYaml.Serialization;
 
 using SiliconStudio.Assets;
@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetDescription(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
     [ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName)]
-    [AssetFormatVersion(7)]
+    [AssetFormatVersion(8)]
     [AssetUpgrader(0, 1, typeof(RemoveSourceUpgrader))]
     [AssetUpgrader(1, 2, typeof(RemoveBaseUpgrader))]
     [AssetUpgrader(2, 3, typeof(RemoveModelDrawOrderUpgrader))]
@@ -32,6 +32,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetUpgrader(4, 5, typeof(RemoveSpriteExtrusionMethodUpgrader))]
     [AssetUpgrader(5, 6, typeof(RemoveModelParametersUpgrader))]
     [AssetUpgrader(6, 7, typeof(RemoveEnabledFromIncompatibleComponent))]
+    [AssetUpgrader(7, 8, typeof(SceneIsNotEntityUpgrader))]
     [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
@@ -40,15 +41,12 @@ namespace SiliconStudio.Paradox.Assets.Entities
         public static SceneAsset Create()
         {
             // Create a new root entity, and make sure transformation component is created
-            var rootEntity = new Scene { Name = "Scene" };
-            rootEntity.GetOrCreate(TransformComponent.Key);
 
             return new SceneAsset
             {
                 Hierarchy =
                 {
-                    Entities = { rootEntity },
-                    RootEntity = rootEntity.Id,
+                    Entities = {},
                 }
             };
         }
@@ -184,6 +182,50 @@ namespace SiliconStudio.Paradox.Assets.Entities
             }
         }
 
+        class SceneIsNotEntityUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                // Transform RootEntity in RootEntities
+                var rootEntityFieldIndex = asset.Hierarchy.IndexOf("RootEntity");
+                asset.Hierarchy.RootEntity = DynamicYamlEmpty.Default;
+
+                asset.Hierarchy.RootEntities = new DynamicYamlArray(new YamlSequenceNode());
+
+                // Make sure it is at same position than just removed RootEntity
+                asset.Hierarchy.MoveChild("RootEntities", rootEntityFieldIndex);
+
+                // Remove previous root entity and make its SceneComponent as Hierarchy.SceneComponent
+                int entityIndex = 0;
+                dynamic rootEntity = null;
+                foreach (var entity in asset.Hierarchy.Entities)
+                {
+                    if (entity.Node.Tag == "!Scene")
+                    {
+                        // Capture root entity and delete it from this list
+                        rootEntity = entity;
+                        asset.Hierarchy.Entities.RemoveAt(entityIndex);
+                        break;
+                    }
+                    entityIndex++;
+                }
+
+                if (rootEntity == null)
+                {
+                    throw new InvalidOperationException("Could not upgrade SceneAsset because there no root Scene could be found");
+                }
+
+                // Update list of root entities
+                foreach (var child in rootEntity.Components["TransformComponent.Key"].Children)
+                {
+                    asset.Hierarchy.RootEntities.Add(child.Entity.Id);
+                }
+
+                // Move scene component
+                asset.Hierarchy.SceneSettings = rootEntity.Components["SceneComponent.Key"];
+            }
+        }
+
         private class SceneFactory : IObjectFactory
         {
             public object New(Type type)
@@ -191,6 +233,5 @@ namespace SiliconStudio.Paradox.Assets.Entities
                 return Create();
             }
         }
-
     }
 }

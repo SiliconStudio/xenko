@@ -16,9 +16,9 @@ using SiliconStudio.Paradox.Engine.Design;
 
 namespace SiliconStudio.Paradox.Assets.Entities
 {
-    public class EntityAssetCompiler : AssetCompilerBase<EntityAsset>
+    public class SceneAssetCompiler : AssetCompilerBase<SceneAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, EntityAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SceneAsset asset, AssetCompilerResult result)
         {
             foreach (var entityData in asset.Hierarchy.Entities)
             {
@@ -66,13 +66,13 @@ namespace SiliconStudio.Paradox.Assets.Entities
             result.BuildSteps = new AssetBuildStep(AssetItem) { new EntityCombineCommand(urlInStorage, AssetItem.Package, context, asset) };
         }
 
-        private class EntityCombineCommand : AssetCommand<EntityAsset>
+        private class EntityCombineCommand : AssetCommand<SceneAsset>
         {
             private readonly Package package;
             private readonly AssetCompilerContext context;
 
 
-            public EntityCombineCommand(string url, Package package, AssetCompilerContext context, EntityAsset assetParameters) : base(url, assetParameters)
+            public EntityCombineCommand(string url, Package package, AssetCompilerContext context, SceneAsset assetParameters) : base(url, assetParameters)
             {
                 this.package = package;
                 this.context = context;
@@ -82,8 +82,12 @@ namespace SiliconStudio.Paradox.Assets.Entities
             {
                 var assetManager = new AssetManager();
 
-                var rootEntity = AssetParameters.Hierarchy.Entities[AssetParameters.Hierarchy.RootEntity];
-                assetManager.Save(Url, rootEntity);
+                var scene = new Scene(AssetParameters.Hierarchy.SceneSettings);
+                foreach (var rootEntity in AssetParameters.Hierarchy.RootEntities)
+                {
+                    scene.Entities.Add(AssetParameters.Hierarchy.Entities[rootEntity]);
+                }
+                assetManager.Save(Url, scene);
 
                 // Save the default settings
                 if (IsDefaultScene())

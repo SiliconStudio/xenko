@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
 {
     [DataContract("EntityAsset")]
     [AssetDescription(FileExtension, false)]
-    [AssetCompiler(typeof(EntityAssetCompiler))]
+    [AssetCompiler(typeof(SceneAssetCompiler))]
     //[ThumbnailCompiler(PreviewerCompilerNames.EntityThumbnailCompilerQualifiedName, true)]
     [Display("Entity", "An entity")]
     //[AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
@@ -60,19 +60,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
         {
             public object New(Type type)
             {
-                // Create a new root entity, and make sure transformation component is created
-                var rootEntity = new Entity();
-                rootEntity.Name = "Root";
-                rootEntity.GetOrCreate(TransformComponent.Key);
-
-                return new EntityAsset
-                {
-                    Hierarchy =
-                    {
-                        Entities = { rootEntity },
-                        RootEntity = rootEntity.Id,
-                    }
-                };
+                return new EntityAsset();
             }
         }
 
