@@ -16,9 +16,12 @@
   <PropertyGroup>
     <!-- Defaults for CPU and GraphicsApi based on platform-->
     <SiliconStudioParadoxGraphicsApi Condition="'$(SiliconStudioParadoxGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Windows'">Direct3D11</SiliconStudioParadoxGraphicsApi>
+    <SiliconStudioParadoxGraphicsApi Condition="'$(SiliconStudioParadoxGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'WindowsStore'">Direct3D11</SiliconStudioParadoxGraphicsApi>
+    <SiliconStudioParadoxGraphicsApi Condition="'$(SiliconStudioParadoxGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'WindowsPhone'">Direct3D11</SiliconStudioParadoxGraphicsApi>
+    <SiliconStudioParadoxGraphicsApi Condition="'$(SiliconStudioParadoxGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Windows10'">Direct3D11</SiliconStudioParadoxGraphicsApi>
     <SiliconStudioParadoxGraphicsApi Condition="'$(SiliconStudioParadoxGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Android'">OpenGLES</SiliconStudioParadoxGraphicsApi>
     <SiliconStudioParadoxGraphicsApi Condition="'$(SiliconStudioParadoxGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'iOS'">OpenGLES</SiliconStudioParadoxGraphicsApi>
-    
+
     <!--By default, turn on assembly processor-->
     <SiliconStudioAssemblyProcessor Condition="'$(SiliconStudioAssemblyProcessor)' == ''">true</SiliconStudioAssemblyProcessor>
 
