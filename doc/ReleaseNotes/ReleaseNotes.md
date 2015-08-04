@@ -52,7 +52,7 @@ Windows 10 Universal Apps (Store and Phone) are now supported. Add it to your ex
 Release date: 2015/08/##
 
 ## Issues fixed
-- Studio: Some object were transparent in the camera preview of the scene editor.
+- Studio: Some objects were transparent in the camera preview of the scene editor.
 - Studio: The button to orient the camera in the left direction was incorrectly implemented.
 - Studio: The property grid was displaying some properties that were supposed to be hidden.
 
