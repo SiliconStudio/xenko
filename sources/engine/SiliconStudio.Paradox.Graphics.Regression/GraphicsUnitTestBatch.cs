@@ -11,6 +11,11 @@ using SiliconStudio.Paradox.Games;
 
 namespace SiliconStudio.Paradox.Graphics.Regression
 {
+    // This class is not ready to be used yet. 
+    // - Image comparison should be performed after each draw action and not at the end of the game 
+    //   (NullReferenceExeption is currently thrown at the end of the game because the test context is not valid (because not in the TestCase) this crash all the test suite on Android)
+    // - Exceptions thrown in the draw actions should be collected.
+    /*
     public class GraphicsUnitTestBatch : GraphicsTestBase
     {
         private readonly ManualResetEvent onLoadContentDone;
@@ -54,8 +59,14 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             Task.Run(
                 () =>
                 {
-                    RunGameTest(this);
-                    onGameExit.Set();
+                    try
+                    {
+                        RunGameTest(this);
+                    }
+                    finally
+                    {
+                        onGameExit.Set();
+                    }
                 });
             onLoadContentDone.WaitOne();
         }
@@ -111,5 +122,5 @@ namespace SiliconStudio.Paradox.Graphics.Regression
                 taskExecuted.Set();
             }
         }
-    }
+    }*/
 }

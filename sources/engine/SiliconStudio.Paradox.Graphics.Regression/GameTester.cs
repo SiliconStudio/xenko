@@ -115,10 +115,6 @@ namespace SiliconStudio.Paradox.Graphics.Regression
 #elif SILICONSTUDIO_PLATFORM_ANDROID
                 AndroidGameTestActivity.Destroyed -= gameFinishedCallback;
 #endif
-
-                // Cleanup
-                game.Exiting -= gameFinishedCallback;
-                game.UnhandledException -= exceptionhandler;
             }
         }
 #endif

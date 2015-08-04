@@ -299,7 +299,6 @@
     <Compile Include="TestDynamicSpriteFontVarious.cs" />
     <Compile Include="TestExternSpriteFont.cs" />
     <Compile Include="TestFontManager.cs" />
-    <Compile Include="TestGraphicsResourceAllocator.cs" />
     <Compile Include="TestHammersley.cs" />
     <Compile Include="TestImageEffect.cs" />
     <Compile Include="TestImageLoad.cs" />
