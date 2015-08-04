@@ -1,12 +1,12 @@
 !Texture
-Id: 2bb04e76-e7e1-4d8f-bc54-41951d8f6602
+Id: 9b63680d-c02b-4cbd-927e-47c732e84cfb
 Tags: []
 Source: ../../../data/tests/DumbWhite.dds
-ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 ~Base:
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000
         Tags: []
+        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
         ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

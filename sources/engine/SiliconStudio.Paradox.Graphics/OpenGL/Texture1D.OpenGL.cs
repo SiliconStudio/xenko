@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Graphics
             Target = TextureTarget1D;
         }
 
-        public override Texture ToTexture(ViewType viewType, int arraySlice, int mipMapSlice)
+        public override Texture ToTextureView(ViewType viewType, int arraySlice, int mipMapSlice)
         {
             // Exists since OpenGL 4.3
             if (viewType != ViewType.Full || arraySlice != 0 || mipMapSlice != 0)
@@ -95,7 +95,11 @@ namespace SiliconStudio.Paradox.Graphics
                         data = textureDatas[i].DataPointer;
                     }
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
                     GL.TexImage2D(TextureTarget1D, i, internalFormat, width, 1, 0, format, type, data);
+#else
+                    GL.TexImage2D(TextureTarget2d.Texture2D, i, internalFormat.ToOpenGL(), width, 1, 0, format, type, data);
+#endif
 #else
                     GL.TexImage1D(TextureTarget1D, i, internalFormat, width, 0, format, type, data);
 #endif
@@ -103,6 +107,14 @@ namespace SiliconStudio.Paradox.Graphics
                 GL.BindTexture(TextureTarget1D, 0);
 
                 resourceId = textureId;
+
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                if (!GraphicsDevice.IsOpenGLES2)
+#endif
+                {
+                    if (Description.Usage == GraphicsResourceUsage.Dynamic)
+                        InitializePixelBufferObject();
+                }
             }
         }
 

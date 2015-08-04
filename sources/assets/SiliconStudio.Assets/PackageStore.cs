@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using NuGet;
 using SiliconStudio.Core;
@@ -22,12 +21,6 @@ namespace SiliconStudio.Assets
     {
         private static readonly Lazy<PackageStore> DefaultPackageStore = new Lazy<PackageStore>(() => new PackageStore());
 
-        private const string DefaultEnvironmentSdkDir = "SiliconStudioParadoxSdkDir";
-
-        private const string CommonTargets = @"Targets\SiliconStudio.Common.targets";
-
-        private const string ParadoxSolution = @"build\Paradox.sln";
-
         private readonly Package defaultPackage;
 
         private readonly UDirectory globalInstallationPath;
@@ -46,10 +39,15 @@ namespace SiliconStudio.Assets
         /// <exception cref="System.InvalidOperationException">Unable to find a valid Paradox installation path</exception>
         private PackageStore(string installationPath = null, string defaultPackageName = "Paradox", string defaultPackageVersion = ParadoxVersion.CurrentAsText)
         {
+            // TODO: these are currently hardcoded to Paradox
+            DefaultPackageName = defaultPackageName;
+            DefaultPackageVersion = new PackageVersion(defaultPackageVersion);
+            defaultPackageDirectory = DirectoryHelper.GetPackageDirectory(defaultPackageName);
+   
             // 1. Try to use the specified installation path
             if (installationPath != null)
             {
-                if (!IsRootDirectory(installationPath))
+                if (!DirectoryHelper.IsInstallationDirectory(installationPath))
                 {
                     throw new ArgumentException("Invalid Paradox installation path [{0}]".ToFormat(installationPath), "installationPath");
                 }
@@ -57,57 +55,11 @@ namespace SiliconStudio.Assets
                 globalInstallationPath = installationPath;
             }
 
-            // TODO: these are currently hardcoded to Paradox
-            DefaultPackageName = defaultPackageName;
-            DefaultPackageVersion = new PackageVersion(defaultPackageVersion);
-
             // 2. Try to resolve an installation path from the path of this assembly
             // We need to be able to use the package manager from an official Paradox install as well as from a developer folder
-
-            // Try to determine the root package manager from the current assembly
-            var thisAssemblyLocation = typeof(PackageStore).Assembly.Location;
-            var binDirectory = new FileInfo(thisAssemblyLocation).Directory;
-            if (binDirectory != null && binDirectory.Parent != null && binDirectory.Parent.Parent != null)
-            {
-                var defaultPackageDirectoryTemp = binDirectory.Parent.Parent;
-
-                // If we have a root directory, then store it as the default package directory
-                if (IsPackageDirectory(defaultPackageDirectoryTemp.FullName, DefaultPackageName))
-                {
-                    defaultPackageDirectory = defaultPackageDirectoryTemp.FullName;
-                }
-                else
-                {
-                    throw new InvalidOperationException("The current assembly [{0}] is not part of the package [{1}]".ToFormat(thisAssemblyLocation, DefaultPackageName));
-                }
-
-                if (globalInstallationPath == null)
-                {
-                    // Check if we have a regular distribution
-                    if (defaultPackageDirectoryTemp.Parent != null && IsRootDirectory(defaultPackageDirectoryTemp.Parent.FullName))
-                    {
-                        globalInstallationPath = defaultPackageDirectoryTemp.Parent.FullName;
-                    }
-                    else if (IsRootDirectory(defaultPackageDirectory))
-                    {
-                        // we have a dev distribution
-                        globalInstallationPath = defaultPackageDirectory;
-                    }
-                }
-            }
-            else
-            {
-                throw new InvalidOperationException("The current assembly [{0}] must be loaded from a valid installation".ToFormat(thisAssemblyLocation));
-            }
-
-            // 3. Try from the environement variable
             if (globalInstallationPath == null)
             {
-                var rootDirectory = Environment.GetEnvironmentVariable(DefaultEnvironmentSdkDir);
-                if (!string.IsNullOrWhiteSpace(rootDirectory) && IsRootDirectory(rootDirectory))
-                {
-                    globalInstallationPath = rootDirectory;
-                }
+                globalInstallationPath = DirectoryHelper.GetInstallationDirectory(DefaultPackageName);
             }
 
             // If there is no root, this is an error
@@ -118,7 +70,7 @@ namespace SiliconStudio.Assets
 
             // Preload default package
             var logger = new LoggerResult();
-            var defaultPackageFile = GetPackageFile(defaultPackageDirectory, DefaultPackageName);
+            var defaultPackageFile = DirectoryHelper.GetPackageFile(defaultPackageDirectory, DefaultPackageName);
             defaultPackage = Package.Load(logger, defaultPackageFile, GetDefaultPackageLoadParameters());
             if (defaultPackage == null)
             {
@@ -127,13 +79,13 @@ namespace SiliconStudio.Assets
             defaultPackage.IsSystem = true;
 
             // A flag variable just to know if it is a bare bone development directory
-            isDev = defaultPackageDirectory != null && IsRootDevDirectory(defaultPackageDirectory);
+            isDev = defaultPackageDirectory != null && DirectoryHelper.IsRootDevDirectory(defaultPackageDirectory);
 
             // Check if we are in a root directory with store/packages facilities
             if (NugetStore.IsStoreDirectory(globalInstallationPath))
             {
                 packagesDirectory = UPath.Combine(globalInstallationPath, (UDirectory)NugetStore.DefaultGamePackagesDirectory);
-                store = new NugetStore(globalInstallationPath) { DefaultPackageId = DefaultPackageName };
+                store = new NugetStore(globalInstallationPath);
             }
         }
 
@@ -240,15 +192,16 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="packageName">Name of the package.</param>
         /// <param name="versionRange">The version range.</param>
+        /// <param name="constraintProvider">The package constraint provider.</param>
         /// <param name="allowPreleaseVersion">if set to <c>true</c> [allow prelease version].</param>
         /// <param name="allowUnlisted">if set to <c>true</c> [allow unlisted].</param>
         /// <returns>A location on the disk to the specified package or null if not found.</returns>
         /// <exception cref="System.ArgumentNullException">packageName</exception>
-        public UFile GetPackageFileName(string packageName, PackageVersionRange versionRange = null, bool allowPreleaseVersion = true, bool allowUnlisted = false)
+        public UFile GetPackageFileName(string packageName, PackageVersionRange versionRange = null, IPackageConstraintProvider constraintProvider = null, bool allowPreleaseVersion = true, bool allowUnlisted = false)
         {
             if (packageName == null) throw new ArgumentNullException("packageName");
-            var directory = GetPackageDirectory(packageName, versionRange, allowPreleaseVersion, allowUnlisted);
-            return directory != null ? UPath.Combine(directory, new UFile(packageName + Package.PackageFileExtension)) : null;
+            var directory = GetPackageDirectory(packageName, versionRange, constraintProvider, allowPreleaseVersion, allowUnlisted);
+            return directory != null ? UPath.Combine(UPath.Combine(UPath.Combine(InstallationPath, (UDirectory)store.RepositoryPath), directory), new UFile(packageName + Package.PackageFileExtension)) : null;
         }
 
         /// <summary>
@@ -266,17 +219,17 @@ namespace SiliconStudio.Assets
         private static PackageLoadParameters GetDefaultPackageLoadParameters()
         {
             // By default, we are not loading assets for installed packages
-            return new PackageLoadParameters() { AutoLoadTemporaryAssets = false };
+            return new PackageLoadParameters { AutoLoadTemporaryAssets = false, LoadAssemblyReferences = false, AutoCompileProjects = false };
         }
 
-        private UDirectory GetPackageDirectory(string packageName, PackageVersionRange versionRange, bool allowPreleaseVersion = false, bool allowUnlisted = false)
+        private UDirectory GetPackageDirectory(string packageName, PackageVersionRange versionRange, IPackageConstraintProvider constraintProvider = null, bool allowPreleaseVersion = false, bool allowUnlisted = false)
         {
             if (packageName == null) throw new ArgumentNullException("packageName");
 
             if (store != null)
             {
                 var versionSpec = versionRange.ToVersionSpec();
-                var package = store.Manager.LocalRepository.FindPackage(packageName, versionSpec, allowPreleaseVersion, allowUnlisted);
+                var package = store.Manager.LocalRepository.FindPackage(packageName, versionSpec, constraintProvider ?? NullConstraintProvider.Instance, allowPreleaseVersion, allowUnlisted);
 
                 // If package was not found, 
                 if (package != null)
@@ -290,40 +243,15 @@ namespace SiliconStudio.Assets
             }
 
             // TODO: Check version for default package
-            return DefaultPackageName == packageName ? defaultPackageDirectory : null;
-        }
+            if (packageName == DefaultPackageName)
+            {
+                if (versionRange == null || versionRange.Contains(DefaultPackageVersion))
+                {
+                    return defaultPackageDirectory;
+                }
+            }
 
-        private static string GetCommonTargets(string directory)
-        {
-            if (directory == null) throw new ArgumentNullException("directory");
-            return Path.Combine(directory, CommonTargets);
-        }
-
-        private static string GetPackageFile(string directory, string packageName)
-        {
-            if (directory == null) throw new ArgumentNullException("directory");
-            return Path.Combine(directory, packageName + Package.PackageFileExtension);
-        }
-
-        private static bool IsRootDirectory(string directory)
-        {
-            if (directory == null) throw new ArgumentNullException("directory");
-            var commonTargets = GetCommonTargets(directory);
-            return File.Exists(commonTargets);
-        }
-
-        private static bool IsPackageDirectory(string directory, string packageName)
-        {
-            if (directory == null) throw new ArgumentNullException("directory");
-            var packageFile = GetPackageFile(directory, packageName);
-            return File.Exists(packageFile);
-        }
-
-        private static bool IsRootDevDirectory(string directory)
-        {
-            if (directory == null) throw new ArgumentNullException("directory");
-            var paradoxSolution = Path.Combine(directory, ParadoxSolution);
-            return File.Exists(paradoxSolution);
+            return null;
         }
     }
 }

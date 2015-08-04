@@ -1,9 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.TextureConverter.Requests
 {
@@ -15,11 +13,21 @@ namespace SiliconStudio.TextureConverter.Requests
         public override RequestType Type { get { return RequestType.Decompressing; } }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DecompressingRequest"/> class.
+        /// The format of the decompressed data.
         /// </summary>
-        public DecompressingRequest()
-        {
-        }
+        public PixelFormat DecompressedFormat { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DecompressingRequest" /> class.
+        /// </summary>
+        /// <param name="isSRgb">Indicate if the input image is an sRGB image</param>
+        /// <param name="pixelFormat">Input pixel format.</param>
+        public DecompressingRequest(bool isSRgb, PixelFormat pixelFormat = PixelFormat.None)
+        {
+            if (pixelFormat.IsHDR())
+                DecompressedFormat = PixelFormat.R16G16B16A16_Float;
+            else
+                DecompressedFormat = isSRgb ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm;
+        }
     }
 }

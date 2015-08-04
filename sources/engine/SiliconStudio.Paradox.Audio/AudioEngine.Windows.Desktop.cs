@@ -9,6 +9,7 @@ using System.Threading;
 using SharpDX;
 using SharpDX.MediaFoundation;
 using SharpDX.Win32;
+using SharpDX.Mathematics.Interop;
 
 using SiliconStudio.Core;
 
@@ -130,7 +131,7 @@ namespace SiliconStudio.Paradox.Audio
                 MediaFactory.CreateTopology(out retTopo);
                 for (var i = 0; i < presDesc.StreamDescriptorCount; i++)
                 {
-                    Bool selected;
+                    RawBool selected;
                     StreamDescriptor desc;
                     presDesc.GetStreamDescriptorByIndex(i, out selected, out desc);
                     collector.Add(desc);

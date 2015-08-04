@@ -43,7 +43,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
             Assert.AreEqual(Orientation.Horizontal, slider.Orientation);
             Assert.AreEqual(HorizontalAlignment.Center, slider.HorizontalAlignment);
             Assert.AreEqual(VerticalAlignment.Center, slider.VerticalAlignment);
-            Assert.AreEqual(DepthAlignment.Back, slider.DepthAlignment);
+            Assert.AreEqual(DepthAlignment.Center, slider.DepthAlignment);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
 
             // - test the properties that are supposed to invalidate the object layout state
             UIElementLayeringTests.TestMeasureInvalidation(slider, () => slider.Orientation = Orientation.Vertical);
-            UIElementLayeringTests.TestMeasureInvalidation(slider, () => slider.TrackBackgroundImage = new UIImage());
+            UIElementLayeringTests.TestMeasureInvalidation(slider, () => slider.TrackBackgroundImage = new Sprite());
             
             // - test the properties that are not supposed to invalidate the object layout state
             UIElementLayeringTests.TestNoInvalidation(slider, () => slider.AreTicksDisplayed = true);
@@ -67,10 +67,10 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
             UIElementLayeringTests.TestNoInvalidation(slider, () => slider.Step = 0.2f);
             UIElementLayeringTests.TestNoInvalidation(slider, () => slider.Maximum = 0.2f);
             UIElementLayeringTests.TestNoInvalidation(slider, () => slider.Minimum = 0.1f);
-            UIElementLayeringTests.TestNoInvalidation(slider, () => slider.TrackForegroundImage = new UIImage());
-            UIElementLayeringTests.TestNoInvalidation(slider, () => slider.ThumbImage = new UIImage());
-            UIElementLayeringTests.TestNoInvalidation(slider, () => slider.MouseOverThumbImage = new UIImage());
-            UIElementLayeringTests.TestNoInvalidation(slider, () => slider.DependencyProperties.Set(Slider.TickImagePropertyKey, new UIImage()));
+            UIElementLayeringTests.TestNoInvalidation(slider, () => slider.TrackForegroundImage = new Sprite());
+            UIElementLayeringTests.TestNoInvalidation(slider, () => slider.ThumbImage = new Sprite());
+            UIElementLayeringTests.TestNoInvalidation(slider, () => slider.MouseOverThumbImage = new Sprite());
+            UIElementLayeringTests.TestNoInvalidation(slider, () => slider.DependencyProperties.Set(Slider.TickImagePropertyKey, new Sprite()));
             UIElementLayeringTests.TestNoInvalidation(slider, () => slider.TickOffset = new float());
             UIElementLayeringTests.TestNoInvalidation(slider, () => slider.TrackStartingOffsets = new Vector2());
         }
@@ -224,7 +224,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
             slider.Measure(new Vector3(100, 200, 300));
             Assert.AreEqual(new Vector3(0), slider.RenderSize);
             
-            slider.TrackBackgroundImage = new UIImage { Region = new RectangleF(2, 3, 40, 50) };
+            slider.TrackBackgroundImage = new Sprite { Region = new RectangleF(2, 3, 40, 50) };
             slider.Measure(new Vector3(100, 200, 300));
             Assert.AreEqual(new Vector3(100, 50, 0), slider.DesiredSize);
 

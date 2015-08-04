@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -8,12 +9,9 @@ using System.Text;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Paradox.Graphics.Font;
 
 using Color = SiliconStudio.Core.Mathematics.Color;
-using Rectangle = SiliconStudio.Core.Mathematics.Rectangle;
 using RectangleF = SiliconStudio.Core.Mathematics.RectangleF;
 
 namespace SiliconStudio.Paradox.Graphics
@@ -21,19 +19,13 @@ namespace SiliconStudio.Paradox.Graphics
     /// <summary>
     /// SpriteFont to use with <see cref="SpriteBatch"/>. See <see cref="SpriteFont"/> to learn how to use it.
     /// </summary>
-    [ContentSerializer(typeof(DataContentConverterSerializer<DynamicSpriteFontData, SpriteFont>))]
-    [ContentSerializer(typeof(DataContentConverterSerializer<StaticSpriteFontData, SpriteFont>))]
+    [DataContract]
     public class SpriteFont : ComponentBase
     {
-        private Vector4 nullVector4 = Vector4.Zero; 
-
-        /// <summary>
-        /// The <see cref="SiliconStudio.Paradox.Graphics.Font.FontSystem"/> that is managing this sprite font.
-        /// </summary>
-        protected readonly FontSystem FontSystem;
+        public static readonly Logger Logger = GlobalLogger.GetLogger("SpriteFont");
 
         // Lookup table indicates which way to move along each axis per SpriteEffects enum value.
-        private static readonly Vector2[] axisDirectionTable = {
+        private static readonly Vector2[] AxisDirectionTable = {
                                                                     new Vector2(-1, -1),
                                                                     new Vector2(1, -1),
                                                                     new Vector2(-1, 1),
@@ -41,25 +33,23 @@ namespace SiliconStudio.Paradox.Graphics
                                                                 };
 
         // Lookup table indicates which axes are mirrored for each SpriteEffects enum value.
-        private static readonly Vector2[] axisIsMirroredTable = {
+        private static readonly Vector2[] AxisIsMirroredTable = {
                                                                     new Vector2(0, 0),
                                                                     new Vector2(1, 0),
                                                                     new Vector2(0, 1),
                                                                     new Vector2(1, 1)
                                                                 };
 
-        public static readonly Logger Logger = GlobalLogger.GetLogger("SpriteFont");
-        protected SwizzleMode Swizzle;
-        protected float BaseOffsetY;
-        protected float DefaultLineSpacing;
-        protected readonly Dictionary<int, float> KerningMap = new Dictionary<int, float>();
-
-        public IReadOnlyList<Texture2D> Textures { get; protected set; }
+        /// <summary>
+        /// Gets the textures containing the font character data.
+        /// </summary>
+        [DataMemberIgnore]
+        public virtual IReadOnlyList<Texture> Textures { get; protected set; }
 
         /// <summary>
         /// Gets the font size (resp. the default font size) for static fonts (resp. for dynamic fonts) in pixels.
         /// </summary>
-        public float Size { get; private set; }
+        public float Size { get; internal set; }
 
         /// <summary>
         /// Gets or sets the default character for the font.
@@ -69,6 +59,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// Completely skips characters that are not in the map.
         /// </summary>
+        [DataMemberIgnore]
         public bool IgnoreUnkownCharacters { get; set; }
 
         /// <summary>
@@ -85,26 +76,55 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <remarks>Line spacing is the distance between the base lines of two consecutive lines of text (blank space as well as characters' height are thus included).</remarks>
         public float ExtraLineSpacing { get; set; }
-
+        
         /// <summary>
         /// Gets a boolean indicating if the current font is dynamic or not.
         /// </summary>
-        public bool IsDynamic { get; private set; }
+        [DataMemberIgnore]
+        public bool IsDynamic { get; protected set; }
 
-        protected SpriteFont(FontSystem fontSystem, SpriteFontData fontData, bool isDynamic)
+        [DataMember(0)]
+        internal float BaseOffsetY;
+
+        [DataMember(1)]
+        internal float DefaultLineSpacing;
+
+        [DataMember(2)]
+        internal Dictionary<int, float> KerningMap;
+
+        private FontSystem fontSystem;
+
+        /// <summary>
+        /// The swizzle mode to use when drawing the sprite font.
+        /// </summary>
+        protected SwizzleMode Swizzle;
+
+        /// <summary>
+        /// The <see cref="SiliconStudio.Paradox.Graphics.Font.FontSystem"/> that is managing this sprite font.
+        /// </summary>
+        [DataMemberIgnore]
+        internal virtual FontSystem FontSystem
         {
-            // register itself to the managing font system
-            FontSystem = fontSystem;
-            FontSystem.AllocatedSpriteFonts.Add(this);
+            get { return fontSystem; }
+            set
+            {
+                if (fontSystem == value)
+                    return;
 
-            // determine the type of the font
-            IsDynamic = isDynamic;
+                // unregister itself from the previous font system
+                if (fontSystem != null)
+                    fontSystem.AllocatedSpriteFonts.Remove(this);
 
-            // Read the font data.
-            Size = fontData.Size;
-            ExtraSpacing = fontData.ExtraSpacing;
-            ExtraLineSpacing = fontData.ExtraLineSpacing;
-            DefaultCharacter = fontData.DefaultCharacter;
+                fontSystem = value;
+
+                // register itself to the new managing font system
+                if(fontSystem != null)
+                    fontSystem.AllocatedSpriteFonts.Add(this);
+            }
+        }
+        
+        internal SpriteFont()
+        {
         }
 
         protected override void Destroy()
@@ -174,7 +194,7 @@ namespace SiliconStudio.Paradox.Graphics
             // If the text is mirrored, offset the start position accordingly.
             if (drawCommand.SpriteEffects != SpriteEffects.None)
             {
-                drawCommand.Origin -= MeasureString(ref text, ref drawCommand.FontSize) * axisIsMirroredTable[(int)drawCommand.SpriteEffects & 3];
+                drawCommand.Origin -= MeasureString(ref text, ref drawCommand.FontSize) * AxisIsMirroredTable[(int)drawCommand.SpriteEffects & 3];
             }
 
             // Draw each character in turn.
@@ -205,7 +225,7 @@ namespace SiliconStudio.Paradox.Graphics
             var spriteEffects = parameters.SpriteEffects;
 
             var offset = new Vector2(x, y + GetBaseOffsetY(fontSize.Y) + glyph.Offset.Y);
-            Vector2.Modulate(ref offset, ref axisDirectionTable[(int)spriteEffects & 3], out offset);
+            Vector2.Modulate(ref offset, ref AxisDirectionTable[(int)spriteEffects & 3], out offset);
             Vector2.Add(ref offset, ref parameters.Origin, out offset);
             offset.X = (float)Math.Round(offset.X);
             offset.Y = (float)Math.Round(offset.Y);
@@ -214,7 +234,7 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 // For mirrored characters, specify bottom and/or right instead of top left.
                 var glyphRect = new Vector2(glyph.Subrect.Right - glyph.Subrect.Left, glyph.Subrect.Top - glyph.Subrect.Bottom);
-                Vector2.Modulate(ref glyphRect, ref axisIsMirroredTable[(int)spriteEffects & 3], out offset);
+                Vector2.Modulate(ref glyphRect, ref AxisIsMirroredTable[(int)spriteEffects & 3], out offset);
             }
             var destination = new RectangleF(parameters.Position.X, parameters.Position.Y, parameters.Scale.X, parameters.Scale.Y);
             RectangleF? sourceRectangle = glyph.Subrect;
@@ -223,13 +243,7 @@ namespace SiliconStudio.Paradox.Graphics
 
         internal void InternalUIDraw(ref StringProxy text, ref InternalUIDrawCommand drawCommand)
         {
-            if (!IsDynamic && (drawCommand.FontScale.X != 1 || drawCommand.FontScale.Y != 1)) // ensure that static font are not scaled internally
-            {
-                drawCommand.SnapText = false;   // we don't want snapping of the resolution of the screen does not match virtual resolution. (character alignment problems)
-                drawCommand.FontScale = Vector2.One;
-            }
-
-            var fontSize = drawCommand.FontSize * drawCommand.FontScale;
+            var fontSize = new Vector2(drawCommand.FontSize * drawCommand.FontScale.Y); // we don't want to have letters with non uniform ratio
             var scaledSize = new Vector2(drawCommand.Size.X * drawCommand.FontScale.X, drawCommand.Size.Y * drawCommand.FontScale.Y);
             ForEachGlyph(ref text, ref fontSize, InternalUIDrawGlyph, ref drawCommand, drawCommand.Alignment, true, scaledSize);
         }
@@ -238,22 +252,36 @@ namespace SiliconStudio.Paradox.Graphics
         {
             if (char.IsWhiteSpace((char)glyph.Character))
                 return;
-            
-            var xShift = x + glyph.Subrect.Width / 2f;
-            var yShift = y + GetBaseOffsetY(fontSize.Y) + glyph.Offset.Y + glyph.Subrect.Height / 2f;
+
+            // Skip items with null size
+            var elementSize = new Vector2(glyph.Subrect.Width / parameters.FontScale.X, glyph.Subrect.Height / parameters.FontScale.Y);
+            if (elementSize.Length() < MathUtil.ZeroTolerance) 
+                return;
+
+            var xShift = x;
+            var yShift = y + GetBaseOffsetY(fontSize.Y) + glyph.Offset.Y;
+            if (parameters.SnapText)
+            {
+                xShift = (float)Math.Round(xShift);
+                yShift = (float)Math.Round(yShift);
+            }
             var xScaledShift = xShift / parameters.FontScale.X;
             var yScaledShift = yShift / parameters.FontScale.Y;
 
-            var worldMatrix = parameters.WorldMatrix;
+            var worldMatrix = parameters.Matrix;
             worldMatrix.M41 += worldMatrix.M11 * xScaledShift + worldMatrix.M21 * yScaledShift;
             worldMatrix.M42 += worldMatrix.M12 * xScaledShift + worldMatrix.M22 * yScaledShift;
             worldMatrix.M43 += worldMatrix.M13 * xScaledShift + worldMatrix.M23 * yScaledShift;
 
-            var elementSize = new Vector3(glyph.Subrect.Width / parameters.FontScale.X, glyph.Subrect.Height / parameters.FontScale.Y, 0);
+            worldMatrix.M11 *= elementSize.X;
+            worldMatrix.M12 *= elementSize.X;
+            worldMatrix.M13 *= elementSize.X;
+            worldMatrix.M21 *= elementSize.Y;
+            worldMatrix.M22 *= elementSize.Y;
+            worldMatrix.M23 *= elementSize.Y;
 
             RectangleF sourceRectangle = glyph.Subrect;
-            parameters.Batch.DrawImage(Textures[glyph.BitmapIndex], null, ref worldMatrix, ref sourceRectangle, ref elementSize, ref nullVector4, 
-                ref parameters.Color, parameters.DepthBias, ImageOrientation.AsIs, Swizzle, parameters.SnapText);
+            parameters.Batch.DrawCharacter(Textures[glyph.BitmapIndex], ref worldMatrix, ref sourceRectangle, ref parameters.Color, parameters.DepthBias, Swizzle);
         }
 
         /// <summary>
@@ -474,8 +502,14 @@ namespace SiliconStudio.Paradox.Graphics
                     var lineSize = Vector2.Zero;
                     ForGlyph(ref text, ref fontSize, MeasureStringGlyph, ref lineSize, startIndex, endIndex, updateGpuResources);
 
-                    // scan the line
+                    // Determine the start position of the line along the x axis
+                    // We round this value to the closest integer to force alignment of all characters to the same pixels
+                    // Otherwise the starting offset can fall just in between two pixels and due to float imprecision 
+                    // some characters can be aligned to the pixel before and others to the pixel after, resulting in gaps and character overlapping
                     var xStart = (scanOrder == TextAlignment.Center) ? (wholeSize.X - lineSize.X) / 2 : wholeSize.X - lineSize.X;
+                    xStart = (float)Math.Round(xStart); 
+
+                    // scan the line
                     ForGlyph(ref text, ref fontSize, action, ref parameters, startIndex, endIndex, updateGpuResources, xStart, yStart);
                     
                     // update variable before going to next line
@@ -634,7 +668,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             public UIBatch Batch;
 
-            public Matrix WorldMatrix;
+            public Matrix Matrix;
 
             public Vector2 Size;
 

@@ -9,7 +9,7 @@ using OpenTK.Graphics.ES30;
 using OpenTK.Graphics.OpenGL;
 #endif
 using SiliconStudio.Core;
-using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.ReferenceCounting;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -36,6 +36,13 @@ namespace SiliconStudio.Paradox.Graphics
             this.vertexBufferBindings = vertexBufferBindings;
             this.indexBufferBinding = indexBufferBinding;
             this.preferredInputSignature = shaderSignature;
+            
+            // Increase the reference count on the provided buffers -> we do not want to take the ownership
+            foreach (VertexBufferBinding vertexBufferBinding in vertexBufferBindings)
+                vertexBufferBinding.Buffer.AddReferenceInternal();
+
+            if (indexBufferBinding != null)
+                indexBufferBinding.Buffer.AddReferenceInternal();
 
             CreateAttributes();
         }
@@ -90,17 +97,16 @@ namespace SiliconStudio.Paradox.Graphics
                 indexBufferId = indexBufferBinding.Buffer.resourceId;
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                if (indexBufferBinding.Is32Bit)
+                if (GraphicsDevice.IsOpenGLES2 && indexBufferBinding.Is32Bit)
                     throw new PlatformNotSupportedException("32 bits index buffer are not supported on OpenGL ES 2.0");
-                drawElementsType = DrawElementsType.UnsignedShort;
-                indexElementSize = 2;
                 indexBufferOffset = (indexBufferId == 0 ? indexBufferBinding.Buffer.StagingData : IntPtr.Zero) +
                                     indexBufferBinding.Offset;
 #else
-                drawElementsType = indexBufferBinding.Is32Bit ? DrawElementsType.UnsignedInt : DrawElementsType.UnsignedShort;
-                indexElementSize = indexBufferBinding.Is32Bit ? 4 : 2;
+                
                 indexBufferOffset = (IntPtr)indexBufferBinding.Offset;
 #endif
+                drawElementsType = indexBufferBinding.Is32Bit ? DrawElementsType.UnsignedInt : DrawElementsType.UnsignedShort;
+                indexElementSize = indexBufferBinding.Is32Bit ? 4 : 2;
             }
 
             // If we have a signature, we can already pre-create the instance

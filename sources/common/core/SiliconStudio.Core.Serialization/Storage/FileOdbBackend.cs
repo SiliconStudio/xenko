@@ -14,6 +14,7 @@ namespace SiliconStudio.Core.Storage
     /// </summary>
     public class FileOdbBackend : IOdbBackend
     {
+        private static readonly object LockOnMove = new object();
         private const int WriteBufferSize = 1024;
         private bool isReadOnly;
 
@@ -71,27 +72,14 @@ namespace SiliconStudio.Core.Storage
             if (!virtualFileProvider.FileExists(url))
             {
                 if (mode == VirtualFileMode.Open || mode == VirtualFileMode.Truncate)
-                    return null;
+                    throw new FileNotFoundException();
 
                 // Otherwise, file creation is allowed, so make sure directory exists
                 virtualFileProvider.CreateDirectory(ExtractPath(url));
 
             }
 
-            try
-            {
-                return virtualFileProvider.OpenStream(url, mode, access, share);
-            }
-            catch (FileNotFoundException)
-            {
-                return null;
-            }
-#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
-            catch (DirectoryNotFoundException)
-            {
-                return null;
-            }
-#endif
+            return virtualFileProvider.OpenStream(url, mode, access, share);
         }
 
         /// <inheritdoc/>
@@ -126,13 +114,14 @@ namespace SiliconStudio.Core.Storage
                 dataStream.Seek(0, SeekOrigin.Begin);
             }
 
+            string tmpFileName = vfsTempUrl + Guid.NewGuid() + ".tmp";
+
             var url = BuildUrl(vfsRootUrl, objectId);
 
             if (!forceWrite && virtualFileProvider.FileExists(url))
                 return objectId;
 
-            virtualFileProvider.CreateDirectory(ExtractPath(url));
-            using (var file = virtualFileProvider.OpenStream(url, VirtualFileMode.Create, VirtualFileAccess.Write))
+            using (var file = virtualFileProvider.OpenStream(tmpFileName, VirtualFileMode.Create, VirtualFileAccess.Write))
             {
                 // TODO: Fast case for NativeStream. However we still need a file implementation of NativeStream.
                 var buffer = new byte[WriteBufferSize];
@@ -147,6 +136,8 @@ namespace SiliconStudio.Core.Storage
                 }
             }
 
+            MoveToDatabase(tmpFileName, objectId);
+
             return objectId;
         }
 
@@ -158,42 +149,42 @@ namespace SiliconStudio.Core.Storage
 
             string tmpFileName = vfsTempUrl + Guid.NewGuid() + ".tmp";
             Stream stream = virtualFileProvider.OpenStream(tmpFileName, VirtualFileMode.Create, VirtualFileAccess.Write);
-            return new DigestStream(stream, tmpFileName) { Disposed = x => SaveStream(x) };
+            return new DigestStream(stream, tmpFileName) { Disposed = x => MoveToDatabase(x.TemporaryName, x.CurrentHash) };
         }
 
         /// <inheritdoc/>
-        private ObjectId SaveStream(OdbStreamWriter stream)
+        private ObjectId MoveToDatabase(string temporaryFilePath, ObjectId objId)
         {
-            ObjectId objId = stream.CurrentHash;
             string fileUrl = BuildUrl(vfsRootUrl, objId);
 
-            string temporaryFilePath = stream.TemporaryName;
-
-            // File may already exists, in this case we decide to not override it.
-            if (!virtualFileProvider.FileExists(fileUrl))
+            lock (LockOnMove)
             {
-                try
+                // File may already exists, in this case we decide to not override it.
+                if (!virtualFileProvider.FileExists(fileUrl))
                 {
-                    // Remove the second part of ObjectId to get the path (cf BuildUrl)
-                    virtualFileProvider.CreateDirectory(fileUrl.Substring(0, fileUrl.Length - (ObjectId.HashStringLength - 2)));
-                    virtualFileProvider.FileMove(temporaryFilePath, BuildUrl(vfsRootUrl, objId));
-                }
-                catch (IOException e)
-                {
-                    // Ignore only IOException "The destination file already exists."
-                    // because other exceptions that we want to catch might inherit from IOException.
-                    // This happens if two FileMove were performed at the same time.
-                    if (e.GetType() != typeof(IOException))
-                        throw;
+                    try
+                    {
+                        // Remove the second part of ObjectId to get the path (cf BuildUrl)
+                        virtualFileProvider.CreateDirectory(fileUrl.Substring(0, fileUrl.Length - (ObjectId.HashStringLength - 2)));
+                        virtualFileProvider.FileMove(temporaryFilePath, BuildUrl(vfsRootUrl, objId));
+                    }
+                    catch (IOException e)
+                    {
+                        // Ignore only IOException "The destination file already exists."
+                        // because other exceptions that we want to catch might inherit from IOException.
+                        // This happens if two FileMove were performed at the same time.
+                        if (e.GetType() != typeof(IOException))
+                            throw;
 
+                        // But we should still clean our temporary file
+                        virtualFileProvider.FileDelete(temporaryFilePath);
+                    }
+                }
+                else
+                {
                     // But we should still clean our temporary file
                     virtualFileProvider.FileDelete(temporaryFilePath);
                 }
-            }
-            else
-            {
-                // But we should still clean our temporary file
-                virtualFileProvider.FileDelete(temporaryFilePath);
             }
 
             return objId;

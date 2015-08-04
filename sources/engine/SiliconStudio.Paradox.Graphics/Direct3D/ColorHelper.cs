@@ -22,29 +22,29 @@
 // THE SOFTWARE.
 
 using SharpDX;
+using SharpDX.Mathematics.Interop;
 using SiliconStudio.Core.Mathematics;
-using Color4 = SharpDX.Color4;
 
 namespace SiliconStudio.Paradox.Graphics
 {
     internal class ColorHelper
     {
-        public static Color4 Convert(SiliconStudio.Core.Mathematics.Color4 color)
+        public static RawColor4 Convert(Color4 color)
         {
-            var temp = new Color4();
+            var temp = new RawColor4();
             unsafe
             {
-                *((SiliconStudio.Core.Mathematics.Color4*)&temp) = color;
+                *((Color4*)&temp) = color;
             }
             return temp;
         }
 
-        public static SiliconStudio.Core.Mathematics.Color4 Convert(Color4 color)
+        public static Color4 Convert(RawColor4 color)
         {
-            var temp = new SiliconStudio.Core.Mathematics.Color4();
+            var temp = new Color4();
             unsafe
             {
-                *((Color4*)&temp) = color;
+                *((RawColor4*)&temp) = color;
             }
             return temp;
         }

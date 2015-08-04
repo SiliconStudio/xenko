@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 
@@ -19,6 +21,7 @@ namespace SiliconStudio.Presentation.Tests
             int count = 1;
             dispatcher.Invoke(() => count = 2);
             Assert.AreEqual(2, count);
+            ShutdownDispatcher(dispatcher);
         }
 
         [Test]
@@ -28,6 +31,7 @@ namespace SiliconStudio.Presentation.Tests
             int count = 1;
             int result = dispatcher.Invoke(() => ++count);
             Assert.AreEqual(2, result);
+            ShutdownDispatcher(dispatcher);
         }
 
         [Test]
@@ -39,6 +43,7 @@ namespace SiliconStudio.Presentation.Tests
             Assert.AreEqual(1, count);
             Thread.Sleep(200);
             Assert.AreEqual(2, count);
+            ShutdownDispatcher(dispatcher);
         }
 
         [Test]
@@ -48,8 +53,9 @@ namespace SiliconStudio.Presentation.Tests
             int count = 1;
             var task = dispatcher.InvokeAsync(async () => { await Task.Delay(100); count = count + 1; });
             Assert.AreEqual(1, count);
-            task.Wait();
+            task.Result.Wait();
             Assert.AreEqual(2, count);
+            ShutdownDispatcher(dispatcher);
         }
 
         [Test]
@@ -60,8 +66,9 @@ namespace SiliconStudio.Presentation.Tests
             var task = dispatcher.InvokeAsync(async () => { await Task.Delay(100); return 2; });
             Assert.AreEqual(1, count);
             task.Wait();
-            count += task.Result;
+            count += task.Result.Result;
             Assert.AreEqual(3, count);
+            ShutdownDispatcher(dispatcher);
         }
         
         [Test]
@@ -71,8 +78,9 @@ namespace SiliconStudio.Presentation.Tests
             int count = 1;
             var task = dispatcher.InvokeAsync(async () => { await Task.Delay(100); count = count + 1; });
             Assert.AreEqual(1, count);
-            await task;
+            await task.Result;
             Assert.AreEqual(2, count);
+            ShutdownDispatcher(dispatcher);
         }
 
         [Test]
@@ -82,8 +90,14 @@ namespace SiliconStudio.Presentation.Tests
             int count = 1;
             var task = dispatcher.InvokeAsync(async () => { await Task.Delay(100); return 2; });
             Assert.AreEqual(1, count);
-            count += await task;
+            count += await task.Result;
             Assert.AreEqual(3, count);
+            ShutdownDispatcher(dispatcher);
+        }
+
+        static void ShutdownDispatcher(IDispatcherService dispatcher)
+        {
+            dispatcher.Invoke(() => Dispatcher.CurrentDispatcher.InvokeShutdown());
         }
 
         static IDispatcherService CreateDispatcher()

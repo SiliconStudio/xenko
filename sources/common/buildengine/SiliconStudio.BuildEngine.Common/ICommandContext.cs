@@ -11,7 +11,7 @@ namespace SiliconStudio.BuildEngine
     public interface ICommandContext
     {
         Command CurrentCommand { get; }
-        Logger Logger { get; }
+        LoggerResult Logger { get; }
         BuildParameterCollection BuildParameters { get; }
 
         IMetadataProvider MetadataProvider { get; }
@@ -22,6 +22,7 @@ namespace SiliconStudio.BuildEngine
 
         void RegisterInputDependency(ObjectUrl url);
         void RegisterOutput(ObjectUrl url, ObjectId hash);
+        void RegisterCommandLog(IEnumerable<ILogMessage> logMessages);
 
         void AddTag(ObjectUrl url, TagSymbol tagSymbol);
 

@@ -53,9 +53,15 @@ namespace SiliconStudio.BuildEngine
             }
 
             assemblies.Add(assembly);
-            foreach (var assemblyName in assembly.GetReferencedAssemblies())
+            foreach (var referencedAssemblyName in assembly.GetReferencedAssemblies())
             {
-                var assemblyRef = Assembly.Load(assemblyName);
+                // Avoid processing system assemblies
+                // TODO: Scan what is actually in framework folders (and unify it with ProcessDataSerializerGlobalAttributes)
+                if (referencedAssemblyName.Name == "mscorlib" || referencedAssemblyName.Name.StartsWith("System")
+                    || referencedAssemblyName.FullName.Contains("PublicKeyToken=31bf3856ad364e35")) // Signed with Microsoft public key (likely part of system libraries)
+                    continue;
+
+                var assemblyRef = Assembly.Load(referencedAssemblyName);
                 ComputeAssemblyHash(assemblyRef, assemblies, outputString);
             }
         }

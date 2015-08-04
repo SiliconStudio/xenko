@@ -114,4 +114,5 @@ We use several open-source products from Paradox, and would like to thanks them 
 * [TreeViewEx](http://treeviewex.codeplex.com/) (MIT License)
 * [WPFToolKit](http://wpftoolkit.codeplex.com/) (Ms-PL)
 * [AvalonDock](https://avalondock.codeplex.com/) (New BSD License)
+* [SocketsForPCL](https://github.com/rdavisau/sockets-for-pcl) (MIT License)
 * Some blog posts contributions, which the authors kindly allowed us to use

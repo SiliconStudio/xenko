@@ -13,14 +13,15 @@ namespace SiliconStudio.Assets.CompilerApp
 {
     public class RemoteCommandContext : CommandContextBase
     {
-        public override Logger Logger { get { return logger; } }
+        public override LoggerResult Logger { get { return logger; } }
 
         internal new CommandResultEntry ResultEntry { get { return base.ResultEntry; } }
 
-        private readonly Logger logger;
+        private readonly LoggerResult logger;
         private readonly IProcessBuilderRemote processBuilderRemote;
 
-        public RemoteCommandContext(IProcessBuilderRemote processBuilderRemote, Command command, BuilderContext builderContext, Logger logger) : base(command, builderContext)
+        public RemoteCommandContext(IProcessBuilderRemote processBuilderRemote, Command command, BuilderContext builderContext, LoggerResult logger)
+            : base(command, builderContext)
         {
             this.processBuilderRemote = processBuilderRemote;
             this.logger = logger;

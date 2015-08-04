@@ -41,6 +41,8 @@ namespace SiliconStudio.Core.Mathematics
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     {
+        public static readonly BoundingSphere Empty = new BoundingSphere();
+
         /// <summary>
         /// The center of the sphere in three dimensional space.
         /// </summary>
@@ -186,29 +188,57 @@ namespace SiliconStudio.Core.Mathematics
         /// </summary>
         /// <param name="points">The points that will be contained by the sphere.</param>
         /// <param name="result">When the method completes, contains the newly constructed bounding sphere.</param>
-        public static void FromPoints(Vector3[] points, out BoundingSphere result)
+        public unsafe static void FromPoints(Vector3[] points, out BoundingSphere result)
         {
+            if (points == null) throw new ArgumentNullException("points");
+            fixed (void* pointsPtr = points)
+            {
+                FromPoints((IntPtr)pointsPtr, 0, points.Length, Utilities.SizeOf<Vector3>(), out result);
+            }
+        }
+
+        /// <summary>
+        /// Constructs a <see cref="SiliconStudio.Core.Mathematics.BoundingSphere" /> that fully contains the given unmanaged points.
+        /// </summary>
+        /// <param name="vertexBufferPtr">A pointer to of vertices containing points.</param>
+        /// <param name="vertexPositionOffsetInBytes">The point offset in bytes starting from the vertex structure.</param>
+        /// <param name="vertexCount">The verterx vertexCount.</param>
+        /// <param name="vertexStride">The vertex stride (size of vertex).</param>
+        /// <param name="result">When the method completes, contains the newly constructed bounding sphere.</param>
+        public static unsafe void FromPoints(IntPtr vertexBufferPtr, int vertexPositionOffsetInBytes, int vertexCount, int vertexStride, out BoundingSphere result)
+        {
+            if (vertexBufferPtr == IntPtr.Zero)
+            {
+                throw new ArgumentNullException("vertexBufferPtr");
+            }
+
+            var startPoint = (byte*)vertexBufferPtr + vertexPositionOffsetInBytes;
+
             //Find the center of all points.
             Vector3 center = Vector3.Zero;
-            for (int i = 0; i < points.Length; ++i)
+            var nextPoint = startPoint;
+            for (int i = 0; i < vertexCount; ++i)
             {
-                Vector3.Add(ref points[i], ref center, out center);
+                Vector3.Add(ref *(Vector3*)nextPoint, ref center, out center);
+                nextPoint += vertexStride;
             }
 
             //This is the center of our sphere.
-            center /= (float)points.Length;
+            center /= (float)vertexCount;
 
             //Find the radius of the sphere
             float radius = 0f;
-            for (int i = 0; i < points.Length; ++i)
+            nextPoint = startPoint;
+            for (int i = 0; i < vertexCount; ++i)
             {
                 //We are doing a relative distance comparasin to find the maximum distance
                 //from the center of our sphere.
                 float distance;
-                Vector3.DistanceSquared(ref center, ref points[i], out distance);
+                Vector3.DistanceSquared(ref center, ref *(Vector3*)nextPoint, out distance);
 
                 if (distance > radius)
                     radius = distance;
+                nextPoint += vertexStride;
             }
 
             //Find the real distance from the DistanceSquared.
@@ -268,6 +298,19 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="result">When the method completes, contains the newly constructed bounding sphere.</param>
         public static void Merge(ref BoundingSphere value1, ref BoundingSphere value2, out BoundingSphere result)
         {
+            // Pre-exit if one of the bounding sphere by assuming that a merge with an empty sphere is equivalent at taking the non-empty sphere
+            if (value1 == Empty)
+            {
+                result = value2;
+                return;
+            } 
+            
+            if (value2 == Empty)
+            {
+                result = value1;
+                return;
+            }
+
             Vector3 difference = value2.Center - value1.Center;
 
             float length = difference.Length();

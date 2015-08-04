@@ -19,15 +19,22 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands.Shaders
             {
                 var parsingResult = ParadoxShaderParser.TryPreProcessAndParse(inputFileContent, inputFileName);
 
-                // Try to generate a mixin code.
-                var shaderKeyGenerator = new ShaderMixinCodeGen(parsingResult.Shader, parsingResult);
+                if (parsingResult.HasErrors)
+                {
+                    result = "// Failed to parse the shader:\n" + parsingResult;
+                }
+                else
+                {
+                    // Try to generate a mixin code.
+                    var shaderKeyGenerator = new ShaderMixinCodeGen(parsingResult.Shader, parsingResult);
 
-                shaderKeyGenerator.Run();
-                result = shaderKeyGenerator.Text ?? string.Empty;
+                    shaderKeyGenerator.Run();
+                    result = shaderKeyGenerator.Text ?? string.Empty;
+                }
             }
             catch (Exception ex)
             {
-                result = "// Unexpected exceptions occured while generating the file\n" + ex;
+                result = "// Unexpected exceptions occurred while generating the file\n" + ex;
             }
 
             // We force the UTF8 to include the BOM to match VS default

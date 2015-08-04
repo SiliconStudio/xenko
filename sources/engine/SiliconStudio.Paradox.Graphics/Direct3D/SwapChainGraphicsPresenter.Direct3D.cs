@@ -28,6 +28,7 @@ using System.Windows.Forms;
 #endif
 using SharpDX;
 using SharpDX.DXGI;
+using SharpDX.Mathematics.Interop;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -36,9 +37,9 @@ namespace SiliconStudio.Paradox.Graphics
     /// </summary>
     public class SwapChainGraphicsPresenter : GraphicsPresenter
     {
-        private RenderTarget backBuffer;
-
         private SwapChain swapChain;
+
+        private Texture backBuffer;
 
         private int bufferCount;
 
@@ -50,14 +51,13 @@ namespace SiliconStudio.Paradox.Graphics
             // Initialize the swap chain
             swapChain = CreateSwapChain();
 
-            var backBufferTexture = new Texture2D(device, swapChain.GetBackBuffer<SharpDX.Direct3D11.Texture2D>(0));
-            backBuffer = backBufferTexture.ToRenderTarget();
+            backBuffer = new Texture(device).InitializeFrom(swapChain.GetBackBuffer<SharpDX.Direct3D11.Texture2D>(0));
 
             // Reload should get backbuffer from swapchain as well
-            //backBufferTexture.Reload = graphicsResource => ((Texture2D)graphicsResource).Recreate(swapChain.GetBackBuffer<SharpDX.Direct3D11.Texture2D>(0));
+            //backBufferTexture.Reload = graphicsResource => ((Texture)graphicsResource).Recreate(swapChain.GetBackBuffer<SharpDX.Direct3D11.Texture>(0));
         }
 
-        public override RenderTarget BackBuffer
+        public override Texture BackBuffer
         {
             get
             {
@@ -99,7 +99,7 @@ namespace SiliconStudio.Paradox.Graphics
 
                 try
                 {
-                    Bool isCurrentlyFullscreen;
+                    RawBool isCurrentlyFullscreen;
                     swapChain.GetFullscreenState(out isCurrentlyFullscreen, out currentOutput);
 
                     // check if the current fullscreen monitor is the same as new one
@@ -114,7 +114,7 @@ namespace SiliconStudio.Paradox.Graphics
 
                 bool switchToFullScreen = value;
                 // If going to fullscreen mode: call 1) SwapChain.ResizeTarget 2) SwapChain.IsFullScreen
-                var description = new ModeDescription(backBuffer.Width, backBuffer.Height, Description.RefreshRate.ToSharpDX(), (SharpDX.DXGI.Format)Description.BackBufferFormat);
+                var description = new ModeDescription(backBuffer.ViewWidth, backBuffer.ViewHeight, Description.RefreshRate.ToSharpDX(), (SharpDX.DXGI.Format)Description.BackBufferFormat);
                 if (switchToFullScreen)
                 {
                     // Force render target destruction
@@ -136,7 +136,7 @@ namespace SiliconStudio.Paradox.Graphics
                     swapChain.IsFullScreen = false;
 
                     // call 1) SwapChain.IsFullScreen 2) SwapChain.Resize
-                    Resize(backBuffer.Width, backBuffer.Height, backBuffer.Texture.ViewFormat);
+                    Resize(backBuffer.ViewWidth, backBuffer.ViewHeight, backBuffer.ViewFormat);
                 }
 
                 // If going to window mode: 
@@ -174,8 +174,8 @@ namespace SiliconStudio.Paradox.Graphics
         public override void OnDestroyed()
         {
             // Manually update back buffer texture
-            backBuffer.Texture.OnDestroyed();
-            backBuffer.Texture.LifetimeState = GraphicsResourceLifetimeState.Destroyed;
+            backBuffer.OnDestroyed();
+            backBuffer.LifetimeState = GraphicsResourceLifetimeState.Destroyed;
 
             swapChain.Dispose();
             swapChain = null;
@@ -195,17 +195,13 @@ namespace SiliconStudio.Paradox.Graphics
 
             // Put it in our back buffer texture
             // TODO: Update new size
-            ((Texture2D)backBuffer.Texture).Recreate(backBufferTexture);
-            backBuffer.Texture.LifetimeState = GraphicsResourceLifetimeState.Active;
+            backBuffer.InitializeFrom(backBufferTexture);
+            backBuffer.LifetimeState = GraphicsResourceLifetimeState.Active;
         }
 
         protected override void ResizeBackBuffer(int width, int height, PixelFormat format)
         {
             // Manually update back buffer texture
-            backBuffer.Texture.OnDestroyed();
-
-            // Force render target destruction
-            // TODO: We should track all user created render targets that points to back buffer as well (or deny their creation?)
             backBuffer.OnDestroyed();
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
@@ -215,7 +211,7 @@ namespace SiliconStudio.Paradox.Graphics
                 var swapChain2 = swapChain.QueryInterface<SwapChain2>();
                 if (swapChain2 != null)
                 {
-                    swapChain2.MatrixTransform = Matrix3x2.Scaling(1f / swapChainPanel.CompositionScaleX, 1f / swapChainPanel.CompositionScaleY);
+                    swapChain2.MatrixTransform = new RawMatrix3x2 { M11 = 1f / swapChainPanel.CompositionScaleX, M22 = 1f / swapChainPanel.CompositionScaleY };
                     swapChain2.Dispose();
                 }
             }
@@ -227,44 +223,20 @@ namespace SiliconStudio.Paradox.Graphics
             var backBufferTexture = swapChain.GetBackBuffer<SharpDX.Direct3D11.Texture2D>(0);
 
             // Put it in our back buffer texture
-            ((Texture2D)backBuffer.Texture).Recreate(backBufferTexture);
-
-            // Recreate render target
-            backBuffer.OnRecreate();
-
-            // Update variables
-            // TODO: Should be kept readonly, maybe with reflection (ugly) or some other IL trick?
-            backBuffer.Texture.Width = width;
-            backBuffer.Texture.Height = height;
-            backBuffer.Width = width;
-            backBuffer.Height = height;
+            backBuffer.InitializeFrom(backBufferTexture);
         }
 
         protected override void ResizeDepthStencilBuffer(int width, int height, PixelFormat format)
         {
-            var newTextureDescrition = DepthStencilBuffer.Texture.NativeDescription;
+            var newTextureDescrition = DepthStencilBuffer.Description;
             newTextureDescrition.Width = width;
             newTextureDescrition.Height = height;
 
             // Manually update the texture
-            DepthStencilBuffer.Texture.OnDestroyed();
-
-            // Force buffer destruction
-            // TODO: We should track all user created depth buffer that points to depthStencilBuffer as well (or deny their creation?)
             DepthStencilBuffer.OnDestroyed();
 
             // Put it in our back buffer texture
-            DepthStencilBuffer.Texture.Recreate(newTextureDescrition);
-
-            // Recreate render target
-            DepthStencilBuffer.OnRecreate();
-
-            // Update variables
-            // TODO: Should be kept readonly, maybe with reflection (ugly) or some other IL trick?
-            DepthStencilBuffer.Texture.Width = width;
-            DepthStencilBuffer.Texture.Height = height;
-            DepthStencilBuffer.DescriptionInternal.Width = width;
-            DepthStencilBuffer.DescriptionInternal.Height = height;
+            DepthStencilBuffer.InitializeFrom(newTextureDescrition);
         }
 
 

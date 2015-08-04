@@ -1,0 +1,14 @@
+!Texture
+Id: 6e52ca68-ba84-4521-a20c-b780ea2831da
+Tags: []
+Source: ../../../data/tests/GraceCathedral.dds
+ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: AsIs
+GenerateMipmaps: false
+~Base:
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        Tags: []
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

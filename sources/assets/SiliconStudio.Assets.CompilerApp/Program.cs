@@ -17,7 +17,8 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Paradox.Assets.Model;
 using SiliconStudio.Paradox.Assets.SpriteFont;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Rendering.Materials;
+using SiliconStudio.Paradox.Rendering.ProceduralModels;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Assets.CompilerApp
@@ -44,6 +45,7 @@ namespace SiliconStudio.Assets.CompilerApp
             clock = Stopwatch.StartNew();
 
             // TODO this is hardcoded. Check how to make this dynamic instead.
+            RuntimeHelpers.RunModuleConstructor(typeof(IProceduralModel).Module.ModuleHandle);
             RuntimeHelpers.RunModuleConstructor(typeof(MaterialKeys).Module.ModuleHandle);
             RuntimeHelpers.RunModuleConstructor(typeof(SpriteFontAsset).Module.ModuleHandle);
             RuntimeHelpers.RunModuleConstructor(typeof(ModelAsset).Module.ModuleHandle);
@@ -57,12 +59,9 @@ namespace SiliconStudio.Assets.CompilerApp
 
             //args = new string[] { "test.pdxpkg", "-o:app_data", "-b:tmp", "-t:1" };
 
-            //hardcoded physics
-            Paradox.Physics.PhysicsEngine.InitializeConverters();
-
             var exeName = Path.GetFileName(Assembly.GetExecutingAssembly().Location);
             var showHelp = false;
-            var options = new PackageBuilderOptions(GlobalLogger.GetLogger("BuildEngine"));
+            var options = new PackageBuilderOptions(new ForwardingLoggerResult(GlobalLogger.GetLogger("BuildEngine")));
 
             var p = new OptionSet
                 {
@@ -86,6 +85,7 @@ namespace SiliconStudio.Assets.CompilerApp
                     { "project-configuration=", "Project configuration", v => options.ProjectConfiguration = v },
                     { "platform=", "Platform name", v => options.Platform = (PlatformType)Enum.Parse(typeof(PlatformType), v) },
                     { "graphics-platform=", "Graphics Platform name", v => options.GraphicsPlatform = (GraphicsPlatform)Enum.Parse(typeof(GraphicsPlatform), v) },
+                    { "get-graphics-platform", "Get Graphics Platform name (needs a pdxpkg and a profile)", v => options.GetGraphicsPlatform = v != null },
                     { "solution-file=", "Solution File Name", v => options.SolutionFile = v },
                     { "package-id=", "Package Id from the solution file", v => options.PackageId = Guid.Parse(v) },
                     { "package-file=", "Input Package File Name", v => options.PackageFile = v },
@@ -190,8 +190,11 @@ namespace SiliconStudio.Assets.CompilerApp
                         fileLogListener = new TextWriterLogListener(new FileStream(logFileName, FileMode.Create)) { TextFormatter = FormatLog };
                         GlobalLogger.GlobalMessageLogged += fileLogListener;
                     }
-                    options.Logger.Info("BuildEngine arguments: " + string.Join(" ", args));
-                    options.Logger.Info("Starting builder.");
+                    if (!options.GetGraphicsPlatform)
+                    {
+                        options.Logger.Info("BuildEngine arguments: " + string.Join(" ", args));
+                        options.Logger.Info("Starting builder.");
+                    }
                 }
 
                 if (showHelp)

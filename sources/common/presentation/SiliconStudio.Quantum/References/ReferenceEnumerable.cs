@@ -31,8 +31,6 @@ namespace SiliconStudio.Quantum.References
                 elementType = enumerableType.GetInterface(typeof(IEnumerable<>)).GetGenericArguments()[0];
             else
                 elementType = typeof(object);
-
-            Refresh(enumerable);
         }
 
         /// <inheritdoc/>
@@ -43,6 +41,12 @@ namespace SiliconStudio.Quantum.References
 
         /// <inheritdoc/>
         public object Index { get; private set; }
+
+        /// <inheritdoc/>
+        public ObjectReference AsObject { get { throw new InvalidCastException("This reference is not an ObjectReference"); } }
+
+        /// <inheritdoc/>
+        public ReferenceEnumerable AsEnumerable { get { return this; } }
 
         /// <summary>
         /// Gets whether this reference enumerates a dictionary collection.
@@ -88,19 +92,6 @@ namespace SiliconStudio.Quantum.References
             {
                 indices.Add(reference.Index);
             }
-        }
-
-        /// <inheritdoc/>
-        public bool UpdateTarget(ModelContainer modelContainer)
-        {
-            bool result = false;
-            foreach (var reference in references)
-            {
-                if (reference.UpdateTarget(modelContainer))
-                    result = true;
-            }
-
-            return result;
         }
 
         /// <inheritdoc/>

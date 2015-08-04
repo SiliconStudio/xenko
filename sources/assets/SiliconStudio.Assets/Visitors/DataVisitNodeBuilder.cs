@@ -25,12 +25,28 @@ namespace SiliconStudio.Assets.Visitors
         private DataVisitNodeBuilder(ITypeDescriptorFactory typeDescriptorFactory, object rootInstance)
             : base(typeDescriptorFactory)
         {
+            CustomVisitors.AddRange(AssetRegistry.GetDataVisitNodeBuilders());
+
             if (rootInstance == null) throw new ArgumentNullException("rootInstance");
             this.rootInstance = rootInstance;
             var objectDescriptor = typeDescriptorFactory.Find(rootInstance.GetType()) as ObjectDescriptor;
             if (objectDescriptor == null)
                 throw new ArgumentException("Expecting an object", "rootInstance");
             stackItems.Push(new DataVisitObject(rootInstance, objectDescriptor));
+        }
+
+        /// <summary>
+        /// Gets the current <see cref="DataVisitNode"/>.
+        /// </summary>
+        /// <value>
+        /// The current <see cref="DataVisitNode"/>.
+        /// </value>
+        public DataVisitNode CurrentNode
+        {
+            get
+            {
+                return stackItems.Peek();
+            }
         }
 
         /// <summary>
@@ -112,7 +128,7 @@ namespace SiliconStudio.Assets.Visitors
         /// <param name="thisObject">The this object.</param>
         /// <param name="member">The member.</param>
         /// <exception cref="System.ArgumentNullException">member</exception>
-        private static void AddMember(DataVisitNode thisObject, DataVisitNode member)
+        private static void AddMember(DataVisitNode thisObject, DataVisitMember member)
         {
             if (member == null) throw new ArgumentNullException("member");
             if (thisObject.Members == null)

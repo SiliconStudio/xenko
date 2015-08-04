@@ -7,6 +7,7 @@ using System.IO;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.TextureConverter.Requests;
 using FreeImageAPI;
 using FreeImageAPI.Plugins;
@@ -54,21 +55,30 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
         public void StartLibrary(TexImage image)
         {
-            if(Tools.IsCompressed(image.Format))
+            if(image.Format.IsCompressed())
             {
                 Log.Error("FreeImage can't process compressed texture.");
                 throw new TextureToolsException("FreeImage can't process compressed texture.");
             }
 
-            FreeImageTextureLibraryData libraryData = new FreeImageTextureLibraryData();
+            var libraryData = new FreeImageTextureLibraryData();
             image.LibraryData[this] = libraryData;
 
             libraryData.Bitmaps = new FIBITMAP[image.SubImageArray.Length];
-            uint bpp = Tools.GetBPP(image.Format);
 
+            FREE_IMAGE_TYPE type;
+            uint bpp, redMask, greenMask, blueMask;
+            if (!FreeImage.GetFormatParameters(image.Format, out type, out bpp, out redMask, out greenMask, out blueMask))
+            {
+                throw new ArgumentException("The pixel format '{0}' is not supported by FreeImage".ToFormat(image.Format));
+            }
             for (int i = 0; i < image.SubImageArray.Length; ++i)
             {
-                libraryData.Bitmaps[i] = FreeImage.ConvertFromRawBits(image.SubImageArray[i].Data, FREE_IMAGE_TYPE.FIT_BITMAP, image.SubImageArray[i].Width, image.SubImageArray[i].Height, image.SubImageArray[i].RowPitch, bpp, 0x00FF0000, 0x0000FF00, 0x000000FF, false);
+                var data = image.SubImageArray[i].Data;
+                var width = image.SubImageArray[i].Width;
+                var heigth = image.SubImageArray[i].Height;
+                var pitch = image.SubImageArray[i].RowPitch;
+                libraryData.Bitmaps[i] = FreeImage.ConvertFromRawBits(data, type, width, heigth, pitch, bpp, redMask, greenMask, blueMask, false);
             }
 
             if (image.DisposingLibrary != null) image.DisposingLibrary.Dispose(image);
@@ -215,9 +225,10 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             Log.Info("Loading " + loader.FilePath + " ...");
 
             FIBITMAP temp;
+            FREE_IMAGE_FORMAT fileFormat = FREE_IMAGE_FORMAT.FIF_UNKNOWN;
             try
             {
-                temp = FreeImage.LoadEx(loader.FilePath);
+                temp = FreeImage.LoadEx(loader.FilePath, ref fileFormat);
                 FreeImage.FlipVertical(temp);
 
                 if (temp.IsNull)
@@ -230,8 +241,9 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             }
 
             // Converting the image into BGRA_8888 format
-            libraryData = new FreeImageTextureLibraryData { Bitmaps = new FIBITMAP[1] { FreeImage.ConvertTo32Bits(temp) } };
+            libraryData = new FreeImageTextureLibraryData { Bitmaps = new [] { FreeImage.ConvertTo32Bits(temp) } };
             image.LibraryData[this] = libraryData;
+            int alphaSize = GetAlphaDepth(fileFormat, temp);
 
             FreeImage.Unload(temp);
 
@@ -240,7 +252,8 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             image.Height = (int)FreeImage.GetHeight(libraryData.Bitmaps[0]);
             image.Depth = 1;
             image.Dimension = image.Height == 1 ? TexImage.TextureDimension.Texture1D : TexImage.TextureDimension.Texture2D;
-            image.Format = SiliconStudio.Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm;
+            image.Format = loader.LoadAsSRgb? PixelFormat.B8G8R8A8_UNorm_SRgb : PixelFormat.B8G8R8A8_UNorm;
+            image.OriginalAlphaDepth = alphaSize;
             
             int rowPitch, slicePitch;
             Tools.ComputePitch(image.Format, image.Width, image.Height, out rowPitch, out slicePitch);
@@ -366,10 +379,10 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 FreeImage.Unload(redChannel);
             }
 
-            if (Tools.IsInBGRAOrder(image.Format))
-                image.Format = SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm;
+            if (image.Format.IsBGRAOrder())
+                image.Format = PixelFormat.R8G8B8A8_UNorm;
             else
-                image.Format = SiliconStudio.Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm;
+                image.Format = PixelFormat.B8G8R8A8_UNorm;
         }
 
         public bool SupportBGRAOrder()
@@ -492,7 +505,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 throw new TextureToolsException("Not implemented.");
             }
 
-            if(!Tools.IsInBGRAOrder(image.Format))
+            if(!image.Format.IsBGRAOrder())
             {
                 SwitchChannels(image, libraryData, new SwitchingBRChannelsRequest());
             }
@@ -550,6 +563,51 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             {
                 FreeImage.AdjustGamma(bitmap, request.Gamma);
             }
+        }
+
+        private static uint GetBitCount(uint bitmask)
+        {
+            uint count = 0;
+            for (uint i = 0 ; i < 32 ; ++i, bitmask>>=1)
+            {
+                if ((bitmask&1) != 0)
+                    count++;
+            }
+            return count;
+        }
+
+        private static int GetAlphaDepth(FREE_IMAGE_FORMAT fileFormat, FIBITMAP bitmap)
+        {
+            uint bpp = FreeImage.GetBPP(bitmap);
+            uint rbit = GetBitCount(FreeImage.GetRedMask(bitmap));
+            uint gbit = GetBitCount(FreeImage.GetGreenMask(bitmap));
+            uint bbit = GetBitCount(FreeImage.GetBlueMask(bitmap));
+            switch (fileFormat)
+            {
+                case FREE_IMAGE_FORMAT.FIF_PNG:
+                case FREE_IMAGE_FORMAT.FIF_TIFF:
+                case FREE_IMAGE_FORMAT.FIF_TARGA:
+                case FREE_IMAGE_FORMAT.FIF_GIF:
+                case FREE_IMAGE_FORMAT.FIF_BMP:
+                case FREE_IMAGE_FORMAT.FIF_ICO:
+                case FREE_IMAGE_FORMAT.FIF_PSD:
+                    switch (bpp)
+                    {
+                        case 32:
+                            if(rbit == 8 && gbit == 8 && bbit == 8)
+                                return 8;
+                            break;
+
+                        case 16:
+                            if (rbit == 5 && gbit == 5 && bbit == 5)
+                                return 1;
+                            else if (rbit == 4 && gbit == 4 && bbit == 4)
+                                return 4;
+                            break;
+                    }
+                    break;
+            }
+            return 0;
         }
 
     }

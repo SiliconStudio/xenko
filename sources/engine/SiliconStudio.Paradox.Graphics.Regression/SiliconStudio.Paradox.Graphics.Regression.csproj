@@ -9,7 +9,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SiliconStudio.Paradox.Graphics.Regression</RootNamespace>
     <AssemblyName>SiliconStudio.Paradox.Graphics.Regression</AssemblyName>
-    <ParadoxBuildTags>*</ParadoxBuildTags>
+    <ParadoxBuildTags>Windows;WindowsStore;WindowsPhone;Android;iOS</ParadoxBuildTags>
+    <DefineConstants>$(DefineConstants);XAMCORE_2_0</DefineConstants>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <!-- Force msbuild to check to rebuild this assembly instead of letting VS IDE guess -->
@@ -45,6 +46,9 @@
     </When>
     <When Condition=" '$(SiliconStudioPlatform)' == 'WindowsStore' OR '$(SiliconStudioPlatform)' == 'WindowsPhone'">
       <ItemGroup>
+        <Reference Include="nunit.framework">
+          <HintPath>$(SiliconStudioDependenciesDir)NUnitLite\Portable\nunit.framework.dll</HintPath>
+        </Reference>
         <Reference Include="nunitlite">
           <HintPath>$(SiliconStudioDependenciesDir)NUnitLite\Portable\nunitlite.dll</HintPath>
         </Reference>
@@ -54,10 +58,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup Condition="'$(SiliconStudioPlatform)' == 'Android'">
@@ -140,6 +140,7 @@
     <Compile Include="FrameGameSystem.cs" />
     <Compile Include="GameTester.cs" />
     <Compile Include="GraphicsTestBase.cs" />
+    <Compile Include="GraphicsUnitTestBatch.cs" />
     <Compile Include="ImageTester.NotRuntime.cs" />
     <Compile Include="ImageTester.cs" />
     <Compile Include="iOSDeviceType.cs" />

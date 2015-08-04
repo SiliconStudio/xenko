@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Settings;
 
 namespace SiliconStudio.Assets
 {
@@ -22,7 +23,7 @@ namespace SiliconStudio.Assets
         {
             PlatformsPart = new SolutionPlatformPartCollection();
             DefineConstants = new List<string>();
-            Properties = new PropertyCollection();          
+            Properties = new SettingsCollection(PackageProfile.SettingsGroup);
         }
 
         /// <summary>
@@ -58,7 +59,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The properties.</value>
         [DataMember(60)]
-        public PropertyCollection Properties { get; private set; }
+        public SettingsCollection Properties { get; private set; }
 
         /// <summary>
         /// Gets the all <see cref="SolutionPlatformPart"/>.

@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Core.Serialization.Converters;
 using SiliconStudio.Core.Serialization.Serializers;
 
 // Serializer for ContentSerializerContext.SerializeReferences()
@@ -22,7 +21,15 @@ namespace SiliconStudio.Core.Serialization.Contents
         private readonly HashSet<object> generatedUrlObjects = new HashSet<object>();
         private string generatedUrlPrefix;
 
+        public enum AttachedReferenceSerialization
+        {
+            Unset,
+            AsSerializableVersion,
+            AsNull,
+        }
+
         public static PropertyKey<ContentSerializerContext> ContentSerializerContextProperty = new PropertyKey<ContentSerializerContext>("ContentSerializerContext", typeof(ContentSerializerContext));
+        public static PropertyKey<AttachedReferenceSerialization> SerializeAttachedReferenceProperty = new PropertyKey<AttachedReferenceSerialization>("SerializeAttachedReference", typeof(ContentSerializerContext));
 
         public AssetManager AssetManager { get; private set; }
         public string Url { get; protected set; }
@@ -30,11 +37,10 @@ namespace SiliconStudio.Core.Serialization.Contents
 
         public List<ContentReference> ContentReferences { get; set; }
 
-        public ConverterContext ConverterContext { get; set; }
-
         public bool RegenerateUrls { get; set; }
 
         internal AssetManager.AssetReference AssetReference { get; set; }
+        public bool LoadContentReferences { get; set; }
 
         internal ContentSerializerContext(string url, ArchiveMode mode, AssetManager assetManager)
         {
@@ -138,11 +144,10 @@ namespace SiliconStudio.Core.Serialization.Contents
             //    AssetManager.RegisterAsset(contentReference.Location, contentReference.ObjectValue, serializationType, false);
         }
 
-        public object SerializeContent(SerializationStream stream, IContentSerializer serializer, object objToSerialize)
+        public void SerializeContent(SerializationStream stream, IContentSerializer serializer, object objToSerialize)
         {
             stream.Context.SerializerSelector = AssetManager.Serializer.LowLevelSerializerSelector;
-            serializer.Serialize(this, stream, ref objToSerialize);
-            return objToSerialize;
+            serializer.Serialize(this, stream, objToSerialize);
         }
 
         public void SerializeReferences(SerializationStream stream)

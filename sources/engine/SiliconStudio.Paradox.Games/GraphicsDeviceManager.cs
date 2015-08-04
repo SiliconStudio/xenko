@@ -46,6 +46,8 @@ namespace SiliconStudio.Paradox.Games
         /// </summary>
         public static readonly int DefaultBackBufferHeight = 720;
 
+        private readonly object lockDeviceCreation;
+
         private GameBase game;
 
         private bool deviceSettingsChanged;
@@ -102,6 +104,8 @@ namespace SiliconStudio.Paradox.Games
             {
                 throw new ArgumentNullException("game");
             }
+
+            lockDeviceCreation = new object();
 
             // Defines all default values
             SynchronizeWithVerticalRetrace = true;
@@ -423,7 +427,7 @@ namespace SiliconStudio.Paradox.Games
         /// </summary>
         public void ApplyChanges()
         {
-            if (GraphicsDevice == null || deviceSettingsChanged)
+            if (GraphicsDevice != null && deviceSettingsChanged)
             {
                 ChangeOrCreateDevice(false);
             }
@@ -450,7 +454,7 @@ namespace SiliconStudio.Paradox.Games
             // By default, we setup the render target to the back buffer, and the viewport as well.
             if (GraphicsDevice.BackBuffer != null)
             {
-                GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+                GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
             }
 
             beginDrawOk = true;
@@ -606,6 +610,12 @@ namespace SiliconStudio.Paradox.Games
                 preferredParameters.PreferredBackBufferHeight = resizedBackBufferHeight;
             }
 
+            GraphicsProfile availableGraphicsProfile;
+            if (!IsPreferredProfileAvailable(preferredParameters.PreferredGraphicsProfile, out availableGraphicsProfile))
+            {
+                throw new InvalidOperationException(string.Format("Graphics profiles [{0}] are not supported by the device. The highest available profile is [{1}].", string.Join(", ", preferredParameters.PreferredGraphicsProfile), availableGraphicsProfile));
+            }
+
             var devices = graphicsDeviceFactory.FindBestDevices(preferredParameters);
             if (devices.Count == 0)
             {
@@ -732,6 +742,31 @@ namespace SiliconStudio.Paradox.Games
                     });
         }
 
+        private bool IsPreferredProfileAvailable(GraphicsProfile[] preferredProfiles, out GraphicsProfile availableProfile)
+        {
+            availableProfile = GraphicsProfile.Level_9_1;
+
+            var graphicsProfiles = Enum.GetValues(typeof(GraphicsProfile));
+
+            foreach (var graphicsAdapter in GraphicsAdapterFactory.Adapters)
+            {
+                foreach (var graphicsProfileValue in graphicsProfiles)
+                {
+                    var graphicsProfile = (GraphicsProfile)graphicsProfileValue;
+                    if (graphicsProfile > availableProfile && graphicsAdapter.IsProfileSupported(graphicsProfile))
+                        availableProfile = graphicsProfile;
+                }
+            }
+
+            foreach (var preferredProfile in preferredProfiles)
+            {
+                if (availableProfile >= preferredProfile)
+                    return true;
+            }
+
+            return false;
+        }
+
         private int CalculateRankForFormat(PixelFormat format)
         {
             if (format == PreferredBackBufferFormat)
@@ -818,7 +853,10 @@ namespace SiliconStudio.Paradox.Games
                 resizedBackBufferWidth = game.Window.ClientBounds.Width;
                 resizedBackBufferHeight = game.Window.ClientBounds.Height;
                 isBackBufferToResize = true;
-                ChangeOrCreateDevice(false);
+                if (GraphicsDevice != null)
+                {
+                    ChangeOrCreateDevice(false);
+                }
             }
         }
 
@@ -826,7 +864,10 @@ namespace SiliconStudio.Paradox.Games
         {
             if ((!isChangingDevice && ((game.Window.ClientBounds.Height != 0) || (game.Window.ClientBounds.Width != 0))) && (game.Window.CurrentOrientation != currentWindowOrientation))
             {
-                ChangeOrCreateDevice(false);
+                if (GraphicsDevice != null)
+                {
+                    ChangeOrCreateDevice(false);
+                }
             }
         }
 
@@ -888,6 +929,8 @@ namespace SiliconStudio.Paradox.Games
 
         private void ChangeOrCreateDevice(bool forceCreate)
         {
+            // We make sure that we won't be call by an asynchronous event (windows resized)
+            lock (lockDeviceCreation)
             using (var profile = Profiler.Begin(GraphicsDeviceManagerProfilingKeys.CreateDevice))
             {
                 isChangingDevice = true;
@@ -938,6 +981,11 @@ namespace SiliconStudio.Paradox.Games
                     if (needToCreateNewDevice)
                     {
                         CreateDevice(graphicsDeviceInformation);
+                    }
+
+                    if (GraphicsDevice == null)
+                    {
+                        throw new InvalidOperationException("Unexpected null GraphicsDevice");
                     }
 
                     var presentationParameters = GraphicsDevice.Presenter.Description;

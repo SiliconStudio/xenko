@@ -69,6 +69,12 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
         public ReferencesPool StageInitReferences { get; private set; }
 
         /// <summary>
+        /// Gets navigable nodes (local variables, base class...etc.)
+        /// </summary>
+        /// <value>The navigable nodes.</value>
+        public List<Node> NavigableNodes { get; private set; }
+
+        /// <summary>
         /// List of the static classes
         /// </summary>
         public HashSet<ModuleMixin> StaticClasses { get; private set; }
@@ -100,6 +106,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
             ExternReferences = new ReferencesPool();
             StageInitReferences = new ReferencesPool();
             StaticClasses = new HashSet<ModuleMixin>();
+            NavigableNodes = new List<Node>();
         }
 
         #endregion

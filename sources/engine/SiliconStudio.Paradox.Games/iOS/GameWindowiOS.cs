@@ -5,7 +5,9 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using OpenTK.Platform.iPhoneOS;
+using OpenGLES;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Graphics.OpenGL;
 using Rectangle = SiliconStudio.Core.Mathematics.Rectangle;
 
 namespace SiliconStudio.Paradox.Games
@@ -57,27 +59,36 @@ namespace SiliconStudio.Paradox.Games
             gameForm.Load += gameForm_Load;
             gameForm.Unload += gameForm_Unload;
             gameForm.RenderFrame += gameForm_RenderFrame;
+            
+            // get the OpenGL ES version
+            var contextAvailable = false;
+            foreach (var version in OpenGLUtils.GetGLVersions(gameContext.RequestedGraphicsProfile))
+            {
+                var contextRenderingApi = MajorVersionTOEAGLRenderingAPI(version);
+                EAGLContext contextTest = null;
+                try
+                {
+                    contextTest = new EAGLContext(contextRenderingApi);
 
-            gameForm.ContextRenderingApi = MonoTouch.OpenGLES.EAGLRenderingAPI.OpenGLES2;
-            gameForm.LayerColorFormat = MonoTouch.OpenGLES.EAGLColorFormat.RGBA8;
+                    // delete extra context
+                    if (contextTest != null)
+                        contextTest.Dispose();
+
+                    gameForm.ContextRenderingApi = contextRenderingApi;
+                    contextAvailable = true;
+                    break;
+                }
+                catch (Exception)
+                {
+                    // TODO: log message
+                }
+            }
+
+            if (!contextAvailable)
+                throw new Exception("Graphics context could not be created.");
+
+            gameForm.LayerColorFormat = EAGLColorFormat.RGBA8;
             //gameForm.LayerRetainsBacking = false;
-
-            // Setup the initial size of the window
-            var width = gameContext.RequestedWidth;
-            if (width == 0)
-            {
-                width = (int)(gameForm.Size.Width * gameForm.ContentScaleFactor);
-            }
-
-            var height = gameContext.RequestedHeight;
-            if (height == 0)
-            {
-                height = (int)(gameForm.Size.Height * gameForm.ContentScaleFactor);
-            }
-
-            gameForm.Size = new Size(width, height);
-
-            //gameForm.Resize += OnClientSizeChanged;
         }
 
         void gameForm_Load(object sender, EventArgs e)
@@ -232,6 +243,14 @@ namespace SiliconStudio.Paradox.Games
             }
 
             base.Destroy();
+        }
+
+        private static EAGLRenderingAPI MajorVersionTOEAGLRenderingAPI(int major)
+        {
+            if (major >= 3)
+                return EAGLRenderingAPI.OpenGLES3;
+            else
+                return EAGLRenderingAPI.OpenGLES2;
         }
     }
 }

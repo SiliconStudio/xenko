@@ -20,10 +20,11 @@ namespace SiliconStudio.Assets
         /// <param name="rootPackage">The root package.</param>
         /// <param name="includeRootPackage">if set to <c>true</c> [include root package].</param>
         /// <param name="isRecursive">if set to <c>true</c> [is recursive].</param>
+        /// <param name="storeOnly">if set to <c>true</c> [ignores local packages and keeps only store packages].</param>
         /// <returns>List&lt;Package&gt;.</returns>
         /// <exception cref="System.ArgumentNullException">rootPackage</exception>
         /// <exception cref="System.ArgumentException">Root package must be part of a session;rootPackage</exception>
-        public static PackageCollection FindDependencies(this Package rootPackage, bool includeRootPackage = false, bool isRecursive = true)
+        public static PackageCollection FindDependencies(this Package rootPackage, bool includeRootPackage = false, bool isRecursive = true, bool storeOnly = false)
         {
             if (rootPackage == null) throw new ArgumentNullException("rootPackage");
             var packages = new PackageCollection();
@@ -33,7 +34,7 @@ namespace SiliconStudio.Assets
                 packages.Add(rootPackage);
             }
 
-            FillPackageDependencies(rootPackage, isRecursive, packages);
+            FillPackageDependencies(rootPackage, isRecursive, packages, storeOnly);
 
             return packages;
         }
@@ -60,7 +61,7 @@ namespace SiliconStudio.Assets
             return packages.Any(package => package.Assets.Find(location) != null);
         }
 
-        private static void FillPackageDependencies(Package rootPackage, bool isRecursive, ICollection<Package> packagesFound)
+        private static void FillPackageDependencies(Package rootPackage, bool isRecursive, ICollection<Package> packagesFound, bool storeOnly = false)
         {
             var session = rootPackage.Session;
 
@@ -84,9 +85,14 @@ namespace SiliconStudio.Assets
 
                     if (isRecursive)
                     {
-                        FillPackageDependencies(package, isRecursive, packagesFound);
+                        FillPackageDependencies(package, isRecursive, packagesFound, storeOnly);
                     }
                 }
+            }
+
+            if (storeOnly)
+            {
+                return;
             }
 
             // 2. Load local packages
@@ -104,7 +110,7 @@ namespace SiliconStudio.Assets
 
                     if (isRecursive)
                     {
-                        FillPackageDependencies(package, isRecursive, packagesFound);
+                        FillPackageDependencies(package, isRecursive, packagesFound, storeOnly);
                     }
                 }
             }

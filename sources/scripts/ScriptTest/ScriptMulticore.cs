@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using SiliconStudio.Paradox;
 using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Paradox.Games.Mathematics;

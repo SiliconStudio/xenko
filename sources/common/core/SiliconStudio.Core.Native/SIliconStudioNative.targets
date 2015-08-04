@@ -10,10 +10,8 @@
     <IntDir>obj\$(SiliconStudioPlatform)\$(SiliconStudioCPU)\</IntDir>
     <GenerateProjectSpecificOutputFolder>false</GenerateProjectSpecificOutputFolder>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(SiliconStudioPlatform)' == 'WindowsStore' Or '$(SiliconStudioPlatform)' == 'WindowsPhone'">
+  <PropertyGroup Condition="'$(SiliconStudioPlatform)' == 'WindowsStore' Or '$(SiliconStudioPlatform)' == 'WindowsPhone' Or '$(SiliconStudioPlatform)' == 'Windows10'">
     <AppContainerApplication>true</AppContainerApplication>
-    <ApplicationType Condition="'$(SiliconStudioPlatform)' == 'WindowsStore'">Windows Store</ApplicationType>
-    <ApplicationType Condition="'$(SiliconStudioPlatform)' == 'WindowsPhone'">Windows Phone</ApplicationType>
     <ApplicationTypeRevision>8.1</ApplicationTypeRevision>
     <ConvergedProjectType>CodeSharingDll</ConvergedProjectType>
   </PropertyGroup>
@@ -21,9 +19,17 @@
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(VisualStudioVersion)' == '12.0' And '$(SiliconStudioPlatform)' == 'WindowsStore'">
+    <ApplicationType>Windows Store</ApplicationType>
     <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(VisualStudioVersion)' == '12.0' And '$(SiliconStudioPlatform)' == 'WindowsPhone'">
+    <ApplicationType>Windows Phone</ApplicationType>
     <PlatformToolset>v120_wp81</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '14.0' And '$(SiliconStudioPlatform)' == 'Windows10'">
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>8.2</ApplicationTypeRevision>
+    <Keyword>DynamicLibrary</Keyword>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
 </Project>

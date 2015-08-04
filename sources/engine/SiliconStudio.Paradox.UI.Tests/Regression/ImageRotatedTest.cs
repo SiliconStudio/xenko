@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.UI.Controls;
 using SiliconStudio.Paradox.UI.Panels;
 
@@ -16,7 +17,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     {
         public ImageRotatedTest()
         {
-            CurrentVersion = 4;
+            CurrentVersion = 5;
         }
 
         protected override void RegisterTests()
@@ -30,9 +31,9 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            var uiImages = Asset.Load<UIImageGroup>("RotatedImages");
-            var img1 = new ImageElement { Source = uiImages["NotRotated"], StretchType = StretchType.Fill };
-            var img2 = new ImageElement { Source = uiImages["Rotated90"], StretchType = StretchType.Fill };
+            var Sprites = Asset.Load<SpriteSheet>("RotatedImages");
+            var img1 = new ImageElement { Source = Sprites["NotRotated"], StretchType = StretchType.Fill };
+            var img2 = new ImageElement { Source = Sprites["Rotated90"], StretchType = StretchType.Fill };
 
             img2.DependencyProperties.Set(GridBase.RowPropertyKey, 1);
 
@@ -40,7 +41,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             grid.Children.Add(img1);
             grid.Children.Add(img2);
 
-            UI.RootElement = grid;
+            UIComponent.RootElement = grid;
         }
 
         [Test]

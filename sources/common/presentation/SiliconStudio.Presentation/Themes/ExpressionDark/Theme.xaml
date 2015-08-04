@@ -14,6 +14,8 @@
                     xmlns:cvt="clr-namespace:SiliconStudio.Presentation.ValueConverters"
                     xmlns:me="clr-namespace:SiliconStudio.Presentation.MarkupExtensions"
                     xmlns:behaviors="clr-namespace:SiliconStudio.Presentation.Behaviors"
+                    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                    xmlns:commands="clr-namespace:SiliconStudio.Presentation.Controls.Commands"
                     mc:Ignorable="d"
                     >
 
@@ -27,7 +29,6 @@
     <Color x:Key="HoverColor">#FF393939</Color>
     <Color x:Key="DefaultColor">#FF9BB1C5</Color>
     <SolidColorBrush x:Key="LightBrush" Color="#FF333333" />
-    <SolidColorBrush x:Key="ShadeBrush" Color="#FF434343" />
 
     <Color x:Key="TopGradientSelectColor">#FFFFFFFF</Color>
     <Color x:Key="BottomGradientSelectColor">#FF737373</Color>
@@ -43,6 +44,11 @@
     <SolidColorBrush x:Key="GlyphBrush" Color="#FFD1D1D1" />
 
     <SolidColorBrush x:Key="PressedBrush" Color="#7E000000"/>
+
+    <SolidColorBrush x:Key="RedBrush" Color="#FFDC4E4E"/>
+    <SolidColorBrush x:Key="GreenBrush" Color="#FF65C36A"/>
+    <SolidColorBrush x:Key="BlueBrush" Color="#FF3F74D1"/>
+    <SolidColorBrush x:Key="AlphaBrush" Color="#FFBCBCBC"/>
 
     <SolidColorBrush x:Key="ControlBackgroundBrush" Color="#FF333333" />
 
@@ -119,6 +125,7 @@
     <BitmapImage x:Key="ImageMaximizeWindow" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/maximize_window.png" />
     <BitmapImage x:Key="ImageMinimizeWindow" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/minimize_window.png" />
     <BitmapImage x:Key="ImageRestoreWindow" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/restore_window.png" />
+    <BitmapImage x:Key="ImageAdvancedEditionVector" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/gear--pencil.png" />
 
     <Style TargetType="Window" x:Key="WindowChromeStyle">
         <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
@@ -151,7 +158,9 @@
                                     <TextBlock VerticalAlignment="Center" Text="{TemplateBinding Title}" Margin="0,4" FontSize="14"/>
                                 </DockPanel>
                                 <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
-                                    <ContentPresenter Content="{TemplateBinding Content}" />
+                                    <AdornerDecorator>
+                                        <ContentPresenter Content="{TemplateBinding Content}" />
+                                    </AdornerDecorator>
                                 </Border>
                             </DockPanel>
                         </Border>
@@ -175,7 +184,7 @@
         </Setter>
     </Style>
     <Style TargetType="TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
     </Style>
 
     <Style TargetType="Hyperlink">
@@ -184,7 +193,7 @@
                 <Setter Property="Foreground" Value="{StaticResource SelectedBackgroundBrush}" />
             </Trigger>
         </Style.Triggers>
-        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="TextBlock.TextDecorations" Value="{x:Null}" />
     </Style>
     
@@ -342,7 +351,7 @@
             <Popup IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" x:Name="Popup" Focusable="False" AllowsTransparency="True" PopupAnimation="Slide">
                 <Grid MaxHeight="{TemplateBinding MaxDropDownHeight}" MinWidth="{TemplateBinding ActualWidth}" x:Name="DropDown" SnapsToDevicePixels="True">
                     <Border x:Name="DropDownBorder" Background="{DynamicResource ControlBackgroundBrush}" CornerRadius="3,3,3,3" />
-                    <ScrollViewer Margin="4,6,4,6" Style="{DynamicResource NuclearScrollViewer}" SnapsToDevicePixels="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" CanContentScroll="True" Foreground="{DynamicResource {x:Static SystemColors.ActiveCaptionTextBrushKey}}">
+                    <ScrollViewer Margin="1" Style="{DynamicResource NuclearScrollViewer}" SnapsToDevicePixels="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" CanContentScroll="True" Foreground="{DynamicResource {x:Static SystemColors.ActiveCaptionTextBrushKey}}">
                         <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
                     </ScrollViewer>
                 </Grid>
@@ -388,10 +397,10 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ComboBoxItem}">
                     <Grid SnapsToDevicePixels="true" Margin="0">
-                        <Rectangle x:Name="Background" IsHitTestVisible="False" Opacity="0.25" Fill="{StaticResource NormalBrush}"/>
+                        <Rectangle x:Name="Background" IsHitTestVisible="True" Fill="Transparent"/>
                         <Rectangle x:Name="HoverRectangle" IsHitTestVisible="False" Opacity="0" Fill="{StaticResource NormalBrush}"/>
                         <Rectangle x:Name="SelectedRectangle" IsHitTestVisible="False" Opacity="0" Fill="{StaticResource SelectedBackgroundBrush}"/>
-                        <ContentPresenter Margin="5,1,0,1" x:Name="contentPresenter" VerticalAlignment="Center" />
+                        <ContentPresenter Margin="5,1" x:Name="contentPresenter" VerticalAlignment="Center" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsHighlighted" Value="true">
@@ -443,13 +452,16 @@
 
     <Style TargetType="{x:Type ctrl:ColorPicker}">
         <Setter Property="Focusable" Value="False"/>
+        <Setter Property="InputColumnWidth" Value="120"/>
+        <Setter Property="PickupAreaSize" Value="160, 160"/>
+        <Setter Property="StripsHeight" Value="22"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ctrl:ColorPicker}">
                     <Grid x:Name="RootLayout" VerticalAlignment="Top" TextElement.Foreground="{DynamicResource TextBrush}" Focusable="False">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" MinWidth="128"/>
-                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="{TemplateBinding InputColumnWidth}"/>
                         </Grid.ColumnDefinitions>
                         <Grid x:Name="LeftPaneLayout" Margin="2" VerticalAlignment="Top" Focusable="False">
                             <Grid.RowDefinitions>
@@ -457,7 +469,8 @@
                                 <RowDefinition/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <Canvas x:Name="PART_HuePickerRenderSurface" Width="160" Height="22">
+                            <Canvas x:Name="PART_HuePickerRenderSurface" Width="{Binding PickupAreaSize.Width, RelativeSource={RelativeSource TemplatedParent}}"
+                                    Height="{TemplateBinding StripsHeight}">
                                 <Canvas.Background>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                                         <GradientStop Color="Red" Offset="0.0"/>
@@ -469,7 +482,7 @@
                                         <GradientStop Color="Red" Offset="1.0"/>
                                     </LinearGradientBrush>
                                 </Canvas.Background>
-                                <Rectangle x:Name="PART_HuePickerSelector" Height="22" Width="2">
+                                <Rectangle x:Name="PART_HuePickerSelector" Height="{TemplateBinding StripsHeight}" Width="2">
                                     <Rectangle.Fill>
                                         <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                                             <GradientStop Color="Black" Offset="0"/>
@@ -477,9 +490,12 @@
                                         </LinearGradientBrush>
                                     </Rectangle.Fill>
                                 </Rectangle>
-                            </Canvas>                              
-                            <Canvas Width="160" Height="160" Grid.Row="1" Margin="2" Focusable="False">
-                                <Rectangle x:Name="PART_ColorPickerRenderSurface" Fill="White" StrokeThickness="0" Width="160" Height="160" Margin="0" VerticalAlignment="Top" HorizontalAlignment="Left" Focusable="False"/>
+                            </Canvas>
+                            <Canvas Width="{Binding PickupAreaSize.Width, RelativeSource={RelativeSource TemplatedParent}}"
+                                    Height="{Binding PickupAreaSize.Height, RelativeSource={RelativeSource TemplatedParent}}" Grid.Row="1" Margin="2" Focusable="False">
+                                <Rectangle x:Name="PART_ColorPickerRenderSurface" Fill="White" StrokeThickness="0" VerticalAlignment="Top" HorizontalAlignment="Left"
+                                           Width="{Binding PickupAreaSize.Width, RelativeSource={RelativeSource TemplatedParent}}" Focusable="False"
+                                           Height="{Binding PickupAreaSize.Height, RelativeSource={RelativeSource TemplatedParent}}" Margin="0"/>
                                 <Canvas x:Name="PART_ColorPickerSelector" Width="0" Height="0" Focusable="False">
                                     <Ellipse Width="10" Height="10" Canvas.Left="-5" Canvas.Top="-5" StrokeThickness="2" Focusable="False">
                                         <Ellipse.Stroke>
@@ -491,7 +507,7 @@
                                     </Ellipse>
                                 </Canvas>
                             </Canvas>
-                            <Grid Height="21" Margin="2" Grid.Row="2" Focusable="False">
+                            <Grid Height="{TemplateBinding StripsHeight}" Margin="2" Grid.Row="2" Focusable="False">
                                 <Rectangle Focusable="False">
                                     <Rectangle.Fill>
                                         <DrawingBrush Viewport="0,0,14,14" TileMode="Tile" ViewportUnits="Absolute">
@@ -527,8 +543,8 @@
                                 <ctrl:KeyValueGrid x:Name="RGBGrid" HorizontalAlignment="Stretch" Focusable="False">
                                     <TextBlock Margin="4,0" Text="R:" ToolTipService.ToolTip="Red" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                                     <StackPanel Margin="0,2">
-                                        <ctrl:NumericTextBox x:Name="RedTextBox" Value="{Binding Red, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="#FFF95A5A" Minimum="0" Maximum="255" Margin="0" MouseValidationTrigger="OnMouseMove"/>
-                                        <Rectangle Height="3" Fill="#FFF95A5A" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                        <ctrl:NumericTextBox x:Name="RedTextBox" Value="{Binding Red, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="{StaticResource RedBrush}" Minimum="0" Maximum="255" Margin="0" MouseValidationTrigger="OnMouseMove"/>
+                                        <Rectangle Height="3" Fill="{StaticResource RedBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                             <Rectangle.RenderTransform>
                                                 <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=RedTextBox}"/>
                                             </Rectangle.RenderTransform>
@@ -536,8 +552,8 @@
                                     </StackPanel>
                                     <TextBlock Margin="4,0" Text="G:" ToolTipService.ToolTip="Green" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                                     <StackPanel Margin="0,2">
-                                        <ctrl:NumericTextBox x:Name="GreenTextBox" Value="{Binding Green, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="#FF64ED6C" Minimum="0" Maximum="255" Margin="0" MouseValidationTrigger="OnMouseMove"/>
-                                        <Rectangle Height="3" Fill="#FF64ED6C" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                        <ctrl:NumericTextBox x:Name="GreenTextBox" Value="{Binding Green, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="{StaticResource GreenBrush}" Minimum="0" Maximum="255" Margin="0" MouseValidationTrigger="OnMouseMove"/>
+                                        <Rectangle Height="3" Fill="{StaticResource GreenBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                             <Rectangle.RenderTransform>
                                                 <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=GreenTextBox}"/>
                                             </Rectangle.RenderTransform>
@@ -545,17 +561,17 @@
                                     </StackPanel>
                                     <TextBlock Margin="4,0" Text="B:" ToolTipService.ToolTip="Blue" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                                     <StackPanel Margin="0,2">
-                                        <ctrl:NumericTextBox x:Name="BlueTextBox" Value="{Binding Blue, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="CornflowerBlue" Minimum="0" Maximum="255" Margin="0" MouseValidationTrigger="OnMouseMove"/>
-                                        <Rectangle Height="3" Fill="CornflowerBlue" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                        <ctrl:NumericTextBox x:Name="BlueTextBox" Value="{Binding Blue, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="{StaticResource BlueBrush}" Minimum="0" Maximum="255" Margin="0" MouseValidationTrigger="OnMouseMove"/>
+                                        <Rectangle Height="3" Fill="{StaticResource BlueBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                             <Rectangle.RenderTransform>
                                                 <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=BlueTextBox}"/>
                                             </Rectangle.RenderTransform>
                                         </Rectangle>
                                     </StackPanel>
-                                    <TextBlock Margin="4,0" Text="A:" ToolTipService.ToolTip="Alpha" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
-                                    <StackPanel Margin="0,2">
-                                        <ctrl:NumericTextBox x:Name="AlphaTextBox" Value="{Binding Alpha, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="#FFBCBCBC" Minimum="0" Maximum="255" Margin="0"/>
-                                        <Rectangle Height="3" Fill="#FFBCBCBC" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                    <TextBlock x:Name="AlphaTextBlock" Margin="4,0" Text="A:" ToolTipService.ToolTip="Alpha" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
+                                    <StackPanel Margin="0,2" x:Name="AlphaValue">
+                                        <ctrl:NumericTextBox x:Name="AlphaTextBox" Value="{Binding Alpha, RelativeSource={RelativeSource Mode=TemplatedParent}}" SelectionBrush="{StaticResource AlphaBrush}" Minimum="0" Maximum="255" Margin="0"/>
+                                        <Rectangle Height="3" Fill="{StaticResource AlphaBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                             <Rectangle.RenderTransform>
                                                 <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=AlphaTextBox}"/>
                                             </Rectangle.RenderTransform>
@@ -567,8 +583,8 @@
                                 <ctrl:KeyValueGrid Focusable="False">
                                     <TextBlock Margin="4,0" Text="H:" ToolTipService.ToolTip="Hue" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                                     <StackPanel Margin="0,2">
-                                        <ctrl:NumericTextBox x:Name="HueTextBox" Value="{Binding Hue, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="#FFBCBCBC" Minimum="0" Maximum="360" Margin="0" MouseValidationTrigger="OnMouseMove"/>
-                                        <Rectangle Height="3" Fill="#FFBCBCBC" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                        <ctrl:NumericTextBox x:Name="HueTextBox" Value="{Binding Hue, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="{StaticResource AlphaBrush}" Minimum="0" Maximum="360" Margin="0" MouseValidationTrigger="OnMouseMove"/>
+                                        <Rectangle Height="3" Fill="{StaticResource AlphaBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                             <Rectangle.RenderTransform>
                                                 <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=HueTextBox}"/>
                                             </Rectangle.RenderTransform>
@@ -576,8 +592,8 @@
                                     </StackPanel>
                                     <TextBlock Margin="4,0" Text="S:" ToolTipService.ToolTip="Saturation" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                                     <StackPanel Margin="0,2">
-                                        <ctrl:NumericTextBox x:Name="SaturationTextBox" Value="{Binding Saturation, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="#FFBCBCBC" Minimum="0" Maximum="100" Margin="0" MouseValidationTrigger="OnMouseMove"/>
-                                        <Rectangle Height="3" Fill="#FFBCBCBC" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                        <ctrl:NumericTextBox x:Name="SaturationTextBox" Value="{Binding Saturation, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="{StaticResource AlphaBrush}" Minimum="0" Maximum="100" Margin="0" MouseValidationTrigger="OnMouseMove"/>
+                                        <Rectangle Height="3" Fill="{StaticResource AlphaBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                             <Rectangle.RenderTransform>
                                                 <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=SaturationTextBox}"/>
                                             </Rectangle.RenderTransform>
@@ -585,8 +601,8 @@
                                     </StackPanel>
                                     <TextBlock Margin="4,0" Text="B:" ToolTipService.ToolTip="Value" VerticalAlignment="Center" HorizontalAlignment="Left" Focusable="False"/>
                                     <StackPanel Margin="0,2">
-                                        <ctrl:NumericTextBox x:Name="BrightnessTextBox" Value="{Binding Brightness, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="#FFBCBCBC" Minimum="0" Maximum="100" Margin="0" MouseValidationTrigger="OnMouseMove"/>
-                                        <Rectangle Height="3" Fill="#FFBCBCBC" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                        <ctrl:NumericTextBox x:Name="BrightnessTextBox" Value="{Binding Brightness, RelativeSource={RelativeSource Mode=TemplatedParent}}" DecimalPlaces="0" SelectionBrush="{StaticResource AlphaBrush}" Minimum="0" Maximum="100" Margin="0" MouseValidationTrigger="OnMouseMove"/>
+                                        <Rectangle Height="3" Fill="{StaticResource AlphaBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                             <Rectangle.RenderTransform>
                                                 <ScaleTransform ScaleX="{Binding ValueRatio, ElementName=BrightnessTextBox}"/>
                                             </Rectangle.RenderTransform>
@@ -596,6 +612,12 @@
                             </GroupBox>
                         </Grid>
                     </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="ShowAlpha" Value="False">
+                            <Setter TargetName="AlphaTextBlock" Property="Visibility" Value="Collapsed"/>
+                            <Setter TargetName="AlphaValue" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -701,16 +723,6 @@
     <SolidColorBrush x:Key="ButtonNormalBorder" Color="#FF888888" />
     <SolidColorBrush x:Key="ButtonNormalBackground" Color="#FF707070"/>
 
-    <Style x:Key="SimpleToggleButton" TargetType="{x:Type ToggleButton}">
-        <Setter Property="FocusVisualStyle" Value="{DynamicResource NuclearButtonFocusVisual}" />
-        <Setter Property="Background" Value="{DynamicResource ButtonNormalBackground}" />
-        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource NormalBorderBrush}" />
-        <Setter Property="Template" Value="{DynamicResource SimpleToggleButtonTemplate}" />
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Margin" Value="0"/>
-    </Style>
-
     <ControlTemplate x:Key="SimpleToggleButtonTemplate" TargetType="{x:Type ToggleButton}">
         <Grid x:Name="Grid">
             <Border x:Name="Background" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"/>
@@ -738,6 +750,16 @@
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
+
+    <Style TargetType="{x:Type ToggleButton}">
+        <Setter Property="FocusVisualStyle" Value="{StaticResource NuclearButtonFocusVisual}" />
+        <Setter Property="Background" Value="{StaticResource ButtonNormalBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource NormalBorderBrush}" />
+        <Setter Property="Template" Value="{StaticResource SimpleToggleButtonTemplate}" />
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Margin" Value="0"/>
+    </Style>
 
     <Style TargetType="{x:Type Button}" BasedOn="{x:Null}">
         <Setter Property="FocusVisualStyle" Value="{DynamicResource NuclearButtonFocusVisual}" />
@@ -1189,7 +1211,7 @@
                 <RowDefinition Height="*" />
                 <RowDefinition MaxHeight="18" />
             </Grid.RowDefinitions>
-            <RepeatButton Grid.Row="0" x:Name="DecreaseRepeat" Command="ScrollBar.LineUpCommand" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}">
+            <RepeatButton Grid.Row="0" x:Name="DecreaseRepeat" Command="ScrollBar.LineUpCommand" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Style="{DynamicResource {x:Type RepeatButton}}">
                 <Grid Margin="0" Background="Transparent">
                     <Path Margin="4.742,3.997,4.946,5.327" VerticalAlignment="Stretch" Height="Auto" Fill="{DynamicResource GlyphBrush}" Stretch="Fill" Stroke="{DynamicResource GlyphBrush}" StrokeThickness="1" Data="M5.2422477,11.132184 L11.5544,11.132184 8.6412958,4.4969033 z" x:Name="DecreaseArrow" />
                 </Grid>
@@ -1205,7 +1227,7 @@
                     <RepeatButton x:Name="PageDown" Style="{DynamicResource NuclearScrollRepeatButtonStyle}" Command="ScrollBar.PageUpCommand" />
                 </Track.DecreaseRepeatButton>
             </Track>
-            <RepeatButton Grid.Row="2" x:Name="IncreaseRepeat" Command="ScrollBar.LineDownCommand">
+            <RepeatButton Grid.Row="2" x:Name="IncreaseRepeat" Command="ScrollBar.LineDownCommand" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Style="{DynamicResource {x:Type RepeatButton}}">
                 <Grid Margin="0" Background="Transparent">
                     <Path Margin="4.742,3.997,4.946,5.327" x:Name="IncreaseArrow" VerticalAlignment="Stretch" Height="Auto" Fill="{DynamicResource GlyphBrush}" Stretch="Fill" Stroke="{DynamicResource GlyphBrush}" StrokeThickness="1" Data="M5.2422477,11.132184 L11.5544,11.132184 8.6412958,4.4969033 z" RenderTransformOrigin="0.5,0.5">
                         <Path.RenderTransform>
@@ -1224,7 +1246,7 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition MaxWidth="18" />
             </Grid.ColumnDefinitions>
-            <RepeatButton Grid.Column="0" x:Name="DecreaseRepeat" Command="ScrollBar.LineLeftCommand">
+            <RepeatButton Grid.Column="0" x:Name="DecreaseRepeat" Command="ScrollBar.LineLeftCommand" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Style="{DynamicResource {x:Type RepeatButton}}">
                 <Grid Margin="0" Background="Transparent">
                     <Path Margin="4.742,3.997,4.946,5.327" HorizontalAlignment="Stretch" Width="Auto" Fill="{DynamicResource GlyphBrush}" Stretch="Fill" Stroke="{DynamicResource GlyphBrush}" StrokeThickness="1" Data="M5.2422477,11.132184 L11.5544,11.132184 8.6412958,4.4969033 z" x:Name="DecreaseArrow" RenderTransformOrigin="0.5,0.5">
                         <Path.RenderTransform>
@@ -1238,13 +1260,13 @@
                     <Thumb Style="{DynamicResource HorizontalNuclearThumbStyle}" Background="{x:Null}" Foreground="{x:Null}"/>
                 </Track.Thumb>
                 <Track.IncreaseRepeatButton>
-                    <RepeatButton x:Name="PageUp" Style="{DynamicResource NuclearScrollRepeatButtonStyle}" Command="ScrollBar.PageRightCommand" />
+                    <RepeatButton x:Name="PageUp" Style="{DynamicResource NuclearScrollRepeatButtonStyle}" Command="ScrollBar.PageRightCommand"/>
                 </Track.IncreaseRepeatButton>
                 <Track.DecreaseRepeatButton>
-                    <RepeatButton x:Name="PageDown" Style="{DynamicResource NuclearScrollRepeatButtonStyle}" Command="ScrollBar.PageLeftCommand" />
+                    <RepeatButton x:Name="PageDown" Style="{DynamicResource NuclearScrollRepeatButtonStyle}" Command="ScrollBar.PageLeftCommand"/>
                 </Track.DecreaseRepeatButton>
             </Track>
-            <RepeatButton Grid.Column="2" x:Name="IncreaseRepeat" Command="ScrollBar.LineRightCommand">
+            <RepeatButton Grid.Column="2" x:Name="IncreaseRepeat" Command="ScrollBar.LineRightCommand" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Style="{DynamicResource {x:Type RepeatButton}}">
                 <Grid Margin="0" Background="Transparent">
                     <Path Margin="4.742,3.997,4.946,5.327" x:Name="IncreaseArrow" HorizontalAlignment="Stretch" Width="Auto" Fill="{DynamicResource GlyphBrush}" Stretch="Fill" Stroke="{DynamicResource GlyphBrush}" StrokeThickness="1" Data="M5.2422477,11.132184 L11.5544,11.132184 8.6412958,4.4969033 z" RenderTransformOrigin="0.5,0.5">
                         <Path.RenderTransform>
@@ -1286,7 +1308,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBox">
-                    <Border Name="Bd" BorderThickness="{TemplateBinding Border.BorderThickness}" Padding="1" BorderBrush="{TemplateBinding Border.BorderBrush}" Background="{TemplateBinding Panel.Background}" SnapsToDevicePixels="True">
+                    <Border Name="Bd" BorderThickness="{TemplateBinding Border.BorderThickness}" Padding="0" BorderBrush="{TemplateBinding Border.BorderBrush}" Background="{TemplateBinding Panel.Background}" SnapsToDevicePixels="True">
                         <ScrollViewer Padding="{TemplateBinding Control.Padding}" Focusable="False">
                             <ItemsPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" Margin="0,0,1,0"/>
                         </ScrollViewer>
@@ -1308,50 +1330,12 @@
     <Style d:IsControlPart="True" TargetType="{x:Type ListBoxItem}">
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="Margin" Value="1,1,1,0"/>
+        <Setter Property="Padding" Value="5,2,5,2"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                    <ControlTemplate.Resources>
-                        <Storyboard x:Key="HoverOn">
-
-                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="HoverRectangle" Storyboard.TargetProperty="(UIElement.Opacity)">
-                                <SplineDoubleKeyFrame KeyTime="0" Value="1"/>
-                            </DoubleAnimationUsingKeyFrames>
-
-                        </Storyboard>
-                        <Storyboard x:Key="HoverOff">
-
-                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="HoverRectangle" Storyboard.TargetProperty="(UIElement.Opacity)">
-                                <SplineDoubleKeyFrame KeyTime="0" Value="0"/>
-                            </DoubleAnimationUsingKeyFrames>
-
-                        </Storyboard>
-                        <Storyboard x:Key="SelectedOn">
-
-                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="SelectedRectangle" Storyboard.TargetProperty="(UIElement.Opacity)">
-                                <SplineDoubleKeyFrame KeyTime="0" Value="1"/>
-                            </DoubleAnimationUsingKeyFrames>
-
-                        </Storyboard>
-                        <Storyboard x:Key="SelectedOff">
-
-                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="SelectedRectangle" Storyboard.TargetProperty="(UIElement.Opacity)">
-                                <SplineDoubleKeyFrame KeyTime="0" Value="0"/>
-                            </DoubleAnimationUsingKeyFrames>
-
-                        </Storyboard>
-                        <Storyboard x:Key="FocussedOn">
-                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="FocusVisualElement" Storyboard.TargetProperty="(UIElement.Opacity)">
-                                <SplineDoubleKeyFrame KeyTime="0" Value="1"/>
-                            </DoubleAnimationUsingKeyFrames>
-                        </Storyboard>
-                        <Storyboard x:Key="FocussedOff">
-                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="FocusVisualElement" Storyboard.TargetProperty="(UIElement.Opacity)">
-                                <SplineDoubleKeyFrame KeyTime="0" Value="0"/>
-                            </DoubleAnimationUsingKeyFrames>
-                        </Storyboard>
-                    </ControlTemplate.Resources>
-                    <Grid SnapsToDevicePixels="true" Background="Transparent">
+                    <Grid SnapsToDevicePixels="true" Background="Transparent" Margin="{TemplateBinding Margin}">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal"/>
@@ -1360,44 +1344,25 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                         <!--<Rectangle Width="{Binding ViewportWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}}" Margin="{Binding ContentHorizontalOffset, Converter={cvt:NumericToThickness}, ConverterParameter={m:Thickness 1,0,0,0}, RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}}" x:Name="Background" IsHitTestVisible="False" Opacity="0.25" Fill="{StaticResource NormalBrush}" RadiusX="1" RadiusY="1"/>-->
-                        <Rectangle x:Name="Background" IsHitTestVisible="False" Margin="1,1,1,1" Opacity="0.25" Fill="{StaticResource NormalBrush}" RadiusX="1" RadiusY="1"/>
-                        <Rectangle x:Name="HoverRectangle" IsHitTestVisible="False" Margin="1,1,1,1" Opacity="0" Fill="{StaticResource NormalBrush}" RadiusX="1" RadiusY="1"/>
-                        <Rectangle x:Name="SelectedRectangle" IsHitTestVisible="False" Margin="1,1,1,1" Opacity="0" Fill="{DynamicResource SelectedBackgroundBrush}" RadiusX="1" RadiusY="1"/>
-                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="5,2,5,2" x:Name="contentPresenter" />
+                        <Rectangle x:Name="Background" IsHitTestVisible="False" Opacity="0.25" Fill="{StaticResource NormalBrush}"/>
+                        <Rectangle x:Name="HoverRectangle" IsHitTestVisible="False" Opacity="0" Fill="{StaticResource NormalBrush}"/>
+                        <Rectangle x:Name="SelectedRectangle" IsHitTestVisible="False" Opacity="0" Fill="{StaticResource SelectedBackgroundBrush}"/>
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}" x:Name="contentPresenter" />
                         <Rectangle x:Name="FocusVisualElement" Stroke="{StaticResource HoverShineBrush}" StrokeThickness="0" RadiusX="1" RadiusY="1" Opacity="0" IsHitTestVisible="False" Margin="1,1,1,1"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsFocused" Value="True">
-                            <Trigger.ExitActions>
-                                <BeginStoryboard Storyboard="{StaticResource FocussedOff}" x:Name="FocussedOff_BeginStoryboard"/>
-                            </Trigger.ExitActions>
-                            <Trigger.EnterActions>
-                                <BeginStoryboard Storyboard="{StaticResource FocussedOn}" x:Name="FocussedOn_BeginStoryboard"/>
-                            </Trigger.EnterActions>
+                            <Setter Property="Opacity" TargetName="FocusVisualElement" Value="1"/>
                         </Trigger>
                         <Trigger Property="IsSelected" Value="true">
-
-                            <Trigger.ExitActions>
-                                <BeginStoryboard x:Name="SelectedOff_BeginStoryboard" Storyboard="{StaticResource SelectedOff}"/>
-                            </Trigger.ExitActions>
-                            <Trigger.EnterActions>
-                                <BeginStoryboard x:Name="SelectedOn_BeginStoryboard" Storyboard="{StaticResource SelectedOn}"/>
-                            </Trigger.EnterActions>
-
+                            <Setter Property="Opacity" TargetName="SelectedRectangle" Value="1"/>
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsMouseOver" Value="True" />
                                 <Condition Property="Selector.IsSelected" Value="False" />
                             </MultiTrigger.Conditions>
-
-                            <MultiTrigger.EnterActions>
-                                <BeginStoryboard Storyboard="{StaticResource HoverOn}"/>
-                            </MultiTrigger.EnterActions>
-                            <MultiTrigger.ExitActions>
-                                <BeginStoryboard x:Name="HoverOff_BeginStoryboard" Storyboard="{StaticResource HoverOff}"/>
-                            </MultiTrigger.ExitActions>
-
+                            <Setter Property="Opacity" TargetName="HoverRectangle" Value="1"/>
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
@@ -1730,31 +1695,16 @@
     </Style>
 
     <Style TargetType="{x:Type ProgressBar}">
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{StaticResource SolidBorderBrush}"/>
+        <Setter Property="Background" Value="{StaticResource NormalBorderBrush}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ProgressBar}">
-                    <ControlTemplate.Resources>
-                        <Storyboard x:Key="ValueChangedOn">
-                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="PART_Track" Storyboard.TargetProperty="(UIElement.BitmapEffect).(OuterGlowBitmapEffect.Opacity)">
-                                <SplineDoubleKeyFrame KeyTime="00:00:00" Value="0" />
-                                <SplineDoubleKeyFrame KeyTime="00:00:00.2000000" Value="1" />
-                                <SplineDoubleKeyFrame KeyTime="00:00:02" Value="0" />
-                            </DoubleAnimationUsingKeyFrames>
-                        </Storyboard>
-                        <Storyboard x:Key="IndeterminateOn">
-                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndeterminateGradientFill" Storyboard.TargetProperty="(Shape.Fill).(Brush.Transform).(TransformGroup.Children)[0].X" RepeatBehavior="Forever">
-                                <SplineDoubleKeyFrame KeyTime="0" Value="0" />
-                                <SplineDoubleKeyFrame KeyTime="00:00:2.4" Value="145" />
-                            </DoubleAnimationUsingKeyFrames>
-                        </Storyboard>
-                    </ControlTemplate.Resources>
                     <Grid>
-                        <Border x:Name="PART_Track" BorderBrush="{DynamicResource SolidBorderBrush}" BorderThickness="1" CornerRadius="0,0,0,0" Background="{DynamicResource LightBrush}">
-                            <Border.BitmapEffect>
-                                <OuterGlowBitmapEffect Opacity="0" GlowColor="{DynamicResource WhiteColor}" GlowSize="3" />
-                            </Border.BitmapEffect>
-                        </Border>
-                        <Border HorizontalAlignment="Left" x:Name="PART_Indicator" BorderBrush="{DynamicResource NormalBorderBrush}" BorderThickness="1" CornerRadius="0,0,0,0">
+                        <Border x:Name="PART_Track" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                Background="{TemplateBinding Background}"/>
+                        <Border HorizontalAlignment="Left" x:Name="PART_Indicator" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
                             <Border.Background>
                                 <LinearGradientBrush EndPoint=".7,1" StartPoint=".7,0">
                                     <GradientStop Color="#B2FFFFFF" Offset="0" />
@@ -1769,39 +1719,54 @@
                             </Border.Background>
                         </Border>
                         <Grid x:Name="IndeterminateRoot" Visibility="Collapsed">
-                            <Rectangle Margin="{TemplateBinding BorderThickness}" x:Name="IndeterminateSolidFill" Opacity="1" RenderTransformOrigin="0.5,0.5" RadiusX="2" RadiusY="2" Fill="{DynamicResource ControlBackgroundBrush}" Stroke="#FF448DCA" StrokeThickness="0" />
-                            <Rectangle Margin="{TemplateBinding BorderThickness}" x:Name="IndeterminateGradientFill" RadiusX="2" RadiusY="2" StrokeThickness="1">
+                            <Rectangle Margin="{TemplateBinding BorderThickness}" Opacity="0.25">
                                 <Rectangle.Fill>
-                                    <LinearGradientBrush EndPoint="0.508,1.394" StartPoint="0.401,-0.394" SpreadMethod="Repeat">
+                                    <LinearGradientBrush EndPoint=".7,1" StartPoint=".7,0">
+                                        <GradientStop Color="#B2FFFFFF" Offset="0" />
+                                        <GradientStop Color="#C6FFFFFF" Offset="0.15" />
+                                        <GradientStop Color="#D1FFFFFF" Offset="0.275" />
+                                        <GradientStop Color="#C6FFFFFF" Offset="0.4" />
+                                        <GradientStop Color="#BFFFFFFF" Offset="0.65" />
+                                        <GradientStop Color="#A5FFFFFF" Offset="0.75" />
+                                        <GradientStop Color="#91FFFFFF" Offset="0.85" />
+                                        <GradientStop Color="#72FFFFFF" Offset="1" />
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <Rectangle Margin="{TemplateBinding BorderThickness}" x:Name="IndeterminateGradientFill" StrokeThickness="1" Opacity="0.5">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush EndPoint="0,1"
+                                                             MappingMode="Absolute"
+                                                             SpreadMethod="Repeat"
+                                                             StartPoint="20,1">
                                         <LinearGradientBrush.Transform>
                                             <TransformGroup>
-                                                <TranslateTransform X="0" />
+                                                <TranslateTransform X="0"
+                                                                        x:Name="xTransform" />
+                                                <SkewTransform AngleX="-30" />
                                             </TransformGroup>
                                         </LinearGradientBrush.Transform>
-                                        <GradientStop Color="#00FFFFFF" />
-                                        <GradientStop Color="#FEA1A1A1" Offset="1" />
-                                        <GradientStop Color="#00FEFEFE" Offset="0.517" />
-                                        <GradientStop Color="#FEA1A1A1" Offset="0.517" />
+                                        <GradientStop Color="#33858585" Offset="0" />
+                                        <GradientStop Color="#33999999" Offset="0.65" />
+                                        <GradientStop Color="#4C000000" Offset="0.10" />
+                                        <GradientStop Color="#4C000000" Offset="0.55" />
                                     </LinearGradientBrush>
                                 </Rectangle.Fill>
                             </Rectangle>
                         </Grid>
-                        <Border Background="{DynamicResource DisabledBackgroundBrush}" Opacity="0" BorderThickness="1,1,1,1" BorderBrush="{DynamicResource DisabledBorderBrush}" x:Name="border"/>
+                        <Border Background="{StaticResource DisabledBackgroundBrush}" Opacity="0" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{StaticResource DisabledBorderBrush}" x:Name="border"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Opacity" TargetName="border" Value="0.8"/>
                         </Trigger>
-                        <EventTrigger RoutedEvent="RangeBase.ValueChanged">
-                            <BeginStoryboard Storyboard="{StaticResource ValueChangedOn}" />
-                        </EventTrigger>
                         <Trigger Property="IsIndeterminate" Value="True">
                             <Trigger.EnterActions>
                                 <BeginStoryboard x:Name="IndeterminateOnStoryboard">
                                     <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndeterminateGradientFill" Storyboard.TargetProperty="(Shape.Fill).(Brush.Transform).(TransformGroup.Children)[0].X">
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndeterminateGradientFill" Storyboard.TargetProperty="(Shape.Fill).(Brush.Transform).(TransformGroup.Children)[0].X" RepeatBehavior="Forever">
                                             <SplineDoubleKeyFrame KeyTime="0" Value="0" />
-                                            <SplineDoubleKeyFrame KeyTime="00:00:2.4" Value="145" />
+                                            <SplineDoubleKeyFrame KeyTime="00:00:.30" Value="20" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </BeginStoryboard>
@@ -1879,7 +1844,7 @@
                                 </RepeatButton>
                                 <RepeatButton x:Name="PART_DecreaseButton" Command="{x:Static ctrl:NumericTextBox.SmallDecreaseCommand}">
                                     <Grid Margin="2,0" Background="Transparent">
-                                        <Path HorizontalAlignment="Stretch" Width="Auto" Height="Auto" Fill="{StaticResource TextBrush}" Stretch="Uniform" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M4,-2 L-4,-2 0,2 z"/>
+                                        <Path HorizontalAlignment="Stretch" Width="Auto" Height="Auto" Fill="{DynamicResource TextBrush}" Stretch="Uniform" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" Data="M4,-2 L-4,-2 0,2 z"/>
                                     </Grid>
                                 </RepeatButton>
                             </UniformGrid>
@@ -2353,6 +2318,31 @@
         </Setter>
     </Style>
     <Style TargetType="{x:Type TabControl}">
+        <Setter Property="Background" Value="{DynamicResource LightBrush}"/>
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <TabPanel IsItemsHost="true" Panel.ZIndex="1" KeyboardNavigation.TabIndex="1" RenderTransformOrigin="0.5,0.5" Width="Auto" Height="Auto">
+                        <TabPanel.LayoutTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="1" ScaleY="1" />
+                                <SkewTransform AngleX="0" AngleY="0" />
+                                <RotateTransform Angle="0" />
+                                <TranslateTransform X="0" Y="0" />
+                            </TransformGroup>
+                        </TabPanel.LayoutTransform>
+                        <TabPanel.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="1" ScaleY="1" />
+                                <SkewTransform AngleX="0" AngleY="0" />
+                                <RotateTransform />
+                                <TranslateTransform X="0" Y="0" />
+                            </TransformGroup>
+                        </TabPanel.RenderTransform>
+                    </TabPanel>
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TabControl}">
@@ -2365,31 +2355,13 @@
                             <RowDefinition Height="Auto" x:Name="RowDefinition0" />
                             <RowDefinition Height="*" x:Name="RowDefinition1" />
                         </Grid.RowDefinitions>
-                        <Border CornerRadius="2,2,0,0" Background="{DynamicResource LightBrush}" x:Name="border">
-                            <TabPanel x:Name="HeaderPanel" IsItemsHost="true" Panel.ZIndex="1" KeyboardNavigation.TabIndex="1" RenderTransformOrigin="0.5,0.5" Width="Auto" Height="Auto">
-                                <TabPanel.LayoutTransform>
-                                    <TransformGroup>
-                                        <ScaleTransform ScaleX="1" ScaleY="1" />
-                                        <SkewTransform AngleX="0" AngleY="0" />
-                                        <RotateTransform Angle="0" />
-                                        <TranslateTransform X="0" Y="0" />
-                                    </TransformGroup>
-                                </TabPanel.LayoutTransform>
-                                <TabPanel.RenderTransform>
-                                    <TransformGroup>
-                                        <ScaleTransform ScaleX="1" ScaleY="1" />
-                                        <SkewTransform AngleX="0" AngleY="0" />
-                                        <RotateTransform />
-                                        <TranslateTransform X="0" Y="0" />
-                                    </TransformGroup>
-                                </TabPanel.RenderTransform>
-
-                            </TabPanel>
+                        <Border Background="{TemplateBinding Background}" x:Name="border">
+                            <ItemsPresenter x:Name="HeaderPanel"/>
                         </Border>
-                        <Border x:Name="ContentPanel" Grid.Column="0" Grid.Row="1" KeyboardNavigation.DirectionalNavigation="Contained" KeyboardNavigation.TabIndex="2" KeyboardNavigation.TabNavigation="Local" Background="{DynamicResource ShadeBrush}" CornerRadius="0,0,2,2">
-                            <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" />
+                        <Border x:Name="ContentPanel" Grid.Column="0" Grid.Row="1" KeyboardNavigation.DirectionalNavigation="Contained" KeyboardNavigation.TabIndex="2" KeyboardNavigation.TabNavigation="Local">
+                            <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" x:Name="PART_SelectedContentHost" ContentSource="SelectedContent"/>
                         </Border>
-                        <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" BorderThickness="0,0,0,1" CornerRadius="10,0,0,0" Opacity="0.5" Margin="2,0,2,0" x:Name="border1">
+                        <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" BorderThickness="0,0,0,1" Opacity="0.5" Margin="2,0,2,0" x:Name="border1">
                             <Border.LayoutTransform>
                                 <TransformGroup>
                                     <ScaleTransform ScaleX="1" ScaleY="1"/>
@@ -2472,6 +2444,7 @@
     </Style>
     <Style d:IsControlPart="True" TargetType="{x:Type TabItem}">
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+        <Setter Property="Padding" Value="8,4" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TabItem}">
@@ -2497,7 +2470,7 @@
                             </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
                     </ControlTemplate.Resources>
-                    <Grid x:Name="grid" Margin="2,1,2,3">
+                    <Grid x:Name="grid">
                         <Grid.LayoutTransform>
                             <TransformGroup>
                                 <ScaleTransform ScaleX="1" ScaleY="1"/>
@@ -2506,7 +2479,7 @@
                                 <TranslateTransform X="0" Y="0"/>
                             </TransformGroup>
                         </Grid.LayoutTransform>
-                        <Border x:Name="border" BorderBrush="{x:Null}" CornerRadius="2,2,2,2" Opacity="0.5">
+                        <Border x:Name="border" BorderBrush="{x:Null}" Opacity="0.5">
                             <Border.Background>
                                 <LinearGradientBrush EndPoint="0.5,0.976" StartPoint="0.5,0.039">
                                     <GradientStop Color="#7F595959" Offset="0" />
@@ -2514,8 +2487,8 @@
                                 </LinearGradientBrush>
                             </Border.Background>
                         </Border>
-                        <Border x:Name="SelectedBorder" BorderBrush="{x:Null}" CornerRadius="2,2,2,2" Opacity="0" Background="{DynamicResource SelectedBackgroundBrush}"/>
-                        <Border x:Name="HoverBorder" BorderBrush="{x:Null}" CornerRadius="2,2,2,2" Opacity="0">
+                        <Border x:Name="SelectedBorder" BorderBrush="{x:Null}" Opacity="0" Background="{DynamicResource SelectedBackgroundBrush}"/>
+                        <Border x:Name="HoverBorder" BorderBrush="{x:Null}" Opacity="0">
                             <Border.Background>
                                 <LinearGradientBrush EndPoint="0.5,0.976" StartPoint="0.5,0.039">
                                     <GradientStop Color="#7F595959" Offset="0" />
@@ -2523,8 +2496,8 @@
                                 </LinearGradientBrush>
                             </Border.Background>
                         </Border>
-                        <Grid>
-                            <ContentPresenter x:Name="ContentSite" RecognizesAccessKey="True" ContentSource="Header" d:LayoutOverrides="Width, Height" HorizontalAlignment="Center" Margin="6,1,6,1" VerticalAlignment="Center" />
+                        <Grid>                        
+                            <ContentPresenter x:Name="ContentSite" RecognizesAccessKey="True" ContentSource="Header" d:LayoutOverrides="Width, Height" HorizontalAlignment="Center" Margin="{TemplateBinding Padding}" VerticalAlignment="Center" />
                         </Grid>
                     </Grid>
                     <ControlTemplate.Triggers>
@@ -2719,7 +2692,7 @@
                         <Border Grid.Row="1" Margin="0" x:Name="Border" Height="4" CornerRadius="2" Background="{DynamicResource LightBrush}" BorderBrush="{DynamicResource NormalBorderBrush}" BorderThickness="1,1,1,1" />
                         <Track Grid.Row="1" x:Name="PART_Track">
                             <Track.Thumb>
-                                <Thumb Style="{DynamicResource NuclearSliderThumb}" Background="{DynamicResource NormalBrush}" Foreground="{x:Null}" Width="20" Height="{TemplateBinding ActualHeight}"/>
+                                <Thumb Style="{DynamicResource NuclearSliderThumb}" Background="{DynamicResource NormalBrush}" Foreground="{x:Null}" Width="10" Height="{TemplateBinding ActualHeight}"/>
                             </Track.Thumb>
                             <Track.IncreaseRepeatButton>
                                 <RepeatButton Style="{DynamicResource NuclearScrollRepeatButtonStyle}" Command="Slider.IncreaseLarge" />
@@ -2773,27 +2746,27 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <ControlTemplate x:Key="DarkExpanderToggleButton" TargetType="{x:Type ToggleButton}">
+        <Grid Background="Transparent">
+            <Path HorizontalAlignment="Center" x:Name="Up_Arrow" VerticalAlignment="Center" Fill="{StaticResource GlyphBrush}"
+                  Data="M 0 0 L 6 6 L 0 12 Z" RenderTransformOrigin="0.5,0.5" Stretch="Uniform" StrokeThickness="0"/>
+            <Path Visibility="Collapsed" HorizontalAlignment="Center" x:Name="Down_Arrow" VerticalAlignment="Center" Fill="{StaticResource GlyphBrush}"
+                  Data="M 0 0 L 6 6 L 12 0 Z" RenderTransformOrigin="0.5,0.5" Stretch="Uniform" StrokeThickness="0"/>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsChecked" Value="true">
+                <Setter Property="Visibility" Value="Collapsed" TargetName="Up_Arrow" />
+                <Setter Property="Visibility" Value="Visible" TargetName="Down_Arrow" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
     <Style x:Key="NuclearTreeViewItemToggleButton" d:IsControlPart="True" TargetType="{x:Type ToggleButton}">
         <Setter Property="Focusable" Value="False" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ToggleButton}">
-                    <Grid Margin="0" Background="Transparent">
-                        <Grid Height="13" Width="15" Background="Transparent" d:LayoutOverrides="Margin">
-                            <Path Visibility="Collapsed" HorizontalAlignment="Left" Margin="1,1,1,1" x:Name="IsExpandedPath" VerticalAlignment="Center" Fill="{DynamicResource GlyphBrush}" Data="M 0 4 L 8 4 L 4 8 Z" />
-                            <Path HorizontalAlignment="Left" Margin="1,1,1,1" x:Name="ExpandPath" VerticalAlignment="Center" Fill="{DynamicResource GlyphBrush}" Data="M 4 0 L 8 4 L 4 8 Z" />
-                        </Grid>
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsChecked" Value="True">
-                            <Setter Property="Visibility" Value="Visible" TargetName="IsExpandedPath" />
-                            <Setter Property="Visibility" Value="Collapsed" TargetName="ExpandPath" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="Template" Value="{StaticResource DarkExpanderToggleButton}"/>
     </Style>
+    
     <Style d:IsControlPart="True" TargetType="{x:Type TreeViewItem}">
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
@@ -3696,6 +3669,9 @@
 
     <Style TargetType="{x:Type GridSplitter}">
         <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
     </Style>
 
     <Style TargetType="ctrl:Vector2Editor">
@@ -3711,41 +3687,53 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="X" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <ctrl:NumericTextBox Grid.Column="1" Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <TextBlock Grid.Column="2" Text="Y" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <ctrl:NumericTextBox Grid.Column="3" Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <TextBlock Grid.Column="0" Text="Length" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}"/>
-                        <ctrl:NumericTextBox Grid.Column="1" Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}"/>
-                        <TextBlock Grid.Column="2" Text="Angle" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}"/>
-                        <ctrl:NumericTextBox Grid.Column="3" Value="{Binding Angle, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}"/>
-                        <ToggleButton Grid.Column="4" x:Name="ToggleButtonPolarCoordinates" Width="22" Height="22">
-                            <ToggleButton.Style>
-                            <Style TargetType="{x:Type ToggleButton}">
-                                <Setter Property="Background" Value="Transparent"/>
-                                <Setter Property="BorderBrush" Value="Transparent"/>
-                                <Setter Property="BorderThickness" Value="0" />
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="{x:Type ToggleButton}">
-                                            <Grid x:Name="Grid">
-                                                <Border x:Name="Background" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"/>
-                                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" />
-                                            </Grid>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsEnabled" Value="false">
-                                                        <Setter Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" TargetName="Background" />
-                                                        <Setter Property="Opacity" TargetName="Grid" Value="0.5" />
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Setter Property="Margin" Value="0"/>
-                            </Style>
-                            </ToggleButton.Style>
-                            <Path Width="16" Height="16" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="F1 M 38,8C 39.9902,8 41.9352,8.19379 43.817,8.56355L 43.0384,11.4693C 41.4061,11.1612 39.7219,11 38,11L 37.6457,11.0023L 37.3836,8.0062L 38,8 Z M 66.4036,28.3187L 63.4978,29.0973C 62.8969,27.3761 62.1266,25.7343 61.2069,24.1919L 63.6707,22.4668C 64.7813,24.2982 65.7014,26.2581 66.4036,28.3187 Z M 55.0828,17.0902L 56.8079,14.6264C 58.4883,15.9803 60.0197,17.5117 61.3736,19.1921L 58.9098,20.9172C 57.765,19.5176 56.4824,18.235 55.0828,17.0902 Z M 46.9027,12.5022L 47.6813,9.59646C 49.742,10.2986 51.7018,11.2188 53.5333,12.3293L 51.8081,14.7931C 50.2657,13.8734 48.6239,13.1031 46.9027,12.5022 Z M 28.4302,12.7451L 27.1589,10.0187C 29.145,9.24866 31.2336,8.68398 33.3984,8.35073L 33.6606,11.3469C 31.8505,11.6393 30.1008,12.1117 28.4302,12.7451 Z M 20.3745,17.546L 18.248,15.4195C 19.866,14.0029 21.6377,12.7575 23.5347,11.7115L 24.806,14.4378C 23.2234,15.3259 21.7394,16.3688 20.3745,17.546 Z M 14.4378,24.806L 11.7114,23.5347C 12.7575,21.6377 14.003,19.866 15.4195,18.2479L 17.5461,20.3745C 16.3688,21.7394 15.3259,23.2234 14.4378,24.806 Z M 11.3469,33.6605L 8.35073,33.3984C 8.68398,31.2336 9.24866,29.145 10.0187,27.1589L 12.7451,28.4302C 12.1117,30.1008 11.6393,31.8505 11.3469,33.6605 Z M 11,38C 11,39.7219 11.1612,41.4061 11.4693,43.0384L 8.56356,43.8169C 8.19381,41.9351 8.00002,39.9902 8.00002,38L 8.00622,37.3835L 11.0023,37.6457L 11,38 Z M 68,38L 67.9938,38.6165L 64.9977,38.3544L 65,38C 65,36.2782 64.8388,34.594 64.5307,32.9617L 67.4364,32.1831C 67.8062,34.0649 68,36.0098 68,38 Z M 38,68C 36.0098,68 34.0649,67.8062 32.1831,67.4365L 32.9617,64.5308C 34.594,64.8388 36.2782,65 38,65L 38.3544,64.9977L 38.6165,67.9938L 38,68 Z M 9.59644,47.6813L 12.5022,46.9027C 13.1031,48.6239 13.8734,50.2657 14.7931,51.8081L 12.3293,53.5332C 11.2187,51.7018 10.2986,49.742 9.59644,47.6813 Z M 20.9172,58.9099L 19.1921,61.3736C 17.5117,60.0197 15.9803,58.4883 14.6264,56.8079L 17.0901,55.0828C 18.235,56.4824 19.5176,57.765 20.9172,58.9099 Z M 29.0974,63.4979L 28.3188,66.4036C 26.2581,65.7014 24.2983,64.7813 22.4668,63.6707L 24.1919,61.2069C 25.7343,62.1266 27.3761,62.8969 29.0974,63.4979 Z M 47.5698,63.255L 48.8411,65.9813C 46.855,66.7514 44.7665,67.316 42.6017,67.6493L 42.3395,64.6531C 44.1495,64.3607 45.8993,63.8883 47.5698,63.255 Z M 55.6256,58.4539L 57.7521,60.5805C 56.134,61.9971 54.3623,63.2425 52.4653,64.2886L 51.194,61.5622C 52.7766,60.6741 54.2606,59.6312 55.6256,58.4539 Z M 61.5622,51.194L 64.2885,52.4654C 63.2425,54.3624 61.9971,56.134 60.5805,57.752L 58.454,55.6255C 59.6312,54.2606 60.6741,52.7766 61.5622,51.194 Z M 64.6531,42.3395L 67.6493,42.6016C 67.316,44.7665 66.7513,46.855 65.9813,48.8412L 63.2549,47.5699C 63.8883,45.8993 64.3607,44.1495 64.6531,42.3395 Z "/>
+                        <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <ToggleButton Grid.Column="4" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="Advanced options"
+                                      ClickMode="Press" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                            <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageAdvancedEditionVector}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                         </ToggleButton>
+                        <Popup x:Name="Popup" IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" AllowsTransparency="True"
+                                       MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ctrl:Vector2Editor}}" StaysOpen="False"
+                                       PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=ctrl:Vector2Editor}}" PopupAnimation="Slide" VerticalOffset="2">
+                            <Border SnapsToDevicePixels="True" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1">
+                                <ctrl:KeyValueGrid>
+                                    <TextBlock Text="Length:" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    <ctrl:NumericTextBox Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                         DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                         Margin="2,6,6,2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                                    <TextBlock Text="Angle" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    <ctrl:NumericTextBox Value="{Binding Angle, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                         DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                         Margin="2,2,6,2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                                    <TextBlock Text="All components:" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    <ctrl:NumericTextBox x:Name="AllTextBox" Margin="2,2,6,6" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True" ValidateOnLostFocus="False">
+                                        <i:Interaction.Behaviors>
+                                            <behaviors:OnEventCommandBehavior EventName="Validated" Command="{x:Static commands:ControlCommands.SetAllVectorComponentsCommand}" CommandParameter="{Binding Value, ElementName=AllTextBox}"/>
+                                            <behaviors:OnEventCommandBehavior EventName="Validated" Command="{Binding ResetValueCommand, ElementName=AllTextBox}"/>
+                                        </i:Interaction.Behaviors>
+                                    </ctrl:NumericTextBox>
+                                    <Rectangle Width="0" Height="0" Visibility="Collapsed"/>
+                                    <Button Command="{x:Static commands:ControlCommands.ResetValueCommand}" Content="Reset value" Margin="2,2,6,6"/>
+                                </ctrl:KeyValueGrid>
+                            </Border>
+                        </Popup>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -3767,41 +3755,58 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="X" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <ctrl:NumericTextBox Grid.Column="1" Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <TextBlock Grid.Column="2" Text="Y" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <ctrl:NumericTextBox Grid.Column="3" Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <TextBlock Grid.Column="4" Text="Z" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <ctrl:NumericTextBox Grid.Column="5" Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <TextBlock Grid.Column="0" Text="Length:" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}"/>
-                        <ctrl:NumericTextBox Grid.Column="1" Grid.ColumnSpan="5" Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}"/>
-                        <ToggleButton Grid.Column="6" x:Name="ToggleButtonPolarCoordinates" Width="22" Height="22">
-                            <ToggleButton.Style>
-                                <Style TargetType="{x:Type ToggleButton}">
-                                    <Setter Property="Background" Value="Transparent"/>
-                                    <Setter Property="BorderBrush" Value="Transparent"/>
-                                    <Setter Property="BorderThickness" Value="0" />
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="{x:Type ToggleButton}">
-                                                <Grid x:Name="Grid">
-                                                    <Border x:Name="Background" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"/>
-                                                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" />
-                                                </Grid>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsEnabled" Value="false">
-                                                        <Setter Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" TargetName="Background" />
-                                                        <Setter Property="Opacity" TargetName="Grid" Value="0.5" />
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                    <Setter Property="Margin" Value="0"/>
-                                </Style>
-                            </ToggleButton.Style>
-                            <Path Width="16" Height="16" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="F1 M 38,8C 39.9902,8 41.9352,8.19379 43.817,8.56355L 43.0384,11.4693C 41.4061,11.1612 39.7219,11 38,11L 37.6457,11.0023L 37.3836,8.0062L 38,8 Z M 66.4036,28.3187L 63.4978,29.0973C 62.8969,27.3761 62.1266,25.7343 61.2069,24.1919L 63.6707,22.4668C 64.7813,24.2982 65.7014,26.2581 66.4036,28.3187 Z M 55.0828,17.0902L 56.8079,14.6264C 58.4883,15.9803 60.0197,17.5117 61.3736,19.1921L 58.9098,20.9172C 57.765,19.5176 56.4824,18.235 55.0828,17.0902 Z M 46.9027,12.5022L 47.6813,9.59646C 49.742,10.2986 51.7018,11.2188 53.5333,12.3293L 51.8081,14.7931C 50.2657,13.8734 48.6239,13.1031 46.9027,12.5022 Z M 28.4302,12.7451L 27.1589,10.0187C 29.145,9.24866 31.2336,8.68398 33.3984,8.35073L 33.6606,11.3469C 31.8505,11.6393 30.1008,12.1117 28.4302,12.7451 Z M 20.3745,17.546L 18.248,15.4195C 19.866,14.0029 21.6377,12.7575 23.5347,11.7115L 24.806,14.4378C 23.2234,15.3259 21.7394,16.3688 20.3745,17.546 Z M 14.4378,24.806L 11.7114,23.5347C 12.7575,21.6377 14.003,19.866 15.4195,18.2479L 17.5461,20.3745C 16.3688,21.7394 15.3259,23.2234 14.4378,24.806 Z M 11.3469,33.6605L 8.35073,33.3984C 8.68398,31.2336 9.24866,29.145 10.0187,27.1589L 12.7451,28.4302C 12.1117,30.1008 11.6393,31.8505 11.3469,33.6605 Z M 11,38C 11,39.7219 11.1612,41.4061 11.4693,43.0384L 8.56356,43.8169C 8.19381,41.9351 8.00002,39.9902 8.00002,38L 8.00622,37.3835L 11.0023,37.6457L 11,38 Z M 68,38L 67.9938,38.6165L 64.9977,38.3544L 65,38C 65,36.2782 64.8388,34.594 64.5307,32.9617L 67.4364,32.1831C 67.8062,34.0649 68,36.0098 68,38 Z M 38,68C 36.0098,68 34.0649,67.8062 32.1831,67.4365L 32.9617,64.5308C 34.594,64.8388 36.2782,65 38,65L 38.3544,64.9977L 38.6165,67.9938L 38,68 Z M 9.59644,47.6813L 12.5022,46.9027C 13.1031,48.6239 13.8734,50.2657 14.7931,51.8081L 12.3293,53.5332C 11.2187,51.7018 10.2986,49.742 9.59644,47.6813 Z M 20.9172,58.9099L 19.1921,61.3736C 17.5117,60.0197 15.9803,58.4883 14.6264,56.8079L 17.0901,55.0828C 18.235,56.4824 19.5176,57.765 20.9172,58.9099 Z M 29.0974,63.4979L 28.3188,66.4036C 26.2581,65.7014 24.2983,64.7813 22.4668,63.6707L 24.1919,61.2069C 25.7343,62.1266 27.3761,62.8969 29.0974,63.4979 Z M 47.5698,63.255L 48.8411,65.9813C 46.855,66.7514 44.7665,67.316 42.6017,67.6493L 42.3395,64.6531C 44.1495,64.3607 45.8993,63.8883 47.5698,63.255 Z M 55.6256,58.4539L 57.7521,60.5805C 56.134,61.9971 54.3623,63.2425 52.4653,64.2886L 51.194,61.5622C 52.7766,60.6741 54.2606,59.6312 55.6256,58.4539 Z M 61.5622,51.194L 64.2885,52.4654C 63.2425,54.3624 61.9971,56.134 60.5805,57.752L 58.454,55.6255C 59.6312,54.2606 60.6741,52.7766 61.5622,51.194 Z M 64.6531,42.3395L 67.6493,42.6016C 67.316,44.7665 66.7513,46.855 65.9813,48.8412L 63.2549,47.5699C 63.8883,45.8993 64.3607,44.1495 64.6531,42.3395 Z "/>
+                        <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="5" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource BlueBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="Z" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <ToggleButton Grid.Column="6" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16"
+                                      Background="Transparent" ToolTip="Advanced options" ClickMode="Press" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                            <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageAdvancedEditionVector}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                         </ToggleButton>
+                        <Popup x:Name="Popup" Placement="Bottom" AllowsTransparency="True" IsOpen="{TemplateBinding IsDropDownOpen}"
+                                       MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ctrl:Vector3Editor}}" StaysOpen="False"
+                                       PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=ctrl:Vector3Editor}}" PopupAnimation="Slide" VerticalOffset="2">
+                            <Border SnapsToDevicePixels="True" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1">
+                                <ctrl:KeyValueGrid>
+                                    <TextBlock Text="Length:" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    <ctrl:NumericTextBox Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                         DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                         Margin="2,6,6,2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                                    <TextBlock Text="All components:" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    <ctrl:NumericTextBox x:Name="AllTextBox" Margin="2,2,6,6" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True" ValidateOnLostFocus="False">
+                                        <i:Interaction.Behaviors>
+                                            <behaviors:OnEventCommandBehavior EventName="Validated" Command="{x:Static commands:ControlCommands.SetAllVectorComponentsCommand}" CommandParameter="{Binding Value, ElementName=AllTextBox}"/>
+                                            <behaviors:OnEventCommandBehavior EventName="Validated" Command="{Binding ResetValueCommand, ElementName=AllTextBox}"/>
+                                        </i:Interaction.Behaviors>
+                                    </ctrl:NumericTextBox>
+                                    <Rectangle Width="0" Height="0" Visibility="Collapsed"/>
+                                    <Button Command="{x:Static commands:ControlCommands.ResetValueCommand}" Content="Reset value" Margin="2,2,6,6"/>
+                                </ctrl:KeyValueGrid>
+                            </Border>
+                        </Popup>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -3825,71 +3830,459 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="X" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <ctrl:NumericTextBox Grid.Column="1" Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <TextBlock Grid.Column="2" Text="Y" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <ctrl:NumericTextBox Grid.Column="3" Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <TextBlock Grid.Column="4" Text="Z" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <ctrl:NumericTextBox Grid.Column="5" Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <TextBlock Grid.Column="6" Text="W" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <ctrl:NumericTextBox Grid.Column="7" Value="{Binding W, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:Chained {cvt:InvertBool}, {cvt:VisibleOrCollapsed}}}"/>
-                        <TextBlock Grid.Column="0" Text="Length:" Margin="3,0" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}"/>
-                        <ctrl:NumericTextBox Grid.Column="1" Grid.ColumnSpan="7" Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True" Visibility="{Binding IsChecked, ElementName=ToggleButtonPolarCoordinates, Converter={cvt:VisibleOrCollapsed}}"/>                        
-                        <ToggleButton Grid.Column="8" x:Name="ToggleButtonPolarCoordinates" Width="22" Height="22">
-                            <ToggleButton.Style>
-                                <Style TargetType="{x:Type ToggleButton}">
-                                    <Setter Property="Background" Value="Transparent"/>
-                                    <Setter Property="BorderBrush" Value="Transparent"/>
-                                    <Setter Property="BorderThickness" Value="0" />
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="{x:Type ToggleButton}">
-                                                <Grid x:Name="Grid">
-                                                    <Border x:Name="Background" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"/>
-                                                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" />
-                                                </Grid>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsEnabled" Value="false">
-                                                        <Setter Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" TargetName="Background" />
-                                                        <Setter Property="Opacity" TargetName="Grid" Value="0.5" />
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                    <Setter Property="Margin" Value="0"/>
-                                </Style>
-                            </ToggleButton.Style>
-                            <Path Width="16" Height="16" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="F1 M 38,8C 39.9902,8 41.9352,8.19379 43.817,8.56355L 43.0384,11.4693C 41.4061,11.1612 39.7219,11 38,11L 37.6457,11.0023L 37.3836,8.0062L 38,8 Z M 66.4036,28.3187L 63.4978,29.0973C 62.8969,27.3761 62.1266,25.7343 61.2069,24.1919L 63.6707,22.4668C 64.7813,24.2982 65.7014,26.2581 66.4036,28.3187 Z M 55.0828,17.0902L 56.8079,14.6264C 58.4883,15.9803 60.0197,17.5117 61.3736,19.1921L 58.9098,20.9172C 57.765,19.5176 56.4824,18.235 55.0828,17.0902 Z M 46.9027,12.5022L 47.6813,9.59646C 49.742,10.2986 51.7018,11.2188 53.5333,12.3293L 51.8081,14.7931C 50.2657,13.8734 48.6239,13.1031 46.9027,12.5022 Z M 28.4302,12.7451L 27.1589,10.0187C 29.145,9.24866 31.2336,8.68398 33.3984,8.35073L 33.6606,11.3469C 31.8505,11.6393 30.1008,12.1117 28.4302,12.7451 Z M 20.3745,17.546L 18.248,15.4195C 19.866,14.0029 21.6377,12.7575 23.5347,11.7115L 24.806,14.4378C 23.2234,15.3259 21.7394,16.3688 20.3745,17.546 Z M 14.4378,24.806L 11.7114,23.5347C 12.7575,21.6377 14.003,19.866 15.4195,18.2479L 17.5461,20.3745C 16.3688,21.7394 15.3259,23.2234 14.4378,24.806 Z M 11.3469,33.6605L 8.35073,33.3984C 8.68398,31.2336 9.24866,29.145 10.0187,27.1589L 12.7451,28.4302C 12.1117,30.1008 11.6393,31.8505 11.3469,33.6605 Z M 11,38C 11,39.7219 11.1612,41.4061 11.4693,43.0384L 8.56356,43.8169C 8.19381,41.9351 8.00002,39.9902 8.00002,38L 8.00622,37.3835L 11.0023,37.6457L 11,38 Z M 68,38L 67.9938,38.6165L 64.9977,38.3544L 65,38C 65,36.2782 64.8388,34.594 64.5307,32.9617L 67.4364,32.1831C 67.8062,34.0649 68,36.0098 68,38 Z M 38,68C 36.0098,68 34.0649,67.8062 32.1831,67.4365L 32.9617,64.5308C 34.594,64.8388 36.2782,65 38,65L 38.3544,64.9977L 38.6165,67.9938L 38,68 Z M 9.59644,47.6813L 12.5022,46.9027C 13.1031,48.6239 13.8734,50.2657 14.7931,51.8081L 12.3293,53.5332C 11.2187,51.7018 10.2986,49.742 9.59644,47.6813 Z M 20.9172,58.9099L 19.1921,61.3736C 17.5117,60.0197 15.9803,58.4883 14.6264,56.8079L 17.0901,55.0828C 18.235,56.4824 19.5176,57.765 20.9172,58.9099 Z M 29.0974,63.4979L 28.3188,66.4036C 26.2581,65.7014 24.2983,64.7813 22.4668,63.6707L 24.1919,61.2069C 25.7343,62.1266 27.3761,62.8969 29.0974,63.4979 Z M 47.5698,63.255L 48.8411,65.9813C 46.855,66.7514 44.7665,67.316 42.6017,67.6493L 42.3395,64.6531C 44.1495,64.3607 45.8993,63.8883 47.5698,63.255 Z M 55.6256,58.4539L 57.7521,60.5805C 56.134,61.9971 54.3623,63.2425 52.4653,64.2886L 51.194,61.5622C 52.7766,60.6741 54.2606,59.6312 55.6256,58.4539 Z M 61.5622,51.194L 64.2885,52.4654C 63.2425,54.3624 61.9971,56.134 60.5805,57.752L 58.454,55.6255C 59.6312,54.2606 60.6741,52.7766 61.5622,51.194 Z M 64.6531,42.3395L 67.6493,42.6016C 67.316,44.7665 66.7513,46.855 65.9813,48.8412L 63.2549,47.5699C 63.8883,45.8993 64.3607,44.1495 64.6531,42.3395 Z "/>
+                        <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="5" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource BlueBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="Z" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="7" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource AlphaBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="W" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding W, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <ToggleButton Grid.Column="8" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="Advanced options"
+                                      ClickMode="Press" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                            <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageAdvancedEditionVector}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                         </ToggleButton>
+                        <Popup x:Name="Popup" IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" AllowsTransparency="True"
+                                       MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ctrl:Vector4Editor}}" StaysOpen="False"
+                                       PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=ctrl:Vector4Editor}}" PopupAnimation="Slide" VerticalOffset="2">
+                            <Border SnapsToDevicePixels="True" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1">
+                                <ctrl:KeyValueGrid>
+                                    <TextBlock Text="Length:" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    <ctrl:NumericTextBox Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                         DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                         Margin="2,6,6,2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                                    <TextBlock Text="All components:" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    <ctrl:NumericTextBox x:Name="AllTextBox" Margin="2,2,6,6" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True" ValidateOnLostFocus="False">
+                                        <i:Interaction.Behaviors>
+                                            <behaviors:OnEventCommandBehavior EventName="Validated" Command="{x:Static commands:ControlCommands.SetAllVectorComponentsCommand}" CommandParameter="{Binding Value, ElementName=AllTextBox}"/>
+                                            <behaviors:OnEventCommandBehavior EventName="Validated" Command="{Binding ResetValueCommand, ElementName=AllTextBox}"/>
+                                        </i:Interaction.Behaviors>
+                                    </ctrl:NumericTextBox>
+                                    <Rectangle Width="0" Height="0" Visibility="Collapsed"/>
+                                    <Button Command="{x:Static commands:ControlCommands.ResetValueCommand}" Content="Reset value" Margin="2,2,6,6"/>
+                                </ctrl:KeyValueGrid>
+                            </Border>
+                        </Popup>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
+    <Style TargetType="ctrl:Int2Editor">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ctrl:Int2Editor">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <ToggleButton Grid.Column="4" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="Advanced options"
+                                      ClickMode="Press" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                            <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageAdvancedEditionVector}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                        </ToggleButton>
+                        <Popup x:Name="Popup" IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" AllowsTransparency="True"
+                                       MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ctrl:Int2Editor}}" StaysOpen="False"
+                                       PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=ctrl:Int2Editor}}" PopupAnimation="Slide" VerticalOffset="2">
+                            <Border SnapsToDevicePixels="True" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1">
+                                <ctrl:KeyValueGrid>
+                                    <TextBlock Text="All components:" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    <ctrl:NumericTextBox x:Name="AllTextBox" Margin="2,2,6,6" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True" ValidateOnLostFocus="False">
+                                        <i:Interaction.Behaviors>
+                                            <behaviors:OnEventCommandBehavior EventName="Validated" Command="{x:Static commands:ControlCommands.SetAllVectorComponentsCommand}" CommandParameter="{Binding Value, ElementName=AllTextBox}"/>
+                                            <behaviors:OnEventCommandBehavior EventName="Validated" Command="{Binding ResetValueCommand, ElementName=AllTextBox}"/>
+                                        </i:Interaction.Behaviors>
+                                    </ctrl:NumericTextBox>
+                                    <Rectangle Width="0" Height="0" Visibility="Collapsed"/>
+                                    <Button Command="{x:Static commands:ControlCommands.ResetValueCommand}" Content="Reset value" Margin="2,2,6,6"/>
+                                </ctrl:KeyValueGrid>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ctrl:Int3Editor">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ctrl:Int3Editor">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="5" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource BlueBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="Z" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <ToggleButton Grid.Column="6" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16"
+                                      Background="Transparent" ToolTip="Advanced options" ClickMode="Press" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                            <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageAdvancedEditionVector}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                        </ToggleButton>
+                        <Popup x:Name="Popup" Placement="Bottom" AllowsTransparency="True" IsOpen="{TemplateBinding IsDropDownOpen}"
+                                       MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ctrl:Int3Editor}}" StaysOpen="False"
+                                       PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=ctrl:Int3Editor}}" PopupAnimation="Slide" VerticalOffset="2">
+                            <Border SnapsToDevicePixels="True" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1">
+                                <ctrl:KeyValueGrid>
+                                    <TextBlock Text="All components:" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    <ctrl:NumericTextBox x:Name="AllTextBox" Margin="2,2,6,6" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True" ValidateOnLostFocus="False">
+                                        <i:Interaction.Behaviors>
+                                            <behaviors:OnEventCommandBehavior EventName="Validated" Command="{x:Static commands:ControlCommands.SetAllVectorComponentsCommand}" CommandParameter="{Binding Value, ElementName=AllTextBox}"/>
+                                            <behaviors:OnEventCommandBehavior EventName="Validated" Command="{Binding ResetValueCommand, ElementName=AllTextBox}"/>
+                                        </i:Interaction.Behaviors>
+                                    </ctrl:NumericTextBox>
+                                    <Rectangle Width="0" Height="0" Visibility="Collapsed"/>
+                                    <Button Command="{x:Static commands:ControlCommands.ResetValueCommand}" Content="Reset value" Margin="2,2,6,6"/>
+                                </ctrl:KeyValueGrid>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ctrl:Int4Editor">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ctrl:Int4Editor">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="5" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource BlueBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="Z" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="7" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource AlphaBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="W" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding W, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <ToggleButton Grid.Column="8" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="Advanced options"
+                                      ClickMode="Press" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                            <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageAdvancedEditionVector}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                        </ToggleButton>
+                        <Popup x:Name="Popup" IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" AllowsTransparency="True"
+                                       MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ctrl:Int4Editor}}" StaysOpen="False"
+                                       PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=ctrl:Int4Editor}}" PopupAnimation="Slide" VerticalOffset="2">
+                            <Border SnapsToDevicePixels="True" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1">
+                                <ctrl:KeyValueGrid>
+                                    <TextBlock Text="All components:" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    <ctrl:NumericTextBox x:Name="AllTextBox" Margin="2,2,6,6" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True" ValidateOnLostFocus="False">
+                                        <i:Interaction.Behaviors>
+                                            <behaviors:OnEventCommandBehavior EventName="Validated" Command="{x:Static commands:ControlCommands.SetAllVectorComponentsCommand}" CommandParameter="{Binding Value, ElementName=AllTextBox}"/>
+                                            <behaviors:OnEventCommandBehavior EventName="Validated" Command="{Binding ResetValueCommand, ElementName=AllTextBox}"/>
+                                        </i:Interaction.Behaviors>
+                                    </ctrl:NumericTextBox>
+                                    <Rectangle Width="0" Height="0" Visibility="Collapsed"/>
+                                    <Button Command="{x:Static commands:ControlCommands.ResetValueCommand}" Content="Reset value" Margin="2,2,6,6"/>
+                                </ctrl:KeyValueGrid>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ctrl:RectangleFEditor">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ctrl:RectangleFEditor">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource AlphaBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding RectX, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource AlphaBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding RectY, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="5" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource AlphaBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="W" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding RectWidth, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="7" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource AlphaBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="H" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding RectHeight, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ctrl:RectangleEditor">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ctrl:RectangleEditor">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource AlphaBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding RectX, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource AlphaBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding RectY, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="5" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource AlphaBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="W" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding RectWidth, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="7" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource AlphaBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="H" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding RectHeight, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="0" DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+                            </DockPanel>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ctrl:RotationEditor">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ctrl:RotationEditor">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="5" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource BlueBrush}" BorderThickness="1" BorderBrush="Transparent">
+                            <DockPanel>
+                                <TextBlock Text="Z" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                                <ctrl:NumericTextBox Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+
+                            </DockPanel>
+                        </Border>
+                        <ToggleButton Grid.Column="6" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="Advanced options"
+                                      ClickMode="Press" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                            <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageAdvancedEditionVector}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                        </ToggleButton>
+                        <Popup x:Name="Popup" IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" AllowsTransparency="True"
+                                       MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ctrl:RotationEditor}}" StaysOpen="False"
+                                       PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=ctrl:RotationEditor}}" PopupAnimation="Slide" VerticalOffset="2">
+                            <Border SnapsToDevicePixels="True" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1">
+                                <Button Command="{x:Static commands:ControlCommands.ResetValueCommand}" Content="Reset value" Margin="6"/>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
     <Style TargetType="ctrl:MatrixEditor">
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ctrl:MatrixEditor">
                     <UniformGrid Rows="4" Columns="4">
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M11, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M12, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M13, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M14, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M21, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M22, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M23, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M24, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M31, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M32, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M33, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M34, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M41, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M42, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M43, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                        <ctrl:NumericTextBox Margin="2" Value="{Binding M44, RelativeSource={RelativeSource Mode=TemplatedParent}}" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M11, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M12, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M13, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M14, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M21, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M22, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M23, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M24, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M31, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M32, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M33, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M34, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M41, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M42, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M43, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
+                        <ctrl:NumericTextBox Margin="2" Value="{Binding M44, RelativeSource={RelativeSource Mode=TemplatedParent}}" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
                     </UniformGrid>
                 </ControlTemplate>
             </Setter.Value>
@@ -3910,42 +4303,42 @@
                         <ToolBarTray DockPanel.Dock="Top" Visibility="{Binding IsToolBarVisible, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:VisibleOrCollapsed}}">
                             <ToolBar ToolBarTray.IsLocked="True" Visibility="{Binding CanClearLog, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:VisibleOrCollapsed}}">
                                 <Button x:Name="PART_ClearLog">
-                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryDelete}"/>
+                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryDelete}"/>
                                 </Button>
                             </ToolBar>
                             <ToolBar ToolBarTray.IsLocked="True" Header="Filters:" Visibility="{Binding CanFilterLog, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:VisibleOrCollapsed}}">
                                 <ToggleButton IsChecked="{Binding ShowDebugMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}">
-                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryDebugMessage}"/>
+                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryDebugMessage}"/>
                                 </ToggleButton>
                                 <ToggleButton IsChecked="{Binding ShowVerboseMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}">
-                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryVerboseMessage}"/>
+                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryVerboseMessage}"/>
                                 </ToggleButton>
                                 <ToggleButton IsChecked="{Binding ShowInfoMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}">
-                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryInfoMessage}"/>
+                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryInfoMessage}"/>
                                 </ToggleButton>
                                 <ToggleButton IsChecked="{Binding ShowWarningMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}">
-                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryWarningMessage}"/>
+                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryWarningMessage}"/>
                                 </ToggleButton>
                                 <ToggleButton IsChecked="{Binding ShowErrorMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}">
-                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryErrorMessage}"/>
+                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryErrorMessage}"/>
                                 </ToggleButton>
                                 <ToggleButton IsChecked="{Binding ShowFatalMessages, RelativeSource={RelativeSource Mode=TemplatedParent}}">
-                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryFatalMessage}"/>
+                                    <Path Width="12" Height="12" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryFatalMessage}"/>
                                 </ToggleButton>
                             </ToolBar>
                             <ToolBar ToolBarTray.IsLocked="True" Header="Search:" Visibility="{Binding CanSearchLog, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={cvt:VisibleOrCollapsed}}">
                                 <ctrl:TextBox UseTimedValidation="True" Width="150" Text="{Binding SearchToken, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=OneWayToSource}" WatermarkContent="Search"/>
                                 <Button x:Name="PART_PreviousResult">
-                                    <Path Width="8" Height="8" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryPrevious}"/>
+                                    <Path Width="8" Height="8" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryPrevious}"/>
                                 </Button>
                                 <Button x:Name="PART_NextResult">
-                                    <Path Width="8" Height="8" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryNext}"/>
+                                    <Path Width="8" Height="8" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryNext}"/>
                                 </Button>
                                 <ToggleButton IsChecked="{Binding SearchMatchCase, RelativeSource={RelativeSource Mode=TemplatedParent}}">
-                                    <Path Width="16" Height="16" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryMatchCase}"/>
+                                    <Path Width="16" Height="16" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryMatchCase}"/>
                                 </ToggleButton>
                                 <ToggleButton IsChecked="{Binding SearchMatchWord, RelativeSource={RelativeSource Mode=TemplatedParent}}">
-                                    <Path Width="16" Height="16" Stretch="Uniform" Fill="{StaticResource TextBrush}" Data="{StaticResource GeometryMatchWord}"/>
+                                    <Path Width="16" Height="16" Stretch="Uniform" Fill="{DynamicResource TextBrush}" Data="{StaticResource GeometryMatchWord}"/>
                                 </ToggleButton>
                             </ToolBar>
                         </ToolBarTray>
@@ -3956,6 +4349,14 @@
         </Setter>
     </Style>
 
+    <Pen x:Key="GlyphPen" Brush="{StaticResource GlyphBrush}"/>
+
+    <Style TargetType="{x:Type ctrl:ScaleBar}">
+        <Setter Property="Foreground" Value="{StaticResource GlyphBrush}"/>
+        <Setter Property="SmallTickPen" Value="{StaticResource GlyphPen}"/>
+        <Setter Property="LargeTickPen" Value="{StaticResource GlyphPen}"/>
+    </Style>
+    
     <Style TargetType="{x:Type Image}">
         <Setter Property="RenderOptions.BitmapScalingMode" Value="NearestNeighbor"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>

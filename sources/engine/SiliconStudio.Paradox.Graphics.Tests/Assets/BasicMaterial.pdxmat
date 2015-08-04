@@ -1,15 +1,14 @@
 !MaterialAsset
-Id: f58c4f53-35d7-42f7-9872-217c4832df15
-BuildOrder: 250
+Id: 12fde36c-d5d6-4ead-b472-5d088d319b8c
 Tags: []
-Material:
-    Nodes:
-        diffuse: !MaterialTextureNode
-            TextureReference: a60c5fe7-6934-455f-bf6a-bd7abe1453d1:uv
+Attributes:
+    Diffuse: !MaterialDiffuseMapFeature
+        DiffuseMap: !ComputeTextureColor
+            Texture: a60c5fe7-6934-455f-bf6a-bd7abe1453d1:uv
             Scale: {X: 1, Y: 1}
             Offset: {X: 0, Y: 0}
-    ColorNodes:
-        MaterialParameters.AlbedoDiffuse: diffuse
-    Parameters:
-        Capacity: 0
-        ~Items: {}
+    DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+    Overrides:
+        UVScale: {X: 1, Y: 1}
+Layers: []
+Parameters: {}

@@ -103,17 +103,17 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// <summary>
         /// The key to the ActiveImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<UIImage> ActiveImagePropertyKey = new PropertyKey<UIImage>("EditActiveImageKey", typeof(EditText), DefaultValueMetadata.Static<UIImage>(null));
+        public static readonly PropertyKey<Sprite> ActiveImagePropertyKey = new PropertyKey<Sprite>("EditActiveImageKey", typeof(EditText), DefaultValueMetadata.Static<Sprite>(null));
 
         /// <summary>
         /// The key to the InactiveImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<UIImage> InactiveImagePropertyKey = new PropertyKey<UIImage>("EditInactiveImageKey", typeof(EditText), DefaultValueMetadata.Static<UIImage>(null));
+        public static readonly PropertyKey<Sprite> InactiveImagePropertyKey = new PropertyKey<Sprite>("EditInactiveImageKey", typeof(EditText), DefaultValueMetadata.Static<Sprite>(null));
 
         /// <summary>
         /// The key to the MouseOverImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<UIImage> MouseOverImagePropertyKey = new PropertyKey<UIImage>("MouseOverImageModeKey", typeof(EditText), DefaultValueMetadata.Static<UIImage>(null));
+        public static readonly PropertyKey<Sprite> MouseOverImagePropertyKey = new PropertyKey<Sprite>("MouseOverImageModeKey", typeof(EditText), DefaultValueMetadata.Static<Sprite>(null));
 
         private static void CheckStrictlyPositive(ref int value)
         {
@@ -223,7 +223,6 @@ namespace SiliconStudio.Paradox.UI.Controls
 
             InitializeImpl();
 
-            SnapText = true;
             CanBeHitByUser = true;
             IsSelectionActive = false;
             Padding = new Thickness(8,4,0,8,8,0);
@@ -385,7 +384,7 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// <summary>
         /// Gets or sets the image that is displayed in background when the edit is active
         /// </summary>
-        public UIImage ActiveImage
+        public Sprite ActiveImage
         {
             get { return DependencyProperties.Get(ActiveImagePropertyKey); }
             set { DependencyProperties.Set(ActiveImagePropertyKey, value); }
@@ -394,7 +393,7 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// <summary>
         /// Gets or sets the image that is displayed in background when the edit is inactive
         /// </summary>
-        public UIImage InactiveImage
+        public Sprite InactiveImage
         {
             get { return DependencyProperties.Get(InactiveImagePropertyKey); }
             set { DependencyProperties.Set(InactiveImagePropertyKey, value); }
@@ -403,16 +402,18 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// <summary>
         /// Gets or sets the image that the button displays when the mouse is over it
         /// </summary>
-        public UIImage MouseOverImage
+        public Sprite MouseOverImage
         {
             get { return DependencyProperties.Get(MouseOverImagePropertyKey); }
             set { DependencyProperties.Set(MouseOverImagePropertyKey, value); }
         }
 
         /// <summary>
-        /// Gets or sets the value indicating if the <see cref="Text"/> of the <see cref="TextBlock"/> must be aligned to the closest screen pixel.
+        /// Gets or sets the value indicating if the snapping of the <see cref="Text"/> of the <see cref="TextBlock"/> to the closest screen pixel should be skipped.
         /// </summary>
-        public bool SnapText { get; set; }
+        /// <remarks>When <value>true</value>, the element's text is never snapped. 
+        /// When <value>false</value>, it is snapped only if the font is dynamic and the element is rendered by a SceneUIRenderer.</remarks>
+        public bool DoNotSnapText { get; set; }
 
         /// <summary>
         /// Gets or sets the caret position in the <see cref="EditText"/>'s text.
@@ -453,7 +454,10 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// </summary>
         public bool IsCaretVisible { get { return IsSelectionActive && !caretHided; } }
         
-        private void ResetCaretVisibility()
+        /// <summary>
+        /// Reset the caret blinking to initial state (visible).
+        /// </summary>
+        public void ResetCaretBlinking()
         {
             caretHided = false;
             accumulatedTime = 0f;
@@ -475,7 +479,7 @@ namespace SiliconStudio.Paradox.UI.Controls
             }
             else
             {
-                ResetCaretVisibility();
+                ResetCaretBlinking();
             }
         }
 
@@ -728,7 +732,7 @@ namespace SiliconStudio.Paradox.UI.Controls
             selectionStop = truncatedStop;
             caretAtStart = caretAtBeginning;
 
-            ResetCaretVisibility(); // force caret not to blink when modifying selection/caret position.
+            ResetCaretBlinking(); // force caret not to blink when modifying selection/caret position.
 
             UpdateSelectionToEditImpl();
         }
@@ -752,8 +756,8 @@ namespace SiliconStudio.Paradox.UI.Controls
             if (textToMeasure == null || Font == null)
                 return Vector2.Zero;
 
-            var sizeRatio = RealSizeVirtualResolutionRatio;
-            var measureFontSize = TextSize * sizeRatio;
+            var sizeRatio = LayoutingContext.RealVirtualResolutionRatio;
+            var measureFontSize = new Vector2(TextSize * sizeRatio.Y); // we don't want letters non-uniform ratio
             var realSize = Font.MeasureString(textToMeasure, measureFontSize);
 
             // force pre-generation if synchronous generation is required

@@ -43,6 +43,21 @@ namespace SiliconStudio.ActionStack
         }
 
         /// <inheritdoc/>
+        public bool TransactionInProgress { get { return TransactionStack.Count > 0; } }
+
+        /// <inheritdoc/>
+        public event EventHandler<EventArgs> TransactionStarted;
+
+        /// <inheritdoc/>
+        public event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionEnded;
+
+        /// <inheritdoc/>
+        public event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionCancelled;
+
+        /// <inheritdoc/>
+        public event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionDiscarded;
+
+        /// <inheritdoc/>
         public IDisposable BeginEndTransaction(string name)
         {
             BeginTransaction();
@@ -88,6 +103,9 @@ namespace SiliconStudio.ActionStack
         {
             var currentTransaction = new List<IActionItem>();
             TransactionStack.Push(currentTransaction);
+            var handler = TransactionStarted;
+            if (handler != null)
+                handler(this, EventArgs.Empty);
         }
 
         /// <inheritdoc/>
@@ -104,6 +122,9 @@ namespace SiliconStudio.ActionStack
             var currentTransaction = TransactionStack.Pop();
             var aggregateActionItem = aggregateActionItems(currentTransaction);
             Add(aggregateActionItem);
+            var handler = TransactionEnded;
+            if (handler != null)
+                handler(this, new ActionItemsEventArgs<IActionItem>(aggregateActionItem));
         }
 
         /// <inheritdoc/>
@@ -115,19 +136,22 @@ namespace SiliconStudio.ActionStack
             {
                 item.Undo();
             }
+            var handler = TransactionCancelled;
+            if (handler != null)
+                handler(this, new ActionItemsEventArgs<IActionItem>(currentTransaction.ToArray()));
         }
 
         /// <inheritdoc/>
         public virtual void DiscardTransaction()
         {
             if (TransactionStack.Count == 0) throw new InvalidOperationException(Properties.ExceptionMessages.CannotEndNoTransactionInProgress);
-            TransactionStack.Pop();
+            var actions = TransactionStack.Pop();
+            var handler = TransactionDiscarded;
+            if (handler != null)
+                handler(this, new ActionItemsEventArgs<IActionItem>(actions.ToArray()));
         }
 
-        /// <summary>
-        /// Gets the action items in the current transaction.
-        /// </summary>
-        /// <returns>The action items in the current transaction.</returns>
+        /// <inheritdoc/>
         public IReadOnlyCollection<IActionItem> GetCurrentTransactions()
         {
             if (TransactionStack.Count == 0) throw new InvalidOperationException(Properties.ExceptionMessages.NoTransactionInProgress);

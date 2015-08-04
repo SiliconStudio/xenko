@@ -2,8 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Linq;
+using System.Management;
 using System.Text;
 using System.Windows.Forms;
+using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Core.Windows
 {
@@ -14,7 +16,7 @@ namespace SiliconStudio.Core.Windows
             return Environment.GetCommandLineArgs().Skip(1).ToArray();
         }
 
-        public static string BuildErrorToClipboard(Exception e, string header = null)
+        public static string BuildErrorMessage(Exception exception, string header = null)
         {
             var body = new StringBuilder();
 
@@ -22,67 +24,71 @@ namespace SiliconStudio.Core.Windows
             {
                 body.Append(header);
             }
-            body.AppendFormat("User: {0}\n", Environment.UserName);
-            body.AppendFormat("Current Directory: {0}\n", Environment.CurrentDirectory);
-            body.AppendFormat("OS Version: {0}\n", Environment.OSVersion);
-            body.AppendFormat("Command Line Args: {0}\n", string.Join(" ", GetCommandLineArgs()));
-            PrintExceptionRecursively(body, e);
-            var errorMessage = body.ToString();
+            body.AppendLine(string.Format("Current Directory: {0}", Environment.CurrentDirectory));
+            body.AppendLine(string.Format("Command Line Args: {0}", string.Join(" ", GetCommandLineArgs())));
+            body.AppendLine(string.Format("OS Version: {0} ({1})", Environment.OSVersion, Environment.Is64BitOperatingSystem ? "x64" : "x86"));
+            body.AppendLine(string.Format("Processor Count: {0}", Environment.ProcessorCount));
+            body.AppendLine("Video configuration:");
+            WriteVideoConfig(body);
+            body.AppendLine(string.Format("Exception: {0}", exception.FormatForReport()));
+            return body.ToString();
+        }
+
+        public static string BuildErrorToClipboard(Exception exception, string header = null)
+        {
+            var errorMessage = BuildErrorMessage(exception, header);
             try
             {
                 Clipboard.SetText(errorMessage);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                e.Ignore();
             }
 
             return errorMessage;
         }
 
-        private static void PrintExceptionRecursively(StringBuilder builder, Exception exception, int indent = 0)
+        internal static void WriteMemoryInfo(StringBuilder writer)
         {
-            PrintException(builder, exception, indent);
-            if (exception == null)
-                return;
-
-            var aggregate = exception as AggregateException;
-            if (aggregate != null)
+            // Not used yet, but we might want to include some of these info
+            try
             {
-                builder.AppendLine("The above exception is an aggregate exception. Printing inner exceptions:");
-                // The InnerException is normally the first of the InnerExceptions.
-                //if (aggregate.InnerException != null)
-                //{
-                //    PrintExceptionRecursively(builder, aggregate.InnerException, indent + 2);
-                //}
-                foreach (var innerException in aggregate.InnerExceptions)
+                var searcher = new ManagementObjectSearcher("SELECT * FROM CIM_OperatingSystem");
+
+                foreach (var managementObject in searcher.Get().OfType<ManagementObject>())
                 {
-                    PrintExceptionRecursively(builder, innerException, indent + 2);
+                    foreach (PropertyData property in managementObject.Properties)
+                    {
+                        writer.AppendLine(string.Format("{0}: {1}", property.Name, property.Value));
+                    }
                 }
             }
-            else if (exception.InnerException != null)
+            catch (Exception)
             {
-                builder.AppendLine("The above exception has an inner exception:");
-                PrintExceptionRecursively(builder, exception.InnerException, indent + 2);
+                writer.AppendLine("An error occurred while trying to retrieve memory information.");
             }
-        }
+    }
 
-        private static void PrintException(StringBuilder builder, Exception exception, int indent)
+        public static void WriteVideoConfig(StringBuilder writer)
         {
-            if (exception == null)
+            try
             {
-                builder.AppendFormat("{0}Exception type: (null)\n", Indent(indent));
+                int i = 0;
+                var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_DisplayConfiguration");
+                foreach (var managementObject in searcher.Get().OfType<ManagementObject>())
+                {
+                    writer.AppendLine(string.Format("GPU {0}", ++i));
+                    foreach (PropertyData property in managementObject.Properties)
+                    {
+                        writer.AppendLine(string.Format("{0}: {1}", property.Name, property.Value));
+                    }
+                }
             }
-            else
+            catch (Exception)
             {
-                builder.AppendFormat("{0}Exception type: {1}\n", Indent(indent), exception.GetType().Name);
-                builder.AppendFormat("{0}Exception message: {1}\n", Indent(indent), exception.Message);
-                builder.AppendFormat("{0}StackTrace: {1}\n", Indent(indent), exception.StackTrace);
+                writer.AppendLine("An error occurred while trying to retrieve video configuration.");
             }
-        }
-
-        private static string Indent(int offset)
-        {
-            return "".PadLeft(offset);
         }
     }
 }

@@ -41,12 +41,7 @@ foreach(var platform in Properties.Platforms)
     <Optimize>true</Optimize>
     <DefineConstants>TRACE;<#= string.Join(";", platform.DefineConstants) #></DefineConstants>
 <#  } #>
-<# if (platform.Type == SiliconStudio.Core.PlatformType.Windows) { #>
-    <OutputPath><#= Properties.ParadoxSdkRelativeDir #>\Bin\<#= platform.Type #>-$(SiliconStudioParadoxGraphicsApi)\</OutputPath>
-<#  } else { #>
-    <SiliconStudioParadoxGraphicsApi><#= platform.Properties[SiliconStudio.Paradox.Assets.ParadoxConfig.GraphicsPlatform] #></SiliconStudioParadoxGraphicsApi>
-    <OutputPath><#= Properties.ParadoxSdkRelativeDir #>\Bin\<#= platform.Type #>-<#= platform.Properties[SiliconStudio.Paradox.Assets.ParadoxConfig.GraphicsPlatform] #>\</OutputPath>
-<#  } #>
+    <OutputPath><#= Properties.ParadoxSdkRelativeDir #>\Bin\<#= platform.Type #>\</OutputPath>
     <IntermediateOutputPath>obj\<#= platform.Type #>\<#= config.Name #>\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -113,11 +108,6 @@ foreach(var platform in Properties.Platforms)
     <ProjectReference Include="<#= Properties.ParadoxSdkRelativeDir #>\sources\engine\SiliconStudio.Paradox\SiliconStudio.Paradox.csproj">
       <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
       <Name>SiliconStudio.Paradox</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="<#= Properties.ParadoxSdkRelativeDir #>\sources\shaders\SiliconStudio.Paradox.Effects.Modules.csproj">
-      <Project>{0342C3E7-4A38-46B4-A8EC-E728D50085D3}</Project>
-      <Name>SiliconStudio.Paradox.Effects.Modules</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="<#= Properties.ParadoxSdkRelativeDir #>\sources\engine\SiliconStudio.Paradox.Engine\SiliconStudio.Paradox.Engine.csproj">

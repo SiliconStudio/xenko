@@ -1,9 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Graphics.Internals;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -16,11 +17,15 @@ namespace SiliconStudio.Paradox.Graphics
         private readonly SharedData sharedData;
         private const int QuadCount = 3;
 
+        private readonly ParameterCollection parameters;
+        private readonly EffectParameterCollectionGroup parameterCollectionGroup;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="PrimitiveQuad" /> class with a <see cref="SimpleEffect"/>.
+        /// Initializes a new instance of the <see cref="PrimitiveQuad" /> class with a <see cref="SpriteEffect"/>.
         /// </summary>
         /// <param name="graphicsDevice">The graphics device.</param>
-        public PrimitiveQuad(GraphicsDevice graphicsDevice) : this(graphicsDevice, new SimpleEffect(graphicsDevice))
+        public PrimitiveQuad(GraphicsDevice graphicsDevice)
+            : this(graphicsDevice, new Effect(graphicsDevice, SpriteEffect.Bytecode))
         {
         }
 
@@ -33,8 +38,10 @@ namespace SiliconStudio.Paradox.Graphics
         {
             GraphicsDevice = graphicsDevice;
             simpleEffect = effect;
-            simpleEffect.Parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
-            sharedData = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, "PrimitiveQuad::VertexBuffer", () => new SharedData(GraphicsDevice, simpleEffect.InputSignature));
+            parameters = new ParameterCollection();
+            parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
+            parameterCollectionGroup = new EffectParameterCollectionGroup(graphicsDevice, simpleEffect, new[] { parameters });
+            sharedData = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, "PrimitiveQuad::VertexBuffer", d => new SharedData(GraphicsDevice, simpleEffect.InputSignature));
         }
 
         /// <summary>
@@ -42,6 +49,18 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <value>The graphics device.</value>
         public GraphicsDevice GraphicsDevice { get; private set; }
+
+        /// <summary>
+        /// Gets the parameters used.
+        /// </summary>
+        /// <value>The parameters.</value>
+        public ParameterCollection Parameters
+        {
+            get
+            {
+                return parameters;
+            }
+        }
 
         /// <summary>
         /// Draws a quad. The effect must have been applied before calling this method with pixel shader having the signature float2:TEXCOORD.
@@ -57,9 +76,10 @@ namespace SiliconStudio.Paradox.Graphics
         /// Draws a quad with a texture. This Draw method is using the current effect bound to this instance.
         /// </summary>
         /// <param name="texture">The texture.</param>
-        public void Draw(Texture texture)
+        /// <param name="applyEffectStates">The flag to apply effect states.</param>
+        public void Draw(Texture texture, bool applyEffectStates = false)
         {
-            Draw(texture, null, Color.White);
+            Draw(texture, null, Color.White, applyEffectStates);
         }
 
         /// <summary>
@@ -68,17 +88,15 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="texture">The texture to draw.</param>
         /// <param name="samplerState">State of the sampler. If null, default sampler is <see cref="SamplerStateFactory.LinearClamp" />.</param>
         /// <param name="color">The color.</param>
-        /// <exception cref="System.ArgumentException">Expecting a Texture2D;texture</exception>
-        public void Draw(Texture texture, SamplerState samplerState, Color4 color)
+        /// <param name="applyEffectStates">The flag to apply effect states.</param>
+        /// <exception cref="System.ArgumentException">Expecting a Texture;texture</exception>
+        public void Draw(Texture texture, SamplerState samplerState, Color4 color, bool applyEffectStates = false)
         {
-            var texture2D = texture as Texture2D;
-            if (texture2D == null) throw new ArgumentException("Expecting a Texture2D", "texture");
-
             // Make sure that we are using our vertex shader
-            simpleEffect.Parameters.Set(SpriteEffectKeys.Color, color);
-            simpleEffect.Parameters.Set(TexturingKeys.Texture0, texture as Texture2D);
-            simpleEffect.Parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
-            simpleEffect.Apply();
+            parameters.Set(SpriteEffectKeys.Color, color);
+            parameters.Set(TexturingKeys.Texture0, texture);
+            parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
+            simpleEffect.Apply(GraphicsDevice, parameterCollectionGroup, applyEffectStates);
             Draw();
 
             // TODO ADD QUICK UNBIND FOR SRV
@@ -95,11 +113,11 @@ namespace SiliconStudio.Paradox.Graphics
             /// </summary>
             public readonly VertexArrayObject VertexBuffer;
             
-            private static readonly VertexPositionTexture[] QuadsVertices = new []
+            private static readonly VertexPositionNormalTexture[] QuadsVertices =
             {
-                new VertexPositionTexture(new Vector3(-1, 1, 0), new Vector2(0, 0)),
-                new VertexPositionTexture(new Vector3( 3, 1, 0), new Vector2(2, 0)),
-                new VertexPositionTexture(new Vector3(-1,-3, 0), new Vector2(0, 2)),
+                new VertexPositionNormalTexture(new Vector3(-1, 1, 0), new Vector3(0, 0, 1), new Vector2(0, 0)),
+                new VertexPositionNormalTexture(new Vector3( 3, 1, 0), new Vector3(0, 0, 1), new Vector2(2, 0)),
+                new VertexPositionNormalTexture(new Vector3(-1,-3, 0), new Vector3(0, 0, 1), new Vector2(0, 2)),
             };
 
             public SharedData(GraphicsDevice device, EffectInputSignature defaultSignature)
@@ -109,7 +127,7 @@ namespace SiliconStudio.Paradox.Graphics
                 // Register reload
                 vertexBuffer.Reload = (graphicsResource) => ((Buffer)graphicsResource).Recreate(QuadsVertices);
 
-                VertexBuffer = VertexArrayObject.New(device, defaultSignature, new VertexBufferBinding(vertexBuffer, VertexPositionTexture.Layout, QuadsVertices.Length, VertexPositionTexture.Size)).DisposeBy(this);
+                VertexBuffer = VertexArrayObject.New(device, defaultSignature, new VertexBufferBinding(vertexBuffer, VertexPositionNormalTexture.Layout, QuadsVertices.Length, VertexPositionNormalTexture.Size)).DisposeBy(this);
             }
         }
     }

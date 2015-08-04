@@ -10,7 +10,7 @@ namespace SiliconStudio.Paradox.Shaders
     /// Describes a shader parameter for a valuetype (usually stored in constant buffers).
     /// </summary>
     [DataContract]
-    [DebuggerDisplay("{Param.Class}{RowCount}x{ColumnCount} {Param.Key} -> {Param.RawName}")]
+    [DebuggerDisplay("{Param.Class}{RowCount}x{ColumnCount} {Param.KeyName} -> {Param.RawName}")]
     public struct EffectParameterValueData
     {
         /// <summary>

@@ -13,7 +13,7 @@ namespace SiliconStudio.Core.Serialization.Contents
     /// <typeparam name="T"></typeparam>
     public class ContentSerializerBase<T> : IContentSerializer<T>
     {
-        static readonly bool hasParameterlessConstructor = typeof(T).GetTypeInfo().DeclaredConstructors.Any(x => !x.IsStatic && !x.GetParameters().Any());
+        static readonly bool hasParameterlessConstructor = typeof(T).GetTypeInfo().DeclaredConstructors.Any(x => !x.IsStatic && x.IsPublic && !x.GetParameters().Any());
 
         /// <inheritdoc/>
         public virtual Type SerializationType
@@ -34,16 +34,15 @@ namespace SiliconStudio.Core.Serialization.Contents
         }
 
         /// <inheritdoc/>
-        public virtual void Serialize(ContentSerializerContext context, Serialization.SerializationStream stream, ref T obj)
+        public virtual void Serialize(ContentSerializerContext context, SerializationStream stream, T obj)
         {
         }
 
         /// <inheritdoc/>
-        public void Serialize(ContentSerializerContext context, Serialization.SerializationStream stream, ref object obj)
+        public void Serialize(ContentSerializerContext context, SerializationStream stream, object obj)
         {
             var objT = (T)obj;
-            Serialize(context, stream, ref objT);
-            obj = objT;
+            Serialize(context, stream, objT);
         }
     }
 }

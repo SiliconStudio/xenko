@@ -8,13 +8,17 @@ using System.Reflection;
 namespace SiliconStudio.Paradox.UI.Renderers
 {
     /// <summary>
-    /// The class in charge to manage the renderer of the different <see cref="UIElement"/>
+    /// The class in charge to manage the renderer of the different <see cref="UIElement"/>s.
+    /// Once registered into the manager, a renderer is owned by the manager.
     /// </summary>
-    public class RendererManager: IRendererManager
+    public class RendererManager: IRendererManager, IDisposable
     {
         private readonly IElementRendererFactory defaultFactory;
 
         private readonly Dictionary<Type, IElementRendererFactory> typesToUserFactories = new Dictionary<Type, IElementRendererFactory>();
+
+        // Note: use Id instead of element instance in order to avoid to keep dead UIelement alive.
+        private readonly Dictionary<uint, ElementRenderer> elementIdToRenderer = new Dictionary<uint, ElementRenderer>();
 
         /// <summary> 
         /// Create a new instance of <see cref="RendererManager"/> with provided DefaultFactory
@@ -27,7 +31,8 @@ namespace SiliconStudio.Paradox.UI.Renderers
 
         public ElementRenderer GetRenderer(UIElement element)
         {
-            var elementRenderer = element.ElementRenderer;
+            ElementRenderer elementRenderer;
+            elementIdToRenderer.TryGetValue(element.ID, out elementRenderer);
             if (elementRenderer == null)
             {
                 // try to get the renderer from the user registered class factory
@@ -48,7 +53,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
                     throw new InvalidOperationException(string.Format("No renderer found for element {0}", element));
 
                 // cache the renderer for future uses.
-                element.ElementRenderer = elementRenderer;
+                elementIdToRenderer[element.ID] = elementRenderer;
             }
 
             return elementRenderer;
@@ -70,7 +75,17 @@ namespace SiliconStudio.Paradox.UI.Renderers
             if (element == null) throw new ArgumentNullException("element");
             if (renderer == null) throw new ArgumentNullException("renderer");
 
-            element.ElementRenderer = renderer;
+            elementIdToRenderer[element.ID] = renderer;
+        }
+
+        public void Dispose()
+        {
+            foreach (var renderer in elementIdToRenderer.Values)
+            {
+                if(!renderer.IsDisposed)
+                    renderer.Dispose();
+            }
+            elementIdToRenderer.Clear();
         }
     }
 }

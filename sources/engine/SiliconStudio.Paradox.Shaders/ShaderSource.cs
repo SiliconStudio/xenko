@@ -8,9 +8,16 @@ namespace SiliconStudio.Paradox.Shaders
     /// <summary>
     /// A shader source.
     /// </summary>
-    [DataContract(Inherited = true)]
+    [DataContract("ShaderSource")]
     public abstract class ShaderSource
     {
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="ShaderSource"/> is a discard shader after it has been mixed.
+        /// </summary>
+        /// <value><c>true</c> if discard; otherwise, <c>false</c>.</value>
+        [DataMemberIgnore]
+        public bool Discard { get; set; }
+
         /// <summary>
         /// Deep clones this instance.
         /// </summary>

@@ -1,8 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PLATFORM_ANDROID
-using System;
-using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Mathematics;
 using OpenTK;
 using OpenTK.Platform.Android;
 
@@ -10,17 +9,17 @@ namespace SiliconStudio.Paradox.Graphics
 {
     public class SwapChainGraphicsPresenter : GraphicsPresenter
     {
-        private static Logger Log = GlobalLogger.GetLogger("SwapChainGraphicsPresenter");
-        private RenderTarget backBuffer;
+        private AndroidGameView gameWindow;
+        private Texture backBuffer;
 
         public SwapChainGraphicsPresenter(GraphicsDevice device, PresentationParameters presentationParameters) : base(device, presentationParameters)
         {
-            device.InitDefaultRenderTarget(presentationParameters);
-            backBuffer = device.DefaultRenderTarget;
-            DepthStencilBuffer = device.windowProvidedDepthBuffer;
+            device.InitDefaultRenderTarget(Description);
+
+            backBuffer = Texture.New2D(device, Description.BackBufferWidth, Description.BackBufferHeight, presentationParameters.BackBufferFormat, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
         }
 
-        public override RenderTarget BackBuffer
+        public override Texture BackBuffer
         {
             get { return backBuffer; }
         }
@@ -34,11 +33,32 @@ namespace SiliconStudio.Paradox.Graphics
         {
             get
             {
-                return ((AndroidGameView)Description.DeviceWindowHandle.NativeHandle).WindowState == WindowState.Fullscreen;
+                return gameWindow.WindowState == WindowState.Fullscreen;
             }
             set
             {
-                ((AndroidGameView)Description.DeviceWindowHandle.NativeHandle).WindowState = value ? WindowState.Fullscreen : WindowState.Normal;
+                gameWindow.WindowState = value ? WindowState.Fullscreen : WindowState.Normal;
+            }
+        }
+
+        protected override void ProcessPresentationParameters()
+        {
+            // Use aspect ratio of device
+            gameWindow = (AndroidGameView)Description.DeviceWindowHandle.NativeHandle;
+            var panelWidth = gameWindow.Size.Width;
+            var panelHeight = gameWindow.Size.Height;
+            var panelRatio = (float)panelWidth / panelHeight;
+
+            var desiredWidth = Description.BackBufferWidth;
+            var desiredHeight = Description.BackBufferHeight;
+
+            if (panelRatio >= 1.0f) // Landscape => use height as base
+            {
+                Description.BackBufferHeight = (int)(desiredWidth / panelRatio);
+            }
+            else // Portrait => use width as base
+            {
+                Description.BackBufferWidth = (int)(desiredHeight * panelRatio);
             }
         }
 
@@ -46,12 +66,15 @@ namespace SiliconStudio.Paradox.Graphics
         {
             GraphicsDevice.Begin();
 
-            // If we made a fake render target to avoid OpenGL limitations on window-provided back buffer, let's copy the rendering result to it
-            if (GraphicsDevice.DefaultRenderTarget != GraphicsDevice.windowProvidedRenderTarget)
-                GraphicsDevice.Copy(GraphicsDevice.DefaultRenderTarget.Texture, GraphicsDevice.windowProvidedRenderTarget.Texture);
-            var graphicsContext = ((AndroidGameView)Description.DeviceWindowHandle.NativeHandle).GraphicsContext;
+            GraphicsDevice.windowProvidedRenderTexture.InternalSetSize(gameWindow.Width, gameWindow.Height);
 
-            ((AndroidGraphicsContext)graphicsContext).Swap();
+            // If we made a fake render target to avoid OpenGL limitations on window-provided back buffer, let's copy the rendering result to it
+            if (backBuffer != GraphicsDevice.windowProvidedRenderTexture)
+                GraphicsDevice.CopyScaler2D(backBuffer, GraphicsDevice.windowProvidedRenderTexture,
+                    new Rectangle(0, 0, backBuffer.Width, backBuffer.Height),
+                    new Rectangle(0, 0, GraphicsDevice.windowProvidedRenderTexture.Width, GraphicsDevice.windowProvidedRenderTexture.Height), true);
+
+            ((AndroidGraphicsContext)gameWindow.GraphicsContext).Swap();
 
             GraphicsDevice.End();
         }
@@ -63,10 +86,6 @@ namespace SiliconStudio.Paradox.Graphics
         protected override void ResizeDepthStencilBuffer(int width, int height, PixelFormat format)
         {
             ReleaseCurrentDepthStencilBuffer();
-        }
-
-        protected override void CreateDepthStencilBuffer()
-        {
         }
     }
 }

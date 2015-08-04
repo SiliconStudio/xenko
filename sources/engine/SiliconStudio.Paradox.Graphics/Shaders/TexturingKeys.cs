@@ -2,11 +2,13 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Effects.Modules
+namespace SiliconStudio.Paradox.Rendering
 {
     public partial class TexturingKeys
     {
@@ -22,7 +24,50 @@ namespace SiliconStudio.Paradox.Effects.Modules
             Texture7TexelSize = CreateDynamicTexelSizeParameterKey(Texture7);
             Texture8TexelSize = CreateDynamicTexelSizeParameterKey(Texture8);
             Texture9TexelSize = CreateDynamicTexelSizeParameterKey(Texture9);
+
+            DefaultTextures = new ReadOnlyCollection<ParameterKey<Texture>>(new List<ParameterKey<Texture>>()
+            {
+                Texture0,
+                Texture1,
+                Texture2,
+                Texture3,
+                Texture4,
+                Texture5,
+                Texture6,
+                Texture7,
+                Texture8,
+                Texture9,
+            });
+            TextureCubes = new ReadOnlyCollection<ParameterKey<Texture>>(new List<ParameterKey<Texture>>()
+            {
+                TextureCube0,
+                TextureCube1,
+                TextureCube2,
+                TextureCube3,
+            });
+            Textures3D = new ReadOnlyCollection<ParameterKey<Texture>>(new List<ParameterKey<Texture>>()
+            {
+                Texture3D0,
+                Texture3D1,
+                Texture3D2,
+                Texture3D3,
+            });
         }
+
+        /// <summary>
+        /// Default textures used by this class (<see cref="Texture0"/>, <see cref="Texture1"/>...etc.)
+        /// </summary>
+        public static readonly IReadOnlyList<ParameterKey<Texture>> DefaultTextures;
+
+        /// <summary>
+        /// The cube textures used by this class (<see cref="TextureCube0"/>, <see cref="TextureCube1"/>...etc.)
+        /// </summary>
+        public static readonly IReadOnlyList<ParameterKey<Texture>> TextureCubes;
+
+        /// <summary>
+        /// The 3d textures used by this class (<see cref="Texture3D0"/>, <see cref="Texture3D1"/>...etc.)
+        /// </summary>
+        public static readonly IReadOnlyList<ParameterKey<Texture>> Textures3D;
 
         /// <summary>
         /// Creates a dynamic parameter key for texel size updated from the texture size.
@@ -42,7 +87,7 @@ namespace SiliconStudio.Paradox.Effects.Modules
         /// <param name="output">The output.</param>
         private static void UpdateTexelSize(ref Texture param1, ref Vector2 output)
         {
-            output = (param1 != null) ? new Vector2(param1.Width, param1.Height) : Vector2.Zero;
+            output = (param1 != null) ? new Vector2(1.0f/param1.ViewWidth, 1.0f/param1.ViewHeight) : Vector2.Zero;
         }
     }
 }

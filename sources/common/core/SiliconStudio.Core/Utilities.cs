@@ -33,10 +33,6 @@ using System.Threading;
 using TaskEx = System.Threading.Tasks.Task;
 #endif
 
-#if SILICONSTUDIO_PLATFORM_IOS
-using MonoTouch;
-#endif
-
 namespace SiliconStudio.Core
 {
     /// <summary>
@@ -44,18 +40,18 @@ namespace SiliconStudio.Core
     /// </summary>
     public static class Utilities
     {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
+#if SILICONSTUDIO_PLATFORM_WINDOWS_PHONE || SILICONSTUDIO_PLATFORM_WINDOWS_STORE || SILICONSTUDIO_PLATFORM_WINDOWS_10
         public unsafe static void CopyMemory(IntPtr dest, IntPtr src, int sizeInBytesToCopy)
         {
             Interop.memcpy((void*)dest, (void*)src, sizeInBytesToCopy);
         }
 #else
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_WINDOWS_STORE
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         private const string MemcpyDll = "msvcrt.dll";
 #elif SILICONSTUDIO_PLATFORM_ANDROID
         private const string MemcpyDll = "libc.so";
 #elif SILICONSTUDIO_PLATFORM_IOS
-        private const string MemcpyDll = Constants.SystemLibrary;
+        private const string MemcpyDll = ObjCRuntime.Constants.SystemLibrary;
 #else
 #   error Unsupported platform
 #endif
@@ -647,6 +643,26 @@ namespace SiliconStudio.Core
 
             // Check that all keys in second are in first
             return second.Keys.All(first.ContainsKey);
+        }
+
+        public static bool Compare<T>(T[] left, T[] right)
+        {
+            if (ReferenceEquals(left, right))
+                return true;
+            if (ReferenceEquals(left, null) || ReferenceEquals(right, null))
+                return false;
+
+            if (left.Length != right.Length)
+                return false;
+
+            var comparer = EqualityComparer<T>.Default;
+            for (int i = 0; i < left.Length; ++i)
+            {
+                if (!comparer.Equals(left[i], right[i]))
+                    return false;
+            }
+
+            return true;
         }
 
         /// <summary>

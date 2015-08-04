@@ -25,12 +25,17 @@
     <Compile Include="Commands\AddPrimitiveKeyCommand.cs" />
     <Compile Include="CombineMode.cs" />
     <Compile Include="Commands\CreateNewInstanceCommand.cs" />
-    <Compile Include="Commands\ModifyValueCommand.cs" />
+    <Compile Include="Commands\ChangeValueCommand.cs" />
+    <Compile Include="Commands\NodeCommand.cs" />
     <Compile Include="Commands\RenameStringKeyCommand.cs" />
-    <Compile Include="Commands\SetToNullCommand.cs" />
     <Compile Include="Commands\UncancellableCommand.cs" />
+    <Compile Include="DefaultContentFactory.cs" />
+    <Compile Include="IContentFactory.cs" />
+    <Compile Include="IModelBuilderPlugin.cs" />
     <Compile Include="IGuidContainer.cs" />
     <Compile Include="INodeBuilder.cs" />
+    <Compile Include="Contents\IUpdatableContent.cs" />
+    <Compile Include="ModelNodeFlags.cs" />
     <Compile Include="NodeConstructedArgs.cs" />
     <Compile Include="NodeConstructingArgs.cs" />
     <Compile Include="QuantumConsistencyException.cs" />
@@ -63,6 +68,10 @@
       <Project>{66581dad-70ad-4475-ae47-c6c0df1ec5e2}</Project>
       <Name>SiliconStudio.Core.Design</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>

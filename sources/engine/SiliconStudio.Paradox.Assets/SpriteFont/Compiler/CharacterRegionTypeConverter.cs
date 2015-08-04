@@ -74,7 +74,7 @@
 // contributors exclude the implied warranties of merchantability, fitness for a
 // particular purpose and non-infringement.
 //--------------------------------------------------------------------
-#if !W8CORE
+
 using System;
 using System.ComponentModel;
 using System.Globalization;
@@ -146,4 +146,3 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
         static TypeConverter intConverter = TypeDescriptor.GetConverter(typeof(int));
     }
 }
-#endif

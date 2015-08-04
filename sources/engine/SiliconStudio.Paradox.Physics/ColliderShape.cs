@@ -1,10 +1,11 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
 
+using System;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Converters;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -80,7 +81,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <summary>
         /// Gets or sets the scaling.
         /// Make sure that you manually created and assigned an exclusive ColliderShape to the Collider otherwise since the engine shares shapes among many Colliders, all the colliders will be scaled.
-        /// Please note that this scaling has no relation to the TransformationComponent scaling.
+        /// Please note that this scaling has no relation to the TransformComponent scaling.
         /// </summary>
         /// <value>
         /// The scaling.
@@ -93,8 +94,15 @@ namespace SiliconStudio.Paradox.Physics
             }
             set
             {
-                DebugPrimitiveScaling *= Matrix.Scaling(value);
-                InternalShape.LocalScaling = value;
+                var newScaling = value;
+                
+                if (Is2D) newScaling.Z = 1.0f;
+
+                DebugPrimitiveMatrix *= Matrix.Scaling(newScaling);
+
+                if (Is2D) newScaling.Z = 0.0f;
+
+                InternalShape.LocalScaling = newScaling;
             }
         }
 
@@ -106,13 +114,20 @@ namespace SiliconStudio.Paradox.Physics
         /// </value>
         public bool Is2D { get; internal set; }
 
+        public IColliderShapeDesc Description { get; internal set; }
+
         internal BulletSharp.CollisionShape InternalShape;
 
         internal CompoundColliderShape Parent;
 
-        internal GeometricPrimitive DebugPrimitive;
+        public virtual GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
+        {
+            return null;
+        }
 
-        internal Matrix DebugPrimitiveScaling;
+        public Model DebugModel;
+
+        public Matrix DebugPrimitiveMatrix;
 
         internal bool NeedsCustomCollisionCallback;
     }

@@ -1,13 +1,12 @@
 !Texture
-Id: 5f5789e4-b57d-4efa-a47c-f91eae3235fb
+Id: cccf5d15-cf6e-4a6b-a759-faacaff0ec6c
 Tags: []
 Source: ../../../data/tests/ImageButtonNotPressed.dds
-ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Format: TrueColor
 ~Base:
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000
         Tags: []
+        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
         ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

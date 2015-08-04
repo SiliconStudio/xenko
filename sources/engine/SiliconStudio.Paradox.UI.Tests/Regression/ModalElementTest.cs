@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Input;
@@ -29,20 +29,20 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         private TextBlock modalButton2Text;
 
-        private UIImageGroup uiImages;
+        private SpriteSheet Sprites;
 
         public ModalElementTest()
         {
-            CurrentVersion = 4;
+            CurrentVersion = 6;
         }
 
         protected override async Task LoadContent()
         {
             await base.LoadContent();
 
-            uiImages = Asset.Load<UIImageGroup>("UIImages");
+            Sprites = Asset.Load<SpriteSheet>("UIImages");
 
-            var lifeBar = new ImageElement { Source = uiImages["Logo"], HorizontalAlignment = HorizontalAlignment.Center };
+            var lifeBar = new ImageElement { Source = Sprites["Logo"], HorizontalAlignment = HorizontalAlignment.Center };
             lifeBar.DependencyProperties.Set(GridBase.ColumnSpanPropertyKey, 3);
 
             var quitGameButton = new Button
@@ -93,9 +93,8 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             uniformGrid.Children.Add(modal2);
             uniformGrid.Children.Add(lifeBar);
             uniformGrid.Children.Add(quitGameButton);
-
             
-            UI.RootElement = uniformGrid;
+            UIComponent.RootElement = uniformGrid;
         }
 
         private void Modal1OnOutsideClick(object sender, RoutedEventArgs routedEventArgs)
@@ -117,11 +116,11 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             uniformGrid.Children.Remove(modal2);
         }
 
-        protected override void SpecificDrawBeforeUI(RenderContext context)
+        protected override void SpecificDrawBeforeUI(RenderContext context, RenderFrame renderFrame)
         {
-            base.SpecificDrawBeforeUI(context);
+            base.SpecificDrawBeforeUI(context, renderFrame);
 
-            GraphicsDevice.DrawTexture(uiImages["GameScreen"].Texture);
+            GraphicsDevice.DrawTexture(Sprites["GameScreen"].Texture);
         }
 
         protected override void Update(GameTime gameTime)

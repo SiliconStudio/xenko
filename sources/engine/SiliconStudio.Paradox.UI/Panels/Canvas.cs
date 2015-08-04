@@ -18,17 +18,17 @@ namespace SiliconStudio.Paradox.UI.Panels
         /// The key to the RelativeSize dependency property. RelativeSize indicate the ratio of the size of the <see cref="UIElement"/> with respect to the parent size.
         /// </summary>
         /// <remarks>Relative size must be strictly positive</remarks>
-        public readonly static PropertyKey<Vector3> RelativeSizePropertyKey = new PropertyKey<Vector3>("RelativeSizeKey", typeof(Canvas), DefaultValueMetadata.Static(new Vector3(float.NaN, float.NaN, float.NaN)), ValidateValueMetadata.New<Vector3>(ValidateRelativeSize), ObjectInvalidationMetadata.New<Vector3>(InvalidateCanvasMeasure));
+        public readonly static PropertyKey<Vector3> RelativeSizePropertyKey = new PropertyKey<Vector3>("RelativeSizeKey", typeof(Canvas), DefaultValueMetadata.Static(new Vector3(float.NaN)), ValidateValueMetadata.New<Vector3>(ValidateRelativeSize), ObjectInvalidationMetadata.New<Vector3>(InvalidateCanvasMeasure));
 
         /// <summary>
         /// The key to the RelativePosition dependency property. RelativePosition indicate where the <see cref="UIElement"/> is pinned in the canvas.
         /// </summary>
-        public readonly static PropertyKey<Vector3> RelativePositionPropertyKey = new PropertyKey<Vector3>("RelativePositionKey", typeof(Canvas), DefaultValueMetadata.Static(Vector3.Zero), ObjectInvalidationMetadata.New<Vector3>(OnRelativePositionChanged));
+        public readonly static PropertyKey<Vector3> RelativePositionPropertyKey = new PropertyKey<Vector3>("RelativePositionKey", typeof(Canvas), DefaultValueMetadata.Static(new Vector3(0)), ObjectInvalidationMetadata.New<Vector3>(OnRelativePositionChanged));
 
         /// <summary>
         /// The key to the AbsolutePosition dependency property. AbsolutePosition indicate where the <see cref="UIElement"/> is pinned in the canvas.
         /// </summary>
-        public readonly static PropertyKey<Vector3> AbsolutePositionPropertyKey = new PropertyKey<Vector3>("AbsolutePositionKey", typeof(Canvas), DefaultValueMetadata.Static(Vector3.Zero), ObjectInvalidationMetadata.New<Vector3>(OnAbsolutePositionChanged));
+        public readonly static PropertyKey<Vector3> AbsolutePositionPropertyKey = new PropertyKey<Vector3>("AbsolutePositionKey", typeof(Canvas), DefaultValueMetadata.Static(new Vector3(0)), ObjectInvalidationMetadata.New<Vector3>(OnAbsolutePositionChanged));
 
         /// <summary>
         /// The key to the useAbsolutionPosition dependency property. This indicates whether to use the AbsolutePosition or the RelativePosition to place to element.
@@ -167,7 +167,7 @@ namespace SiliconStudio.Paradox.UI.Panels
                 // arrange the child
                 child.Arrange(childProvidedSize, IsCollapsed);
 
-                // compute the child offsets wrt to parent (left,top,back) corner
+                // compute the child offsets wrt to parent (left,top,front) corner
                 var pinOrigin = child.DependencyProperties.Get(PinOriginPropertyKey);
                 var childOrigin = ComputeAbsolutePinPosition(child, ref finalSizeWithoutMargins) - Vector3.Modulate(pinOrigin, child.RenderSize);
 

@@ -7,7 +7,7 @@ namespace SiliconStudio.Core.Serialization.Contents
     /// <summary>
     /// Allows customization of IContentSerializer through an attribute.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = true, Inherited = false)]
     public class ContentSerializerAttribute : Attribute
     {
         /// <summary>

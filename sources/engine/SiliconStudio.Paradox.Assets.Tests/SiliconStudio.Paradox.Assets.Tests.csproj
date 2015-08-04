@@ -36,7 +36,8 @@
     <IntermediateOutputPath>obj\Windows\Debug\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -46,10 +47,11 @@
     <IntermediateOutputPath>obj\Windows\Release\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Paradox.Assets.Tests.TestTextureAlphaSplitter</StartupObject>
+    <StartupObject>SiliconStudio.Paradox.Assets.Tests.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\assets\SiliconStudio.Assets\SiliconStudio.Assets.csproj">
@@ -80,11 +82,6 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
       <Name>SiliconStudio.Core</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.Modules.csproj">
-      <Project>{0342c3e7-4a38-46b4-a8ec-e728d50085d3}</Project>
-      <Name>SiliconStudio.Paradox.Effects.Modules</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\tools\SiliconStudio.TextureConverter\SiliconStudio.TextureConverter.csproj">
@@ -138,21 +135,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
-    <Compile Include="GameAssets\testEffect.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>testEffect.pdxfx</DependentUpon>
-    </Compile>
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestAssetImport.cs" />
     <Compile Include="TestCommon.cs" />
     <Compile Include="TestDependencyResolver.cs" />
-    <Compile Include="TestMaterialTree.cs" />
-    <Compile Include="TestTextureAlphaSplitter.cs" />
+    <Compile Include="TestEntity.cs" />
+    <Compile Include="TestModelAsset.cs" />
     <Compile Include="TestTexturePacker.cs" />
-    <Compile Include="TestTreeFlattener.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\data\tests\factory\factory.fbx">
@@ -167,42 +157,21 @@
       <Link>app_data\SiliconStudio.Paradox.Assets.Tests\TX-Factory_Ground.dds</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="GameAssets\blinn1.pdxmat" />
+    <None Include="GameAssets\blinn2.pdxmat" />
     <None Include="GameAssets\checker.pdxtex" />
-    <None Include="GameAssets\Cube\cube.pdxentity" />
-    <None Include="GameAssets\Cube\cube_model.pdxm3d" />
-    <None Include="GameAssets\Cube\cube_material_lambert1.pdxmat" />
-    <None Include="GameAssets\Cube\cube_Untitled.pdxtex" />
     <None Include="GameAssets\earth.pdxtex" />
-    <None Include="GameAssets\factory.pdxentity" />
-    <None Include="GameAssets\factory2\factory.pdxentity" />
-    <None Include="GameAssets\factory2\factory_material_blinn1.pdxmat" />
-    <None Include="GameAssets\factory2\factory_material_blinn2.pdxmat" />
-    <None Include="GameAssets\factory2\factory_model.pdxm3d" />
-    <None Include="GameAssets\factory2\factory_TX-Factory_ALL.pdxtex" />
-    <None Include="GameAssets\factory2\factory_TX-Factory_Ground.pdxtex" />
-    <None Include="GameAssets\factory\factory.pdxentity" />
-    <None Include="GameAssets\factory\factory_material_blinn1.pdxmat" />
-    <None Include="GameAssets\factory\factory_material_blinn2.pdxmat" />
-    <None Include="GameAssets\factory\factory_model.pdxm3d" />
-    <None Include="GameAssets\factory\factory_TX-Factory_ALL.pdxtex" />
-    <None Include="GameAssets\factory\factory_TX-Factory_Ground.pdxtex" />
-    <None Include="GameAssets\factory_material_blinn1.pdxmat" />
-    <None Include="GameAssets\factory_material_blinn2.pdxmat" />
-    <None Include="GameAssets\factory_model.pdxm3d" />
-    <None Include="GameAssets\factory_TX-Factory_ALL.pdxtex" />
-    <None Include="GameAssets\factory_TX-Factory_Ground.pdxtex" />
+    <None Include="GameAssets\factory Model.pdxm3d" />
+    <None Include="GameAssets\MainScene.pdxscene" />
     <None Include="GameAssets\starMask.pdxtex" />
-    <None Include="GameAssets\testEffect.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>testEffect.cs</LastGenOutput>
-    </None>
+    <None Include="GameAssets\TX-Factory_ALL.pdxtex" />
+    <None Include="GameAssets\TX-Factory_Ground.pdxtex" />
     <None Include="materials\testConstantValueKey.pdxmat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="materials\testEffect.pdxmat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="GameAssets\testEffectLib.pdxfxlib" />
     <None Include="materials\testMaterial.pdxmat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

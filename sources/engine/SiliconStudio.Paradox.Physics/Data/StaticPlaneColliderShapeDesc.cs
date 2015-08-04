@@ -1,4 +1,6 @@
-﻿using SiliconStudio.Core;
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 
@@ -6,6 +8,7 @@ namespace SiliconStudio.Paradox.Physics
 {
     [ContentSerializer(typeof(DataContentSerializer<StaticPlaneColliderShapeDesc>))]
     [DataContract("StaticPlaneColliderShapeDesc")]
+    [Display(50, "StaticPlaneColliderShape")]
     public class StaticPlaneColliderShapeDesc : IColliderShapeDesc
     {
         /// <userdoc>

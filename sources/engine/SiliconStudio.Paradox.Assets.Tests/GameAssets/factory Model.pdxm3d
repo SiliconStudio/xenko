@@ -1,0 +1,39 @@
+!Model
+Id: 3e977733-a289-412b-9eeb-cacf1aa8bca7
+SerializedVersion: 2
+BuildOrder: 500
+Tags: []
+Source: ../../../data/tests/Factory/factory.fbx
+SourceHash: d2f423dd854ddffde648997a5284b01c
+Materials:
+    -   Name: blinn2
+        MaterialInstance:
+            Material: 68c5ca12-8e6b-4a0d-a0bb-6286497b75a7:blinn2
+    -   Name: blinn1
+        MaterialInstance:
+            Material: f348e32d-c987-4c73-91ad-53ad983b8632:blinn1
+Nodes:
+    - {Name: RootNode, Depth: 0, Preserve: false}
+    - {Name: Plane01, Depth: 1, Preserve: false}
+    - {Name: group1, Depth: 1, Preserve: false}
+    - {Name: Factory_02, Depth: 2, Preserve: false}
+~Base:
+    Location: --import--
+    Asset: !Model
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: 2
+        BuildOrder: 500
+        Tags: []
+        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
+        Materials:
+            -   Name: blinn2
+                MaterialInstance:
+                    Material: 68c5ca12-8e6b-4a0d-a0bb-6286497b75a7:blinn2
+            -   Name: blinn1
+                MaterialInstance:
+                    Material: f348e32d-c987-4c73-91ad-53ad983b8632:blinn1
+        Nodes:
+            - {Name: RootNode, Depth: 0, Preserve: false}
+            - {Name: Plane01, Depth: 1, Preserve: false}
+            - {Name: group1, Depth: 1, Preserve: false}
+            - {Name: Factory_02, Depth: 2, Preserve: false}

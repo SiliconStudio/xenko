@@ -14,18 +14,12 @@ namespace SiliconStudio.Assets
     /// <summary>
     /// Helper class to load/save a VisualStudio solution.
     /// </summary>
-    internal class PackageSessionHelper
+    internal partial class PackageSessionHelper
     {
-        private const string SiliconStudioPackage = "SiliconStudioPackage";
         private const string SolutionHeader = @"Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1";
-
-        public static bool IsSolutionFile(string filePath)
-        {
-            return String.Compare(Path.GetExtension(filePath), ".sln", StringComparison.InvariantCultureIgnoreCase) == 0;
-        }
 
         public static bool IsPackageFile(string filePath)
         {
@@ -54,27 +48,6 @@ MinimumVisualStudioVersion = 10.0.40219.1";
                     packagePaths.Add(packageFullPath);
                 }
             }
-        }
-
-        private static bool IsPackage(Project project)
-        {
-            string packagePath;
-            return IsPackage(project, out packagePath);
-        }
-
-        private static bool IsPackage(Project project, out string packagePathRelative)
-        {
-            packagePathRelative = null;
-            if (project.IsSolutionFolder && project.Sections.Contains(SiliconStudioPackage))
-            {
-                var propertyItem = project.Sections[SiliconStudioPackage].Properties.FirstOrDefault();
-                if (propertyItem != null)
-                {
-                    packagePathRelative = propertyItem.Name;
-                    return true;
-                }
-            }
-            return false;
         }
 
         public static void SaveSolution(PackageSession session, ILogger log)
@@ -340,6 +313,38 @@ MinimumVisualStudioVersion = 10.0.40219.1";
             {
                 log.Error("Error while saving solution [{0}]", ex, solutionPath);
             }
+        }
+
+        /// <summary>
+        /// Saves a .props file for the specified package, containing the paradox version (only Major.Minor)
+        /// used to compile the package. 
+        /// </summary>
+        /// <param name="package">The package.</param>
+        public static void SaveProperties(Package package)
+        {
+            // Props file is in the same folder as the pdxpkg file, just with a ".props" extension.
+            var packagePath = package.FullPath;
+            var propsFilePath = UPath.Combine(packagePath.GetParent(), (UFile)(packagePath.GetFileName() + ".props")) ;
+
+            var projectCollection = new Microsoft.Build.Evaluation.ProjectCollection();
+            var project = new Microsoft.Build.Evaluation.Project(projectCollection);
+            var commonPropertyGroup = project.Xml.AddPropertyGroup();
+
+            var dependencies = package.FindDependencies(false, false, true);
+
+            // Add Paradox version
+            var pdxVersion = dependencies.FirstOrDefault(d => d.Meta.Name == "Paradox");
+            if (pdxVersion != null)
+            {
+                var versionText = pdxVersion.Meta.Version.Version.Major + "." + pdxVersion.Meta.Version.Version.Minor;
+                commonPropertyGroup.AddProperty("SiliconStudioPackageParadoxVersion", versionText);
+            }
+
+            if (File.Exists(propsFilePath))
+            {
+                File.Delete(propsFilePath);
+            }
+            project.Save(propsFilePath);
         }
     }
 }

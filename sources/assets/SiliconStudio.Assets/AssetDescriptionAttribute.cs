@@ -5,52 +5,34 @@ using System;
 namespace SiliconStudio.Assets
 {
     /// <summary>
-    /// Associates user-friendly names and descriptions to an asset type.
+    /// Associates meta-information to a particular <see cref="Asset"/>.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    public sealed class AssetDescriptionAttribute : Attribute
+    public class AssetDescriptionAttribute : Attribute
     {
-        private readonly AssetDescription assetDescription;
-
-        /// <summary>
-        /// Gets the display name of the asset
-        /// </summary>
-        public string DisplayName { get { return assetDescription.DisplayName; } }
-
-        /// <summary>
-        /// Gets a description of the asset.
-        /// </summary>
-        public string Description { get { return assetDescription.Description; } }
-
-        /// <summary>
-        /// Gets whether the thumbnails of the asset type are dynamic and should be regenerated each time a property changes.
-        /// </summary>
-        public bool DynamicThumbnails { get { return assetDescription.DynamicThumbnails; } }
+        private readonly string fileExtensions;
+        private readonly bool allowUserCreation;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssetDescriptionAttribute"/> class.
         /// </summary>
-        /// <param name="displayName">A user-friendly name describing the asset type.</param>
-        /// <param name="description">A sentence describing the purpose of the asset type.</param>
-        /// <param name="dynamicThumbnails">Indicates that the thumbnails of the asset type are dynamic and should be regenerated each time a property changes.</param>
-        public AssetDescriptionAttribute(string displayName, string description, bool dynamicThumbnails)
+        /// <param name="fileExtensions">The file extensions supported by a type of asset.</param>
+        /// <param name="allowUserCreation">Indicate whether this asset can be created by users using engine tools.</param>
+        public AssetDescriptionAttribute(string fileExtensions, bool allowUserCreation = true)
         {
-            assetDescription = new AssetDescription(displayName, description, dynamicThumbnails);
+            this.fileExtensions = fileExtensions;
+            this.allowUserCreation = allowUserCreation;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AssetDescriptionAttribute"/> class.
+        /// Gets the file extensions supported by a type of asset.
         /// </summary>
-        /// <param name="displayName">A user-friendly name describing the asset type.</param>
-        /// <param name="description">A sentence describing the purpose of the asset type.</param>
-        public AssetDescriptionAttribute(string displayName, string description)
-            : this(displayName, description, false)
-        {
-        }
+        /// <value>The extension.</value>
+        public string FileExtensions { get { return fileExtensions; } }
 
-        internal AssetDescription GetDescription()
-        {
-            return assetDescription;
-        }
+        /// <summary>
+        /// Gets whether this asset can be created by users using engine tools.
+        /// </summary>
+        public bool AllowUserCreation { get { return allowUserCreation; } }
     }
 }

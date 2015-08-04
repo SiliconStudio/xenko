@@ -67,29 +67,6 @@ Quaternion aiQuaternionToQuaternion(aiQuaterniont<float> quat)
 	return ret;
 }
 
-LightType aiLightTypeToPdxLightType(aiLightSourceType aiLightType, String^ lightName, Logger^ logger)
-{
-	switch (aiLightType)
-	{
-	case aiLightSource_DIRECTIONAL:
-		return LightType::Directional;
-
-	case aiLightSource_POINT:
-		return LightType::Point;
-
-	case aiLightSource_SPOT:
-		return LightType::Spot;
-
-	case aiLightSource_UNDEFINED:
-	case _aiLightSource_Force32Bit:
-	default:
-		logger->Warning("Light '{0}' type is not correct. Type value set to default value 'Directional'.",
-						gcnew ArgumentException("The provided light source type is incorrect."), lightName,
-						CallerInfo::Get(__FILEW__, __FUNCTIONW__, __LINE__));
-		return LightType::Directional;
-	}
-}
-
 CompressedTimeSpan aiTimeToPdxTimeSpan(double time, double aiTickPerSecond)
 {
 	double pdxTime = CompressedTimeSpan::TicksPerSecond / aiTickPerSecond * time;

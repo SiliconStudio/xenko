@@ -5,20 +5,21 @@ using System.Linq;
 
 using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Quantum.Attributes;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public class AddPrimitiveKeyCommand : INodeCommand
+    public class AddPrimitiveKeyCommand : NodeCommand
     {
         /// <inheritdoc/>
-        public string Name { get { return "AddPrimitiveKey"; } }
+        public override string Name { get { return "AddPrimitiveKey"; } }
 
         /// <inheritdoc/>
-        public CombineMode CombineMode { get { return CombineMode.CombineOnlyForAll; } }
+        public override CombineMode CombineMode { get { return CombineMode.CombineOnlyForAll; } }
         
         /// <inheritdoc/>
-        public bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor)
+        public override bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor)
         {
             if (memberDescriptor != null)
             {
@@ -34,20 +35,23 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public object Invoke(object currentValue, ITypeDescriptor descriptor, object parameter, out UndoToken undoToken)
+        public override object Invoke(object currentValue, object parameter, out UndoToken undoToken)
         {
-            var dictionaryDescriptor = (DictionaryDescriptor)descriptor;
-            var newKey = dictionaryDescriptor.KeyType != typeof(string) ? Activator.CreateInstance(dictionaryDescriptor.KeyType) : GenerateStringKey(currentValue, descriptor, parameter);
-            var newItem = !dictionaryDescriptor.ValueType.IsAbstract ? Activator.CreateInstance(dictionaryDescriptor.ValueType) : null;
+            var dictionaryDescriptor = (DictionaryDescriptor)TypeDescriptorFactory.Default.Find(currentValue.GetType());
+            var newKey = dictionaryDescriptor.KeyType != typeof(string) ? Activator.CreateInstance(dictionaryDescriptor.KeyType) : GenerateStringKey(currentValue, dictionaryDescriptor, parameter);
+            object newItem = null;
+            // TODO: Find a better solution that doesn't require to reference Core.Serialization (and unreference this assembly)
+            if (!dictionaryDescriptor.ValueType.GetCustomAttributes(typeof(ContentSerializerAttribute), true).Any())
+                newItem = !dictionaryDescriptor.ValueType.IsAbstract ? Activator.CreateInstance(dictionaryDescriptor.ValueType) : null;
             dictionaryDescriptor.SetValue(currentValue, newKey, newItem);
             undoToken = new UndoToken(true, newKey);
             return currentValue;
         }
-
+        
         /// <inheritdoc/>
-        public object Undo(object currentValue, ITypeDescriptor descriptor, UndoToken undoToken)
+        public override object Undo(object currentValue, UndoToken undoToken)
         {
-            var dictionaryDescriptor = (DictionaryDescriptor)descriptor;
+            var dictionaryDescriptor = (DictionaryDescriptor)TypeDescriptorFactory.Default.Find(currentValue.GetType());
             var key = undoToken.TokenValue;
             dictionaryDescriptor.Remove(currentValue, key);
             return currentValue;

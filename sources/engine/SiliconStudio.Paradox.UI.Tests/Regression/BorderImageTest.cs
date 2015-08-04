@@ -20,25 +20,25 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public BorderImageTest()
         {
-            CurrentVersion = 4;
+            CurrentVersion = 6;
         }
 
         protected override async Task LoadContent()
         {
             await base.LoadContent();
 
-            var uiImage = new UIImage(Asset.Load<Texture2D>("BorderButton")) { Borders = new Vector4(64, 64, 64, 64) };
+            var sprite = new Sprite(Asset.Load<Texture>("BorderButton")) { Borders = new Vector4(64, 64, 64, 64) };
 
-            var bi1 = new ImageElement { Source = uiImage, Height = 150 };
-            var bi2 = new ImageElement { Source = uiImage, Height = 300 };
-            var bi3 = new ImageElement { Source = uiImage, Height = 500 };
+            var bi1 = new ImageElement { Source = sprite, Height = 150 };
+            var bi2 = new ImageElement { Source = sprite, Height = 300 };
+            var bi3 = new ImageElement { Source = sprite, Height = 500 };
 
             stackPanel = new StackPanel { Orientation = Orientation.Vertical };
             stackPanel.Children.Add(bi1);
             stackPanel.Children.Add(bi2);
             stackPanel.Children.Add(bi3);
 
-            UI.RootElement = new ScrollViewer { Content = stackPanel, ScrollMode = ScrollingMode.HorizontalVertical };
+            UIComponent.RootElement = new ScrollViewer { Content = stackPanel, ScrollMode = ScrollingMode.HorizontalVertical };
         }
 
         protected override void RegisterTests()

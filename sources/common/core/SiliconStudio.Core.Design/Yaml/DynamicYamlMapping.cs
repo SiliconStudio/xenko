@@ -1,5 +1,10 @@
-﻿using System;
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using SharpYaml.Serialization;
 
 namespace SiliconStudio.Core.Yaml
@@ -7,7 +12,7 @@ namespace SiliconStudio.Core.Yaml
     /// <summary>
     /// Dynamic version of <see cref="YamlMappingNode"/>.
     /// </summary>
-    public class DynamicYamlMapping : DynamicYamlObject
+    public class DynamicYamlMapping : DynamicYamlObject, IEnumerable
     {
         internal YamlMappingNode node;
 
@@ -22,6 +27,11 @@ namespace SiliconStudio.Core.Yaml
         public DynamicYamlMapping(YamlMappingNode node)
         {
             this.node = node;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return node.Children.Select(x => new KeyValuePair<dynamic, dynamic>(ConvertToDynamic(x.Key), ConvertToDynamic(x.Value))).ToArray().GetEnumerator();
         }
 
         public void MoveChild(object key, int movePosition)
@@ -48,7 +58,8 @@ namespace SiliconStudio.Core.Yaml
         {
             var yamlKey = ConvertFromDynamic(key);
             var keyPosition = node.Children.IndexOf(yamlKey);
-            node.Children.RemoveAt(keyPosition);
+            if (keyPosition != -1)
+                node.Children.RemoveAt(keyPosition);
         }
 
         public int IndexOf(object key)

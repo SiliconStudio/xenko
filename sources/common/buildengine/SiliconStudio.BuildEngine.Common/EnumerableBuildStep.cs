@@ -105,12 +105,7 @@ namespace SiliconStudio.BuildEngine
         /// <returns></returns>
         protected async Task CompleteCommands(IExecuteContext executeContext, List<BuildStep> buildStepsToWait)
         {
-            // Wait for steps to be finished
-            if (buildStepsToWait.Count > 0)
-                await Task.WhenAll(buildStepsToWait.Select(x => x.ExecutedAsync()));
-
-            // Wait for spawned steps to be finished
-            await Task.WhenAll(buildStepsToWait.SelectMany(EnumerateSpawnedBuildSteps).Select(x => x.ExecutedAsync()));
+            await WaitCommands(buildStepsToWait);
 
             // TODO: Merge results of sub lists
             foreach (var buildStep in buildStepsToWait)
@@ -161,6 +156,16 @@ namespace SiliconStudio.BuildEngine
             mergeCounter++;
         }
 
+        protected static async Task WaitCommands(List<BuildStep> buildStepsToWait)
+        {
+            // Wait for steps to be finished
+            if (buildStepsToWait.Count > 0)
+                await Task.WhenAll(buildStepsToWait.Select(x => x.ExecutedAsync()));
+
+            // Wait for spawned steps to be finished
+            await Task.WhenAll(buildStepsToWait.SelectMany(EnumerateSpawnedBuildSteps).Select(x => x.ExecutedAsync()));
+        }
+
         /// <summary>
         /// Processes the results from a <see cref="CommandBuildStep"/>.
         /// </summary>
@@ -197,6 +202,9 @@ namespace SiliconStudio.BuildEngine
                     AddOutputObject(executeContext, resultOutputObject.Key, resultOutputObject.Value, buildStep.Command);
                 }
             }
+
+            // Forward logs
+            buildStep.Logger.CopyTo(Logger);
 
             // Process recursively
             // TODO: Wait for completion of spawned step in case Task didn't wait for them

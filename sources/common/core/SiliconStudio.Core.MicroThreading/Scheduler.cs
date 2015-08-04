@@ -19,13 +19,14 @@ namespace SiliconStudio.Core.MicroThreading
     /// </remarks>
     public class Scheduler
     {
-        internal static Logger Log = GlobalLogger.GetLogger("Scheduler");
+        internal readonly static Logger Log = GlobalLogger.GetLogger("Scheduler");
 
         // An ever-increasing counter that will be used to have a "stable" microthread scheduling (first added is first scheduled)
         internal long SchedulerCounter;
 
         internal PriorityNodeQueue<MicroThread> scheduledMicroThreads = new PriorityNodeQueue<MicroThread>();
         internal LinkedList<MicroThread> allMicroThreads = new LinkedList<MicroThread>();
+        internal List<MicroThreadCallbackNode> callbackNodePool = new List<MicroThreadCallbackNode>();
 
         private ThreadLocal<MicroThread> runningMicroThread = new ThreadLocal<MicroThread>();
 
@@ -40,8 +41,18 @@ namespace SiliconStudio.Core.MicroThreading
         /// </summary>
         public Scheduler()
         {
+            PropagateExceptions = true;
             FrameChannel = new Channel<int> { Preference = ChannelPreference.PreferSender };
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether microthread exceptions are propagated (and crashes the process). Default to true.
+        /// This can be overridden to false per <see cref="MicroThread"/> by using <see cref="MicroThreadFlags.IgnoreExceptions"/>.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [propagate exceptions]; otherwise, <c>false</c>.
+        /// </value>
+        internal bool PropagateExceptions { get; set; }
 
         /// <summary>
         /// Gets the current running micro thread in this scheduler through <see cref="Run"/>.
@@ -69,7 +80,7 @@ namespace SiliconStudio.Core.MicroThreading
         /// Gets the list of every non-stopped micro threads.
         /// </summary>
         /// <value>The list of every non-stopped micro threads.</value>
-        public IEnumerable<MicroThread> MicroThreads
+        public ICollection<MicroThread> MicroThreads
         {
             get { return allMicroThreads; }
         }
@@ -124,18 +135,27 @@ namespace SiliconStudio.Core.MicroThreading
             int managedThreadId = Thread.CurrentThread.ManagedThreadId;
 #endif
 
+            MicroThreadCallbackList callbacks = default(MicroThreadCallbackList);
+
             while (true)
             {
-                Action callback;
                 MicroThread microThread;
                 lock (scheduledMicroThreads)
                 {
+                    // Reclaim callbacks of previous microthread
+                    MicroThreadCallbackNode callback;
+                    while (callbacks.TakeFirst(out callback))
+                    {
+                        callback.Clear();
+                        callbackNodePool.Add(callback);
+                    }
+
                     if (scheduledMicroThreads.Count == 0)
                         break;
                     microThread = scheduledMicroThreads.Dequeue();
 
-                    callback = microThread.Callback;
-                    microThread.Callback = null;
+                    callbacks = microThread.Callbacks;
+                    microThread.Callbacks = default(MicroThreadCallbackList);
                 }
 
                 // Since it can be reentrant, it should be restored after running the callback.
@@ -159,7 +179,14 @@ namespace SiliconStudio.Core.MicroThreading
 
                     using (Profiler.Begin(microThread.ProfilingKey))
                     {
-                        callback();
+                        var callback = callbacks.First;
+                        while (callback != null)
+                        {
+                            microThread.ThrowIfExceptionRequest();
+                            callback.Invoke();
+                            callback = callback.Next;
+                        }
+                        microThread.ThrowIfExceptionRequest();
                     }
                 }
                 catch (Exception e)
@@ -189,7 +216,7 @@ namespace SiliconStudio.Core.MicroThreading
                                 // Nothing was listening on the micro thread and it crashed
                                 // Let's treat it as unhandled exception and propagate it
                                 // Use ExceptionDispatchInfo.Capture to not overwrite callstack
-                                if ((microThread.Flags & MicroThreadFlags.IgnoreExceptions) != MicroThreadFlags.IgnoreExceptions)
+                                if (PropagateExceptions && (microThread.Flags & MicroThreadFlags.IgnoreExceptions) != MicroThreadFlags.IgnoreExceptions)
                                     ExceptionDispatchInfo.Capture(microThread.Exception).Throw();
                             }
 

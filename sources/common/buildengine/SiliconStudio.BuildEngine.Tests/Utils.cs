@@ -19,7 +19,7 @@ namespace SiliconStudio.BuildEngine.Tests
 
         private const string FileSourceFolder = "source";
 
-        public static string BuildPath { get { return Path.Combine(Platform.ApplicationBinaryDirectory, Assembly.GetEntryAssembly() == null? TestContext.CurrentContext.Test.Name: "data/"+Assembly.GetEntryAssembly().GetName().Name); } }
+        public static string BuildPath { get { return Path.Combine(PlatformFolders.ApplicationBinaryDirectory, Assembly.GetEntryAssembly() == null? TestContext.CurrentContext.Test.Name: "data/"+Assembly.GetEntryAssembly().GetName().Name); } }
 
         private static StringBuilder logCollecter;
 

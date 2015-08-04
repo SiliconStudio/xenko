@@ -107,16 +107,8 @@ namespace SiliconStudio.Assets.Analysis
                 var subPackage = package.Session.Packages.Find(packageDependency);
                 if (subPackage == null)
                 {
-                    if (packageDependency.Name == PackageStore.Instance.DefaultPackageName)
-                    {
-                        log.Warning(package, null, AssetMessageCode.PackageDependencyModified, packageDependency, PackageStore.Instance.DefaultPackageMinVersion);
-                        packageDependency.Version = PackageStore.Instance.DefaultPackageMinVersion;
-                        package.IsDirty = true;
-                    }
-                    else
-                    {
-                        log.Error(package, null, AssetMessageCode.PackageNotFound, packageDependency);
-                    }
+                    // Originally we were fixing DefaultPackage version, but it should now be handled by package upgraders
+                    log.Error(package, null, AssetMessageCode.PackageNotFound, packageDependency);
                 }
             }
 

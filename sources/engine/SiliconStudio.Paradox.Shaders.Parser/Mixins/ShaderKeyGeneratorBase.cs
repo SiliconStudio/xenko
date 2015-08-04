@@ -36,6 +36,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// </summary>
         protected bool VariableAsParameterKey = true;
 
+        protected bool IsPdxfx = false;
+
         /// <summary>
         /// Runs the code generation. Results is accessible from <see cref="ShaderWriter.Text"/> property.
         /// </summary>
@@ -54,7 +56,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             }
             else
             {
-                base.Visit(variable);
+                if (IsPdxfx)
+                {
+                    base.Visit(variable);
+                }
             }
         }
 
@@ -75,6 +80,12 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             CloseBrace();
         }
 
+        //[Visit]
+        //protected virtual void Visit(ConstantBuffer constantBuffer)
+        //{
+        //    Visit((Node)constantBuffer);
+        //}
+
         internal bool IsParameterKey(Variable variable)
         {
             // Don't generate a parameter key for variable stored storage qualifier: extern, const, compose, stream
@@ -82,6 +93,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 || variable.Qualifiers.Contains(StorageQualifier.Const)
                 || variable.Qualifiers.Contains(ParadoxStorageQualifier.Compose)
                 || variable.Qualifiers.Contains(ParadoxStorageQualifier.PatchStream)
+                || variable.Qualifiers.Contains(SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier.Groupshared)
                 || variable.Qualifiers.Contains(ParadoxStorageQualifier.Stream))
                 return false;
 

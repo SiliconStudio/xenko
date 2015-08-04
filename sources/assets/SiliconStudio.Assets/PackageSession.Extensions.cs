@@ -1,10 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Assets.Analysis;
-using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Assets
@@ -66,17 +64,17 @@ namespace SiliconStudio.Assets
             assetPackageCloned.Assets.Add(assetItemRootCloned);
 
             // For each asset item dependency, clone it in the new package
-            foreach (var item in dependencies)
+            foreach (var assetLink in dependencies.LinksOut)
             {
                 // Only add assets not already added (in case of circular dependencies)
-                if (assetPackageCloned.Assets.Find(item.Id) == null)
+                if (assetPackageCloned.Assets.Find(assetLink.Item.Id) == null)
                 {
                     // create a copy of the asset item and add it to the appropriate compile package
-                    var assetItemCloned = item.Clone();
+                    var itemCloned = assetLink.Item.Clone();
 
                     // Store the fullpath to the sourcefolder, this avoid us to clone hierarchy of packages
-                    assetItemCloned.SourceFolder = item.FullPath.GetParent();
-                    assetPackageCloned.Assets.Add(assetItemCloned);
+                    itemCloned.SourceFolder = assetLink.Item.FullPath.GetParent();
+                    assetPackageCloned.Assets.Add(itemCloned);
                 }
             }
 

@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.UI.Controls
 {
@@ -13,7 +14,7 @@ namespace SiliconStudio.Paradox.UI.Controls
     [DebuggerDisplay("ImageElement - Name={Name}")]
     public class ImageElement : UIElement
     {
-        private UIImage source;
+        private Sprite source;
         private StretchType stretchType = StretchType.Uniform;
         private StretchDirection stretchDirection = StretchDirection.Both;
 
@@ -43,16 +44,16 @@ namespace SiliconStudio.Paradox.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="UIImage"/> for the image.
+        /// Gets or sets the <see cref="Sprite"/> for the image.
         /// </summary>
-        public UIImage Source
+        public Sprite Source
         {
             get { return source;} 
             set
             {
                 if (source != null)
                 {
-                    source.IdealSizeChanged -= InvalidateMeasure;
+                    source.SizeChanged -= InvalidateMeasure;
                     source.BorderChanged -= InvalidateMeasure;
                 }
 
@@ -61,7 +62,7 @@ namespace SiliconStudio.Paradox.UI.Controls
 
                 if (source != null)
                 {
-                    source.IdealSizeChanged += InvalidateMeasure;
+                    source.SizeChanged += InvalidateMeasure;
                     source.BorderChanged += InvalidateMeasure;
                 }
             }
@@ -96,7 +97,7 @@ namespace SiliconStudio.Paradox.UI.Controls
             if (Source == null) // no associated image -> no region needed
                 return Vector3.Zero;
 
-            var idealSize = source.ImageIdealSize;
+            var idealSize = source.SizeInPixels;
             if (idealSize.X <= 0 || idealSize.Y <= 0) // image size null or invalid -> no region needed
                 return Vector3.Zero;
 

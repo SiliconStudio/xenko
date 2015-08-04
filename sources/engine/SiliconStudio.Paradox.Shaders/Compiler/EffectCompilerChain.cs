@@ -2,9 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-
+using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Paradox.Shaders.Compiler
 {
@@ -26,9 +27,25 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             get { return compiler; }
         }
 
-        public override EffectBytecode Compile(ShaderMixinSource mixin, string fullEffectName, ShaderMixinParameters compilerParameters, HashSet<string> modifiedShaders, HashSet<string> recentlyModifiedShaders, LoggerResult log)
+        public override IVirtualFileProvider FileProvider
         {
-            return compiler.Compile(mixin, fullEffectName, compilerParameters, modifiedShaders, recentlyModifiedShaders, log);
+            get { return compiler.FileProvider; }
+            set { compiler.FileProvider = value; }
+        }
+
+        public override ObjectId GetShaderSourceHash(string type)
+        {
+            return compiler.GetShaderSourceHash(type);
+        }
+
+        public override void ResetCache(HashSet<string> modifiedShaders)
+        {
+            compiler.ResetCache(modifiedShaders);
+        }
+
+        public override TaskOrResult<EffectBytecodeCompilerResult> Compile(ShaderMixinSource mixinTree, CompilerParameters compilerParameters)
+        {
+            return compiler.Compile(mixinTree, compilerParameters);
         }
     }
 }

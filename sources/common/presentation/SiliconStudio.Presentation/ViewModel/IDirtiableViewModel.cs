@@ -11,6 +11,8 @@ namespace SiliconStudio.Presentation.ViewModel
     {
         Save,
         UndoRedo,
+        Added,
+        Discarded,
     }
 
     /// <summary>
@@ -27,7 +29,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <summary>
         /// Raised when the <see cref="IsDirty"/> property has changed.
         /// </summary>
-        event EventHandler<DirtinessChangedEventArgs> DirtinessChanged;
+        event EventHandler<DirtinessUpdatedEventArgs> DirtinessUpdated;
 
         /// <summary>
         /// Register a <see cref="ViewModelActionItem"/> object to this dirtiable object. A registered action item can modify the dirty state when

@@ -3,13 +3,13 @@
 using System;
 using System.IO;
 
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     /// <summary>
     /// Plugin used to render to a GBuffer from a MainPlugin.
@@ -78,7 +78,7 @@ namespace SiliconStudio.Paradox.Effects
                 return;
 
             // Create texture used for normal packing
-            var texture2D = Texture2D.New(GraphicsDevice, 1024, 1024, 1, PixelFormat.A8_UNorm);
+            var texture2D = Texture.New2D(GraphicsDevice, 1024, 1024, 1, PixelFormat.A8_UNorm);
             texture2D.Name = "Renorm";
 
             // Load normal packing data
@@ -129,7 +129,7 @@ namespace SiliconStudio.Paradox.Effects
             DepthStencilStateZReadOnly.Name = "ZReadOnly";
 
             // Create normal texture (that LightPlugin will use)
-            var gbufferTexture = Texture2D.New(GraphicsDevice, graphicsDevice.BackBuffer.Width, graphicsDevice.BackBuffer.Height, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+            var gbufferTexture = Texture.New2D(GraphicsDevice, graphicsDevice.BackBuffer.Width, graphicsDevice.BackBuffer.Height, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
             gbufferTexture.Name = "GBufferTexture";
             Parameters.Set(GBufferBaseKeys.GBufferTexture, gbufferTexture);
             RenderTarget = gbufferTexture.ToRenderTarget();

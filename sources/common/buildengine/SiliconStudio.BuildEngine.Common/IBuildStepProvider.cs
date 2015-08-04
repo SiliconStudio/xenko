@@ -11,6 +11,6 @@ namespace SiliconStudio.BuildEngine
         /// Gets the next build step to execute.
         /// </summary>
         /// <returns>The next build step to execute, or <c>null</c> if there is no build step to execute.</returns>
-        BuildStep GetNextBuildStep();
+        BuildStep GetNextBuildStep(int maxPriority);
     }
 }

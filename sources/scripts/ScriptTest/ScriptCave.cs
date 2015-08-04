@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 using SiliconStudio.Paradox;
 using SiliconStudio.Paradox.DataModel;
 using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 #if PARADOX_YEBIS
 using Paradox.Effects.Yebis;
 #endif

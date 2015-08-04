@@ -2,17 +2,13 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Threading;
-using System.Xml.Linq;
 using Microsoft.Build.Evaluation;
-using Microsoft.Build.Logging;
-using Microsoft.Win32;
+
 using NuGet;
+using SiliconStudio.Core.Windows;
 
 namespace SiliconStudio.Assets
 {
@@ -21,16 +17,19 @@ namespace SiliconStudio.Assets
     /// </summary>
     internal class NugetStore
     {
+        private const string RepositoryPathKey = "repositorypath";
+
+        private const string MainPackageKey = "mainPackage";
+
+        private const string VsixPluginKey = "vsixPlugin";
+
         private const string DefaultTargets = @"Targets\SiliconStudio.Common.targets";
 
         public const string DefaultGamePackagesDirectory = "GamePackages";
 
         public const string DefaultConfig = "store.config";
 
-        /// <summary>
-        /// Used to lookup for Vsix
-        /// </summary>
-        private const string DefaultBinDirectory = "Bin";
+        public const string OverrideConfig = "store.local.config";
 
         private readonly PhysicalFileSystem rootFileSystem;
         private readonly ISettings settings;
@@ -42,22 +41,30 @@ namespace SiliconStudio.Assets
         private readonly PackageManager manager;
         private ILogger logger;
 
-        public NugetStore(string rootDirectory, string configFile = DefaultConfig)
+        public NugetStore(string rootDirectory, string configFile = DefaultConfig, string overrideFile = OverrideConfig)
         {
             if (rootDirectory == null) throw new ArgumentNullException("rootDirectory");
             if (configFile == null) throw new ArgumentNullException("configFile");
+            if (overrideFile == null) throw new ArgumentNullException("overrideFile");
 
-            var configFilePath = Path.Combine(rootDirectory, configFile);
+            // First try the override file with custom settings
+            var configFileName = overrideFile;
+            var configFilePath = Path.Combine(rootDirectory, configFileName);
+
             if (!File.Exists(configFilePath))
             {
-                throw new ArgumentException(String.Format("Invalid installation. Configuration file [{0}] not found", configFile), "configFile");
+                // Override file does not exist, fallback to default config file
+                configFileName = configFile;
+                configFilePath = Path.Combine(rootDirectory, configFileName);
+
+                if (!File.Exists(configFilePath))
+                {
+                    throw new ArgumentException(String.Format("Invalid installation. Configuration file [{0}] not found", configFile), "configFile");
+                }
             }
 
-            // Setup NugetCachePath in the cache folder
-            Environment.SetEnvironmentVariable("NuGetCachePath", Path.Combine(rootDirectory, "Cache"));
-
             rootFileSystem = new PhysicalFileSystem(rootDirectory);
-            settings = NuGet.Settings.LoadDefaultSettings(rootFileSystem, configFile, null);
+            settings = NuGet.Settings.LoadDefaultSettings(rootFileSystem, configFileName, null);
 
             string installPath = settings.GetRepositoryPath();
             packagesFileSystem = new PhysicalFileSystem(installPath);
@@ -69,6 +76,27 @@ namespace SiliconStudio.Assets
             pathResolver = new DefaultPackagePathResolver(packagesFileSystem);
 
             manager = new PackageManager(aggregateRepository, pathResolver, packagesFileSystem);
+
+            MainPackageId = Settings.GetConfigValue(MainPackageKey);
+            if (string.IsNullOrWhiteSpace(MainPackageId))
+            {
+                throw new InvalidOperationException(string.Format("Invalid configuration. Expecting [{0}] in config", MainPackageKey));
+            }
+
+            VSIXPluginId = Settings.GetConfigValue(VsixPluginKey);
+            if (string.IsNullOrWhiteSpace(VSIXPluginId))
+            {
+                throw new InvalidOperationException(string.Format("Invalid configuration. Expecting [{0}] in config", VsixPluginKey));
+            }
+
+            RepositoryPath = Settings.GetConfigValue(RepositoryPathKey);
+            if (string.IsNullOrWhiteSpace(RepositoryPath))
+            {
+                RepositoryPath = DefaultGamePackagesDirectory;
+            }
+
+            // Setup NugetCachePath in the cache folder
+            Environment.SetEnvironmentVariable("NuGetCachePath", Path.Combine(rootDirectory, "Cache", RepositoryPath));
         }
 
         public string RootDirectory
@@ -79,7 +107,11 @@ namespace SiliconStudio.Assets
             }
         }
 
-        public string DefaultPackageId { get; set; }
+        public string MainPackageId { get; private set; }
+
+        public string VSIXPluginId { get; private set; }
+
+        public string RepositoryPath { get; private set; }
 
         public ILogger Logger
         {
@@ -151,10 +183,11 @@ namespace SiliconStudio.Assets
                 UpdateTargetsInternal();
 
                 // Install vsix
-                InstallVsix(GetLatestPackageInstalled(packageId));
+                ////InstallVsix(GetLatestPackageInstalled(packageId));
             }
         }
 
+        [Obsolete]
         public void UpdatePackage(IPackage package)
         {
             using (GetLocalRepositoryLocker())
@@ -165,7 +198,18 @@ namespace SiliconStudio.Assets
                 UpdateTargetsInternal();
 
                 // Install vsix
-                InstallVsix(GetLatestPackageInstalled(package.Id));
+                //InstallVsix(GetLatestPackageInstalled(package.Id));
+            }
+        }
+
+        public void UninstallPackage(IPackage package)
+        {
+            using (GetLocalRepositoryLocker())
+            {
+                Manager.UninstallPackage(package);
+
+                // Every time a new package is installed, we are updating the common targets
+                UpdateTargetsInternal();
             }
         }
 
@@ -180,6 +224,11 @@ namespace SiliconStudio.Assets
         public IPackage GetLatestPackageInstalled(string packageId)
         {
             return LocalRepository.GetPackages().Where(p => p.Id == packageId).OrderByDescending(p => p.Version).FirstOrDefault();
+        }
+
+        public IList<IPackage> GetPackagesInstalled(string packageId)
+        {
+            return LocalRepository.GetPackages().Where(p => p.Id == packageId).OrderByDescending(p => p.Version).ToArray();
         }
 
         public static bool CheckSource(IPackageRepository repository)
@@ -205,10 +254,10 @@ namespace SiliconStudio.Assets
             var newPackageId = packageId.Replace(".", String.Empty);
             return "SiliconStudioPackage" + newPackageId + "Version";
         }
-
-        private GlobalMutexLocker GetLocalRepositoryLocker()
+        
+        private IDisposable GetLocalRepositoryLocker()
         {
-            return new GlobalMutexLocker("LauncherApp-" + RootDirectory);
+            return GlobalMutex.Wait("ParadoxLauncher-{1F6F92C3-B1CF-4E40-A8D5-4D1F1EB66285}-" + RootDirectory);
         }
 
         private List<IPackage> UpdateTargetsInternal()
@@ -223,8 +272,14 @@ namespace SiliconStudio.Assets
             var packages = GetRootPackagesInDependencyOrder();
             foreach (var package in packages)
             {
+
+                if (package.Tags != null && package.Tags.Contains("internal"))
+                {
+                    continue; // We don't want to polute the Common.targets file with internal packages
+                }
+
                 var packageVar = GetPackageVersionVariable(package.Id);
-                var packageTarget = String.Format(@"$(MSBuildThisFileDirectory)..\{0}\{1}.{2}\Targets\{1}.targets", DefaultGamePackagesDirectory, package.Id, "$(" + packageVar + ")");
+                var packageTarget = String.Format(@"$(MSBuildThisFileDirectory)..\{0}\{1}.{2}\Targets\{1}.targets", RepositoryPath, package.Id, "$(" + packageVar + ")");
 
                 // Add import
                 // <Import Project="..\Packages\Paradox$(SiliconStudioPackageParadoxVersion)\Targets\Paradox.targets" Condition="Exists('..\Packages\Paradox.$(SiliconStudioPackageParadoxVersion)\Targets\Paradox.targets')" />
@@ -234,15 +289,44 @@ namespace SiliconStudio.Assets
                 // Add common properties
                 var packageVarSaved = packageVar + "Saved";
                 var packageVarInvalid = packageVar + "Invalid";
+                var packageVarRevision = packageVar + "Revision";
+                var packageVarOverride = packageVar + "Override";
+
+                // <SiliconStudioPackageParadoxVersion Condition="'$(SiliconStudioPackageParadoxVersionOverride)' != ''">$(SiliconStudioPackageParadoxVersionOverride)</SiliconStudioPackageParadoxVersion>
+                var versionFromOverrideProperty = commonPropertyGroup.AddProperty(packageVar, "$(" + packageVarOverride + ")");
+                versionFromOverrideProperty.Condition = "'$(" + packageVarOverride + ")' != ''";
 
                 // <SiliconStudioPackageParadoxVersionSaved>$(SiliconStudioPackageParadoxVersion)</SiliconStudioPackageParadoxVersionSaved>
                 commonPropertyGroup.AddProperty(packageVarSaved, "$(" + packageVar + ")");
+
+                // List all the correspondances: Major.minor -> latest installed explicit version
+
+                // Get all the related versions of the same package also installed, and order by Major.Minor
+                var allMajorVersions = LocalRepository.FindPackagesById(package.Id).GroupBy(p => p.Version.Version.Major, p => p);
+                foreach (var major in allMajorVersions)
+                {
+                    var majorVersion = major.Key;
+                    var minorPkg = major.GroupBy(p => p.Version.Version.Minor, p => p);
+                    foreach (var minor in minorPkg)
+                    {
+                        var latestPackage = minor.First();
+                        // <SiliconStudioPackageParadoxVersionRevision Condition="'$(SiliconStudioPackageParadoxVersion)' == '0.5'">0.5.0-alpha09</SiliconStudioPackageParadoxVersionRevision>
+                        var revisionVersionProperty = commonPropertyGroup.AddProperty(packageVarRevision, latestPackage.Version.ToString());
+                        revisionVersionProperty.Condition = "'$(" + packageVar + ")' == '" + majorVersion + "." + minor.Key + "'";
+                    }
+                }
+
+                // Replace the version Major.minor by the full revision name
+                // <SiliconStudioPackageParadoxVersion>$(SiliconStudioPackageParadoxVersionRevision)</SiliconStudioPackageParadoxVersion>
+                commonPropertyGroup.AddProperty(packageVar, "$(" + packageVarRevision + ")");
 
                 // <SiliconStudioPackageParadoxVersionInvalid Condition="'$(SiliconStudioPackageParadoxVersion)' == '' or !Exists('..\Packages\Paradox.$(SiliconStudioPackageParadoxVersion)\Targets\Paradox.targets')">true</SiliconStudioPackageParadoxVersionInvalid>
                 commonPropertyGroup.AddProperty(packageVarInvalid, "true").Condition = "'$(" + packageVar + ")' == '' or !" + importElement.Condition;
 
                 // <SiliconStudioPackageParadoxVersion Condition="'$(SiliconStudioPackageParadoxVersionInvalid)' == 'true'">1.0.0-alpha01</SiliconStudioPackageParadoxVersion>
-                var invalidProperty = commonPropertyGroup.AddProperty(packageVar, package.Version.ToString());
+                // Special case: if major version 1.0 still exists, use it as default (new projects should be created with props file)
+                var defaultPackageVersion = LocalRepository.FindPackagesById(package.Id).Select(x => x.Version).FirstOrDefault(x => x.Version.Major == 1 && x.Version.Minor == 0) ?? package.Version;
+                var invalidProperty = commonPropertyGroup.AddProperty(packageVar, defaultPackageVersion.ToString());
                 invalidProperty.Condition = "'$(" + packageVarInvalid + ")' == 'true'";
 
                 // Add in CheckPackages target
@@ -307,140 +391,6 @@ namespace SiliconStudio.Assets
             packages.Remove(packageToTrack);
         }
 
-        private void InstallVsix(IPackage package)
-        {
-            if (package == null)
-            {
-                return;
-            }
-
-            var packageDirectory = PathResolver.GetInstallPath(package);
-            InstallVsixFromPackageDirectory(packageDirectory);
-        }
-
-        internal void InstallVsixFromPackageDirectory(string packageDirectory)
-        {
-            var vsixInstallerPath = FindLatestVsixInstaller();
-            if (vsixInstallerPath == null)
-            {
-                return;
-            }
-
-            var files = Directory.EnumerateFiles(Path.Combine(packageDirectory, DefaultBinDirectory), "*.vsix", SearchOption.AllDirectories);
-            foreach (var file in files)
-            {
-                InstallVsix(vsixInstallerPath, file);
-            }
-        }
-
-        private void InstallVsix(string vsixInstallerPath, string pathToVsix)
-        {
-            // Uninstall previous vsix
-
-            var vsixId = GetVsixId(pathToVsix);
-            if (vsixId == Guid.Empty)
-            {
-                throw new InvalidOperationException(string.Format("Invalid VSIX package [{0}]", pathToVsix));
-            }
-
-            var vsixName = Path.GetFileNameWithoutExtension(pathToVsix);
-            
-            // Log just one message when installing the visual studio package
-            Logger.Log(MessageLevel.Info, "Installing Visual Studio Package [{0}]", vsixName);
-
-            RunVsixInstaller(vsixInstallerPath, "/q /uninstall:" + vsixId.ToString("D", CultureInfo.InvariantCulture));
-
-            // Install new vsix
-            RunVsixInstaller(vsixInstallerPath, "/q \"" + pathToVsix + "\"");
-        }
-
-        private static bool RunVsixInstaller(string pathToVsixInstaller, string arguments)
-        {
-            try
-            {
-                var process = Process.Start(pathToVsixInstaller, arguments);
-                if (process == null)
-                {
-                    return false;
-                }
-                process.WaitForExit();
-                return process.ExitCode == 0;
-            }
-            catch (Exception)
-            {
-            }
-
-            return false;
-        }
-
-        private static Guid GetVsixId(string pathToVsix)
-        {
-            if (pathToVsix == null) throw new ArgumentNullException("pathToVsix");
-
-            var id = Guid.Empty;
-            using (var stream = File.OpenRead(pathToVsix))
-            {
-                var package = System.IO.Packaging.Package.Open(stream);
-
-                var uri = System.IO.Packaging.PackUriHelper.CreatePartUri(new Uri("extension.vsixmanifest", UriKind.Relative));
-                var manifest = package.GetPart(uri);
-
-                var doc = XElement.Load(manifest.GetStream());
-                var identity = doc.Descendants().FirstOrDefault(element => element.Name.LocalName == "Identity");
-                if (identity != null)
-                {
-                    var idAttribute = identity.Attribute("Id");
-                    if (idAttribute != null)
-                    {
-                        Guid.TryParse(idAttribute.Value, out id);
-                    }
-                }
-            }
-
-            return id;
-        }
-
-        private static string FindLatestVsixInstaller()
-        {
-            var key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
-            var subKey = key.OpenSubKey(@"SOFTWARE\Microsoft\VisualStudio\");
-            if (subKey == null)
-            {
-                return null;
-            }
-
-            var versions = new Dictionary<Version, string>();
-            foreach (var subKeyName in subKey.GetSubKeyNames())
-            {
-                Version version;
-                if (Version.TryParse(subKeyName, out version))
-                {
-                    versions.Add(version, subKeyName);
-                }
-            }
-
-            foreach (var version in versions.Keys.OrderByDescending(v => v))
-            {
-                var subKeyName = versions[version];
-                
-                var vsKey = subKey.OpenSubKey(subKeyName);
-
-                var installDirValue = vsKey.GetValue("InstallDir");
-                if (installDirValue != null)
-                {
-                    var installDir = installDirValue.ToString();
-                    var vsixInstallerPath = Path.Combine(installDir, "VSIXInstaller.exe");
-                    if (File.Exists(vsixInstallerPath))
-                    {
-                        return vsixInstallerPath;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-
         public static bool IsSourceUnavailableException(Exception ex)
         {
             return (((ex is WebException) ||
@@ -448,45 +398,11 @@ namespace SiliconStudio.Assets
                 (ex.InnerException is InvalidOperationException)));
         }
 
-        private class GlobalMutexLocker : IDisposable
-        {
-            private Mutex mutex;
-            private readonly bool owned;
-
-            public GlobalMutexLocker(string name)
-            {
-                name = name.Replace(":", "_");
-                name = name.Replace("/", "_");
-                name = name.Replace("\\", "_");
-                mutex = new Mutex(true, name, out owned);
-                if (!owned)
-                {
-                    owned = mutex.WaitOne();
-                }
-            }
-
-            public void Dispose()
-            {
-                if (owned)
-                {
-                    mutex.ReleaseMutex();
-                }
-                mutex = null;
-            }
-        }
-
         public static bool IsStoreDirectory(string directory)
         {
             if (directory == null) throw new ArgumentNullException("directory");
             var storeConfig = Path.Combine(directory, DefaultConfig);
-            return File.Exists(storeConfig) && HasPackages(directory);
-        }
-
-        private static bool HasPackages(string directory)
-        {
-            if (directory == null) throw new ArgumentNullException("directory");
-            var commonTargets = Path.Combine(directory, DefaultGamePackagesDirectory);
-            return Directory.Exists(commonTargets);
+            return File.Exists(storeConfig);
         }
     }
 }

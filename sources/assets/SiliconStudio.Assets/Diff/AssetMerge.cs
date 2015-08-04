@@ -7,6 +7,7 @@ using System.Linq;
 using Microsoft.Win32;
 using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets.Diff
 {
@@ -116,16 +117,27 @@ namespace SiliconStudio.Assets.Diff
                         continue;
                     }
 
-                    // As we are merging into asset1, the only relevant changes can only come from asset2
-                    if (changeType != Diff3ChangeType.MergeFromAsset2)
+                    object dataInstance;
+                    bool replaceValue;
+
+                    switch (changeType)
                     {
-                        continue;
+                        case Diff3ChangeType.MergeFromAsset2:
+                            // As we are merging into asset1, the only relevant changes can only come from asset2
+                            dataInstance = diff3Node.Asset2Node != null ? diff3Node.Asset2Node.Instance : null;
+                            replaceValue = true;
+                            break;
+                        case Diff3ChangeType.Children:
+                            MergeContainer(diff3Node, out dataInstance);
+                            replaceValue = dataInstance != null;
+                            break;
+                        default:
+                            continue;
                     }
 
-                    var dataInstance = diff3Node.Asset2Node != null ? diff3Node.Asset2Node.Instance : null;
-
                     // Sets the value on the node
-                    diff3Node.ReplaceValue(dataInstance, node => node.Asset1Node, diff3Node.Asset2Node == null);
+                    if (replaceValue)
+                        diff3Node.ReplaceValue(dataInstance, node => node.Asset1Node);
                 }
                 catch (Exception ex)
                 {
@@ -134,7 +146,76 @@ namespace SiliconStudio.Assets.Diff
                 }
             }
 
+            if (!previewOnly)
+            {
+                foreach (var node in allDiffs.Asset1Node.Children(node => true))
+                {
+                    if (node.Instance is IDiffProxy)
+                    {
+                        ((IDiffProxy)node.Instance).ApplyChanges();
+                    }
+                }
+            }
+
             return result;
+        }
+
+        private static void MergeContainer(Diff3Node diff3Node, out object dataInstanceOut)
+        {
+            dataInstanceOut = null;
+
+            // We don't have a valid parent (probably removed), so skip this node
+            if (diff3Node.Parent != null && diff3Node.Parent.Asset1Node.Instance == null)
+                return;
+
+            if (diff3Node.Asset1Node == null)
+            {
+                diff3Node.Asset1Node = (diff3Node.Asset2Node ?? diff3Node.BaseNode).CreateWithEmptyInstance();
+                if (diff3Node.Parent != null)
+                    diff3Node.Asset1Node.Parent = diff3Node.Parent.Asset1Node;
+            }
+
+            object dataInstance = diff3Node.Asset1Node.Instance;
+
+            // If a node has children, since DiffCollection/DiffDictionary takes null as empty arrays,
+            // we should now create this array for it to be properly merged
+            if (dataInstance == null)
+                dataInstanceOut = dataInstance = Activator.CreateInstance(diff3Node.InstanceType);
+
+            // If it's a collection, clear it and reconstruct it from DiffCollection result (stored in Diff3Node.Items)
+            // TODO: Various optimizations to avoid removing and reinserting items that were already here before (would need to diff Asset1 and Diff3Node...)
+            var collectionDescriptor = diff3Node.Asset1Node.InstanceDescriptor as CollectionDescriptor;
+            if (collectionDescriptor != null && diff3Node.Type == Diff3NodeType.Collection)
+            {
+                collectionDescriptor.Clear(dataInstance);
+                if (diff3Node.Items != null)
+                {
+                    foreach (var item in diff3Node.Items)
+                    {
+                        object itemInstance;
+                        switch (item.ChangeType)
+                        {
+                            case Diff3ChangeType.Children:
+                            case Diff3ChangeType.Conflict:
+                            case Diff3ChangeType.ConflictType:
+                                // Use any valid object, it will be replaced later
+                                itemInstance = SafeNodeInstance(item.Asset1Node) ?? SafeNodeInstance(item.Asset2Node) ?? SafeNodeInstance(item.BaseNode);
+                                break;
+                            case Diff3ChangeType.None:
+                            case Diff3ChangeType.MergeFromAsset1:
+                            case Diff3ChangeType.MergeFromAsset1And2:
+                                itemInstance = item.Asset1Node.Instance;
+                                break;
+                            case Diff3ChangeType.MergeFromAsset2:
+                                itemInstance = item.Asset2Node.Instance;
+                                break;
+                            default:
+                                throw new InvalidOperationException();
+                        }
+                        collectionDescriptor.Add(dataInstance, itemInstance);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -246,6 +327,11 @@ namespace SiliconStudio.Assets.Diff
             }
 
             return result;
+        }
+
+        private static object SafeNodeInstance(DataVisitNode node)
+        {
+            return node != null ? node.Instance : null;
         }
     }
 }

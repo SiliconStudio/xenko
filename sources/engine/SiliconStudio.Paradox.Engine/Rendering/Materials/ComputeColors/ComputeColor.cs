@@ -1,0 +1,88 @@
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.ComponentModel;
+
+using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Shaders;
+
+namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
+{
+    [DataContract("ComputeColor")]
+    [Display("Color")]
+    public class ComputeColor : ComputeValueBase<Color4>, IComputeColor
+    {
+        /// <summary>
+        /// Gets or sets a value indicating whether to convert the texture in pre-multiplied alpha.
+        /// </summary>
+        /// <value><c>true</c> to convert the texture in pre-multiplied alpha.; otherwise, <c>false</c>.</value>
+        /// <userdoc>
+        /// If checked, The color values will be pre-multiplied by the alpha value.
+        /// </userdoc>
+        [DataMember(10)]
+        [DefaultValue(true)]
+        public bool PremultiplyAlpha { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ComputeColor"/> class.
+        /// </summary>
+        public ComputeColor()
+            : this(Color4.Black)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ComputeColor"/> class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public ComputeColor(Color4 value)
+            : base(value)
+        {
+            PremultiplyAlpha = true;
+        }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return "Color";
+        }
+
+        public override ShaderSource GenerateShaderSource(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys)
+        {
+            var key = context.GetParameterKey(Key ?? baseKeys.ValueBaseKey ?? MaterialKeys.GenericValueColor4);
+
+            // Store the color in Linear space
+            var color = Value.ToLinear();
+            if (PremultiplyAlpha)
+                color = Color4.PremultiplyAlpha(color);
+            
+            if (key is ParameterKey<Color4>)
+            {
+                context.Parameters.Set((ParameterKey<Color4>)key, color);
+            }
+            else if (key is ParameterKey<Vector4>)
+            {
+                context.Parameters.Set((ParameterKey<Vector4>)key, color);
+            }
+            else if (key is ParameterKey<Color3>)
+            {
+                
+                context.Parameters.Set((ParameterKey<Color3>)key, (Color3)color);
+            }
+            else if (key is ParameterKey<Vector3>)
+            {
+
+                context.Parameters.Set((ParameterKey<Vector3>)key, (Vector3)color);
+            }
+            else
+            {
+                context.Log.Error("Unexpected ParameterKey [{0}] for type [{0}]. Expecting a [Vector3/Color3] or [Vector4/Color4]", key, key.PropertyType);
+            }
+            UsedKey = key;
+
+            return new ShaderClassSource("ComputeColorConstantColorLink", key);
+            // return new ShaderClassSource("ComputeColorFixed", MaterialUtility.GetAsShaderString(Value));
+        }
+    }
+}

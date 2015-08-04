@@ -10,8 +10,8 @@ namespace SiliconStudio.Paradox.Graphics
     /// <summary>
     /// Describes a custom vertex format structure that contains position as a Vector2. 
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VertexPosition2 : IEquatable<VertexPosition2>
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    public struct VertexPosition2 : IEquatable<VertexPosition2>, IVertex
     {
         /// <summary>
         /// Initializes a new <see cref="VertexPositionTexture"/> instance.
@@ -70,6 +70,15 @@ namespace SiliconStudio.Paradox.Graphics
         public override string ToString()
         {
             return string.Format("Position: {0}", Position);
+        }
+
+        public VertexDeclaration GetLayout()
+        {
+            return Layout;
+        }
+
+        public void FlipWinding()
+        {
         }
     }
 }

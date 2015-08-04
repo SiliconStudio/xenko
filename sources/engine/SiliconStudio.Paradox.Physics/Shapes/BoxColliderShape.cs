@@ -1,7 +1,9 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -10,27 +12,20 @@ namespace SiliconStudio.Paradox.Physics
         /// <summary>
         /// Initializes a new instance of the <see cref="BoxColliderShape"/> class.
         /// </summary>
-        /// <param name="halfExtents">The half extents.</param>
-        public BoxColliderShape(Vector3 halfExtents)
+        /// <param name="size">The size of the cube</param>
+        public BoxColliderShape(Vector3 size)
         {
             Type = ColliderShapeTypes.Box;
             Is2D = false;
 
-            HalfExtents = halfExtents;
+            InternalShape = new BulletSharp.BoxShape(size/2);
 
-            InternalShape = new BulletSharp.BoxShape(halfExtents);
-
-            if (!PhysicsEngine.Singleton.CreateDebugPrimitives) return;
-            DebugPrimitive = GeometricPrimitive.Cube.New(PhysicsEngine.Singleton.DebugGraphicsDevice);
-            DebugPrimitiveScaling = Matrix.Scaling((halfExtents * 2.0f) * 1.01f);
+            DebugPrimitiveMatrix = Matrix.Scaling(size * 1.01f);
         }
 
-        /// <summary>
-        /// Gets the half extents.
-        /// </summary>
-        /// <value>
-        /// The half extents.
-        /// </value>
-        public Vector3 HalfExtents { get; private set; }
+        public override GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
+        {
+            return GeometricPrimitive.Cube.New(device);
+        }
     }
 }

@@ -157,9 +157,44 @@ namespace SiliconStudio.Core.VisualStudio
         /// <param name="solutionPath">The solution path.</param>
         public void SaveAs(string solutionPath)
         {
-            using (var writer = new SolutionWriter(solutionPath))
+            // If the solution file already exists, we want to write it only if it has actually changed, to prevent Visual Studio to reload the solution
+            if (File.Exists(solutionPath))
             {
+                // Read the current version of the solution file.
+                string currentVersion;
+                StreamReader reader;
+                using (reader = new StreamReader(solutionPath))
+                {
+                    currentVersion = reader.ReadToEnd();
+                }
+                var memoryStream = new MemoryStream();
+
+                // Write the new version of the solution file in memory
+                var writer = new SolutionWriter(memoryStream);
                 writer.WriteSolutionFile(this);
+                writer.Flush();
+                memoryStream.Position = 0;
+
+                // Retrieve the new version of the solution file in a string
+                reader = new StreamReader(memoryStream);
+                var newVersion = reader.ReadToEnd();
+                memoryStream.Close();
+
+                // If the versions are different, actually write the new version on disk
+                if (newVersion != currentVersion)
+                {
+                    using (var streamWriter = new StreamWriter(solutionPath))
+                    {
+                        streamWriter.Write(newVersion);
+                    }
+                }
+            }
+            else
+            {
+                using (var writer = new SolutionWriter(solutionPath))
+                {
+                    writer.WriteSolutionFile(this);
+                }
             }
         }
 

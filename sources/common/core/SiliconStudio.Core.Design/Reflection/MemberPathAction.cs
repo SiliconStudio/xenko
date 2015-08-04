@@ -28,6 +28,11 @@ namespace SiliconStudio.Core.Reflection
         /// <summary>
         /// Removes a value from the collection
         /// </summary>
-        CollectionRemove
+        CollectionRemove,
+
+        /// <summary>
+        /// Clears the value.
+        /// </summary>
+        ValueClear,
     }
 }

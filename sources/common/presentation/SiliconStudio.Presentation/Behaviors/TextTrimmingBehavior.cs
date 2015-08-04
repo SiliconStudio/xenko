@@ -14,14 +14,7 @@ using SiliconStudio.Presentation.Controls;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
-    public enum TrimPosition
-    {
-        Start,
-        Middle,
-        End
-    }
-
-    [Obsolete]
+    [Obsolete("This behavior is obsolete. Use the TextBox control instead.")]
     public class TextTrimmingBehavior : DeferredBehaviorBase<TextBlock>
     {
         private FrameworkElement parent;

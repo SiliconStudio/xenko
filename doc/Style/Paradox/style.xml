@@ -31,6 +31,7 @@
   <description>Paradox Style</description>
   
   <param name="FileExt">.htm</param>
+  <param name="RootFileExt">.aspx</param>
   <param name="Copyright">©SiliconStudio Corp., all rights reserved.</param>
 
   <!-- Inherit from standard style -->

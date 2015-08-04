@@ -12,6 +12,7 @@ namespace SiliconStudio.Paradox.Shaders
     /// <summary>
     /// An array of <see cref="ShaderSource"/> used only in shader mixin compositions.
     /// </summary>
+    [DataContract("ShaderArraySource")]
     public sealed class ShaderArraySource : ShaderSource, IEnumerable<ShaderSource>, IEquatable<ShaderArraySource>
     {
         /// <summary>

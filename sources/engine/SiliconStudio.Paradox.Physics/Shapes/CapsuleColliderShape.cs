@@ -1,93 +1,65 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
+using BulletSharp;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
+using System;
+
+using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
 
 namespace SiliconStudio.Paradox.Physics
 {
     public class CapsuleColliderShape : ColliderShape
     {
+        private float capsuleLength;
+        private float capsuleRadius;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CapsuleColliderShape"/> class.
         /// </summary>
         /// <param name="is2D">if set to <c>true</c> [is2 d].</param>
         /// <param name="radius">The radius.</param>
-        /// <param name="height">The height.</param>
-        /// <param name="upAxis">Up axis.</param>
-        public CapsuleColliderShape(bool is2D, float radius, float height, Vector3 upAxis)
+        /// <param name="length">The length of the capsule.</param>
+        /// <param name="orientation">Up axis.</param>
+        public CapsuleColliderShape(bool is2D, float radius, float length, ShapeOrientation orientation)
         {
             Type = ColliderShapeTypes.Capsule;
             Is2D = is2D;
 
-            Radius = radius;
-            Height = height;
-            UpAxis = upAxis;
-
-            BulletSharp.CapsuleShape shape;
+            capsuleLength = length;
+            capsuleRadius = radius;
 
             Matrix rotation;
+            CapsuleShape shape;
 
-            //http://en.wikipedia.org/wiki/Capsule_(geometry)
-            var h = radius * 2 + height;
-
-            if (upAxis == Vector3.UnitX)
+            switch (orientation)
             {
-                shape = new BulletSharp.CapsuleShapeX(radius, height);
-
-                rotation = Matrix.RotationZ((float)Math.PI / 2.0f);
-            }
-            else if (upAxis == Vector3.UnitZ)
-            {
-                shape = new BulletSharp.CapsuleShapeZ(radius, height);
-
-                rotation = Matrix.RotationX((float)Math.PI / 2.0f);
-            }
-            else //default to Y
-            {
-                UpAxis = Vector3.UnitY;
-                shape = new BulletSharp.CapsuleShape(radius, height);
-
-                rotation = Matrix.Identity;
+                case ShapeOrientation.UpX:
+                    shape = new CapsuleShapeZ(radius, length);
+                    rotation = Matrix.RotationX((float)Math.PI / 2.0f);
+                    break;
+                case ShapeOrientation.UpY:
+                    shape = new CapsuleShape(radius, length);
+                    rotation = Matrix.Identity;
+                    break;
+                case ShapeOrientation.UpZ:
+                    shape = new CapsuleShapeX(radius, length);
+                    rotation = Matrix.RotationZ((float)Math.PI / 2.0f);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("orientation");
             }
 
-            if (Is2D)
-            {
-                InternalShape = new BulletSharp.Convex2DShape(shape) { LocalScaling = new Vector3(1, 1, 0) };
-            }
-            else
-            {
-                InternalShape = shape;
-            }
+            InternalShape = Is2D ? (CollisionShape)new Convex2DShape(shape) { LocalScaling = new Vector3(1, 1, 0) }: shape;
 
-            if (!PhysicsEngine.Singleton.CreateDebugPrimitives) return;
-            DebugPrimitive = GeometricPrimitive.Capsule.New(PhysicsEngine.Singleton.DebugGraphicsDevice);
-            DebugPrimitiveScaling = Matrix.Scaling(new Vector3(radius * 2, h / 2, radius * 2) * 1.01f) * rotation;
+            DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(1.01f)) * rotation;
         }
 
-        /// <summary>
-        /// Gets the radius.
-        /// </summary>
-        /// <value>
-        /// The radius.
-        /// </value>
-        public float Radius { get; private set; }
-
-        /// <summary>
-        /// Gets the height.
-        /// </summary>
-        /// <value>
-        /// The height.
-        /// </value>
-        public float Height { get; private set; }
-
-        /// <summary>
-        /// Gets up axis.
-        /// </summary>
-        /// <value>
-        /// Up axis.
-        /// </value>
-        public Vector3 UpAxis { get; private set; }
+        public override GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
+        {
+            return GeometricPrimitive.Capsule.New(device, capsuleLength, capsuleRadius);
+        }
     }
 }

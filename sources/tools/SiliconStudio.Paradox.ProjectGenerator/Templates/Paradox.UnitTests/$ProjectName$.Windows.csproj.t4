@@ -19,7 +19,6 @@
     <SiliconStudioBuildProfile><#= Properties.CurrentPlatformName #></SiliconStudioBuildProfile>
     <SiliconStudioPackageGuid>{<#= Properties.Package.Id  #>}</SiliconStudioPackageGuid>
     <SiliconStudioParadoxDir>$(MSBuildThisFileDirectory)<#= Properties.ParadoxSdkRelativeDir #></SiliconStudioParadoxDir>
-    <SiliconStudioParadoxGraphicsApi Condition="'$(SiliconStudioParadoxGraphicsApi)' == ''">Direct3D11</SiliconStudioParadoxGraphicsApi>
     <!-- Force msbuild to check to rebuild this assembly instead of letting VS IDE guess -->
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

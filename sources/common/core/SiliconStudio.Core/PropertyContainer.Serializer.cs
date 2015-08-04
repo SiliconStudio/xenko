@@ -14,14 +14,7 @@ namespace SiliconStudio.Core
         {
             public override void Serialize(ref PropertyContainer propertyCollection, ArchiveMode mode, SerializationStream stream)
             {
-                if (mode == ArchiveMode.Serialize)
-                {
-                    stream.Write(propertyCollection.properties);
-                }
-                else if (mode == ArchiveMode.Deserialize)
-                {
-                    propertyCollection.properties = stream.Read<Dictionary<PropertyKey, object>>();
-                }
+                stream.SerializeExtended(ref propertyCollection.properties, mode);
             }
         }
     }

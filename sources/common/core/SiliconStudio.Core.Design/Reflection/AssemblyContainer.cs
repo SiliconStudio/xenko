@@ -10,9 +10,21 @@ using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Core.Reflection
 {
+    public class LoadedAssembly
+    {
+        public string Path { get; private set; }
+        public Assembly Assembly { get; private set; }
+
+        public LoadedAssembly(string path, Assembly assembly)
+        {
+            Path = path;
+            Assembly = assembly;
+        }
+    }
     public class AssemblyContainer
     {
-        private readonly Dictionary<string, Assembly> loadedAssemblies = new Dictionary<string, Assembly>(StringComparer.InvariantCultureIgnoreCase);
+        private readonly List<LoadedAssembly> loadedAssemblies = new List<LoadedAssembly>();
+        private readonly Dictionary<string, LoadedAssembly> loadedAssembliesByName = new Dictionary<string, LoadedAssembly>(StringComparer.InvariantCultureIgnoreCase);
         private static readonly string[] KnownAssemblyExtensions = { ".dll", ".exe" };
         [ThreadStatic]
         private static AssemblyContainer loadingInstance;
@@ -33,8 +45,21 @@ namespace SiliconStudio.Core.Reflection
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
         }
 
-        public AssemblyContainer()
+        /// <summary>
+        /// Gets a copy of the list of loaded assemblies.
+        /// </summary>
+        /// <value>
+        /// The loaded assemblies.
+        /// </value>
+        public IList<LoadedAssembly> LoadedAssemblies
         {
+            get
+            {
+                lock (loadedAssemblies)
+                {
+                    return loadedAssemblies.ToList();
+                }
+            }
         }
 
         public Assembly LoadAssemblyFromPath(string assemblyFullPath, ILogger outputLog = null, List<string> lookupDirectoryList = null)
@@ -77,6 +102,20 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
+        public bool UnloadAssembly(Assembly assembly)
+        {
+            lock (loadedAssemblies)
+            {
+                var loadedAssembly = loadedAssemblies.FirstOrDefault(x => x.Assembly == assembly);
+                if (loadedAssembly == null)
+                    return false;
+
+                loadedAssemblies.Remove(loadedAssembly);
+                loadedAssembliesByName.Remove(loadedAssembly.Path);
+                return true;
+            }
+        }
+
         private Assembly LoadAssemblyByName(string assemblyName)
         {
             if (assemblyName == null) throw new ArgumentNullException("assemblyName");
@@ -98,56 +137,40 @@ namespace SiliconStudio.Core.Reflection
             return null;
         }
 
-        private string CopySafeShadow(string path)
-        {
-            for(int i = 1; i < 20; i++)
-            {
-                var shadowName = Path.ChangeExtension(path, "shadow" + i);
-                try
-                {
-                    File.Copy(path, shadowName, true);
-                    return shadowName;
-                }
-                catch (Exception)
-                {
-                }
-            }
-
-            return null;
-        }
-
         private Assembly LoadAssemblyFromPathInternal(string assemblyFullPath)
         {
             if (assemblyFullPath == null) throw new ArgumentNullException("assemblyFullPath");
 
-            string safeShadowPath = null;
+            assemblyFullPath = Path.GetFullPath(assemblyFullPath);
+
             try
             {
-                assemblyFullPath = Path.GetFullPath(assemblyFullPath);
-
                 lock (loadedAssemblies)
                 {
-                    Assembly assembly;
-                    if (loadedAssemblies.TryGetValue(assemblyFullPath, out assembly))
+                    LoadedAssembly loadedAssembly;
+                    if (loadedAssembliesByName.TryGetValue(assemblyFullPath, out loadedAssembly))
                     {
-                        return assembly;
+                        return loadedAssembly.Assembly;
                     }
 
                     if (!File.Exists(assemblyFullPath))
                         return null;
 
-                    // Create a shadow copy of the assembly to load
-                    safeShadowPath = CopySafeShadow(assemblyFullPath);
-                    if (safeShadowPath == null)
-                    {
-                        log.Error("Cannot create a shadow copy for assembly [{0}]", assemblyFullPath);
-                        return null;
-                    }
+                    // Find pdb (if it exists)
+                    var pdbFullPath = Path.ChangeExtension(assemblyFullPath, ".pdb");
+                    if (!File.Exists(pdbFullPath))
+                        pdbFullPath = null;
+
+                    // PreLoad the assembly into memory without locking it
+                    var assemblyBytes = File.ReadAllBytes(assemblyFullPath);
+                    var pdbBytes = pdbFullPath != null ? File.ReadAllBytes(pdbFullPath) : null;
 
                     // Load the assembly into the current AppDomain
                     // TODO: Is using AppDomain would provide more opportunities for unloading?
-                    assembly = Assembly.LoadFile(safeShadowPath);
-                    loadedAssemblies.Add(assemblyFullPath, assembly);
+                    var assembly = pdbBytes != null ? Assembly.Load(assemblyBytes, pdbBytes) : Assembly.Load(assemblyBytes);
+                    loadedAssembly = new LoadedAssembly(assemblyFullPath, assembly);
+                    loadedAssemblies.Add(loadedAssembly);
+                    loadedAssembliesByName.Add(assemblyFullPath, loadedAssembly);
 
                     // Force assembly resolve with proper name
                     // (doing it here, because if done later, loadingInstance will be set to null and it won't work)
@@ -172,7 +195,7 @@ namespace SiliconStudio.Core.Reflection
             }
             catch (Exception exception)
             {
-                log.Error("Error while loading assembly reference [{0}]", exception, safeShadowPath ?? assemblyFullPath);
+                log.Error("Error while loading assembly reference [{0}]", exception, assemblyFullPath);
                 var loaderException = exception as ReflectionTypeLoadException;
                 if (loaderException != null)
                 {

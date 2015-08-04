@@ -1,4 +1,4 @@
-#region Header Licence
+﻿#region Header Licence
 //  ---------------------------------------------------------------------
 // 
 //  Copyright (c) 2009 Alexandre Mutel and Microsoft Corporation.  
@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Drawing;
@@ -31,7 +32,10 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.TextManager.Interop;
 using SiliconStudio.Paradox.VisualStudio.Classifiers;
+using SiliconStudio.Paradox.VisualStudio.Commands;
+
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+using VsShell = Microsoft.VisualStudio.Shell.VsShellUtilities;
 
 namespace NShader
 {
@@ -40,16 +44,21 @@ namespace NShader
         private VisualStudioThemeEngine themeEngine;
         private NShaderColorableItem[] m_colorableItems;
 
+        private readonly ErrorListProvider errorListProvider;
+
         private LanguagePreferences m_preferences;
+        private int lastChangeCount = -1;
+        private readonly Stopwatch clock;
 
-        public override void Initialize()
+        private const int TriggerParsingDelayInMs = 1000; // Parse after 1s of inactivity and a change in source code
+
+        public NShaderLanguageService(ErrorListProvider errorListProvider)
         {
-            base.Initialize();
-
-            EnsureInitialized();
+            this.errorListProvider = errorListProvider;
+            clock = new Stopwatch();
         }
 
-        private void EnsureInitialized()
+        public void InitializeColors()
         {
             // Check if already initialized
             if (m_colorableItems != null)
@@ -80,6 +89,11 @@ namespace NShader
             themeEngine.Dispose();
 
             base.Dispose();
+        }
+
+        public override ViewFilter CreateViewFilter(CodeWindowManager mgr, IVsTextView newView)
+        {
+            return new NShaderViewFilter(this, mgr, newView);
         }
 
         void themeEngine_OnThemeChanged(object sender, EventArgs e)
@@ -155,8 +169,6 @@ namespace NShader
 
         public override Colorizer GetColorizer(IVsTextLines buffer)
         {
-            EnsureInitialized();
-
             // Clear font cache
             // http://social.msdn.microsoft.com/Forums/office/en-US/54064c52-727d-4015-af70-c72e44d116a7/vs2012-fontandcolors-text-editor-category-for-language-service-colors?forum=vsx
             IVsFontAndColorStorage storage;
@@ -216,6 +228,65 @@ namespace NShader
             return base.GetColorizer(buffer);
         }
 
+        public override void OnIdle(bool periodic)
+        {
+            var source = GetCurrentNShaderSource();
+            if (source != null)
+            {
+                if (lastChangeCount != source.ChangeCount)
+                {
+                    clock.Restart();
+                    lastChangeCount = source.ChangeCount;
+                }
+
+                if (clock.IsRunning)
+                {
+                    if (clock.ElapsedMilliseconds > TriggerParsingDelayInMs)
+                    {
+                        clock.Stop();
+                        clock.Reset();
+
+                        var text = source.GetText();
+                        var sourcePath = source.GetFilePath();
+
+                        Trace.WriteLine(string.Format("Parsing Change: {0} Time: {1}", source.ChangeCount, DateTime.Now));
+                        var thread = new System.Threading.Thread(
+                            () =>
+                            {
+                                try
+                                {
+                                    var result = ParadoxCommandsProxy.GetProxy().AnalyzeAndGoToDefinition(text, new RawSourceSpan(sourcePath, 1, 1));
+                                    OutputAnalysisMessages(result, source);
+                                }
+                                catch (Exception ex)
+                                {
+                                    lock (errorListProvider)
+                                    {
+                                        errorListProvider.Tasks.Add(new ErrorTask(ex.InnerException ?? ex));
+                                    }
+                                }
+                            });
+                        thread.Start();
+                    }
+                }
+            }
+
+            base.OnIdle(periodic);
+        }
+
+        private NShaderSource GetCurrentNShaderSource()
+        {
+            IVsTextView vsTextView = this.LastActiveTextView;
+            if (vsTextView == null)
+                return null;
+            return GetNShaderSource(vsTextView);
+        }
+
+        private NShaderSource GetNShaderSource(IVsTextView textView)
+        {
+            return this.GetSource(textView) as NShaderSource;
+        }
+
         public override AuthoringScope ParseSource(ParseRequest req)
         {
             // req.FileName
@@ -231,9 +302,165 @@ namespace NShader
         {
             get { return "Paradox Shader Language"; }
         }
-        
+
+        public void OutputAnalysisAndGotoLocation(RawShaderNavigationResult result, IVsTextView textView)
+        {
+            if (result == null) throw new ArgumentNullException("result");
+            if (textView == null) throw new ArgumentNullException("textView");
+            var source = GetNShaderSource(textView);
+
+            OutputAnalysisMessages(result, source);
+            GoToLocation(result.DefinitionSpan, null, false);
+        }
+
+        private void OutputAnalysisMessages(RawShaderNavigationResult result, NShaderSource source = null)
+        {
+            lock (errorListProvider)
+            {
+                try
+                {
+                    var taskProvider = source != null ? source.GetTaskProvider() : null;
+                    if (taskProvider != null)
+                    {
+                        taskProvider.Tasks.Clear();
+                    }
+
+                    errorListProvider.Tasks.Clear(); // clear previously created
+                    foreach (var message in result.Messages)
+                    {
+                        var errorCategory = TaskErrorCategory.Message;
+                        if (message.Type == "warning")
+                        {
+                            errorCategory = TaskErrorCategory.Warning;
+                        }
+                        else if (message.Type == "error")
+                        {
+                            errorCategory = TaskErrorCategory.Error;
+                        }
+
+                        // Make sure that we won't pass nay null to VS as it will crash it
+                        var filePath = message.Span.File ?? string.Empty;
+                        var messageText = message.Text ?? string.Empty;
+
+
+                        if (taskProvider != null && errorCategory == TaskErrorCategory.Error)
+                        {
+                            var task = source.CreateErrorTaskItem(ConvertToTextSpan(message.Span), filePath, messageText, TaskPriority.High, TaskCategory.CodeSense, MARKERTYPE.MARKER_CODESENSE_ERROR, TaskErrorCategory.Error);
+                            taskProvider.Tasks.Add(task);
+                        }
+                        else
+                        {
+                            var newError = new ErrorTask()
+                            {
+                                ErrorCategory = errorCategory,
+                                Category = TaskCategory.BuildCompile,
+                                Text = messageText,
+                                Document = filePath,
+                                Line = Math.Max(0, message.Span.Line - 1),
+                                Column = Math.Max(0, message.Span.Column - 1),
+                                // HierarchyItem = hierarchyItem // TODO Add hierarchy the file is associated to
+                            };
+
+                            // Install our navigate to source 
+                            newError.Navigate += NavigateToSourceError;
+                            errorListProvider.Tasks.Add(newError); // add item
+                        }
+                    }
+
+                    if (result.Messages.Count > 0)
+                    {
+                        errorListProvider.Show(); // make sure it is visible 
+                    }
+                    else
+                    {
+                        errorListProvider.Refresh();
+                    }
+
+                    if (taskProvider != null)
+                    {
+                        taskProvider.Refresh();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    errorListProvider.Tasks.Add(new ErrorTask(ex.InnerException ?? ex));
+                }
+            }
+        }
+
+        private static TextSpan ConvertToTextSpan(RawSourceSpan span)
+        {
+            return new TextSpan()
+            {
+                iStartIndex = Math.Max(0, span.Column-1),
+                iStartLine = Math.Max(0, span.Line-1),
+                iEndIndex = Math.Max(0, span.EndColumn-1),
+                iEndLine = Math.Max(0, span.EndLine-1)
+            };
+        }
+
+        private void NavigateToSourceError(object sender, EventArgs e)
+        {
+            var task = sender as Task;
+            if (task != null)
+            {
+                GoToLocation(new RawSourceSpan(task.Document, task.Line + 1, task.Column + 1), null, false);
+            }
+        }
+
+        private void GoToLocation(RawSourceSpan loc, string caption, bool asReadonly)
+        {
+            // Code taken from Nemerle https://github.com/rsdn/nemerle/blob/master/snippets/VS2010/Nemerle.VisualStudio/LanguageService/NemerleLanguageService.cs#L565
+            // TODO: Add licensing
+            if (loc == null || loc.File == null)
+                return;
+
+            // Opens the document
+            var span = new TextSpan { iStartLine = loc.Line - 1, iStartIndex = loc.Column - 1, iEndLine = loc.EndLine - 1, iEndIndex = loc.EndColumn - 1 };
+            uint itemID;
+            IVsUIHierarchy hierarchy;
+            IVsWindowFrame docFrame;
+            IVsTextView textView;
+            VsShell.OpenDocument(Site, loc.File, VSConstants.LOGVIEWID_Code, out hierarchy, out itemID, out docFrame, out textView);
+
+            // If we need readonly, set the buffer to read-only
+            if (asReadonly)
+            {
+                IVsTextLines buffer;
+                ErrorHandler.ThrowOnFailure(textView.GetBuffer(out buffer));
+                var stream = (IVsTextStream)buffer;
+                stream.SetStateFlags((uint)BUFFERSTATEFLAGS.BSF_USER_READONLY);
+            }
+
+            // Need to use a different caption?
+            if (caption != null)
+            {
+                ErrorHandler.ThrowOnFailure(docFrame.SetProperty((int)__VSFPROPID.VSFPROPID_OwnerCaption, caption));
+            }
+
+            // Show the frame
+            ErrorHandler.ThrowOnFailure(docFrame.Show());
+
+            // Go to the specific location
+            if (textView != null && loc.Line != 0)
+            {
+                try
+                {
+                    ErrorHandler.ThrowOnFailure(textView.SetCaretPos(span.iStartLine, span.iStartIndex));
+                    TextSpanHelper.MakePositive(ref span);
+                    //ErrorHandler.ThrowOnFailure(textView.SetSelection(span.iStartLine, span.iStartIndex, span.iEndLine, span.iEndIndex));
+                    ErrorHandler.ThrowOnFailure(textView.EnsureSpanVisible(span));
+                }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine(ex.Message);
+                }
+            }
+        }
+
         internal class TestAuthoringScope : AuthoringScope
         {
+
             public override string GetDataTipText(int line, int col, out TextSpan span)
             {
                 span = new TextSpan();

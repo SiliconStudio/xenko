@@ -1,10 +1,10 @@
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Xaml.Markup;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     [ContentProperty("Effect")]
     public class PostEffectMeshPlugin : PostEffectPlugin, IRenderPassPluginSource, IRenderPassPluginTarget
@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Effects
             get
             {
                 if (renderSource == null)
-                    renderSource = Texture2D.New(GraphicsDevice, (int)(RenderTarget.Width / ResizeFactor), (int)(RenderTarget.Height / ResizeFactor), PixelFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+                    renderSource = Texture.New2D(GraphicsDevice, (int)(RenderTarget.Width / ResizeFactor), (int)(RenderTarget.Height / ResizeFactor), PixelFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
                 return renderSource;
             }
             set { renderSource = value; }

@@ -12,8 +12,7 @@ namespace SiliconStudio.Presentation.Commands
     /// </summary>
     public abstract class CancellableCommand : CommandBase
     {
-        private readonly IActionStack actionStack;
-        private readonly IEnumerable<IDirtiableViewModel> dirtiables;
+        private readonly IViewModelServiceProvider serviceProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CancellableCommand"/> class.
@@ -23,15 +22,19 @@ namespace SiliconStudio.Presentation.Commands
         protected CancellableCommand(IViewModelServiceProvider serviceProvider, IEnumerable<IDirtiableViewModel> dirtiables)
             : base(serviceProvider)
         {
-            actionStack = serviceProvider.Get<IActionStack>();
-            this.dirtiables = dirtiables;
+            this.serviceProvider = serviceProvider;
+            Dirtiables = dirtiables;
         }
 
         /// <summary>
         /// The name of this command.
         /// </summary>
         public abstract string Name { get; }
-        
+
+        protected IEnumerable<IDirtiableViewModel> Dirtiables { get; private set; }
+
+        private IActionStack ActionStack { get { return serviceProvider.Get<IActionStack>(); } }
+
         /// <inheritdoc/>
         public override void Execute(object parameter)
         {
@@ -57,7 +60,8 @@ namespace SiliconStudio.Presentation.Commands
         public UndoToken ExecuteCommand(object parameter, bool createActionItem)
         {
             // TODO: Improve this - we're discarding any change made directly by the command invoke and create a CommandActionItem after.
-            var transactionalActionStack = actionStack as ITransactionalActionStack;
+            // NOTE: PickupAssetCommand is currently assuming that there's such a transaction in progress, be sure to check it if changing this.
+            var transactionalActionStack = ActionStack as ITransactionalActionStack;
             if (transactionalActionStack != null)
                 transactionalActionStack.BeginTransaction();
 
@@ -68,8 +72,8 @@ namespace SiliconStudio.Presentation.Commands
             
             if (token.CanUndo && createActionItem)
             {
-                var actionItem = new CommandActionItem(this, parameter, token, dirtiables);
-                actionStack.Add(actionItem);
+                var actionItem = new CommandActionItem(this, parameter, token, Dirtiables);
+                ActionStack.Add(actionItem);
             }
             return token;
         }

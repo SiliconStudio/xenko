@@ -97,7 +97,7 @@
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.11.0" />
     <Reference Include="Microsoft.VisualStudio.TextManager.Interop.8.0, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="NuGet">
-      <HintPath>..\..\..\deps\Nuget\NuGet.exe</HintPath>
+      <HintPath>..\..\..\deps\Nuget\NuGet.Core.dll</HintPath>
     </Reference>
     <Reference Include="SharpYaml">
       <HintPath>..\..\common\deps\SharpYaml\SharpYaml.dll</HintPath>
@@ -183,6 +183,32 @@
     <Compile Include="..\..\common\core\SiliconStudio.Core\Diagnostics\CallerInfo.cs">
       <Link>CallerInfo.cs</Link>
     </Compile>
+    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Windows\GlobalMutex.cs">
+      <Link>Core\Design\Windows\GlobalMutex.cs</Link>
+    </Compile>    
+    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Yaml\DynamicYamlEmpty.cs">
+      <Link>Core\Design\Yaml\DynamicYamlEmpty.cs</Link>
+    </Compile>		
+    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Yaml\DynamicYamlObject.cs">
+      <Link>Core\Design\Yaml\DynamicYamlObject.cs</Link>
+    </Compile>		
+    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Yaml\DynamicYamlScalar.cs">
+      <Link>Core\Design\Yaml\DynamicYamlScalar.cs</Link>
+    </Compile>	
+    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Yaml\DynamicYamlMapping.cs">
+      <Link>Core\Design\Yaml\DynamicYamlMapping.cs</Link>
+    </Compile>	
+    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Yaml\DynamicYamlArray.cs">
+      <Link>Core\Design\Yaml\DynamicYamlArray.cs</Link>
+    </Compile>
+	<Compile Include="..\..\common\core\SiliconStudio.Core.Design\VisualStudio\*.cs">
+      <Link>Core\Design\VisualStudio\%(Filename).cs</Link>
+    </Compile>			
+	<Compile Include="..\..\assets\SiliconStudio.Assets\PackageSessionHelper.Solution.cs">
+      <Link>Assets\PackageSessionHelper.Solution.cs</Link>
+    </Compile>	
+  </ItemGroup>
+  <ItemGroup>	
     <Compile Include="Assets\AssetObjectClassificationColorManager.cs" />
     <Compile Include="Assets\AssetObjectDefinitions.cs" />
     <Compile Include="Assets\AssetObjectEditorFormat.cs" />
@@ -198,11 +224,9 @@
     <Compile Include="BuildSubmissionAwaitExtensions.cs" />
     <Compile Include="CodeGenerator\BaseCodeGenerator.cs" />
     <Compile Include="CodeGenerator\BaseCodeGeneratorWithSite.cs" />
-    <Compile Include="Commands\AppDomainUnloadWrapper.cs" />
     <Compile Include="Commands\BuildMonitorCallback.cs" />
     <Compile Include="Commands\IParadoxCommands.cs" />
     <Compile Include="Commands\ParadoxCommandsProxy.cs" />
-    <Compile Include="DataGenerator\DataCodeGenerator.cs" />
     <Compile Include="MyControl.xaml.cs">
       <DependentUpon>MyControl.xaml</DependentUpon>
     </Compile>
@@ -232,6 +256,10 @@
     <Compile Include="NShader\NShaderSource.cs" />
     <Compile Include="NShader\NShaderSupportedExtensions.cs" />
     <Compile Include="NShader\NShaderVersion.cs" />
+    <Compile Include="NShader\NShaderViewFilter.cs" />
+    <Compile Include="NShader\RawShaderAnalysisMessage.cs" />
+    <Compile Include="NShader\RawShaderNavigationResult.cs" />
+    <Compile Include="NShader\RawSourceSpan.cs" />
     <Compile Include="ParadoxCommands.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -266,6 +294,7 @@
     <EmbeddedResource Include="NShader\Common\ParadoxShaderKeywords.map" />
     <None Include="NShader\Common\ShaderMPLexer.lex" />
     <None Include="packages.config" />
+    <None Include="SiliconStudio.Paradox.VisualStudio.Package.nuspec" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -298,7 +327,6 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup />
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>

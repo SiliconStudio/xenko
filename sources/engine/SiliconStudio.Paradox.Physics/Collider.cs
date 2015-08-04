@@ -1,13 +1,14 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
 
+using System;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Physics
 {
-    public class Collider : IDisposable
+    public class Collider : IDisposable, IRelative
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Collider"/> class.
@@ -28,8 +29,6 @@ namespace SiliconStudio.Paradox.Physics
             InternalCollider.Dispose();
             InternalCollider = null;
         }
-
-        internal PhysicsEngine Engine;
 
         bool enabled = true;
         /// <summary>
@@ -253,6 +252,7 @@ namespace SiliconStudio.Paradox.Physics
         public bool ContactsAlwaysValid { get; set; }
 
         int eventUsers; //this helps optimize performance
+
         internal bool NeedsCollisionCheck
         {
             get
@@ -263,18 +263,19 @@ namespace SiliconStudio.Paradox.Physics
 
         readonly object eventsLock = new Object();
 
-        event EventHandler<CollisionArgs> PrivateOnFirstContactBegin;
+        event EventHandler<CollisionArgs> PrivateFirstContactBegin;
+
         /// <summary>
         /// Occurs when the first contant with a collider begins.
         /// </summary>
-        public event EventHandler<CollisionArgs> OnFirstContactBegin
+        public event EventHandler<CollisionArgs> FirstContactStart
         {
             add
             {
                 lock (eventsLock)
                 {
                     eventUsers++;
-                    PrivateOnFirstContactBegin += value;
+                    PrivateFirstContactBegin += value;
                 }
             }
             remove
@@ -282,30 +283,31 @@ namespace SiliconStudio.Paradox.Physics
                 lock (eventsLock)
                 {
                     eventUsers--;
-                    PrivateOnFirstContactBegin -= value;
+                    PrivateFirstContactBegin -= value;
                 }
             }
         }
 
-        internal void PropagateOnFirstContactBegin(CollisionArgs args)
+        internal void OnFirstContactStart(CollisionArgs args)
         {
-            var e = PrivateOnFirstContactBegin;
+            var e = PrivateFirstContactBegin;
             if (e == null) return;
             e(this, args);
         }
 
-        event EventHandler<CollisionArgs> PrivateOnContactBegin;
+        event EventHandler<CollisionArgs> PrivateContactStart;
+
         /// <summary>
         /// Occurs when a contact begins (there could be multiple contacts and contact points).
         /// </summary>
-        public event EventHandler<CollisionArgs> OnContactBegin
+        public event EventHandler<CollisionArgs> ContactStart
         {
             add
             {
                 lock (eventsLock)
                 {
                     eventUsers++;
-                    PrivateOnContactBegin += value;
+                    PrivateContactStart += value;
                 }
             }
             remove
@@ -313,30 +315,31 @@ namespace SiliconStudio.Paradox.Physics
                 lock (eventsLock)
                 {
                     eventUsers--;
-                    PrivateOnContactBegin -= value;
+                    PrivateContactStart -= value;
                 }
             }
         }
 
-        internal void PropagateOnContactBegin(CollisionArgs args)
+        internal void OnContactStart(CollisionArgs args)
         {
-            var e = PrivateOnContactBegin;
+            var e = PrivateContactStart;
             if (e == null) return;
             e(this, args);
         }
 
-        event EventHandler<CollisionArgs> PrivateOnContactChange;
+        event EventHandler<CollisionArgs> PrivateContactChange;
+
         /// <summary>
         /// Occurs when a contact changed.
         /// </summary>
-        public event EventHandler<CollisionArgs> OnContactChange
+        public event EventHandler<CollisionArgs> ContactChange
         {
             add
             {
                 lock (eventsLock)
                 {
                     eventUsers++;
-                    PrivateOnContactChange += value;
+                    PrivateContactChange += value;
                 }
             }
             remove
@@ -344,30 +347,30 @@ namespace SiliconStudio.Paradox.Physics
                 lock (eventsLock)
                 {
                     eventUsers--;
-                    PrivateOnContactChange -= value;
+                    PrivateContactChange -= value;
                 }
             }
         }
 
-        internal void PropagateOnContactChange(CollisionArgs args)
+        internal void OnContactChange(CollisionArgs args)
         {
-            var e = PrivateOnContactChange;
+            var e = PrivateContactChange;
             if (e == null) return;
             e(this, args);
         }
 
-        event EventHandler<CollisionArgs> PrivateOnLastContactEnd;
+        event EventHandler<CollisionArgs> PrivateLastContactEnd;
         /// <summary>
         /// Occurs when the last contact with a collider happened.
         /// </summary>
-        public event EventHandler<CollisionArgs> OnLastContactEnd
+        public event EventHandler<CollisionArgs> LastContactEnd
         {
             add
             {
                 lock (eventsLock)
                 {
                     eventUsers++;
-                    PrivateOnLastContactEnd += value;
+                    PrivateLastContactEnd += value;
                 }
             }
             remove
@@ -375,30 +378,31 @@ namespace SiliconStudio.Paradox.Physics
                 lock (eventsLock)
                 {
                     eventUsers--;
-                    PrivateOnLastContactEnd -= value;
+                    PrivateLastContactEnd -= value;
                 }
             }
         }
 
-        internal void PropagateOnLastContactEnd(CollisionArgs args)
+        internal void OnLastContactEnd(CollisionArgs args)
         {
-            var e = PrivateOnLastContactEnd;
+            var e = PrivateLastContactEnd;
             if (e == null) return;
             e(this, args);
         }
 
-        event EventHandler<CollisionArgs> PrivateOnContactEnd;
+        event EventHandler<CollisionArgs> PrivateContactEnd;
+
         /// <summary>
         /// Occurs when a contact ended.
         /// </summary>
-        public event EventHandler<CollisionArgs> OnContactEnd
+        public event EventHandler<CollisionArgs> ContactEnd
         {
             add
             {
                 lock (eventsLock)
                 {
                     eventUsers++;
-                    PrivateOnContactEnd += value;
+                    PrivateContactEnd += value;
                 }
             }
             remove
@@ -406,14 +410,14 @@ namespace SiliconStudio.Paradox.Physics
                 lock (eventsLock)
                 {
                     eventUsers--;
-                    PrivateOnContactEnd -= value;
+                    PrivateContactEnd -= value;
                 }
             }
         }
 
-        internal void PropagateOnContactEnd(CollisionArgs args)
+        internal void OnContactEnd(CollisionArgs args)
         {
-            var e = PrivateOnContactEnd;
+            var e = PrivateContactEnd;
             if (e == null) return;
             e(this, args);
         }
@@ -442,12 +446,13 @@ namespace SiliconStudio.Paradox.Physics
         public string Tag { get; set; }
 
         /// <summary>
-        /// Gets or sets the entity object. 
-        /// Should always cast this as an Entity
+        /// Gets the entity linked with this Collider
         /// </summary>
-        /// <value>
-        /// The entity object.
-        /// </value>
-        public object EntityObject { get; set; }
+        public Entity Entity { get; internal set; }
+
+        /// <summary>
+        /// Gets the Simulation where this Collider is being processed
+        /// </summary>
+        public Simulation Simulation { get; internal set; }
     }
 }

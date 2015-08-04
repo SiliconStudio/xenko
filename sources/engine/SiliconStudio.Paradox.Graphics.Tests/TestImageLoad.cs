@@ -15,8 +15,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
     public class TestImageLoad : TestGameBase
     {
         private SpriteBatch spriteBatch;
-        private Texture2D jpg;
-        private Texture2D png;
+        private Texture jpg;
+        private Texture png;
 
         public TestImageLoad()
         {
@@ -38,11 +38,11 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             using (var pngStream = AssetManager.FileProvider.OpenStream("PngImage.png", VirtualFileMode.Open, VirtualFileAccess.Read))
             using (var pngImage = Image.Load(pngStream))
-                png = Texture2D.New(GraphicsDevice, pngImage);
+                png = Texture.New(GraphicsDevice, pngImage);
 
             using (var jpgStream = AssetManager.FileProvider.OpenStream("JpegImage.jpg", VirtualFileMode.Open, VirtualFileAccess.Read))
             using (var jpgImage = Image.Load(jpgStream))
-                jpg = Texture2D.New(GraphicsDevice, jpgImage);
+                jpg = Texture.New(GraphicsDevice, jpgImage);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -57,10 +57,10 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.AntiqueWhite);
             GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.SetRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
             spriteBatch.Begin();
 
-            var screenSize = new Vector2(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height);
+            var screenSize = new Vector2(GraphicsDevice.BackBuffer.ViewWidth, GraphicsDevice.BackBuffer.ViewHeight);
 
             spriteBatch.Draw(jpg, new Rectangle(0, 0, (int)screenSize.X, (int)(screenSize.Y / 2)), Color.White);
             spriteBatch.Draw(png, new Rectangle(0, (int)(screenSize.Y / 2), (int)screenSize.X, (int)(screenSize.Y / 2)), Color.White);

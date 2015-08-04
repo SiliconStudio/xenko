@@ -307,6 +307,24 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Converts this color from linear space to sRGB space.
+        /// </summary>
+        /// <returns>A color3 in sRGB space.</returns>
+        public Color4 ToSRgb()
+        {
+            return new Color4(MathUtil.LinearToSRgb(R), MathUtil.LinearToSRgb(G), MathUtil.LinearToSRgb(B), A);
+        }
+
+        /// <summary>
+        /// Converts this color from sRGB space to linear space.
+        /// </summary>
+        /// <returns>A color4 in linear space.</returns>
+        public Color4 ToLinear()
+        {
+            return new Color4(MathUtil.SRgbToLinear(R), MathUtil.SRgbToLinear(G), MathUtil.SRgbToLinear(B), A);
+        }
+
+        /// <summary>
         /// Adds two colors.
         /// </summary>
         /// <param name="left">The first color to add.</param>
@@ -647,6 +665,16 @@ namespace SiliconStudio.Core.Mathematics
                 grey + saturation * (value.G - grey),
                 grey + saturation * (value.B - grey),
                 value.A);
+        }
+
+        /// <summary>
+        /// Premultiplies the color components by the alpha value.
+        /// </summary>
+        /// <param name="value">The color to premultiply.</param>
+        /// <returns>A color with premultiplied alpha.</returns>
+        public static Color4 PremultiplyAlpha(Color4 value)
+        {
+            return new Color4(value.R * value.A, value.G * value.A, value.B * value.A, value.A);
         }
 
         /// <summary>

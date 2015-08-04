@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Diagnostics;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Paradox.Shaders
 {
@@ -37,5 +36,14 @@ namespace SiliconStudio.Paradox.Shaders
         /// The members of this constant buffer.
         /// </summary>
         public EffectParameterValueData[] Members;
+
+        /// <summary>
+        /// Clone the current instance of the constant buffer description.
+        /// </summary>
+        /// <returns>A clone copy of the description</returns>
+        public ShaderConstantBufferDescription Clone()
+        {
+            return (ShaderConstantBufferDescription)MemberwiseClone();
+        }
     }
 }

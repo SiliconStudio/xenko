@@ -17,6 +17,11 @@ namespace SiliconStudio.Core.Serialization.Assets
         public static readonly ProfilingKey AssetLoad = new ProfilingKey(Asset, "Load", ProfilingKeyFlags.Log);
 
         /// <summary>
+        /// Profiling load of an asset.
+        /// </summary>
+        public static readonly ProfilingKey AssetReload = new ProfilingKey(Asset, "Reload", ProfilingKeyFlags.Log);
+
+        /// <summary>
         /// Profiling save of an asset.
         /// </summary>
         public static readonly ProfilingKey AssetSave = new ProfilingKey(Asset, "Save", ProfilingKeyFlags.Log);

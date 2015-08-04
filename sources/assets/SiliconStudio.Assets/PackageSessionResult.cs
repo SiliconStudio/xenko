@@ -15,6 +15,12 @@ namespace SiliconStudio.Assets
         /// <value>The session.</value>
         public PackageSession Session { get; internal set; }
 
+        /// <summary>
+        /// Gets or sets whether the operation has been cancelled by user.
+        /// </summary>
+        public bool OperationCancelled { get; set; }
+
+        /// <inheritdoc/>
         public override void Clear()
         {
             base.Clear();

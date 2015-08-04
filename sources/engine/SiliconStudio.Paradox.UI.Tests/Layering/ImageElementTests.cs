@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
         [Test]
         public void TestBasicInvalidations()
         {
-            var source = new UIImage();
+            var source = new Sprite();
 
             // ReSharper disable ImplicitlyCapturedClosure
 
@@ -52,8 +52,8 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
         {
             var rand = new Random();
             var imageSize = new Vector3(100, 50, 0);
-            var uiImage = new UIImage { Region = new Rectangle(0, 0, (int)imageSize.X, (int)imageSize.Y), Borders = new Vector4(1, 2, 3, 4) };
-            var image = new ImageElement { Source = uiImage };
+            var Sprite = new Sprite { Region = new Rectangle(0, 0, (int)imageSize.X, (int)imageSize.Y), Borders = new Vector4(1, 2, 3, 4) };
+            var image = new ImageElement { Source = Sprite };
 
             // Fixed sized
             image.StretchType = StretchType.None;
@@ -106,8 +106,8 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
         public void TestMeasureOverrideInfiniteValues(StretchType stretch)
         {
             var imageSize = new Vector3(100, 50, 0);
-            var uiImage = new UIImage { Region = new Rectangle(0, 0, (int)imageSize.X, (int)imageSize.Y), Borders = new Vector4(1, 2, 3, 4) };
-            var image = new ImageElement { Source = uiImage, StretchType = stretch };
+            var Sprite = new Sprite { Region = new Rectangle(0, 0, (int)imageSize.X, (int)imageSize.Y), Borders = new Vector4(1, 2, 3, 4) };
+            var image = new ImageElement { Source = Sprite, StretchType = stretch };
             
             image.Measure(new Vector3(float.PositiveInfinity));
             Assert.AreEqual(imageSize, image.DesiredSizeWithMargins);
@@ -124,8 +124,8 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
         {
             var rand = new Random();
             var imageSize = new Vector3(100, 50, 0);
-            var uiImage = new UIImage { Region = new Rectangle(0, 0, (int)imageSize.X, (int)imageSize.Y), Borders = new Vector4(1, 2, 3, 4) };
-            var image = new ImageElement { Source = uiImage };
+            var Sprite = new Sprite { Region = new Rectangle(0, 0, (int)imageSize.X, (int)imageSize.Y), Borders = new Vector4(1, 2, 3, 4) };
+            var image = new ImageElement { Source = Sprite };
 
             // Fixed sized
             image.StretchType = StretchType.None;
@@ -178,8 +178,8 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
         public void TestArrangeOverrideInfiniteValues(StretchType stretch)
         {
             var imageSize = new Vector3(100, 50, 0);
-            var uiImage = new UIImage { Region = new Rectangle(0, 0, (int)imageSize.X, (int)imageSize.Y), Borders = new Vector4(1, 2, 3, 4) };
-            var image = new ImageElement { Source = uiImage, StretchType = stretch };
+            var Sprite = new Sprite { Region = new Rectangle(0, 0, (int)imageSize.X, (int)imageSize.Y), Borders = new Vector4(1, 2, 3, 4) };
+            var image = new ImageElement { Source = Sprite, StretchType = stretch };
 
             image.Arrange(new Vector3(float.PositiveInfinity), false);
             Assert.AreEqual(imageSize, image.RenderSize);

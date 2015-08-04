@@ -18,13 +18,16 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
     /// </summary>
     public class ShaderMixinCodeGen : ShaderKeyGeneratorBase//ShaderWriter
     {
-        private const string DefaultNameSpace = "SiliconStudio.Paradox.Effects.Modules";
+        private const string DefaultNameSpace = "SiliconStudio.Paradox.Rendering";
 
         private const string BlockContextTag = "BlockContextTag";
         private readonly LoggerResult logging;
         private readonly Shader shader;
         private ShaderBlock currentBlock;
         private int localVariableCount;
+        private readonly HashSet<string> parameterKeysReferenced = new HashSet<string>();
+        private readonly HashSet<string> mixinsReferenced = new HashSet<string>();
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderMixinCodeGen" /> class.
@@ -43,7 +46,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
             this.shader = shader;
             this.logging = logging;
-            EnablePreprocessorLine = true;
+            EnablePreprocessorLine = false;
         }
 
         /// <summary>
@@ -111,12 +114,14 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 return true;
             }
 
+            IsPdxfx = blockVisitor.HasMixin;
+
             // Header of usings declaration
             // TODO: Should probably be better to use fully qualified name of types to avoid conflicts.
 
             WriteLine("using System;");
             WriteLine("using SiliconStudio.Core;");
-            WriteLine("using SiliconStudio.Paradox.Effects;");
+            WriteLine("using SiliconStudio.Paradox.Rendering;");
             WriteLine("using SiliconStudio.Paradox.Graphics;");
             WriteLine("using SiliconStudio.Paradox.Shaders;");
             WriteLine("using SiliconStudio.Core.Mathematics;");
@@ -158,6 +163,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             Identifier typeMember;
             if (TryParameters(memberReferenceExpression, out typeTarget, out typeMember))
             {
+                var key = typeTarget + "." + typeMember;
+                parameterKeysReferenced.Add(key);
                 Write("context.GetParam(").Write(typeTarget).Write(".").Write(typeMember).Write(")");
             }
             else
@@ -232,7 +239,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             // A discard will be transformed to 'return'
             if (keywordExpression.Name.Text == "discard")
             {
-                Write("return");
+                WriteLinkLine(keywordExpression);
+                WriteLine("context.Discard();");
             }
             else
             {
@@ -243,14 +251,25 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         [Visit]
         protected virtual void Visit(ShaderClassType shader)
         {
-            Write("public static partial class ");
+            Write(shader.Qualifiers.Any(qualifier => qualifier == ParadoxStorageQualifier.Internal) ? "internal " : "public ");
+            Write("static partial class ");
             Write(shader.Name);
             Write("Keys");
             {
                 OpenBrace();
-                foreach (var decl in shader.Members.OfType<Variable>())
+                foreach (var decl in shader.Members)
                 {
-                    VisitDynamic(decl);
+                    if (decl is Variable)
+                    {
+                        VisitDynamic(decl);
+                    }
+                    else if (decl is ConstantBuffer)
+                    {
+                        foreach (var subDecl in ((ConstantBuffer)decl).Members.OfType<Variable>())
+                        {
+                            VisitDynamic(subDecl);
+                        }
+                    }
                 }
                 CloseBrace();
             }
@@ -259,9 +278,18 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         [Visit]
         protected virtual void Visit(GenericType<ObjectType> type)
         {
-            if (IsStringInList(type.Name, "StructuredBuffer", "RWStructuredBuffer", "ConsumeStructuredBuffer", "AppendStructuredBuffer"))
+            var typeName = type.Name.Text;
+            if (typeName.Contains("Texture"))
+            {
+                Write("Texture");
+            }
+            else if (typeName.Contains("Buffer"))
             {
                 Write("Buffer");
+            }
+            else
+            {
+                Visit((GenericType)type);
             }
             ProcessInitialValueStatus = false;
         }
@@ -309,7 +337,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             else
             {
                 Write("foreach(");
+                IsVisitingVariableInlines = true;
                 VisitDynamic(forEachStatement.Variable);
+                IsVisitingVariableInlines = false;
                 Write(" in ");
                 VisitDynamic(forEachStatement.Collection);
                 Write(")");
@@ -330,6 +360,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
             VariableAsParameterKey = false;
 
+            // Clear ParameterKey and Mixin references
+            parameterKeysReferenced.Clear();
+            mixinsReferenced.Clear();
+
             // Use a single internal class for all shader mixins
             Write("internal static partial class ShaderMixins");
             {
@@ -342,7 +376,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 {
                     OpenBrace();
                     // Generate the main generate method for each shader block
-                    Write("public void Generate(ShaderMixinSourceTree mixin, ShaderMixinContext context)");
+                    Write("public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)");
                     {
                         OpenBrace();
                         // Create a context associated with ShaderBlock
@@ -408,24 +442,18 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     ExtractGenericParameters(targetExpression, out mixinName, genericParameters);
                     var childName = assignExpression != null ? assignExpression.Target : mixinName;
                     {
-                        OpenBrace();
                         WriteLinkLine(mixinStatement);
-                        Write("var __subMixin = new ShaderMixinSourceTree() { Name = ");
+                        Write("if (context.ChildEffectName == ");
                         WriteMixinName(childName);
-                        WriteLine(", Parent = mixin };");
-                        WriteLine("mixin.Children.Add(__subMixin);");
+                        Write(")");
+                        OpenBrace();
 
                         WriteLinkLine(mixinStatement);
-                        WriteLine("context.BeginChild(__subMixin);");
-
-                        WriteLinkLine(mixinStatement);
-                        Write("context.Mixin(__subMixin, ");
+                        Write("context.Mixin(mixin, ");
                         WriteMixinName(mixinName);
                         WriteGenericParameters(genericParameters);
                         WriteLine(");");
-
-                        WriteLinkLine(mixinStatement);
-                        WriteLine("context.EndChild();");
+                        WriteLine("return;");
 
                         CloseBrace();
                     }
@@ -442,14 +470,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         logging.Error("Removing with generic parameters is not supported", mixinStatement.Span);
                     }
                     WriteLine(");");
-                    break;
-
-                case MixinStatementType.Clone:
-                    WriteLinkLine(mixinStatement);
-                    WriteLine("context.CloneProperties();");
-
-                    WriteLinkLine(mixinStatement);
-                    WriteLine("mixin.Mixin.CloneFrom(mixin.Parent.Mixin);");
                     break;
 
                 case MixinStatementType.Macro:
@@ -484,7 +504,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         }
                     }
 
-                    Write("mixin.Mixin.AddMacro(");
+                    Write("mixin.AddMacro(");
                     VisitDynamic(macroName);
                     Write(", ");
                     VisitDynamic(macroValue);
@@ -499,12 +519,12 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         return;
                     }
 
-                    var addCompositionFunction = "AddComposition";
+                    var addCompositionFunction = "PushComposition";
 
                     // If it's a +=, let's create or complete a ShaderArraySource
                     if (assignExpression.Operator == AssignmentOperator.Addition)
                     {
-                        addCompositionFunction = "AddCompositionToArray";
+                        addCompositionFunction = "PushCompositionArray";
                     }
 
                     ExtractGenericParameters(assignExpression.Value, out mixinName, genericParameters);
@@ -512,20 +532,23 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     {
                         OpenBrace();
                         WriteLinkLine(mixinStatement);
-                        WriteLine("var __subMixin = new ShaderMixinSourceTree() { Parent = mixin };");
+                        Write("var __mixinToCompose__ = ");
+                        WriteMixinName(mixinName);
+                        WriteLine(";");
+                        WriteLine("var __subMixin = new ShaderMixinSource();");
 
                         WriteLinkLine(mixinStatement);
-                        Write("context.Mixin(__subMixin, ");
-                        WriteMixinName(mixinName);
+                        Write("context.").Write(addCompositionFunction).Write("(mixin, ");
+                        WriteStringOrExpression(assignExpression.Target);
+                        WriteLine(", __subMixin);");
+
+                        WriteLinkLine(mixinStatement);
+                        Write("context.Mixin(__subMixin, __mixinToCompose__");
                         WriteGenericParameters(genericParameters);
                         WriteLine(");");
 
-                        Write("mixin.Mixin.");
-                        Write(addCompositionFunction);
-                        Write("(");
-                        WriteMixinName(assignExpression.Target);
-                        Write(", __subMixin.Mixin");
-                        WriteLine(");");
+                        WriteLinkLine(mixinStatement);
+                        WriteLine("context.PopComposition();");
                         CloseBrace();
                     }
                     break;
@@ -670,14 +693,24 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             // Output between "" only if the mixin name is only a variable
             if (mixinName is VariableReferenceExpression)
             {
+                mixinsReferenced.Add(mixinName.ToString());
+            }
+            WriteStringOrExpression(mixinName);
+        }
+
+        private void WriteStringOrExpression(Expression expr)
+        {
+            if (expr is VariableReferenceExpression)
+            {
                 Write("\"");
             }
-            VisitDynamic(mixinName);
-            if (mixinName is VariableReferenceExpression)
+            VisitDynamic(expr);
+            if (expr is VariableReferenceExpression)
             {
                 Write("\"");
             }
         }
+
 
         private void LogErrors()
         {
@@ -719,8 +752,6 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
             private readonly ShaderKeyGeneratorBase parent;
 
-            private bool isVisitingShaderClassType;
-
             public ShaderBlockVisitor(ShaderKeyGeneratorBase parent, LoggerResult logging)
                 : base(false, false)
             {
@@ -746,10 +777,16 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             [Visit]
             private void Visit(ShaderClassType shaderClassType)
             {
-                isVisitingShaderClassType = true;
-                foreach (var variable in shaderClassType.Members.OfType<Variable>())
+                // Check if there are any parameter keys in ShaderClassType and ConstantBuffer
+                CheckParameterKeys(shaderClassType.Members.OfType<Variable>());
+                CheckParameterKeys(shaderClassType.Members.OfType<ConstantBuffer>().SelectMany(cbuffer => cbuffer.Members).OfType<Variable>());
+            }
+
+            private void CheckParameterKeys(IEnumerable<Variable> variables)
+            {
+                foreach (var variable in variables)
                 {
-                    if (isVisitingShaderClassType && !HasShaderClassType)
+                    if (!HasShaderClassType)
                     {
                         if (parent.IsParameterKey(variable))
                         {
@@ -757,8 +794,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         }
                     }
                 }
-                isVisitingShaderClassType = false;
             }
+
 
             [Visit]
             private void Visit(ShaderBlock shaderBlock)

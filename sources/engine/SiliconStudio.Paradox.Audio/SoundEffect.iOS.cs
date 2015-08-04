@@ -4,7 +4,7 @@
 #if SILICONSTUDIO_PLATFORM_IOS
 
 using System;
-using MonoTouch.UIKit;
+using UIKit;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Audio.Wave;

@@ -2,6 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+
 using SiliconStudio.Shaders.Ast;
 
 namespace SiliconStudio.Shaders.Visitor
@@ -51,9 +54,10 @@ namespace SiliconStudio.Shaders.Visitor
             result = new ExpressionResult();
 
             // Small optim, if LiteralExpression, we perform a direct eval.
-            if (expression is LiteralExpression)
+            var literalExpression = expression as LiteralExpression;
+            if (literalExpression != null)
             {
-                Visit((LiteralExpression) expression);
+                Visit(literalExpression);
             }
             else
             {
@@ -73,7 +77,7 @@ namespace SiliconStudio.Shaders.Visitor
         [Visit]
         protected virtual void Visit(Expression expression)
         {
-            result.Warning("Expression evaluation [{0}] is not supported", expression.Span, expression);
+            result.Error("Expression evaluation [{0}] is not supported", expression.Span, expression);
         }
 
         /// <inheritdoc/>
@@ -82,65 +86,79 @@ namespace SiliconStudio.Shaders.Visitor
         {
             Visit((Node) binaryExpression);
 
+            if (values.Count < 2)
+            {
+                return;
+            }
+
             var rightValue = values.Pop();
             var leftValue = values.Pop();
+
+            var resultValue = 0.0;
 
             switch (binaryExpression.Operator)
             {
                 case BinaryOperator.Plus:
-                    values.Push(leftValue + rightValue);
+                    resultValue = leftValue + rightValue;
                     break;
                 case BinaryOperator.Minus:
-                    values.Push(leftValue - rightValue);
+                    resultValue = leftValue - rightValue;
                     break;
                 case BinaryOperator.Multiply:
-                    values.Push(leftValue*rightValue);
+                    resultValue = leftValue*rightValue;
                     break;
                 case BinaryOperator.Divide:
-                    values.Push(leftValue/rightValue);
+                    resultValue = leftValue/rightValue;
                     break;
                 case BinaryOperator.Modulo:
-                    values.Push(leftValue%rightValue);
+                    resultValue = leftValue%rightValue;
                     break;
                 case BinaryOperator.LeftShift:
-                    values.Push((int) leftValue << (int) rightValue);
+                    resultValue = (int) leftValue << (int) rightValue;
                     break;
                 case BinaryOperator.RightShift:
-                    values.Push((int) leftValue >> (int) rightValue);
+                    resultValue = (int) leftValue >> (int) rightValue;
                     break;
                 case BinaryOperator.BitwiseOr:
-                    values.Push(((int) leftValue) | ((int) rightValue));
+                    resultValue = ((int) leftValue) | ((int) rightValue);
                     break;
                 case BinaryOperator.BitwiseAnd:
-                    values.Push(((int) leftValue) & ((int) rightValue));
+                    resultValue = ((int) leftValue) & ((int) rightValue);
                     break;
                 case BinaryOperator.BitwiseXor:
-                    values.Push(((int) leftValue) ^ ((int) rightValue));
+                    resultValue = ((int) leftValue) ^ ((int) rightValue);
+                    break;
+                case BinaryOperator.LogicalAnd:
+                    resultValue = leftValue != 0.0 && rightValue != 0.0 ? 1.0 : 0.0;
+                    break;
+                case BinaryOperator.LogicalOr:
+                    resultValue = leftValue != 0.0 || rightValue != 0.0 ? 1.0 : 0.0;
+                    break;
+                case BinaryOperator.GreaterEqual:
+                    resultValue = leftValue >= rightValue ? 1.0 : 0.0;
+                    break;
+                case BinaryOperator.Greater:
+                    resultValue = leftValue > rightValue ? 1.0 : 0.0;
+                    break;
+                case BinaryOperator.Less:
+                    resultValue = leftValue < rightValue ? 1.0 : 0.0;
+                    break;
+                case BinaryOperator.LessEqual:
+                    resultValue = leftValue <= rightValue ? 1.0 : 0.0;
+                    break;
+                case BinaryOperator.Equality:
+                    resultValue = leftValue == rightValue ? 1.0 : 0.0;
+                    break;
+                case BinaryOperator.Inequality:
+                    resultValue = leftValue != rightValue ? 1.0 : 0.0;
                     break;
                 default:
                     result.Error("Binary operator [{0}] is not supported", binaryExpression.Span, binaryExpression);
-                    values.Push(0);
                     break;
             }
+
+            values.Push(resultValue);
         }
-
-        /*
-        //[Visit]
-        //protected virtual void Visit(IndexerExpression indexerExpression)
-        //{
-        //    Visit((Node)indexerExpression);
-        //    // TODO implement indexer expression eval
-        //    result.Error("Indexer expression evaluation [{0}] is not supported", indexerExpression.Span, indexerExpression);
-        //}
-        //[Visit]
-        //protected virtual void Visit(MemberReferenceExpression memberReferenceExpression)
-        //{
-        //    Visit((Node)memberReferenceExpression);
-
-        //    // TODO implement member reference expression eval
-        //    result.Error("Member reference expression evaluation [{0}] is not supported", memberReferenceExpression.Span, memberReferenceExpression);
-        //}
-        */
 
         /// <inheritdoc/>
         [Visit]
@@ -153,25 +171,12 @@ namespace SiliconStudio.Shaders.Visitor
                 {
                     var evaluator = new ExpressionEvaluator();
                     var subResult = evaluator.Evaluate(methodInvocationExpression.Arguments[0]);
-
-                    if (subResult.Value == null)
-                        result.Error("Unable to evaluate cast [{0}]", methodInvocationExpression.Span, methodInvocationExpression);
-                    else
-                    {
-                        try
-                        {
-                            values.Push(Convert.ToDouble(subResult.Value));
-                        }
-                        catch (Exception e)
-                        {
-                            result.Error(e.Message, methodInvocationExpression.Span);
-                            result.Error("Unable to cast the value [{0}]", methodInvocationExpression.Span, methodInvocationExpression);
-                        }
-                    }
+                    values.Push(subResult.Value);
+                    return;
                 }
-                else
-                    result.Error("Method invocation expression evaluation [{0}] is not supported", methodInvocationExpression.Span, methodInvocationExpression);
             }
+
+            result.Error("Method invocation expression evaluation [{0}] is not supported", methodInvocationExpression.Span, methodInvocationExpression);
         }
 
         /// <inheritdoc/>
@@ -185,7 +190,7 @@ namespace SiliconStudio.Shaders.Visitor
             {
                 result.Error("Unable to find variable [{0}]", variableReferenceExpression.Span, variableReferenceExpression);
             }
-            else if (variableDeclaration.InitialValue == null)
+            else if (variableDeclaration.InitialValue == null || !variableDeclaration.Qualifiers.Contains(StorageQualifier.Const))
             {
                 result.Error("Variable [{0}] used in expression is not constant", variableReferenceExpression.Span, variableDeclaration);
             }
@@ -197,11 +202,11 @@ namespace SiliconStudio.Shaders.Visitor
 
                 if (subResult.HasErrors)
                 {
-                    values.Push(0.0f);
+                    values.Push(0.0);
                 }
                 else
                 {
-                    values.Push(Convert.ToDouble(subResult.Value));
+                    values.Push(subResult.Value);
                 }
             }
         }
@@ -210,7 +215,15 @@ namespace SiliconStudio.Shaders.Visitor
         [Visit]
         protected virtual void Visit(LiteralExpression literalExpression)
         {
-            values.Push(Convert.ToDouble(literalExpression.Literal.Value));
+            try
+            {
+                var value = Convert.ToDouble(literalExpression.Literal.Value, CultureInfo.InvariantCulture);
+                values.Push(value);
+            }
+            catch (Exception ex)
+            {
+                result.Error("Unable to convert value [{0}] to double", literalExpression.Span, literalExpression.Literal.Value);
+            }
         }
 
         /// <inheritdoc/>
@@ -226,6 +239,11 @@ namespace SiliconStudio.Shaders.Visitor
         protected virtual void Visit(UnaryExpression unaryExpression)
         {
             Visit((Node)unaryExpression);
+
+            if (values.Count == 0)
+            {
+                return;
+            }
 
             var value = values.Pop();
 
@@ -247,6 +265,9 @@ namespace SiliconStudio.Shaders.Visitor
                 case UnaryOperator.PostDecrement:
                     value--;
                     values.Push(value);
+                    break;
+                case UnaryOperator.LogicalNot:
+                    values.Push(value == 0.0 ? 1.0 : 0.0);
                     break;
                 default:
                     result.Error("Unary operator [{0}] is not supported", unaryExpression.Span, unaryExpression);

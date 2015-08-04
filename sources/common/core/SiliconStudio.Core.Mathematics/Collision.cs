@@ -721,8 +721,8 @@ namespace SiliconStudio.Core.Mathematics
                 rectangleWorldMatrix.M21 == 0 && rectangleWorldMatrix.M23 == 0 &&
                 rectangleWorldMatrix.M31 == 0 && rectangleWorldMatrix.M32 == 0)
             {
-                var halfSize1 = rectangleWorldMatrix[(testAxis1 << 2) + testAxis1] * rectangleSize[testAxis1] / 2f;
-                var halfSize2 = rectangleWorldMatrix[(testAxis2 << 2) + testAxis2] * rectangleSize[testAxis2] / 2f;
+                var halfSize1 = Math.Abs(rectangleWorldMatrix[(testAxis1 << 2) + testAxis1] * rectangleSize[testAxis1] / 2f);
+                var halfSize2 = Math.Abs(rectangleWorldMatrix[(testAxis2 << 2) + testAxis2] * rectangleSize[testAxis2] / 2f);
 
                 intersects = -halfSize1 <= intersectionInRectangle[testAxis1] && intersectionInRectangle[testAxis1] <= halfSize1 &&
                              -halfSize2 <= intersectionInRectangle[testAxis2] && intersectionInRectangle[testAxis2] <= halfSize2;
@@ -1462,14 +1462,13 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Determines whether a <see cref="BoundingFrustum"/> intersects or contains an AABB determined by its center and extent.
+        /// Determines whether a <see cref="BoundingFrustum" /> intersects or contains an AABB determined by its center and extent.
         /// Faster variant specific for frustum culling.
         /// </summary>
         /// <param name="frustum">The frustum.</param>
-        /// <param name="center">The center.</param>
-        /// <param name="extent">The extent.</param>
-        /// <returns></returns>
-        public static bool FrustumContainsBox(ref BoundingFrustum frustum, ref Vector3 center, ref Vector3 extent)
+        /// <param name="boundingBoxExt">The bounding box ext.</param>
+        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
+        public static bool FrustumContainsBox(ref BoundingFrustum frustum, ref BoundingBoxExt boundingBoxExt)
         {
             unsafe
             {
@@ -1478,11 +1477,53 @@ namespace SiliconStudio.Core.Mathematics
                     var plane = planeStart;
                     for (int i = 0; i < 6; ++i)
                     {
-                        if (Vector3.Dot(center, plane->Normal)
-                            + extent.X * Math.Abs(plane->Normal.X)
-                            + extent.Y * Math.Abs(plane->Normal.Y)
-                            + extent.Z * Math.Abs(plane->Normal.Z)
+                        // Previous code:
+                        if (Vector3.Dot(boundingBoxExt.Center, plane->Normal)
+                            + boundingBoxExt.Extent.X * Math.Abs(plane->Normal.X)
+                            + boundingBoxExt.Extent.Y * Math.Abs(plane->Normal.Y)
+                            + boundingBoxExt.Extent.Z * Math.Abs(plane->Normal.Z)
                             <= -plane->D)
+                            return false;
+                        plane++;
+                    }
+                }
+
+                return true;
+            }
+/*
+            unsafe
+            {
+                fixed (Plane* planeStart = &frustum.Plane1)
+                fixed (Vector3* pExtent = &boundingBoxExt.Extent)
+                {
+                    var plane = planeStart;
+                    for (int i = 0; i < 6; ++i)
+                    {
+                        // Previous code:
+                        //if (Vector3.Dot(boundingBoxExt.Center, plane->Normal)
+                        //    + boundingBoxExt.Extent.X * Math.Abs(plane->Normal.X)
+                        //    + boundingBoxExt.Extent.Y * Math.Abs(plane->Normal.Y)
+                        //    + boundingBoxExt.Extent.Z * Math.Abs(plane->Normal.Z)
+                        //    <= -plane->D)
+
+                        // Optimized version (only 1 dot and cheaper Math.Abs)
+                        // https://fgiesen.wordpress.com/2010/10/17/view-frustum-culling/
+                        // return dot3(center, plane) + dot3(extent, absPlane) <= -plane.w;
+                        // or
+                        // vector4 signFlip = componentwise_and(plane, 0x80000000);
+                        // vector3 centerOffset = xor(extent, signFlip)
+                        // dot3(center + centerOffset, plane) <= -plane.w;
+
+                        uint val = (((uint*)&plane->Normal)[0] & 0x80000000) ^ ((uint*)pExtent)[0];
+                        var dist = plane->Normal.X * ((*(float*)(&val)) + boundingBoxExt.Center.X);
+
+                        val = (((uint*)&plane->Normal)[1] & 0x80000000) ^ ((uint*)pExtent)[1];
+                        dist += plane->Normal.Y * ((*(float*)(&val)) + boundingBoxExt.Center.Y);
+
+                        val = (((uint*)&plane->Normal)[2] & 0x80000000) ^ ((uint*)pExtent)[2];
+                        dist += plane->Normal.Z * ((*(float*)(&val)) + boundingBoxExt.Center.Z);
+
+                        if (dist <= -plane->D)
                             return false;
 
                         plane++;
@@ -1491,6 +1532,7 @@ namespace SiliconStudio.Core.Mathematics
 
                 return true;
             }
+ */
         }
     }
 }

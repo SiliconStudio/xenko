@@ -1,14 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Graphics.Internals
 {
     internal class ShaderStageSetup
     {
-        private readonly ShaderParameterUpdater parameterUpdater;
         private static readonly EffectParameterResourceBinding.ApplyParameterWithUpdaterDelegate UpdateConstantBufferFromUpdater = UpdateConstantBuffer;
         private static readonly EffectParameterResourceBinding.ApplyParameterWithUpdaterDelegate UpdateSamplerFromUpdater = UpdateSampler;
         private static readonly EffectParameterResourceBinding.ApplyParameterWithUpdaterDelegate UpdateShaderResourceViewFromUpdater = UpdateShaderResourceView;
@@ -18,17 +17,8 @@ namespace SiliconStudio.Paradox.Graphics.Internals
         private static readonly EffectParameterResourceBinding.ApplyParameterFromValueDelegate UpdateShaderResourceViewDirect = UpdateShaderResourceView;
         private static readonly EffectParameterResourceBinding.ApplyParameterFromValueDelegate UpdateUnorderedAccessViewDirect = UpdateUnorderedAccessView;
 
-        public readonly ParameterCollection[] ParameterCollections;
-
         public ShaderStageSetup()
         {
-            parameterUpdater = new ShaderParameterUpdater();
-            ParameterCollections = new ParameterCollection[16];            
-        }
-
-        public void SetParameterCollection(int index, ParameterCollection collection)
-        {
-            ParameterCollections[index] = collection;
         }
 
         public void PrepareBindings(EffectParameterResourceBinding[] bindings)
@@ -39,30 +29,39 @@ namespace SiliconStudio.Paradox.Graphics.Internals
             }
         }
 
-        public void UpdateParameters(GraphicsDevice graphicsDevice, ShaderParameterUpdaterDefinition parameterUpdaterDefinition, int collectionCount)
+        public void UpdateParameters(GraphicsDevice graphicsDevice, EffectParameterCollectionGroup parameterCollectionGroup, EffectParameterUpdaterDefinition parameterUpdaterDefinition)
         {
-            parameterUpdater.Update(graphicsDevice, parameterUpdaterDefinition, ParameterCollections, collectionCount);
+            parameterCollectionGroup.Update(graphicsDevice, parameterUpdaterDefinition);
         }
 
-        public void Apply(GraphicsDevice graphicsDevice, EffectParameterResourceBinding[] bindings, ref EffectStateBindings effectStateBindings, bool applyEffectStates)
+        public void Apply(GraphicsDevice graphicsDevice, EffectParameterResourceBinding[] bindings, EffectParameterCollectionGroup parameterCollectionGroup, ref EffectStateBindings effectStateBindings, bool applyEffectStates)
         {
             // Apply shader parameters
             for (int i = 0; i < bindings.Length; i++)
             {
-                bindings[i].ApplyParameterWithUpdater(graphicsDevice, ref bindings[i].Description, parameterUpdater);
+                bindings[i].ApplyParameterWithUpdater(graphicsDevice, ref bindings[i].Description, parameterCollectionGroup);
             }
 
             if (applyEffectStates)
             {
                 // Apply graphics states
-                var rasterizerState = parameterUpdater.GetValue<RasterizerState>(effectStateBindings.RasterizerStateKeyIndex);
-                graphicsDevice.SetRasterizerState(rasterizerState);
+                var rasterizerState = parameterCollectionGroup.GetValue<RasterizerState>(effectStateBindings.RasterizerStateKeyIndex);
+                if (rasterizerState != null)
+                {
+                    graphicsDevice.SetRasterizerState(rasterizerState);
+                }
 
-                var depthStencilState = parameterUpdater.GetValue<DepthStencilState>(effectStateBindings.DepthStencilStateKeyIndex);
-                graphicsDevice.SetDepthStencilState(depthStencilState);
+                var depthStencilState = parameterCollectionGroup.GetValue<DepthStencilState>(effectStateBindings.DepthStencilStateKeyIndex);
+                if (depthStencilState != null)
+                {
+                    graphicsDevice.SetDepthStencilState(depthStencilState);
+                }
 
-                var blendState = parameterUpdater.GetValue<BlendState>(effectStateBindings.BlendStateKeyIndex);
-                graphicsDevice.SetBlendState(blendState);
+                var blendState = parameterCollectionGroup.GetValue<BlendState>(effectStateBindings.BlendStateKeyIndex);
+                if (blendState != null)
+                {
+                    graphicsDevice.SetBlendState(blendState);
+                }
             }
         }
 
@@ -102,31 +101,31 @@ namespace SiliconStudio.Paradox.Graphics.Internals
             }
         }
 
-        private static void UpdateConstantBuffer(GraphicsDevice graphicsDevice, ref EffectParameterResourceData binding, ShaderParameterUpdater parameterUpdater)
+        private static void UpdateConstantBuffer(GraphicsDevice graphicsDevice, ref EffectParameterResourceData binding, EffectParameterCollectionGroup parameterCollectionGroup)
         {
-            var constantBufferHelper = parameterUpdater.GetValue<ParameterConstantBuffer>(binding.Param.KeyIndex);
+            var constantBufferHelper = parameterCollectionGroup.GetValue<ParameterConstantBuffer>(binding.Param.KeyIndex);
             
             // Update constant buffer content (if required)
-            constantBufferHelper.Update(graphicsDevice, parameterUpdater);
+            constantBufferHelper.Update(graphicsDevice, parameterCollectionGroup);
 
             graphicsDevice.SetConstantBuffer(binding.Stage, binding.SlotStart, constantBufferHelper.Buffer);
         }
 
-        private static void UpdateSampler(GraphicsDevice graphicsDevice, ref EffectParameterResourceData binding, ShaderParameterUpdater parameterUpdater)
+        private static void UpdateSampler(GraphicsDevice graphicsDevice, ref EffectParameterResourceData binding, EffectParameterCollectionGroup parameterCollectionGroup)
         {
-            var samplerState = (SamplerState)parameterUpdater.GetObject(binding.Param.KeyIndex);
+            var samplerState = (SamplerState)parameterCollectionGroup.GetObject(binding.Param.KeyIndex);
             graphicsDevice.SetSamplerState(binding.Stage, binding.SlotStart, samplerState);
         }
 
-        private static void UpdateShaderResourceView(GraphicsDevice graphicsDevice, ref EffectParameterResourceData binding, ShaderParameterUpdater parameterUpdater)
+        private static void UpdateShaderResourceView(GraphicsDevice graphicsDevice, ref EffectParameterResourceData binding, EffectParameterCollectionGroup parameterCollectionGroup)
         {
-            var shaderResourceView = (GraphicsResource)parameterUpdater.GetObject(binding.Param.KeyIndex);
+            var shaderResourceView = (GraphicsResource)parameterCollectionGroup.GetObject(binding.Param.KeyIndex);
             graphicsDevice.SetShaderResourceView(binding.Stage, binding.SlotStart, shaderResourceView);
         }
 
-        private static void UpdateUnorderedAccessView(GraphicsDevice graphicsDevice, ref EffectParameterResourceData binding, ShaderParameterUpdater parameterUpdater)
+        private static void UpdateUnorderedAccessView(GraphicsDevice graphicsDevice, ref EffectParameterResourceData binding, EffectParameterCollectionGroup parameterCollectionGroup)
         {
-            var unorderedAccessView = (GraphicsResource)parameterUpdater.GetObject(binding.Param.KeyIndex);
+            var unorderedAccessView = (GraphicsResource)parameterCollectionGroup.GetObject(binding.Param.KeyIndex);
             graphicsDevice.SetUnorderedAccessView(binding.Stage, binding.SlotStart, unorderedAccessView);
         }
 

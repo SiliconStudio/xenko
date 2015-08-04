@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.UI.Events;
 
 namespace SiliconStudio.Paradox.UI.Controls
@@ -17,17 +18,17 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// <summary>
         /// The key to the CheckedImagePropertyKey dependency property.
         /// </summary>
-        public static readonly PropertyKey<UIImage> CheckedImagePropertyKey = new PropertyKey<UIImage>("CheckedImageModeKey", typeof(ToggleButton), ObjectInvalidationMetadata.New<UIImage>(OnToggleImageInvalidated));
+        public static readonly PropertyKey<Sprite> CheckedImagePropertyKey = new PropertyKey<Sprite>("CheckedImageModeKey", typeof(ToggleButton), ObjectInvalidationMetadata.New<Sprite>(OnToggleImageInvalidated));
 
         /// <summary>
         /// The key to the IndeterminateImagePropertyKey dependency property.
         /// </summary>
-        public static readonly PropertyKey<UIImage> IndeterminateImagePropertyKey = new PropertyKey<UIImage>("IndeterminateImageModeKey", typeof(ToggleButton), ObjectInvalidationMetadata.New<UIImage>(OnToggleImageInvalidated));
+        public static readonly PropertyKey<Sprite> IndeterminateImagePropertyKey = new PropertyKey<Sprite>("IndeterminateImageModeKey", typeof(ToggleButton), ObjectInvalidationMetadata.New<Sprite>(OnToggleImageInvalidated));
 
         /// <summary>
         /// The key to the UncheckedImagePropertyKey dependency property.
         /// </summary>
-        public static readonly PropertyKey<UIImage> UncheckedImagePropertyKey = new PropertyKey<UIImage>("UncheckedImageModeKey", typeof(ToggleButton), ObjectInvalidationMetadata.New<UIImage>(OnToggleImageInvalidated));
+        public static readonly PropertyKey<Sprite> UncheckedImagePropertyKey = new PropertyKey<Sprite>("UncheckedImageModeKey", typeof(ToggleButton), ObjectInvalidationMetadata.New<Sprite>(OnToggleImageInvalidated));
 
         private static void OnToggleImageInvalidated(object propertyOwner, PropertyKey propertyKey, object propertyOldValue)
         {
@@ -57,7 +58,7 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// <summary>
         /// Gets or sets the image that the button displays when checked
         /// </summary>
-        public UIImage CheckedImage
+        public Sprite CheckedImage
         {
             get { return DependencyProperties.Get(CheckedImagePropertyKey); }
             set { DependencyProperties.Set(CheckedImagePropertyKey, value); }
@@ -66,7 +67,7 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// <summary>
         /// Gets or sets the image that the button displays when indeterminate
         /// </summary>
-        public UIImage IndeterminateImage
+        public Sprite IndeterminateImage
         {
             get { return DependencyProperties.Get(IndeterminateImagePropertyKey); }
             set { DependencyProperties.Set(IndeterminateImagePropertyKey, value); }
@@ -75,7 +76,7 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// <summary>
         /// Gets or sets the image that the button displays when unchecked
         /// </summary>
-        public UIImage UncheckedImage
+        public Sprite UncheckedImage
         {
             get { return DependencyProperties.Get(UncheckedImagePropertyKey); }
             set { DependencyProperties.Set(UncheckedImagePropertyKey, value); }

@@ -4,7 +4,7 @@
 <#@ import namespace="System.Reflection" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Mono.Cecil" #>
-<#@ import namespace="SiliconStudio.Core.Serialization.Serializers" #>
+<#@ import namespace="SiliconStudio.Core.Serialization" #>
 
 using System;
 using System.Collections.Generic;
@@ -45,33 +45,25 @@ namespace SiliconStudio.DataSerializers
 	    [SiliconStudio.Core.ModuleInitializer]
         internal static void Initialize()
         {
-<# foreach (var profile in cecilSerializerContext.SerializableTypesProfiles) { #>
-			DataSerializerFactory.RegisterSerializationProfile("<#=profile.Key#>", Register<#=profile.Key#>);
-<# } #>
-        }
+			var assemblySerializers = new AssemblySerializers(typeof(<#=assemblySerializerFactoryClassName#>).GetTypeInfo().Assembly);
 
-<# foreach (var profile in cecilSerializerContext.SerializableTypesProfiles) { #>
-		public static void Register<#=profile.Key#>(DataSerializerFactory serializerFactory)
-		{
-			// Force module .ctor of referenced assemblies to be initialized as well
 <# foreach (var referencedAssemblySerializerFactoryType in referencedAssemblySerializerFactoryTypes) { #>
-			ModuleRuntimeHelpers.RunModuleConstructor(typeof(<#=referencedAssemblySerializerFactoryType.ConvertCSharp()#>).GetTypeInfo().Module);
+			assemblySerializers.Modules.Add(typeof(<#=referencedAssemblySerializerFactoryType.ConvertCSharp()#>).GetTypeInfo().Module);
 <# } #>
 
-			// Register types used by this assembly
-<# foreach (var type in profile.Value.SerializableTypes.Where(x => x.Value.Local)) { #>
-			if (!serializerFactory.CanSerialize(typeof(<#= type.Key.ConvertCSharp() #>)))
+<# foreach (var profile in cecilSerializerContext.SerializableTypesProfiles) { #>
 			{
-<#   if (type.Value.SerializerType != null) { #>
-				serializerFactory.RegisterSerializer(<#=type.Key.ConvertTypeId()#>, new <#= type.Value.SerializerType.ConvertCSharp() #>());
-<#   } else { #>
-				serializerFactory.RegisterNullSerializer(<#=type.Key.ConvertTypeId()#>, typeof(<#= type.Key.ConvertCSharp() #>));
+				var assemblySerializersProfile = new AssemblySerializersPerProfile();
+				assemblySerializers.Profiles["<#=profile.Key#>"] = assemblySerializersProfile;
+
+<#   foreach (var type in profile.Value.SerializableTypes.Where(x => x.Value.Local)) { #>
+				assemblySerializersProfile.Add(new AssemblySerializerEntry(<#=type.Key.ConvertTypeId()#>, typeof(<#= type.Key.ConvertCSharp() #>), <# if (type.Value.SerializerType != null) { #>typeof(<#= type.Value.SerializerType.ConvertCSharp() #>)<# } else { #>null<# } #>));
 <#   } #>
 			}
 <# } #>
-		}
 
-<# } // foreach (profile) #>
+			DataSerializerFactory.RegisterSerializationAssembly(assemblySerializers);
+        }
 	}
 }
 

@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public ContentDecoratorTest()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 5;
         }
 
         protected override async Task LoadContent()
@@ -41,10 +41,10 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
                 Content = textBlock, 
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                BackgroundImage = new UIImage(Asset.Load<Texture2D>("DumbWhite"))
+                BackgroundImage = new Sprite(Asset.Load<Texture>("DumbWhite"))
             };
 
-            UI.RootElement = decorator;
+            UIComponent.RootElement = decorator;
         }
 
         protected override void Update(GameTime gameTime)

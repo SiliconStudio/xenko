@@ -133,6 +133,15 @@ namespace SiliconStudio.Shaders.Visitor
                 CollectReferences(collectedReferences, entryPoint);
             }
 
+            if (KeepConstantBuffers)
+            {
+                // Include dependencies of cbuffer (i.e. dependent types)
+                foreach (var variable in shader.Declarations.OfType<ConstantBuffer>())
+                {
+                    CollectReferences(collectedReferences, variable);
+                }
+            }
+
             StripDeclarations(shader.Declarations, collectedReferences, StripUniforms);
         }
 

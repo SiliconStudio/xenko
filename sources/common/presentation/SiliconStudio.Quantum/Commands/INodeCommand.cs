@@ -32,19 +32,38 @@ namespace SiliconStudio.Quantum.Commands
         /// Invokes the node command.
         /// </summary>
         /// <param name="currentValue">The current value of the associated object or member.</param>
-        /// <param name="descriptor">The type descriptor of the associated object or member.</param>
         /// <param name="parameter">The parameter of the command.</param>
         /// <param name="undoToken">The <see cref="UndoToken"/> that will be passed to the <see cref="Undo"/> method when undoing the execution of this command.</param>
         /// <returns>The new value to assign to the associated object or member.</returns>
-        object Invoke(object currentValue, ITypeDescriptor descriptor, object parameter, out UndoToken undoToken);
+        object Invoke(object currentValue, object parameter, out UndoToken undoToken);
 
         /// <summary>
         /// Undoes an invoke of the node command.
         /// </summary>
         /// <param name="currentValue">The current value of the associated object or member.</param>
-        /// <param name="descriptor">The type descriptor of the associated object or member.</param>
         /// <param name="undoToken">The <see cref="UndoToken"/> that was generated when invoking this command.</param>
         /// <returns>The new value to assign to the associated object or member.</returns>
-        object Undo(object currentValue, ITypeDescriptor descriptor, UndoToken undoToken);
+        object Undo(object currentValue, UndoToken undoToken);
+
+        /// <summary>
+        /// Redoes the node command.
+        /// </summary>
+        /// <param name="currentValue">The current value of the associated object or member.</param>
+        /// <param name="parameter">The parameter of the command.</param>
+        /// <param name="undoToken">The <see cref="UndoToken"/> that will be passed to the <see cref="Undo"/> method when undoing the execution of this command.</param>
+        /// <returns>The new value to assign to the associated object or member.</returns>
+        object Redo(object currentValue, object parameter, out UndoToken undoToken);
+
+        /// <summary>
+        /// Notifies the command that the following invokes will be part of a combined execution (the same command being executed multiple times on multiple objects with the same parameters).
+        /// </summary>
+        /// <seealso cref="EndCombinedInvoke"/>
+        void StartCombinedInvoke();
+
+        /// <summary>
+        /// Notifies the command that the combined execution is done.
+        /// </summary>
+        /// <seealso cref="StartCombinedInvoke"/>
+        void EndCombinedInvoke();
     }
 }

@@ -20,13 +20,13 @@ namespace SiliconStudio.Paradox.Audio
             audioEngine = engine;
         }
 
-        public override void Serialize(ContentSerializerContext context, SerializationStream stream, ref SoundEffect obj)
+        public override void Serialize(ContentSerializerContext context, SerializationStream stream, SoundEffect soundEffect)
         {
-            base.Serialize(context, stream, ref obj);
+            base.Serialize(context, stream, soundEffect);
 
             if (context.Mode == ArchiveMode.Deserialize)
             {
-                obj = SoundEffect.Load(audioEngine, stream.NativeStream);
+                soundEffect.Load(stream.NativeStream);
             }
             else
             {
@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Audio
 
         public override object Construct(ContentSerializerContext context)
         {
-            return null;
+            return new SoundEffect(audioEngine);
         }
     }
 }

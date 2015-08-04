@@ -15,4 +15,4 @@ Profiles:
         Platform: Windows
         Properties:
             Paradox.GraphicsPlatform: !GraphicsPlatform Direct3D11
-            Paradox.GraphicsProfile: !GraphicsProfile Level_9_3
+            GameSettingsAsset.DefaultGraphicsProfile: !GraphicsProfile Level_9_3

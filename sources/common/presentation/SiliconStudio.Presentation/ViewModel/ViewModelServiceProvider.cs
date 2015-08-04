@@ -16,32 +16,48 @@ namespace SiliconStudio.Presentation.ViewModel
 
         public static IViewModelServiceProvider NullServiceProvider = new ViewModelServiceProvider(Enumerable.Empty<object>());
 
-        public ViewModelServiceProvider(IEnumerable<object> services)
+        public ViewModelServiceProvider(IEnumerable<object> services = null)
+            : this(null, services)
         {
-            foreach (var service in services)
+        }
+
+        public ViewModelServiceProvider(IViewModelServiceProvider parentProvider, IEnumerable<object> services = null)
+        {
+            // If the parent provider is a ViewModelServiceProvider, try to merge its service list instead of using composition.
+            var parent = parentProvider as ViewModelServiceProvider;
+            if (parent != null)
             {
-                RegisterService(service);
+                parent.services.ForEach(RegisterService);
+            }
+            else
+            {
+                this.parentProvider = parentProvider;
+            }
+            if (services != null)
+            {
+                foreach (var service in services)
+                {
+                    RegisterService(service);
+                }
             }
         }
 
-        public ViewModelServiceProvider(IViewModelServiceProvider parentProvider, IEnumerable<object> services)
-            : this(services)
-        {
-            this.parentProvider = parentProvider;
-        }
-
-        /// <summary>
-        /// Register a new service in this <see cref="ViewModelServiceProvider"/>.
-        /// </summary>
-        /// <param name="service">The service to register.</param>
-        /// <exception cref="InvalidOperationException">A service of the same type has already been registered.</exception>
-        protected void RegisterService(object service)
+        /// <inheritdoc/>
+        public void RegisterService(object service)
         {
             if (service == null) throw new ArgumentNullException("service");
             if (services.Any(x => x.GetType() == service.GetType()))
                 throw new InvalidOperationException("A service of the same type has already been registered.");
 
             services.Add(service);
+        }
+
+        /// <inheritdoc/>
+        public void UnregisterService(object service)
+        {
+            if (service == null) throw new ArgumentNullException("service");
+
+            services.Remove(service);
         }
 
         /// <inheritdoc/>

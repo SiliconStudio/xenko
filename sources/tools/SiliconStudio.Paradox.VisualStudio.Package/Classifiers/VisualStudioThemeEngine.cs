@@ -65,23 +65,60 @@ namespace SiliconStudio.Paradox.VisualStudio.Classifiers
         public VisualStudioTheme GetCurrentTheme()
         {
             var currentUser32 = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
-            using (var subkey = currentUser32.OpenSubKey(string.Format(@"{0}\General", dte.RegistryRoot)))
+            
+            int version = 0;
+            if (!int.TryParse(dte.Version.Split('.')[0], out version))
+                version = 12;
+
+            if (version >= 14)
             {
-                if (subkey == null)
-                    return VisualStudioTheme.Unknown;
+                // VS2015 and after
+                using (var subkey = currentUser32.OpenSubKey(string.Format(@"{0}\ApplicationPrivateSettings\Microsoft\VisualStudio", dte.RegistryRoot)))
+                {
+                    if (subkey == null)
+                        return VisualStudioTheme.Unknown;
 
-                var themeValue = (string)subkey.GetValue("CurrentTheme");
-                if (themeValue == null)
-                    return VisualStudioTheme.Unknown;
+                    // We expect this prefix (not sure what else could happen there?)
+                    const string prefix = "0*System.String*";
 
-                Guid themeGuid;
-                if (!Guid.TryParse(themeValue, out themeGuid))
-                    return VisualStudioTheme.Unknown;
+                    var themeValue = (string)subkey.GetValue("ColorTheme");
+                    if (themeValue == null || !themeValue.StartsWith(prefix))
+                        return VisualStudioTheme.Unknown;
 
-                VisualStudioTheme theme;
-                availableThemes.TryGetValue(themeGuid, out theme);
+                    // Remove prefix
+                    themeValue = themeValue.Substring(prefix.Length);
 
-                return theme;
+                    Guid themeGuid;
+                    if (!Guid.TryParse(themeValue, out themeGuid))
+                        return VisualStudioTheme.Unknown;
+
+                    VisualStudioTheme theme;
+                    availableThemes.TryGetValue(themeGuid, out theme);
+
+                    return theme;
+                }
+            }
+            else
+            {
+                // VS2013 and before
+                using (var subkey = currentUser32.OpenSubKey(string.Format(@"{0}\General", dte.RegistryRoot)))
+                {
+                    if (subkey == null)
+                        return VisualStudioTheme.Unknown;
+
+                    var themeValue = (string)subkey.GetValue("CurrentTheme");
+                    if (themeValue == null)
+                        return VisualStudioTheme.Unknown;
+
+                    Guid themeGuid;
+                    if (!Guid.TryParse(themeValue, out themeGuid))
+                        return VisualStudioTheme.Unknown;
+
+                    VisualStudioTheme theme;
+                    availableThemes.TryGetValue(themeGuid, out theme);
+
+                    return theme;
+                }
             }
         }
 

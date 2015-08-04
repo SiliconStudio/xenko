@@ -14,7 +14,7 @@ namespace SiliconStudio.AssemblyProcessor
     using System.Reflection;
     using System.Collections.Generic;
     using Mono.Cecil;
-    using SiliconStudio.Core.Serialization.Serializers;
+    using SiliconStudio.Core.Serialization;
     using System;
     
     /// <summary>
@@ -205,150 +205,117 @@ namespace SiliconStudio.DataSerializers
             #line default
             #line hidden
             this.Write("\r\n\t{\r\n\t    [SiliconStudio.Core.ModuleInitializer]\r\n        internal static void I" +
-                    "nitialize()\r\n        {\r\n");
+                    "nitialize()\r\n        {\r\n\t\t\tvar assemblySerializers = new AssemblySerializers(typ" +
+                    "eof(");
             
             #line 48 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
- foreach (var profile in cecilSerializerContext.SerializableTypesProfiles) { 
+            this.Write(this.ToStringHelper.ToStringWithCulture(assemblySerializerFactoryClassName));
             
             #line default
             #line hidden
-            this.Write("\t\t\tDataSerializerFactory.RegisterSerializationProfile(\"");
-            
-            #line 49 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(profile.Key));
-            
-            #line default
-            #line hidden
-            this.Write("\", Register");
-            
-            #line 49 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(profile.Key));
-            
-            #line default
-            #line hidden
-            this.Write(");\r\n");
+            this.Write(").GetTypeInfo().Assembly);\r\n\r\n");
             
             #line 50 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
- } 
-            
-            #line default
-            #line hidden
-            this.Write("        }\r\n\r\n");
-            
-            #line 53 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
- foreach (var profile in cecilSerializerContext.SerializableTypesProfiles) { 
-            
-            #line default
-            #line hidden
-            this.Write("\t\tpublic static void Register");
-            
-            #line 54 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(profile.Key));
-            
-            #line default
-            #line hidden
-            this.Write("(DataSerializerFactory serializerFactory)\r\n\t\t{\r\n\t\t\t// Force module .ctor of refer" +
-                    "enced assemblies to be initialized as well\r\n");
-            
-            #line 57 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
  foreach (var referencedAssemblySerializerFactoryType in referencedAssemblySerializerFactoryTypes) { 
             
             #line default
             #line hidden
-            this.Write("\t\t\tModuleRuntimeHelpers.RunModuleConstructor(typeof(");
+            this.Write("\t\t\tassemblySerializers.Modules.Add(typeof(");
             
-            #line 58 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
+            #line 51 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(referencedAssemblySerializerFactoryType.ConvertCSharp()));
             
             #line default
             #line hidden
             this.Write(").GetTypeInfo().Module);\r\n");
             
-            #line 59 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
+            #line 52 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
  } 
             
             #line default
             #line hidden
-            this.Write("\r\n\t\t\t// Register types used by this assembly\r\n");
+            this.Write("\r\n");
             
-            #line 62 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
- foreach (var type in profile.Value.SerializableTypes.Where(x => x.Value.Local)) { 
-            
-            #line default
-            #line hidden
-            this.Write("\t\t\tif (!serializerFactory.CanSerialize(typeof(");
-            
-            #line 63 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(type.Key.ConvertCSharp()));
+            #line 54 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
+ foreach (var profile in cecilSerializerContext.SerializableTypesProfiles) { 
             
             #line default
             #line hidden
-            this.Write(")))\r\n\t\t\t{\r\n");
+            this.Write("\t\t\t{\r\n\t\t\t\tvar assemblySerializersProfile = new AssemblySerializersPerProfile();\r\n" +
+                    "\t\t\t\tassemblySerializers.Profiles[\"");
             
-            #line 65 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
-   if (type.Value.SerializerType != null) { 
-            
-            #line default
-            #line hidden
-            this.Write("\t\t\t\tserializerFactory.RegisterSerializer(");
-            
-            #line 66 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(type.Key.ConvertTypeId()));
+            #line 57 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(profile.Key));
             
             #line default
             #line hidden
-            this.Write(", new ");
+            this.Write("\"] = assemblySerializersProfile;\r\n\r\n");
             
-            #line 66 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(type.Value.SerializerType.ConvertCSharp()));
-            
-            #line default
-            #line hidden
-            this.Write("());\r\n");
-            
-            #line 67 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
-   } else { 
+            #line 59 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
+   foreach (var type in profile.Value.SerializableTypes.Where(x => x.Value.Local)) { 
             
             #line default
             #line hidden
-            this.Write("\t\t\t\tserializerFactory.RegisterNullSerializer(");
+            this.Write("\t\t\t\tassemblySerializersProfile.Add(new AssemblySerializerEntry(");
             
-            #line 68 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
+            #line 60 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(type.Key.ConvertTypeId()));
             
             #line default
             #line hidden
             this.Write(", typeof(");
             
-            #line 68 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
+            #line 60 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(type.Key.ConvertCSharp()));
+            
+            #line default
+            #line hidden
+            this.Write("), ");
+            
+            #line 60 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
+ if (type.Value.SerializerType != null) { 
+            
+            #line default
+            #line hidden
+            this.Write("typeof(");
+            
+            #line 60 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(type.Value.SerializerType.ConvertCSharp()));
+            
+            #line default
+            #line hidden
+            this.Write(")");
+            
+            #line 60 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
+ } else { 
+            
+            #line default
+            #line hidden
+            this.Write("null");
+            
+            #line 60 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
+ } 
             
             #line default
             #line hidden
             this.Write("));\r\n");
             
-            #line 69 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
+            #line 61 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
    } 
             
             #line default
             #line hidden
             this.Write("\t\t\t}\r\n");
             
-            #line 71 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
+            #line 63 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
  } 
             
             #line default
             #line hidden
-            this.Write("\t\t}\r\n\r\n");
+            this.Write("\r\n\t\t\tDataSerializerFactory.RegisterSerializationAssembly(assemblySerializers);\r\n " +
+                    "       }\r\n\t}\r\n}\r\n\r\n");
             
-            #line 74 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
- } // foreach (profile) 
-            
-            #line default
-            #line hidden
-            this.Write("\t}\r\n}\r\n\r\n");
-            
-            #line 78 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
+            #line 70 "C:\DEV\paradox\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexSerializerCodeGenerator.tt"
 
 // Generate complex serializers
 foreach (var complexType in cecilSerializerContext.ComplexTypes)

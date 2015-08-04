@@ -1218,6 +1218,17 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Divides a numerator by a vector.
+        /// </summary>
+        /// <param name="numerator">The numerator.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>The scaled vector.</returns>
+        public static Vector2 operator /(float numerator, Vector2 value)
+        {
+            return new Vector2(numerator / value.X, numerator / value.Y);
+        }
+
+        /// <summary>
         /// Tests for equality between two objects.
         /// </summary>
         /// <param name="left">The first value to compare.</param>

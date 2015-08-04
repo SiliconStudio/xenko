@@ -2,7 +2,7 @@
 Id: cc1bcc78-50b2-4da6-8902-f7a3ae42898b
 Meta:
     Name: Paradox
-    Version: 1.0.0-beta07
+    Version: 1.2.2-beta
     Owners:
       - Silicon Studio Corp.
     Authors: 
@@ -14,9 +14,9 @@ Meta:
 Profiles:
     - Name: Shared
       AssetFolders:
-        - Path: sources/shaders
-        - Path: sources/engine/SiliconStudio.Paradox.Engine/Shaders
+        - Path: sources/engine/SiliconStudio.Paradox.Engine/Rendering
         - Path: sources/engine/SiliconStudio.Paradox.Graphics/Shaders
+        - Path: sources/editor/SiliconStudio.Paradox.Assets.Presentation/Shaders
 TemplateFolders:
     - Path: sources/editor/SiliconStudio.Paradox.Assets.Presentation/Templates
       Group: Core
@@ -26,6 +26,9 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Paradox.Assets.Presentation/Templates/ProjectExecutable.pdxtpl
         - sources/editor/SiliconStudio.Paradox.Assets.Presentation/Templates/ProjectLibrary.pdxtpl
         - sources/editor/SiliconStudio.Paradox.Assets.Presentation/Templates/UpdatePlatforms.pdxtpl
+    - Path: sources/data/images/NewGame
+      Group: Core
+      Exclude: "**/*.psd;**/*.md"
     - Path: samples
       Group: Samples
       Exclude: "**/.git/**;**/_ReSharper.*/**;**/Bin/**;**/obj/**;**/*.sln;**/*.suo;**/*.GhostDoc.xml;**/samples2/readme.md;**/samples2/.gitignore;**/*.psess;**/*.vspx;**/*.userprefs"
@@ -34,21 +37,19 @@ TemplateFolders:
         - samples\Games\JumpyJet\JumpyJet.pdxtpl
         - samples\Games\SpaceEscape\SpaceEscape.pdxtpl
         - samples\Graphics\AnimatedModel\AnimatedModel.pdxtpl
-        - samples\Graphics\CubemapReflection\CubemapReflection.pdxtpl
         - samples\Graphics\CustomEffect\CustomEffect.pdxtpl
-        - samples\Graphics\DeferredLighting\DeferredLighting.pdxtpl
         - samples\Graphics\ForwardLighting\ForwardLighting.pdxtpl
         - samples\Graphics\GeometricPrimitives\GeometricPrimitives.pdxtpl
         - samples\Graphics\HelloWorld\HelloWorld.pdxtpl
+        - samples\Graphics\MaterialSample\MaterialSample.pdxtpl
         - samples\Graphics\RenderSceneToTexture\RenderSceneToTexture.pdxtpl
         - samples\Graphics\SimpleDynamicTexture\SimpleDynamicTexture.pdxtpl
         - samples\Graphics\SimpleModel\SimpleModel.pdxtpl
         - samples\Graphics\SimpleSprite\SimpleSprite.pdxtpl
-        - samples\Graphics\SimpleTerrain\SimpleTerrain.pdxtpl
         - samples\Graphics\SpriteEntity\SpriteEntity.pdxtpl
         - samples\Graphics\SpriteFonts\SpriteFonts.pdxtpl
         - samples\Input\TouchInputs\TouchInputs.pdxtpl
-        - samples\Physics\CharacterController\CharacterController.pdxtpl
+        - samples\Physics\CharacterControllerSample\CharacterControllerSample.pdxtpl
         - samples\Physics\Constraints\Constraints.pdxtpl
         - samples\Physics\Raycasting\Raycasting.pdxtpl
         - samples\UI\GameMenu\GameMenu.pdxtpl

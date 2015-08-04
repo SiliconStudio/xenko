@@ -23,6 +23,7 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
 
 using System;
+using Windows.Graphics.Display;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core.Mathematics;
 using Windows.UI.ViewManagement;
@@ -38,6 +39,8 @@ namespace SiliconStudio.Paradox.Games
     internal class GameWindowWindowsRuntimeSwapChainPanel : GameWindow
     {
 #region Fields
+        private const DisplayOrientations PortraitOrientations = DisplayOrientations.Portrait | DisplayOrientations.PortraitFlipped;
+        private const DisplayOrientations LandscapeOrientations = DisplayOrientations.Landscape | DisplayOrientations.LandscapeFlipped;
 
         private SwapChainPanel swapChainPanel;
         private WindowHandle windowHandle;
@@ -168,28 +171,35 @@ namespace SiliconStudio.Paradox.Games
             var bounds = e.NewSize;
 
             // Only apply SwapChain resize when effective orientation is matching current orientation
-            // TODO: This code is just a workaround. We need to improve orientation handling PDX-1140
-            var effectiveOrientation = bounds.Width > bounds.Height ? ApplicationViewOrientation.Landscape : ApplicationViewOrientation.Portrait;
+            // TODO: We might want to handle borders if excplitiely asked in game user settings asset (fixed aspect ratio)
             var currentOrientation = ApplicationView.GetForCurrentView().Orientation;
-            if (effectiveOrientation == currentOrientation
-                && bounds.Width > 0 && bounds.Height > 0 && currentWidth > 0 && currentHeight > 0)
+            var rotationPreferences = DisplayInformation.AutoRotationPreferences;
+
+            // If user clicked only portraits or only landscapes mode (or nothing at all?), let's check against current orientation if it is matching
+            bool isOrientationMatchingPreferences =
+                rotationPreferences == DisplayOrientations.None
+                || (currentOrientation == ApplicationViewOrientation.Portrait && (rotationPreferences & PortraitOrientations) != 0)
+                || (currentOrientation == ApplicationViewOrientation.Landscape && (rotationPreferences & LandscapeOrientations) != 0);
+
+            if (!isOrientationMatchingPreferences && bounds.Width > 0 && bounds.Height > 0 && currentWidth > 0 && currentHeight > 0)
             {
+                // Need to add border (display forces us to have another orientation, i.e. a portrait-only game running on Windows Store computer screen)
                 double panelWidth;
                 double panelHeight;
                 panelWidth = bounds.Width;
                 panelHeight = bounds.Height;
-                var panelRatio = panelWidth/panelHeight;
-                var currentRatio = currentWidth/currentHeight;
+                var panelRatio = panelWidth / panelHeight;
+                var currentRatio = currentWidth / currentHeight;
 
                 if (panelRatio < currentRatio)
                 {
                     panelWidth = bounds.Width;
-                    panelHeight = (int)(currentHeight*bounds.Width/currentWidth);
+                    panelHeight = (int)(currentHeight * bounds.Width / currentWidth);
                 }
                 else
                 {
                     panelHeight = bounds.Height;
-                    panelWidth = (int)(currentWidth*bounds.Height/currentHeight);
+                    panelWidth = (int)(currentWidth * bounds.Height / currentHeight);
                 }
 
                 if (swapChainPanel.Width != panelWidth || swapChainPanel.Height != panelHeight)

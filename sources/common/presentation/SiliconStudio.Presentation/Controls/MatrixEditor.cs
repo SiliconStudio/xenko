@@ -2,102 +2,94 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Presentation.Controls
 {
-    public class MatrixEditor : Control
+    public class MatrixEditor : VectorEditor<Matrix>
     {
         private static readonly Dictionary<DependencyProperty, int> PropertyToIndex;
-        private bool interlock;
-
-        /// <summary>
-        /// Identifies the <see cref="Matrix"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty MatrixProperty = DependencyProperty.Register("Matrix", typeof(Matrix), typeof(MatrixEditor), new FrameworkPropertyMetadata(default(Matrix), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnMatrixPropertyChanged, null, false, UpdateSourceTrigger.Explicit));
 
         /// <summary>
         /// Identifies the <see cref="M11"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty M11Property = DependencyProperty.Register("M11", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnElementValuePropertyChanged));
+        public static readonly DependencyProperty M11Property = DependencyProperty.Register("M11", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="M12"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty M12Property = DependencyProperty.Register("M12", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnElementValuePropertyChanged));
+        public static readonly DependencyProperty M12Property = DependencyProperty.Register("M12", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="M13"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty M13Property = DependencyProperty.Register("M13", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnElementValuePropertyChanged));
+        public static readonly DependencyProperty M13Property = DependencyProperty.Register("M13", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="M14"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty M14Property = DependencyProperty.Register("M14", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnElementValuePropertyChanged));
+        public static readonly DependencyProperty M14Property = DependencyProperty.Register("M14", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="M21"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty M21Property = DependencyProperty.Register("M21", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnElementValuePropertyChanged));
+        public static readonly DependencyProperty M21Property = DependencyProperty.Register("M21", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="M22"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty M22Property = DependencyProperty.Register("M22", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnElementValuePropertyChanged));
+        public static readonly DependencyProperty M22Property = DependencyProperty.Register("M22", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="M23"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty M23Property = DependencyProperty.Register("M23", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnElementValuePropertyChanged));
+        public static readonly DependencyProperty M23Property = DependencyProperty.Register("M23", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="M24"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty M24Property = DependencyProperty.Register("M24", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnElementValuePropertyChanged));
+        public static readonly DependencyProperty M24Property = DependencyProperty.Register("M24", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="M31"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty M31Property = DependencyProperty.Register("M31", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnElementValuePropertyChanged));
+        public static readonly DependencyProperty M31Property = DependencyProperty.Register("M31", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="M32"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty M32Property = DependencyProperty.Register("M32", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnElementValuePropertyChanged));
+        public static readonly DependencyProperty M32Property = DependencyProperty.Register("M32", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="M33"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty M33Property = DependencyProperty.Register("M33", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnElementValuePropertyChanged));
+        public static readonly DependencyProperty M33Property = DependencyProperty.Register("M33", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="M34"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty M34Property = DependencyProperty.Register("M34", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnElementValuePropertyChanged));
+        public static readonly DependencyProperty M34Property = DependencyProperty.Register("M34", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="M41"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty M41Property = DependencyProperty.Register("M41", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnElementValuePropertyChanged));
+        public static readonly DependencyProperty M41Property = DependencyProperty.Register("M41", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="M42"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty M42Property = DependencyProperty.Register("M42", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnElementValuePropertyChanged));
+        public static readonly DependencyProperty M42Property = DependencyProperty.Register("M42", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="M43"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty M43Property = DependencyProperty.Register("M43", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnElementValuePropertyChanged));
+        public static readonly DependencyProperty M43Property = DependencyProperty.Register("M43", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="M44"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty M44Property = DependencyProperty.Register("M44", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnElementValuePropertyChanged));
+        public static readonly DependencyProperty M44Property = DependencyProperty.Register("M44", typeof(float), typeof(MatrixEditor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         static MatrixEditor()
         {
@@ -108,11 +100,7 @@ namespace SiliconStudio.Presentation.Controls
                 { M41Property, 12 }, { M42Property, 13 }, { M43Property, 14 }, { M44Property, 15 },
             };
         }
-        /// <summary>
-        /// The <see cref="Matrix"/> associated to this control.
-        /// </summary>
-        public Matrix Matrix { get { return (Matrix)GetValue(MatrixProperty); } set { SetValue(MatrixProperty, value); } }
-
+    
         /// <summary>
         /// The value at the first column of the first row of the <see cref="Matrix"/> associated to this control.
         /// </summary>
@@ -193,77 +181,30 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public float M44 { get { return (float)GetValue(M44Property); } set { SetValue(M44Property, value); } }
 
-        /// <summary>
-        /// Raised when the <see cref="Matrix"/> property is modified.
-        /// </summary>
-        private void OnMatrixValueChanged()
+        /// <inheritdoc/>
+        protected override void UpdateComponentsFromValue(Matrix value)
         {
-            if (!interlock)
+            foreach (var property in PropertyToIndex)
             {
-                interlock = true;
-                foreach (var dependencyProperty in PropertyToIndex)
-                {
-                    SetCurrentValue(dependencyProperty.Key, Matrix[dependencyProperty.Value]);
-                }
-                interlock = false;
+                SetCurrentValue(property.Key, value[property.Value]);
+            }
+        }
+
+        /// <inheritdoc/>
+        protected override Matrix UpdateValueFromComponent(DependencyProperty property)
+        {
+            var array = new float[16];
+            foreach (var dependencyProperty in PropertyToIndex)
+            {
+                array[dependencyProperty.Value] = property == dependencyProperty.Key ? (float)GetValue(dependencyProperty.Key) : Value[dependencyProperty.Value];
             }
 
-            UpdateBinding(MatrixProperty);
+            return new Matrix(array);
         }
 
-        /// <summary>
-        /// Raised when the one of the element properties is modified.
-        /// </summary>
-        /// <param name="e">The dependency property that has changed.</param>
-        private void OnElementValueChanged(DependencyPropertyChangedEventArgs e)
+        protected override Matrix UpateValueFromFloat(float value)
         {
-            if (!interlock)
-            {
-                interlock = true;
-                var array = new float[16];
-                foreach (var dependencyProperty in PropertyToIndex)
-                {
-                    array[dependencyProperty.Value] = e.Property == dependencyProperty.Key ? (float)e.NewValue : Matrix[dependencyProperty.Value];
-                }
-
-                Matrix = new Matrix(array);
-                interlock = false;
-            }
-
-            UpdateBinding(e.Property);
-        }
-
-        /// <summary>
-        /// Updates the binding of the given dependency property.
-        /// </summary>
-        /// <param name="dependencyProperty">The dependency property.</param>
-        private void UpdateBinding(DependencyProperty dependencyProperty)
-        {
-            BindingExpression expression = GetBindingExpression(dependencyProperty);
-            if (expression != null)
-                expression.UpdateSource();
-        }
-
-        /// <summary>
-        /// Raised by <see cref="MatrixProperty"/> when the <see cref="Matrix"/> dependency property is modified.
-        /// </summary>
-        /// <param name="sender">The dependency object where the event handler is attached.</param>
-        /// <param name="e">The event data.</param>
-        private static void OnMatrixPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            var editor = (MatrixEditor)sender;
-            editor.OnMatrixValueChanged();
-        }
-
-        /// <summary>
-        /// Raised by any element dependency property when it is modified.
-        /// </summary>
-        /// <param name="sender">The dependency object where the event handler is attached.</param>
-        /// <param name="e">The event data.</param>
-        private static void OnElementValuePropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            var editor = (MatrixEditor)sender;
-            editor.OnElementValueChanged(e);
+            return new Matrix(value);
         }
     }
 }

@@ -23,7 +23,7 @@ Vector4 FbxDouble4ToVector4(FbxDouble4 vector)
 	return Vector4((float)vector[0], (float)vector[1], (float)vector[2], (float)vector[3]);
 }
 
-CompressedTimeSpan FBXTimeToTimeSpane(const FbxTime& time)
+CompressedTimeSpan FBXTimeToTimeSpan(const FbxTime& time)
 {
 	double resultTime = (double)time.Get();
 	resultTime *= (double)CompressedTimeSpan::TicksPerSecond / (double)FBXSDK_TIME_ONE_SECOND.Get();
@@ -41,6 +41,17 @@ Matrix FBXMatrixToMatrix(FbxAMatrix& matrix)
 	return result;
 }
 
+FbxAMatrix MatrixToFBXMatrix(Matrix& matrix)
+{
+	FbxAMatrix result;
+
+	for (int i = 0; i < 4; ++i)
+		for (int j = 0; j < 4; ++j)
+			((double*)&result)[i * 4 + j] = (double)((float*)&matrix)[j * 4 + i];
+
+	return result;
+}
+
 double FocalLengthToVerticalFov(double filmHeight, double focalLength)
 {
 	return 2.0 * Math::Atan(filmHeight * 0.5 * 10.0 * 2.54 / focalLength);
@@ -50,4 +61,14 @@ double FocalLengthToVerticalFov(double filmHeight, double focalLength)
 FbxDouble3 operator*(double factor, FbxDouble3 vector)
 {
 	return FbxDouble3(factor * vector[0], factor * vector[1], factor * vector[2]);
+}
+
+// string manipulation
+System::String^ ConvertToUTF8(std::string str)
+{
+	auto byteCount = str.length();
+	array<Byte>^ bytes = gcnew array<Byte>(byteCount);
+	pin_ptr<Byte> p = &bytes[0];
+	memcpy(p, str.c_str(), byteCount);
+	return System::Text::Encoding::UTF8->GetString(bytes);
 }

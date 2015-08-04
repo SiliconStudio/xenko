@@ -69,6 +69,7 @@ namespace SiliconStudio.Presentation.Controls
         }
 
         private DragState dragState;
+        private double mouseMoveDelta;
         private Point mouseDownPosition;
         private DragDirectionAdorner adorner;
         private Orientation dragOrientation;
@@ -76,6 +77,11 @@ namespace SiliconStudio.Presentation.Controls
         private RepeatButton decreaseButton;
         private ScrollViewer contentHost;
         private bool updatingValue;
+
+        /// <summary>
+        /// The amount of pixel to move the mouse in order to add/remove a <see cref="SmallChange"/> to the current <see cref="Value"/>.
+        /// </summary>
+        public static double DragSpeed = 3;
 
         /// <summary>
         /// Identifies the <see cref="Value"/> dependency property.
@@ -167,6 +173,11 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public static RoutedCommand SmallDecreaseCommand { get; private set; }
 
+        /// <summary>
+        /// Resets the current value to zero.
+        /// </summary>
+        public static RoutedCommand ResetValueCommand { get; private set; }
+
         static NumericTextBox()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(NumericTextBox), new FrameworkPropertyMetadata(typeof(NumericTextBox)));
@@ -194,6 +205,9 @@ namespace SiliconStudio.Presentation.Controls
             SmallDecreaseCommand = new RoutedCommand("SmallDecreaseCommand", typeof(System.Windows.Controls.TextBox));
             CommandManager.RegisterClassCommandBinding(typeof(System.Windows.Controls.TextBox), new CommandBinding(SmallDecreaseCommand, OnSmallDecreaseCommand));
             CommandManager.RegisterClassInputBinding(typeof(System.Windows.Controls.TextBox), new InputBinding(SmallDecreaseCommand, new KeyGesture(Key.Down)));
+
+            ResetValueCommand = new RoutedCommand("ResetValueCommand", typeof(System.Windows.Controls.TextBox));
+            CommandManager.RegisterClassCommandBinding(typeof(System.Windows.Controls.TextBox), new CommandBinding(ResetValueCommand, OnResetValueCommand));
         }
 
         /// <summary>
@@ -267,6 +281,16 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public event EventHandler<RepeatButtonPressedRoutedEventArgs> RepeatButtonReleased { add { AddHandler(RepeatButtonReleasedEvent, value); } remove { RemoveHandler(RepeatButtonReleasedEvent, value); } }
 
+        /// <summary>
+        /// Raised when the mouse starts to drag the cursor to change the value.
+        /// </summary>
+        public event EventHandler<DragStartedEventArgs> DragStarted;
+
+        /// <summary>
+        /// Raised when the mouse stops to drag the cursor to change the value, after the validation of the change.
+        /// </summary>
+        public event EventHandler<DragCompletedEventArgs> DragCompleted;
+
         /// <inheritdoc/>
         public override void OnApplyTemplate()
         {
@@ -308,6 +332,44 @@ namespace SiliconStudio.Presentation.Controls
             base.OnInitialized(e);
             var textValue = FormatValue(Value);
             SetCurrentValue(TextProperty, textValue);
+        }
+
+        private void RootParentIsKeyboardFocusWithinChanged(object sender, DependencyPropertyChangedEventArgs args)
+        {
+            if ((bool)args.NewValue == false)
+            {
+                // Cancel dragging in progress
+                if (dragState == DragState.Dragging)
+                {
+                    if (adorner != null)
+                    {
+                        var adornerLayer = AdornerLayer.GetAdornerLayer(this);
+                        if (adornerLayer != null)
+                        {
+                            adornerLayer.Remove(adorner);
+                            adorner = null;
+                        }
+                    }
+                    Cancel();
+
+                    var handler = DragCompleted;
+                    if (handler != null)
+                    {
+                        Point position = Mouse.GetPosition(this);
+                        double dx = Math.Abs(position.X - mouseDownPosition.X);
+                        double dy = Math.Abs(position.Y - mouseDownPosition.Y);
+                        handler(this, new DragCompletedEventArgs(dx, dy, true));
+                    }
+
+                    Mouse.OverrideCursor = null;
+                    dragState = DragState.None;
+
+                }
+
+                var root = this.FindVisualRoot() as FrameworkElement;
+                if (root != null)
+                    root.IsKeyboardFocusWithinChanged -= RootParentIsKeyboardFocusWithinChanged;
+            }
         }
 
         /// <inheritdoc/>
@@ -353,8 +415,20 @@ namespace SiliconStudio.Presentation.Controls
 
                 if (dx > SystemParameters.MinimumHorizontalDragDistance || dy > SystemParameters.MinimumVerticalDragDistance)
                 {
-                    e.MouseDevice.Capture(this);
+                    var root = this.FindVisualRoot() as FrameworkElement;
+                    if (root != null)
+                        root.IsKeyboardFocusWithinChanged += RootParentIsKeyboardFocusWithinChanged;
+
+                    mouseDownPosition = position;
+                    mouseMoveDelta = 0;
                     dragState = DragState.Dragging;
+                    
+                    e.MouseDevice.Capture(this);
+                    var handler = DragStarted;
+                    if (handler != null)
+                    {
+                        handler(this, new DragStartedEventArgs(mouseDownPosition.X, mouseDownPosition.Y));
+                    }
                     SelectAll();
                     if (adorner != null)
                         adorner.SetOrientation(dragOrientation);
@@ -363,14 +437,14 @@ namespace SiliconStudio.Presentation.Controls
 
             if (dragState == DragState.Dragging)
             {
-                double delta;
-
                 if (dragOrientation == Orientation.Horizontal)
-                    delta = position.X - mouseDownPosition.X;
+                    mouseMoveDelta += position.X - mouseDownPosition.X;
                 else
-                    delta = mouseDownPosition.Y - position.Y;
+                    mouseMoveDelta += mouseDownPosition.Y - position.Y;
 
-                var newValue = Value + delta * SmallChange;
+                var deltaUsed = Math.Floor(mouseMoveDelta / DragSpeed);
+                mouseMoveDelta -= deltaUsed;
+                var newValue = Value + deltaUsed * SmallChange;
 
                 SetCurrentValue(ValueProperty, newValue);
 
@@ -399,7 +473,7 @@ namespace SiliconStudio.Presentation.Controls
                 }
             }
             else if (dragState == DragState.Dragging && AllowMouseDrag)
-            {
+            {                
                 if (adorner != null)
                 {
                     var adornerLayer = AdornerLayer.GetAdornerLayer(this);
@@ -410,6 +484,15 @@ namespace SiliconStudio.Presentation.Controls
                     }
                 }
                 Validate();
+
+                var handler = DragCompleted;
+                if (handler != null)
+                {
+                    Point position = e.GetPosition(this);
+                    double dx = Math.Abs(position.X - mouseDownPosition.X);
+                    double dy = Math.Abs(position.Y - mouseDownPosition.Y);
+                    handler(this, new DragCompletedEventArgs(dx, dy, false));
+                }
             }
 
             Mouse.OverrideCursor = null;
@@ -418,6 +501,10 @@ namespace SiliconStudio.Presentation.Controls
 
         protected sealed override void OnCancelled()
         {
+            BindingExpression expression = GetBindingExpression(ValueProperty);
+            if (expression != null)
+                expression.UpdateTarget();
+
             var textValue = FormatValue(Value);
             SetCurrentValue(TextProperty, textValue);
         }
@@ -428,14 +515,7 @@ namespace SiliconStudio.Presentation.Controls
             double value;
             try
             {
-                try
-                {
-                    value = double.Parse(Text);
-                }
-                catch (Exception)
-                {
-                    value = double.Parse(Text, CultureInfo.InvariantCulture);
-                }
+                value = double.Parse(Text, CultureInfo.InvariantCulture);
             }
             catch (Exception)
             {
@@ -455,14 +535,8 @@ namespace SiliconStudio.Presentation.Controls
             double value;
             try
             {
-                try
-                {
-                    value = double.Parse(baseValue);
-                }
-                catch (Exception)
-                {
-                    value = double.Parse(baseValue, CultureInfo.InvariantCulture);
-                }
+                value = double.Parse(baseValue, CultureInfo.InvariantCulture);
+
                 if (value > Maximum)
                 {
                     value = Maximum;
@@ -480,11 +554,6 @@ namespace SiliconStudio.Presentation.Controls
             return FormatValue(value);
         }
 
-        /// <summary>
-        /// Formats the text to 
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
         protected string FormatValue(double value)
         {
             int decimalPlaces = DecimalPlaces;
@@ -624,7 +693,7 @@ namespace SiliconStudio.Presentation.Controls
                 control.UpdateValue(MathUtil.Lerp(control.Minimum, control.Maximum, (double)e.NewValue));
         }
 
-        private static void UpdateValueCommand(object sender, Func<NumericTextBox, double> getValue)
+        private static void UpdateValueCommand(object sender, Func<NumericTextBox, double> getValue, bool validate = true)
         {
             var control = (sender as NumericTextBox) ?? ((System.Windows.Controls.TextBox)sender).FindVisualParentOfType<NumericTextBox>();
             if (control != null)
@@ -632,7 +701,8 @@ namespace SiliconStudio.Presentation.Controls
                 var value = getValue(control);
                 control.UpdateValue(value);
                 control.SelectAll();
-                control.Validate();
+                if (validate)
+                    control.Validate();
             }
         }
 
@@ -654,6 +724,11 @@ namespace SiliconStudio.Presentation.Controls
         private static void OnSmallDecreaseCommand(object sender, ExecutedRoutedEventArgs e)
         {
             UpdateValueCommand(sender, x => x.Value - x.SmallChange);
+        }
+
+        private static void OnResetValueCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            UpdateValueCommand(sender, x => 0.0, false);
         }
 
         private static void OnForbiddenPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

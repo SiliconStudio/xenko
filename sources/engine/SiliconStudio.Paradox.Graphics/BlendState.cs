@@ -2,14 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.ReferenceCounting;
-using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Paradox.Graphics
 {
     /// <summary>	
     /// Describes a blend state.	
     /// </summary>
-    [ContentSerializer(typeof(BlendStateSerializer))]
     public partial class BlendState : GraphicsResourceBase
     {
         // For FakeBlendState.
@@ -18,7 +16,7 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         // For FakeBlendState.
-        protected BlendState(BlendStateDescription description)
+        private BlendState(BlendStateDescription description)
         {
             Description = description;
         }
@@ -40,11 +38,28 @@ namespace SiliconStudio.Paradox.Graphics
                 }
                 else
                 {
+                    // Make a local copy of the render targets (ideally, should be ImmutableArray)
+                    var renderTargets = blendStateDescription.RenderTargets;
+                    blendStateDescription.RenderTargets = new BlendStateRenderTargetDescription[renderTargets.Length];
+                    for (int i = 0; i < renderTargets.Length; ++i)
+                        blendStateDescription.RenderTargets[i] = renderTargets[i];
+
                     blendState = new BlendState(graphicsDevice, blendStateDescription);
                     graphicsDevice.CachedBlendStates.Add(blendStateDescription, blendState);
                 }
             }
             return blendState;
+        }
+
+
+        /// <summary>
+        /// Create a new fake blend state for serialization.
+        /// </summary>
+        /// <param name="description">The description of the blend state</param>
+        /// <returns>The fake blend state</returns>
+        public static BlendState NewFake(BlendStateDescription description)
+        {
+            return new BlendState(description);
         }
 
         protected override void Destroy()
@@ -70,6 +85,6 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// Gets or sets a bitmask which defines which samples can be written during multisampling. The default is 0xffffffff.
         /// </summary>
-        public int MultiSampleMask;
+        public int MultiSampleMask = -1;
     }
 }

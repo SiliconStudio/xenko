@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Graphics.Font
         public float XAdvance;
 
         /// <summary>
-        /// Index to a bitmap stored in <see cref="StaticSpriteFontData.Bitmaps"/>. 
+        /// Index of the bitmap. 
         /// </summary>
         public int BitmapIndex;
     } 

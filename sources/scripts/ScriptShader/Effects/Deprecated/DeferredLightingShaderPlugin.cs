@@ -2,7 +2,7 @@
 
 using SiliconStudio.Paradox.Shaders;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     /// <summary>
     /// Shader used with <see cref="LightingPrepassPlugin"/>.

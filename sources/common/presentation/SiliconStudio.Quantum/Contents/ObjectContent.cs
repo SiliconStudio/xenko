@@ -16,12 +16,17 @@ namespace SiliconStudio.Quantum.Contents
         private object value;
 
         public ObjectContent(object value, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
-            : base(descriptor.Type, descriptor, isPrimitive, reference)
+            : base(descriptor, isPrimitive, reference)
         {
             SerializeFlags = ViewModelContentSerializeFlags.None;
             this.value = value;
         }
 
-        public override object Value { get { return value; } set { this.value = value; } }
+        public override object Value { get { return value; } set { throw new InvalidOperationException("An ObjectContent value cannot be modified after it has been constructed"); } }
+
+        protected void SetValue(object newValue)
+        {
+            value = newValue;
+        }
     }
 }

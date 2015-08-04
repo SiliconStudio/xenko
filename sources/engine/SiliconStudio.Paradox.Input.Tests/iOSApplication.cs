@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
-using SiliconStudio.Paradox.Effects.Modules;
+using SiliconStudio.Paradox.Effects;
 using SiliconStudio.Paradox.Starter;
 
 namespace SiliconStudio.Paradox.Input.Tests

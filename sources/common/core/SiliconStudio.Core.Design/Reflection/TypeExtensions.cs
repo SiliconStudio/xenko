@@ -131,10 +131,10 @@ namespace SiliconStudio.Core.Reflection
         }
 
         /// <summary>
-        /// Returnes true if the specified <paramref name="type"/> is a struct type.
+        /// Indicates whether the specified <paramref name="type"/> is a non-primitive struct type.
         /// </summary>
-        /// <param name="type"><see cref="Type"/> to be analyzed.</param>
-        /// <returns>true if the specified <paramref name="type"/> is a struct type; otehrwise false.</returns>
+        /// <param name="type">The <see cref="Type"/> to be analyzed.</param>
+        /// <returns><c>True</c> if the specified <paramref name="type"/> is a non-primitive struct type; otehrwise <c>False</c>.</returns>
         public static bool IsStruct(this Type type)
         {
             return type != null && type.GetTypeInfo().IsValueType && !type.GetTypeInfo().IsPrimitive && !type.GetTypeInfo().IsEnum;
@@ -185,6 +185,18 @@ namespace SiliconStudio.Core.Reflection
                 return decimal.MinValue;
 
             throw new ArgumentException("Numeric type expected");
+        }
+
+        /// <summary>
+        /// Gets the display name of the given type. The display name is the name of the type, or, if the <see cref="DisplayAttribute"/> is
+        /// applied on the type, value of the <see cref="DisplayAttribute.Name"/> property.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static string GetDisplayName(this Type type)
+        {
+            var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(type);
+            return displayAttribute != null && !string.IsNullOrEmpty(displayAttribute.Name) ? displayAttribute.Name : type.Name;
         }
 
         /// <summary>

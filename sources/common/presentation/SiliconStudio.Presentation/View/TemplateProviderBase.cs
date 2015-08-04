@@ -64,12 +64,8 @@ namespace SiliconStudio.Presentation.View
             // Other overrides none: this is first.
             if (other.OverrideRule == OverrideRule.None)
                 return -1;
-
-            // Both overrides most: undeterminated.
-            if (OverrideRule == OverrideRule.Most && other.OverrideRule == OverrideRule.Most)
-                return 0;
             
-            // From this point, at least one have the "Some" rule and at most one have the "Most" rule.
+            // From this point, both have either the "Some" rule or the "Most" rule.
             bool thisOverrides = OverriddenProviderNames.Contains(other.Name);
             bool otherOverrides = other.OverriddenProviderNames.Contains(Name);
 
@@ -81,13 +77,17 @@ namespace SiliconStudio.Presentation.View
             if (!thisOverrides && !otherOverrides)
             {
                 // ...but this overrides most: this is first.
-                if (OverrideRule == OverrideRule.Most)
+                if (OverrideRule == OverrideRule.Most && other.OverrideRule == OverrideRule.Some)
                     return -1;
 
                 // ...but other overrides most: other is first.
-                if (other.OverrideRule == OverrideRule.Most)
+                if (OverrideRule == OverrideRule.Some && other.OverrideRule == OverrideRule.Most)
                     return 1;
+
+                // ...and both have the same rule: undeterminated
+                return 0;
             }
+
             // Result: whichever overrides the other is first.
             return thisOverrides ? -1 : 1;
         }

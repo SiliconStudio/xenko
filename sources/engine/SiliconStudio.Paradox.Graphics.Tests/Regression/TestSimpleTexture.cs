@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests.Regression
         /// <summary>
         /// The texture.
         /// </summary>
-        private Texture2D texture;
+        private Texture texture;
         
         public TestSimpleTexture()
         {
@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests.Regression
             await base.LoadContent();
 
             Console.WriteLine(@"Begin load.");
-            texture = Asset.Load<Texture2D>("small_uv");
+            texture = Asset.Load<Texture>("small_uv");
             Console.WriteLine(@"End load.");
         }
 

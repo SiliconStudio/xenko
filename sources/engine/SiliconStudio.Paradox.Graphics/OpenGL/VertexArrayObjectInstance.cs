@@ -3,7 +3,6 @@
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
 using System;
 using System.Collections.Generic;
-using SiliconStudio.Core.Collections;
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
 #else
@@ -57,11 +56,17 @@ namespace SiliconStudio.Paradox.Graphics
             if (vaoId != 0)
             {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                if (graphicsDevice.HasVAO)
-                    OpenTK.Graphics.ES20.GL.Oes.DeleteVertexArrays(1, ref vaoId);
-#else
-                GL.DeleteVertexArrays(1, ref vaoId);
+                if (graphicsDevice.IsOpenGLES2)
+                {
+                    if (graphicsDevice.HasVAO)
+                        OpenTK.Graphics.ES20.GL.Oes.DeleteVertexArrays(1, ref vaoId);
+                }
+                else
 #endif
+                {
+                    GL.DeleteVertexArrays(1, ref vaoId);
+                }
+
                 vaoId = 0;
             }
         }
@@ -95,7 +100,10 @@ namespace SiliconStudio.Paradox.Graphics
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
                 if (hasDynamicStagingVB)
                 {
-                    OpenTK.Graphics.ES20.GL.Oes.BindVertexArray(0);
+                    if (graphicsDevice.IsOpenGLES2)
+                        OpenTK.Graphics.ES20.GL.Oes.BindVertexArray(0);
+                    else
+                        GL.BindVertexArray(0);
                     ApplyAttributes(ref graphicsDevice.enabledVertexAttribArrays);
                 }
                 else
@@ -103,12 +111,17 @@ namespace SiliconStudio.Paradox.Graphics
                     if (vaoId == 0)
                     {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                        OpenTK.Graphics.ES20.GL.Oes.GenVertexArrays(1, out vaoId);
-                        OpenTK.Graphics.ES20.GL.Oes.BindVertexArray(vaoId);
-#else
-                        GL.GenVertexArrays(1, out vaoId);
-                        GL.BindVertexArray(vaoId);
+                        if (graphicsDevice.IsOpenGLES2)
+                        {
+                            OpenTK.Graphics.ES20.GL.Oes.GenVertexArrays(1, out vaoId);
+                            OpenTK.Graphics.ES20.GL.Oes.BindVertexArray(vaoId);
+                        }
+                        else
 #endif
+                        {
+                            GL.GenVertexArrays(1, out vaoId);
+                            GL.BindVertexArray(vaoId);
+                        }
 
                         // New VAO starts with no vertex attribs
                         uint currentlyEnabledVertexAttribArrays = 0;
@@ -117,10 +130,13 @@ namespace SiliconStudio.Paradox.Graphics
                     else
                     {
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                        OpenTK.Graphics.ES20.GL.Oes.BindVertexArray(vaoId);
-#else
-                        GL.BindVertexArray(vaoId);
+                        if (graphicsDevice.IsOpenGLES2)
+                            OpenTK.Graphics.ES20.GL.Oes.BindVertexArray(vaoId);
+                        else
 #endif
+                        {
+                            GL.BindVertexArray(vaoId);
+                        }
 
 #if SILICONSTUDIO_PLATFORM_ANDROID
                         // Not sure why, but it seems PowerVR doesn't work well when changing VAO.

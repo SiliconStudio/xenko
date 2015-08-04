@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}</ProjectGuid>
-    <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
@@ -16,6 +16,7 @@
     <SiliconStudioBuildProfile>iOS</SiliconStudioBuildProfile>
     <SiliconStudioPackageGuid>{04ed1618-1a06-4a69-ac34-1006a978af11}</SiliconStudioPackageGuid>
     <SiliconStudioParadoxDir>$(MSBuildThisFileDirectory)..\..\..</SiliconStudioParadoxDir>
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
     <!-- Force msbuild to check to rebuild this assembly instead of letting VS IDE guess -->
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -107,7 +108,7 @@
     <StartupObject>SiliconStudio.Tests.Application</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="monotouch" Label="Paradox.DoNotSync" />
+    <Reference Include="Xamarin.iOS" Label="Paradox.DoNotSync" />
   </ItemGroup>
   <ItemGroup>
     <None Label="Paradox.DoNotSync" Include="Info.plist" />
@@ -118,77 +119,58 @@
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
       <Name>SiliconStudio.Core</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
       <Project>{1DE01410-22C9-489B-9796-1ADDAB1F64E5}</Project>
       <Name>SiliconStudio.Core.IO</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
       <Project>{1320F627-EE43-4115-8E89-19D1753E51F2}</Project>
       <Name>SiliconStudio.Core.MicroThreading</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
       <Name>SiliconStudio.Core</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
       <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
       <Name>SiliconStudio.Core.Serialization</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox.Input\SiliconStudio.Paradox.Input.csproj">
       <Project>{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}</Project>
       <Name>SiliconStudio.Paradox.Input</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders.Compiler\SiliconStudio.Paradox.Shaders.Compiler.csproj">
       <Project>{E8B3553F-A79F-4E50-B75B-ACEE771C320C}</Project>
       <Name>SiliconStudio.Paradox.Shaders.Compiler</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders.Parser\SiliconStudio.Paradox.Shaders.Parser.csproj">
       <Project>{14A47447-2A24-4ECD-B24D-6571499DCD4C}</Project>
       <Name>SiliconStudio.Paradox.Shaders.Parser</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders\SiliconStudio.Paradox.Shaders.csproj">
       <Project>{273BDD15-7392-4078-91F0-AF23594A3D7B}</Project>
       <Name>SiliconStudio.Paradox.Shaders</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox\SiliconStudio.Paradox.csproj">
       <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
       <Name>SiliconStudio.Paradox</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\sources\shaders\SiliconStudio.Paradox.Effects.Modules.csproj">
-      <Project>{0342C3E7-4A38-46B4-A8EC-E728D50085D3}</Project>
-      <Name>SiliconStudio.Paradox.Effects.Modules</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox.Engine\SiliconStudio.Paradox.Engine.csproj">
       <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
       <Name>SiliconStudio.Paradox.Engine</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj">
       <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
       <Name>SiliconStudio.Paradox.Graphics</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\common\shaders\SiliconStudio.Shaders\SiliconStudio.Shaders.csproj">
       <Project>{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}</Project>
       <Name>SiliconStudio.Shaders</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.Games\SiliconStudio.Paradox.Games.csproj">
       <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
@@ -204,23 +186,71 @@
     </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Compile Include="Assets\CustomEffect1.cs">
+    <Compile Include="Assets\ComputeShaderTestEffect.cs">
+      <DependentUpon>ComputeShaderTestEffect.pdxfx</DependentUpon>
       <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>CustomEffect.pdxsl</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Compiler\CubemapEffect.cs">
+    <Compile Include="Assets\HammersleyTest.cs">
+      <DependentUpon>HammersleyTest.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>CubemapEffect.pdxfx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Compiler\MultipleRenderTargetsEffect.cs">
+    <Compile Include="Assets\MultipleRenderTargetsEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>MultipleRenderTargetsEffect.pdxfx</DependentUpon>
+    </Compile>
+    <Compile Include="Assets\MultipleRenderTargetsEffectShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MultipleRenderTargetsEffectShader.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Assets\SpriteEffectWithGamma.cs">
+      <DependentUpon>SpriteEffectWithGamma.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Assets\ComputeShaderTest.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeShaderTest.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Assets\CustomEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CustomEffect.pdxfx</DependentUpon>
+    </Compile>
+    <Compile Include="Assets\MyCustomColorTransformShader.cs">
+      <DependentUpon>MyCustomColorTransformShader.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Assets\CustomShader2.cs">
+      <DependentUpon>CustomShader2.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Assets\CustomShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CustomShader.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Assets\CubemapSprite.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CubemapSprite.pdxsl</DependentUpon>
     </Compile>
     <Compile Include="Compiler\MultiTexturesSpriteEffect.cs">
       <AutoGen>True</AutoGen>
@@ -264,16 +294,22 @@
     <Compile Include="Regression\TestMultipleTextures.cs" />
     <Compile Include="Regression\TestSimpleTexture.cs" />
     <Compile Include="TestBitmapSpriteFont.cs" />
-    <Compile Include="TestCubemapDeferred.cs" />
-    <Compile Include="TestCubemapRendering.cs" />
     <Compile Include="TestDynamicSpriteFont.cs" />
     <Compile Include="TestDynamicSpriteFontJapanese.cs" />
     <Compile Include="TestDynamicSpriteFontVarious.cs" />
     <Compile Include="TestExternSpriteFont.cs" />
     <Compile Include="TestFontManager.cs" />
+    <Compile Include="TestHammersley.cs" />
+    <Compile Include="TestImageEffect.cs" />
     <Compile Include="TestImageLoad.cs" />
+    <Compile Include="TestLambertPrefilteringSHPass2.cs" />
+    <Compile Include="TestLambertPrefilteringSH.cs" />
+    <Compile Include="TestComputeShader.cs" />
     <Compile Include="TestMultipleRenderTargets.cs" />
+    <Compile Include="TestRadiancePrefilteringGGX.cs" />
+    <Compile Include="TestScene.cs" />
     <Compile Include="TestSprite.cs" />
+    <Compile Include="TestSpriteBatch3D.cs" />
     <Compile Include="TestSpriteBatchResolution.cs" />
     <Compile Include="TestSpriteBatchToTexture.cs" />
     <Compile Include="TestSpriteFont.cs" />
@@ -291,17 +327,49 @@
     <Compile Include="TestTexture.cs" />
     <Compile Include="TestGraphicsApiCheck.cs" />
     <Compile Include="TestTextureSampling.cs" />
-    <None Include="Assets\CustomEffect.pdxsl">
+    <None Include="Assets\ComputeShaderTestEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>CustomEffect1.cs</LastGenOutput>
+      <LastGenOutput>ComputeShaderTestEffect.cs</LastGenOutput>
     </None>
-    <None Include="Compiler\CubemapEffect.pdxfx">
+    <None Include="Assets\HammersleyTest.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>CubemapEffect.cs</LastGenOutput>
+      <LastGenOutput>HammersleyTest.cs</LastGenOutput>
     </None>
-    <None Include="Compiler\MultipleRenderTargetsEffect.pdxfx">
+    <None Include="Assets\MultipleRenderTargetsEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>MultipleRenderTargetsEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\MultipleRenderTargetsEffectShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MultipleRenderTargetsEffectShader.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\SpriteEffectWithGamma.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>SpriteEffectWithGamma.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\ComputeShaderTest.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeShaderTest.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\CustomEffect.pdxfx">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CustomEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\MyCustomColorTransformShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>MyCustomColorTransformShader.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\CustomShader2.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CustomShader2.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\CustomShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CustomShader.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\CubemapSprite.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>CubemapSprite.cs</LastGenOutput>
     </None>
     <None Include="Compiler\MultiTexturesSpriteEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -338,7 +406,7 @@
   <ItemGroup>
     <BundleResource Include="Resources\Icon-60%402x.png" Label="Paradox.DoNotSync" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="$(SiliconStudioPackageProps)" Condition="Exists('$(SiliconStudioPackageProps)')" />
   <Import Project="$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets" Condition="Exists('$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets')" />
   <Target Name="EnsureSiliconStudioParadoxInstalled" BeforeTargets="PrepareForBuild">

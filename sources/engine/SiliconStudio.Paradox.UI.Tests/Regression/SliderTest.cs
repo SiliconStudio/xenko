@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Games;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Input;
 using SiliconStudio.Paradox.UI.Controls;
 using SiliconStudio.Paradox.UI.Panels;
@@ -20,27 +21,27 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     {
         private Slider slider;
         private UniformGrid grid;
-        private UIImageGroup sliderImages;
+        private SpriteSheet sliderImages;
 
         private bool isRotatedImages;
 
         public SliderTest()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 2;
         }
 
         protected override async Task LoadContent()
         {
             await base.LoadContent();
 
-            sliderImages = Asset.Load<UIImageGroup>("DebugSlider");
+            sliderImages = Asset.Load<SpriteSheet>("DebugSlider");
 
             slider = new Slider { TrackStartingOffsets = new Vector2(10, 6), TickOffset = 10 };
             SetSliderImages(isRotatedImages);
 
             grid = new UniformGrid { Children = { slider } };
 
-            UI.RootElement = grid;
+            UIComponent.RootElement = grid;
         }
 
         private void SetSliderImages(bool setRotatedImages)
@@ -167,7 +168,6 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.75f, 0.5f)));
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.75f, 0.5f)));
-            UI.Update(new GameTime());
         }
 
         public void DrawTest4()
@@ -187,7 +187,6 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.54f, 0.5f)));
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.54f, 0.5f)));
-            UI.Update(new GameTime());
         }
 
         public void DrawTest7()
@@ -212,7 +211,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public void DrawTest11()
         {
-            slider.LocalMatrix = Matrix.Translation(20, 30, 0) * Matrix.RotationYawPitchRoll(0.1f, 0.2f, 0.3f);
+            slider.LocalMatrix = Matrix.Translation(20, 30, 0) * Matrix.RotationYawPitchRoll(-0.1f, -0.2f, 0.3f);
         }
 
         [Test]

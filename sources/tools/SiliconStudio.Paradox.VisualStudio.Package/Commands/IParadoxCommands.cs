@@ -3,18 +3,35 @@
 using System;
 using EnvDTE80;
 
+using NShader;
+
 namespace SiliconStudio.Paradox.VisualStudio.Commands
 {
     /// <summary>
     /// Describes paradox commands accessed by VS Package to current paradox package (so that VSPackage doesn't depend on Paradox assemblies).
     /// </summary>
+    /// <remarks>
+    /// WARNING: Modifying this contract or any of it's dependencies will break backwards compatibility!
+    /// Introduce a new contract instead (e.g. IParadoxCommands2).
+    /// </remarks>
     public interface IParadoxCommands
     {
+        /// <summary>
+        /// Initialize parsing (this method can be called from a separate thread).
+        /// </summary>
+        void Initialize(string paradoxSdkDir);
+
+        /// <summary>
+        /// Test whether we should reload these commands (assemblies changed)
+        /// </summary>
+        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
+        bool ShouldReload();
+
         void StartRemoteBuildLogServer(IBuildMonitorCallback buildMonitorCallback, string logPipeUrl);
 
         byte[] GenerateShaderKeys(string inputFileName, string inputFileContent);
 
-        byte[] GenerateDataClasses(string assemblyOutput, string projectFullName, string intermediateAssembly);
+        RawShaderNavigationResult AnalyzeAndGoToDefinition(string sourceCode, RawSourceSpan span);
     }
 
     public interface IBuildMonitorCallback

@@ -1,0 +1,30 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+class MaterialFrontBackBlendShader<bool TUseNormalBackface> : ShadingBase, Transformation, PositionStream, NormalStream
+{
+    [Color]
+    stage float3 ColorFront;
+    
+    [Color]
+    stage float3 ColorBack;
+
+    stage float ColorBlend;
+    
+    stage float AlphaBlend;
+
+    // method computing color
+    stage override float4 Shading()
+    {
+        float3 color = ColorFront;
+        if (TUseNormalBackface)
+        {
+            float3 viewWS = normalize(Eye.xyz - streams.PositionWS.xyz);
+            // Allow smooth transition from front face to backface
+            float ndotV = saturate((dot(streams.normalWS, viewWS) + 0.25) / 0.25);
+            color = lerp(ColorBack, ColorFront, ndotV);
+        }
+
+        return float4(color * ColorBlend, AlphaBlend);
+    }
+};

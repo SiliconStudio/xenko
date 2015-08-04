@@ -15,14 +15,14 @@ namespace SiliconStudio.Paradox.Graphics.Font
     {
         private readonly FontSystem system;
 
-        private readonly List<Texture2D> cacheTextures = new List<Texture2D>();
+        private readonly List<Texture> cacheTextures = new List<Texture>();
         private readonly LinkedList<CharacterSpecification> cachedCharacters = new LinkedList<CharacterSpecification>();
         private readonly GuillotinePacker packer = new GuillotinePacker();
         
         /// <summary>
         /// The textures containing the cached characters on the GPU.
         /// </summary>
-        public IReadOnlyList<Texture2D> Textures { get; private set; }
+        public IReadOnlyList<Texture> Textures { get; private set; }
 
         public FontCacheManager(FontSystem system, int textureDefaultSize = 1024)
         {
@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Graphics.Font
             Textures = cacheTextures;
 
             // create the cache textures
-            var newTexture = Texture2D.New(system.GraphicsDevice, textureDefaultSize, textureDefaultSize, PixelFormat.R8_UNorm);
+            var newTexture = Texture.New2D(system.GraphicsDevice, textureDefaultSize, textureDefaultSize, PixelFormat.R8_UNorm);
             cacheTextures.Add(newTexture);
             newTexture.Reload = ReloadCache;
             ClearCache();
@@ -53,7 +53,7 @@ namespace SiliconStudio.Paradox.Graphics.Font
                 character.IsBitmapUploaded = false;
             cachedCharacters.Clear();
 
-            packer.Clear(cacheTextures[0].Width, cacheTextures[0].Height);
+            packer.Clear(cacheTextures[0].ViewWidth, cacheTextures[0].ViewHeight);
         }
         
         /// <summary>

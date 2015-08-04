@@ -2,9 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.IO;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Paradox.Audio
@@ -23,11 +21,11 @@ namespace SiliconStudio.Paradox.Audio
             audioEngine = engine;
         }
 
-        public override void Serialize(ContentSerializerContext context, SerializationStream stream, ref SoundMusic obj)
+        public override void Serialize(ContentSerializerContext context, SerializationStream stream, SoundMusic soundMusic)
         {
             if (context.Mode == ArchiveMode.Deserialize)
             {
-                obj = SoundMusic.Load(audioEngine, stream.NativeStream);
+                soundMusic.Load(stream.NativeStream);
             }
             else
             {
@@ -37,7 +35,7 @@ namespace SiliconStudio.Paradox.Audio
 
         public override object Construct(ContentSerializerContext context)
         {
-            return null;
+            return new SoundMusic(audioEngine);
         }
     }
 }

@@ -13,6 +13,7 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using MethodAttributes = Mono.Cecil.MethodAttributes;
 using TypeAttributes = Mono.Cecil.TypeAttributes;
 
@@ -20,9 +21,12 @@ namespace SiliconStudio.AssemblyProcessor
 {
     public class AssemblyProcessorApp
     {
+        private Logger log;
+
         public AssemblyProcessorApp()
         {
             SearchDirectories = new List<string>();
+            SerializationProjectReferences = new List<string>();
             ModuleInitializer = true;
         }
 
@@ -44,9 +48,13 @@ namespace SiliconStudio.AssemblyProcessor
 
         public List<string> SearchDirectories { get; set; }
 
+        public List<string> SerializationProjectReferences { get; set; } 
+
         public string SignKeyFile { get; set; }
 
         public bool UseSymbols { get; set; }
+
+        public bool TreatWarningsAsErrors { get; set; }
 
         public Action<string, Exception> OnErrorEvent;
 
@@ -62,6 +70,60 @@ namespace SiliconStudio.AssemblyProcessor
 
             try
             {
+                var assemblyResolver = CreateAssemblyResolver();
+
+                var readWriteSymbols = UseSymbols;
+                // Double check that 
+                var symbolFile = Path.ChangeExtension(inputFile, "pdb");
+                if (!File.Exists(symbolFile))
+                {
+                    readWriteSymbols = false;
+                }
+
+                var assemblyDefinition = AssemblyDefinition.ReadAssembly(inputFile, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = readWriteSymbols });
+
+                bool modified;
+                var result = Run(ref assemblyDefinition, ref readWriteSymbols, out modified);
+                if (modified || inputFile != outputFile)
+                {
+                    // Make sure output directory is created
+                    var outputDirectory = Path.GetDirectoryName(outputFile);
+                    if (!string.IsNullOrEmpty(outputDirectory) && !Directory.Exists(outputDirectory))
+                    {
+                        Directory.CreateDirectory(outputDirectory);
+                    }
+
+                    assemblyDefinition.Write(outputFile, new WriterParameters() { WriteSymbols = readWriteSymbols });
+                }
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                OnErrorAction(e.Message, e);
+                return false;
+            }
+        }
+
+        public CustomAssemblyResolver CreateAssemblyResolver()
+        {
+            var assemblyResolver = new CustomAssemblyResolver();
+            assemblyResolver.RemoveSearchDirectory(".");
+            foreach (string searchDirectory in SearchDirectories)
+                assemblyResolver.AddSearchDirectory(searchDirectory);
+            return assemblyResolver;
+        }
+
+        public bool Run(ref AssemblyDefinition assemblyDefinition, ref bool readWriteSymbols, out bool modified)
+        {
+            log = new Logger(assemblyDefinition.Name.Name, TreatWarningsAsErrors);
+
+            modified = false;
+
+            try
+            {
+                var assemblyResolver = (CustomAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver;
+
                 var processors = new List<IAssemblyDefinitionProcessor>();
 
                 // We are no longer using it so we are deactivating it for now to avoid processing
@@ -89,12 +151,12 @@ namespace SiliconStudio.AssemblyProcessor
 
                 if (SerializationAssembly)
                 {
-                    processors.Add(new SerializationProcessor(SignKeyFile));
+                    processors.Add(new SerializationProcessor(SignKeyFile, SerializationProjectReferences, log));
                 }
 
                 if (GenerateUserDocumentation)
                 {
-                    processors.Add(new GenerateUserDocumentationProcessor(inputFile));
+                    processors.Add(new GenerateUserDocumentationProcessor(assemblyDefinition.MainModule.FullyQualifiedName));
                 }
 
                 if (ModuleInitializer)
@@ -103,22 +165,6 @@ namespace SiliconStudio.AssemblyProcessor
                 }
 
                 processors.Add(new OpenSourceSignProcessor());
-
-                var assemblyResolver = new CustomAssemblyResolver();
-                assemblyResolver.RemoveSearchDirectory(".");
-                foreach (string searchDirectory in SearchDirectories)
-                    assemblyResolver.AddSearchDirectory(searchDirectory);
-
-
-                var readWriteSymbols = UseSymbols;
-                // Double check that 
-                var symbolFile = Path.ChangeExtension(inputFile, "pdb");
-                if (!File.Exists(symbolFile))
-                {
-                    readWriteSymbols = false;
-                }
-
-                var assemblyDefinition = AssemblyDefinition.ReadAssembly(inputFile, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = readWriteSymbols });
 
                 // Check if pdb was actually read
                 readWriteSymbols = assemblyDefinition.MainModule.HasDebugHeader;
@@ -138,8 +184,6 @@ namespace SiliconStudio.AssemblyProcessor
                 // Special handling for MonoAndroid
                 // Default frameworkFolder
                 var frameworkFolder = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\");
-
-
 
                 switch (Platform)
                 {
@@ -165,9 +209,9 @@ namespace SiliconStudio.AssemblyProcessor
                             throw new InvalidOperationException("Expecting option target framework for iOS");
                         }
 
-                        var monoAndroidPath = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Reference Assemblies\Microsoft\Framework\MonoTouch");
-                        frameworkFolder = Path.Combine(monoAndroidPath, "v1.0");
-                        var additionalFrameworkFolder = Path.Combine(monoAndroidPath, TargetFramework);
+                        var monoTouchPath = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Reference Assemblies\Microsoft\Framework\Xamarin.iOS");
+                        frameworkFolder = Path.Combine(monoTouchPath, "v1.0");
+                        var additionalFrameworkFolder = Path.Combine(monoTouchPath, TargetFramework);
                         assemblyResolver.AddSearchDirectory(additionalFrameworkFolder);
                         assemblyResolver.AddSearchDirectory(frameworkFolder);
 
@@ -205,6 +249,27 @@ namespace SiliconStudio.AssemblyProcessor
 
                         // Add path to look for WinRT assemblies (Windows.winmd)
                         var windowsAssemblyPath = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Windows Phone Kits\8.1\References\CommonConfiguration\Neutral\", "Windows.winmd");
+                        var windowsAssembly = AssemblyDefinition.ReadAssembly(windowsAssemblyPath, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = false });
+                        assemblyResolver.Register(windowsAssembly);
+
+                        break;
+                    }
+
+                    case PlatformType.Windows10:
+                    {
+                        if (string.IsNullOrEmpty(TargetFramework))
+                        {
+                            throw new InvalidOperationException("Expecting option target framework for Windows10");
+                        }
+
+                        frameworkFolder = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Reference Assemblies\Microsoft\Framework\.NETCore", TargetFramework);
+                        assemblyResolver.AddSearchDirectory(frameworkFolder);
+
+                        // Add path to look for WinRT assemblies (Windows.Foundation.FoundationContract.winmd, etc...)
+                        assemblyResolver.WindowsKitsReferenceDirectory = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Windows Kits\10\References");
+
+                        // Add path to look for WinRT assemblies (Windows.winmd)
+                        var windowsAssemblyPath = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Windows Kits\8.1\References\CommonConfiguration\Neutral\", "Windows.winmd");
                         var windowsAssembly = AssemblyDefinition.ReadAssembly(windowsAssemblyPath, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = false });
                         assemblyResolver.Register(windowsAssembly);
 
@@ -259,19 +324,22 @@ namespace SiliconStudio.AssemblyProcessor
                         };
                         assemblyDefinition.CustomAttributes.Add(internalsVisibleAttribute);
 
+                        var assemblyFilePath = assemblyDefinition.MainModule.FullyQualifiedName;
+                        if (string.IsNullOrEmpty(assemblyFilePath))
+                        {
+                            assemblyFilePath = Path.ChangeExtension(Path.GetTempFileName(), ".dll");
+                        }
+
                         // Save updated file
-                        assemblyDefinition.Write(inputFile, new WriterParameters() { WriteSymbols = readWriteSymbols });
+                        assemblyDefinition.Write(assemblyFilePath, new WriterParameters() { WriteSymbols = readWriteSymbols });
 
                         // Reread file (otherwise it seems Mono Cecil is buggy and generate invalid PDB)
-                        assemblyDefinition = AssemblyDefinition.ReadAssembly(inputFile, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = readWriteSymbols });
+                        assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyFilePath, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = readWriteSymbols });
 
                         // Check if pdb was actually read
                         readWriteSymbols = assemblyDefinition.MainModule.HasDebugHeader;
                     }
                 }
-
-
-                bool modified = false;
 
                 var assemblyProcessorContext = new AssemblyProcessorContext(assemblyResolver, assemblyDefinition, Platform);
 
@@ -281,7 +349,7 @@ namespace SiliconStudio.AssemblyProcessor
                 // Assembly might have been recreated (i.e. il-repack), so let's use it from now on
                 assemblyDefinition = assemblyProcessorContext.Assembly;
 
-                if (modified || inputFile != outputFile)
+                if (modified)
                 {
                     // In case assembly has been modified,
                     // add AssemblyProcessedAttribute to assembly so that it doesn't get processed again
@@ -307,17 +375,9 @@ namespace SiliconStudio.AssemblyProcessor
                     assemblyProcessedAttributeConstructor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
                     assemblyProcessedAttributeType.Methods.Add(assemblyProcessedAttributeConstructor);
 
-                    // Make sure output directory is created
-                    var outputDirectory = Path.GetDirectoryName(outputFile);
-                    if (!string.IsNullOrEmpty(outputDirectory) && !Directory.Exists(outputDirectory))
-                    {
-                        Directory.CreateDirectory(outputDirectory);
-                    }
-
                     // Add AssemblyProcessedAttribute to assembly
                     assemblyDefinition.MainModule.Types.Add(assemblyProcessedAttributeType);
                     assemblyDefinition.CustomAttributes.Add(new CustomAttribute(assemblyProcessedAttributeConstructor));
-                    assemblyDefinition.Write(outputFile, new WriterParameters() { WriteSymbols = readWriteSymbols });
                 }
             }
             catch (Exception e)
@@ -369,6 +429,27 @@ namespace SiliconStudio.AssemblyProcessor
             else
             {
                 OnInfoEvent(infoMessage);
+            }
+        }
+
+        private class Logger : ILogger
+        {
+            private readonly bool treatWarningsAsErrors;
+
+            public string Module { get; private set; }
+
+            public Logger(string module, bool treatWarningsAsErrors)
+            {
+                Module = module;
+                this.treatWarningsAsErrors = treatWarningsAsErrors;
+            }
+
+            public void Log(ILogMessage logMessage)
+            {
+                if (treatWarningsAsErrors && logMessage.Type == LogMessageType.Warning)
+                    logMessage.Type = LogMessageType.Error;
+
+                Console.WriteLine(logMessage);
             }
         }
     }

@@ -2,6 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -13,7 +15,7 @@ namespace SiliconStudio.Paradox.Shaders
     /// <summary>
     /// A shader class used for mixin.
     /// </summary>
-    [DataContract]
+    [DataContract("ShaderClassSource")]
     public sealed class ShaderClassSource : ShaderSource, IEquatable<ShaderClassSource>
     {
         /// <summary>
@@ -26,8 +28,10 @@ namespace SiliconStudio.Paradox.Shaders
         /// Gets the generic parameters.
         /// </summary>
         /// <value>The generic parameters.</value>
+        [DefaultValue(null)]
         public string[] GenericArguments { get; set; }
 
+        [DefaultValue(null)]
         public Dictionary<string, string> GenericParametersArguments { get; set; }
 
         /// <summary>
@@ -72,9 +76,9 @@ namespace SiliconStudio.Paradox.Shaders
                 {
                     var genArg = genericArguments[i];
                     if (genArg is bool)
-                        GenericArguments[i] = ((bool)genArg).ToString().ToLower();
+                        GenericArguments[i] = ((bool)genArg) ? "true" : "false";
                     else
-                        GenericArguments[i] = genArg == null ? "null": genArg.ToString();
+                        GenericArguments[i] = genArg == null ? "null" : Convert.ToString(genArg, CultureInfo.InvariantCulture);
                 }
             }
         }

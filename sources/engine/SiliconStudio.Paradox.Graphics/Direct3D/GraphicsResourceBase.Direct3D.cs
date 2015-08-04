@@ -1,14 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D 
-using System;
-using System.Runtime.InteropServices;
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D
 using SharpDX;
-using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
-using SharpDX.DXGI;
-
-using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -17,14 +10,12 @@ namespace SiliconStudio.Paradox.Graphics
     /// </summary>
     public abstract partial class GraphicsResourceBase
     {
-        protected internal SharpDX.Direct3D11.DeviceChild _nativeDeviceChild;
+        private SharpDX.Direct3D11.DeviceChild nativeDeviceChild;
 
-        protected internal SharpDX.Direct3D11.Resource NativeResource;
+        protected internal SharpDX.Direct3D11.Resource NativeResource { get; private set; }
 
         private void Initialize()
         {
-            if (GraphicsDevice != null)
-                NativeDevice = GraphicsDevice.NativeDevice;
         }
 
         /// <summary>
@@ -35,29 +26,21 @@ namespace SiliconStudio.Paradox.Graphics
         {
             get
             {
-                return _nativeDeviceChild;
+                return nativeDeviceChild;
             }
             set
             {
-                if (_nativeDeviceChild != null) throw new ArgumentException(string.Format(FrameworkResources.GraphicsResourceAlreadySet, "DeviceChild"), "value");
-                _nativeDeviceChild = value;
-
-                if (_nativeDeviceChild is SharpDX.Direct3D11.Resource)
-                    NativeResource = (SharpDX.Direct3D11.Resource)_nativeDeviceChild;
-
+                nativeDeviceChild = value;
+                NativeResource = nativeDeviceChild as SharpDX.Direct3D11.Resource;
                 // Associate PrivateData to this DeviceResource
-                SetDebugName(GraphicsDevice, _nativeDeviceChild, Name);
+                SetDebugName(GraphicsDevice, nativeDeviceChild, Name);
             }
         }
 
         protected virtual void DestroyImpl()
         {
-            if (_nativeDeviceChild != null)
-            {
-                ((IUnknown)_nativeDeviceChild).Release();
-                _nativeDeviceChild = null;
-                NativeResource = null;
-            }
+            ReleaseComObject(ref nativeDeviceChild);
+            NativeResource = null;
         }
 
         /// <summary>
@@ -67,21 +50,7 @@ namespace SiliconStudio.Paradox.Graphics
         {
             if (graphicsDevice.IsDebugMode && deviceChild != null)
             {
-                IntPtr namePtr = SharpDX.Utilities.StringToHGlobalAnsi(name);
-                deviceChild.SetPrivateData(CommonGuid.DebugObjectName, name.Length, namePtr);
-                // TODO Should PrivateData be deallocated now or keep a reference to it?
-            }
-        }
-
-        /// <summary>
-        /// Associates the private data to the device child, useful to get the name in PIX debugger.
-        /// </summary>
-        internal static void SetDebugName(GraphicsDevice graphicsDevice, DXGIObject dxgiObject, string name)
-        {
-            if (graphicsDevice.IsDebugMode)
-            {
-                IntPtr namePtr = SharpDX.Utilities.StringToHGlobalAnsi(name);
-                dxgiObject.SetPrivateData(CommonGuid.DebugObjectName, name.Length, namePtr);
+                deviceChild.DebugName = name;
             }
         }
 
@@ -90,7 +59,6 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         protected internal virtual void OnDestroyed()
         {
-            NativeDevice = null;
         }
 
         /// <summary>
@@ -99,14 +67,15 @@ namespace SiliconStudio.Paradox.Graphics
         /// <returns>True if item transitionned to a <see cref="GraphicsResourceLifetimeState.Active"/> state.</returns>
         protected internal virtual bool OnRecreate()
         {
-            NativeDevice = GraphicsDevice.NativeDevice;
             return false;
         }
 
         protected SharpDX.Direct3D11.Device NativeDevice
         {
-            get;
-            private set;
+            get
+            {
+                return GraphicsDevice != null ? GraphicsDevice.NativeDevice : null;
+            }
         }
 
         /// <summary>
@@ -124,6 +93,17 @@ namespace SiliconStudio.Paradox.Graphics
                     return SharpDX.Direct3D11.CpuAccessFlags.Read;
             }
             return SharpDX.Direct3D11.CpuAccessFlags.None;
+        }
+
+        internal static void ReleaseComObject<T>(ref T comObject) where T : class
+        {
+            // We can't put IUnknown as a constraint on the generic as it would break compilation (trying to import SharpDX in projects with InternalVisibleTo)
+            var iUnknownObject = comObject as IUnknown;
+            if (iUnknownObject != null)
+            {
+                iUnknownObject.Release();
+                comObject = null;
+            }
         }
     }
 }

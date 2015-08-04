@@ -118,20 +118,22 @@ namespace SiliconStudio.Paradox.TestRunner2
             try
             {
                 server = StartServer();
+                ProcessOutputs adbOutputs;
 
+                var logStack = new List<string>();
                 if (reinstall)
                 {
                     // force stop - only works for Android 3.0 and above.
-                    var o0 = ShellHelper.RunProcessAndGetOutput(@"adb", string.Format(@"-s {0} shell am force-stop {1}", device.Serial, packageName));
+                    adbOutputs = ShellHelper.RunProcessAndGetOutput(@"adb", string.Format(@"-s {0} shell am force-stop {1}", device.Serial, packageName));
 
                     // uninstall
-                    ShellHelper.RunProcessAndGetOutput(@"adb", string.Format(@"-s {0} uninstall {1}", device.Serial, packageName));
+                    adbOutputs = ShellHelper.RunProcessAndGetOutput(@"adb", string.Format(@"-s {0} uninstall {1}", device.Serial, packageName));
 
                     // install
-                    var o1 = ShellHelper.RunProcessAndGetOutput(@"adb", string.Format(@"-s {0} install {1}", device.Serial, packageFile));
-                    Console.WriteLine("adb install: exitcode {0}\nOutput: {1}\nErrors: {2}", o1.ExitCode, string.Join(Environment.NewLine, o1.OutputLines), string.Join(Environment.NewLine, o1.OutputErrors));
-                    if (o1.ExitCode != 0)
-                        throw new InvalidOperationException("Invalid error code from adb install");
+                    adbOutputs = ShellHelper.RunProcessAndGetOutput(@"adb", string.Format(@"-s {0} install {1}", device.Serial, packageFile));
+                    Console.WriteLine("adb install: exitcode {0}\nOutput: {1}\nErrors: {2}", adbOutputs.ExitCode, adbOutputs.OutputAsString, adbOutputs.ErrorsAsString);
+                    if (adbOutputs.ExitCode != 0)
+                        throw new InvalidOperationException("Invalid error code from adb install.\n Shell log: {0}");
                 }
 
                 // run
@@ -145,12 +147,23 @@ namespace SiliconStudio.Paradox.TestRunner2
                     AddAndroidParameter(parameters, TestRunner.ParadoxBranchName, branchName);
                 Console.WriteLine(parameters.ToString());
 
-                var o2 = ShellHelper.RunProcessAndGetOutput(@"adb", parameters.ToString());
-                Console.WriteLine("adb shell am start: exitcode {0}\nOutput: {1}\nErrors: {2}", o2.ExitCode, string.Join(Environment.NewLine, o2.OutputLines), string.Join(Environment.NewLine, o2.OutputErrors));
-                if (o2.ExitCode != 0)
-                    throw new InvalidOperationException("Invalid error code from adb shell am start");
+                adbOutputs = ShellHelper.RunProcessAndGetOutput(@"adb", parameters.ToString());
+                Console.WriteLine("adb shell am start: exitcode {0}\nOutput: {1}\nErrors: {2}", adbOutputs.ExitCode, adbOutputs.OutputAsString, adbOutputs.ErrorsAsString);
+                if (adbOutputs.ExitCode != 0)
+                    throw new InvalidOperationException("Invalid error code from adb shell am start.");
 
                 // Wait for client to connect
+                const int WaitingTime = 30;
+                for (int i = 0; i < WaitingTime; i++)
+                {
+                    if (server.Pending())
+                        break;
+
+                    Thread.Sleep(1000);
+                }
+                if (!server.Pending())
+                    throw new InvalidOperationException("The client (the remote test application) failed to establish the connection.");
+
                 var client = server.AcceptTcpClient();
 
                 Console.WriteLine("Device connected, wait for results...");

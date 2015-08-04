@@ -12,7 +12,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SiliconStudio.Paradox.Engine.Tests</RootNamespace>
     <AssemblyName>SiliconStudio.Paradox.Engine.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <ParadoxBuildTags>*</ParadoxBuildTags>
@@ -42,6 +42,7 @@
     <IntermediateOutputPath>obj\Windows\Debug\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -51,6 +52,7 @@
     <IntermediateOutputPath>obj\Windows\Release\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
@@ -108,11 +110,6 @@
       <Name>SiliconStudio.Paradox</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\sources\shaders\SiliconStudio.Paradox.Effects.Modules.csproj">
-      <Project>{0342C3E7-4A38-46B4-A8EC-E728D50085D3}</Project>
-      <Name>SiliconStudio.Paradox.Effects.Modules</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox.Engine\SiliconStudio.Paradox.Engine.csproj">
       <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
       <Name>SiliconStudio.Paradox.Engine</Name>
@@ -127,6 +124,10 @@
       <Project>{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}</Project>
       <Name>SiliconStudio.Shaders</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.csproj">
+      <Project>{0342c3e7-4a38-46b4-a8ec-e728d50085d3}</Project>
+      <Name>SiliconStudio.Paradox.Effects</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.Games\SiliconStudio.Paradox.Games.csproj">
       <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
@@ -147,30 +148,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Build\TestBuilder.cs" />
+    <Compile Include="EngineTestBase.cs" />
     <Compile Include="SpriteTestGame.cs" />
-    <Compile Include="TestSpriteAnimation.cs" />
-    <Compile Include="TestTextureAlphaSeparation.cs" />
+    <Compile Include="TestCamera.cs" />
+    <Compile Include="SpriteAnimationTest.cs" />
+    <Compile Include="TesselationTest.cs" />
     <None Include="Build\TestSerializer.cs" />
     <Compile Include="Build\TestStorage.cs" />
-    <Compile Include="FBXEntityAnimTestGame.cs" />
-    <Compile Include="FBXTestGame.cs" />
-    <Compile Include="FBXEntityTestGame.cs" />
     <Compile Include="Module.cs" />
-    <Compile Include="TestAnimationChannel.cs" />
-    <Compile Include="TestEntitySerializer.cs" />
-    <Compile Include="TestParameterPath.cs" />
-    <Compile Include="Default.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Default.pdxfx</DependentUpon>
-    </Compile>
-    <Compile Include="TestShaderMerging.cs" />
-    <Compile Include="TestParameters.cs" />
-    <None Include="Default.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>Default.cs</LastGenOutput>
-    </None>
+    <Compile Include="AnimationChannelTest.cs" />
+    <Compile Include="EntitySerializerTest.cs" />
+    <Compile Include="ParameterPathTest.cs" />
+    <Compile Include="ParametersTest.cs" />
     <None Include="effects_test.xml">
       <SubType>Designer</SubType>
     </None>
@@ -179,6 +168,7 @@
   <ItemGroup>
     <Compile Label="Paradox.DoNotSync" Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SiliconStudioPackageProps)" Condition="Exists('$(SiliconStudioPackageProps)')" />
   <Import Project="$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets" Condition="Exists('$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets')" />

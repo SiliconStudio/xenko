@@ -59,5 +59,10 @@ namespace SiliconStudio.Assets.Visitors
         {
             return string.Format("[{0}] = {1}", index, Instance ?? "null");
         }
+
+        public override DataVisitNode CreateWithEmptyInstance()
+        {
+            return new DataVisitListItem(index, null, InstanceDescriptor);
+        }
     }
 }

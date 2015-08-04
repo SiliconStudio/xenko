@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     {
         public UniformGridTest()
         {
-            CurrentVersion = 3;
+            CurrentVersion = 5;
         }
 
         protected override void RegisterTests()
@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            var imgElt = new ImageElement { Source = new UIImage(Asset.Load<Texture2D>("uv")), StretchType = StretchType.Fill };
+            var imgElt = new ImageElement { Source = new Sprite(Asset.Load<Texture>("uv")), StretchType = StretchType.Fill };
             imgElt.DependencyProperties.Set(GridBase.RowSpanPropertyKey, 2);
             imgElt.DependencyProperties.Set(GridBase.ColumnSpanPropertyKey, 2);
             imgElt.DependencyProperties.Set(GridBase.RowPropertyKey, 1);
@@ -62,7 +62,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             grid.Children.Add(button2);
             grid.Children.Add(text);
 
-            UI.RootElement = grid;
+            UIComponent.RootElement = grid;
         }
 
         [Test]

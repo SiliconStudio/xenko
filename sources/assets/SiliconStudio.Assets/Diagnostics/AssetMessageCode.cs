@@ -129,6 +129,11 @@ namespace SiliconStudio.Assets.Diagnostics
         CompilationFatal,
 
         /// <summary>
+        /// A message log happened inside the asset compiler.
+        /// </summary>
+        CompilationMessage,
+
+        /// <summary>
         /// An error that caused the asset compilation to fail.
         /// </summary>
         CompilationError,
@@ -137,5 +142,10 @@ namespace SiliconStudio.Assets.Diagnostics
         /// A warning that occured in the asset compilation.
         /// </summary>
         CompilationWarning,
+
+        /// <summary>
+        /// A default scene was not found in the package.
+        /// </summary>
+        DefaultSceneNotFound,
     }
 }

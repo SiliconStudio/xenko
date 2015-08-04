@@ -11,7 +11,7 @@ namespace SiliconStudio.Assets.CompilerApp
 {
     public class PackageBuilderOptions
     {
-        public readonly Logger Logger;
+        public readonly LoggerResult Logger;
 
         public bool Verbose = false;
         public bool Debug = false;
@@ -24,6 +24,7 @@ namespace SiliconStudio.Assets.CompilerApp
         public Guid PackageId { get; set; }
         public PlatformType Platform { get; set; }
         public Paradox.Graphics.GraphicsPlatform? GraphicsPlatform { get; set; }
+        public bool GetGraphicsPlatform { get; set; }
         public string PackageFile { get; set; }
         public List<string> LogPipeNames = new List<string>();
         public List<string> MonitorPipeNames = new List<string>();
@@ -38,7 +39,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
         public string TestName;
 
-        public PackageBuilderOptions(Logger logger)
+        public PackageBuilderOptions(LoggerResult logger)
         {
             if (logger == null) throw new ArgumentNullException("logger");
             Logger = logger;
@@ -69,16 +70,20 @@ namespace SiliconStudio.Assets.CompilerApp
         /// The given working directory \ + workingDir + \ does not exist.;workingdir</exception>
         public void ValidateOptions()
         {
-            if (string.IsNullOrWhiteSpace(BuildDirectory))
-                throw new ArgumentException("This tool requires a build path.", "build-path");
+            // --get-graphics-profile doesn't require a build path
+            if (!GetGraphicsPlatform)
+            {
+                if (string.IsNullOrWhiteSpace(BuildDirectory))
+                    throw new ArgumentException("This tool requires a build path.", "build-path");
 
-            try
-            {
-                BuildDirectory = Path.GetFullPath(BuildDirectory);
-            }
-            catch (Exception)
-            {
-                throw new ArgumentException("The provided path is not a valid path name.", "build-path");
+                try
+                {
+                    BuildDirectory = Path.GetFullPath(BuildDirectory);
+                }
+                catch (Exception)
+                {
+                    throw new ArgumentException("The provided path is not a valid path name.", "build-path");
+                }
             }
 
             if (SlavePipe == null)
@@ -107,6 +112,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 case PlatformType.Windows:
                 case PlatformType.WindowsPhone:
                 case PlatformType.WindowsStore:
+                case PlatformType.Windows10:
                     return Paradox.Graphics.GraphicsPlatform.Direct3D11;
                 case PlatformType.Android:
                 case PlatformType.iOS:

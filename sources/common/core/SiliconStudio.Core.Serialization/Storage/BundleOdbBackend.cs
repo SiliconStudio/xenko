@@ -62,8 +62,6 @@ namespace SiliconStudio.Core.Storage
 
         public BundleOdbBackend(string vfsRootUrl)
         {
-            BundleResolve += BundleResolve;
-
             vfsBundleDirectory = vfsRootUrl + "/bundles/";
 
             if (!VirtualFileSystem.DirectoryExists(vfsBundleDirectory))
@@ -169,17 +167,25 @@ namespace SiliconStudio.Core.Storage
             // Resolve package
             var vfsUrl = await ResolveBundle(bundleName, true);
 
+            await LoadBundleFromUrl(bundleName, objectDatabaseAssetIndexMap, vfsUrl);
+        }
+
+        public async Task LoadBundleFromUrl(string bundleName, ObjectDatabaseAssetIndexMap objectDatabaseAssetIndexMap, string bundleUrl, bool ignoreDependencies = false)
+        {
             BundleDescription bundle;
 
-            using (var packStream = VirtualFileSystem.OpenStream(vfsUrl, VirtualFileMode.Open, VirtualFileAccess.Read))
+            using (var packStream = VirtualFileSystem.OpenStream(bundleUrl, VirtualFileMode.Open, VirtualFileAccess.Read))
             {
                 bundle = ReadBundleDescription(packStream);
             }
 
             // Read and resolve dependencies
-            foreach (var dependency in bundle.Dependencies)
+            if (!ignoreDependencies)
             {
-                await LoadBundle(dependency, objectDatabaseAssetIndexMap);
+                foreach (var dependency in bundle.Dependencies)
+                {
+                    await LoadBundle(dependency, objectDatabaseAssetIndexMap);
+                }
             }
 
             lock (loadedBundles)
@@ -200,7 +206,7 @@ namespace SiliconStudio.Core.Storage
                     loadedBundle = new LoadedBundle
                     {
                         BundleName = bundleName,
-                        BundleUrl = vfsUrl,
+                        BundleUrl = bundleUrl,
                         Description = bundle,
                         ReferenceCount = 1
                     };
@@ -218,7 +224,7 @@ namespace SiliconStudio.Core.Storage
             {
                 foreach (var objectEntry in bundle.Objects)
                 {
-                    objects[objectEntry.Key] = new ObjectLocation { Info = objectEntry.Value, BundleUrl = vfsUrl };
+                    objects[objectEntry.Key] = new ObjectLocation { Info = objectEntry.Value, BundleUrl = bundleUrl };
                 }
             }
 

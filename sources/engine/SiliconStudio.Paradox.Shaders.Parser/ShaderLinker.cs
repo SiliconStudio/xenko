@@ -67,7 +67,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser
         {
             // Recalculate constant buffers
             // Order first all non-method declarations and then after method declarations
-            var declarations = shader.Declarations.Where(declaration => !(declaration is MethodDeclaration) && !(declaration is Variable)).ToList();
+            var otherNodes = shader.Declarations.Where(declaration => !(declaration is MethodDeclaration) && !(declaration is Variable)).ToList();
+            var declarations = new List<Node>();
             var variables = shader.Declarations.OfType<Variable>();
             var methods = shader.Declarations.OfType<MethodDeclaration>();
             var newVariables = new List<Node>();
@@ -99,7 +100,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser
 
                     if (constantBufferName == null)
                     {
-                        declarations.Insert(0, variable); // keep thes kinds of variable at the top of the declaration
+                        //declarations.Insert(0, variable); // keep thes kinds of variable at the top of the declaration
+                        declarations.Add(variable);
                     }
                     else
                     {
@@ -120,6 +122,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                 }
             }
 
+            declarations.AddRange(otherNodes);
             declarations.AddRange(newVariables);
             declarations.AddRange(methods);
 
@@ -570,7 +573,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
 
         private static void LinkVariable(EffectReflection reflection, string variableName, LocalParameterKey parameterKey)
         {
-            var binding = new EffectParameterResourceData {Param = {KeyName = parameterKey.Name, Class = parameterKey.Class, Type = parameterKey.Type, RawName = variableName}};
+            var binding = new EffectParameterResourceData { Param = { KeyName = parameterKey.Name, Class = parameterKey.Class, Type = parameterKey.Type, RawName = variableName }, SlotStart = -1 };
             reflection.ResourceBindings.Add(binding);
         }
 
@@ -582,7 +585,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
             {
                 constantBuffer = new ShaderConstantBufferDescription() {Name = cbName};
                 effectReflection.ConstantBuffers.Add(constantBuffer);
-                var constantBufferBinding = new EffectParameterResourceData {Param = {KeyName = cbName, Class = EffectParameterClass.ConstantBuffer, Type = EffectParameterType.Buffer, RawName = cbName}};
+                var constantBufferBinding = new EffectParameterResourceData { Param = { KeyName = cbName, Class = EffectParameterClass.ConstantBuffer, Type = EffectParameterType.Buffer, RawName = cbName }, SlotStart = -1 };
                 effectReflection.ResourceBindings.Add(constantBufferBinding);
                 valueBindings.Add(constantBuffer, new List<EffectParameterValueData>());
             }

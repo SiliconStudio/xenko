@@ -2,11 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
+using System.Text;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Shaders
 {
@@ -15,55 +15,55 @@ namespace SiliconStudio.Paradox.Shaders
     /// </summary>
     public class ShaderMixinContext
     {
-        private readonly ParameterCollection defaultPropertyContainer;
-        private readonly Stack<ParameterCollection> propertyContainers = new Stack<ParameterCollection>();
+        private readonly ParameterCollection compilerParameters;
+        private readonly Stack<ParameterCollection> parameterCollections = new Stack<ParameterCollection>();
         private readonly Dictionary<string, IShaderMixinBuilder> registeredBuilders;
-        private readonly Dictionary<object, object> strippedPropertyContainers = new Dictionary<object, object>();
-        private readonly Stack<ShaderMixinParameters> currentUsedParameters = new Stack<ShaderMixinParameters>();
-        private readonly List<ShaderMixinParameters> finalUsedParameters = new List<ShaderMixinParameters>();
-        private readonly Stack<string> shaderNames = new Stack<string>();
-        private readonly Stack<HashSet<ParameterKey>> blackListKeys = new Stack<HashSet<ParameterKey>>();
-        private readonly Stack<ParameterCollection> currentPropertyContainers = new Stack<ParameterCollection>();
+        private readonly Stack<int> compositionIndices = new Stack<int>();
+        private readonly StringBuilder compositionStringBuilder = new StringBuilder();
+
+        private string compositionString = null;
+
+        private readonly ShaderMixinSource currentMixinSourceTree;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ShaderMixinContext"/> class.
+        /// Initializes a new instance of the <see cref="ShaderMixinContext" /> class.
         /// </summary>
-        /// <param name="defaultPropertyContainer">The default property container.</param>
+        /// <param name="mixinTree">The mixin tree.</param>
+        /// <param name="compilerParameters">The default property container.</param>
         /// <param name="registeredBuilders">The registered builders.</param>
-        /// <param name="shaderBaseName">The name of the base shader.</param>
-        /// <exception cref="System.ArgumentNullException">
-        /// defaultPropertyContainer
+        /// <exception cref="System.ArgumentNullException">compilerParameters
         /// or
-        /// registeredBuilders
-        /// </exception>
-        public ShaderMixinContext(ParameterCollection defaultPropertyContainer, Dictionary<string, IShaderMixinBuilder> registeredBuilders, string shaderBaseName)
+        /// registeredBuilders</exception>
+        public ShaderMixinContext(ShaderMixinSource mixinTree, ParameterCollection compilerParameters, Dictionary<string, IShaderMixinBuilder> registeredBuilders)
         {
-            if (defaultPropertyContainer == null)
-                throw new ArgumentNullException("defaultPropertyContainer");
+            if (mixinTree == null) throw new ArgumentNullException("mixinTree");
+            if (compilerParameters == null)
+                throw new ArgumentNullException("compilerParameters");
 
             if (registeredBuilders == null)
                 throw new ArgumentNullException("registeredBuilders");
 
-            // TODO: use a copy of the defaultPropertyContainer?
-            this.defaultPropertyContainer = defaultPropertyContainer;
+            // TODO: use a copy of the compilerParameters?
+            this.currentMixinSourceTree = mixinTree;
+            this.compilerParameters = compilerParameters;
             this.registeredBuilders = registeredBuilders;
-
-            strippedPropertyContainers.Add(defaultPropertyContainer, new ShaderMixinParameters());
-
-            currentUsedParameters.Push(new ShaderMixinParameters(shaderBaseName));
-            shaderNames.Push(shaderBaseName);
-            blackListKeys.Push(new HashSet<ParameterKey>());
-            currentPropertyContainers.Push(defaultPropertyContainer);
+            this.parameterCollections = new Stack<ParameterCollection>();
         }
+
+        /// <summary>
+        /// Gets or sets the child effect.
+        /// </summary>
+        /// <value>The child effect.</value>
+        public string ChildEffectName { get; set; }
 
         /// <summary>
         /// Pushes the current parameters collection being used.
         /// </summary>
         /// <typeparam name="T">Type of the parameter collection</typeparam>
-        /// <param name="propertyContainer">The property container.</param>
-        public void PushParameters<T>(T propertyContainer) where T : ParameterCollection
+        /// <param name="parameterCollection">The property container.</param>
+        public void PushParameters<T>(T parameterCollection) where T : ParameterCollection
         {
-            propertyContainers.Push(propertyContainer);
+            parameterCollections.Push(parameterCollection);
         }
 
         /// <summary>
@@ -71,106 +71,99 @@ namespace SiliconStudio.Paradox.Shaders
         /// </summary>
         public void PopParameters()
         {
-            propertyContainers.Pop();
+            parameterCollections.Pop();
+        }
+
+        public ShaderMixinSource CurrentMixin
+        {
+            get
+            {
+                return currentMixinSourceTree;
+            }
+        }
+
+        public void Discard()
+        {
+            throw new ShaderMixinDiscardException();
         }
 
         /// <summary>
         /// Gets a parameter value for the specified key.
         /// </summary>
         /// <typeparam name="T">Type of the parameter value</typeparam>
-        /// <param name="key">The key.</param>
+        /// <param name="paramKey">The parameter key.</param>
         /// <returns>The value or default value associated to this parameter key.</returns>
         /// <exception cref="System.ArgumentNullException">key</exception>
-        public T GetParam<T>(ParameterKey<T> key)
+        public T GetParam<T>(ParameterKey<T> paramKey)
         {
-            if (key == null)
-                throw new ArgumentNullException("key");
+            if (paramKey == null)
+                throw new ArgumentNullException("paramKey");
 
-            ParameterCollection sourcePropertyContainer = null;
+            var globalKey = paramKey;
+            var composeKey = GetComposeKey(paramKey);
+            var selectedKey = globalKey;
+            ParameterCollection sourceParameters = null;
 
-            T value;
-            // Try to get a value from registered containers
-            foreach (var propertyContainer in propertyContainers)
+            // Try first if a composite key with a value is available for the key
+            if (composeKey != globalKey)
             {
-                if (propertyContainer.TryGet(key, out value))
-                {
-                    sourcePropertyContainer = propertyContainer;
-                    goto valueFound; // Use goto to speedup the code and avoid usage of additionnal bool state
-                }
+                sourceParameters = FindKeyValue(composeKey, out selectedKey);
             }
 
-            // Else gets the value (or default value) from the default property container
-            sourcePropertyContainer = defaultPropertyContainer;
-            value = currentPropertyContainers.Peek().Get(key);
-            // do not store the keys behind a ParameterKey<ShaderMixinParameters>, only when it comes from defaultPropertyContainer
-            if (!blackListKeys.Peek().Contains(key))
-                currentUsedParameters.Peek().Set(key, value);
-
-        valueFound:
-
-            // Cache the strip property container
-            var stripPropertyContainer = (ParameterCollection)ReplicateContainer(sourcePropertyContainer);
-
-            if (!stripPropertyContainer.ContainsKey(key))
+            // Else try using global key
+            if (sourceParameters == null)
             {
-                var stripValue = value;
-                if (IsPropertyContainer(value))
-                {
-                    stripValue = (T)ReplicateContainer(value);
-                }
-                stripPropertyContainer.Set(key, stripValue);
+                sourceParameters = FindKeyValue(globalKey, out selectedKey);
+            }
+
+            // If nothing found, use composeKey and global compiler parameters
+            if (sourceParameters == null)
+            {
+                selectedKey = composeKey;
+                sourceParameters = compilerParameters;
+            }
+
+            // Gets the value from a source parameters
+            var value = sourceParameters.Get(selectedKey);
+
+            // Sore only used parameters when they are taken from compilerParameters
+            if (sourceParameters == compilerParameters)
+            {
+                currentMixinSourceTree.UsedParameters.Set(selectedKey, value);
             }
 
             return value;
         }
 
-        /// <summary>
-        /// Gets all parameters used by this context when mixin a shader.
-        /// </summary>
-        /// <returns>ShaderMixinParameters.</returns>
-        public ShaderMixinParameters GetMainUsedParameters()
+        private ParameterCollection FindKeyValue<T>(ParameterKey<T> key, out ParameterKey<T> selectedKey)
         {
-            return (ShaderMixinParameters)strippedPropertyContainers[defaultPropertyContainer];
-        }
-
-        public List<ShaderMixinParameters> GetUsedParameters()
-        {
-            while (currentUsedParameters.Count > 0)
-                finalUsedParameters.Add(currentUsedParameters.Pop());
-            return finalUsedParameters;
-        }
-
-        private bool IsPropertyContainer(object source)
-        {
-            return source is PropertyContainer || source is PropertyContainer[];
-        }
-
-        private object ReplicateContainer(object source)
-        {
-            object objectToReplicate = null;
-            if (!strippedPropertyContainers.TryGetValue(source, out objectToReplicate))
+            // Try to get a value from registered containers
+            selectedKey = null;
+            foreach (var parameterCollection in parameterCollections)
             {
-                if (source is ParameterCollection)
+                if (parameterCollection.ContainsKey(key))
                 {
-                    objectToReplicate = new ShaderMixinParameters();
+                    selectedKey = key;
+                    return parameterCollection;
                 }
-                else
-                {
-                    var containers = source as ParameterCollection[];
-                    if (containers != null)
-                    {
-                        var subPropertyContainers = new ShaderMixinParameters[containers.Length];
-                        for (int i = 0; i < containers.Length; i++)
-                        {
-                            subPropertyContainers[i] = (ShaderMixinParameters)ReplicateContainer(containers[i]);
-                        }
-                        objectToReplicate = containers;
-                    }
-                }
-
-                strippedPropertyContainers.Add(source, objectToReplicate);
             }
-            return objectToReplicate;
+            if (compilerParameters.ContainsKey(key))
+            {
+                selectedKey = key;
+                return compilerParameters;
+            }
+            
+            return null;
+        }
+
+        private ParameterKey<T> GetComposeKey<T>(ParameterKey<T> key)
+        {
+            if (compositionString == null)
+            {
+                return key;
+            }
+            key = key.ComposeWith(compositionString);
+            return key;
         }
 
         public void SetParam<T>(ParameterKey<T> key, T value)
@@ -178,11 +171,8 @@ namespace SiliconStudio.Paradox.Shaders
             if (key == null)
                 throw new ArgumentNullException("key");
 
-            var propertyContainer = propertyContainers.Count > 0 ? propertyContainers.Peek() : currentPropertyContainers.Peek();
+            var propertyContainer = parameterCollections.Count > 0 ? parameterCollections.Peek() : compilerParameters;
             propertyContainer.Set(key, value);
-
-            if (propertyContainers.Count == 0) // in currentDefaultContainer?
-                blackListKeys.Peek().Add(key);
         }
 
         /// <summary>
@@ -190,9 +180,9 @@ namespace SiliconStudio.Paradox.Shaders
         /// </summary>
         /// <param name="mixinTree">The mixin tree.</param>
         /// <param name="name">The name.</param>
-        public void RemoveMixin(ShaderMixinSourceTree mixinTree, string name)
+        public void RemoveMixin(ShaderMixinSource mixinTree, string name)
         {
-            var mixinParent = mixinTree.Mixin;
+            var mixinParent = mixinTree;
             for (int i = mixinParent.Mixins.Count - 1; i >= 0; i--)
             {
                 var mixin = mixinParent.Mixins[i];
@@ -204,22 +194,45 @@ namespace SiliconStudio.Paradox.Shaders
         }
 
         /// <summary>
-        /// Mixins a <see cref="ShaderClassSource"/> identified by its name/generic parameters into the specified mixin tree.
+        /// Mixins a <see cref="ShaderMixinSource" /> into the specified mixin tree.
+        /// </summary>
+        /// <param name="mixinTree">The mixin tree.</param>
+        /// <param name="name">The name.</param>
+        public void Mixin(ShaderMixinSource mixinTree, string name)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException("name", "Invalid null mixin name");
+            }
+
+            IShaderMixinBuilder builder;
+            if (!registeredBuilders.TryGetValue(name, out builder))
+            {
+                // Else simply add the name of the shader
+                mixinTree.Mixins.Add(new ShaderClassSource(name));
+            }
+            else if (builder != null)
+            {
+                builder.Generate(mixinTree, this);
+            }
+        }
+
+        /// <summary>
+        /// Mixins a <see cref="ShaderClassSource" /> identified by its name/generic parameters into the specified mixin tree.
         /// </summary>
         /// <param name="mixinTree">The mixin tree.</param>
         /// <param name="name">The name.</param>
         /// <param name="genericParameters">The generic parameters.</param>
         /// <exception cref="System.InvalidOperationException">If the class source doesn't support generic parameters</exception>
-        public void Mixin(ShaderMixinSourceTree mixinTree, string name, params object[] genericParameters)
+        public void Mixin(ShaderMixinSource mixinTree, string name, params object[] genericParameters)
         {
             IShaderMixinBuilder builder;
             if (!registeredBuilders.TryGetValue(name, out builder))
             {
                 // Else simply add the name of the shader
-                mixinTree.Mixin.Mixins.Add(new ShaderClassSource(name, genericParameters));
-            }
-
-            if (builder != null)
+                mixinTree.Mixins.Add(new ShaderClassSource(name, genericParameters));
+            } 
+            else if (builder != null)
             {
                 if (genericParameters.Length != 0)
                 {
@@ -229,61 +242,81 @@ namespace SiliconStudio.Paradox.Shaders
             }
         }
 
-        /// <summary>
-        /// Creates a new ParameterCollection for a child shader.
-        /// </summary>
-        public void BeginChild(ShaderMixinSourceTree subMixin)
+        public void PushComposition(ShaderMixinSource mixin, string compositionName, ShaderMixinSource composition)
         {
-            var parentName = shaderNames.Peek();
-            var childName = parentName + "." + subMixin.Name;
-            currentUsedParameters.Push(new ShaderMixinParameters(childName));
-            shaderNames.Push(childName);
+            mixin.AddComposition(compositionName, composition);
 
-            // copy the keys that have been set
-            var blk = new HashSet<ParameterKey>();
-            foreach (var blackKey in blackListKeys.Peek())
-                blk.Add(blackKey);
-            blackListKeys.Push(blk);
-
-            // copy the set of parameters
-            var pc = new ParameterCollection();
-            currentPropertyContainers.Peek().CopyTo(pc);
-            currentPropertyContainers.Push(pc);
-        }
-
-        /// <summary>
-        /// Copy the properties of the parent to the calling clone.
-        /// </summary>
-        public void CloneProperties()
-        {
-            if (currentUsedParameters.Count > 1)
+            compositionIndices.Push(compositionStringBuilder.Length);
+            if (compositionString != null)
             {
-                var childUsedParameters = currentUsedParameters.Pop();
-                var parentUsedParameters = currentUsedParameters.Peek();
-                parentUsedParameters.CopyTo(childUsedParameters);
-                currentUsedParameters.Push(childUsedParameters);
+                compositionStringBuilder.Insert(0, '.');
             }
+
+            compositionStringBuilder.Insert(0, compositionName);
+
+            compositionString = compositionStringBuilder.ToString();
         }
 
-        /// <summary>
-        /// Ends the computation of the child mixin and store the used parameters.
-        /// </summary>
-        public void EndChild()
+        public void PushCompositionArray(ShaderMixinSource mixin, string compositionName, ShaderMixinSource composition)
         {
-            shaderNames.Pop();
-            blackListKeys.Pop();
-            currentPropertyContainers.Pop();
-            finalUsedParameters.Add(currentUsedParameters.Pop());
+            int arrayIndex = mixin.AddCompositionToArray(compositionName, composition);
+
+            compositionIndices.Push(compositionStringBuilder.Length);
+            if (compositionString != null)
+            {
+                compositionStringBuilder.Insert(0, '.');
+            }
+
+            compositionStringBuilder.Insert(0, ']');
+            compositionStringBuilder.Insert(0, arrayIndex);
+            compositionStringBuilder.Insert(0, '[');
+            compositionStringBuilder.Insert(0, compositionName);
+
+            compositionString = compositionStringBuilder.ToString();
+        }
+
+        public void PopComposition()
+        {
+            var compositionIndex = compositionIndices.Pop();
+            compositionStringBuilder.Remove(0, compositionStringBuilder.Length - compositionIndex);
+            compositionString = compositionIndex == 0 ? null : compositionStringBuilder.ToString();
         }
 
         /// <summary>
         /// Mixins a <see cref="ShaderMixinSource"/> into the specified mixin tree.
         /// </summary>
         /// <param name="mixinTree">The mixin tree.</param>
-        /// <param name="shaderMixinSource">The shader mixin source.</param>
-        public void Mixin(ShaderMixinSourceTree mixinTree, ShaderMixinSource shaderMixinSource)
+        /// <param name="shaderSource">The shader source.</param>
+        public void Mixin(ShaderMixinSource mixinTree, ShaderSource shaderSource)
         {
-            mixinTree.Mixin.CloneFrom(shaderMixinSource);
+            if (shaderSource == null)
+            {
+                return;
+            }
+
+            var shaderMixinSource = shaderSource as ShaderMixinSource;
+            if (shaderMixinSource != null)
+            {
+                mixinTree.CloneFrom(shaderMixinSource);
+            }
+            else if (shaderSource is ShaderClassSource)
+            {
+                mixinTree.Mixins.Add((ShaderClassSource)shaderSource);
+            }
+            else if (shaderSource is ShaderMixinGeneratorSource)
+            {
+                Mixin(mixinTree, ((ShaderMixinGeneratorSource)shaderSource).Name);
+            }
+            else
+            {
+                throw new InvalidOperationException("ShaderSource [{0}] is not supported (Only ShaderMixinSource and ShaderClassSource)".ToFormat(shaderSource.GetType()));
+            }
+
+            // If we are mixin a shader source that has an attached discard, don't proceed further
+            if (shaderSource.Discard)
+            {
+                Discard();
+            }
         }
     }
 }

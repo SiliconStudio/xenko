@@ -1,11 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Core.Serialization.Assets
 {
@@ -21,6 +17,8 @@ namespace SiliconStudio.Core.Serialization.Assets
             /// </summary>
             public AssetReference Next, Prev;
 
+            public bool Deserialized;
+
             /// <summary>
             /// The object being referenced.
             /// </summary>
@@ -30,11 +28,6 @@ namespace SiliconStudio.Core.Serialization.Assets
             /// The URL.
             /// </summary>
             public readonly string Url;
-
-            /// <summary>
-            /// The URL.
-            /// </summary>
-            public readonly ObjectId ObjectId;
 
             /// <summary>
             /// The public reference count (corresponding to AssetManager.Load/Unload).
@@ -52,9 +45,8 @@ namespace SiliconStudio.Core.Serialization.Assets
             // TODO: Lazily create this list?
             public HashSet<AssetReference> References = new HashSet<AssetReference>();
 
-            public AssetReference(ObjectId objectId, string url, bool publicReference)
+            public AssetReference(string url, bool publicReference)
             {
-                ObjectId = objectId;
                 Url = url;
                 PublicReferenceCount = publicReference ? 1 : 0;
                 PrivateReferenceCount = publicReference ? 0 : 1;

@@ -15,6 +15,6 @@ namespace SiliconStudio.Shaders.Visitor
         /// <value>
         /// The result of an expression.
         /// </value>
-        public object Value { get; set; }
+        public double Value { get; set; }
     }
 }

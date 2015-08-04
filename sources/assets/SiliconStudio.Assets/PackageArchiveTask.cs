@@ -15,6 +15,8 @@ namespace SiliconStudio.Assets
         [Required]
         public ITaskItem File { get; set; }
 
+        public string SpecialVersion { get; set; }
+
         public override bool Execute()
         {
 
@@ -46,6 +48,12 @@ namespace SiliconStudio.Assets
             if (result.HasErrors)
             {
                 return false;
+            }
+
+            // Override version with task SpecialVersion (if specified by user)
+            if (!string.IsNullOrEmpty(SpecialVersion))
+            {
+                package.Meta.Version = new PackageVersion(package.Meta.Version.Version, SpecialVersion);
             }
 
             Log.LogMessage(MessageImportance.High, "Packaging [{0}] version [{1}]", package.Meta.Name, package.Meta.Version);

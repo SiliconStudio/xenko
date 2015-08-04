@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Games;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Input;
 using SiliconStudio.Paradox.UI.Controls;
 using SiliconStudio.Paradox.UI.Panels;
@@ -24,14 +25,14 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public ClippingTest()
         {
-            CurrentVersion = 4;
+            CurrentVersion = 5;
         }
 
         protected override async Task LoadContent()
         {
             await base.LoadContent();
 
-            var uiGroup = Asset.Load<UIImageGroup>("UIImages");
+            var uiGroup = Asset.Load<SpriteSheet>("UIImages");
 
             element4 = new ContentDecorator
             {
@@ -63,7 +64,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             canvas.Children.Add(element1);
             canvas.Children.Add(element2);
 
-            UI.RootElement = canvas;
+            UIComponent.RootElement = canvas;
         }
 
         protected override void Update(GameTime gameTime)

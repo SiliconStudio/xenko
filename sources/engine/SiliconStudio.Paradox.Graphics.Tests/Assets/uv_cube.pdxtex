@@ -3,6 +3,7 @@ Id: f474fd19-e3d1-4923-b0b2-65cc513a4ad3
 Tags: []
 Source: ../../../data/tests/uv_cube.dds
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: Compressed
 GenerateMipmaps: false
 PremultiplyAlpha: false
 ~Base:

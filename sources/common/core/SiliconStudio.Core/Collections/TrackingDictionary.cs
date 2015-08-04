@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Core.Collections
@@ -21,7 +22,25 @@ namespace SiliconStudio.Core.Collections
     public class TrackingDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IDictionary, ITrackingCollectionChanged
     {
         private Dictionary<TKey, TValue> innerDictionary;
-        public event EventHandler<TrackingCollectionChangedEventArgs> CollectionChanged;
+
+        private EventHandler<TrackingCollectionChangedEventArgs> itemAdded;
+        private EventHandler<TrackingCollectionChangedEventArgs> itemRemoved;
+
+        /// <inheritdoc/>
+        public event EventHandler<TrackingCollectionChangedEventArgs> CollectionChanged
+        {
+            add
+            {
+                // We keep a list in reverse order for removal, so that we can easily have multiple handlers depending on each others
+                itemAdded = (EventHandler<TrackingCollectionChangedEventArgs>)Delegate.Combine(itemAdded, value);
+                itemRemoved = (EventHandler<TrackingCollectionChangedEventArgs>)Delegate.Combine(value, itemRemoved);
+            }
+            remove
+            {
+                itemAdded = (EventHandler<TrackingCollectionChangedEventArgs>)Delegate.Remove(itemAdded, value);
+                itemRemoved = (EventHandler<TrackingCollectionChangedEventArgs>)Delegate.Remove(itemRemoved, value);
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TrackingDictionary{TKey, TValue}"/> class.
@@ -35,7 +54,7 @@ namespace SiliconStudio.Core.Collections
         public void Add(TKey key, TValue value)
         {
             innerDictionary.Add(key, value);
-            var collectionChanged = CollectionChanged;
+            var collectionChanged = itemAdded;
             if (collectionChanged != null)
                 collectionChanged(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, key, value, null, true));
         }
@@ -55,7 +74,7 @@ namespace SiliconStudio.Core.Collections
         /// <inheritdoc/>
         public bool Remove(TKey key)
         {
-            var collectionChanged = CollectionChanged;
+            var collectionChanged = itemRemoved;
             if (collectionChanged != null && innerDictionary.ContainsKey(key))
                 collectionChanged(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, key, innerDictionary[key], null, true));
 
@@ -83,15 +102,19 @@ namespace SiliconStudio.Core.Collections
             }
             set
             {
-                var collectionChanged = CollectionChanged;
-                if (collectionChanged != null)
+                var collectionChangedRemoved = itemRemoved;
+                if (collectionChangedRemoved != null)
                 {
                     TValue oldValue;
+                    
                     bool alreadyExisting = innerDictionary.TryGetValue(key, out oldValue);
                     if (alreadyExisting)
-                        collectionChanged(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, key, oldValue, null, false));
+                        collectionChangedRemoved(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, key, oldValue, null, false));
+
                     innerDictionary[key] = value;
-                    collectionChanged(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, key, innerDictionary[key], oldValue, !alreadyExisting));
+
+                    // Note: CollectionChanged is considered not thread-safe, so no need to skip if null here, shouldn't happen
+                    itemAdded(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, key, innerDictionary[key], oldValue, !alreadyExisting));
                 }
                 else
                 {
@@ -109,7 +132,7 @@ namespace SiliconStudio.Core.Collections
         /// <inheritdoc/>
         public void Clear()
         {
-            var collectionChanged = CollectionChanged;
+            var collectionChanged = itemRemoved;
             if (collectionChanged != null)
             {
                 foreach (var key in innerDictionary.Keys.ToArray())
@@ -150,7 +173,7 @@ namespace SiliconStudio.Core.Collections
         /// <inheritdoc/>
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
-            var collectionChanged = CollectionChanged;
+            var collectionChanged = itemRemoved;
             if (collectionChanged != null && innerDictionary.Contains(item))
                 return innerDictionary.Remove(item.Key);
 
@@ -172,7 +195,7 @@ namespace SiliconStudio.Core.Collections
         /// <inheritdoc/>
         void IDictionary.Add(object key, object value)
         {
-            ((IDictionary)innerDictionary).Add(key, value);
+            Add((TKey)key, (TValue)value);
         }
 
         /// <inheritdoc/>
@@ -202,7 +225,7 @@ namespace SiliconStudio.Core.Collections
         /// <inheritdoc/>
         void IDictionary.Remove(object key)
         {
-            ((IDictionary)innerDictionary).Remove(key);
+            Remove((TKey)key);
         }
 
         /// <inheritdoc/>
@@ -214,8 +237,14 @@ namespace SiliconStudio.Core.Collections
         /// <inheritdoc/>
         object IDictionary.this[object key]
         {
-            get { return ((IDictionary)innerDictionary)[key]; }
-            set { ((IDictionary)innerDictionary)[key] = value; }
+            get
+            {
+                return this[(TKey)key];
+            }
+            set
+            {
+                this[(TKey)key] = (TValue)value;
+            }
         }
 
         /// <inheritdoc/>

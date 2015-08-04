@@ -223,6 +223,14 @@ namespace SiliconStudio.Shaders.Convertor
         public bool ViewFrustumRemap { get; set; }
 
         /// <summary>
+        /// Gets or sets a variable name that will be checked to know if render target needs to be flipped. Null means nothing happens.
+        /// </summary>
+        /// <value>
+        /// The name of the variable to check if render target needs to be flipped.
+        /// </value>
+        public string FlipRenderTargetFlag { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether this instance is point sprite shader.
         /// </summary>
         /// <value>
@@ -339,6 +347,11 @@ namespace SiliconStudio.Shaders.Convertor
         /// Gets or sets a value indicating whether to keep array initializers.
         /// </summary>
         public bool KeepNonUniformArrayInitializers { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the shader should be converted to ES2 target.
+        /// </summary>
+        public bool IsOpenGLES2 { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to unroll the loops with the [unroll] annotation.
@@ -1061,6 +1074,12 @@ namespace SiliconStudio.Shaders.Convertor
                 textureSizeCall.Arguments.Add(new VariableReferenceExpression(glslSampler.Name));
                 textureSizeCall.Arguments.Add(new LiteralExpression(0));
 
+                // TODO: Support all the versions of GetDimensions based on texture type and parameter count
+                // GetDimensions signature can be (uint mipLevel, uint width, uint height) or (uint width, uint height)
+                var startArgIndex = 0;
+                if (methodInvocationExpression.Arguments.Count > 2)
+                    startArgIndex = 1;
+
                 // TODO: Support for sampler size other than 2D
                 var textureSizeVariable = new Variable(VectorType.Int2, "tempTextureSize", textureSizeCall);
                 resultBlock.Statements.Add(new DeclarationStatement(textureSizeVariable));
@@ -1068,13 +1087,13 @@ namespace SiliconStudio.Shaders.Convertor
                     new ExpressionStatement(
                         new AssignmentExpression(
                             AssignmentOperator.Default,
-                            methodInvocationExpression.Arguments[0],
+                            methodInvocationExpression.Arguments[startArgIndex],
                             new MemberReferenceExpression(new VariableReferenceExpression(textureSizeVariable.Name), "x"))));
                 resultBlock.Statements.Add(
                     new ExpressionStatement(
                         new AssignmentExpression(
                             AssignmentOperator.Default,
-                            methodInvocationExpression.Arguments[1],
+                            methodInvocationExpression.Arguments[startArgIndex + 1],
                             new MemberReferenceExpression(new VariableReferenceExpression(textureSizeVariable.Name), "y"))));
 
                 return resultBlock;
@@ -1247,7 +1266,7 @@ namespace SiliconStudio.Shaders.Convertor
                 {
                     methodVar.Name = "log";
                     var log10 = new MethodInvocationExpression("log", new LiteralExpression(10.0f));
-                    return new BinaryExpression(BinaryOperator.Multiply, methodInvocationExpression, log10);
+                    return new BinaryExpression(BinaryOperator.Divide, methodInvocationExpression, log10);
                 }
 
                 if (methodName == "saturate")
@@ -1314,6 +1333,7 @@ namespace SiliconStudio.Shaders.Convertor
                     case "SampleBias":
                     case "SampleGrad":
                     case "SampleLevel":
+                    case "SampleCmp":
                         {
                             string methodName = "texture";
 
@@ -1367,7 +1387,22 @@ namespace SiliconStudio.Shaders.Convertor
 
                             if (isLoad)
                             {
-                                methodName += "Lod";
+                                if (IsOpenGLES2)
+                                    methodName += "Lod";
+                                else
+                                    methodName = "texelFetch";
+                            }
+
+                            if (memberReferenceExpression.Member == "SampleCmp")
+                            {
+                                // Need to convert texture.SampleCmp(texcoord, compareValue) to texture(vec3(texcoord, compareValue))
+                                var texcoord = methodInvocationExpression.Arguments[1];
+                                methodInvocationExpression.Arguments[1] = new MethodInvocationExpression(
+                                    new TypeReferenceExpression(new VectorType(ScalarType.Float, TypeBase.GetDimensionSize(texcoord.TypeInference.TargetType, 1) + 1)),
+                                    methodInvocationExpression.Arguments[1],
+                                    methodInvocationExpression.Arguments[2]
+                                    );
+                                methodInvocationExpression.Arguments.RemoveAt(methodInvocationExpression.Arguments.Count - 1);
                             }
 
                             if (methodInvocationExpression.Arguments.Count == baseParameterCount + 1)
@@ -1398,9 +1433,10 @@ namespace SiliconStudio.Shaders.Convertor
 
                             if (isLoad)
                             {
-                                // Since Texture.Load works with integer coordinates, need to convert
-                                // texture.Load(coords, [offset]) to textureLod[Offset](texture_sampler, coords.xy / textureSize(texture_sampler), coords.z, [offset])
-
+                                // Since Texture.Load works with integer coordinates, need to convert texture.Load(coords, [offset]) to:
+                                //    - textureLod[Offset](texture_sampler, coords.xy / textureSize(texture_sampler), coords.z, [offset]) on OpenGL ES 2
+                                //    - texelFetch[Offset](texture_sampler, coords.xy, coords.z, [offset]) on OpenGL and ES 3
+                                
                                 string dimP = "??";
                                 string mipLevel = "?";
 
@@ -1423,11 +1459,19 @@ namespace SiliconStudio.Shaders.Convertor
                                         break;
                                 }
 
-                                methodInvocationExpression.Arguments.Insert(2, NewCast(ScalarType.Float, new MemberReferenceExpression(methodInvocationExpression.Arguments[1].DeepClone(), mipLevel)));
-                                methodInvocationExpression.Arguments[1] = NewCast(new VectorType(ScalarType.Float, dimP.Length), new BinaryExpression(
-                                    BinaryOperator.Divide,
-                                    new MemberReferenceExpression(methodInvocationExpression.Arguments[1], dimP),
-                                    NewCast(new VectorType(ScalarType.Float, dimP.Length), new MethodInvocationExpression("textureSize", new VariableReferenceExpression(glslSampler.Name), new LiteralExpression(0)))));
+                                if (IsOpenGLES2)
+                                {
+                                    methodInvocationExpression.Arguments.Insert(2, NewCast(ScalarType.Float, new MemberReferenceExpression(methodInvocationExpression.Arguments[1].DeepClone(), mipLevel)));
+                                    methodInvocationExpression.Arguments[1] = NewCast(new VectorType(ScalarType.Float, dimP.Length), new BinaryExpression(
+                                        BinaryOperator.Divide,
+                                        new MemberReferenceExpression(methodInvocationExpression.Arguments[1], dimP),
+                                        NewCast(new VectorType(ScalarType.Float, dimP.Length), new MethodInvocationExpression("textureSize", new VariableReferenceExpression(glslSampler.Name), new LiteralExpression(0)))));
+                                }
+                                else
+                                {
+                                    methodInvocationExpression.Arguments.Insert(2, NewCast(ScalarType.Int, new MemberReferenceExpression(methodInvocationExpression.Arguments[1].DeepClone(), mipLevel)));
+                                    methodInvocationExpression.Arguments[1] = NewCast(new VectorType(ScalarType.Int, dimP.Length), new MemberReferenceExpression(methodInvocationExpression.Arguments[1], dimP));
+                                }
                             }
 
                             methodInvocationExpression.Target = new VariableReferenceExpression(methodName);
@@ -1435,6 +1479,9 @@ namespace SiliconStudio.Shaders.Convertor
                             // TODO: Check how many components are required
                             // methodInvocationExpression.Arguments[1] = new MemberReferenceExpression(new ParenthesizedExpression(methodInvocationExpression.Arguments[1]), "xy");
                         }
+
+                        // Set methodDeclaration to null, so that "Add default parameters" doesn't do anything little bit further in this method
+                        methodDeclaration = null;
 
                         break;
                 }
@@ -2267,13 +2314,28 @@ namespace SiliconStudio.Shaders.Convertor
                 targetIterator = ((IndexerExpression)targetIterator).Target;
             }
 
+            Variable variable = null;
+            Identifier varName = null;
             // Check that index apply to an array variable
-            var variableReferenceExpression = targetIterator as VariableReferenceExpression;
-            MatrixType matrixType = null;
-            if (variableReferenceExpression != null)
+            if (targetIterator is VariableReferenceExpression)
             {
-                var variable = FindDeclaration(variableReferenceExpression.Name) as Variable;
+                varName = ((VariableReferenceExpression)targetIterator).Name;
+                variable = FindDeclaration(varName) as Variable;
+            }
+            else if (targetIterator is MemberReferenceExpression) // Also check arrays inside structures
+            {
+                varName = ((MemberReferenceExpression)targetIterator).Member;
 
+                var target = ((MemberReferenceExpression)targetIterator).Target;
+                var targetType = target.TypeInference.TargetType as StructType;
+
+                if (targetType != null)
+                    variable = targetType.Fields.FirstOrDefault(x => x.Name.Text == varName.Text);
+            }
+
+            MatrixType matrixType = null;
+            if (varName != null)
+            {
                 // If array is a multidimension array
                 var variableType = variable != null ? variable.Type.ResolveType() : null;
                 var arrayType = variableType as ArrayType;
@@ -2287,11 +2349,12 @@ namespace SiliconStudio.Shaders.Convertor
                     // Transform multi-dimensionnal array to single dimension
                     // float myarray[s1][s2][s3]...[sn] = {{.{..{...}}};
                     // float value = myarray[i1][i2][i3]...[in]    => float value = myarray[(i1)*(s2)*(s3)*...*(sn) + (i2)*(s3)*...*(sn) + (i#)*(s#+1)*(s#+2)*...*(sn)];
+                    // The indice list is in reversed order => <[sn]...[s3][s2][s1]>
                     Expression finalIndex = null;
                     for (int i = 0; i < indices.Count; i++)
                     {
                         Expression indexExpression = indices[i];
-                        for (int j = i + 1; j < indices.Count; j++)
+                        for (int j = indices.Count - i; j < indices.Count; ++j)
                         {
                             var nextExpression = arrayType.Dimensions[j];
                             indexExpression = new BinaryExpression(BinaryOperator.Multiply, indexExpression, nextExpression);
@@ -2319,7 +2382,7 @@ namespace SiliconStudio.Shaders.Convertor
                     // float4x3[0][1] -> mat4x3[1][0]
                     for (int i = 0; i < indices.Count; i++)
                     {
-                        nextExpression = nextExpression == null ? new IndexerExpression(variableReferenceExpression, indices[i]) : new IndexerExpression(nextExpression, indices[i]);
+                        nextExpression = nextExpression == null ? new IndexerExpression(targetIterator, indices[i]) : new IndexerExpression(nextExpression, indices[i]);
                     }
                     return nextExpression;
                 }
@@ -3789,11 +3852,12 @@ namespace SiliconStudio.Shaders.Convertor
 
         private static string RenameGlslKeyword(string name)
         {
+            // Note: we try to avoid ending up with a _, since glsl_optimizer might add another _X, and GLSL doesn't like usage of double underscore
             if (GlslKeywords.IsReserved(name))
-                name = "_" + name + "_";
+                name = "_" + name;
 
-            // Replace all variable using __ with _t_
-            return name.Replace("__", "_t_");
+            // Replace all variable using __ with _0
+            return name.Replace("__", "_0");
         }
 
         /// <summary>
@@ -3801,32 +3865,39 @@ namespace SiliconStudio.Shaders.Convertor
         /// </summary>
         private void RemapCoordinates(StatementList list)
         {
-            if (ViewFrustumRemap && pipelineStage == PipelineStage.Vertex && entryPoint is MethodDefinition)
+            if (pipelineStage == PipelineStage.Vertex && entryPoint is MethodDefinition)
             {
-                // Add gl_Position.z = gl_Position.z * 2.0f - gl_Position.w
-                list.Add(
-                    new ExpressionStatement(
-                        new AssignmentExpression(
-                            AssignmentOperator.Default,
-                            new MemberReferenceExpression(new VariableReferenceExpression("gl_Position"), "z"),
-                            new BinaryExpression(
-                                BinaryOperator.Minus,
+                if (ViewFrustumRemap)
+                {
+                    // Add gl_Position.z = gl_Position.z * 2.0f - gl_Position.w
+                    list.Add(
+                        new ExpressionStatement(
+                            new AssignmentExpression(
+                                AssignmentOperator.Default,
+                                new MemberReferenceExpression(new VariableReferenceExpression("gl_Position"), "z"),
                                 new BinaryExpression(
-                                    BinaryOperator.Multiply,
-                                    new MemberReferenceExpression(new VariableReferenceExpression("gl_Position"), "z"),
-                                    new LiteralExpression(2.0f)),
-                                new MemberReferenceExpression(new VariableReferenceExpression("gl_Position"), "w"))
-                            )));
-                list.Add(
-                    new ExpressionStatement(
-                        new AssignmentExpression(
+                                    BinaryOperator.Minus,
+                                    new BinaryExpression(
+                                        BinaryOperator.Multiply,
+                                        new MemberReferenceExpression(new VariableReferenceExpression("gl_Position"), "z"),
+                                        new LiteralExpression(2.0f)),
+                                    new MemberReferenceExpression(new VariableReferenceExpression("gl_Position"), "w"))
+                                )));
+                }
+
+                if (FlipRenderTargetFlag != null)
+                {
+                    list.Add(
+                        new ExpressionStatement(
+                            new AssignmentExpression(
                                 AssignmentOperator.Default,
                                 new MemberReferenceExpression(new VariableReferenceExpression("gl_Position"), "y"),
                                 new BinaryExpression(
-                                    BinaryOperator.Multiply, 
-                                    new VariableReferenceExpression("ParadoxFlipRendertarget"), 
+                                    BinaryOperator.Multiply,
+                                    new VariableReferenceExpression(FlipRenderTargetFlag),
                                     new MemberReferenceExpression(new VariableReferenceExpression("gl_Position"), "y"))
                                 )));
+                }
             }
         }
 

@@ -9,7 +9,7 @@ namespace SiliconStudio.Assets.Tests
     public partial class TestSerializing
     {
         [DataContract("MyAsset")]
-        [AssetFileExtension(".pdxobj")]
+        [AssetDescription(".pdxobj")]
         public class MyAsset : Asset
         {
             public MyAsset()
@@ -25,6 +25,7 @@ namespace SiliconStudio.Assets.Tests
                 MapItems1 = new Dictionary<object, object>();
                 MapItems2 = new MyDictionary();
                 MapItems3 = new MyDictionaryPure();
+                CustomObjectWithProtectedSet = new CustomObject { Name = "customObject" };
             }
 
             [DataMember(0)]
@@ -57,6 +58,14 @@ namespace SiliconStudio.Assets.Tests
             public MyDictionary MapItems2 { get; set; }
             
             public MyDictionaryPure MapItems3 { get; set; }
+
+            public object CustomObjectWithProtectedSet { get; protected set; }
+        }
+
+        [DataContract("CustomObject")]
+        public class CustomObject
+        {
+            public string Name { get; set; }
         }
 
         [DataContract("MyCollection")]

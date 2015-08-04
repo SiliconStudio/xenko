@@ -136,7 +136,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         public ImageDescription Description;
 
-        private Image()
+        internal Image()
         {
         }
 
@@ -768,6 +768,22 @@ namespace SiliconStudio.Paradox.Graphics
 
             // PreCompute databoxes
             dataBoxArray = ComputeDataBox();
+        }
+
+        internal void InitializeFrom(Image image)
+        {
+            // TODO: Invalidate original image?
+            pixelBuffers = image.pixelBuffers;
+            dataBoxArray = image.dataBoxArray;
+            mipMapToZIndex = image.mipMapToZIndex;
+            zBufferCountPerArraySlice = image.zBufferCountPerArraySlice;
+            mipmapDescriptions = image.mipmapDescriptions;
+            pixelBufferArray = image.pixelBufferArray;
+            totalSizeInBytes = image.totalSizeInBytes;
+            buffer = image.buffer;
+            bufferIsDisposable = image.bufferIsDisposable;
+            handle = image.handle;
+            Description = image.Description;
         }
 
         private PixelBuffer GetPixelBufferUnsafe(int arrayIndex, int zIndex, int mipmap)

@@ -81,6 +81,7 @@ namespace SiliconStudio.Core.Tests
             public List<SerializeClassTest> ListClass;
             public Dictionary<string, string> Dictionary;
             public Dictionary<string, string> DictionaryNull;
+            public readonly List<int> ReadOnlyList = new List<int>();
         }
 
         [DataContract]
@@ -238,6 +239,7 @@ namespace SiliconStudio.Core.Tests
                                  List = new List<int> { 3112, 123 },
                                  ListInterface = new List<int> { 5112, 623 },
                                  ListClass = new List<SerializeClassTest> { new SerializeClassTest { A = 1, B = 2 }, new SerializeClassTest { A = 3, B = 4 } },
+                                 ReadOnlyList = { 345, 567 },
                                  Dictionary = new Dictionary<string, string> { { "a", "b" }, { "c", "d" } },
                              };
             var copy = CopyBySerialization(source, serializationBackend);
@@ -246,6 +248,7 @@ namespace SiliconStudio.Core.Tests
             Assert.That(copy.ListInterface, Is.EqualTo(source.ListInterface));
             Assert.Null(copy.ListInterfaceNull);
             Assert.That(copy.ListClass.Count, Is.EqualTo(source.ListClass.Count));
+            Assert.That(copy.ReadOnlyList.Count, Is.EqualTo(source.ReadOnlyList.Count));
             for (int i = 0; i < source.ListClass.Count; ++i)
             {
                 Assert.That(copy.ListClass[i].A, Is.EqualTo(source.ListClass[i].A));

@@ -21,7 +21,7 @@
   </ItemGroup>
   <!-- Include platform dependent assembly when specified -->
   <Choose>
-    <When Condition="'$(SiliconStudioPlatform)' == 'WindowsStore' or '$(SiliconStudioPlatform)' == 'WindowsPhone'">
+    <When Condition="'$(SiliconStudioPlatform)' == 'WindowsStore' or '$(SiliconStudioPlatform)' == 'WindowsPhone' or '$(SiliconStudioPlatform)' == 'Windows10'">
       <ItemGroup>
         <Reference Include="SharpDX">
           <SpecificVersion>False</SpecificVersion>
@@ -35,8 +35,10 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Extensions\DesignExtensions.cs" />
+    <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\TaskExtensions.cs" />
+    <Compile Include="Extensions\TypeDescriptorExtensions.cs" />
     <Compile Include="IO\UDirectory.cs" />
     <Compile Include="IO\UDirectorySerializer.cs" />
     <Compile Include="IO\UFile.cs" />
@@ -65,6 +67,8 @@
     <Compile Include="Reflection\MemberDescriptiorExtensions.cs" />
     <Compile Include="Reflection\MemberPathAction.cs" />
     <Compile Include="Reflection\MemberDescriptorBase.cs" />
+    <Compile Include="Reflection\MemberPathExtensions.cs" />
+    <Compile Include="Reflection\MemberPathNode.cs" />
     <Compile Include="Reflection\NullableDescriptor.cs" />
     <Compile Include="Reflection\ObjectDescriptor.cs" />
     <Compile Include="Reflection\Override.cs" />
@@ -74,12 +78,45 @@
     <Compile Include="Reflection\MemberPath.cs" />
     <Compile Include="Reflection\ShadowAttributes.cs" />
     <Compile Include="Reflection\ShadowContainer.cs" />
+    <Compile Include="Reflection\ShadowId.cs" />
     <Compile Include="Reflection\ShadowObject.cs" />
+    <Compile Include="Reflection\ThisDescriptor.cs" />
     <Compile Include="Reflection\TypeDescriptorFactory.cs" />
     <Compile Include="Reflection\TypeExtensions.cs" />
     <Compile Include="Reflection\VisitorContext.cs" />
+    <Compile Include="Settings\ChangesValidatedEventArgs.cs" />
+    <Compile Include="Settings\FileModifiedEventArgs.cs" />
+    <Compile Include="Settings\NamespaceDoc.cs" />
+    <Compile Include="Settings\SettingsCollection.cs" />
+    <Compile Include="Settings\SettingsDictionarySerializer.cs" />
+    <Compile Include="Windows\GlobalMutex.cs" />
+    <Compile Include="Yaml\DynamicYamlExtensions.cs" />
+    <Compile Include="Yaml\ParsingEventListEmitter.cs" />
+    <Compile Include="Settings\SettingsEntry.cs" />
+    <Compile Include="Settings\SettingsEntryValue.cs" />
+    <Compile Include="Settings\SettingsFile.cs" />
+    <Compile Include="Settings\SettingsFileLoadedEventArgs.cs" />
+    <Compile Include="Settings\SettingsKey.cs" />
+    <Compile Include="Settings\SettingsProfile.cs" />
+    <Compile Include="Settings\SettingsGroup.cs" />
+    <Compile Include="Settings\SettingsValueKey.cs" />
+    <Compile Include="Settings\Utils.cs" />
     <Compile Include="StringSpan.cs" />
     <Compile Include="StringSpanExtensions.cs" />
+    <Compile Include="TypeConverters\BaseConverter.cs" />
+    <Compile Include="TypeConverters\Color4Converter.cs" />
+    <Compile Include="TypeConverters\ColorConverter.cs" />
+    <Compile Include="TypeConverters\FieldPropertyDescriptor.cs" />
+    <Compile Include="TypeConverters\Half2Converter.cs" />
+    <Compile Include="TypeConverters\Half3Converter.cs" />
+    <Compile Include="TypeConverters\Half4Converter.cs" />
+    <Compile Include="TypeConverters\HalfConverter.cs" />
+    <Compile Include="TypeConverters\MatrixConverter.cs" />
+    <Compile Include="TypeConverters\NamespaceDoc.cs" />
+    <Compile Include="TypeConverters\QuaternionConverter.cs" />
+    <Compile Include="TypeConverters\Vector2Converter.cs" />
+    <Compile Include="TypeConverters\Vector3Converter.cs" />
+    <Compile Include="TypeConverters\Vector4Converter.cs" />
     <Compile Include="VisualStudio\KeyedCollectionExtensions.cs" />
     <Compile Include="VisualStudio\KnownProjectTypeGuid.cs" />
     <Compile Include="VisualStudio\Project.cs" />
@@ -92,6 +129,7 @@
     <Compile Include="VisualStudio\SolutionFileException.cs" />
     <Compile Include="VisualStudio\SolutionReader.cs" />
     <Compile Include="VisualStudio\SolutionWriter.cs" />
+    <Compile Include="VisualStudio\VisualStudioVersions.cs" />
     <Compile Include="Windows\AppHelper.cs" />
     <Compile Include="Yaml\AssetScalarSerializerBase.cs" />
     <Compile Include="Yaml\DynamicYamlArray.cs" />
@@ -108,6 +146,19 @@
     <Compile Include="Yaml\YamlSerializerFactoryAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\presentation\SiliconStudio.ActionStack\SiliconStudio.ActionStack.csproj">
+      <Project>{e9c3adc8-3f13-4673-aaa8-a0e97419db5b}</Project>
+      <Name>SiliconStudio.ActionStack</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>
@@ -119,6 +170,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\deps\SharpYaml\SharpYaml.dll</HintPath>
     </Reference>
+    <Reference Include="System.Management" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
   </ItemGroup>

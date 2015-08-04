@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Effects
+namespace SiliconStudio.Paradox.Rendering
 {
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     internal struct ShadowMapReceiverVsmInfo

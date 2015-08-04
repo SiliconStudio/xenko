@@ -266,7 +266,7 @@ namespace SiliconStudio.Core.Mathematics
         public float Gradians
         {
             get { return MathUtil.RadiansToGradians(radians); }
-            set { radians = MathUtil.RadiansToGradians(value); }
+            set { radians = MathUtil.GradiansToRadians(value); }
         }
 
         /// <summary>

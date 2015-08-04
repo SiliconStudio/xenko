@@ -1,3 +1,5 @@
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -353,7 +355,7 @@ namespace SiliconStudio.Presentation.Controls
 
         private static void OnLostFocusActionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var input = (TextBox)d;
+            var input = (TextBoxBase)d;
             if (e.Property == ValidateOnLostFocusProperty && (bool)e.NewValue)
             {
                 input.SetCurrentValue(CancelOnLostFocusProperty, false);

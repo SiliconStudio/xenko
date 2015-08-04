@@ -14,9 +14,9 @@ namespace SiliconStudio.Core.Collections
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="T"></typeparam>
-    public abstract class KeyedSortedList<TKey, T> : IList<T>
+    public abstract class KeyedSortedList<TKey, T> : IList<T>, IList
     {
-        private IComparer<TKey> comparer;
+        private readonly IComparer<TKey> comparer;
         protected FastListStruct<T> items = new FastListStruct<T>(1);
 
         protected KeyedSortedList() : this(null)
@@ -57,6 +57,14 @@ namespace SiliconStudio.Core.Collections
             items.RemoveAt(index);
         }
 
+        /// <summary>
+        /// Sorts again this list (in case keys were mutated).
+        /// </summary>
+        public void Sort()
+        {
+            Array.Sort(items.Items, 0, items.Count, new Comparer(this));
+        }
+
         /// <inheritdoc/>
         public void Add(T item)
         {
@@ -69,7 +77,7 @@ namespace SiliconStudio.Core.Collections
             InsertItem(~index, item);
         }
 
-        public bool Contains(TKey key)
+        public bool ContainsKey(TKey key)
         {
             return BinarySearch(key) >= 0;
         }
@@ -111,6 +119,19 @@ namespace SiliconStudio.Core.Collections
             }
         }
 
+        public bool TryGetValue(TKey key, out T value)
+        {
+            int index = BinarySearch(key);
+            if (index < 0)
+            {
+                value = default(T);
+                return false;
+            }
+
+            value = items[index];
+            return true;
+        }
+
         /// <inheritdoc/>
         public void Clear()
         {
@@ -124,6 +145,38 @@ namespace SiliconStudio.Core.Collections
         }
 
         /// <inheritdoc/>
+        int IList.Add(object value)
+        {
+            int index = items.Count;
+            Add((T)value);
+            return index;
+        }
+
+        /// <inheritdoc/>
+        bool IList.Contains(object value)
+        {
+            return Contains((T)value);
+        }
+
+        /// <inheritdoc/>
+        int IList.IndexOf(object value)
+        {
+            return IndexOf((T)value);
+        }
+
+        /// <inheritdoc/>
+        void IList.Insert(int index, object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        void IList.Remove(object value)
+        {
+            throw new NotImplementedException();
+        }
+        
+        /// <inheritdoc/>
         void ICollection<T>.CopyTo(T[] array, int arrayIndex)
         {
             throw new NotImplementedException();
@@ -135,17 +188,28 @@ namespace SiliconStudio.Core.Collections
             throw new NotImplementedException();
         }
 
+        void ICollection.CopyTo(Array array, int index)
+        {
+            throw new NotImplementedException();
+        }
+        
         /// <inheritdoc/>
         public int Count
         {
             get { return items.Count; }
         }
 
+        public object SyncRoot { get; private set; }
+
+        public bool IsSynchronized { get; private set; }
+
         /// <inheritdoc/>
         public bool IsReadOnly
         {
             get { return false; }
         }
+
+        public bool IsFixedSize { get; private set; }
 
         /// <inheritdoc/>
         public int IndexOf(T item)
@@ -163,6 +227,12 @@ namespace SiliconStudio.Core.Collections
         public void RemoveAt(int index)
         {
             items.RemoveAt(index);
+        }
+
+        object IList.this[int index]
+        {
+            get { return items[index]; }
+            set { items[index] = (T)value; }
         }
 
         /// <inheritdoc/>
@@ -209,6 +279,21 @@ namespace SiliconStudio.Core.Collections
                 }
             }
             return ~start;
+        }
+
+        struct Comparer : IComparer<T>
+        {
+            private KeyedSortedList<TKey, T> list;
+
+            internal Comparer(KeyedSortedList<TKey, T> list)
+            {
+                this.list = list;
+            }
+
+            public int Compare(T x, T y)
+            {
+                return list.comparer.Compare(list.GetKeyForItem(x), list.GetKeyForItem(y));
+            }
         }
  
         #region Nested type: Enumerator

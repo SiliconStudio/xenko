@@ -10,8 +10,7 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Animations;
 
 namespace SiliconStudio.Paradox.Assets.Model
 {
@@ -19,11 +18,14 @@ namespace SiliconStudio.Paradox.Assets.Model
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AnimationAsset asset, AssetCompilerResult result)
         {
+            if (!EnsureSourceExists(result, asset, assetAbsolutePath))
+                return;
+
             // Get absolute path of asset source on disk
             var assetDirectory = assetAbsolutePath.GetParent();
-            var assetSource = UPath.Combine(assetDirectory, asset.Source);
+            var assetSource = GetAbsolutePath(assetAbsolutePath, asset.Source);
             var extension = assetSource.GetFileExtension();
-            var buildStep = new ListBuildStep();
+            var buildStep = new AssetBuildStep(AssetItem);
 
             var additiveAnimationAsset = asset as AdditiveAnimationAsset;
             if (additiveAnimationAsset != null)
@@ -36,13 +38,13 @@ namespace SiliconStudio.Paradox.Assets.Model
                 // Import base and main animation
                 if (ImportFbxCommand.IsSupportingExtensions(extension))
                 {
-                    buildStep.Add(new ImportFbxCommand { SourcePath = assetSource, Location = sourceUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode });
-                    buildStep.Add(new ImportFbxCommand { SourcePath = baseAssetSource, Location = baseUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode });
+                    buildStep.Add(new ImportFbxCommand { SourcePath = assetSource, Location = sourceUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport});
+                    buildStep.Add(new ImportFbxCommand { SourcePath = baseAssetSource, Location = baseUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport });
                 }
                 else if (ImportAssimpCommand.IsSupportingExtensions(extension))
                 {
-                    buildStep.Add(new ImportAssimpCommand { SourcePath = assetSource, Location = sourceUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode });
-                    buildStep.Add(new ImportAssimpCommand { SourcePath = baseAssetSource, Location = baseUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode });
+                    buildStep.Add(new ImportAssimpCommand { SourcePath = assetSource, Location = sourceUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport });
+                    buildStep.Add(new ImportAssimpCommand { SourcePath = baseAssetSource, Location = baseUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport });
                 }
                 // Wait for both import fbx commands to be completed
                 buildStep.Add(new WaitBuildStep());
@@ -54,9 +56,9 @@ namespace SiliconStudio.Paradox.Assets.Model
             {
                 // Import the main animation
                 if (ImportFbxCommand.IsSupportingExtensions(extension))
-                    buildStep.Add(new ImportFbxCommand { SourcePath = assetSource, Location = urlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode });
+                    buildStep.Add(new ImportFbxCommand { SourcePath = assetSource, Location = urlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport });
                 else if (ImportAssimpCommand.IsSupportingExtensions(extension))
-                    buildStep.Add(new ImportAssimpCommand { SourcePath = assetSource, Location = urlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode });
+                    buildStep.Add(new ImportAssimpCommand { SourcePath = assetSource, Location = urlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport });
             }
 
             result.BuildSteps = buildStep;
@@ -64,7 +66,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 
         internal class AdditiveAnimationCommand : AssetCommand<AdditiveAnimationParameters>
         {
-            public AdditiveAnimationCommand(string url, AdditiveAnimationParameters asset) : base(url, asset)
+            public AdditiveAnimationCommand(string url, AdditiveAnimationParameters assetParameters) : base(url, assetParameters)
             {
             }
 
@@ -73,8 +75,8 @@ namespace SiliconStudio.Paradox.Assets.Model
                 var assetManager = new AssetManager();
 
                 // Load source and base animations
-                var baseAnimation = assetManager.Load<AnimationClip>(asset.BaseUrl);
-                var sourceAnimation = assetManager.Load<AnimationClip>(asset.SourceUrl);
+                var baseAnimation = assetManager.Load<AnimationClip>(AssetParameters.BaseUrl);
+                var sourceAnimation = assetManager.Load<AnimationClip>(AssetParameters.SourceUrl);
 
                 // Generate diff animation
                 var animation = SubtractAnimations(baseAnimation, sourceAnimation);
@@ -124,7 +126,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                         time = sourceAnimation.Duration;
 
                     TimeSpan baseTime;
-                    switch (asset.Mode)
+                    switch (AssetParameters.Mode)
                     {
                         case AdditiveAnimationBaseMode.FirstFrame:
                             baseTime = TimeSpan.Zero;
