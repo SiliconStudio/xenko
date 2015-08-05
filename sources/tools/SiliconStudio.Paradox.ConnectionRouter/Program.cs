@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using Mono.Options;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Windows;
 using SiliconStudio.Paradox.Engine.Network;
 
 namespace SiliconStudio.Paradox.ConnectionRouter
@@ -73,33 +74,28 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                     GlobalLogger.GlobalMessageLogged += fileLogListener;
                 }
 
-                try
+                using (var mutex = GlobalMutex.TryLock("connectionrouter"))
                 {
-                    if (!RouterHelper.RouterMutex.WaitOne(TimeSpan.Zero, true))
+                    if (mutex == null)
                     {
                         Console.WriteLine("Another instance of Paradox Router is already running");
                         return -1;
                     }
+
+                    var router = new Router();
+
+                    // Start router (in listen server mode)
+                    router.Listen(RouterClient.DefaultPort);
+
+                    // Start Android management thread
+                    new Thread(() => AndroidTracker.TrackDevices(router)) { IsBackground = true }.Start();
+
+                    // Start Windows Phone management thread
+                    new Thread(() => WindowsPhoneTracker.TrackDevices(router)) { IsBackground = true }.Start();
+
+                    // Start WinForms loop
+                    System.Windows.Forms.Application.Run();
                 }
-                catch (AbandonedMutexException)
-                {
-                    // Previous instance of this application was not closed properly.
-                    // However, receiving this exception means we could capture the mutex.
-                }
-
-                var router = new Router();
-
-                // Start router (in listen server mode)
-                router.Listen(RouterClient.DefaultPort);
-
-                // Start Android management thread
-                new Thread(() => AndroidTracker.TrackDevices(router)) { IsBackground = true }.Start();
-
-                // Start Windows Phone management thread
-                new Thread(() => WindowsPhoneTracker.TrackDevices(router)) { IsBackground = true }.Start();
-
-                // Start WinForms loop
-                System.Windows.Forms.Application.Run();
             }
             catch (Exception e)
             {

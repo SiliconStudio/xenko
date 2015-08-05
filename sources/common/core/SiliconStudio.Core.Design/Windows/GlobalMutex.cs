@@ -1,9 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.IO;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Threading;
+using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Core.Windows
 {
@@ -12,15 +14,15 @@ namespace SiliconStudio.Core.Windows
     /// </summary>
     public class GlobalMutex : IDisposable
     {
-        private readonly Mutex mutex;
+        private FileStream lockFile;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GlobalMutex"/> class.
         /// </summary>
         /// <param name="mutex">A mutex for which the current thread has ownership.</param>
-        private GlobalMutex(Mutex mutex)
+        private GlobalMutex(FileStream lockFile)
         {
-            this.mutex = mutex;
+            this.lockFile = lockFile;
         }
 
         /// <summary>
@@ -28,7 +30,24 @@ namespace SiliconStudio.Core.Windows
         /// </summary>
         public void Dispose()
         {
-            mutex.ReleaseMutex();
+            if (lockFile != null)
+            {
+                var overlapped = new NativeLockFile.OVERLAPPED();
+                NativeLockFile.UnlockFileEx(lockFile.SafeFileHandle, 0, 0, 0, ref overlapped);
+                lockFile.Dispose();
+
+                // Try to delete the file
+                // Ideally we would use FileOptions.DeleteOnClose, but it doesn't seem to work well with FileShare for second instance
+                try
+                {
+                    File.Delete(lockFile.Name);
+                }
+                catch (Exception)
+                {
+                }
+
+                lockFile = null;
+            }
         }
         
         /// <summary>
@@ -69,7 +88,11 @@ namespace SiliconStudio.Core.Windows
             var mutex = BuildMutex(name);
             try
             {
-                bool hasHandle = mutex.WaitOne(millisecondsTimeout, false);
+                if (millisecondsTimeout != 0 && millisecondsTimeout != -1)
+                    throw new NotImplementedException("GlobalMutex.Wait() is implemented only for millisecondsTimeout 0 or -1");
+
+                var overlapped = new NativeLockFile.OVERLAPPED();
+                bool hasHandle = NativeLockFile.LockFileEx(mutex.SafeFileHandle, NativeLockFile.LOCKFILE_EXCLUSIVE_LOCK | (millisecondsTimeout == 0 ? NativeLockFile.LOCKFILE_FAIL_IMMEDIATELY : 0), 0, uint.MaxValue, uint.MaxValue, ref overlapped);
                 return hasHandle == false ? null : new GlobalMutex(mutex);
             }
             catch (AbandonedMutexException)
@@ -78,20 +101,12 @@ namespace SiliconStudio.Core.Windows
             }
         }
 
-        private static Mutex BuildMutex(string name)
+        private static FileStream BuildMutex(string name)
         {
             name = name.Replace(":", "_");
             name = name.Replace("/", "_");
             name = name.Replace("\\", "_");
-            string mutexId = string.Format("Global\\{0}", name);
-            // Benlitz: I suspect the MutexSecurity object to be responible of some issues such as this one: https://github.com/SiliconStudio/paradox/issues/252 so I'm disabling it.
-            //var allowEveryoneRule = new MutexAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null), MutexRights.FullControl, AccessControlType.Allow);
-            //var securitySettings = new MutexSecurity();
-            //securitySettings.AddAccessRule(allowEveryoneRule);
-            bool createdNew;
-            //var mutex = new Mutex(false, mutexId, out createdNew, securitySettings);
-            var mutex = new Mutex(false, mutexId, out createdNew);
-            return mutex;
+            return new FileStream(name + ".lock", FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
         }
     }
 }

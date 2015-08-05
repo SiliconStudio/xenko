@@ -34,6 +34,9 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="..\SiliconStudio.Core.Serialization\IO\NativeLockFile.cs">
+      <Link>Windows\NativeLockFile.cs</Link>
+    </Compile>
     <Compile Include="Extensions\DesignExtensions.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
