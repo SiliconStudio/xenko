@@ -95,7 +95,7 @@ namespace SiliconStudio.Core.Serialization
         /// <returns></returns>
         public static object CreateSerializableVersion(Type type, Guid id, string location)
         {
-            var result = Activator.CreateInstance(type);
+            var result = Activator.CreateInstance(type, true);
             var attachedReference = GetOrCreateAttachedReference(result);
             attachedReference.Id = id;
             attachedReference.Url = location;
