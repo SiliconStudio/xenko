@@ -34,12 +34,25 @@ namespace SiliconStudio.Assets
         /// <param name="asset">The asset.</param>
         /// <exception cref="System.ArgumentNullException">location</exception>
         /// <exception cref="System.ArgumentException">asset</exception>
-        public AssetItem(UFile location, Asset asset)
+        public AssetItem(UFile location, Asset asset) : this(location, asset, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AssetItem" /> class.
+        /// </summary>
+        /// <param name="location">The location.</param>
+        /// <param name="asset">The asset.</param>
+        /// <param name="package">The package.</param>
+        /// <exception cref="System.ArgumentNullException">location</exception>
+        /// <exception cref="System.ArgumentException">asset</exception>
+        internal AssetItem(UFile location, Asset asset, Package package)
         {
             if (location == null) throw new ArgumentNullException("location");
             if (asset == null) throw new ArgumentException("asset");
             this.location = location;
             this.asset = asset;
+            this.package = package;
             isDirty = true;
         }
 
@@ -140,18 +153,13 @@ namespace SiliconStudio.Assets
         /// <returns>A clone of this instance.</returns>
         internal AssetItem Clone(bool copyPackage, UFile newLocation = null, Asset newAsset = null)
         {
-            var item = new AssetItem(newLocation ?? location, newAsset ?? (Asset)AssetCloner.Clone(Asset))
+            // Set the package after the new AssetItem(), to make sure that isDirty is not going to call a notification on the
+            // package
+            var item = new AssetItem(newLocation ?? location, newAsset ?? (Asset)AssetCloner.Clone(Asset), copyPackage ? Package : null)
                 {
                     isDirty = isDirty,
                     SourceFolder = SourceFolder
                 };
-
-            // Set the package after the new AssetItem(), to make sure that isDirty is not going to call a notification on the
-            // package
-            if (copyPackage)
-            {
-                item.Package = Package;
-            }
             return item;
         }
 

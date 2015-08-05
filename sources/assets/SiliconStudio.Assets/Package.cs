@@ -809,10 +809,9 @@ namespace SiliconStudio.Assets
                     var asset = LoadAsset(log, assetFullPath, assetPath, fileUPath, assetContent);
 
                     // Create asset item
-                    var assetItem = new AssetItem(assetPath, asset)
+                    var assetItem = new AssetItem(assetPath, asset, this)
                     {
                         IsDirty = assetContent != null,
-                        Package = this,
                         SourceFolder = sourceFolder.MakeRelative(RootDirectory)
                     };
                     // Set the modified time to the time loaded from disk
