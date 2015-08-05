@@ -51,7 +51,7 @@ namespace SiliconStudio.Paradox.Assets
             {
                 var result = new GameSettings();
 
-                result.DefaultSceneUrl = AttachedReferenceManager.GetUrl(AssetParameters.DefaultScene);
+                result.DefaultSceneUrl = AssetParameters.DefaultScene != null ? AttachedReferenceManager.GetUrl(AssetParameters.DefaultScene) : null;
                 result.DefaultBackBufferWidth = AssetParameters.BackBufferWidth;
                 result.DefaultBackBufferHeight = AssetParameters.BackBufferHeight;
                 result.DefaultGraphicsProfileUsed = AssetParameters.DefaultGraphicsProfile;
