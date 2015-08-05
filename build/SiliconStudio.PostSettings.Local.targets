@@ -10,7 +10,10 @@
     <ParadoxDependenciesDir Condition="'$(ParadoxDependenciesDir)' == ''">$(MSBuildThisFileDirectory)..\deps\</ParadoxDependenciesDir>
     <ParadoxDependenciesDir Condition="'$(ParadoxDependenciesDir)' != '' and !HasTrailingSlash('$(ParadoxDependenciesDir)')">$(ParadoxDependenciesDir)\</ParadoxDependenciesDir>
     <SharpDXSdkDir Condition="'$(SharpDXSdkDir)' == ''">$(SiliconStudioDependenciesDir)SharpDX</SharpDXSdkDir>
-  </PropertyGroup>
+
+    <SiliconStudioAssemblyProcessorPath>$(MSBuildThisFileDirectory)..\Bin\Windows-Direct3D11\SiliconStudio.AssemblyProcessor.exe</SiliconStudioAssemblyProcessorPath>
+    <SiliconStudioCoreAssemblyPath>$(MSBuildThisFileDirectory)..\Bin\Windows-Direct3D11\SiliconStudio.Core.dll</SiliconStudioCoreAssemblyPath>
+</PropertyGroup>
 
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
     <SiliconStudioShaderUseSharpDX>true</SiliconStudioShaderUseSharpDX>

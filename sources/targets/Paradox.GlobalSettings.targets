@@ -57,6 +57,11 @@
    
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows10' ">
+    <ProjectLockFile Condition="'$(ProjectLockFile)' == ''">$(MSBuildThisFileDirectory)..\build\project.lock.json</ProjectLockFile>
+  </PropertyGroup>
+
+
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Android' ">
     <ParadoxExternalSuffix>.Android</ParadoxExternalSuffix>
     <FrameworkShaderUseSharpDX>false</FrameworkShaderUseSharpDX>
