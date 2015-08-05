@@ -70,6 +70,7 @@
     <Compile Include="DisposeBase.cs" />
     <Compile Include="IO\NativeFile.cs" />
     <Compile Include="IO\NativeFile.WindowsRuntime.cs" />
+    <Compile Include="NativeLibraryInternal.cs" />
     <Compile Include="PlatformFolders.cs" />
     <Compile Include="Reflection\IObjectFactory.cs" />
     <Compile Include="Reflection\ObjectFactory.cs" />

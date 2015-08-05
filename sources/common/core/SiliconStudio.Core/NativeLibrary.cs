@@ -12,6 +12,7 @@ namespace SiliconStudio.Core
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         [DllImport("kernel32", EntryPoint = "LoadLibrary", SetLastError = true, CharSet = CharSet.Unicode)]
         internal static extern IntPtr LoadLibrary(string lpFileName);
+
 #elif SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
         [DllImport("PhoneAppModelHost", CharSet = CharSet.Unicode, SetLastError = true)]
         private static extern IntPtr LoadPackagedLibrary(string libraryName, uint reserved);
@@ -52,7 +53,10 @@ namespace SiliconStudio.Core
                 cpu = "ARM";
             else
                 cpu = IntPtr.Size == 8 ? "x64" : "x86";
-            var libraryFilename = Path.Combine(Path.GetDirectoryName(typeof(NativeLibrary).Assembly.Location), cpu, libraryName);
+
+            // We are trying to load the dll from a shadow path if it is already registered, otherwise we use it directly from the folder
+            var dllFolder = NativeLibraryInternal.GetShadowPathForNativeDll(libraryName) ?? Path.Combine(Path.GetDirectoryName(typeof(NativeLibrary).Assembly.Location), cpu);
+            var libraryFilename = Path.Combine(dllFolder, libraryName);
             var result = LoadLibrary(libraryFilename);
 
             if (result == IntPtr.Zero)

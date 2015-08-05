@@ -15,6 +15,12 @@
     <StartupObject>
     </StartupObject>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -27,6 +33,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\common\core\SiliconStudio.Core\NativeLibraryInternal.cs">
+      <Link>NativeLibraryInternal.cs</Link>
+    </Compile>
+    <Compile Include="AppDomainShadow.cs" />
     <Compile Include="ExecServerRemote.cs" />
     <Compile Include="ExecServerApp.cs" />
     <Compile Include="IExecServerRemote.cs" />

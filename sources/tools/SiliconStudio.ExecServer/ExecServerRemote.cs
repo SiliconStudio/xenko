@@ -1,9 +1,14 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Security.Policy;
 using System.ServiceModel;
 using System.Threading;
+using System.Xml;
+
+using SiliconStudio.Core;
 
 namespace SiliconStudio.ExecServer
 {
@@ -47,8 +52,10 @@ namespace SiliconStudio.ExecServer
             lock (singleton)
             {
                 upTime.Restart();
-                var assembly = Assembly.LoadFile(executablePath);
-                var result = (int)assembly.EntryPoint.Invoke(null, new object[] { args } );
+
+                var appDomainLoader = new AppDomainShadow(executablePath, IntPtr.Size == 8 ? "x64" : "x86");
+                appDomainLoader.TryLock();
+                var result = appDomainLoader.Run(args);
                 return result;
             }
         }
