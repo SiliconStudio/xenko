@@ -26,7 +26,8 @@ namespace SiliconStudio.AssemblyProcessor
         public AssemblyProcessorApp()
         {
             SearchDirectories = new List<string>();
-            SerializationProjectReferences = new List<string>();
+            References = new List<string>();
+            ReferencesToAdd = new List<string>();
             ModuleInitializer = true;
         }
 
@@ -48,13 +49,16 @@ namespace SiliconStudio.AssemblyProcessor
 
         public List<string> SearchDirectories { get; set; }
 
-        public List<string> SerializationProjectReferences { get; set; } 
+        public List<string> References { get; set; }
+
+        public List<string> ReferencesToAdd { get; set; }
 
         public string SignKeyFile { get; set; }
 
         public bool UseSymbols { get; set; }
 
         public bool TreatWarningsAsErrors { get; set; }
+        public bool DeleteOutputOnError { get; set; }
 
         public Action<string, Exception> OnErrorEvent;
 
@@ -100,6 +104,8 @@ namespace SiliconStudio.AssemblyProcessor
             }
             catch (Exception e)
             {
+                if (DeleteOutputOnError)
+                    File.Delete(outputFile);
                 OnErrorAction(e.Message, e);
                 return false;
             }
@@ -124,6 +130,9 @@ namespace SiliconStudio.AssemblyProcessor
             {
                 var assemblyResolver = (CustomAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver;
 
+                // Register self
+                assemblyResolver.Register(assemblyDefinition);
+
                 var processors = new List<IAssemblyDefinitionProcessor>();
 
                 // We are no longer using it so we are deactivating it for now to avoid processing
@@ -131,6 +140,8 @@ namespace SiliconStudio.AssemblyProcessor
                 //{
                 //    processors.Add(new NotifyPropertyProcessor());
                 //}
+
+                processors.Add(new AddReferenceProcessor(ReferencesToAdd));
 
                 if (ParameterKey)
                 {
@@ -151,7 +162,7 @@ namespace SiliconStudio.AssemblyProcessor
 
                 if (SerializationAssembly)
                 {
-                    processors.Add(new SerializationProcessor(SignKeyFile, SerializationProjectReferences, log));
+                    processors.Add(new SerializationProcessor(SignKeyFile, References, log));
                 }
 
                 if (GenerateUserDocumentation)
@@ -177,104 +188,10 @@ namespace SiliconStudio.AssemblyProcessor
                     return true;
                 }
 
-                var targetFrameworkAttribute = assemblyDefinition.CustomAttributes
-                    .FirstOrDefault(x => x.AttributeType.FullName == typeof(TargetFrameworkAttribute).FullName);
-                var targetFramework = targetFrameworkAttribute != null ? (string)targetFrameworkAttribute.ConstructorArguments[0].Value : null;
-
-                // Special handling for MonoAndroid
-                // Default frameworkFolder
-                var frameworkFolder = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\");
-
-                switch (Platform)
+                // Register references so that our assembly resolver can use them
+                foreach (var reference in References)
                 {
-                    case PlatformType.Android:
-                    {
-                        if (string.IsNullOrEmpty(TargetFramework))
-                        {
-                            throw new InvalidOperationException("Expecting option target framework for Android");
-                        }
-
-                        var monoAndroidPath = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Reference Assemblies\Microsoft\Framework\MonoAndroid");
-                        frameworkFolder = Path.Combine(monoAndroidPath, "v1.0");
-                        var additionalFrameworkFolder = Path.Combine(monoAndroidPath, TargetFramework);
-                        assemblyResolver.AddSearchDirectory(additionalFrameworkFolder);
-                        assemblyResolver.AddSearchDirectory(frameworkFolder);
-                        break;
-                    }
-
-                    case PlatformType.iOS:
-                    {
-                        if (string.IsNullOrEmpty(TargetFramework))
-                        {
-                            throw new InvalidOperationException("Expecting option target framework for iOS");
-                        }
-
-                        var monoTouchPath = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Reference Assemblies\Microsoft\Framework\Xamarin.iOS");
-                        frameworkFolder = Path.Combine(monoTouchPath, "v1.0");
-                        var additionalFrameworkFolder = Path.Combine(monoTouchPath, TargetFramework);
-                        assemblyResolver.AddSearchDirectory(additionalFrameworkFolder);
-                        assemblyResolver.AddSearchDirectory(frameworkFolder);
-
-                        break;
-                    }
-
-                    case PlatformType.WindowsStore:
-                    {
-                        if (string.IsNullOrEmpty(TargetFramework))
-                        {
-                            throw new InvalidOperationException("Expecting option target framework for WindowsStore");
-                        }
-
-                        frameworkFolder = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Reference Assemblies\Microsoft\Framework\.NETCore", TargetFramework);
-                        assemblyResolver.AddSearchDirectory(frameworkFolder);
-
-                        // Add path to look for WinRT assemblies (Windows.winmd)
-                        var windowsAssemblyPath = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Windows Kits\8.1\References\CommonConfiguration\Neutral\", "Windows.winmd");
-                        var windowsAssembly = AssemblyDefinition.ReadAssembly(windowsAssemblyPath, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = false });
-                        assemblyResolver.Register(windowsAssembly);
-
-                        break;
-                    }
-
-                    case PlatformType.WindowsPhone:
-                    {
-                        if (string.IsNullOrEmpty(TargetFramework))
-                        {
-                            throw new InvalidOperationException("Expecting option target framework for WindowsPhone");
-                        }
-
-                        // Note: v8.1 is hardcoded because we currently receive v4.5.x as TargetFramework (different from TargetPlatformVersion)
-                        frameworkFolder = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Reference Assemblies\Microsoft\Framework\WindowsPhoneApp", "v8.1");
-                        assemblyResolver.AddSearchDirectory(frameworkFolder);
-
-                        // Add path to look for WinRT assemblies (Windows.winmd)
-                        var windowsAssemblyPath = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Windows Phone Kits\8.1\References\CommonConfiguration\Neutral\", "Windows.winmd");
-                        var windowsAssembly = AssemblyDefinition.ReadAssembly(windowsAssemblyPath, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = false });
-                        assemblyResolver.Register(windowsAssembly);
-
-                        break;
-                    }
-
-                    case PlatformType.Windows10:
-                    {
-                        if (string.IsNullOrEmpty(TargetFramework))
-                        {
-                            throw new InvalidOperationException("Expecting option target framework for Windows10");
-                        }
-
-                        frameworkFolder = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Reference Assemblies\Microsoft\Framework\.NETCore", TargetFramework);
-                        assemblyResolver.AddSearchDirectory(frameworkFolder);
-
-                        // Add path to look for WinRT assemblies (Windows.Foundation.FoundationContract.winmd, etc...)
-                        assemblyResolver.WindowsKitsReferenceDirectory = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Windows Kits\10\References");
-
-                        // Add path to look for WinRT assemblies (Windows.winmd)
-                        var windowsAssemblyPath = Path.Combine(CecilExtensions.ProgramFilesx86(), @"Windows Kits\8.1\References\CommonConfiguration\Neutral\", "Windows.winmd");
-                        var windowsAssembly = AssemblyDefinition.ReadAssembly(windowsAssemblyPath, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = false });
-                        assemblyResolver.Register(windowsAssembly);
-
-                        break;
-                    }
+                    assemblyResolver.RegisterReference(reference);
                 }
 
                 if (SerializationAssembly)

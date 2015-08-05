@@ -29,7 +29,7 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
             // TODO: Add a flag for ComplexSerializer and transmit it properly (it needs different kind of analysis)
 
             // Let's recurse over referenced assemblies
-            foreach (var referencedAssemblyName in assembly.MainModule.AssemblyReferences)
+            foreach (var referencedAssemblyName in assembly.MainModule.AssemblyReferences.ToArray())
             {
                 // Avoid processing system assemblies
                 // TODO: Scan what is actually in framework folders
@@ -37,8 +37,16 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
                     || referencedAssemblyName.FullName.Contains("PublicKeyToken=31bf3856ad364e35")) // Signed with Microsoft public key (likely part of system libraries)
                     continue;
 
-                var referencedAssembly = context.Assembly.MainModule.AssemblyResolver.Resolve(referencedAssemblyName);
-                ProcessDataSerializerGlobalAttributes(context, referencedAssembly, false);
+                try
+                {
+                    var referencedAssembly = context.Assembly.MainModule.AssemblyResolver.Resolve(referencedAssemblyName);
+
+                    ProcessDataSerializerGlobalAttributes(context, referencedAssembly, false);
+                }
+                catch (AssemblyResolutionException)
+                {
+                    continue;
+                }
             }
 
             // Find DataSerializer attribute on assembly and/or types
