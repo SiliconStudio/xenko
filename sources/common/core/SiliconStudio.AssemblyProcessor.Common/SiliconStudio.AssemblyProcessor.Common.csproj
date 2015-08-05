@@ -95,6 +95,7 @@
     <Compile Include="..\SiliconStudio.Core\Diagnostics\CallerInfo.cs">
       <Link>Diagnostics\CallerInfo.cs</Link>
     </Compile>
+    <Compile Include="AddReferenceProcessor.cs" />
     <Compile Include="AssemblyProcessorApp.cs" />
     <Compile Include="AssemblyProcessorContext.cs" />
     <Compile Include="AssemblyVersionProcessor.cs" />
