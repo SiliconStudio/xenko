@@ -89,7 +89,7 @@ namespace SiliconStudio.Paradox.Assets
         /// <userdoc>The texture quality when encoding textures. Higher settings might result in much slower build depending on the target platform.</userdoc>
         public TextureQuality TextureQuality { get; set; }
 
-        internal class UpgraderVersion122
+        internal class UpgraderVersion130
         {
             public static SettingsValueKey<DisplayOrientation> DisplayOrientation = new SettingsValueKey<DisplayOrientation>("Paradox.DisplayOrientation", PackageProfile.SettingsGroup);
 

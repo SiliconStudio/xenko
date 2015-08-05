@@ -11,7 +11,7 @@ using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Paradox.Assets
 {
-    [PackageUpgrader("Paradox", "1.0.0-beta01", "1.2.2-alpha01")]
+    [PackageUpgrader("Paradox", "1.0.0-beta01", "1.3.0-alpha01")]
     public class ParadoxPackageUpgrader : PackageUpgrader
     {
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
@@ -38,9 +38,9 @@ namespace SiliconStudio.Paradox.Assets
                 RenameAndChangeTag(assetFiles, spritesGroups, "!SpriteGroup");
             }
 
-            if (dependency.Version.MinVersion < new PackageVersion("1.2.2-alpha01"))
+            if (dependency.Version.MinVersion < new PackageVersion("1.3.0-alpha01"))
             {
-                GameSettingsAsset.UpgraderVersion122.Upgrade(session, log, dependentPackage, dependency, dependencyPackage, assetFiles);
+                GameSettingsAsset.UpgraderVersion130.Upgrade(session, log, dependentPackage, dependency, dependencyPackage, assetFiles);
             }
 
             return true;
