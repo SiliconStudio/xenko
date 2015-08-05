@@ -69,16 +69,13 @@ namespace SiliconStudio.AssemblyProcessor
             metadataReferences.Add(CreateMetadataReference(assemblyResolver, mscorlibAssembly));
             var collectionType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(Dictionary<,>).FullName);
             metadataReferences.Add(CreateMetadataReference(assemblyResolver, collectionType.Module.Assembly));
-
-            var repackReferences = metadataReferences.OfType<PortableExecutableReference>().Select(x => x.FilePath).ToList();
-
             metadataReferences.Add(CreateMetadataReference(assemblyResolver, assembly));
 
-            // In case Paradox.Framework.Serialization was not referenced, let's add it.
-            //if (!references.Any(x => string.Compare(Path.GetFileNameWithoutExtension(x), "SiliconStudio.Core", StringComparison.OrdinalIgnoreCase) == 0))
-            //{
-            //    metadataReferences.Add(CreateMetadataReference(assemblyResolver, assemblyResolver.Resolve("SiliconStudio.Core")));
-            //}
+            // In case SiliconStudio.Core was not referenced, let's add it.
+            if (assembly.Name.Name != "SiliconStudio.Core" && !references.Any(x => string.Compare(Path.GetFileNameWithoutExtension(x), "SiliconStudio.Core", StringComparison.OrdinalIgnoreCase) == 0))
+            {
+                metadataReferences.Add(CreateMetadataReference(assemblyResolver, assemblyResolver.Resolve("SiliconStudio.Core")));
+            }
 
             // Create roslyn compilation object
             var assemblyName = assembly.Name.Name + ".Serializers";
