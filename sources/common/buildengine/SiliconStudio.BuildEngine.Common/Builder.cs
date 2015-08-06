@@ -229,7 +229,9 @@ namespace SiliconStudio.BuildEngine
             this.buildProfile = buildProfile;
             this.indexFilename = indexFilename;
             var entryAssembly = Assembly.GetEntryAssembly();
-            SlaveBuilderPath = entryAssembly != null ? entryAssembly.Location : "";
+            SlaveBuilderPath = Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                entryAssembly != null ? Path.GetFileName(entryAssembly.Location) : string.Empty);
             Logger = logger;
             this.inputHashesFilename = inputHashesFilename;
             this.buildPath = buildPath;
