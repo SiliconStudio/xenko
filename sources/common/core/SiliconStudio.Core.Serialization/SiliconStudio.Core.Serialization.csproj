@@ -27,6 +27,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="IO\IDatabaseStream.cs" />
+    <Compile Include="IO\NativeLockFile.cs" />
     <Compile Include="LZ4\ILZ4Service.cs" />
     <Compile Include="LZ4\LZ4Codec.cs" />
     <Compile Include="LZ4\LZ4Stream.cs" />

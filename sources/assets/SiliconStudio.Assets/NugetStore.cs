@@ -257,7 +257,7 @@ namespace SiliconStudio.Assets
         
         private IDisposable GetLocalRepositoryLocker()
         {
-            return GlobalMutex.Wait("ParadoxLauncher-{1F6F92C3-B1CF-4E40-A8D5-4D1F1EB66285}-" + RootDirectory);
+            return FileLock.Wait("nuget.lock");
         }
 
         private List<IPackage> UpdateTargetsInternal()
