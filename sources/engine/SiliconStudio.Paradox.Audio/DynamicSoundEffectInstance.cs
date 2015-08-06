@@ -103,7 +103,7 @@ namespace SiliconStudio.Paradox.Audio
         /// The buffer must conform to the format alignment. For example, the buffer length must be aligned to the block alignment value for the audio format type. 
         /// For PCM audio format, the block alignment is calculated as BlockAlignment = BytesPerSample * AudioChannels. 
         /// DynamicSoundEffectInstance supports only PCM 8bits and 16-bit mono or stereo data. 
-        /// <para>Submited buffer must not be modified before it finished to play.</para>
+        /// <para>Submitted buffer must not be modified before it finished to play.</para>
         /// <para>Scratches in the sound flow may appears if the submitted buffers are not big enough.</para>
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="buffer"/> is null.</exception>
@@ -120,7 +120,7 @@ namespace SiliconStudio.Paradox.Audio
         }
 
         /// <summary>
-        /// Submits an audio buffer for playback. Playback begins at the specifed offset, and the byte count determines the size of the sample played. 
+        /// Submits an audio buffer for playback. Playback begins at the specified offset, and the byte count determines the size of the sample played. 
         /// </summary>
         /// <param name="buffer">Buffer that contains the audio data. The audio format must be PCM wave data.</param>
         /// <param name="offset">Offset, in bytes, to the starting position of the data.</param>
@@ -129,7 +129,7 @@ namespace SiliconStudio.Paradox.Audio
         /// The buffer must conform to the format alignment. For example, the buffer length must be aligned to the block alignment value for the audio format type. 
         /// For PCM audio format, the block alignment is calculated as BlockAlignment = BytesPerSample * AudioChannels. 
         /// DynamicSoundEffectInstance supports only PCM 8bits and 16-bit mono or stereo data. 
-        /// <para>Submited buffer must not be modified before it finished to play.</para>
+        /// <para>Submitted buffer must not be modified before it finished to play.</para>
         /// <para>Scratches in the sound flow may appears if the submitted buffers are not big enough.</para>
         /// </remarks>
         /// <exception cref="ObjectDisposedException">The exception thrown if SubmitBuffer is called after DynamicSoundEffectInstance is disposed.</exception>
