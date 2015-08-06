@@ -257,7 +257,7 @@ namespace SiliconStudio.Assets
         
         private IDisposable GetLocalRepositoryLocker()
         {
-            return GlobalMutex.Wait("nuget");
+            return FileLock.Wait("nuget.lock");
         }
 
         private List<IPackage> UpdateTargetsInternal()

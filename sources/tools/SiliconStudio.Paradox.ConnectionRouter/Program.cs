@@ -74,7 +74,8 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                     GlobalLogger.GlobalMessageLogged += fileLogListener;
                 }
 
-                using (var mutex = GlobalMutex.TryLock("connectionrouter"))
+                // TODO: Lock will be only for this folder but it should be shared across OS (should we resolve SiliconStudioParadoxDir?)
+                using (var mutex = FileLock.TryLock("connectionrouter.lock"))
                 {
                     if (mutex == null)
                     {
