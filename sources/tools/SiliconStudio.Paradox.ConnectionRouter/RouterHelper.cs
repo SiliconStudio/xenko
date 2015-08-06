@@ -11,11 +11,6 @@ namespace SiliconStudio.Paradox.ConnectionRouter
     public static class RouterHelper
     {
         /// <summary>
-        /// The mutex to check if a process containing <see cref="Router"/> has been launched.
-        /// </summary>
-        public static Mutex RouterMutex = new Mutex(false, "SiliconStudioParadoxRouter");
-
-        /// <summary>
         /// Gets the paradox SDK dir.
         /// </summary>
         /// <param name="paradoxVersion">The paradox version. If null, it will get latest version.</param>
