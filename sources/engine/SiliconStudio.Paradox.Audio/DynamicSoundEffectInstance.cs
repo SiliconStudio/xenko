@@ -53,10 +53,8 @@ namespace SiliconStudio.Paradox.Audio
         ///  </exception>
         /// <exception cref="ArgumentNullException"><paramref name="engine"/> is null.</exception>
         public DynamicSoundEffectInstance(AudioEngine engine, int sampleRate, AudioChannels channels, AudioDataEncoding encoding)
-            : base(engine)
         {
-            if (engine == null) 
-                throw new ArgumentNullException("engine");
+            AttachEngine(engine);
 
             if (sampleRate < 8000 || 48000 < sampleRate)
                 throw new ArgumentOutOfRangeException("sampleRate");

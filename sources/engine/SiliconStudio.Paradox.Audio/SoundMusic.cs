@@ -26,6 +26,8 @@ namespace SiliconStudio.Paradox.Audio
     /// <seealso cref="SoundEffect"/>
     /// <seealso cref="IPlayableSound"/>
     /// <seealso cref="DynamicSoundEffectInstance"/>
+    [DataSerializerGlobal(typeof(ReferenceSerializer<SoundMusic>), Profile = "Asset")]
+    [DataSerializer(typeof(NullSerializer<SoundMusic>))]
     public sealed class SoundMusic : SoundInstanceBase
     {
 #if SILICONSTUDIO_PLATFORM_ANDROID
@@ -64,7 +66,8 @@ namespace SiliconStudio.Paradox.Audio
 
             // TODO: Not portable on WindowsStore
 
-            var ret = new SoundMusic(engine);
+            var ret = new SoundMusic();
+            ret.AttachEngine(engine);
             ret.Load(stream);
 
             return ret;
@@ -76,8 +79,7 @@ namespace SiliconStudio.Paradox.Audio
         private static int soundMusicCreationCount;
 
         // for serialization
-        internal SoundMusic(AudioEngine engine)
-            : base(engine)
+        internal SoundMusic()
         {
         }
 

@@ -42,8 +42,8 @@ namespace SiliconStudio.Paradox.Audio
 
         //prevent creation of SoundEffectInstance to the user
         internal SoundEffectInstance(SoundEffect correspSoundEffect)
-            : base(correspSoundEffect.AudioEngine)
         {
+            AttachEngine(correspSoundEffect.AudioEngine);
             soundEffect = correspSoundEffect;
             
             if (EngineState != AudioEngineState.Invalidated)
@@ -53,8 +53,7 @@ namespace SiliconStudio.Paradox.Audio
         }
 
         //prevent creation of SoundEffectInstance to the user and other classes
-        internal SoundEffectInstance(AudioEngine engine)
-            : base(engine)
+        internal SoundEffectInstance()
         {
             soundEffect = null;
         }
