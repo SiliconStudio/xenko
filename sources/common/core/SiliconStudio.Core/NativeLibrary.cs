@@ -53,6 +53,13 @@ namespace SiliconStudio.Core
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             lock (LoadedLibraries)
             {
+                // If already loaded, just exit as we want to load it just once
+                var libraryNameNormalized = libraryName.ToLowerInvariant();
+                if (LoadedLibraries.ContainsKey(libraryNameNormalized))
+                {
+                    return;
+                }
+
                 var systemInfo = new SYSTEM_INFO();
                 GetNativeSystemInfo(out systemInfo);
 
