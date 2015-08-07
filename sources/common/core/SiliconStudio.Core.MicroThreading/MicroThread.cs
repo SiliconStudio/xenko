@@ -15,7 +15,9 @@ namespace SiliconStudio.Core.MicroThreading
     /// </summary>
     public class MicroThread : IComparable<MicroThread>
     {
-        internal ProfilingKey ProfilingKey;
+        internal static readonly ProfilingKey ProfilingKey = new ProfilingKey("MicroThread-Running");
+
+        internal string ScriptId;
 
         /// <summary>
         /// Gets the attached properties to this component.
@@ -170,7 +172,7 @@ namespace SiliconStudio.Core.MicroThreading
         /// <exception cref="System.InvalidOperationException">MicroThread was already started before.</exception>
         public void Start(Func<Task> microThreadFunction, ScheduleMode scheduleMode = ScheduleMode.Last)
         {
-            ProfilingKey = new ProfilingKey("MicroThread " + microThreadFunction.Target);
+            ScriptId = microThreadFunction.Target.ToString();
 
             // TODO: Interlocked compare exchange?
             if (Interlocked.CompareExchange(ref state, (int)MicroThreadState.Starting, (int)MicroThreadState.None) != (int)MicroThreadState.None)
