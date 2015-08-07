@@ -25,6 +25,7 @@ namespace SiliconStudio.Paradox.Audio
         {
             if (context.Mode == ArchiveMode.Deserialize)
             {
+                soundMusic.AttachEngine(audioEngine);
                 soundMusic.Load(stream.NativeStream);
             }
             else
@@ -35,7 +36,7 @@ namespace SiliconStudio.Paradox.Audio
 
         public override object Construct(ContentSerializerContext context)
         {
-            return new SoundMusic(audioEngine);
+            return new SoundMusic();
         }
     }
 }

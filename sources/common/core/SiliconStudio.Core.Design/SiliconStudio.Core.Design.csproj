@@ -34,6 +34,9 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="..\SiliconStudio.Core.Serialization\IO\NativeLockFile.cs">
+      <Link>Windows\NativeLockFile.cs</Link>
+    </Compile>
     <Compile Include="Extensions\DesignExtensions.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
@@ -89,6 +92,7 @@
     <Compile Include="Settings\NamespaceDoc.cs" />
     <Compile Include="Settings\SettingsCollection.cs" />
     <Compile Include="Settings\SettingsDictionarySerializer.cs" />
+    <Compile Include="Windows\FileLock.cs" />
     <Compile Include="Windows\GlobalMutex.cs" />
     <Compile Include="Yaml\DynamicYamlExtensions.cs" />
     <Compile Include="Yaml\ParsingEventListEmitter.cs" />

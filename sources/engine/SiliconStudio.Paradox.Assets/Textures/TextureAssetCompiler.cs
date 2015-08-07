@@ -26,7 +26,9 @@ namespace SiliconStudio.Paradox.Assets.Textures
             // Get absolute path of asset source on disk
             var assetSource = GetAbsolutePath(assetAbsolutePath, asset.Source);
 
-            var parameter = new TextureConvertParameters(assetSource, asset, context.Platform, context.GetGraphicsPlatform(), context.GetGraphicsProfile(), context.GetTextureQuality());
+            var gameSettingsAsset = context.GetGameSettingsAsset();
+
+            var parameter = new TextureConvertParameters(assetSource, asset, context.Platform, context.GetGraphicsPlatform(), gameSettingsAsset.DefaultGraphicsProfile, gameSettingsAsset.TextureQuality);
             result.BuildSteps = new AssetBuildStep(AssetItem) { new TextureConvertCommand(urlInStorage, parameter) };
         }
 

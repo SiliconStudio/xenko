@@ -270,7 +270,6 @@ namespace SiliconStudio.Assets
 
         private void RemoveInternal(AssetItem item)
         {
-            item.Package = null;
             item.Asset.IsIdLocked = false;
         }
 

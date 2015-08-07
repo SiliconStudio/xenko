@@ -60,8 +60,7 @@ namespace SiliconStudio.Core.Serialization.Contents
             if (contentReference.State != ContentReferenceState.NeverLoad && contentReference.ObjectValue != null)
             {
                 // Auto-generate URL if necessary
-                var serializer = AssetManager.Serializer.GetSerializer(null, contentReference.ObjectValue.GetType());
-                BuildUrl(contentReference, serializer.ActualType);
+                BuildUrl(contentReference);
                 //Executor.ProcessObject(this, contentReference.Type, contentReference);
                 ContentReferences.Add(contentReference);
             }
@@ -107,7 +106,7 @@ namespace SiliconStudio.Core.Serialization.Contents
         }
 
 
-        public void BuildUrl(ContentReference contentReference, Type serializationType)
+        public void BuildUrl(ContentReference contentReference)
         {
             var content = contentReference.ObjectValue;
             string url = contentReference.Location;

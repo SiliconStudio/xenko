@@ -2,18 +2,23 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using EnvDTE80;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace SiliconStudio.Paradox.VisualStudio.Commands
 {
     class BuildMonitorCallback : MarshalByRefObject, IBuildMonitorCallback
     {
-        private EnvDTE.OutputWindowPane buildPane;
+        private IVsOutputWindowPane buildPane;
 
-        public BuildMonitorCallback(DTE2 dte)
+        public BuildMonitorCallback()
         {
-            var vsOutputWindow = dte.Windows.Item(EnvDTE.Constants.vsWindowKindOutput);
-            var outputWindow = (EnvDTE.OutputWindow)vsOutputWindow.Object;
-            buildPane = outputWindow.OutputWindowPanes.Item("Build");
+            var outputWindow = (IVsOutputWindow)Package.GetGlobalService(typeof(SVsOutputWindow));
+
+            // Get Output pane
+            Guid buildPaneGuid = VSConstants.GUID_BuildOutputWindowPane;
+            outputWindow.GetPane(ref buildPaneGuid, out buildPane);
         }
 
         public override object InitializeLifetimeService()
@@ -24,7 +29,8 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
 
         public void Message(string type, string module, string text)
         {
-            buildPane.OutputString(string.Format("[BuildEngine] {0}: {1}\r\n", type[0], text));
+            if (buildPane != null)
+                buildPane.OutputString(string.Format("[BuildEngine] {0}: {1}\r\n", type[0], text));
         }
     }
 }

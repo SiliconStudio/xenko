@@ -11,7 +11,7 @@ using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Paradox.Assets
 {
-    [PackageUpgrader("Paradox", "1.0.0-beta01", "1.2.0-alpha01")]
+    [PackageUpgrader("Paradox", "1.0.0-beta01", "1.3.0-alpha01")]
     public class ParadoxPackageUpgrader : PackageUpgrader
     {
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
@@ -33,9 +33,14 @@ namespace SiliconStudio.Paradox.Assets
             {
                 // UIImageGroups and SpriteGroups asset have been merged into a single SpriteSheet => rename the assets and modify the tag
                 var uiImageGroups = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".pdxuiimage");
-                var spitesGroups = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".pdxsprite");
+                var spritesGroups = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".pdxsprite");
                 RenameAndChangeTag(assetFiles, uiImageGroups, "!UIImageGroup");
-                RenameAndChangeTag(assetFiles, spitesGroups, "!SpriteGroup");
+                RenameAndChangeTag(assetFiles, spritesGroups, "!SpriteGroup");
+            }
+
+            if (dependency.Version.MinVersion < new PackageVersion("1.3.0-alpha01"))
+            {
+                GameSettingsAsset.UpgraderVersion130.Upgrade(session, log, dependentPackage, dependency, dependencyPackage, assetFiles);
             }
 
             return true;
@@ -44,7 +49,7 @@ namespace SiliconStudio.Paradox.Assets
         private void ChangeFileExtension(IList<PackageLoadingAssetFile> assetFiles, PackageLoadingAssetFile file, string newExtension)
         {
             // Create the new file
-            var newFileName = new UFile(file.FilePath.FullPath.Replace(file.FilePath.GetFileExtension(), ".pdxsheet"));
+            var newFileName = new UFile(file.FilePath.FullPath.Replace(file.FilePath.GetFileExtension(), newExtension));
             var newFile = new PackageLoadingAssetFile(newFileName, file.SourceFolder) { AssetContent = file.AssetContent };
 
             // Add the new file

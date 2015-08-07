@@ -120,10 +120,17 @@ namespace SiliconStudio.Assets.CompilerApp
                 sharedProfile.Properties.CopyTo(context.PackageProperties, true);
             }
 
-            context.PackageProperties.Set(Paradox.Assets.ParadoxConfig.GraphicsPlatform, builderOptions.GraphicsPlatform ?? builderOptions.GetDefaultGraphicsPlatform());
-
             // Copy properties from build profile
             buildProfile.Properties.CopyTo(context.PackageProperties, true);
+
+            var gameSettingsAsset = context.Package.GetGameSettingsAsset();
+            if (gameSettingsAsset == null)
+            {
+                builderOptions.Logger.Error("Could not find game settings asset at location [{0}]", GameSettingsAsset.GameSettingsLocation);
+                return BuildResultCode.BuildError;
+            }
+
+            context.SetGameSettingsAsset(gameSettingsAsset);
 
             var assetBuildResult = assetBuilder.Compile(context);
             assetBuildResult.CopyTo(builderOptions.Logger);
@@ -171,9 +178,9 @@ namespace SiliconStudio.Assets.CompilerApp
                 return BuildResultCode.BuildError;
             }
 
-            var graphicsPlatform = buildProfile.Properties.ContainsKey(ParadoxConfig.GraphicsPlatform)
-                ? buildProfile.Properties.Get(ParadoxConfig.GraphicsPlatform)
-                : builderOptions.GetDefaultGraphicsPlatform();
+            // For now, graphics platform is implicit.
+            // It will need to be readded to GameSettingsAsset at some point.
+            var graphicsPlatform = builderOptions.Platform.GetDefaultGraphicsPlatform();
 
             Console.WriteLine(graphicsPlatform);
             return BuildResultCode.Successful;

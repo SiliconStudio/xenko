@@ -36,7 +36,7 @@ namespace SiliconStudio.AssemblyProcessor
             var inputFile = inputFiles[0];
 
             // Add search path from input file
-            app.SearchDirectories.Add(Path.GetDirectoryName(inputFile));
+            //app.SearchDirectories.Add(Path.GetDirectoryName(inputFile));
 
             // Load symbol file if it exists
             var symbolFile = Path.ChangeExtension(inputFile, "pdb");
@@ -99,8 +99,10 @@ namespace SiliconStudio.AssemblyProcessor
                 { "d|directory=", "Additional search directory for assemblies", app.SearchDirectories.Add },
                 { "a|assembly=", "Additional assembly (for now, it will add the assembly directory to search path)", v => app.SearchDirectories.Add(Path.GetDirectoryName(v)) },
                 { "signkeyfile=", "Signing Key File", v => app.SignKeyFile = v },
-                { "serializationProjectReferencePaths=", "Project reference paths to auto-load by serialization module initializer (separated by semi-colon)", v => app.SerializationProjectReferences.AddRange(v.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)) },
-                { "Werror", "Promote warnings to errors", v => app.TreatWarningsAsErrors = true }
+                { "references-file=", "Project reference stored in a path", v => app.References.AddRange(File.ReadAllLines(v)) },
+                { "add-reference=", "References to explicitely add", v => app.ReferencesToAdd.Add(v) },
+                { "Werror", "Promote warnings to errors", v => app.TreatWarningsAsErrors = true },
+                { "delete-output-on-error", "Delete output file if an error happened", v => app.DeleteOutputOnError = true },
             };
 
             showHelp = localShowHelp;

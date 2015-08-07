@@ -251,11 +251,6 @@ namespace SiliconStudio.Paradox.Engine
             GameSystems.Add(SceneSystem);
 
             // TODO: data-driven?
-            //Asset.Serializer.RegisterSerializer(new GpuTextureSerializer2(GraphicsDevice));
-            //Asset.Serializer.RegisterSerializer(new GpuSamplerStateSerializer2(GraphicsDevice));
-            //Asset.Serializer.RegisterSerializer(new GpuBlendStateSerializer(GraphicsDevice));
-            //Asset.Serializer.RegisterSerializer(new GpuRasterizerStateSerializer(GraphicsDevice));
-            //Asset.Serializer.RegisterSerializer(new GpuDepthStencilStateSerializer(GraphicsDevice));
             Asset.Serializer.RegisterSerializer(new ImageSerializer());
             Asset.Serializer.RegisterSerializer(new SoundEffectSerializer(Audio.AudioEngine));
             Asset.Serializer.RegisterSerializer(new SoundMusicSerializer(Audio.AudioEngine));
