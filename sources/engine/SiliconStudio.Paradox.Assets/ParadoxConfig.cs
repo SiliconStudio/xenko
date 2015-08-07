@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using SharpDX.Text;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
@@ -18,7 +19,13 @@ namespace SiliconStudio.Paradox.Assets
     {
         private const string XamariniOSBuild = @"MSBuild\Xamarin\iOS\Xamarin.iOS.CSharp.targets";
         private const string XamarinAndroidBuild = @"MSBuild\Xamarin\Android\Xamarin.Android.CSharp.targets";
-        private const string WindowsRuntimeBuild = @"MSBuild\Microsoft\WindowsXaml\v12.0\8.1\Microsoft.Windows.UI.Xaml.Common.Targets";
+
+        private static readonly string[] WindowsRuntimeBuild =
+        {
+            @"MSBuild\Microsoft\WindowsXaml\v12.0\8.1\Microsoft.Windows.UI.Xaml.Common.Targets",
+            @"MSBuild\Microsoft\WindowsXaml\v14.0\8.1\Microsoft.Windows.UI.Xaml.Common.Targets",
+        };
+
         private const string Windows10UniversalRuntimeBuild = @"MSBuild\Microsoft\WindowsXaml\v14.0\8.2\Microsoft.Windows.UI.Xaml.Common.Targets";
         private static readonly string ProgramFilesX86 = Environment.GetEnvironmentVariable(Environment.Is64BitOperatingSystem ? "ProgramFiles(x86)" : "ProgramFiles");
 
@@ -68,7 +75,7 @@ namespace SiliconStudio.Paradox.Assets
                 Name = PlatformType.WindowsStore.ToString(),
                 DisplayName = "Windows Store",
                 Type = PlatformType.WindowsStore,
-                IsAvailable = IsFileInProgramFilesx86Exist(WindowsRuntimeBuild),
+                IsAvailable = WindowsRuntimeBuild.Any(IsFileInProgramFilesx86Exist),
                 UseWithExecutables = false,
                 IncludeInSolution = false,
             };
@@ -152,7 +159,7 @@ namespace SiliconStudio.Paradox.Assets
                 Name = PlatformType.WindowsPhone.ToString(),
                 DisplayName = "Windows Phone",
                 Type = PlatformType.WindowsPhone,
-                IsAvailable = IsFileInProgramFilesx86Exist(WindowsRuntimeBuild),
+                IsAvailable = WindowsRuntimeBuild.Any(IsFileInProgramFilesx86Exist),
                 UseWithExecutables = false,
                 IncludeInSolution = false,
             };
