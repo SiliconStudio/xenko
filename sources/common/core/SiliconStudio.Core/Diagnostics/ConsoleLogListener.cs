@@ -19,7 +19,44 @@ namespace SiliconStudio.Core.Diagnostics
     /// </summary>
     public class ConsoleLogListener : LogListener
     {
+        // NOTE: This keys should not be changed unless changing them also in the ExecServer.
+        // They are used when multiple appdomain are sharing the same console
+        private const string AppDomainConsoleSharedKey = "AppDomainConsoleSharedKey";
+        private const string AppDomainConsoleForegroundColorKey = "AppDomainConsoleForegroundColor";
+
         private bool isConsoleActive;
+
+        private static ConsoleColor localColor;
+        private readonly Func<ConsoleColor> foreGroundColorGetter;
+        private readonly Action<ConsoleColor> foreGroundColorSetter;
+
+        static ConsoleLogListener()
+        {
+            localColor = Console.ForegroundColor;
+        }
+
+        public ConsoleLogListener()
+        {
+            // If we are in the context of multiple app domain sharing the same console,
+            // then the output has been redirected and we must also not use the shared Console.ForeGroundColor to modify the color
+            // So we pass the color to the current app domain, so that the system handling the MultiDomain app (for instance, the ExecServer)
+            // will be able to recover the color from the app domain
+            var appDomain = AppDomain.CurrentDomain;
+            if (appDomain.GetData(AppDomainConsoleSharedKey) != null)
+            {
+                foreGroundColorGetter = () => localColor;
+                foreGroundColorSetter = color =>
+                {
+                    localColor = color;
+                    appDomain.SetData(AppDomainConsoleForegroundColorKey, color);
+                };
+            }
+            else
+            {
+                foreGroundColorGetter = () => Console.ForegroundColor;
+                foreGroundColorSetter = color => Console.ForegroundColor = color;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the minimum log level handled by this listener.
@@ -85,26 +122,26 @@ namespace SiliconStudio.Core.Diagnostics
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             // save initial console color
-            ConsoleColor initialColor = Console.ForegroundColor;
+            ConsoleColor initialColor = foreGroundColorGetter();
 
             // set the color depending on the message log level
             switch (logMessage.Type)
             {
                 case LogMessageType.Debug:
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    foreGroundColorSetter(ConsoleColor.DarkGray);
                     break;
                 case LogMessageType.Verbose:
-                    Console.ForegroundColor = ConsoleColor.Gray;
+                    foreGroundColorSetter(ConsoleColor.Gray);
                     break;
                 case LogMessageType.Info:
-                    Console.ForegroundColor = ConsoleColor.Green;
+                    foreGroundColorSetter(ConsoleColor.Green);
                     break;
                 case LogMessageType.Warning:
-                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    foreGroundColorSetter(ConsoleColor.Yellow);
                     break;
                 case LogMessageType.Error:
                 case LogMessageType.Fatal:
-                    Console.ForegroundColor = ConsoleColor.Red;
+                    foreGroundColorSetter(ConsoleColor.Red);
                     break;
             }
 #endif
@@ -136,7 +173,7 @@ namespace SiliconStudio.Core.Diagnostics
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 
             // revert console initial color
-            Console.ForegroundColor = initialColor;
+            foreGroundColorSetter(initialColor);
 #endif
 #endif // !SILICONSTUDIO_PLATFORM_ANDROID
         }
