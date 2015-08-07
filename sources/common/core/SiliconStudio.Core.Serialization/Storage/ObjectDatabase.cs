@@ -12,7 +12,7 @@ namespace SiliconStudio.Core.Storage
     /// <summary>
     /// Gives access to the object database.
     /// </summary>
-    public class ObjectDatabase
+    public class ObjectDatabase : IDisposable
     {
         // Loaded Hash => Blob mapping
         private static readonly Dictionary<ObjectId, Blob> LoadedBlobs = new Dictionary<ObjectId, Blob>();
@@ -43,6 +43,7 @@ namespace SiliconStudio.Core.Storage
             // Try to open file backends
             bool isReadOnly = Platform.Type != PlatformType.Windows;
             var backend = new FileOdbBackend(vfsMainUrl, isReadOnly, indexName);
+
             AssetIndexMap.Merge(backend.AssetIndexMap);
             if (backend.IsReadOnly)
             {
@@ -76,6 +77,19 @@ namespace SiliconStudio.Core.Storage
         }
 
         public ObjectDatabaseAssetIndexMap AssetIndexMap { get; private set; }
+
+        public void Dispose()
+        {
+            backendRead1.Dispose();
+            if (backendRead2 != null && !ReferenceEquals(backendRead2, backendRead1))
+            {
+                backendRead2.Dispose();
+            }
+            if (backendWrite != null && !ReferenceEquals(backendRead2, backendWrite) && !ReferenceEquals(backendRead2, backendRead1))
+            {
+                backendWrite.Dispose();
+            }
+        }
 
         public void CreateBundle(ObjectId[] objectIds, string bundleName, BundleOdbBackend bundleBackend, ISet<ObjectId> disableCompressionIds, Dictionary<string, ObjectId> indexMap, IList<string> dependencies)
         {

@@ -40,219 +40,223 @@ namespace SiliconStudio.Assets.CompilerApp
             if (disableCompressionIds == null) throw new ArgumentNullException("disableCompressionIds");
 
             // Load index maps and mount databases
-            var objDatabase = new ObjectDatabase("/data/db", indexName, loadDefaultBundle: false);
-
-            logger.Info("Generate bundles: Scan assets and their dependencies...");
-
-            // Prepare list of bundles gathered from all projects
-            var bundles = new List<Bundle>();
-
-            foreach (var project in packageSession.Packages)
+            using (var objDatabase = new ObjectDatabase("/data/db", indexName, loadDefaultBundle: false))
             {
-                bundles.AddRange(project.Bundles);
-            }
 
-            var databaseFileProvider = new DatabaseFileProvider(objDatabase.AssetIndexMap, objDatabase);
-            AssetManager.GetFileProvider = () => databaseFileProvider;
+                logger.Info("Generate bundles: Scan assets and their dependencies...");
 
-            // Pass1: Create ResolvedBundle from user Bundle
-            var resolvedBundles = new Dictionary<string, ResolvedBundle>();
-            foreach (var bundle in bundles)
-            {
-                if (resolvedBundles.ContainsKey(bundle.Name))
+                // Prepare list of bundles gathered from all projects
+                var bundles = new List<Bundle>();
+
+                foreach (var project in packageSession.Packages)
                 {
-                    throw new InvalidOperationException(string.Format("Two bundles with name {0} found", bundle.Name));
+                    bundles.AddRange(project.Bundles);
                 }
 
-                resolvedBundles.Add(bundle.Name, new ResolvedBundle(bundle));
-            }
-            
-            // Pass2: Enumerate all assets which directly or indirectly belong to an bundle
-            var bundleAssets = new HashSet<string>();
+                var databaseFileProvider = new DatabaseFileProvider(objDatabase.AssetIndexMap, objDatabase);
+                AssetManager.GetFileProvider = () => databaseFileProvider;
 
-            foreach (var bundle in resolvedBundles)
-            {
-                // For each project, we apply asset selectors of current bundle
-                // This will give us a list of "root assets".
-                foreach (var assetSelector in bundle.Value.Source.Selectors)
+                // Pass1: Create ResolvedBundle from user Bundle
+                var resolvedBundles = new Dictionary<string, ResolvedBundle>();
+                foreach (var bundle in bundles)
                 {
-                    foreach (var assetLocation in assetSelector.Select(packageSession, objDatabase.AssetIndexMap))
+                    if (resolvedBundles.ContainsKey(bundle.Name))
                     {
-                        bundle.Value.AssetUrls.Add(assetLocation);
+                        throw new InvalidOperationException(string.Format("Two bundles with name {0} found", bundle.Name));
+                    }
+
+                    resolvedBundles.Add(bundle.Name, new ResolvedBundle(bundle));
+                }
+
+                // Pass2: Enumerate all assets which directly or indirectly belong to an bundle
+                var bundleAssets = new HashSet<string>();
+
+                foreach (var bundle in resolvedBundles)
+                {
+                    // For each project, we apply asset selectors of current bundle
+                    // This will give us a list of "root assets".
+                    foreach (var assetSelector in bundle.Value.Source.Selectors)
+                    {
+                        foreach (var assetLocation in assetSelector.Select(packageSession, objDatabase.AssetIndexMap))
+                        {
+                            bundle.Value.AssetUrls.Add(assetLocation);
+                        }
+                    }
+
+                    // Compute asset dependencies, and fill bundleAssets with list of all assets contained in bundles (directly or indirectly).
+                    foreach (var assetUrl in bundle.Value.AssetUrls)
+                    {
+                        CollectReferences(bundle.Value.Source, bundleAssets, assetUrl, objDatabase.AssetIndexMap);
                     }
                 }
 
-                // Compute asset dependencies, and fill bundleAssets with list of all assets contained in bundles (directly or indirectly).
-                foreach (var assetUrl in bundle.Value.AssetUrls)
+                // Pass3: Create a default bundle that contains all assets not contained in any bundle (directly or indirectly)
+                var defaultBundle = new Bundle { Name = "default" };
+                var resolvedDefaultBundle = new ResolvedBundle(defaultBundle);
+                bundles.Add(defaultBundle);
+                resolvedBundles.Add(defaultBundle.Name, resolvedDefaultBundle);
+                foreach (var asset in objDatabase.AssetIndexMap.GetMergedIdMap())
                 {
-                    CollectReferences(bundle.Value.Source, bundleAssets, assetUrl, objDatabase.AssetIndexMap);
-                }
-            }
-
-            // Pass3: Create a default bundle that contains all assets not contained in any bundle (directly or indirectly)
-            var defaultBundle = new Bundle { Name = "default" };
-            var resolvedDefaultBundle = new ResolvedBundle(defaultBundle);
-            bundles.Add(defaultBundle);
-            resolvedBundles.Add(defaultBundle.Name, resolvedDefaultBundle);
-            foreach (var asset in objDatabase.AssetIndexMap.GetMergedIdMap())
-            {
-                if (!bundleAssets.Contains(asset.Key))
-                {
-                    resolvedDefaultBundle.AssetUrls.Add(asset.Key);
-                }
-            }
-
-            // Pass4: Resolve dependencies
-            foreach (var bundle in resolvedBundles)
-            {
-                // Every bundle depends implicitely on default bundle
-                if (bundle.Key != "default")
-                {
-                    bundle.Value.Dependencies.Add(resolvedBundles["default"]);
-                }
-
-                // Add other explicit dependencies
-                foreach (var dependencyName in bundle.Value.Source.Dependencies)
-                {
-                    ResolvedBundle dependency;
-                    if (!resolvedBundles.TryGetValue(dependencyName, out dependency))
-                        throw new InvalidOperationException(string.Format("Could not find dependency {0} when processing bundle {1}", dependencyName, bundle.Value.Name));
-
-                    bundle.Value.Dependencies.Add(dependency);
-                }
-            }
-
-            logger.Info("Generate bundles: Assign assets to bundles...");
-
-            // Pass5: Topological sort (a.k.a. build order)
-            // If there is a cyclic dependency, an exception will be thrown.
-            var sortedBundles = TopologicalSort(resolvedBundles.Values, assetBundle => assetBundle.Dependencies);
-
-            // Pass6: Find which ObjectId belongs to which bundle
-            foreach (var bundle in sortedBundles)
-            {
-                // Add objects created by dependencies
-                foreach (var dep in bundle.Dependencies)
-                {
-                    // ObjectIds
-                    bundle.DependencyObjectIds.UnionWith(dep.DependencyObjectIds);
-                    bundle.DependencyObjectIds.UnionWith(dep.ObjectIds);
-
-                    // IndexMap
-                    foreach (var asset in dep.DependencyIndexMap.Concat(dep.IndexMap))
+                    if (!bundleAssets.Contains(asset.Key))
                     {
-                        if (!bundle.DependencyIndexMap.ContainsKey(asset.Key))
-                            bundle.DependencyIndexMap.Add(asset.Key, asset.Value);
+                        resolvedDefaultBundle.AssetUrls.Add(asset.Key);
                     }
                 }
 
-                // Collect assets (object ids and partial index map) from given asset urls
-                // Those not present in dependencies will be added to this bundle
-                foreach (var assetUrl in bundle.AssetUrls)
+                // Pass4: Resolve dependencies
+                foreach (var bundle in resolvedBundles)
                 {
-                    CollectBundle(bundle, assetUrl, objDatabase.AssetIndexMap);
-                }
-            }
-
-            logger.Info("Generate bundles: Compress and save bundles to HDD...");
-
-            var vfsToDisposeList = new List<IVirtualFileProvider>();
-            // Mount VFS for output database (currently disabled because already done in ProjectBuilder.CopyBuildToOutput)
-            using (var provider = VirtualFileSystem.MountFileSystem("/data_output", outputDirectory))
-            {
-                VirtualFileSystem.CreateDirectory("/data_output/db");
-
-                // Mount output database and delete previous bundles that shouldn't exist anymore (others should be overwritten)
-                var outputDatabase = new ObjectDatabase("/data_output/db", loadDefaultBundle: false);
-                try
-                {
-                    outputDatabase.LoadBundle("default").GetAwaiter().GetResult();
-                }
-                catch (Exception)
-                {
-                    logger.Info("Generate bundles: Tried to load previous 'default' bundle but it was invalid. Deleting it...");
-                    outputDatabase.BundleBackend.DeleteBundles(x => Path.GetFileNameWithoutExtension(x) == "default");
-                }
-                var outputBundleBackend = outputDatabase.BundleBackend;
-
-                var outputGroupBundleBackends = new Dictionary<string, BundleOdbBackend>();
-
-                if (profile != null && profile.OutputGroupDirectories != null)
-                {
-                    var rootPackage = packageSession.LocalPackages.First();
-
-                    foreach (var item in profile.OutputGroupDirectories)
+                    // Every bundle depends implicitely on default bundle
+                    if (bundle.Key != "default")
                     {
-                        var path = Path.Combine(rootPackage.RootDirectory, item.Value);
-                        var vfsPath = "/data_group_" + item.Key;
-                        var vfsDatabasePath = vfsPath + "/db";
+                        bundle.Value.Dependencies.Add(resolvedBundles["default"]);
+                    }
 
-                        // Mount VFS for output database (currently disabled because already done in ProjectBuilder.CopyBuildToOutput)
-                        vfsToDisposeList.Add(VirtualFileSystem.MountFileSystem(vfsPath, path));
-                        VirtualFileSystem.CreateDirectory(vfsDatabasePath);
+                    // Add other explicit dependencies
+                    foreach (var dependencyName in bundle.Value.Source.Dependencies)
+                    {
+                        ResolvedBundle dependency;
+                        if (!resolvedBundles.TryGetValue(dependencyName, out dependency))
+                            throw new InvalidOperationException(string.Format("Could not find dependency {0} when processing bundle {1}", dependencyName, bundle.Value.Name));
 
-                        outputGroupBundleBackends.Add(item.Key, new BundleOdbBackend(vfsDatabasePath));
+                        bundle.Value.Dependencies.Add(dependency);
                     }
                 }
 
-                // Pass7: Assign bundle backends
+                logger.Info("Generate bundles: Assign assets to bundles...");
+
+                // Pass5: Topological sort (a.k.a. build order)
+                // If there is a cyclic dependency, an exception will be thrown.
+                var sortedBundles = TopologicalSort(resolvedBundles.Values, assetBundle => assetBundle.Dependencies);
+
+                // Pass6: Find which ObjectId belongs to which bundle
                 foreach (var bundle in sortedBundles)
                 {
-                    BundleOdbBackend bundleBackend;
-                    if (bundle.Source.OutputGroup == null)
+                    // Add objects created by dependencies
+                    foreach (var dep in bundle.Dependencies)
                     {
-                        // No output group, use OutputDirectory
-                        bundleBackend = outputBundleBackend;
-                    }
-                    else if (!outputGroupBundleBackends.TryGetValue(bundle.Source.OutputGroup, out bundleBackend))
-                    {
-                        // Output group not found in OutputGroupDirectories, let's issue a warning and fallback to OutputDirectory
-                        logger.Warning("Generate bundles: Could not find OutputGroup {0} for bundle {1} in ProjectBuildProfile.OutputGroupDirectories", bundle.Source.OutputGroup, bundle.Name);
-                        bundleBackend = outputBundleBackend;
+                        // ObjectIds
+                        bundle.DependencyObjectIds.UnionWith(dep.DependencyObjectIds);
+                        bundle.DependencyObjectIds.UnionWith(dep.ObjectIds);
+
+                        // IndexMap
+                        foreach (var asset in dep.DependencyIndexMap.Concat(dep.IndexMap))
+                        {
+                            if (!bundle.DependencyIndexMap.ContainsKey(asset.Key))
+                                bundle.DependencyIndexMap.Add(asset.Key, asset.Value);
+                        }
                     }
 
-                    bundle.BundleBackend = bundleBackend;
+                    // Collect assets (object ids and partial index map) from given asset urls
+                    // Those not present in dependencies will be added to this bundle
+                    foreach (var assetUrl in bundle.AssetUrls)
+                    {
+                        CollectBundle(bundle, assetUrl, objDatabase.AssetIndexMap);
+                    }
                 }
 
-                CleanUnknownBundles(outputBundleBackend, resolvedBundles);
+                logger.Info("Generate bundles: Compress and save bundles to HDD...");
 
-                foreach (var bundleBackend in outputGroupBundleBackends)
+                var vfsToDisposeList = new List<IVirtualFileProvider>();
+                // Mount VFS for output database (currently disabled because already done in ProjectBuilder.CopyBuildToOutput)
+                using (var provider = VirtualFileSystem.MountFileSystem("/data_output", outputDirectory))
                 {
-                    CleanUnknownBundles(bundleBackend.Value, resolvedBundles);
-                }
+                    VirtualFileSystem.CreateDirectory("/data_output/db");
 
-                // Pass8: Pack actual data
-                foreach (var bundle in sortedBundles)
-                {
-                    // Compute dependencies (by bundle names)
-                    var dependencies = bundle.Dependencies.Select(x => x.Name).Distinct().ToList();
+                    // Mount output database and delete previous bundles that shouldn't exist anymore (others should be overwritten)
+                    using (var outputDatabase = new ObjectDatabase("/data_output/db", loadDefaultBundle: false))
+                    {
+                        try
+                        {
+                            outputDatabase.LoadBundle("default").GetAwaiter().GetResult();
+                        }
+                        catch (Exception)
+                        {
+                            logger.Info("Generate bundles: Tried to load previous 'default' bundle but it was invalid. Deleting it...");
+                            outputDatabase.BundleBackend.DeleteBundles(x => Path.GetFileNameWithoutExtension(x) == "default");
+                        }
+                        var outputBundleBackend = outputDatabase.BundleBackend;
 
-                    BundleOdbBackend bundleBackend;
-                    if (bundle.Source.OutputGroup == null)
-                    {
-                        // No output group, use OutputDirectory
-                        bundleBackend = outputBundleBackend;
-                    }
-                    else if (!outputGroupBundleBackends.TryGetValue(bundle.Source.OutputGroup, out bundleBackend))
-                    {
-                        // Output group not found in OutputGroupDirectories, let's issue a warning and fallback to OutputDirectory
-                        logger.Warning("Generate bundles: Could not find OutputGroup {0} for bundle {1} in ProjectBuildProfile.OutputGroupDirectories", bundle.Source.OutputGroup, bundle.Name);
-                        bundleBackend = outputBundleBackend;
-                    }
+                        var outputGroupBundleBackends = new Dictionary<string, BundleOdbBackend>();
 
-                    objDatabase.CreateBundle(bundle.ObjectIds.ToArray(), bundle.Name, bundleBackend, disableCompressionIds, bundle.IndexMap, dependencies);
-                }
+                        if (profile != null && profile.OutputGroupDirectories != null)
+                        {
+                            var rootPackage = packageSession.LocalPackages.First();
 
-                // Dispose VFS created for groups
-                foreach (var vfsToDispose in vfsToDisposeList)
-                {
-                    try
-                    {
-                        vfsToDispose.Dispose();
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.Error("Unable to dispose VFS [{0}]", ex, vfsToDispose.RootPath);
+                            foreach (var item in profile.OutputGroupDirectories)
+                            {
+                                var path = Path.Combine(rootPackage.RootDirectory, item.Value);
+                                var vfsPath = "/data_group_" + item.Key;
+                                var vfsDatabasePath = vfsPath + "/db";
+
+                                // Mount VFS for output database (currently disabled because already done in ProjectBuilder.CopyBuildToOutput)
+                                vfsToDisposeList.Add(VirtualFileSystem.MountFileSystem(vfsPath, path));
+                                VirtualFileSystem.CreateDirectory(vfsDatabasePath);
+
+                                outputGroupBundleBackends.Add(item.Key, new BundleOdbBackend(vfsDatabasePath));
+                            }
+                        }
+
+                        // Pass7: Assign bundle backends
+                        foreach (var bundle in sortedBundles)
+                        {
+                            BundleOdbBackend bundleBackend;
+                            if (bundle.Source.OutputGroup == null)
+                            {
+                                // No output group, use OutputDirectory
+                                bundleBackend = outputBundleBackend;
+                            }
+                            else if (!outputGroupBundleBackends.TryGetValue(bundle.Source.OutputGroup, out bundleBackend))
+                            {
+                                // Output group not found in OutputGroupDirectories, let's issue a warning and fallback to OutputDirectory
+                                logger.Warning("Generate bundles: Could not find OutputGroup {0} for bundle {1} in ProjectBuildProfile.OutputGroupDirectories", bundle.Source.OutputGroup, bundle.Name);
+                                bundleBackend = outputBundleBackend;
+                            }
+
+                            bundle.BundleBackend = bundleBackend;
+                        }
+
+                        CleanUnknownBundles(outputBundleBackend, resolvedBundles);
+
+                        foreach (var bundleBackend in outputGroupBundleBackends)
+                        {
+                            CleanUnknownBundles(bundleBackend.Value, resolvedBundles);
+                        }
+
+                        // Pass8: Pack actual data
+                        foreach (var bundle in sortedBundles)
+                        {
+                            // Compute dependencies (by bundle names)
+                            var dependencies = bundle.Dependencies.Select(x => x.Name).Distinct().ToList();
+
+                            BundleOdbBackend bundleBackend;
+                            if (bundle.Source.OutputGroup == null)
+                            {
+                                // No output group, use OutputDirectory
+                                bundleBackend = outputBundleBackend;
+                            }
+                            else if (!outputGroupBundleBackends.TryGetValue(bundle.Source.OutputGroup, out bundleBackend))
+                            {
+                                // Output group not found in OutputGroupDirectories, let's issue a warning and fallback to OutputDirectory
+                                logger.Warning("Generate bundles: Could not find OutputGroup {0} for bundle {1} in ProjectBuildProfile.OutputGroupDirectories", bundle.Source.OutputGroup, bundle.Name);
+                                bundleBackend = outputBundleBackend;
+                            }
+
+                            objDatabase.CreateBundle(bundle.ObjectIds.ToArray(), bundle.Name, bundleBackend, disableCompressionIds, bundle.IndexMap, dependencies);
+                        }
+
+                        // Dispose VFS created for groups
+                        foreach (var vfsToDispose in vfsToDisposeList)
+                        {
+                            try
+                            {
+                                vfsToDispose.Dispose();
+                            }
+                            catch (Exception ex)
+                            {
+                                logger.Error("Unable to dispose VFS [{0}]", ex, vfsToDispose.RootPath);
+                            }
+                        }
                     }
                 }
             }
