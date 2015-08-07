@@ -255,25 +255,33 @@ namespace SiliconStudio.Paradox.VisualStudio
                 }
             }
 
-            try
+            int version = 0;
+            if (!int.TryParse(dte.Version.Split('.')[0], out version))
+                version = 12;
+
+            // Seems like VS2015 display <Exec> output directly without waiting end of execution, so no need for all this anymore!
+            if (version < 14)
             {
-                // Start PackageBuildMonitorRemote in a separate app domain
-                if (buildMonitorDomain != null)
+                try
+                {
+                    // Start PackageBuildMonitorRemote in a separate app domain
+                    if (buildMonitorDomain != null)
+                        AppDomain.Unload(buildMonitorDomain);
+
+                    buildMonitorDomain = ParadoxCommandsProxy.CreateParadoxDomain();
+                    ParadoxCommandsProxy.InitialzeFromSolution(solutionPath, buildMonitorDomain);
+                    var remoteCommands = ParadoxCommandsProxy.CreateProxy(buildMonitorDomain);
+                    remoteCommands.StartRemoteBuildLogServer(new BuildMonitorCallback(), buildLogPipeGenerator.LogPipeUrl);
+                }
+                catch (Exception e)
+                {
+                    generalOutputPane.OutputStringThreadSafe(string.Format("Error loading Paradox SDK: {0}\r\n", e));
+                    generalOutputPane.Activate();
+
+                    // Unload domain right away
                     AppDomain.Unload(buildMonitorDomain);
-
-                buildMonitorDomain = ParadoxCommandsProxy.CreateParadoxDomain();
-                ParadoxCommandsProxy.InitialzeFromSolution(solutionPath, buildMonitorDomain);
-                var remoteCommands = ParadoxCommandsProxy.CreateProxy(buildMonitorDomain);
-                remoteCommands.StartRemoteBuildLogServer(new BuildMonitorCallback(), buildLogPipeGenerator.LogPipeUrl);
-            }
-            catch (Exception e)
-            {
-                generalOutputPane.OutputStringThreadSafe(string.Format("Error loading Paradox SDK: {0}\r\n", e));
-                generalOutputPane.Activate();
-
-                // Unload domain right away
-                AppDomain.Unload(buildMonitorDomain);
-                buildMonitorDomain = null;
+                    buildMonitorDomain = null;
+                }
             }
 
             // Preinitialize the parser in a separate thread
