@@ -37,6 +37,7 @@
       <Link>NativeLibraryInternal.cs</Link>
     </Compile>
     <Compile Include="AppDomainShadow.cs" />
+    <Compile Include="AppDomainShadowManager.cs" />
     <Compile Include="ExecServerRemote.cs" />
     <Compile Include="ExecServerApp.cs" />
     <Compile Include="IExecServerRemote.cs" />

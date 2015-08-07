@@ -10,18 +10,17 @@ namespace SiliconStudio.ExecServer
     /// <summary>
     /// A AppDomain container for managing shadow copy AppDomain that is working with native dlls.
     /// </summary>
-    internal class AppDomainShadow : MarshalByRefObject
+    internal class AppDomainShadow : MarshalByRefObject, IDisposable
     {
-        private const string CurrentAssemblyLoadedKey = "CurrentAssemblyLoadedKey";
         private const string CacheFolder = ".shadow";
 
         private readonly object singletonLock = new object();
 
-        private readonly AppDomain parentDomain;
-
         private readonly string applicationPath;
 
         private readonly string[] nativeDllsPathOrFolderList;
+
+        private readonly string appDomainName;
 
         private readonly string mainAssemblyPath;
 
@@ -40,25 +39,28 @@ namespace SiliconStudio.ExecServer
         /// <summary>
         /// Initializes a new instance of the <see cref="AppDomainShadow" /> class.
         /// </summary>
+        /// <param name="appDomainName">Name of the application domain.</param>
         /// <param name="mainAssemblyPath">The main assembly path.</param>
         /// <param name="nativeDllsPathOrFolderList">An array of folders path (containing only native dlls) or directly a specific path to a dll.</param>
         /// <exception cref="System.ArgumentNullException">mainAssemblyPath</exception>
         /// <exception cref="System.InvalidOperationException">If the assembly does not exist</exception>
-        public AppDomainShadow(string mainAssemblyPath, params string[] nativeDllsPathOrFolderList)
+        public AppDomainShadow(string appDomainName, string mainAssemblyPath, params string[] nativeDllsPathOrFolderList)
         {
             if (mainAssemblyPath == null) throw new ArgumentNullException("mainAssemblyPath");
             if (nativeDllsPathOrFolderList == null) throw new ArgumentNullException("nativeDllsPathOrFolderList");
             if (!File.Exists(mainAssemblyPath)) throw new InvalidOperationException(string.Format("Assembly [{0}] does not exist", mainAssemblyPath));
 
-            parentDomain = AppDomain.CurrentDomain;
+            this.appDomainName = appDomainName;
             this.mainAssemblyPath = mainAssemblyPath;
             this.nativeDllsPathOrFolderList = nativeDllsPathOrFolderList;
             applicationPath = Path.GetDirectoryName(mainAssemblyPath);
             filesLoaded = new List<FileLoaded>();
-            appDomain = CreateAppDomain();
+            appDomain = CreateAppDomain(appDomainName);
 
             callback = new AssemblyLoaderCallback(AssemblyLoaded);
             appDomain.DoCallBack(callback.RegisterAssemblyLoad);
+
+            Console.WriteLine("AppDomain {0} Created", appDomainName);
         }
 
         /// <summary>
@@ -107,8 +109,10 @@ namespace SiliconStudio.ExecServer
 
                 foreach (var fileLoaded in filesToCheck)
                 {
-                    if (fileLoaded.IsUpToDate())
+                    if (!fileLoaded.IsUpToDate())
                     {
+                        Console.WriteLine("Dll File changed: {0}", fileLoaded.filePath);
+
                         isUpToDate = false;
                         break;
                     }
@@ -134,19 +138,18 @@ namespace SiliconStudio.ExecServer
             try
             {
                 var result = appDomain.ExecuteAssembly(mainAssemblyPath, args);
+                Console.WriteLine("Return result: {0}", result);
                 return result;
             }
             catch (Exception exception)
             {
+                Console.WriteLine("Unexpected exception: {0}", exception);
                 // TODO: Unexpected exception, close this appdomain?
                 return 1;
             }
-            finally
-            {
-                EndRun();
-            }
         }
-        private void EndRun()
+
+        public void EndRun()
         {
             lock (singletonLock)
             {
@@ -156,8 +159,6 @@ namespace SiliconStudio.ExecServer
 
         private void AssemblyLoaded(string location)
         {
-            //var location = (string)parentDomain.GetData(CurrentAssemblyLoadedKey);
-
             if (!isDllImportShadowCopy)
             {
                 ShadowCopyNativeDlls(location);
@@ -297,9 +298,8 @@ namespace SiliconStudio.ExecServer
             }
         }
 
-        private AppDomain CreateAppDomain()
+        private AppDomain CreateAppDomain(string appDomainName)
         {
-            var appName = Path.GetFileNameWithoutExtension(mainAssemblyPath);
             var appDomainSetup = new AppDomainSetup
             {
                 ApplicationBase = applicationPath,
@@ -307,26 +307,27 @@ namespace SiliconStudio.ExecServer
                 CachePath = Path.Combine(applicationPath, CacheFolder),
             };
 
-            return AppDomain.CreateDomain(appName, AppDomain.CurrentDomain.Evidence, appDomainSetup);
+            return AppDomain.CreateDomain(appDomainName, AppDomain.CurrentDomain.Evidence, appDomainSetup);
         }
 
         private struct FileLoaded
         {
             public FileLoaded(FileInfo file)
             {
-                FilePath = file.FullName;
-                LastWriteTime = file.LastWriteTimeUtc;
+                filePath = file.FullName;
+                lastWriteTime = file.LastWriteTimeUtc;
             }
 
-            public readonly string FilePath;
+            public readonly string filePath;
 
-            public readonly DateTime LastWriteTime;
+            private readonly DateTime lastWriteTime;
 
             public bool IsUpToDate()
             {
                 try
                 {
-                    return new FileInfo(FilePath).LastWriteTimeUtc == LastWriteTime;
+                    var currentTime = new FileInfo(filePath).LastWriteTimeUtc;
+                    return currentTime == lastWriteTime;
                 }
                 catch (IOException)
                 {
@@ -347,25 +348,25 @@ namespace SiliconStudio.ExecServer
 
             public void RegisterAssemblyLoad()
             {
+                // This method is executed in the child application domain
                 AppDomain.CurrentDomain.AssemblyLoad += AppDomainOnAssemblyLoad;
             }
 
-            public void AppDomainOnAssemblyLoad(object sender, AssemblyLoadEventArgs args)
+            private void AppDomainOnAssemblyLoad(object sender, AssemblyLoadEventArgs args)
             {
                 var assembly = args.LoadedAssembly;
                 if (!assembly.IsDynamic)
                 {
+                    // This method will be executed in the ExecServer application domain
                     callback(assembly.Location);
                 }
-                //// This method is run from the domain of the assembly being loaded, but we want to record it from the ExecServer app domain.
-
-                //// So first, we pass the location of the assembly being loaded
-                //parentDomain.SetData(CurrentAssemblyLoadedKey, args.LoadedAssembly.Location);
-
-                //// Then call parent domain to grab this assembly
-                //parentDomain.DoCallBack(AssemblyLoaded);
             }
+        }
 
+        public void Dispose()
+        {
+            System.AppDomain.Unload(appDomain);
+            Console.WriteLine("AppDomain {0} Disposed", appDomainName);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace SiliconStudio.ExecServer
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, UseSynchronizationContext = false)]
     public class ExecServerRemote : IExecServerRemote
     {
-        private readonly string executablePath;
+        private readonly AppDomainShadowManager shadowManager;
 
         private readonly Thread trackingThread;
 
@@ -25,7 +25,8 @@ namespace SiliconStudio.ExecServer
 
         public ExecServerRemote(string executablePath, bool trackExecPathLastTime)
         {
-            this.executablePath = executablePath;
+            // TODO: List of native dll directory is hardcoded here. Instead, it should be extracted from .exe.config file for example
+            shadowManager = new AppDomainShadowManager(executablePath, IntPtr.Size == 8 ? "x64" : "x86");
 
             upTime = Stopwatch.StartNew();
             singleton = new object();
@@ -53,35 +54,35 @@ namespace SiliconStudio.ExecServer
             {
                 upTime.Restart();
 
-                var appDomainLoader = new AppDomainShadow(executablePath, IntPtr.Size == 8 ? "x64" : "x86");
-                appDomainLoader.TryLock();
-                var result = appDomainLoader.Run(args);
+                var result = shadowManager.Run(args);
                 return result;
             }
         }
 
         public void Wait(ServiceHost serviceHost)
         {
-            if (serviceHost == null) throw new ArgumentNullException("serviceHost");
-
             if (trackingThread != null)
             {
                 trackingThread.Join();
 
+                shadowManager.Dispose();
+
                 // Make sure nothing is running and close the service host
                 lock (singleton)
                 {
-                    serviceHost.Close();
+                    if (serviceHost != null)
+                    {
+                        serviceHost.Close();
+                    }
                 }
             }
         }
 
         private void TrackExecutablePath()
         {
-            var originalExecutableTime = File.GetLastWriteTime(executablePath);
             while (true)
             {
-                Thread.Sleep(100);
+                Thread.Sleep(200);
 
                 var localUpTime = GetUpTime();
                 if (localUpTime > TimeSpan.FromMinutes(10))
@@ -89,12 +90,7 @@ namespace SiliconStudio.ExecServer
                     break;
                 }
 
-                // Executable has changed, allow to reload it
-                var newTime = File.GetLastWriteTime(executablePath);
-                if (newTime != originalExecutableTime)
-                {
-                    break;
-                }
+                shadowManager.Recycle();
             }
         }
 
