@@ -52,6 +52,8 @@ Windows 10 Universal Apps (Store and Phone) are now supported. Add it to your ex
 Release date: 2015/08/##
 
 ## Issues fixed
+- Windows10: Updated to work with Windows 10 and VS2015 RTM (there was significant changes in how the build is done between RC and RTM).
+- Studio: New Game were not properly tracked for script changes (until reloaded).
 - Studio: Some objects were transparent in the camera preview of the scene editor.
 - Studio: The button to orient the camera in the left direction was incorrectly implemented.
 - Studio: The property grid was displaying some properties that were supposed to be hidden.
