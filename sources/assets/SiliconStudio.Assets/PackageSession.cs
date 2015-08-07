@@ -595,6 +595,18 @@ namespace SiliconStudio.Assets
             }
         }
 
+        /// <summary>
+        /// Loads the assembly references that were not loaded before.
+        /// </summary>
+        /// <param name="log">The log.</param>
+        public void UpdateAssemblyReferences(LoggerResult log)
+        {
+            foreach (var package in LocalPackages)
+            {
+                package.UpdateAssemblyReferences(log);
+            }
+        }
+
         private bool CheckModifiedPackages()
         {
             if (IsDirty)
