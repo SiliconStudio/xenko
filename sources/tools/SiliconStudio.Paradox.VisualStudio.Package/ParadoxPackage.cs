@@ -129,9 +129,6 @@ namespace SiliconStudio.Paradox.VisualStudio
             solutionEventsListener = new SolutionEventsListener(this);
             solutionEventsListener.AfterSolutionBackgroundLoadComplete += solutionEventsListener_AfterSolutionBackgroundLoadComplete;
 
-            // Initialize the build monitor, that will display BuildEngine results in the Build Output pane.
-            buildLogPipeGenerator = new BuildLogPipeGenerator(this);
-
             dte2 = GetGlobalService(typeof(SDTE)) as DTE2;
 
             // Register the C# language service
@@ -255,13 +252,17 @@ namespace SiliconStudio.Paradox.VisualStudio
                 }
             }
 
-            int version = 0;
-            if (!int.TryParse(dte.Version.Split('.')[0], out version))
-                version = 12;
-
+            // Initialize the build monitor, that will display BuildEngine results in the Build Output pane.
             // Seems like VS2015 display <Exec> output directly without waiting end of execution, so no need for all this anymore!
-            if (version < 14)
+            // TODO: Need to find a better way to detect VS version?
+            int visualStudioVersion;
+            if (!int.TryParse(dte2.Version.Split('.')[0], out visualStudioVersion))
+                visualStudioVersion = 12;
+
+            if (visualStudioVersion < 14)
             {
+                buildLogPipeGenerator = new BuildLogPipeGenerator(this);
+
                 try
                 {
                     // Start PackageBuildMonitorRemote in a separate app domain
