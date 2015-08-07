@@ -324,28 +324,36 @@ namespace SiliconStudio.Assets
             {
                 // Load a project without specifying a platform to make sure we get the correct platform type
                 var msProject = VSProjectHelper.LoadProject(pathToMsproj, platform: "NoPlatform");
-
-                var projectType = VSProjectHelper.GetProjectTypeFromProject(msProject);
-                if (!projectType.HasValue)
+                try
                 {
-                    logger.Error("This project is not a project created with the editor");
-                }
-                else
-                {
-                    var platformType = VSProjectHelper.GetPlatformTypeFromProject(msProject) ?? PlatformType.Shared;
 
-                    var projectReference = new ProjectReference()
+                    var projectType = VSProjectHelper.GetProjectTypeFromProject(msProject);
+                    if (!projectType.HasValue)
+                    {
+                        logger.Error("This project is not a project created with the editor");
+                    }
+                    else
+                    {
+                        var platformType = VSProjectHelper.GetPlatformTypeFromProject(msProject) ?? PlatformType.Shared;
+
+                        var projectReference = new ProjectReference()
                         {
                             Id = VSProjectHelper.GetProjectGuid(msProject),
                             Location = pathToMsproj.MakeRelative(RootDirectory),
                             Type = projectType.Value
                         };
 
-                    // Add the ProjectReference only for the compatible profiles (same platform or no platform)
-                    foreach (var profile in Profiles.Where(profile => platformType == profile.Platform))
-                    {
-                        profile.ProjectReferences.Add(projectReference);
+                        // Add the ProjectReference only for the compatible profiles (same platform or no platform)
+                        foreach (var profile in Profiles.Where(profile => platformType == profile.Platform))
+                        {
+                            profile.ProjectReferences.Add(projectReference);
+                        }
                     }
+                }
+                finally
+                {
+                    msProject.ProjectCollection.UnloadAllProjects();
+                    msProject.ProjectCollection.Dispose();
                 }
             }
             catch (Exception ex)
