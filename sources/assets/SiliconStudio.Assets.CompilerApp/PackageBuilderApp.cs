@@ -16,6 +16,7 @@ using Mono.Options;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Assets.Model;
 using SiliconStudio.Paradox.Assets.SpriteFont;
 using SiliconStudio.Paradox.Graphics;
@@ -28,7 +29,13 @@ namespace SiliconStudio.Assets.CompilerApp
     class PackageBuilderApp : IPackageBuilderApp
     {
         private static Stopwatch clock;
-        
+
+        private ConsoleLogListener globalLoggerOnGlobalMessageLogged;
+
+        private PackageBuilder builder;
+
+        public bool IsSlave { get; private set; }
+
         public int Run(string[] args)
         {
             clock = Stopwatch.StartNew();
@@ -139,8 +146,8 @@ namespace SiliconStudio.Assets.CompilerApp
             // Output logs to the console with colored messages
             if (options.SlavePipe == null)
             {
-                var consoleLogListener = new ConsoleLogListener { TextFormatter = FormatLog, LogMode = ConsoleLogMode.Always };
-                GlobalLogger.GlobalMessageLogged += consoleLogListener;
+                globalLoggerOnGlobalMessageLogged = new ConsoleLogListener { TextFormatter = FormatLog, LogMode = ConsoleLogMode.Always };
+                GlobalLogger.GlobalMessageLogged += globalLoggerOnGlobalMessageLogged;
             }
 
             BuildResultCode exitCode;
@@ -186,6 +193,10 @@ namespace SiliconStudio.Assets.CompilerApp
                         options.Logger.Info("Starting builder.");
                     }
                 }
+                else
+                {
+                    IsSlave = true;
+                }
 
                 if (showHelp)
                 {
@@ -200,8 +211,11 @@ namespace SiliconStudio.Assets.CompilerApp
                 }
                 else
                 {
-                    var builder = new PackageBuilder(options);
-                    Console.CancelKeyPress += (_, e) => e.Cancel = builder.Cancel();
+                    builder = new PackageBuilder(options);
+                    if (!IsSlave)
+                    {
+                        Console.CancelKeyPress += OnConsoleOnCancelKeyPress;
+                    }
                     exitCode = builder.Build();
                 }
             }
@@ -218,10 +232,33 @@ namespace SiliconStudio.Assets.CompilerApp
             finally
             {
                 if (fileLogListener != null)
+                {
+                    GlobalLogger.GlobalMessageLogged -= fileLogListener;
                     fileLogListener.LogWriter.Close();
+                }
 
+                // Output logs to the console with colored messages
+                if (globalLoggerOnGlobalMessageLogged != null)
+                {
+                    GlobalLogger.GlobalMessageLogged -= globalLoggerOnGlobalMessageLogged;
+                }
+                if (builder != null && !IsSlave)
+                {
+                    Console.CancelKeyPress -= OnConsoleOnCancelKeyPress;
+                }
+
+                // Make sure that MSBuild doesn't hold anything else
+                VSProjectHelper.Reset();
+
+                // Reset cache hold by YamlSerializer
+                YamlSerializer.ResetCache();
             }
             return (int)exitCode;
+        }
+
+        private void OnConsoleOnCancelKeyPress(object _, ConsoleCancelEventArgs e)
+        {
+            e.Cancel = builder.Cancel();
         }
 
         private static string FormatLog(ILogMessage message)
