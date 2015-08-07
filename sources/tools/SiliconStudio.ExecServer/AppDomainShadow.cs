@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 
 using SiliconStudio.Core;
 
@@ -12,6 +16,10 @@ namespace SiliconStudio.ExecServer
     /// </summary>
     internal class AppDomainShadow : MarshalByRefObject, IDisposable
     {
+        // NOTE: This keys should not be changed unless changing them also in the ExecServer.
+        // They are used when multiple appdomain are sharing the same console
+        private const string AppDomainLogToActionKey = "AppDomainLogToAction";
+
         private const string CacheFolder = ".shadow";
 
         private readonly object singletonLock = new object();
@@ -36,6 +44,8 @@ namespace SiliconStudio.ExecServer
 
         private readonly AssemblyLoaderCallback callback;
 
+        private DateTime lastRunTime; 
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AppDomainShadow" /> class.
         /// </summary>
@@ -55,13 +65,23 @@ namespace SiliconStudio.ExecServer
             this.nativeDllsPathOrFolderList = nativeDllsPathOrFolderList;
             applicationPath = Path.GetDirectoryName(mainAssemblyPath);
             filesLoaded = new List<FileLoaded>();
-            appDomain = CreateAppDomain(appDomainName);
-
             callback = new AssemblyLoaderCallback(AssemblyLoaded);
-            appDomain.DoCallBack(callback.RegisterAssemblyLoad);
-
-            Console.WriteLine("AppDomain {0} Created", appDomainName);
+            appDomain = CreateAppDomain();
+            lastRunTime = DateTime.Now;
         }
+
+        /// <summary>
+        /// Gets the name.
+        /// </summary>
+        /// <value>The name.</value>
+        public string Name
+        {
+            get
+            {
+                return appDomainName;
+            }
+        }
+
 
         /// <summary>
         /// Gets the application domain managed by this container.
@@ -75,22 +95,29 @@ namespace SiliconStudio.ExecServer
             }
         }
 
+        public DateTime LastRunTime
+        {
+            get
+            {
+                return lastRunTime;
+            }
+        }
+
         /// <summary>
         /// Tries to take the ownership of this container to run an exe/method from the app domain.
         /// </summary>
         /// <returns><c>true</c> if ownership was successfull (you can then use <see cref="Run"/> method), <c>false</c> otherwise.</returns>
         public bool TryLock()
         {
-            bool result;
             lock (singletonLock)
             {
                 if (!isRunning)
                 {
                     isRunning = true;
+                    return true;
                 }
-                result = isRunning;
             }
-            return result;
+            return false;
         }
 
         /// <summary>
@@ -126,9 +153,10 @@ namespace SiliconStudio.ExecServer
         /// Runs the main entry point method passing arguments to it
         /// </summary>
         /// <param name="args">The arguments.</param>
+        /// <param name="logger">The logger.</param>
         /// <returns>System.Int32.</returns>
         /// <exception cref="System.InvalidOperationException">Must call TryLock before calling this method</exception>
-        public int Run(string[] args)
+        public int Run(string[] args, IServerLogger logger)
         {
             if (!isRunning)
             {
@@ -137,15 +165,26 @@ namespace SiliconStudio.ExecServer
 
             try
             {
-                var result = appDomain.ExecuteAssembly(mainAssemblyPath, args);
-                Console.WriteLine("Return result: {0}", result);
-                return result;
+                lastRunTime = DateTime.Now;
+                using (var appDomainRedirectLogger = new AppDomainRedirectLogger(logger))
+                {
+                    var loggerInstaller = new LoggerInstaller(appDomainRedirectLogger, Path.GetFileNameWithoutExtension(mainAssemblyPath), args);
+                    appDomain.DoCallBack(loggerInstaller.InstallLoggerCallback);
+                    var result = loggerInstaller.Result;
+
+                    //var result = appDomain.ExecuteAssembly(mainAssemblyPath, args);
+                    Console.WriteLine("Return result: {0}", result);
+                    return result;
+                }
             }
             catch (Exception exception)
             {
-                Console.WriteLine("Unexpected exception: {0}", exception);
-                // TODO: Unexpected exception, close this appdomain?
+                logger.OnLog(string.Format("Unexpected exception: {0}", exception));
                 return 1;
+            }
+            finally
+            {
+                lastRunTime = DateTime.Now;
             }
         }
 
@@ -159,6 +198,11 @@ namespace SiliconStudio.ExecServer
 
         private void AssemblyLoaded(string location)
         {
+            if (!location.StartsWith(applicationPath, true, CultureInfo.InvariantCulture))
+            {
+                return;
+            }
+
             if (!isDllImportShadowCopy)
             {
                 ShadowCopyNativeDlls(location);
@@ -222,7 +266,6 @@ namespace SiliconStudio.ExecServer
                 if (String.Compare(info.Name, "dl3", StringComparison.InvariantCultureIgnoreCase) == 0)
                 {
                     return info;
-                    break;
                 }
                 info = info.Parent;
             }
@@ -298,7 +341,7 @@ namespace SiliconStudio.ExecServer
             }
         }
 
-        private AppDomain CreateAppDomain(string appDomainName)
+        private AppDomain CreateAppDomain()
         {
             var appDomainSetup = new AppDomainSetup
             {
@@ -307,7 +350,12 @@ namespace SiliconStudio.ExecServer
                 CachePath = Path.Combine(applicationPath, CacheFolder),
             };
 
-            return AppDomain.CreateDomain(appDomainName, AppDomain.CurrentDomain.Evidence, appDomainSetup);
+            var newAppDomain = AppDomain.CreateDomain(appDomainName, AppDomain.CurrentDomain.Evidence, appDomainSetup);
+
+            // Install the callback to prepare the new app domain
+            newAppDomain.DoCallBack(callback.RegisterAssemblyLoad);
+
+            return newAppDomain;
         }
 
         private struct FileLoaded
@@ -348,6 +396,14 @@ namespace SiliconStudio.ExecServer
 
             public void RegisterAssemblyLoad()
             {
+                // NOTE: This part is important to have native dlls resolved correctly by Mixed Assemblies
+                var path = Environment.GetEnvironmentVariable("PATH");
+                if (!path.Contains(AppDomain.CurrentDomain.BaseDirectory))
+                {
+                    path = AppDomain.CurrentDomain.BaseDirectory + ";" + path;
+                    Environment.SetEnvironmentVariable("PATH", path);
+                }
+
                 // This method is executed in the child application domain
                 AppDomain.CurrentDomain.AssemblyLoad += AppDomainOnAssemblyLoad;
             }
@@ -360,6 +416,55 @@ namespace SiliconStudio.ExecServer
                     // This method will be executed in the ExecServer application domain
                     callback(assembly.Location);
                 }
+            }
+        }
+
+        private sealed class AppDomainRedirectLogger : MarshalByRefObject, IServerLogger, IDisposable
+        {
+            private IServerLogger logger;
+
+            public AppDomainRedirectLogger(IServerLogger logger)
+            {
+                this.logger = logger;
+            }
+
+            public void OnLog(string text)
+            {
+                var localLogger = logger;
+                if (localLogger != null)
+                {
+                    Task.Factory.StartNew(() => localLogger.OnLog(text));
+                }
+            }
+
+            public void Dispose()
+            {
+                logger = null;
+            }
+        }
+
+        [Serializable]
+        private class LoggerInstaller
+        {
+            private readonly IServerLogger logger;
+            private readonly string executablePath;
+            private readonly string[] args;
+
+            public LoggerInstaller(IServerLogger logger, string executablePath, string[] args)
+            {
+                this.logger = logger;
+                this.executablePath = executablePath;
+                this.args = args;
+            }
+
+            public int Result { get; private set; }
+
+            public void InstallLoggerCallback()
+            {
+                var currentDomain = AppDomain.CurrentDomain;
+                currentDomain.SetData(AppDomainLogToActionKey, new Action<string>(logger.OnLog));
+                var assembly = currentDomain.Load(executablePath);
+                Result = Convert.ToInt32(assembly.EntryPoint.Invoke(null, new object[] { args }));
             }
         }
 

@@ -1,37 +1,39 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
-using System.Security.Policy;
 using System.ServiceModel;
+using System.Text;
 using System.Threading;
-using System.Xml;
-
-using SiliconStudio.Core;
 
 namespace SiliconStudio.ExecServer
 {
-    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, UseSynchronizationContext = false)]
+    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode=ConcurrencyMode.Multiple)]
     public class ExecServerRemote : IExecServerRemote
     {
+        private const int ShutdownExecServerAfterSeconds = 3600;
+        private const int DisposeAppDomainsAfterSeconds = 600;
+
         private readonly AppDomainShadowManager shadowManager;
 
         private readonly Thread trackingThread;
 
         private readonly Stopwatch upTime;
 
-        private readonly object singleton;
+        public event EventHandler<EventArgs> ShuttingDown;
 
-        public ExecServerRemote(string executablePath, bool trackExecPathLastTime)
+        public ExecServerRemote(string executablePath, bool trackingServer, bool cachingAppDomain, int maxConcurrentAppDomain)
         {
             // TODO: List of native dll directory is hardcoded here. Instead, it should be extracted from .exe.config file for example
-            shadowManager = new AppDomainShadowManager(executablePath, IntPtr.Size == 8 ? "x64" : "x86");
+            shadowManager = new AppDomainShadowManager(executablePath, new[] { IntPtr.Size == 8 ? "x64" : "x86" }, maxConcurrentAppDomain)
+            {
+                IsCachingAppDomain = cachingAppDomain
+            };
 
             upTime = Stopwatch.StartNew();
-            singleton = new object();
 
-            if (trackExecPathLastTime)
+            if (trackingServer)
             {
                 trackingThread = new Thread(TrackExecutablePath)
                 {
@@ -50,47 +52,58 @@ namespace SiliconStudio.ExecServer
         {
             Console.WriteLine("Run Received {0}", string.Join(" ", args));
 
-            lock (singleton)
-            {
-                upTime.Restart();
+            upTime.Restart();
 
-                var result = shadowManager.Run(args);
-                return result;
-            }
+            var logger = OperationContext.Current.GetCallbackChannel<IServerLogger>();
+            var result = shadowManager.Run(args, logger);
+            return result;
         }
 
-        public void Wait(ServiceHost serviceHost)
+        public void Wait()
         {
             if (trackingThread != null)
             {
                 trackingThread.Join();
 
                 shadowManager.Dispose();
-
-                // Make sure nothing is running and close the service host
-                lock (singleton)
-                {
-                    if (serviceHost != null)
-                    {
-                        serviceHost.Close();
-                    }
-                }
             }
         }
 
         private void TrackExecutablePath()
         {
-            while (true)
+            var thisAssembly = typeof(ExecServerRemote).Assembly;
+            var assemblyName = thisAssembly.GetCustomAttributes<AssemblyProductAttribute>().First();
+            var originalAssemblyPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, assemblyName.Product) + ".exe";
+            var assemblyPath = thisAssembly.Location;
+            var thisAssemblyTime = File.GetLastWriteTimeUtc(assemblyPath);
+
+            try
             {
-                Thread.Sleep(200);
-
-                var localUpTime = GetUpTime();
-                if (localUpTime > TimeSpan.FromMinutes(10))
+                while (true)
                 {
-                    break;
-                }
+                    Thread.Sleep(200);
 
-                shadowManager.Recycle();
+                    var localUpTime = GetUpTime();
+                    if (localUpTime > TimeSpan.FromSeconds(ShutdownExecServerAfterSeconds))
+                    {
+                        Console.WriteLine("Shutdown server after {0}s of inactivity", ShutdownExecServerAfterSeconds);
+                        break;
+                    }
+
+                    // If this exec server is no longer up-to-date with its original exe, we can close it
+                    if (File.GetLastWriteTimeUtc(originalAssemblyPath) != thisAssemblyTime)
+                    {
+                        Console.WriteLine("Shutdown server as original exe [{0}] has changed", originalAssemblyPath);
+                        break;
+                    }
+
+                    shadowManager.Recycle(TimeSpan.FromSeconds(DisposeAppDomainsAfterSeconds));
+                }
+            }
+            finally
+            {
+
+                OnShuttingDown();
             }
         }
 
@@ -100,6 +113,12 @@ namespace SiliconStudio.ExecServer
             {
                 return upTime.Elapsed;
             }
+        }
+
+        private void OnShuttingDown()
+        {
+            EventHandler<EventArgs> handler = ShuttingDown;
+            if (handler != null) handler(this, EventArgs.Empty);
         }
     }
 }

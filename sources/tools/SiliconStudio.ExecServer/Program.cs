@@ -12,6 +12,7 @@ namespace SiliconStudio.ExecServer
         {
             var serverApp = new ExecServerApp();
             var result = serverApp.Run(args);
+            //Environment.Exit(result);
             return result;
         }
     }

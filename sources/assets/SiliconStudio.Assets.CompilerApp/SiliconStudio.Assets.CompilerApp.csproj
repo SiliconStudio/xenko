@@ -34,6 +34,7 @@
     <Compile Include="AssetSerializableLogMessage.cs" />
     <Compile Include="BundlePacker.cs" />
     <Compile Include="IPackageBuilderApp.cs" />
+    <Compile Include="LogListenerRedirectToAction.cs" />
     <Compile Include="PackageBuilderApp.cs" />
     <Compile Include="ResolvedBundle.cs" />
     <Compile Include="Program.cs" />

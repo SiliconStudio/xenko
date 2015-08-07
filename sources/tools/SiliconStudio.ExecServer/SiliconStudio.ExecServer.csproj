@@ -41,6 +41,7 @@
     <Compile Include="ExecServerRemote.cs" />
     <Compile Include="ExecServerApp.cs" />
     <Compile Include="IExecServerRemote.cs" />
+    <Compile Include="ProcessHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

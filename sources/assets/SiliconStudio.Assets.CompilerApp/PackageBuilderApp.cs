@@ -30,7 +30,7 @@ namespace SiliconStudio.Assets.CompilerApp
     {
         private static Stopwatch clock;
 
-        private ConsoleLogListener globalLoggerOnGlobalMessageLogged;
+        private LogListener globalLoggerOnGlobalMessageLogged;
 
         private PackageBuilder builder;
 
@@ -38,6 +38,8 @@ namespace SiliconStudio.Assets.CompilerApp
 
         public int Run(string[] args)
         {
+            var traceSourceRedirect = AppDomain.CurrentDomain.GetData("AppDomainLogToAction") as Action<string>;
+
             clock = Stopwatch.StartNew();
 
             // TODO this is hardcoded. Check how to make this dynamic instead.
@@ -146,7 +148,14 @@ namespace SiliconStudio.Assets.CompilerApp
             // Output logs to the console with colored messages
             if (options.SlavePipe == null)
             {
-                globalLoggerOnGlobalMessageLogged = new ConsoleLogListener { TextFormatter = FormatLog, LogMode = ConsoleLogMode.Always };
+                if (traceSourceRedirect != null)
+                {
+                    globalLoggerOnGlobalMessageLogged = new LogListenerRedirectToAction(traceSourceRedirect);
+                }
+                else
+                {
+                    globalLoggerOnGlobalMessageLogged = new ConsoleLogListener { TextFormatter = FormatLog, LogMode = ConsoleLogMode.Always };
+                }
                 GlobalLogger.GlobalMessageLogged += globalLoggerOnGlobalMessageLogged;
             }
 
@@ -212,7 +221,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 else
                 {
                     builder = new PackageBuilder(options);
-                    if (!IsSlave)
+                    if (!IsSlave && traceSourceRedirect == null)
                     {
                         Console.CancelKeyPress += OnConsoleOnCancelKeyPress;
                     }
@@ -242,7 +251,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 {
                     GlobalLogger.GlobalMessageLogged -= globalLoggerOnGlobalMessageLogged;
                 }
-                if (builder != null && !IsSlave)
+                if (builder != null && !IsSlave && traceSourceRedirect == null)
                 {
                     Console.CancelKeyPress -= OnConsoleOnCancelKeyPress;
                 }

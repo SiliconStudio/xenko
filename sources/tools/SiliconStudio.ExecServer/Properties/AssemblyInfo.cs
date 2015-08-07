@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SiliconStudio.ExecServer")]
+[assembly: AssemblyProduct("SiliconStudio.ExecServer")] // THIS VALUE SHOULD MATCH THE ASSEMBLY NAME AS IT IS USED TO FIND THE ORIGINAL EXE WHEN THIS ASSEMBLY IS RENAMED
 [assembly: AssemblyCopyright("Copyright ©  2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

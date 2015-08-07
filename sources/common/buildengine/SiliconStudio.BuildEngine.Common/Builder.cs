@@ -231,7 +231,7 @@ namespace SiliconStudio.BuildEngine
             var entryAssembly = Assembly.GetEntryAssembly();
             SlaveBuilderPath = Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory,
-                entryAssembly != null ? Path.GetFileName(entryAssembly.Location) : string.Empty);
+                entryAssembly != null ? Path.GetFileName(entryAssembly.Location) : "SiliconStudio.Assets.CompilerApp.exe"); // TODO: Hardcoded value of CompilerApp
             Logger = logger;
             this.inputHashesFilename = inputHashesFilename;
             this.buildPath = buildPath;
