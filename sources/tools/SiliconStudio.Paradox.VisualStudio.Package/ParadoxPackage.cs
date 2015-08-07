@@ -264,7 +264,7 @@ namespace SiliconStudio.Paradox.VisualStudio
                 buildMonitorDomain = ParadoxCommandsProxy.CreateParadoxDomain();
                 ParadoxCommandsProxy.InitialzeFromSolution(solutionPath, buildMonitorDomain);
                 var remoteCommands = ParadoxCommandsProxy.CreateProxy(buildMonitorDomain);
-                remoteCommands.StartRemoteBuildLogServer(new BuildMonitorCallback(dte2), buildLogPipeGenerator.LogPipeUrl);
+                remoteCommands.StartRemoteBuildLogServer(new BuildMonitorCallback(), buildLogPipeGenerator.LogPipeUrl);
             }
             catch (Exception e)
             {
