@@ -300,6 +300,8 @@ namespace SiliconStudio.Paradox.Physics
 
         protected override void OnEntityAdding(Entity entity, AssociatedData data)
         {
+            if (Simulation.DisableSimulation) return;
+
             if (elements.Any(x => !x.LinkedBoneName.IsNullOrEmpty()))
             {
                 if (data.ModelComponent == null)
@@ -319,6 +321,8 @@ namespace SiliconStudio.Paradox.Physics
 
         protected override void OnEntityRemoved(Entity entity, AssociatedData data)
         {
+            if (Simulation.DisableSimulation) return;
+
             foreach (var element in data.PhysicsComponent.Elements)
             {
                 DeleteElement(element, true);
@@ -327,6 +331,8 @@ namespace SiliconStudio.Paradox.Physics
 
         protected override void OnEnabledChanged(Entity entity, bool enabled)
         {
+            if (Simulation.DisableSimulation) return;
+
             var entityElements = entity.Get(PhysicsComponent.Key).Elements;
 
             foreach (var element in entityElements.Where(element => element.Collider != null))
