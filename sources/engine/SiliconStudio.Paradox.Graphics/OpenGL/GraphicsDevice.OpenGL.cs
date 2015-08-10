@@ -1297,6 +1297,9 @@ namespace SiliconStudio.Paradox.Graphics
             if (!flipRenderTarget)
                 newFrontFace = newFrontFace == FrontFaceDirection.Cw ? FrontFaceDirection.Ccw : FrontFaceDirection.Cw;
 
+            // Update viewports
+            SetViewportImpl();
+
             if (newFrontFace != boundFrontFace)
             {
                 boundFrontFace = newFrontFace;
@@ -1765,22 +1768,22 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-        private void SetViewportImpl(int index, Viewport value)
+        private void SetViewportImpl()
         {
 #if DEBUG
             EnsureContextActive();
 #endif
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-            if (index != 0)
-                throw new NotImplementedException("MRT on OpenGL ES");
+            if (!needViewportUpdate)
+                return;
+            needViewportUpdate = false;
 
-            _currentViewports[0] = value;
-            UpdateViewport(value);
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+            // TODO: Check all non-empty viewports are identical and match what is active in FBO!
+            UpdateViewport(currentState.Viewports[0]);
 #else
-            if (index >= _currentViewports.Length)
+            if (currentState.Viewports.Length >= _currentViewports.Length)
                 throw new IndexOutOfRangeException("The viewport index is higher than the number of available viewports.");
-            _currentViewports[index] = value;
             UpdateViewports();
 #endif
         }
