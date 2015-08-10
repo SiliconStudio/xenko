@@ -55,7 +55,11 @@ namespace SiliconStudio.Core.IO
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void FileMove(string sourceFileName, string destFileName)
         {
-            MoveFileEx(sourceFileName, destFileName, 2 /* MOVEFILE_COPY_ALLOWED */);
+            if (!MoveFileEx(sourceFileName, destFileName, 2 /* MOVEFILE_COPY_ALLOWED */))
+            {
+                // TODO: Process GetLastError() code.
+                throw new IOException(string.Format("Can't move file {0} to {1}", sourceFileName, destFileName));
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
