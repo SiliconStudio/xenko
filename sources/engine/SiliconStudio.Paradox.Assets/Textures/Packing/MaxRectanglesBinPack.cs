@@ -260,7 +260,7 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
         /// <param name="bestLongSideFit"></param>
         /// <param name="width"></param>
         /// <returns></returns>
-        private Rectangle FindPositionForNewNodeBestShortSideFit(int width, int height, out int bestShortSideFit, ref int bestLongSideFit)
+        private RotatableRectangle FindPositionForNewNodeBestShortSideFit(int width, int height, out int bestShortSideFit, ref int bestLongSideFit)
         {
             var bestNode = new RotatableRectangle();
 
@@ -328,7 +328,7 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
         /// <param name="bestX"></param>
         /// <param name="width"></param>
         /// <returns></returns>
-        private Rectangle FindPositionForNewNodeBottomLeft(int width, int height, out int bestY, ref int bestX)
+        private RotatableRectangle FindPositionForNewNodeBottomLeft(int width, int height, out int bestY, ref int bestX)
         {
             var bestNode = new RotatableRectangle();
 
