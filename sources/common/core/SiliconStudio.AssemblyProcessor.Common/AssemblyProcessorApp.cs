@@ -21,13 +21,14 @@ namespace SiliconStudio.AssemblyProcessor
 {
     public class AssemblyProcessorApp
     {
-        private Logger log;
+        private ILogger log;
 
         public AssemblyProcessorApp()
         {
             SearchDirectories = new List<string>();
             References = new List<string>();
             ReferencesToAdd = new List<string>();
+            MemoryReferences = new List<AssemblyDefinition>();
             ModuleInitializer = true;
         }
 
@@ -50,6 +51,8 @@ namespace SiliconStudio.AssemblyProcessor
         public List<string> SearchDirectories { get; set; }
 
         public List<string> References { get; set; }
+
+        public List<AssemblyDefinition> MemoryReferences { get; set; }
 
         public List<string> ReferencesToAdd { get; set; }
 
@@ -162,7 +165,7 @@ namespace SiliconStudio.AssemblyProcessor
 
                 if (SerializationAssembly)
                 {
-                    processors.Add(new SerializationProcessor(SignKeyFile, References, log));
+                    processors.Add(new SerializationProcessor(SignKeyFile, References, MemoryReferences, log));
                 }
 
                 if (GenerateUserDocumentation)
