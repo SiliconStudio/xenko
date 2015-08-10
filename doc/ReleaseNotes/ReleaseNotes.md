@@ -49,7 +49,10 @@ Windows 10 Universal Apps (Store and Phone) are now supported. Add it to your ex
 
 # Version 1.2.2-beta
 
-Release date: 2015/08/##
+Release date: 2015/08/10
+
+## Enhancements
+- Studio: "New Game" template now has better default values for skybox intensity for Level10+, and ambient light that matches skybox color for Level9.
 
 ## Issues fixed
 - Windows10: Updated to work with Windows 10 and VS2015 RTM (there was significant changes in how the build is done between RC and RTM).
@@ -57,6 +60,7 @@ Release date: 2015/08/##
 - Studio: Some objects were transparent in the camera preview of the scene editor.
 - Studio: The button to orient the camera in the left direction was incorrectly implemented.
 - Studio: The property grid was displaying some properties that were supposed to be hidden.
+- Effects: Changing tonemap operator was not working properly.
 
 # Version 1.2.1-beta
 
