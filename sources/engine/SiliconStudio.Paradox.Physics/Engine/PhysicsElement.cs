@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.Physics
         };
 
         /// <userdoc>
-        /// The physics type of this element. 
+        /// The physics type of this element.
         /// </userdoc>
         [DataMember(10)]
         public Types Type { get; set; }
@@ -174,17 +174,8 @@ namespace SiliconStudio.Paradox.Physics
             Quaternion rotation;
             Vector3 translation;
 
-            if (!entity.Transform.UseTRS)
-            {
-                //derive rotation and translation, scale is ignored for now
-                Vector3 scale;
-                entity.Transform.WorldMatrix.Decompose(out scale, out rotation, out translation);
-            }
-            else
-            {
-                rotation = entity.Transform.Rotation;
-                translation = entity.Transform.Position;
-            }
+            Vector3 scale;
+            entity.Transform.WorldMatrix.Decompose(out scale, out rotation, out translation);
 
             derivedTransformation = Matrix.RotationQuaternion(rotation) * Matrix.Translation(translation);
 
@@ -228,34 +219,28 @@ namespace SiliconStudio.Paradox.Physics
 
             var rotation = Quaternion.RotationMatrix(physicsTransform);
             var translation = physicsTransform.TranslationVector;
+            var worldMatrix = entity.Transform.WorldMatrix;
 
-            if (entity.Transform.UseTRS)
+            Vector3 scale;
+            scale.X = (float)Math.Sqrt((worldMatrix.M11 * worldMatrix.M11) + (worldMatrix.M12 * worldMatrix.M12) + (worldMatrix.M13 * worldMatrix.M13));
+            scale.Y = (float)Math.Sqrt((worldMatrix.M21 * worldMatrix.M21) + (worldMatrix.M22 * worldMatrix.M22) + (worldMatrix.M23 * worldMatrix.M23));
+            scale.Z = (float)Math.Sqrt((worldMatrix.M31 * worldMatrix.M31) + (worldMatrix.M32 * worldMatrix.M32) + (worldMatrix.M33 * worldMatrix.M33));
+
+            TransformComponent.CreateMatrixTRS(ref translation, ref rotation, ref scale, out entity.Transform.WorldMatrix);
+            if (entity.Transform.Parent == null)
             {
-                entity.Transform.Position = translation;
-                entity.Transform.Rotation = rotation;
+                entity.Transform.LocalMatrix = entity.Transform.WorldMatrix;
             }
             else
             {
-                var worldMatrix = entity.Transform.WorldMatrix;
-
-                Vector3 scale;
-                scale.X = (float)Math.Sqrt((worldMatrix.M11 * worldMatrix.M11) + (worldMatrix.M12 * worldMatrix.M12) + (worldMatrix.M13 * worldMatrix.M13));
-                scale.Y = (float)Math.Sqrt((worldMatrix.M21 * worldMatrix.M21) + (worldMatrix.M22 * worldMatrix.M22) + (worldMatrix.M23 * worldMatrix.M23));
-                scale.Z = (float)Math.Sqrt((worldMatrix.M31 * worldMatrix.M31) + (worldMatrix.M32 * worldMatrix.M32) + (worldMatrix.M33 * worldMatrix.M33));
-
-                TransformComponent.CreateMatrixTRS(ref translation, ref rotation, ref scale, out entity.Transform.WorldMatrix);
-                if (entity.Transform.Parent == null)
-                {
-                    entity.Transform.LocalMatrix = entity.Transform.WorldMatrix;
-                }
-                else
-                {
-                    //We are not root so we need to derive the local matrix as well
-                    var inverseParent = entity.Transform.Parent.WorldMatrix;
-                    inverseParent.Invert();
-                    entity.Transform.LocalMatrix = Matrix.Multiply(entity.Transform.WorldMatrix, inverseParent);
-                }
+                //We are not root so we need to derive the local matrix as well
+                var inverseParent = entity.Transform.Parent.WorldMatrix;
+                inverseParent.Invert();
+                entity.Transform.LocalMatrix = Matrix.Multiply(entity.Transform.WorldMatrix, inverseParent);
             }
+
+            entity.Transform.Position = entity.Transform.LocalMatrix.TranslationVector;
+            entity.Transform.Rotation = Quaternion.RotationMatrix(entity.Transform.LocalMatrix);
         }
 
         internal void UpdateBoneTransformation(Matrix physicsTransform)

@@ -313,6 +313,9 @@ namespace SiliconStudio.Paradox.Physics
                 data.ModelComponent.ModelViewHierarchy.UpdateMatrices();
             }
 
+            //this is not optimal as UpdateWorldMatrix will end up being called twice this frame.. but we need to ensure that we have valid data.
+            entity.Transform.UpdateWorldMatrix();
+
             foreach (var element in data.PhysicsComponent.Elements)
             {
                 NewElement(element, data, entity);
