@@ -150,26 +150,13 @@ namespace SiliconStudio.Paradox.ConnectionRouter
 
             GlobalLogger.GlobalMessageLogged += (logMessage) =>
             {
-                System.Windows.Forms.ToolTipIcon toolTipIcon;
-                switch (logMessage.Type)
-                {
-                    case LogMessageType.Debug:
-                    case LogMessageType.Verbose:
-                    case LogMessageType.Info:
-                        toolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
-                        break;
-                    case LogMessageType.Warning:
-                        toolTipIcon = System.Windows.Forms.ToolTipIcon.Warning;
-                        break;
-                    case LogMessageType.Error:
-                    case LogMessageType.Fatal:
-                        toolTipIcon = System.Windows.Forms.ToolTipIcon.Error;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                // Log only warning, errors and more
+                if (logMessage.Type < LogMessageType.Warning)
+                    return;
 
-                // Display notification (for one second)
+                var toolTipIcon = logMessage.Type < LogMessageType.Error ? System.Windows.Forms.ToolTipIcon.Warning : System.Windows.Forms.ToolTipIcon.Error;
+
+                // Display notification (for two second)
                 notifyIcon.ShowBalloonTip(2000, "Paradox Connection Router", logMessage.ToString(), toolTipIcon);
             };
 
