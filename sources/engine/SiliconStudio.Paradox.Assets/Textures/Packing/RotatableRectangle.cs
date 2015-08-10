@@ -1,6 +1,6 @@
 ﻿using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Assets.Texture
+namespace SiliconStudio.Paradox.Assets.Textures.Packing
 {
     /// <summary>
     /// RotatableRectangle adds a rotating status to Rectangle struct type indicating that this rectangle is rotated by 90 degree-

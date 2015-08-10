@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Threading;
-
-using SiliconStudio.BuildEngine;
-using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Assets.Materials;
 using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.TextureConverter;
 
-namespace SiliconStudio.Paradox.Assets.Texture
+namespace SiliconStudio.Paradox.Assets.Textures.Packing
 {
     /// <summary>
     /// A partial class of TexturePacker that contains a Factory to create and/or save texture atlas
@@ -96,94 +89,6 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 }
 
                 return atlasTexture;
-            }
-
-            /// <summary>
-            /// Creates and Saves texture atlas image to a disk
-            /// </summary>
-            /// <typeparam name="T">ImageGroupAsset</typeparam>
-            /// <param name="textureAtlas">Input texture atlas</param>
-            /// <param name="outputUrl">Output url to be saved</param>
-            /// <param name="parameters">Parameters of image group asset</param>
-            /// <param name="separateAlpha">Should alpha be saved separately; This is true for Android</param>
-            /// <param name="cancellationToken">Cancellation token for cancelling the build task</param>
-            /// <param name="logger">Logger to output the warnings and errors</param>
-            /// <returns></returns>
-            public static ResultStatus CreateAndSaveTextureAtlasImage<T>(TextureAtlas textureAtlas, string outputUrl,
-                ImageGroupParameters<T> parameters, bool separateAlpha, CancellationToken cancellationToken, Logger logger)
-                where T : ImageGroupAsset
-            {
-                var assetManager = new AssetManager();
-
-                var imageGroup = parameters.GroupAsset;
-
-                using (var atlasImage = CreateTextureAtlas(textureAtlas))
-                using (var texTool = new TextureTool())
-                using (var texImage = texTool.Load(atlasImage))
-                {
-                    // Apply transformations
-                    texTool.Decompress(texImage);
-
-                    if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
-                        return ResultStatus.Cancelled;
-
-                    // texture size is now determined, we can cache it
-                    var textureSize = new Int2(texImage.Width, texImage.Height);
-
-                    // Check that the resulting texture size is supported by the targeted graphics profile
-                    if (!TextureCommandHelper.TextureSizeSupported(imageGroup.Format, parameters.GraphicsPlatform, parameters.GraphicsProfile, textureSize, imageGroup.GenerateMipmaps, logger))
-                        return ResultStatus.Failed;
-
-                    // Apply the color key
-                    if (imageGroup.ColorKeyEnabled)
-                        texTool.ColorKey(texImage, imageGroup.ColorKeyColor);
-
-                    if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
-                        return ResultStatus.Cancelled;
-
-                    // Pre-multiply alpha
-                    if (imageGroup.PremultiplyAlpha)
-                        texTool.PreMultiplyAlpha(texImage);
-
-                    if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
-                        return ResultStatus.Cancelled;
-
-                    // Generate mipmaps
-                    if (imageGroup.GenerateMipmaps)
-                        texTool.GenerateMipMaps(texImage, Filter.MipMapGeneration.Box);
-
-                    if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
-                        return ResultStatus.Cancelled;
-
-                    // Convert/Compress to output format
-                    // TODO: Change alphaFormat depending on actual image content (auto-detection)?
-                    var outputFormat = TextureCommandHelper.DetermineOutputFormat(imageGroup.Format, imageGroup.Alpha, parameters.Platform,
-                        parameters.GraphicsPlatform, textureSize, texImage.Format);
-
-                    texTool.Compress(texImage, outputFormat, (TextureConverter.Requests.TextureQuality)parameters.TextureQuality);
-
-                    if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
-                        return ResultStatus.Cancelled;
-
-                    // Save the texture
-                    if (separateAlpha)
-                    {
-                        TextureAlphaComponentSplitter.CreateAndSaveSeparateTextures(texTool, texImage, outputUrl, imageGroup.GenerateMipmaps);
-                    }
-                    else
-                    {
-                        using (var outputImage = texTool.ConvertToParadoxImage(texImage))
-                        {
-                            if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
-                                return ResultStatus.Cancelled;
-
-                            assetManager.Save(outputUrl, outputImage);
-
-                            logger.Info("Compression successful [{3}] to ({0}x{1},{2})", outputImage.Description.Width, outputImage.Description.Height, outputImage.Description.Format, outputUrl);
-                        }
-                    }
-                }
-                return ResultStatus.Successful;
             }
 
             /// <summary>

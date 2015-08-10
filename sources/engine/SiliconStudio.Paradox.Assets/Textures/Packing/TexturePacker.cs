@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 
-namespace SiliconStudio.Paradox.Assets.Texture
+namespace SiliconStudio.Paradox.Assets.Textures.Packing
 {
     /// <summary>
     /// TexturePacker class for packing several textures, using MaxRects <see cref="MaxRectanglesBinPack"/>, into one or more texture atlases
@@ -217,8 +216,8 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// <returns>True indicates all textures could be packed; False otherwise</returns>
         public bool PackTextures(Dictionary<string, IntermediateTexture> textureElements, TexturePackingMethod algorithm, int width, int height)
         {
-            var binWidth = (AtlasSizeContraint == AtlasSizeConstraints.PowerOfTwo) ? TextureCommandHelper.FloorToNearestPowerOfTwo(width) : width;
-            var binHeight = (AtlasSizeContraint == AtlasSizeConstraints.PowerOfTwo) ? TextureCommandHelper.FloorToNearestPowerOfTwo(height) : height;
+            var binWidth = (AtlasSizeContraint == AtlasSizeConstraints.PowerOfTwo) ? MathUtil.PreviousPowerOfTwo(width) : width;
+            var binHeight = (AtlasSizeContraint == AtlasSizeConstraints.PowerOfTwo) ? MathUtil.PreviousPowerOfTwo(height) : height;
 
             // Create data for the packer
             var textureRegions = new List<RotatableRectangle>();
@@ -288,8 +287,8 @@ namespace SiliconStudio.Paradox.Assets.Texture
                 // Alter the size of atlas so that it is a power of two
                 if (AtlasSizeContraint == AtlasSizeConstraints.PowerOfTwo)
                 {
-                    packedSize.Width = TextureCommandHelper.CeilingToNearestPowerOfTwo(packedSize.Width);
-                    packedSize.Height = TextureCommandHelper.CeilingToNearestPowerOfTwo(packedSize.Height);
+                    packedSize.Width = MathUtil.NextPowerOfTwo(packedSize.Width);
+                    packedSize.Height = MathUtil.NextPowerOfTwo(packedSize.Height);
 
                     if (packedSize.Width > subArray.Width || packedSize.Height > subArray.Height)
                         continue;
@@ -393,7 +392,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
         public TextureAddressMode AddressModeV;
 
         /// <summary>
-        /// Gets or sets Border color when AddressModeU is set to Border mode
+        /// Gets or sets Border color when BorderModeU is set to Border mode
         /// </summary>
         public Color? BorderColor;
     }

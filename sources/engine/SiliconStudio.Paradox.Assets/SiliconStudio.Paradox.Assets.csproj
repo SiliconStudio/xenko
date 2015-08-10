@@ -191,8 +191,14 @@
     <Compile Include="Skyboxes\SkyboxGenerator.cs" />
     <Compile Include="Skyboxes\SkyboxPreFilteringDiffuseOrder.cs" />
     <Compile Include="Sprite\SpriteSheetType.cs" />
-    <Compile Include="Textures\TextureCommandHelper.cs" />
+    <Compile Include="Sprite\PackingAttributes.cs" />
+    <Compile Include="Textures\Packing\MaxRectanglesBinPack.cs" />
+    <Compile Include="Textures\Packing\RotatableRectangle.cs" />
+    <Compile Include="Textures\TextureHelper.cs" />
     <Compile Include="Textures\TextureHint.cs" />
+    <Compile Include="Textures\Packing\TexturePacker.cs" />
+    <Compile Include="Textures\Packing\TexturePacker.Factory.cs" />
+    <Compile Include="Textures\Packing\TexturePackingMethod.cs" />
     <Compile Include="Textures\TextureQuality.cs" />
     <Compile Include="Serializers\GenericDictionarySerializer.cs" />
     <Compile Include="Serializers\ParameterKeySerializer.cs" />

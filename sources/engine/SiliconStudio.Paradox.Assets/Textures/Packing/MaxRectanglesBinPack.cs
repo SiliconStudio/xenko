@@ -1,28 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Assets.Texture
+namespace SiliconStudio.Paradox.Assets.Textures.Packing
 {
-    /// <summary>
-    /// Heuristic methods for choosing a place for a given rectangle
-    /// </summary>
-    public enum TexturePackingMethod
-    {
-        Best,
-        BestShortSideFit,
-        BestLongSideFit,
-        BestAreaFit,
-        BottomLeftRule,
-        ContactPointRule
-    }
-
     /// <summary>
     /// Implementation of texture packer using MaxRects algorithm.
     /// Reference: http://clb.demon.fi/files/RectangleBinPack.pdf by Jukka Jylanki.
     /// </summary>
-    public partial class MaxRectanglesBinPack
+    public class MaxRectanglesBinPack
     {
         private bool useRotation;
         private int binWidth;
@@ -56,13 +42,13 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// </summary>
         /// <param name="width">Expected width of a bin</param>
         /// <param name="height">Expected height of a bin</param>
-        /// <param name="useRotation">Indicate whether rectangle are allowed to be rotated</param>
-        public void Initialize(int width, int height, bool useRotation)
+        /// <param name="allowRotation">Indicate whether rectangle are allowed to be rotated</param>
+        public void Initialize(int width, int height, bool allowRotation)
         {
             binWidth = width;
             binHeight = height;
 
-            this.useRotation = useRotation;
+            useRotation = allowRotation;
 
             packedRectangles.Clear();
             freeRectangles.Clear();
@@ -222,10 +208,18 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// <returns></returns>
         private RotatableRectangle ChooseTargetPosition(RotatableRectangle rectangle, TexturePackingMethod method, out int score1, out int score2)
         {
+            var bestNode = new RotatableRectangle { Key = rectangle.Key };
+
+            // null sized rectangle fits everywhere with a perfect score.
+            if (rectangle.Value.Width == 0 || rectangle.Value.Height == 0)
+            {
+                score1 = 0;
+                score2 = 0;
+                return bestNode;
+            }
+
             score1 = int.MaxValue;
             score2 = int.MaxValue;
-
-            RotatableRectangle bestNode;
 
             switch (method)
             {
@@ -249,8 +243,6 @@ namespace SiliconStudio.Paradox.Assets.Texture
                     throw new ArgumentOutOfRangeException("method");
             }
 
-            bestNode.Key = rectangle.Key;
-
             if (bestNode.Value.Height == 0)
             {
                 score1 = int.MaxValue;
@@ -268,7 +260,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// <param name="bestLongSideFit"></param>
         /// <param name="width"></param>
         /// <returns></returns>
-        private RotatableRectangle FindPositionForNewNodeBestShortSideFit(int width, int height, out int bestShortSideFit, ref int bestLongSideFit)
+        private Rectangle FindPositionForNewNodeBestShortSideFit(int width, int height, out int bestShortSideFit, ref int bestLongSideFit)
         {
             var bestNode = new RotatableRectangle();
 
@@ -336,7 +328,7 @@ namespace SiliconStudio.Paradox.Assets.Texture
         /// <param name="bestX"></param>
         /// <param name="width"></param>
         /// <returns></returns>
-        private RotatableRectangle FindPositionForNewNodeBottomLeft(int width, int height, out int bestY, ref int bestX)
+        private Rectangle FindPositionForNewNodeBottomLeft(int width, int height, out int bestY, ref int bestX)
         {
             var bestNode = new RotatableRectangle();
 
@@ -460,11 +452,11 @@ namespace SiliconStudio.Paradox.Assets.Texture
             return score;
         }
 
-        private int CommonIntervalLength(int i1start, int i1end, int i2start, int i2end)
+        private int CommonIntervalLength(int i1Start, int i1End, int i2Start, int i2End)
         {
-            if (i1end < i2start || i2end < i1start)
+            if (i1End < i2Start || i2End < i1Start)
                 return 0;
-            return Math.Min(i1end, i2end) - Math.Max(i1start, i2start);
+            return Math.Min(i1End, i2End) - Math.Max(i1Start, i2Start);
         }
 
         /// <summary>
