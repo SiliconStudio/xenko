@@ -132,7 +132,15 @@ namespace SiliconStudio.AssemblyProcessor
                 //LogFile = "ilmerge.log",
             };
 
-            merge.Repack();
+            try
+            {
+                merge.Repack();
+            }
+            catch (Exception)
+            {
+                log.Log(new LogMessage("ILRepack", LogMessageType.Error, string.Format("Error while ILRepacking {0}", assembly.Name.Name)));
+                throw;
+            }
 
             // Copy name
             merge.TargetAssemblyDefinition.Name.Name = assembly.Name.Name;
