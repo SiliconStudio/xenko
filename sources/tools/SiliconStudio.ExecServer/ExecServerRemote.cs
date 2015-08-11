@@ -1,16 +1,21 @@
-﻿using System;
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.ServiceModel;
-using System.Text;
 using System.Threading;
 
 namespace SiliconStudio.ExecServer
 {
+    /// <summary>
+    /// Remote implementation of the server
+    /// </summary>
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode=ConcurrencyMode.Multiple)]
-    public class ExecServerRemote : IExecServerRemote
+    internal class ExecServerRemote : IExecServerRemote
     {
         private const int ShutdownExecServerAfterSeconds = 3600;
         private const int DisposeAppDomainsAfterSeconds = 600;
@@ -81,7 +86,7 @@ namespace SiliconStudio.ExecServer
             {
                 while (true)
                 {
-                    Thread.Sleep(200);
+                    Thread.Sleep(500);
 
                     var localUpTime = GetUpTime();
                     if (localUpTime > TimeSpan.FromSeconds(ShutdownExecServerAfterSeconds))

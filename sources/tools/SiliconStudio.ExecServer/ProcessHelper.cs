@@ -2,13 +2,15 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 
 namespace SiliconStudio.ExecServer
 {
-    public static class ProcessHelper
+    /// <summary>
+    /// Helper class to launch a detached process.
+    /// </summary>
+    internal static class ProcessHelper
     {
         /// <summary>
         /// Helper method to launch a completely detached process. (.NET Process object is not working well in our case)
@@ -37,31 +39,25 @@ namespace SiliconStudio.ExecServer
             var tSec = new SECURITY_ATTRIBUTES();
             pSec.nLength = Marshal.SizeOf(pSec);
             tSec.nLength = Marshal.SizeOf(tSec);
-            const uint CREATE_DEFAULT_ERROR_MODE = 0x04000000;
-            const uint CREATE_NO_WINDOW = 0x08000000;
-            const uint DETACHED_PROCESS = 0x00000008;
-            const uint CREATE_NEW_CONSOLE = 0x00000010;
             return CreateProcessW(executablePath, "\"" + executablePath + "\" " + arguments, ref pSec, ref tSec, false, CREATE_DEFAULT_ERROR_MODE | CREATE_NO_WINDOW | DETACHED_PROCESS, IntPtr.Zero, Path.GetDirectoryName(executablePath), ref lpStartupInfo, out pInfo);
         }
 
-        public static void HideConsole()
-        {
-            var consolePtr = GetConsoleWindow();
-            if (consolePtr != IntPtr.Zero)
-            {
-                ShowWindow(consolePtr, 0);
-            }
-        }
+        [DllImport("kernel32.dll", EntryPoint = "CreateProcessW", CharSet = CharSet.Unicode)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool CreateProcessW(
+            string lpApplicationName, string lpCommandLine, ref SECURITY_ATTRIBUTES lpProcessAttributes,
+            ref SECURITY_ATTRIBUTES lpThreadAttributes, bool bInheritHandles, uint dwCreationFlags,
+            IntPtr lpEnvironment, string lpCurrentDirectory, [In] ref STARTUPINFOEX lpStartupInfo,
+            out PROCESS_INFORMATION lpProcessInformation);
 
-        [DllImport("kernel32.dll")]
-        static extern IntPtr GetConsoleWindow();
+        // ReSharper disable InconsistentNaming
+        // ReSharper disable FieldCanBeMadeReadOnly.Local
+        // ReSharper disable MemberCanBePrivate.Local
 
-        [DllImport("user32.dll")]
-        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-        const int SW_HIDE = 0;
-        const int SW_SHOW = 5;
-
+        const uint CREATE_DEFAULT_ERROR_MODE = 0x04000000;
+        const uint CREATE_NO_WINDOW = 0x08000000;
+        const uint DETACHED_PROCESS = 0x00000008;
+        const uint CREATE_NEW_CONSOLE = 0x00000010;
 
         [StructLayout(LayoutKind.Sequential)]
         private struct PROCESS_INFORMATION
@@ -110,12 +106,8 @@ namespace SiliconStudio.ExecServer
             public IntPtr hStdError;
         }
 
-        [DllImport("kernel32.dll", EntryPoint = "CreateProcessW", CharSet = CharSet.Unicode)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool CreateProcessW(
-            string lpApplicationName, string lpCommandLine, ref SECURITY_ATTRIBUTES lpProcessAttributes,
-            ref SECURITY_ATTRIBUTES lpThreadAttributes, bool bInheritHandles, uint dwCreationFlags,
-            IntPtr lpEnvironment, string lpCurrentDirectory, [In] ref STARTUPINFOEX lpStartupInfo,
-            out PROCESS_INFORMATION lpProcessInformation);
+        // ReSharper restore MemberCanBePrivate.Local
+        // ReSharper restore FieldCanBeMadeReadOnly.Local
+        // ReSharper restore InconsistentNaming
     }
 }

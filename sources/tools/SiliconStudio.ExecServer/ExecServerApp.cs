@@ -1,28 +1,44 @@
-﻿using System;
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.Threading;
 
 namespace SiliconStudio.ExecServer
 {
+    /// <summary>
+    /// ExecServer allows to keep in memory an exec loaded into an AppDomain with the benefits that JIT
+    /// has been ran already once and the code will run quicker on next run. This is more convenient 
+    /// alternative than using NGEN, as we have the benefit of a better code gen while still having the 
+    /// benefits of fast startup.
+    /// Also the server doesn't lock original assemblies but it shadows copy them (including native dlls
+    /// from DllImport), and tracks if original assemblies changed (in this case it will automatically
+    /// shutdown).
+    /// </summary>
     public class ExecServerApp
     {
         private const string DisableExecServerAppDomainCaching = "DisableExecServerAppDomainCaching";
 
         // TODO: This setting must be configured by the executable directly
-        private const int MaxConcurrentAppDomainProcess = 1;
+        public int MaxConcurrentAppDomainProcess = 1;
 
         private const int MaxRetryProcess = 10;
 
+        /// <summary>
+        /// Runs the specified arguments copy.
+        /// </summary>
+        /// <param name="argsCopy">The arguments copy.</param>
+        /// <returns>System.Int32.</returns>
         public int Run(string[] argsCopy)
         {
             if (argsCopy.Length == 0)
             {
+                Console.WriteLine("Usage ExecServer.exe [/direct|/server] executablePath [executableArguments]");
                 return 0;
             }
             var args = new List<string>(argsCopy);
@@ -51,6 +67,10 @@ namespace SiliconStudio.ExecServer
             }
         }
 
+        /// <summary>
+        /// Runs ExecServer in server mode (waiting for connection from ExecServer clients)
+        /// </summary>
+        /// <param name="executablePath">Path of the executable to run from this ExecServer instance</param>
         private void RunServer(string executablePath)
         {
             var address = GetEndpointAddress(executablePath);
@@ -61,18 +81,29 @@ namespace SiliconStudio.ExecServer
             // Start WCF pipe for communication with process
             var execServerApp = new ExecServerRemote(executablePath, true, useAppDomainCaching, MaxConcurrentAppDomainProcess);
             var host = new ServiceHost(execServerApp);
-            host.AddServiceEndpoint(typeof(IExecServerRemote), new NetNamedPipeBinding(NetNamedPipeSecurityMode.None) { MaxReceivedMessageSize = int.MaxValue }, address);
-
+            host.AddServiceEndpoint(typeof(IExecServerRemote), new NetNamedPipeBinding(NetNamedPipeSecurityMode.None)
+            {
+                MaxReceivedMessageSize = int.MaxValue,
+                // TODO: Check if we need to tweak timeouts
+            }, address);
             host.Open();
 
             Console.WriteLine("Server [{0}] is running", executablePath);
 
+            // Register for shutdown
             execServerApp.ShuttingDown += (sender, args) => host.Close();
 
-            // Wait for the server to finish
+            // Wait for the server to shutdown
             execServerApp.Wait();
         }
 
+        /// <summary>
+        /// Runs the client side by calling ExecServer remote server and passing arguments. If ExecServer remote is not running,
+        /// it will start it automatically.
+        /// </summary>
+        /// <param name="executablePath">The executable path.</param>
+        /// <param name="args">The arguments.</param>
+        /// <returns>Return status.</returns>
         private int RunClient(string executablePath, List<string> args)
         {
             var address = GetEndpointAddress(executablePath);
@@ -80,7 +111,9 @@ namespace SiliconStudio.ExecServer
             var binding = new NetNamedPipeBinding(NetNamedPipeSecurityMode.None)
             {
                 MaxReceivedMessageSize = int.MaxValue,
-                OpenTimeout = TimeSpan.FromMilliseconds(100)
+                OpenTimeout = TimeSpan.FromMilliseconds(100),
+                SendTimeout = TimeSpan.FromHours(1),
+                ReceiveTimeout = TimeSpan.FromHours(1),
             };
 
             var redirectLog = new RedirectLogger();
@@ -141,7 +174,11 @@ namespace SiliconStudio.ExecServer
             return 1;
         }
 
-        private void CloseService(IExecServerRemote service)
+        /// <summary>
+        /// Closes a WCF service.
+        /// </summary>
+        /// <param name="service">The service.</param>
+        private static void CloseService(IExecServerRemote service)
         {
             try
             {
@@ -164,12 +201,17 @@ namespace SiliconStudio.ExecServer
             }
         }
 
+        /// <summary>
+        /// Runs the server process when it does not exist.
+        /// </summary>
+        /// <param name="executablePath">The executable path.</param>
         private void RunServerProcess(string executablePath)
         {
-            var originalExecServerAppPath = Assembly.GetEntryAssembly().Location;
+            var originalExecServerAppPath = typeof(ExecServerApp).Assembly.Location;
             var originalTime = File.GetLastWriteTimeUtc(originalExecServerAppPath);
 
-            var copyExecServer = Path.Combine(Path.GetDirectoryName(executablePath), Path.GetFileNameWithoutExtension(executablePath) + "_ExecServerProxy.exe");
+            // Avoid locking ExecServer.exe original file, so we are using the name of the executable path and append _ExecServer.exe
+            var copyExecServer = Path.Combine(Path.GetDirectoryName(executablePath), Path.GetFileNameWithoutExtension(executablePath) + "_ExecServer.exe");
             var copyExecFile = false;
             if (File.Exists(copyExecServer))
             {
@@ -195,21 +237,7 @@ namespace SiliconStudio.ExecServer
 
             // NOTE: We are not using Process.Start as it is for some unknown reasons blocking the process calling this process on Process.ExitProcess
             // Handling directly the creation of the process with Win32 function solves this. Not sure why.
-
-            //var startInfo = new ProcessStartInfo
-            //{
-            //    FileName = copyExecServer,
-            //    Arguments = string.Format("/server \"{0}\"",executablePath),
-            //    WorkingDirectory = Path.GetDirectoryName(executablePath),
-            //    CreateNoWindow = false,
-            //    UseShellExecute = false,
-            //};
-
-            //var process = new Process { StartInfo = startInfo };
-            //process.Start();
-
             var arguments = string.Format("/server \"{0}\"", executablePath);
-
             if (!ProcessHelper.LaunchProcess(copyExecServer, arguments))
             {
                 Console.WriteLine("Error, unable to launch process [{0}]", copyExecServer);
@@ -247,6 +275,9 @@ namespace SiliconStudio.ExecServer
                 : base(logger, binding, remoteAddress) { }
         }
 
+        /// <summary>
+        /// Loggers that receive logs from the exec server for the running app.
+        /// </summary>
         [CallbackBehavior(UseSynchronizationContext = false, AutomaticSessionShutdown = true)]
         private class RedirectLogger : IServerLogger
         {
