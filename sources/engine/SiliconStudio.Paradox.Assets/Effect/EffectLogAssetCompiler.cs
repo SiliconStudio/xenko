@@ -45,18 +45,20 @@ namespace SiliconStudio.Paradox.Assets.Effect
                 var urlRoot = originalSourcePath.GetParent();
 
                 var fileStream = new FileStream(originalSourcePath.ToWindowsPath(), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
-                var recordedEffectCompile = new EffectLogStore(fileStream);
-                recordedEffectCompile.LoadNewValues();
-
-                foreach (var entry in recordedEffectCompile.GetValues())
+                using (var recordedEffectCompile = new EffectLogStore(fileStream))
                 {
-                    var effectCompileRequest = entry.Key;
+                    recordedEffectCompile.LoadNewValues();
 
-                    var compilerParameters = new CompilerParameters();
-                    effectCompileRequest.UsedParameters.CopyTo(compilerParameters);
-                    compilerParameters.Platform = context.GetGraphicsPlatform();
-                    compilerParameters.Profile = context.GetGraphicsProfile();
-                    steps.Add(new CommandBuildStep(new EffectCompileCommand(context, urlRoot, effectCompileRequest.EffectName, compilerParameters)));
+                    foreach (var entry in recordedEffectCompile.GetValues())
+                    {
+                        var effectCompileRequest = entry.Key;
+
+                        var compilerParameters = new CompilerParameters();
+                        effectCompileRequest.UsedParameters.CopyTo(compilerParameters);
+                        compilerParameters.Platform = context.GetGraphicsPlatform();
+                        compilerParameters.Profile = context.GetGraphicsProfile();
+                        steps.Add(new CommandBuildStep(new EffectCompileCommand(context, urlRoot, effectCompileRequest.EffectName, compilerParameters)));
+                    }
                 }
 
                 Steps = steps;
