@@ -38,7 +38,9 @@ namespace SiliconStudio.Assets.CompilerApp
 
         public int Run(string[] args)
         {
-            var traceSourceRedirect = AppDomain.CurrentDomain.GetData("AppDomainLogToAction") as Action<string>;
+            // This is used by ExecServer to retrieve the logs directly without using the console redirect (which is not working well
+            // in a multi-domain scenario)
+            var redirectLogToAppDomainAction = AppDomain.CurrentDomain.GetData("AppDomainLogToAction") as Action<string, ConsoleColor>;
 
             clock = Stopwatch.StartNew();
 
@@ -148,14 +150,15 @@ namespace SiliconStudio.Assets.CompilerApp
             // Output logs to the console with colored messages
             if (options.SlavePipe == null)
             {
-                if (traceSourceRedirect != null)
+                if (redirectLogToAppDomainAction != null)
                 {
-                    globalLoggerOnGlobalMessageLogged = new LogListenerRedirectToAction(traceSourceRedirect);
+                    globalLoggerOnGlobalMessageLogged = new LogListenerRedirectToAction(redirectLogToAppDomainAction);
                 }
                 else
                 {
-                    globalLoggerOnGlobalMessageLogged = new ConsoleLogListener { TextFormatter = FormatLog, LogMode = ConsoleLogMode.Always };
+                    globalLoggerOnGlobalMessageLogged = new ConsoleLogListener { LogMode = ConsoleLogMode.Always };
                 }
+                globalLoggerOnGlobalMessageLogged.TextFormatter = FormatLog;
                 GlobalLogger.GlobalMessageLogged += globalLoggerOnGlobalMessageLogged;
             }
 
@@ -221,7 +224,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 else
                 {
                     builder = new PackageBuilder(options);
-                    if (!IsSlave && traceSourceRedirect == null)
+                    if (!IsSlave && redirectLogToAppDomainAction == null)
                     {
                         Console.CancelKeyPress += OnConsoleOnCancelKeyPress;
                     }
@@ -251,7 +254,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 {
                     GlobalLogger.GlobalMessageLogged -= globalLoggerOnGlobalMessageLogged;
                 }
-                if (builder != null && !IsSlave && traceSourceRedirect == null)
+                if (builder != null && !IsSlave && redirectLogToAppDomainAction == null)
                 {
                     Console.CancelKeyPress -= OnConsoleOnCancelKeyPress;
                 }
@@ -275,7 +278,7 @@ namespace SiliconStudio.Assets.CompilerApp
             //$filename($row,$column): $error_type $error_code: $error_message
             //C:\Code\Paradox\sources\assets\SiliconStudio.Assets.CompilerApp\PackageBuilder.cs(89,13,89,70): warning CS1717: Assignment made to same variable; did you mean to assign something else?
             var builder = new StringBuilder();
-            builder.Append(message.Module);
+            builder.Append(message.Module ?? "AssetCompiler");
             builder.Append(": ");
             builder.Append(message.Type.ToString().ToLowerInvariant()).Append(" ");
             builder.Append((clock.ElapsedMilliseconds * 0.001).ToString("0.000"));

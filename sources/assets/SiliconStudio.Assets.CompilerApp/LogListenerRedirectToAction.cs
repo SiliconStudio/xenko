@@ -2,18 +2,19 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Diagnostics;
 
-using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Assets.CompilerApp
 {
+    /// <summary>
+    /// A log listener redirecting logs to an action
+    /// </summary>
     public class LogListenerRedirectToAction : LogListener
     {
-        private readonly Action<string> logger;
+        private readonly Action<string, ConsoleColor> logger;
 
-        public LogListenerRedirectToAction(Action<string> logger)
+        public LogListenerRedirectToAction(Action<string, ConsoleColor> logger)
         {
             if (logger == null) throw new ArgumentNullException("logger");
             this.logger = logger;
@@ -33,7 +34,30 @@ namespace SiliconStudio.Assets.CompilerApp
                 return;
             }
 
-            logger(GetDefaultText(logMessage));
+            var color = ConsoleColor.Gray;
+
+            // set the color depending on the message log level
+            switch (logMessage.Type)
+            {
+                case LogMessageType.Debug:
+                    color = ConsoleColor.DarkGray;
+                    break;
+                case LogMessageType.Verbose:
+                    color = ConsoleColor.Gray;
+                    break;
+                case LogMessageType.Info:
+                    color = ConsoleColor.Green;
+                    break;
+                case LogMessageType.Warning:
+                    color = ConsoleColor.Yellow;
+                    break;
+                case LogMessageType.Error:
+                case LogMessageType.Fatal:
+                    color = ConsoleColor.Red;
+                    break;
+            }
+
+            logger(GetDefaultText(logMessage), color);
         }
     }
 }

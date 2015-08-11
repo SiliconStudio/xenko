@@ -13,7 +13,7 @@ namespace SiliconStudio.ExecServer
     public interface IServerLogger
     {
         [OperationContract(IsOneWay = true)]
-        void OnLog(string text);
+        void OnLog(string text, ConsoleColor color);
     }
 
     /// <summary>

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -179,7 +180,7 @@ namespace SiliconStudio.ExecServer
             }
             catch (Exception exception)
             {
-                logger.OnLog(string.Format("Unexpected exception: {0}", exception));
+                logger.OnLog(string.Format("Unexpected exception: {0}", exception), ConsoleColor.Red);
                 return 1;
             }
             finally
@@ -428,12 +429,12 @@ namespace SiliconStudio.ExecServer
                 this.logger = logger;
             }
 
-            public void OnLog(string text)
+            public void OnLog(string text, ConsoleColor color)
             {
                 var localLogger = logger;
                 if (localLogger != null)
                 {
-                    Task.Factory.StartNew(() => localLogger.OnLog(text));
+                    Task.Factory.StartNew(() => localLogger.OnLog(text, color));
                 }
             }
 
@@ -462,7 +463,7 @@ namespace SiliconStudio.ExecServer
             public void InstallLoggerCallback()
             {
                 var currentDomain = AppDomain.CurrentDomain;
-                currentDomain.SetData(AppDomainLogToActionKey, new Action<string>(logger.OnLog));
+                currentDomain.SetData(AppDomainLogToActionKey, new Action<string, ConsoleColor>((text,color) => logger.OnLog(text, color)));
                 var assembly = currentDomain.Load(executablePath);
                 Result = Convert.ToInt32(assembly.EntryPoint.Invoke(null, new object[] { args }));
             }

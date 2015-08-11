@@ -231,9 +231,12 @@ namespace SiliconStudio.ExecServer
         [CallbackBehavior(UseSynchronizationContext = false, AutomaticSessionShutdown = true)]
         private class RedirectLogger : IServerLogger
         {
-            public void OnLog(string text)
+            public void OnLog(string text, ConsoleColor color)
             {
+                var backupColor = Console.ForegroundColor;
+                Console.ForegroundColor = color;
                 Console.Out.WriteLine(text);
+                Console.ForegroundColor = backupColor;
             }
         }
     }
