@@ -56,7 +56,7 @@ namespace SiliconStudio.ExecServer
             var address = GetEndpointAddress(executablePath);
 
             // TODO: The setting of disabling caching should be done per EXE (via config file) instead of global settings for ExecServer
-            var useAppDomainCaching = false; //Environment.GetEnvironmentVariable(DisableExecServerAppDomainCaching) != "true";
+            var useAppDomainCaching = Environment.GetEnvironmentVariable(DisableExecServerAppDomainCaching) != "true";
 
             // Start WCF pipe for communication with process
             var execServerApp = new ExecServerRemote(executablePath, true, useAppDomainCaching, MaxConcurrentAppDomainProcess);
@@ -169,13 +169,28 @@ namespace SiliconStudio.ExecServer
             var originalExecServerAppPath = Assembly.GetEntryAssembly().Location;
             var originalTime = File.GetLastWriteTimeUtc(originalExecServerAppPath);
 
-            var copyExecServer = Path.Combine(Path.GetDirectoryName(executablePath) ?? Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(executablePath) + "_ExecServerProxy.exe");
-            var copyExecServerTime = File.GetLastWriteTimeUtc(copyExecServer);
-
-            // If exec server has changed, we need to copy the new version to it
-            if (originalTime != copyExecServerTime)
+            var copyExecServer = Path.Combine(Path.GetDirectoryName(executablePath), Path.GetFileNameWithoutExtension(executablePath) + "_ExecServerProxy.exe");
+            var copyExecFile = false;
+            if (File.Exists(copyExecServer))
             {
-                File.Copy(originalExecServerAppPath, copyExecServer, true);
+                var copyExecServerTime = File.GetLastWriteTimeUtc(copyExecServer);
+                // If exec server has changed, we need to copy the new version to it
+                copyExecFile = originalTime != copyExecServerTime;
+            }
+            else
+            {
+                copyExecFile = true;
+            }
+
+            if (copyExecFile)
+            {
+                try
+                {
+                    File.Copy(originalExecServerAppPath, copyExecServer, true);
+                }
+                catch (IOException)
+                {
+                }
             }
 
             // NOTE: We are not using Process.Start as it is for some unknown reasons blocking the process calling this process on Process.ExitProcess
@@ -219,6 +234,10 @@ namespace SiliconStudio.ExecServer
 
             var fullExePath = args[0];
             args.RemoveAt(0);
+
+            // Make sure the executable has a directory
+            fullExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fullExePath);
+
             return fullExePath;
         }
 
