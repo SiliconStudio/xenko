@@ -49,18 +49,25 @@ Windows 10 Universal Apps (Store and Phone) are now supported. Add it to your ex
 
 # Version 1.2.2-beta
 
-Release date: 2015/08/10
+Release date: 2015/08/11
 
 ## Enhancements
 - Studio: "New Game" template now has better default values for skybox intensity for Level10+, and ambient light that matches skybox color for Level9.
 
 ## Issues fixed
 - Windows10: Updated to work with Windows 10 and VS2015 RTM (there was significant changes in how the build is done between RC and RTM).
+- Windows10: With D3D 9.x, we were using RSSetViewports with more than one viewports (MRT), resulting in errors and nothing rendered under Windows 10 (runtime is doing more checks than before)
 - Studio: New Game were not properly tracked for script changes (until reloaded).
 - Studio: Some objects were transparent in the camera preview of the scene editor.
 - Studio: The button to orient the camera in the left direction was incorrectly implemented.
 - Studio: The property grid was displaying some properties that were supposed to be hidden.
+- Studio: When running "Live Scripting" mode, log of compilation and runtime errors is better (no more huge dialog boxes)
 - Effects: Changing tonemap operator was not working properly.
+- Physics: Parent transformation were ignored by the PhysicsElement pipeline.
+- Physics: When removing a physics component, it would sometime crashes.
+- Physics: Shapes/Colliders can now be changed at runtime by scripts.
+- Graphics: GraphicsDevice.Destroy did not dispose DepthStencilStates ([#257](https://github.com/SiliconStudio/paradox/issues/257)).
+- General: Prerequisites for Build Tools 2015 updated from RC to RTM.
 
 # Version 1.2.1-beta
 
