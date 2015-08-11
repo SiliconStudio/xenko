@@ -41,7 +41,7 @@ namespace SiliconStudio.ExecServer
             const uint CREATE_NO_WINDOW = 0x08000000;
             const uint DETACHED_PROCESS = 0x00000008;
             const uint CREATE_NEW_CONSOLE = 0x00000010;
-            return CreateProcessW(null, "\"" + executablePath + "\" " + arguments, ref pSec, ref tSec, false, CREATE_DEFAULT_ERROR_MODE | CREATE_NO_WINDOW | DETACHED_PROCESS, IntPtr.Zero, IntPtr.Zero, ref lpStartupInfo, out pInfo);
+            return CreateProcessW(executablePath, "\"" + executablePath + "\" " + arguments, ref pSec, ref tSec, false, CREATE_DEFAULT_ERROR_MODE | CREATE_NO_WINDOW | DETACHED_PROCESS, IntPtr.Zero, Path.GetDirectoryName(executablePath), ref lpStartupInfo, out pInfo);
         }
 
         public static void HideConsole()
@@ -115,7 +115,7 @@ namespace SiliconStudio.ExecServer
         private static extern bool CreateProcessW(
             string lpApplicationName, string lpCommandLine, ref SECURITY_ATTRIBUTES lpProcessAttributes,
             ref SECURITY_ATTRIBUTES lpThreadAttributes, bool bInheritHandles, uint dwCreationFlags,
-            IntPtr lpEnvironment, IntPtr lpCurrentDirectory, [In] ref STARTUPINFOEX lpStartupInfo,
+            IntPtr lpEnvironment, string lpCurrentDirectory, [In] ref STARTUPINFOEX lpStartupInfo,
             out PROCESS_INFORMATION lpProcessInformation);
     }
 }
