@@ -168,6 +168,9 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
                 // a shadow into the frustum)
                 shadowModelComponentRenderer.RasterizerState = shadowRasterizerState;
 
+                // We should not cull models in the view frustum, as objects can be outside the frustum and cast shadows
+                // TODO: We need at some point to be perform shadow culling based on the frustum of the shadow view
+                shadowModelComponentRenderer.CullingModeOverride = CullingMode.None;
                 shadowModelComponentRenderer.CurrentCullingMask = cullingMask;
                 shadowModelComponentRenderer.Prepare(context, opaqueRenderItems, transparentRenderItems);
                 shadowModelComponentRenderer.Draw(context, opaqueRenderItems, 0, opaqueRenderItems.Count - 1);
