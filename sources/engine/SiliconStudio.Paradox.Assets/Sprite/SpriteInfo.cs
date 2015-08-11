@@ -129,7 +129,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
             CenterFromMiddle = true;
             BorderModeU = TextureAddressMode.Clamp;
             BorderModeV = TextureAddressMode.Clamp;
-            BorderColor = Color.White;
+            BorderColor = Color.Transparent;
         }
     }
 }
