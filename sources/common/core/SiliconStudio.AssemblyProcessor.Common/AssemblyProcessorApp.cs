@@ -90,7 +90,8 @@ namespace SiliconStudio.AssemblyProcessor
                 var assemblyDefinition = AssemblyDefinition.ReadAssembly(inputFile, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = readWriteSymbols });
 
                 bool modified;
-                var result = Run(ref assemblyDefinition, ref readWriteSymbols, out modified);
+
+                var result = Run(ref assemblyDefinition, ref readWriteSymbols, out modified, new ConsoleLogger());
                 if (modified || inputFile != outputFile)
                 {
                     // Make sure output directory is created
@@ -123,9 +124,9 @@ namespace SiliconStudio.AssemblyProcessor
             return assemblyResolver;
         }
 
-        public bool Run(ref AssemblyDefinition assemblyDefinition, ref bool readWriteSymbols, out bool modified)
+        public bool Run(ref AssemblyDefinition assemblyDefinition, ref bool readWriteSymbols, out bool modified, ILogger logger)
         {
-            log = new Logger(assemblyDefinition.Name.Name, TreatWarningsAsErrors);
+            log = new Logger(assemblyDefinition.Name.Name, TreatWarningsAsErrors, logger);
 
             modified = false;
 
@@ -354,14 +355,16 @@ namespace SiliconStudio.AssemblyProcessor
 
         private class Logger : ILogger
         {
+            private readonly ILogger loggerToForward;
             private readonly bool treatWarningsAsErrors;
 
             public string Module { get; private set; }
 
-            public Logger(string module, bool treatWarningsAsErrors)
+            public Logger(string module, bool treatWarningsAsErrors, ILogger loggerToForward)
             {
                 Module = module;
                 this.treatWarningsAsErrors = treatWarningsAsErrors;
+                this.loggerToForward = loggerToForward;
             }
 
             public void Log(ILogMessage logMessage)
@@ -369,6 +372,16 @@ namespace SiliconStudio.AssemblyProcessor
                 if (treatWarningsAsErrors && logMessage.Type == LogMessageType.Warning)
                     logMessage.Type = LogMessageType.Error;
 
+                loggerToForward.Log(logMessage);
+            }
+        }
+
+        private class ConsoleLogger : ILogger
+        {
+            public string Module { get { return "AssemblyProcessor"; } }
+
+            public void Log(ILogMessage logMessage)
+            {
                 Console.WriteLine(logMessage);
             }
         }
