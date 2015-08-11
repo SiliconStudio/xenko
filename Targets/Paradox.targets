@@ -167,7 +167,7 @@
     <SiliconStudioParadoxCompileAssetCommand Condition="'$(SiliconStudioParadoxCompileAssetCommand)' == ''">$(SiliconStudioPackageParadoxSdkBin)\SiliconStudio.Assets.CompilerApp.exe</SiliconStudioParadoxCompileAssetCommand>
 
     <SiliconStudioParadoxCompileAssetCommandProxy Condition="'$(DisableAssetCompilerExecServerProxy)' == 'true'">&quot;$(SiliconStudioParadoxCompileAssetCommand)&quot;</SiliconStudioParadoxCompileAssetCommandProxy>
-    <SiliconStudioParadoxCompileAssetCommandProxy Condition="'$(SiliconStudioParadoxCompileAssetCommandProxy)' == ''">&quot;$(SiliconStudioPackageParadoxSdkBin)\SiliconStudio.ExecServer.exe&quot; &quot;$(SiliconStudioParadoxCompileAssetCommand)&quot;</SiliconStudioParadoxCompileAssetCommandProxy>
+    <SiliconStudioParadoxCompileAssetCommandProxy Condition="'$(SiliconStudioParadoxCompileAssetCommandProxy)' == ''">&quot;$(SiliconStudioPackageParadoxSdkBin)\SiliconStudio.Assets.CompilerClient.exe&quot;</SiliconStudioParadoxCompileAssetCommandProxy>
   </PropertyGroup>
   
   <Target Name="SiliconStudioGetGraphicsPlatform" Inputs="$(SiliconStudioCurrentPackagePath)" Outputs="$(IntermediateOutputPath)ParadoxGraphicsPlatform.cache" Condition="'$(SiliconStudioCurrentPackagePath)' != ''">
