@@ -144,6 +144,26 @@ namespace SiliconStudio.Paradox.Assets.Tests
         }
 
         [Test]
+        public void TestTexturePackerEmptyList()
+        {
+            var textureElements = new List<AtlasTextureElement>();
+
+            var texturePacker = new TexturePacker
+            {
+                AllowMultipack = true,
+                AllowRotation = true,
+                MaxHeight = 300,
+                MaxWidth = 300,
+            };
+
+            var canPackAllTextures = texturePacker.PackTextures(textureElements);
+
+            Assert.AreEqual(0, textureElements.Count);
+            Assert.AreEqual(0, texturePacker.AtlasTextureLayouts.Count);
+            Assert.IsTrue(canPackAllTextures);
+        }
+
+        [Test]
         public void TestTexturePackerWithMultiPack()
         {
             var textureElements = CreateFakeTextureElements();

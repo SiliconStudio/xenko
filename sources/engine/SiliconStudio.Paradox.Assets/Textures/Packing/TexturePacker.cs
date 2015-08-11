@@ -67,6 +67,9 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
         /// <returns><value>True</value> if the texture could be packed, <value>False</value> otherwise</returns>
         public bool PackTextures(List<AtlasTextureElement> textureElements)
         {
+            if (textureElements == null) 
+                throw new ArgumentNullException("textureElements");
+
             // clones the into elementsToPack to avoid side effects on the input.
             var textureElementsClone = textureElements.Select(e => e.Clone()).ToList();
 
@@ -182,6 +185,8 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
         private bool PackTextures(List<AtlasTextureElement> textureElements, TexturePackingMethod algorithm)
         {
             var elementsToPack = textureElements;
+            if (elementsToPack.Count == 0) // always successful if there is no element to pack (note we do not create a layout)
+                return true;
 
             do
             {
