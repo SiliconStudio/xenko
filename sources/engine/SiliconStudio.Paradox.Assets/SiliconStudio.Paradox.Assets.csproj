@@ -192,12 +192,14 @@
     <Compile Include="Skyboxes\SkyboxPreFilteringDiffuseOrder.cs" />
     <Compile Include="Sprite\SpriteSheetType.cs" />
     <Compile Include="Sprite\PackingAttributes.cs" />
+    <Compile Include="Textures\Packing\AtlasTextureElement.cs" />
+    <Compile Include="Textures\Packing\AtlasTextureLayout.cs" />
     <Compile Include="Textures\Packing\MaxRectanglesBinPack.cs" />
-    <Compile Include="Textures\Packing\RotatableRectangle.cs" />
+    <Compile Include="Textures\Packing\RotableRectangle.cs" />
     <Compile Include="Textures\TextureHelper.cs" />
     <Compile Include="Textures\TextureHint.cs" />
     <Compile Include="Textures\Packing\TexturePacker.cs" />
-    <Compile Include="Textures\Packing\TexturePacker.Factory.cs" />
+    <Compile Include="Textures\Packing\AtlasTextureFactory.cs" />
     <Compile Include="Textures\Packing\TexturePackingMethod.cs" />
     <Compile Include="Textures\TextureQuality.cs" />
     <Compile Include="Serializers\GenericDictionarySerializer.cs" />
@@ -226,7 +228,9 @@
     <Compile Include="Textures\TextureImporter.cs" />
     <Compile Include="PreviewerCompilerNames.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
+  </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

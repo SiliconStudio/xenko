@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -39,16 +38,18 @@ namespace SiliconStudio.Paradox.Assets.Tests
             var maxRectPacker = new MaxRectanglesBinPack();
             maxRectPacker.Initialize(100, 100, false);
 
-            // This data set remain only 1 rect that cant be packed
-            var packRectangles = new List<RotatableRectangle>
+            // This data set remain only 1 rectangle that cant be packed
+            var packRectangles = new List<RotableRectangle>
             {
-                new RotatableRectangle(0, 0, 80, 100), new RotatableRectangle(0, 0, 100, 20),
+                new RotableRectangle(0, 0, 80, 100), 
+                new RotableRectangle(0, 0, 100, 20),
             };
+            var elementToPack = packRectangles.Select(r => new AtlasTextureElement { DestinationRegion = r }).ToList();
 
-            maxRectPacker.PackRectangles(packRectangles);
+            maxRectPacker.PackRectangles(elementToPack);
 
-            Assert.AreEqual(1, packRectangles.Count);
-            Assert.AreEqual(1, maxRectPacker.PackedRectangles.Count);
+            Assert.AreEqual(1, elementToPack.Count);
+            Assert.AreEqual(1, maxRectPacker.PackedElements.Count);
         }
 
         [Test]
@@ -57,17 +58,18 @@ namespace SiliconStudio.Paradox.Assets.Tests
             var maxRectPacker = new MaxRectanglesBinPack();
             maxRectPacker.Initialize(100, 100, true);
 
-            // This data set remain only 1 rect that cant be packed
-            var packRectangles = new List<RotatableRectangle>
+            // This data set remain only 1 rectangle that cant be packed
+            var packRectangles = new List<AtlasTextureElement>
             {
-                new RotatableRectangle(0, 0, 80, 100) { Key = "A" }, new RotatableRectangle(0, 0, 100, 20) { Key = "B"},
+                new AtlasTextureElement { DestinationRegion = new RotableRectangle(0, 0, 80, 100), Name = "A" }, 
+                new AtlasTextureElement { DestinationRegion = new RotableRectangle(0, 0, 100, 20), Name = "B" }, 
             };
 
             maxRectPacker.PackRectangles(packRectangles);
 
             Assert.AreEqual(0, packRectangles.Count);
-            Assert.AreEqual(2, maxRectPacker.PackedRectangles.Count);
-            Assert.IsTrue(maxRectPacker.PackedRectangles.Find(rectangle => rectangle.Key == "B").IsRotated);
+            Assert.AreEqual(2, maxRectPacker.PackedElements.Count);
+            Assert.IsTrue(maxRectPacker.PackedElements.Find(e => e.Name == "B").DestinationRegion.IsRotated);
         }
 
         /// <summary>
@@ -79,19 +81,22 @@ namespace SiliconStudio.Paradox.Assets.Tests
             var maxRectPacker = new MaxRectanglesBinPack();
             maxRectPacker.Initialize(100, 100, true);
 
-            // This data set remain only 1 rect that cant be packed
-            var packRectangles = new List<RotatableRectangle>
+            // This data set remain only 1 rectangle that cant be packed
+            var packRectangles = new List<AtlasTextureElement>
             {
-                new RotatableRectangle(0, 0, 55, 70), new RotatableRectangle(0, 0, 55, 30),
-                new RotatableRectangle(0, 0, 25, 30), new RotatableRectangle(0, 0, 20, 30),
-                new RotatableRectangle(0, 0, 45, 30),
-                new RotatableRectangle(0, 0, 25, 40), new RotatableRectangle(0, 0, 20, 40)
+                new AtlasTextureElement { DestinationRegion = new RotableRectangle(0, 0, 55, 70) }, 
+                new AtlasTextureElement { DestinationRegion = new RotableRectangle(0, 0, 55, 30) },
+                new AtlasTextureElement { DestinationRegion = new RotableRectangle(0, 0, 25, 30) }, 
+                new AtlasTextureElement { DestinationRegion = new RotableRectangle(0, 0, 20, 30) },
+                new AtlasTextureElement { DestinationRegion = new RotableRectangle(0, 0, 45, 30) },
+                new AtlasTextureElement { DestinationRegion = new RotableRectangle(0, 0, 25, 40) }, 
+                new AtlasTextureElement { DestinationRegion = new RotableRectangle(0, 0, 20, 40) }
             };
 
             maxRectPacker.PackRectangles(packRectangles);
 
             Assert.AreEqual(1, packRectangles.Count);
-            Assert.AreEqual(6, maxRectPacker.PackedRectangles.Count);
+            Assert.AreEqual(6, maxRectPacker.PackedElements.Count);
         }
 
         [Test]
@@ -101,8 +106,9 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             var texturePacker = new TexturePacker
             {
-                UseMultipack = false,
-                UseRotation = true,
+                AllowMultipack = false,
+                AllowRotation = true,
+                AllowNonPowerOfTwo = true,
                 MaxHeight = 2000,
                 MaxWidth = 2000
             };
@@ -112,21 +118,25 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.IsTrue(canPackAllTextures);
 
             // Dispose image
-            foreach (var texture in texturePacker.TextureAtlases.SelectMany(textureAtlas => textureAtlas.Textures))
+            foreach (var texture in texturePacker.AtlasTextureLayouts.SelectMany(textureAtlas => textureAtlas.Textures))
                 texture.Texture.Dispose();
         }
 
-        public Dictionary<string, IntermediateTexture> CreateFakeTextureElements()
+        public List<AtlasTextureElement> CreateFakeTextureElements()
         {
-            var textureElements = new Dictionary<string, IntermediateTexture>();
+            var textureElements = new List<AtlasTextureElement>();
 
-            textureElements.Add("A", new IntermediateTexture
+            textureElements.Add(new AtlasTextureElement
             {
+                Name = "A",
+                DestinationRegion =  new RotableRectangle { Width = 100, Height = 200 },
                 Texture = Image.New2D(100, 200, 1, PixelFormat.R8G8B8A8_UNorm)
             });
 
-            textureElements.Add("B", new IntermediateTexture
+            textureElements.Add(new AtlasTextureElement
             {
+                Name = "B",
+                DestinationRegion = new RotableRectangle { Width = 400, Height = 300 },
                 Texture = Image.New2D(400, 300, 1, PixelFormat.R8G8B8A8_UNorm)
             });
 
@@ -140,9 +150,8 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
             var texturePacker = new TexturePacker
             {
-                UseMultipack = true,
-                UseRotation = true,
-                AtlasSizeContraint = AtlasSizeConstraints.PowerOfTwo,
+                AllowMultipack = true,
+                AllowRotation = true,
                 MaxHeight = 300,
                 MaxWidth = 300,
             };
@@ -150,56 +159,47 @@ namespace SiliconStudio.Paradox.Assets.Tests
             var canPackAllTextures = texturePacker.PackTextures(textureElements);
 
             Assert.AreEqual(2, textureElements.Count);
-            Assert.AreEqual(0, texturePacker.TextureAtlases.Count);
+            Assert.AreEqual(0, texturePacker.AtlasTextureLayouts.Count);
             Assert.IsFalse(canPackAllTextures);
 
-            texturePacker.ResetPacker();
+            texturePacker.Reset();
             texturePacker.MaxWidth = 1500;
             texturePacker.MaxHeight = 800;
 
             canPackAllTextures = texturePacker.PackTextures(textureElements);
 
             Assert.IsTrue(canPackAllTextures);
-            Assert.AreEqual(1, texturePacker.TextureAtlases.Count);
-            Assert.AreEqual(textureElements.Count, texturePacker.TextureAtlases[0].Textures.Count);
+            Assert.AreEqual(1, texturePacker.AtlasTextureLayouts.Count);
+            Assert.AreEqual(textureElements.Count, texturePacker.AtlasTextureLayouts[0].Textures.Count);
 
-            Assert.IsTrue(MathUtil.IsPow2(texturePacker.TextureAtlases[0].Width));
-            Assert.IsTrue(MathUtil.IsPow2(texturePacker.TextureAtlases[0].Height));
+            Assert.IsTrue(MathUtil.IsPow2(texturePacker.AtlasTextureLayouts[0].Width));
+            Assert.IsTrue(MathUtil.IsPow2(texturePacker.AtlasTextureLayouts[0].Height));
 
             // Dispose image
-            foreach (var texture in texturePacker.TextureAtlases.SelectMany(textureAtlas => textureAtlas.Textures))
+            foreach (var texture in texturePacker.AtlasTextureLayouts.SelectMany(textureAtlas => textureAtlas.Textures))
                 texture.Texture.Dispose();
         }
 
         [Test]
         public void TestTexturePackerWithBorder()
         {
-            var textureAtlases = new List<TextureAtlas>();
+            var textureAtlases = new List<AtlasTextureLayout>();
 
-            var textureElements = new Dictionary<string, IntermediateTexture>();
+            var textureElements = new List<AtlasTextureElement>();
 
-            textureElements.Add("A", new IntermediateTexture
-            {
-                Texture = Image.New2D(100, 200, 1, PixelFormat.R8G8B8A8_UNorm)
-            });
-
-            textureElements.Add("B", new IntermediateTexture
-            {
-                Texture = Image.New2D(57, 22, 1, PixelFormat.R8G8B8A8_UNorm)
-            });
+            textureElements.Add(new AtlasTextureElement("A", null, new Rectangle(0, 0, 100, 200), 2, TextureAddressMode.Clamp, TextureAddressMode.Clamp));
+            textureElements.Add(new AtlasTextureElement("B", null, new Rectangle(0, 0, 57, 22), 2, TextureAddressMode.Clamp, TextureAddressMode.Clamp));
 
             var texturePacker = new TexturePacker
             {
-                BorderSize = 2,
-                UseMultipack = true,
-                UseRotation = true,
-                AtlasSizeContraint = AtlasSizeConstraints.PowerOfTwo,
+                AllowMultipack = true,
+                AllowRotation = true,
                 MaxHeight = 512,
                 MaxWidth = 512
             };
 
             var canPackAllTextures = texturePacker.PackTextures(textureElements);
-            textureAtlases.AddRange(texturePacker.TextureAtlases);
+            textureAtlases.AddRange(texturePacker.AtlasTextureLayouts);
 
             Assert.IsTrue(canPackAllTextures);
             Assert.AreEqual(2, textureElements.Count);
@@ -209,16 +209,16 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.IsTrue(MathUtil.IsPow2(textureAtlases[0].Height));
 
             // Test if border is applied in width and height
-            var textureA = textureAtlases[0].Textures.Find(rectangle => rectangle.PackingRegion.Key == "A");
-            var textureB = textureAtlases[0].Textures.Find(rectangle => rectangle.PackingRegion.Key == "B");
+            var textureA = textureAtlases[0].Textures.Find(rectangle => rectangle.Name == "A");
+            var textureB = textureAtlases[0].Textures.Find(rectangle => rectangle.Name == "B");
 
-            Assert.AreEqual(textureA.Texture.Description.Width + 2 * textureAtlases[0].BorderSize, textureA.PackingRegion.Value.Width);
-            Assert.AreEqual(textureA.Texture.Description.Height + 2 * textureAtlases[0].BorderSize, textureA.PackingRegion.Value.Height);
+            Assert.AreEqual(textureA.SourceRegion.Width + 2 * textureA.BorderSize, textureA.DestinationRegion.Width);
+            Assert.AreEqual(textureA.SourceRegion.Height + 2 * textureA.BorderSize, textureA.DestinationRegion.Height);
 
-            Assert.AreEqual(textureB.Texture.Description.Width + 2 * textureAtlases[0].BorderSize,
-                (!textureB.PackingRegion.IsRotated) ? textureB.PackingRegion.Value.Width : textureB.PackingRegion.Value.Height);
-            Assert.AreEqual(textureB.Texture.Description.Height + 2 * textureAtlases[0].BorderSize,
-                (!textureB.PackingRegion.IsRotated) ? textureB.PackingRegion.Value.Height : textureB.PackingRegion.Value.Width);
+            Assert.AreEqual(textureB.SourceRegion.Width + 2 * textureB.BorderSize,
+                (!textureB.DestinationRegion.IsRotated) ? textureB.DestinationRegion.Width : textureB.DestinationRegion.Height);
+            Assert.AreEqual(textureB.SourceRegion.Height + 2 * textureB.BorderSize,
+                (!textureB.DestinationRegion.IsRotated) ? textureB.DestinationRegion.Height : textureB.DestinationRegion.Width);
         }
 
         public Image CreateMockTexture(int width, int height, Color color)
@@ -243,22 +243,22 @@ namespace SiliconStudio.Paradox.Assets.Tests
         [Test]
         public void TestTextureAtlasFactory()
         {
-            var textureElements = new Dictionary<string, IntermediateTexture>();
+            var textureElements = new List<AtlasTextureElement>();
 
             var mockTexture = CreateMockTexture(100, 200, Color.MediumPurple);
 
             // Load a test texture asset
-            textureElements.Add("A", new IntermediateTexture
+            textureElements.Add(new AtlasTextureElement
             {
+                Name = "A", 
                 Texture = mockTexture,
-                Region = new Rectangle(0, 0, 100, 200)
+                SourceRegion = new Rectangle(0, 0, 100, 200)
             });
 
             var texturePacker = new TexturePacker
             {
-                AtlasSizeContraint = AtlasSizeConstraints.PowerOfTwo,
-                UseMultipack = false,
-                UseRotation = true,
+                AllowMultipack = false,
+                AllowRotation = true,
                 MaxHeight = 2000,
                 MaxWidth = 2000
             };
@@ -268,15 +268,15 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.IsTrue(canPackAllTextures);
 
             // Obtain texture atlases
-            var textureAtlases = texturePacker.TextureAtlases;
+            var textureAtlases = texturePacker.AtlasTextureLayouts;
 
             Assert.AreEqual(1, textureAtlases.Count);
             Assert.IsTrue(MathUtil.IsPow2(textureAtlases[0].Width));
             Assert.IsTrue(MathUtil.IsPow2(textureAtlases[0].Height));
 
             // Create atlas texture
-            var atlasTexture = TexturePacker.Factory.CreateTextureAtlas(textureAtlases[0]);
-            //            atlasTexture.Save(new FileStream(@"C:/Users/Peeranut/Desktop/super_output/img.png", FileMode.CreateNew), ImageFileType.Png);
+            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(textureAtlases[0]);
+            //atlasTexture.Save(new FileStream(@"C:/Users/Peeranut/Desktop/super_output/img.png", FileMode.CreateNew), ImageFileType.Png);
 
             Assert.AreEqual(textureAtlases[0].Width, atlasTexture.Description.Width);
             Assert.AreEqual(textureAtlases[0].Height, atlasTexture.Description.Height);
@@ -288,21 +288,21 @@ namespace SiliconStudio.Paradox.Assets.Tests
         [Test]
         public void TestNullSizeTexture()
         {
-            var textureElements = new Dictionary<string, IntermediateTexture>();
+            var textureElements = new List<AtlasTextureElement>();
 
             var mockTexture = CreateMockTexture(100, 200, Color.MediumPurple);
 
             // Load a test texture asset
-            textureElements.Add("A", new IntermediateTexture
+            textureElements.Add(new AtlasTextureElement
             {
+                Name = "A", 
                 Texture = mockTexture
             });
 
             var texturePacker = new TexturePacker
             {
-                AtlasSizeContraint = AtlasSizeConstraints.PowerOfTwo,
-                UseMultipack = false,
-                UseRotation = true,
+                AllowMultipack = false,
+                AllowRotation = true,
                 MaxHeight = 2000,
                 MaxWidth = 2000
             };
@@ -312,15 +312,15 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.IsTrue(canPackAllTextures);
 
             // Obtain texture atlases
-            var textureAtlases = texturePacker.TextureAtlases;
+            var textureAtlases = texturePacker.AtlasTextureLayouts;
 
             Assert.AreEqual(1, textureAtlases.Count);
             Assert.IsTrue(MathUtil.IsPow2(textureAtlases[0].Width));
             Assert.IsTrue(MathUtil.IsPow2(textureAtlases[0].Height));
 
             // Create atlas texture
-            var atlasTexture = TexturePacker.Factory.CreateTextureAtlas(textureAtlases[0]);
-            //            atlasTexture.Save(new FileStream(@"C:/Users/Peeranut/Desktop/super_output/img.png", FileMode.CreateNew), ImageFileType.Png);
+            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(textureAtlases[0]);
+            //atlasTexture.Save(new FileStream(@"C:/Users/Peeranut/Desktop/super_output/img.png", FileMode.CreateNew), ImageFileType.Png);
 
             Assert.AreEqual(textureAtlases[0].Width, atlasTexture.Description.Width);
             Assert.AreEqual(textureAtlases[0].Height, atlasTexture.Description.Height);
@@ -333,114 +333,114 @@ namespace SiliconStudio.Paradox.Assets.Tests
         public void TestWrapBorderMode()
         {
             // Positive sets
-            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(0, 10, TextureAddressMode.Wrap));
-            Assert.AreEqual(5, TexturePacker.Factory.GetSourceTextureIndex(5, 10, TextureAddressMode.Wrap));
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(9, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(0, AtlasTextureFactory.GetSourceTextureCoordinate(0, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(5, AtlasTextureFactory.GetSourceTextureCoordinate(5, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(9, 10, TextureAddressMode.Wrap));
 
-            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(10, 10, TextureAddressMode.Wrap));
-            Assert.AreEqual(5, TexturePacker.Factory.GetSourceTextureIndex(15, 10, TextureAddressMode.Wrap));
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(19, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(0, AtlasTextureFactory.GetSourceTextureCoordinate(10, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(5, AtlasTextureFactory.GetSourceTextureCoordinate(15, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(19, 10, TextureAddressMode.Wrap));
 
-            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(20, 10, TextureAddressMode.Wrap));
-            Assert.AreEqual(5, TexturePacker.Factory.GetSourceTextureIndex(25, 10, TextureAddressMode.Wrap));
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(29, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(0, AtlasTextureFactory.GetSourceTextureCoordinate(20, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(5, AtlasTextureFactory.GetSourceTextureCoordinate(25, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(29, 10, TextureAddressMode.Wrap));
 
             // Negative sets
-            Assert.AreEqual(6, TexturePacker.Factory.GetSourceTextureIndex(-4, 10, TextureAddressMode.Wrap));
-            Assert.AreEqual(1, TexturePacker.Factory.GetSourceTextureIndex(-9, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(6, AtlasTextureFactory.GetSourceTextureCoordinate(-4, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(1, AtlasTextureFactory.GetSourceTextureCoordinate(-9, 10, TextureAddressMode.Wrap));
 
-            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-10, 10, TextureAddressMode.Wrap));
-            Assert.AreEqual(6, TexturePacker.Factory.GetSourceTextureIndex(-14, 10, TextureAddressMode.Wrap));
-            Assert.AreEqual(1, TexturePacker.Factory.GetSourceTextureIndex(-19, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(0, AtlasTextureFactory.GetSourceTextureCoordinate(-10, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(6, AtlasTextureFactory.GetSourceTextureCoordinate(-14, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(1, AtlasTextureFactory.GetSourceTextureCoordinate(-19, 10, TextureAddressMode.Wrap));
 
-            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-20, 10, TextureAddressMode.Wrap));
-            Assert.AreEqual(6, TexturePacker.Factory.GetSourceTextureIndex(-24, 10, TextureAddressMode.Wrap));
-            Assert.AreEqual(1, TexturePacker.Factory.GetSourceTextureIndex(-29, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(0, AtlasTextureFactory.GetSourceTextureCoordinate(-20, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(6, AtlasTextureFactory.GetSourceTextureCoordinate(-24, 10, TextureAddressMode.Wrap));
+            Assert.AreEqual(1, AtlasTextureFactory.GetSourceTextureCoordinate(-29, 10, TextureAddressMode.Wrap));
         }
 
         [Test]
         public void TestClampBorderMode()
         {
             // Positive sets
-            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(0, 10, TextureAddressMode.Clamp));
-            Assert.AreEqual(5, TexturePacker.Factory.GetSourceTextureIndex(5, 10, TextureAddressMode.Clamp));
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(9, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(0, AtlasTextureFactory.GetSourceTextureCoordinate(0, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(5, AtlasTextureFactory.GetSourceTextureCoordinate(5, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(9, 10, TextureAddressMode.Clamp));
 
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(10, 10, TextureAddressMode.Clamp));
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(15, 10, TextureAddressMode.Clamp));
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(19, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(10, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(15, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(19, 10, TextureAddressMode.Clamp));
 
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(20, 10, TextureAddressMode.Clamp));
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(25, 10, TextureAddressMode.Clamp));
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(29, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(20, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(25, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(29, 10, TextureAddressMode.Clamp));
 
             // Negative sets
-            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-4, 10, TextureAddressMode.Clamp));
-            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-9, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(0, AtlasTextureFactory.GetSourceTextureCoordinate(-4, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(0, AtlasTextureFactory.GetSourceTextureCoordinate(-9, 10, TextureAddressMode.Clamp));
 
-            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-10, 10, TextureAddressMode.Clamp));
-            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-14, 10, TextureAddressMode.Clamp));
-            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-19, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(0, AtlasTextureFactory.GetSourceTextureCoordinate(-10, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(0, AtlasTextureFactory.GetSourceTextureCoordinate(-14, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(0, AtlasTextureFactory.GetSourceTextureCoordinate(-19, 10, TextureAddressMode.Clamp));
 
-            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-20, 10, TextureAddressMode.Clamp));
-            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-24, 10, TextureAddressMode.Clamp));
-            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-29, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(0, AtlasTextureFactory.GetSourceTextureCoordinate(-20, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(0, AtlasTextureFactory.GetSourceTextureCoordinate(-24, 10, TextureAddressMode.Clamp));
+            Assert.AreEqual(0, AtlasTextureFactory.GetSourceTextureCoordinate(-29, 10, TextureAddressMode.Clamp));
         }
 
         [Test]
         public void TestMirrorBorderMode()
         {
             // Positive sets
-            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(0, 10, TextureAddressMode.Mirror));
-            Assert.AreEqual(5, TexturePacker.Factory.GetSourceTextureIndex(5, 10, TextureAddressMode.Mirror));
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(9, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(0, AtlasTextureFactory.GetSourceTextureCoordinate(0, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(5, AtlasTextureFactory.GetSourceTextureCoordinate(5, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(9, 10, TextureAddressMode.Mirror));
 
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(10, 10, TextureAddressMode.Mirror));
-            Assert.AreEqual(8, TexturePacker.Factory.GetSourceTextureIndex(11, 10, TextureAddressMode.Mirror));
-            Assert.AreEqual(7, TexturePacker.Factory.GetSourceTextureIndex(12, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(10, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(8, AtlasTextureFactory.GetSourceTextureCoordinate(11, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(7, AtlasTextureFactory.GetSourceTextureCoordinate(12, 10, TextureAddressMode.Mirror));
 
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(20, 10, TextureAddressMode.Mirror));
-            Assert.AreEqual(8, TexturePacker.Factory.GetSourceTextureIndex(21, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(20, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(8, AtlasTextureFactory.GetSourceTextureCoordinate(21, 10, TextureAddressMode.Mirror));
 
             // Negative Sets
-            Assert.AreEqual(1, TexturePacker.Factory.GetSourceTextureIndex(-1, 10, TextureAddressMode.Mirror));
-            Assert.AreEqual(2, TexturePacker.Factory.GetSourceTextureIndex(-2, 10, TextureAddressMode.Mirror));
-            Assert.AreEqual(3, TexturePacker.Factory.GetSourceTextureIndex(-3, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(1, AtlasTextureFactory.GetSourceTextureCoordinate(-1, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(2, AtlasTextureFactory.GetSourceTextureCoordinate(-2, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(3, AtlasTextureFactory.GetSourceTextureCoordinate(-3, 10, TextureAddressMode.Mirror));
 
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(-9, 10, TextureAddressMode.Mirror));
-            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-10, 10, TextureAddressMode.Mirror));
-            Assert.AreEqual(1, TexturePacker.Factory.GetSourceTextureIndex(-11, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(-9, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(0, AtlasTextureFactory.GetSourceTextureCoordinate(-10, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(1, AtlasTextureFactory.GetSourceTextureCoordinate(-11, 10, TextureAddressMode.Mirror));
 
-            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(-20, 10, TextureAddressMode.Mirror));
-            Assert.AreEqual(1, TexturePacker.Factory.GetSourceTextureIndex(-21, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(0, AtlasTextureFactory.GetSourceTextureCoordinate(-20, 10, TextureAddressMode.Mirror));
+            Assert.AreEqual(1, AtlasTextureFactory.GetSourceTextureCoordinate(-21, 10, TextureAddressMode.Mirror));
         }
 
         [Test]
         public void TestMirrorOnceBorderMode()
         {
             // Positive sets
-            Assert.AreEqual(0, TexturePacker.Factory.GetSourceTextureIndex(0, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(5, TexturePacker.Factory.GetSourceTextureIndex(5, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(9, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(0, AtlasTextureFactory.GetSourceTextureCoordinate(0, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(5, AtlasTextureFactory.GetSourceTextureCoordinate(5, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(9, 10, TextureAddressMode.MirrorOnce));
 
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(10, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(11, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(12, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(10, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(11, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(12, 10, TextureAddressMode.MirrorOnce));
 
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(20, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(21, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(20, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(21, 10, TextureAddressMode.MirrorOnce));
 
             // Negative Sets
-            Assert.AreEqual(1, TexturePacker.Factory.GetSourceTextureIndex(-1, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(2, TexturePacker.Factory.GetSourceTextureIndex(-2, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(3, TexturePacker.Factory.GetSourceTextureIndex(-3, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(1, AtlasTextureFactory.GetSourceTextureCoordinate(-1, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(2, AtlasTextureFactory.GetSourceTextureCoordinate(-2, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(3, AtlasTextureFactory.GetSourceTextureCoordinate(-3, 10, TextureAddressMode.MirrorOnce));
 
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(-9, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(-10, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(-11, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(-9, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(-10, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(-11, 10, TextureAddressMode.MirrorOnce));
 
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(-20, 10, TextureAddressMode.MirrorOnce));
-            Assert.AreEqual(9, TexturePacker.Factory.GetSourceTextureIndex(-21, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(-20, 10, TextureAddressMode.MirrorOnce));
+            Assert.AreEqual(9, AtlasTextureFactory.GetSourceTextureCoordinate(-21, 10, TextureAddressMode.MirrorOnce));
         }
 
         [Test]
@@ -515,111 +515,133 @@ namespace SiliconStudio.Paradox.Assets.Tests
         public void TestCreateTextureAtlasToOutput()
         {
             const string OutputPath = "./output.png";
-            var textureElements = new Dictionary<string, IntermediateTexture>();
+            var textureElements = new List<AtlasTextureElement>();
 
             // Load a test texture asset
-            textureElements.Add("MediumPurple", new IntermediateTexture
+            textureElements.Add(new AtlasTextureElement
             {
+                Name = "MediumPurple",
+                BorderSize = 10,
                 Texture = CreateMockTexture(130, 158, Color.MediumPurple),
-                AddressModeU = TextureAddressMode.Border,
-                AddressModeV = TextureAddressMode.Border,
+                BorderModeU = TextureAddressMode.Border,
+                BorderModeV = TextureAddressMode.Border,
                 BorderColor = Color.SteelBlue
             });
 
-            textureElements.Add("Red", new IntermediateTexture
+            textureElements.Add(new AtlasTextureElement
             {
+                Name = "Red",
+                BorderSize = 10,
                 Texture = CreateMockTexture(127, 248, Color.Red),
-                AddressModeU = TextureAddressMode.Border,
-                AddressModeV = TextureAddressMode.Border,
+                BorderModeU = TextureAddressMode.Border,
+                BorderModeV = TextureAddressMode.Border,
                 BorderColor = Color.SteelBlue
             });
 
-            textureElements.Add("Blue", new IntermediateTexture
+            textureElements.Add(new AtlasTextureElement
             {
+                Name = "Blue",
+                BorderSize = 10,
                 Texture = CreateMockTexture(212, 153, Color.Blue),
-                AddressModeU = TextureAddressMode.Border,
-                AddressModeV = TextureAddressMode.Border,
+                BorderModeU = TextureAddressMode.Border,
+                BorderModeV = TextureAddressMode.Border,
                 BorderColor = Color.SteelBlue
             });
 
-            textureElements.Add("Gold", new IntermediateTexture
+            textureElements.Add(new AtlasTextureElement
             {
+                Name = "Gold",
+                BorderSize = 10,
                 Texture = CreateMockTexture(78, 100, Color.Gold),
-                AddressModeU = TextureAddressMode.Border,
-                AddressModeV = TextureAddressMode.Border,
+                BorderModeU = TextureAddressMode.Border,
+                BorderModeV = TextureAddressMode.Border,
                 BorderColor = Color.SteelBlue
             });
 
-            textureElements.Add("RosyBrown", new IntermediateTexture
+            textureElements.Add(new AtlasTextureElement
             {
+                Name = "RosyBrown",
+                BorderSize = 10,
                 Texture = CreateMockTexture(78, 100, Color.RosyBrown),
-                AddressModeU = TextureAddressMode.Border,
-                AddressModeV = TextureAddressMode.Border,
+                BorderModeU = TextureAddressMode.Border,
+                BorderModeV = TextureAddressMode.Border,
                 BorderColor = Color.SteelBlue
             });
 
-            textureElements.Add("SaddleBrown", new IntermediateTexture
+            textureElements.Add(new AtlasTextureElement
             {
+                Name = "SaddleBrown",
+                BorderSize = 10,
                 Texture = CreateMockTexture(400, 100, Color.SaddleBrown),
-                AddressModeU = TextureAddressMode.Border,
-                AddressModeV = TextureAddressMode.Border,
+                BorderModeU = TextureAddressMode.Border,
+                BorderModeV = TextureAddressMode.Border,
                 BorderColor = Color.SteelBlue
             });
 
-            textureElements.Add("Salmon", new IntermediateTexture
+            textureElements.Add(new AtlasTextureElement
             {
+                Name = "Salmon",
+                BorderSize = 10,
                 Texture = CreateMockTexture(400, 200, Color.Salmon),
-                AddressModeU = TextureAddressMode.Border,
-                AddressModeV = TextureAddressMode.Border,
+                BorderModeU = TextureAddressMode.Border,
+                BorderModeV = TextureAddressMode.Border,
                 BorderColor = Color.SteelBlue
             });
 
-            textureElements.Add("PowderBlue", new IntermediateTexture
+            textureElements.Add(new AtlasTextureElement
             {
+                Name = "PowderBlue",
+                BorderSize = 10,
                 Texture = CreateMockTexture(190, 200, Color.PowderBlue),
-                AddressModeU = TextureAddressMode.Border,
-                AddressModeV = TextureAddressMode.Border,
+                BorderModeU = TextureAddressMode.Border,
+                BorderModeV = TextureAddressMode.Border,
                 BorderColor = Color.SteelBlue
             });
 
-            textureElements.Add("Orange", new IntermediateTexture
+            textureElements.Add(new AtlasTextureElement
             {
+                Name = "Orange",
+                BorderSize = 10,
                 Texture = CreateMockTexture(200, 230, Color.Orange),
-                AddressModeU = TextureAddressMode.Border,
-                AddressModeV = TextureAddressMode.Border,
+                BorderModeU = TextureAddressMode.Border,
+                BorderModeV = TextureAddressMode.Border,
                 BorderColor = Color.SteelBlue
             });
 
-            textureElements.Add("Silver", new IntermediateTexture
+            textureElements.Add(new AtlasTextureElement
             {
+                Name = "Silver",
+                BorderSize = 10,
                 Texture = CreateMockTexture(100, 170, Color.Silver),
-                AddressModeU = TextureAddressMode.Border,
-                AddressModeV = TextureAddressMode.Border,
+                BorderModeU = TextureAddressMode.Border,
+                BorderModeV = TextureAddressMode.Border,
                 BorderColor = Color.SteelBlue
             });
 
-            textureElements.Add("SlateGray", new IntermediateTexture
+            textureElements.Add(new AtlasTextureElement
             {
+                Name = "SlateGray",
+                BorderSize = 10,
                 Texture = CreateMockTexture(100, 170, Color.SlateGray),
-                AddressModeU = TextureAddressMode.Border,
-                AddressModeV = TextureAddressMode.Border,
+                BorderModeU = TextureAddressMode.Border,
+                BorderModeV = TextureAddressMode.Border,
                 BorderColor = Color.SteelBlue
             });
 
-            textureElements.Add("Tan", new IntermediateTexture
+            textureElements.Add(new AtlasTextureElement
             {
+                Name = "Tan",
+                BorderSize = 10,
                 Texture = CreateMockTexture(140, 110, Color.Tan),
-                AddressModeU = TextureAddressMode.Border,
-                AddressModeV = TextureAddressMode.Border,
+                BorderModeU = TextureAddressMode.Border,
+                BorderModeV = TextureAddressMode.Border,
                 BorderColor = Color.SteelBlue
             });
 
             var texturePacker = new TexturePacker
             {
-                BorderSize = 10,
-                AtlasSizeContraint = AtlasSizeConstraints.PowerOfTwo,
-                UseMultipack = false,
-                UseRotation = true,
+                AllowMultipack = false,
+                AllowRotation = true,
                 MaxHeight = 1024,
                 MaxWidth = 1024
             };
@@ -629,18 +651,18 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.IsTrue(canPackAllTextures);
 
             // Obtain texture atlases
-            var textureAtlases = texturePacker.TextureAtlases;
+            var textureAtlases = texturePacker.AtlasTextureLayouts;
 
             Assert.AreEqual(1, textureAtlases.Count);
 
-            if (texturePacker.AtlasSizeContraint == AtlasSizeConstraints.PowerOfTwo)
+            if (!texturePacker.AllowNonPowerOfTwo)
             {
                 Assert.IsTrue(MathUtil.IsPow2(textureAtlases[0].Width));
                 Assert.IsTrue(MathUtil.IsPow2(textureAtlases[0].Height));
             }
 
             // Create atlas texture
-            var atlasTexture = TexturePacker.Factory.CreateTextureAtlas(textureAtlases[0]);
+            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(textureAtlases[0]);
             atlasTexture.Save(new FileStream(OutputPath, FileMode.Create), ImageFileType.Png);
 
             Assert.AreEqual(textureAtlases[0].Width, atlasTexture.Description.Width);
@@ -660,64 +682,70 @@ namespace SiliconStudio.Paradox.Assets.Tests
             // Specify where the images are, and uncomment [Test] above
             var inputDir = @".\";
 
-            var textureElements = new Dictionary<string, IntermediateTexture>();
+            var textureElements = new List<AtlasTextureElement>();
 
             using (var texTool = new TextureTool())
             {
                 for (var i = 1; i <= 5; ++i)
                 {
                     var name = "character_idle_0" + i;
-                    textureElements.Add(name, new IntermediateTexture
+                    textureElements.Add(new AtlasTextureElement
                     {
+                        Name = name,
+                        BorderSize = 100,
                         Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png")),
                         BorderColor = Color.SteelBlue,
-                        AddressModeU = TextureAddressMode.Wrap,
-                        AddressModeV = TextureAddressMode.Wrap
+                        BorderModeU = TextureAddressMode.Wrap,
+                        BorderModeV = TextureAddressMode.Wrap
                     });
                 }
 
                 for (var i = 1; i <= 5; ++i)
                 {
                     var name = "character_run_0" + i;
-                    textureElements.Add(name, new IntermediateTexture
+                    textureElements.Add(new AtlasTextureElement
                     {
+                        Name = name,
+                        BorderSize = 100,
                         Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png")),
                         BorderColor = Color.SteelBlue,
-                        AddressModeU = TextureAddressMode.Wrap,
-                        AddressModeV = TextureAddressMode.Wrap
+                        BorderModeU = TextureAddressMode.Wrap,
+                        BorderModeV = TextureAddressMode.Wrap
                     });
                 }
 
                 for (var i = 1; i <= 5; ++i)
                 {
                     var name = "character_shoot_0" + i;
-                    textureElements.Add(name, new IntermediateTexture
+                    textureElements.Add(new AtlasTextureElement
                     {
+                        Name = name,
+                        BorderSize = 100,
                         Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png")),
                         BorderColor = Color.SteelBlue,
-                        AddressModeU = TextureAddressMode.Wrap,
-                        AddressModeV = TextureAddressMode.Wrap
+                        BorderModeU = TextureAddressMode.Wrap,
+                        BorderModeV = TextureAddressMode.Wrap
                     });
                 }
 
                 for (var i = 1; i <= 8; ++i)
                 {
                     var name = "ef_0" + i;
-                    textureElements.Add(name, new IntermediateTexture
+                    textureElements.Add(new AtlasTextureElement
                     {
+                        Name = name,
+                        BorderSize = 100,
                         Texture = LoadImage(texTool, new UFile(inputDir + "/" + name + ".png")),
                         BorderColor = Color.SteelBlue,
-                        AddressModeU = TextureAddressMode.Wrap,
-                        AddressModeV = TextureAddressMode.Wrap
+                        BorderModeU = TextureAddressMode.Wrap,
+                        BorderModeV = TextureAddressMode.Wrap
                     });
                 }
 
                 var texturePacker = new TexturePacker
                 {
-                    BorderSize = 100,
-                    AtlasSizeContraint = AtlasSizeConstraints.PowerOfTwo,
-                    UseMultipack = false,
-                    UseRotation = false,
+                    AllowMultipack = false,
+                    AllowRotation = false,
                     MaxHeight = 2048,
                     MaxWidth = 2048
                 };
@@ -727,13 +755,13 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 Assert.IsTrue(canPackAllTextures);
 
                 // Obtain texture atlases
-                var textureAtlases = texturePacker.TextureAtlases;
+                var textureAtlases = texturePacker.AtlasTextureLayouts;
 
                 // Create atlas texture
-                var atlasTexture = TexturePacker.Factory.CreateTextureAtlas(textureAtlases[0]);
-                const ImageFileType OutputType = ImageFileType.Png;
+                var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(textureAtlases[0]);
+                const ImageFileType outputType = ImageFileType.Png;
 
-                atlasTexture.Save(new FileStream(@"C:\Users\Peeranut\Desktop\sprite_output\output2." + GetImageExtension(OutputType), FileMode.Create), OutputType);
+                atlasTexture.Save(new FileStream(@"C:\Users\Peeranut\Desktop\sprite_output\output2." + GetImageExtension(outputType), FileMode.Create), outputType);
                 atlasTexture.Dispose();
 
                 foreach (var texture in textureAtlases.SelectMany(textureAtlas => textureAtlas.Textures))

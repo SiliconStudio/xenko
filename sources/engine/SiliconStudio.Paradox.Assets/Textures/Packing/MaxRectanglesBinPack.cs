@@ -14,13 +14,13 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
         private int binWidth;
         private int binHeight;
 
-        private readonly List<RotatableRectangle> packedRectangles = new List<RotatableRectangle>();
+        private readonly List<AtlasTextureElement> packedElements = new List<AtlasTextureElement>();
         private readonly List<Rectangle> freeRectangles = new List<Rectangle>();
 
         /// <summary>
-        /// Gets those rectangles that are already packed
+        /// Gets those elementsToPack that are already packed
         /// </summary>
-        public List<RotatableRectangle> PackedRectangles { get { return packedRectangles; } }
+        public List<AtlasTextureElement> PackedElements { get { return packedElements; } }
 
         public MaxRectanglesBinPack()
         {
@@ -50,34 +50,34 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
 
             useRotation = allowRotation;
 
-            packedRectangles.Clear();
+            packedElements.Clear();
             freeRectangles.Clear();
 
             freeRectangles.Add(new Rectangle(0, 0, binWidth, binHeight));
         }
 
         /// <summary>
-        /// Packs input rectangles with MaxRects algorithm.
-        /// Note that, rectangles is modified when any rectangle could be packed, it will be removed from the collection.
+        /// Packs input elements using the MaxRects algorithm.
+        /// Note that any element that could be packed is removed from the elementsToPack collection.
         /// </summary>
-        /// <param name="rectangles">a list of rectangles to be packed</param>
+        /// <param name="elementsToPack">a list of rectangles to be packed</param>
         /// <param name="method">MaxRects heuristic method which default value is BestShortSideFit</param>
-        public void PackRectangles(List<RotatableRectangle> rectangles, TexturePackingMethod method = TexturePackingMethod.BestShortSideFit)
+        public void PackRectangles(List<AtlasTextureElement> elementsToPack, TexturePackingMethod method = TexturePackingMethod.BestShortSideFit)
         {
-            var bestNode = new RotatableRectangle();
+            var bestRectangle = new RotableRectangle();
 
-            while (rectangles.Count > 0)
+            while (elementsToPack.Count > 0)
             {
                 var bestScore1 = int.MaxValue;
                 var bestScore2 = int.MaxValue;
 
                 var bestRectangleIndex = -1;
 
-                for (var i = 0; i < rectangles.Count; ++i)
+                for (var i = 0; i < elementsToPack.Count; ++i)
                 {
                     int score1;
                     int score2;
-                    var pickedNode = ChooseTargetPosition(rectangles[i], method, out score1, out score2);
+                    var pickedRectangle = ChooseTargetPosition(elementsToPack[i].DestinationRegion, method, out score1, out score2);
 
                     if (score1 < bestScore1 || (score1 == bestScore1 && score2 < bestScore2))
                     // Found the new best free region to hold a rectangle
@@ -85,28 +85,36 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
                         bestScore1 = score1;
                         bestScore2 = score2;
                         bestRectangleIndex = i;
-                        bestNode = pickedNode;
+                        bestRectangle = pickedRectangle;
                     }
                 }
 
                 // Could not find any free region to hold a rectangle, terminate packing process
                 if (bestRectangleIndex == -1) break;
 
-                PlaceRectangle(bestNode);
-                rectangles.RemoveAt(bestRectangleIndex);
+                // Update the free space of the packer
+                TakeSpaceForRectangle(bestRectangle);
+
+                // Update the packed element
+                var packedElement = elementsToPack[bestRectangleIndex];
+                packedElement.DestinationRegion = bestRectangle;
+
+                // Update the packed and remaining element lists
+                packedElements.Add(packedElement);
+                elementsToPack.RemoveAt(bestRectangleIndex);
             }
         }
 
         /// <summary>
-        /// Places a given rectangle in packedRectangles, modifies free rectangles that are affected by the placement
+        /// Places a given rectangle in the free space.
         /// </summary>
-        /// <param name="node">A rectangle to be placed</param>
-        private void PlaceRectangle(RotatableRectangle node)
+        /// <param name="rectangleToPlace">The rectangle to place</param>
+        private void TakeSpaceForRectangle(RotableRectangle rectangleToPlace)
         {
             var numberRectanglesToProcess = freeRectangles.Count;
             for (var i = 0; i < numberRectanglesToProcess; ++i)
             {
-                if (SplitFreeNode(freeRectangles[i], node))
+                if (SplitFreeNode(freeRectangles[i], rectangleToPlace))
                 {
                     freeRectangles.RemoveAt(i);
                     --i;
@@ -115,12 +123,10 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
             }
 
             PruneFreeList();
-
-            packedRectangles.Add(node);
         }
 
         /// <summary>
-        /// Removes those free rectangles that are sub-regions of other rectangles
+        /// Removes those free elementsToPack that are sub-regions of other elementsToPack
         /// </summary>
         private void PruneFreeList()
         {
@@ -148,49 +154,49 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
         /// <param name="freeNode">Free rectangle to be splitted</param>
         /// <param name="usedNode">UsedNode rectangle</param>
         /// <returns></returns>
-        private bool SplitFreeNode(Rectangle freeNode, RotatableRectangle usedNode)
+        private bool SplitFreeNode(Rectangle freeNode, RotableRectangle usedNode)
         {
-            // Test with SAT if the rectangles even intersect.
-            if (usedNode.Value.X >= freeNode.X + freeNode.Width || usedNode.Value.X + usedNode.Value.Width <= freeNode.X ||
-                usedNode.Value.Y >= freeNode.Y + freeNode.Height || usedNode.Value.Y + usedNode.Value.Height <= freeNode.Y)
+            // Test with SAT if the elementsToPack even intersect.
+            if (usedNode.X >= freeNode.X + freeNode.Width || usedNode.X + usedNode.Width <= freeNode.X ||
+                usedNode.Y >= freeNode.Y + freeNode.Height || usedNode.Y + usedNode.Height <= freeNode.Y)
                 return false;
 
-            if (usedNode.Value.X < freeNode.X + freeNode.Width && usedNode.Value.X + usedNode.Value.Width > freeNode.X)
+            if (usedNode.X < freeNode.X + freeNode.Width && usedNode.X + usedNode.Width > freeNode.X)
             {
                 // New node at the top side of the used node.
-                if (usedNode.Value.Y > freeNode.Y && usedNode.Value.Y < freeNode.Y + freeNode.Height)
+                if (usedNode.Y > freeNode.Y && usedNode.Y < freeNode.Y + freeNode.Height)
                 {
                     var newNode = freeNode;
-                    newNode.Height = usedNode.Value.Y - newNode.Y;
+                    newNode.Height = usedNode.Y - newNode.Y;
                     freeRectangles.Add(newNode);
                 }
 
                 // New node at the bottom side of the used node.
-                if (usedNode.Value.Y + usedNode.Value.Height < freeNode.Y + freeNode.Height)
+                if (usedNode.Y + usedNode.Height < freeNode.Y + freeNode.Height)
                 {
                     var newNode = freeNode;
-                    newNode.Y = usedNode.Value.Y + usedNode.Value.Height;
-                    newNode.Height = freeNode.Y + freeNode.Height - (usedNode.Value.Y + usedNode.Value.Height);
+                    newNode.Y = usedNode.Y + usedNode.Height;
+                    newNode.Height = freeNode.Y + freeNode.Height - (usedNode.Y + usedNode.Height);
                     freeRectangles.Add(newNode);
                 }
             }
 
-            if (usedNode.Value.Y < freeNode.Y + freeNode.Height && usedNode.Value.Y + usedNode.Value.Height > freeNode.Y)
+            if (usedNode.Y < freeNode.Y + freeNode.Height && usedNode.Y + usedNode.Height > freeNode.Y)
             {
                 // New node at the left side of the used node.
-                if (usedNode.Value.X > freeNode.X && usedNode.Value.X < freeNode.X + freeNode.Width)
+                if (usedNode.X > freeNode.X && usedNode.X < freeNode.X + freeNode.Width)
                 {
                     var newNode = freeNode;
-                    newNode.Width = usedNode.Value.X - newNode.X;
+                    newNode.Width = usedNode.X - newNode.X;
                     freeRectangles.Add(newNode);
                 }
 
                 // New node at the right side of the used node.
-                if (usedNode.Value.X + usedNode.Value.Width < freeNode.X + freeNode.Width)
+                if (usedNode.X + usedNode.Width < freeNode.X + freeNode.Width)
                 {
                     var newNode = freeNode;
-                    newNode.X = usedNode.Value.X + usedNode.Value.Width;
-                    newNode.Width = freeNode.X + freeNode.Width - (usedNode.Value.X + usedNode.Value.Width);
+                    newNode.X = usedNode.X + usedNode.Width;
+                    newNode.Width = freeNode.X + freeNode.Width - (usedNode.X + usedNode.Width);
                     freeRectangles.Add(newNode);
                 }
             }
@@ -206,12 +212,12 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
         /// <param name="score1">First score</param>
         /// <param name="score2">Second score</param>
         /// <returns></returns>
-        private RotatableRectangle ChooseTargetPosition(RotatableRectangle rectangle, TexturePackingMethod method, out int score1, out int score2)
+        private RotableRectangle ChooseTargetPosition(RotableRectangle rectangle, TexturePackingMethod method, out int score1, out int score2)
         {
-            var bestNode = new RotatableRectangle { Key = rectangle.Key };
+            var bestNode = new RotableRectangle();
 
             // null sized rectangle fits everywhere with a perfect score.
-            if (rectangle.Value.Width == 0 || rectangle.Value.Height == 0)
+            if (rectangle.Width == 0 || rectangle.Height == 0)
             {
                 score1 = 0;
                 score2 = 0;
@@ -224,26 +230,27 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
             switch (method)
             {
                 case TexturePackingMethod.BestShortSideFit:
-                    bestNode = FindPositionForNewNodeBestShortSideFit(rectangle.Value.Width, rectangle.Value.Height, out score1, ref score2);
+                    bestNode = FindPositionForNewNodeBestShortSideFit(rectangle.Width, rectangle.Height, out score1, ref score2);
                     break;
                 case TexturePackingMethod.BottomLeftRule:
-                    bestNode = FindPositionForNewNodeBottomLeft(rectangle.Value.Width, rectangle.Value.Height, out score1, ref score2);
+                    bestNode = FindPositionForNewNodeBottomLeft(rectangle.Width, rectangle.Height, out score1, ref score2);
                     break;
                 case TexturePackingMethod.ContactPointRule:
-                    bestNode = FindPositionForNewNodeContactPoint(rectangle.Value.Width, rectangle.Value.Height, out score1);
+                    bestNode = FindPositionForNewNodeContactPoint(rectangle.Width, rectangle.Height, out score1);
                     score1 *= -1;
                     break;
                 case TexturePackingMethod.BestLongSideFit:
-                    bestNode = FindPositionForNewNodeBestLongSideFit(rectangle.Value.Width, rectangle.Value.Height, ref score2, out score1);
+                    bestNode = FindPositionForNewNodeBestLongSideFit(rectangle.Width, rectangle.Height, ref score2, out score1);
                     break;
                 case TexturePackingMethod.BestAreaFit:
-                    bestNode = FindPositionForNewNodeBestAreaFit(rectangle.Value.Width, rectangle.Value.Height, out score1, ref score2);
+                    bestNode = FindPositionForNewNodeBestAreaFit(rectangle.Width, rectangle.Height, out score1, ref score2);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("method");
             }
 
-            if (bestNode.Value.Height == 0)
+            // there is no available space big enough to fit the rectangle
+            if (bestNode.Height == 0)
             {
                 score1 = int.MaxValue;
                 score2 = int.MaxValue;
@@ -260,9 +267,9 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
         /// <param name="bestLongSideFit"></param>
         /// <param name="width"></param>
         /// <returns></returns>
-        private RotatableRectangle FindPositionForNewNodeBestShortSideFit(int width, int height, out int bestShortSideFit, ref int bestLongSideFit)
+        private RotableRectangle FindPositionForNewNodeBestShortSideFit(int width, int height, out int bestShortSideFit, ref int bestLongSideFit)
         {
-            var bestNode = new RotatableRectangle();
+            var bestNode = new RotableRectangle();
 
             bestShortSideFit = int.MaxValue;
 
@@ -278,11 +285,11 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
 
                     if (shortSideFit < bestShortSideFit || (shortSideFit == bestShortSideFit && longSideFit < bestLongSideFit))
                     {
-                        bestNode.Value.X = freeRectangles[i].X;
-                        bestNode.Value.Y = freeRectangles[i].Y;
+                        bestNode.X = freeRectangles[i].X;
+                        bestNode.Y = freeRectangles[i].Y;
 
-                        bestNode.Value.Width = width;
-                        bestNode.Value.Height = height;
+                        bestNode.Width = width;
+                        bestNode.Height = height;
 
                         bestShortSideFit = shortSideFit;
                         bestLongSideFit = longSideFit;
@@ -302,11 +309,11 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
 
                     if (flippedShortSideFit < bestShortSideFit || (flippedShortSideFit == bestShortSideFit && flippedLongSideFit < bestLongSideFit))
                     {
-                        bestNode.Value.X = freeRectangles[i].X;
-                        bestNode.Value.Y = freeRectangles[i].Y;
+                        bestNode.X = freeRectangles[i].X;
+                        bestNode.Y = freeRectangles[i].Y;
 
-                        bestNode.Value.Width = height;
-                        bestNode.Value.Height = width;
+                        bestNode.Width = height;
+                        bestNode.Height = width;
 
                         bestShortSideFit = flippedShortSideFit;
                         bestLongSideFit = flippedLongSideFit;
@@ -328,9 +335,9 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
         /// <param name="bestX"></param>
         /// <param name="width"></param>
         /// <returns></returns>
-        private RotatableRectangle FindPositionForNewNodeBottomLeft(int width, int height, out int bestY, ref int bestX)
+        private RotableRectangle FindPositionForNewNodeBottomLeft(int width, int height, out int bestY, ref int bestX)
         {
-            var bestNode = new RotatableRectangle();
+            var bestNode = new RotableRectangle();
 
             bestY = int.MaxValue;
 
@@ -342,10 +349,10 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
                     var topSideY = freeRectangles[i].Y + height;
                     if (topSideY < bestY || (topSideY == bestY && freeRectangles[i].X < bestX))
                     {
-                        bestNode.Value.X = freeRectangles[i].X;
-                        bestNode.Value.Y = freeRectangles[i].Y;
-                        bestNode.Value.Width = width;
-                        bestNode.Value.Height = height;
+                        bestNode.X = freeRectangles[i].X;
+                        bestNode.Y = freeRectangles[i].Y;
+                        bestNode.Width = width;
+                        bestNode.Height = height;
                         bestY = topSideY;
                         bestX = freeRectangles[i].X;
                         bestNode.IsRotated = false;
@@ -359,10 +366,10 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
                     var topSideY = freeRectangles[i].Y + width;
                     if (topSideY < bestY || (topSideY == bestY && freeRectangles[i].X < bestX))
                     {
-                        bestNode.Value.X = freeRectangles[i].X;
-                        bestNode.Value.Y = freeRectangles[i].Y;
-                        bestNode.Value.Width = height;
-                        bestNode.Value.Height = width;
+                        bestNode.X = freeRectangles[i].X;
+                        bestNode.Y = freeRectangles[i].Y;
+                        bestNode.Width = height;
+                        bestNode.Height = width;
                         bestY = topSideY;
                         bestX = freeRectangles[i].X;
                         bestNode.IsRotated = true;
@@ -380,9 +387,9 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
         /// <param name="bestContactScore"></param>
         /// <param name="width"></param>
         /// <returns></returns>
-        private RotatableRectangle FindPositionForNewNodeContactPoint(int width, int height, out int bestContactScore)
+        private RotableRectangle FindPositionForNewNodeContactPoint(int width, int height, out int bestContactScore)
         {
-            var bestNode = new RotatableRectangle();
+            var bestNode = new RotableRectangle();
 
             bestContactScore = -1;
 
@@ -394,10 +401,10 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
                     int score = ContactPointScoreNode(freeRectangles[i].X, freeRectangles[i].Y, width, height);
                     if (score > bestContactScore)
                     {
-                        bestNode.Value.X = freeRectangles[i].X;
-                        bestNode.Value.Y = freeRectangles[i].Y;
-                        bestNode.Value.Width = width;
-                        bestNode.Value.Height = height;
+                        bestNode.X = freeRectangles[i].X;
+                        bestNode.Y = freeRectangles[i].Y;
+                        bestNode.Width = width;
+                        bestNode.Height = height;
                         bestContactScore = score;
                         bestNode.IsRotated = false;
                     }
@@ -411,10 +418,10 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
                     int score = ContactPointScoreNode(freeRectangles[i].X, freeRectangles[i].Y, width, height);
                     if (score > bestContactScore)
                     {
-                        bestNode.Value.X = freeRectangles[i].X;
-                        bestNode.Value.Y = freeRectangles[i].Y;
-                        bestNode.Value.Width = height;
-                        bestNode.Value.Height = width;
+                        bestNode.X = freeRectangles[i].X;
+                        bestNode.Y = freeRectangles[i].Y;
+                        bestNode.Width = height;
+                        bestNode.Height = width;
                         bestContactScore = score;
                         bestNode.IsRotated = true;
                     }
@@ -427,11 +434,6 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
         /// <summary>
         /// Calculates ContactPoint score
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <returns></returns>
         private int ContactPointScoreNode(int x, int y, int width, int height)
         {
             var score = 0;
@@ -441,12 +443,13 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
             if (y == 0 || y + height == binHeight)
                 score += width;
 
-            for (var i = 0; i < packedRectangles.Count; ++i)
+            foreach (AtlasTextureElement element in packedElements)
             {
-                if (packedRectangles[i].Value.X == x + width || packedRectangles[i].Value.X + packedRectangles[i].Value.Width == x)
-                    score += CommonIntervalLength(packedRectangles[i].Value.Y, packedRectangles[i].Value.Y + packedRectangles[i].Value.Height, y, y + height);
-                if (packedRectangles[i].Value.Y == y + height || packedRectangles[i].Value.Y + packedRectangles[i].Value.Height == y)
-                    score += CommonIntervalLength(packedRectangles[i].Value.X, packedRectangles[i].Value.X + packedRectangles[i].Value.Width, x, x + width);
+                var rectangle = element.DestinationRegion;
+                if (rectangle.X == x + width || rectangle.X + rectangle.Width == x)
+                    score += CommonIntervalLength(rectangle.Y, rectangle.Y + rectangle.Height, y, y + height);
+                if (rectangle.Y == y + height || rectangle.Y + rectangle.Height == y)
+                    score += CommonIntervalLength(rectangle.X, rectangle.X + rectangle.Width, x, x + width);
             }
 
             return score;
@@ -467,9 +470,9 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
         /// <param name="bestLongSideFit"></param>
         /// <param name="width"></param>
         /// <returns></returns>
-        private RotatableRectangle FindPositionForNewNodeBestLongSideFit(int width, int height, ref int bestShortSideFit, out int bestLongSideFit)
+        private RotableRectangle FindPositionForNewNodeBestLongSideFit(int width, int height, ref int bestShortSideFit, out int bestLongSideFit)
         {
-            var bestNode = new RotatableRectangle();
+            var bestNode = new RotableRectangle();
 
             bestLongSideFit = int.MaxValue;
 
@@ -485,10 +488,10 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
 
                     if (longSideFit < bestLongSideFit || (longSideFit == bestLongSideFit && shortSideFit < bestShortSideFit))
                     {
-                        bestNode.Value.X = freeRectangles[i].X;
-                        bestNode.Value.Y = freeRectangles[i].Y;
-                        bestNode.Value.Width = width;
-                        bestNode.Value.Height = height;
+                        bestNode.X = freeRectangles[i].X;
+                        bestNode.Y = freeRectangles[i].Y;
+                        bestNode.Width = width;
+                        bestNode.Height = height;
                         bestShortSideFit = shortSideFit;
                         bestLongSideFit = longSideFit;
                         bestNode.IsRotated = false;
@@ -507,10 +510,10 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
 
                     if (longSideFit < bestLongSideFit || (longSideFit == bestLongSideFit && shortSideFit < bestShortSideFit))
                     {
-                        bestNode.Value.X = freeRectangles[i].X;
-                        bestNode.Value.Y = freeRectangles[i].Y;
-                        bestNode.Value.Width = height;
-                        bestNode.Value.Height = width;
+                        bestNode.X = freeRectangles[i].X;
+                        bestNode.Y = freeRectangles[i].Y;
+                        bestNode.Width = height;
+                        bestNode.Height = width;
                         bestShortSideFit = shortSideFit;
                         bestLongSideFit = longSideFit;
                         bestNode.IsRotated = true;
@@ -529,9 +532,9 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
         /// <param name="bestShortSideFit"></param>
         /// <param name="width"></param>
         /// <returns></returns>
-        private RotatableRectangle FindPositionForNewNodeBestAreaFit(int width, int height, out int bestAreaFit, ref int bestShortSideFit)
+        private RotableRectangle FindPositionForNewNodeBestAreaFit(int width, int height, out int bestAreaFit, ref int bestShortSideFit)
         {
-            var bestNode = new RotatableRectangle();
+            var bestNode = new RotableRectangle();
 
             bestAreaFit = int.MaxValue;
 
@@ -548,13 +551,13 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
 
                     if (areaFit < bestAreaFit || (areaFit == bestAreaFit && shortSideFit < bestShortSideFit))
                     {
-                        bestNode.Value.X = freeRectangles[i].X;
-                        bestNode.Value.Y = freeRectangles[i].Y;
-                        bestNode.Value.Width = width;
-                        bestNode.Value.Height = height;
+                        bestNode.X = freeRectangles[i].X;
+                        bestNode.Y = freeRectangles[i].Y;
+                        bestNode.Width = width;
+                        bestNode.Height = height;
+                        bestNode.IsRotated = false;
                         bestShortSideFit = shortSideFit;
                         bestAreaFit = areaFit;
-                        bestNode.IsRotated = false;
                     }
                 }
 
@@ -569,13 +572,13 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
 
                     if (areaFit < bestAreaFit || (areaFit == bestAreaFit && shortSideFit < bestShortSideFit))
                     {
-                        bestNode.Value.X = freeRectangles[i].X;
-                        bestNode.Value.Y = freeRectangles[i].Y;
-                        bestNode.Value.Width = height;
-                        bestNode.Value.Height = width;
+                        bestNode.X = freeRectangles[i].X;
+                        bestNode.Y = freeRectangles[i].Y;
+                        bestNode.Width = height;
+                        bestNode.Height = width;
+                        bestNode.IsRotated = true;
                         bestShortSideFit = shortSideFit;
                         bestAreaFit = areaFit;
-                        bestNode.IsRotated = true;
                     }
                 }
             }

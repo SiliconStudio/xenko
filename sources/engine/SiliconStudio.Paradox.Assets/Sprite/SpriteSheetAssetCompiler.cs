@@ -187,7 +187,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                 // Pack textures
                 using (var texTool = new TextureTool())
                 {
-                    var textureElements = new Dictionary<string, IntermediateTexture>();
+                    var textureElements = new List<AtlasTextureElement>();
 
                     // Input textures
                     var imageDictionary = new Dictionary<string, Image>();
@@ -221,17 +221,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
 
                         var key = Url + "_" + i;
 
-                        textureElements.Add(
-                            key,
-                            new IntermediateTexture
-                            {
-                                Texture = texture,
-                                Region = sprite.TextureRegion,
-                                AddressModeU = sprite.BorderModeU,
-                                AddressModeV = sprite.BorderModeV,
-                                BorderColor = sprite.BorderColor
-                            }
-                        );
+                        textureElements.Add(new AtlasTextureElement(key, texture, sprite.TextureRegion, packingParameters.BorderSize, sprite.BorderModeU, sprite.BorderModeV, sprite.BorderColor));
 
                         imageInfoDictionary[key] = sprite;
                     }
@@ -240,12 +230,10 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                     var texturePacker = new TexturePacker
                     {
                         Algorithm = packingParameters.PackingAlgorithm,
-                        UseMultipack = packingParameters.AllowMultipacking,
+                        AllowMultipack = packingParameters.AllowMultipacking,
                         MaxHeight = packingParameters.AtlasMaximumSize.X,
                         MaxWidth = packingParameters.AtlasMaximumSize.Y,
-                        UseRotation = canUseRotation && packingParameters.AllowRotations,
-                        BorderSize = packingParameters.BorderSize,
-                        AtlasSizeContraint = AtlasSizeConstraints.PowerOfTwo
+                        AllowRotation = canUseRotation && packingParameters.AllowRotations,
                     };
 
                     var canPackAllTextures = texturePacker.PackTextures(textureElements);
@@ -257,12 +245,12 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                     }
 
                     // Create and save every generated texture atlas
-                    for (var textureAtlasIndex = 0; textureAtlasIndex < texturePacker.TextureAtlases.Count; ++textureAtlasIndex)
+                    for (var textureAtlasIndex = 0; textureAtlasIndex < texturePacker.AtlasTextureLayouts.Count; ++textureAtlasIndex)
                     {
-                        var textureAtlas = texturePacker.TextureAtlases[textureAtlasIndex];
+                        var atlasLayout = texturePacker.AtlasTextureLayouts[textureAtlasIndex];
 
                         ResultStatus resultStatus;
-                        using (var atlasImage = TexturePacker.Factory.CreateTextureAtlas(textureAtlas))
+                        using (var atlasImage = AtlasTextureFactory.CreateTextureAtlas(atlasLayout))
                         using (var texImage = texTool.Load(atlasImage))
                         {
                             var outputUrl = SpriteSheetAsset.BuildTextureAtlasUrl(Url, textureAtlasIndex);
@@ -270,12 +258,8 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                             resultStatus = TextureHelper.ImportTextureImage(texTool, texImage, convertParameters, CancellationToken, logger);
                         }
 
-                        foreach (var texture in textureAtlas.Textures)
-                        {
-                            var textureKey = texture.PackingRegion.Key;
-
-                            spriteToPackedSprite.Add(imageInfoDictionary[textureKey], new PackedSpriteInfo(texture.PackingRegion, textureAtlasIndex, packingParameters.BorderSize));
-                        }
+                        foreach (var texture in atlasLayout.Textures)
+                            spriteToPackedSprite.Add(imageInfoDictionary[texture.Name], new PackedSpriteInfo(texture.DestinationRegion, textureAtlasIndex, packingParameters.BorderSize));
 
                         if (resultStatus != ResultStatus.Successful)
                         {
@@ -317,7 +301,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
 
             private class PackedSpriteInfo
             {
-                private RotatableRectangle packedRectangle;
+                private RotableRectangle packedRectangle;
                 private readonly float borderSize;
 
                 /// <summary>
@@ -333,10 +317,10 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                     get
                     {
                         return new RectangleF(
-                            borderSize + packedRectangle.Value.X, 
-                            borderSize + packedRectangle.Value.Y,
-                            packedRectangle.Value.Width - 2 * borderSize,
-                            packedRectangle.Value.Height - 2 * borderSize);
+                            borderSize + packedRectangle.X, 
+                            borderSize + packedRectangle.Y,
+                            packedRectangle.Width - 2 * borderSize,
+                            packedRectangle.Height - 2 * borderSize);
                     }
                 }
 
@@ -345,7 +329,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                 /// </summary>
                 public bool IsRotated { get { return packedRectangle.IsRotated; } }
 
-                public PackedSpriteInfo(RotatableRectangle packedRectangle, int atlasTextureIndex, float borderSize)
+                public PackedSpriteInfo(RotableRectangle packedRectangle, int atlasTextureIndex, float borderSize)
                 {
                     this.packedRectangle = packedRectangle;
                     this.borderSize = borderSize;
