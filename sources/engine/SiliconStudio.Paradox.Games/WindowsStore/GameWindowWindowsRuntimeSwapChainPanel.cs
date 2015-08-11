@@ -177,8 +177,7 @@ namespace SiliconStudio.Paradox.Games
 
             // If user clicked only portraits or only landscapes mode (or nothing at all?), let's check against current orientation if it is matching
             bool isOrientationMatchingPreferences =
-                rotationPreferences == DisplayOrientations.None
-                || (currentOrientation == ApplicationViewOrientation.Portrait && (rotationPreferences & PortraitOrientations) != 0)
+                (currentOrientation == ApplicationViewOrientation.Portrait && (rotationPreferences & PortraitOrientations) != 0)
                 || (currentOrientation == ApplicationViewOrientation.Landscape && (rotationPreferences & LandscapeOrientations) != 0);
 
             if (!isOrientationMatchingPreferences && bounds.Width > 0 && bounds.Height > 0 && currentWidth > 0 && currentHeight > 0)
