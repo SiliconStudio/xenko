@@ -21,13 +21,14 @@ namespace SiliconStudio.AssemblyProcessor
 {
     public class AssemblyProcessorApp
     {
-        private Logger log;
+        private ILogger log;
 
         public AssemblyProcessorApp()
         {
             SearchDirectories = new List<string>();
             References = new List<string>();
             ReferencesToAdd = new List<string>();
+            MemoryReferences = new List<AssemblyDefinition>();
             ModuleInitializer = true;
         }
 
@@ -50,6 +51,8 @@ namespace SiliconStudio.AssemblyProcessor
         public List<string> SearchDirectories { get; set; }
 
         public List<string> References { get; set; }
+
+        public List<AssemblyDefinition> MemoryReferences { get; set; }
 
         public List<string> ReferencesToAdd { get; set; }
 
@@ -87,7 +90,8 @@ namespace SiliconStudio.AssemblyProcessor
                 var assemblyDefinition = AssemblyDefinition.ReadAssembly(inputFile, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = readWriteSymbols });
 
                 bool modified;
-                var result = Run(ref assemblyDefinition, ref readWriteSymbols, out modified);
+
+                var result = Run(ref assemblyDefinition, ref readWriteSymbols, out modified, new ConsoleLogger());
                 if (modified || inputFile != outputFile)
                 {
                     // Make sure output directory is created
@@ -120,9 +124,9 @@ namespace SiliconStudio.AssemblyProcessor
             return assemblyResolver;
         }
 
-        public bool Run(ref AssemblyDefinition assemblyDefinition, ref bool readWriteSymbols, out bool modified)
+        public bool Run(ref AssemblyDefinition assemblyDefinition, ref bool readWriteSymbols, out bool modified, ILogger logger)
         {
-            log = new Logger(assemblyDefinition.Name.Name, TreatWarningsAsErrors);
+            log = new Logger(assemblyDefinition.Name.Name, TreatWarningsAsErrors, logger);
 
             modified = false;
 
@@ -162,7 +166,7 @@ namespace SiliconStudio.AssemblyProcessor
 
                 if (SerializationAssembly)
                 {
-                    processors.Add(new SerializationProcessor(SignKeyFile, References, log));
+                    processors.Add(new SerializationProcessor(SignKeyFile, References, MemoryReferences, log));
                 }
 
                 if (GenerateUserDocumentation)
@@ -351,14 +355,16 @@ namespace SiliconStudio.AssemblyProcessor
 
         private class Logger : ILogger
         {
+            private readonly ILogger loggerToForward;
             private readonly bool treatWarningsAsErrors;
 
             public string Module { get; private set; }
 
-            public Logger(string module, bool treatWarningsAsErrors)
+            public Logger(string module, bool treatWarningsAsErrors, ILogger loggerToForward)
             {
                 Module = module;
                 this.treatWarningsAsErrors = treatWarningsAsErrors;
+                this.loggerToForward = loggerToForward;
             }
 
             public void Log(ILogMessage logMessage)
@@ -366,6 +372,16 @@ namespace SiliconStudio.AssemblyProcessor
                 if (treatWarningsAsErrors && logMessage.Type == LogMessageType.Warning)
                     logMessage.Type = LogMessageType.Error;
 
+                loggerToForward.Log(logMessage);
+            }
+        }
+
+        private class ConsoleLogger : ILogger
+        {
+            public string Module { get { return "AssemblyProcessor"; } }
+
+            public void Log(ILogMessage logMessage)
+            {
                 Console.WriteLine(logMessage);
             }
         }

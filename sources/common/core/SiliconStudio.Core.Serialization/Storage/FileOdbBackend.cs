@@ -62,6 +62,11 @@ namespace SiliconStudio.Core.Storage
             get { return isReadOnly; }
         }
 
+        public void Dispose()
+        {
+            assetIndexMap.Dispose();
+        }
+
         /// <inheritdoc/>
         public virtual Stream OpenStream(ObjectId objectId, VirtualFileMode mode = VirtualFileMode.Open, VirtualFileAccess access = VirtualFileAccess.Read, VirtualFileShare share = VirtualFileShare.Read)
         {
@@ -248,5 +253,6 @@ namespace SiliconStudio.Core.Storage
 
             return result.ToString();
         }
+
     }
 }

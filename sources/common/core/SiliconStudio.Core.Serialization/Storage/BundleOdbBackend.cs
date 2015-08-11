@@ -70,6 +70,12 @@ namespace SiliconStudio.Core.Storage
             BundleResolve += DefaultBundleResolve;
         }
 
+
+        public void Dispose()
+        {
+
+        }
+
         public Dictionary<ObjectId, ObjectInfo> GetObjectInfos()
         {
             lock (objects)

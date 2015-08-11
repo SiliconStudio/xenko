@@ -10,7 +10,7 @@ namespace SiliconStudio.Core.Diagnostics
     /// </summary>
     public class ProfilingKey
     {
-        internal static readonly List<ProfilingKey> AllKeys = new List<ProfilingKey>();
+        internal static readonly HashSet<ProfilingKey> AllKeys = new HashSet<ProfilingKey>();
         internal bool Enabled;
         internal ProfilingKeyFlags Flags;
 

@@ -22,7 +22,7 @@ namespace SiliconStudio.AssemblyProcessor
     {
         public static CodeDomProvider codeDomProvider = new Microsoft.CSharp.CSharpCodeProvider();
 
-        public static AssemblyDefinition GenerateSerializationAssembly(PlatformType platformType, BaseAssemblyResolver assemblyResolver, AssemblyDefinition assembly, string serializationAssemblyLocation, string signKeyFile, List<string> references, ILogger log)
+        public static AssemblyDefinition GenerateSerializationAssembly(PlatformType platformType, BaseAssemblyResolver assemblyResolver, AssemblyDefinition assembly, string serializationAssemblyLocation, string signKeyFile, List<string> references, List<AssemblyDefinition> memoryReferences, ILogger log)
         {
             // Create the serializer code generator
             var serializerGenerator = new ComplexSerializerCodeGenerator(assemblyResolver, assembly, log);
@@ -57,10 +57,16 @@ namespace SiliconStudio.AssemblyProcessor
                 }
             }
 
+            // Add references (files and in-memory PE data)
             var metadataReferences = new List<MetadataReference>();
             foreach (var reference in references)
             {
                 metadataReferences.Add(MetadataReference.CreateFromFile(reference));
+            }
+
+            foreach (var reference in memoryReferences)
+            {
+                metadataReferences.Add(CreateMetadataReference(assemblyResolver, reference));
             }
 
             // typeof(Dictionary<,>)
@@ -122,7 +128,15 @@ namespace SiliconStudio.AssemblyProcessor
                 //LogFile = "ilmerge.log",
             };
 
-            merge.Repack();
+            try
+            {
+                merge.Repack();
+            }
+            catch (Exception)
+            {
+                log.Log(new LogMessage("ILRepack", LogMessageType.Error, string.Format("Error while ILRepacking {0}", assembly.Name.Name)));
+                throw;
+            }
 
             // Copy name
             merge.TargetAssemblyDefinition.Name.Name = assembly.Name.Name;

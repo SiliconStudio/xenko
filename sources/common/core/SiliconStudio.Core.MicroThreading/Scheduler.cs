@@ -177,7 +177,7 @@ namespace SiliconStudio.Core.MicroThreading
                     if (MicroThreadCallbackStart != null)
                         MicroThreadCallbackStart(this, new SchedulerThreadEventArgs(microThread, managedThreadId));
 
-                    using (Profiler.Begin(microThread.ProfilingKey))
+                    using (Profiler.Begin(MicroThread.ProfilingKey, microThread.ScriptId))
                     {
                         var callback = callbacks.First;
                         while (callback != null)

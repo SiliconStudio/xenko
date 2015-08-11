@@ -300,6 +300,8 @@ namespace SiliconStudio.Paradox.Physics
 
         protected override void OnEntityAdding(Entity entity, AssociatedData data)
         {
+            if (Simulation.DisableSimulation) return;
+
             if (elements.Any(x => !x.LinkedBoneName.IsNullOrEmpty()))
             {
                 if (data.ModelComponent == null)
@@ -311,6 +313,9 @@ namespace SiliconStudio.Paradox.Physics
                 data.ModelComponent.ModelViewHierarchy.UpdateMatrices();
             }
 
+            //this is not optimal as UpdateWorldMatrix will end up being called twice this frame.. but we need to ensure that we have valid data.
+            entity.Transform.UpdateWorldMatrix();
+
             foreach (var element in data.PhysicsComponent.Elements)
             {
                 NewElement(element, data, entity);
@@ -319,6 +324,8 @@ namespace SiliconStudio.Paradox.Physics
 
         protected override void OnEntityRemoved(Entity entity, AssociatedData data)
         {
+            if (Simulation.DisableSimulation) return;
+
             foreach (var element in data.PhysicsComponent.Elements)
             {
                 DeleteElement(element, true);
@@ -327,6 +334,8 @@ namespace SiliconStudio.Paradox.Physics
 
         protected override void OnEnabledChanged(Entity entity, bool enabled)
         {
+            if (Simulation.DisableSimulation) return;
+
             var entityElements = entity.Get(PhysicsComponent.Key).Elements;
 
             foreach (var element in entityElements.Where(element => element.Collider != null))

@@ -42,7 +42,6 @@ namespace SiliconStudio.Paradox.Graphics
         private SharpDX.Direct3D11.InputLayout currentInputLayout;
         private VertexArrayObject currentVertexArrayObject;
         private VertexArrayLayout currentVertexArrayLayout;
-        private readonly RawViewportF[] currentNativeViewports = new RawViewportF[SimultaneousRenderTargetCount];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphicsDevice" /> class using the default GraphicsAdapter
@@ -711,13 +710,16 @@ namespace SiliconStudio.Paradox.Graphics
         ///     Gets or sets the 1st viewport. See <see cref="Render+states"/> to learn how to use it.
         /// </summary>
         /// <value>The viewport.</value>
-        private void SetViewportImpl(int index, Viewport value)
+        private unsafe void SetViewportImpl()
         {
-            unsafe
+            if (!needViewportUpdate)
+                return;
+            needViewportUpdate = false;
+
+            fixed (Viewport* viewports = currentState.Viewports)
             {
-                Utilities.ReadOut(new IntPtr(&value), out currentNativeViewports[index]);
+                nativeDeviceContext.Rasterizer.SetViewports((RawViewportF*)viewports, currentState.Viewports.Length);
             }
-            nativeDeviceContext.Rasterizer.SetViewports(currentNativeViewports);
         }
 
         public void UnmapSubresource(MappedResource unmapped)
@@ -983,6 +985,8 @@ namespace SiliconStudio.Paradox.Graphics
                         inputAssembler.InputLayout = currentInputLayout;
                 }
             }
+
+            SetViewportImpl();
         }
     }
 }

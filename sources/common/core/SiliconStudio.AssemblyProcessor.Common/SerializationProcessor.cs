@@ -17,12 +17,15 @@ namespace SiliconStudio.AssemblyProcessor
 
         public List<string> References { get; private set; }
 
+        public List<AssemblyDefinition> MemoryReferences { get; private set; }
+
         public ILogger Log { get; private set; }
 
-        public SerializationProcessor(string signKeyFile, List<string> references, ILogger log)
+        public SerializationProcessor(string signKeyFile, List<string> references, List<AssemblyDefinition> memoryReferences, ILogger log)
         {
             SignKeyFile = signKeyFile;
             References = references;
+            MemoryReferences = memoryReferences;
             Log = log;
         }
 
@@ -30,7 +33,7 @@ namespace SiliconStudio.AssemblyProcessor
         {
             // Generate serialization assembly
             var serializationAssemblyFilepath = ComplexSerializerGenerator.GenerateSerializationAssemblyLocation(context.Assembly.MainModule.FullyQualifiedName);
-            context.Assembly = ComplexSerializerGenerator.GenerateSerializationAssembly(context.Platform, context.AssemblyResolver, context.Assembly, serializationAssemblyFilepath, SignKeyFile, References, Log);
+            context.Assembly = ComplexSerializerGenerator.GenerateSerializationAssembly(context.Platform, context.AssemblyResolver, context.Assembly, serializationAssemblyFilepath, SignKeyFile, References, MemoryReferences, Log);
 
             return true;
         }
