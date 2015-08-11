@@ -76,7 +76,7 @@ namespace SiliconStudio.Core
 
                 if (result == IntPtr.Zero)
                 {
-                    throw new InvalidOperationException(string.Format("Could not load native library {0} using CPU architecture {1}.", libraryName, cpu));
+                    throw new InvalidOperationException(string.Format("Could not load native library {0} from path [{1}] using CPU architecture {2}.", libraryName, libraryFilename, cpu));
                 }
                 else
                 {
