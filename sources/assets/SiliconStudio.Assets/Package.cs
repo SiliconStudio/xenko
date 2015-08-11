@@ -897,6 +897,20 @@ namespace SiliconStudio.Assets
             }
         }
 
+        /// <summary>
+        /// Loads the assembly references that were not loaded before.
+        /// </summary>
+        /// <param name="log">The log.</param>
+        /// <param name="loadParametersArg">The load parameters argument.</param>
+        public void UpdateAssemblyReferences(ILogger log, PackageLoadParameters loadParametersArg = null)
+        {
+            if (State < PackageState.DependenciesReady)
+                return;
+
+            var loadParameters = loadParametersArg ?? PackageLoadParameters.Default();
+            LoadAssemblyReferencesForPackage(log, loadParameters);
+        }
+
         private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, UFile fileUPath, byte[] assetContent)
         {
             var asset = assetContent != null
@@ -924,8 +938,14 @@ namespace SiliconStudio.Assets
             {
                 foreach (var projectReference in profile.ProjectReferences.Where(projectRef => projectRef.Type == ProjectType.Plugin || projectRef.Type == ProjectType.Library))
                 {
+                    // Check if already loaded
+                    // TODO: More advanced cases: unload removed references, etc...
+                    if (loadedAssemblies.Any(x => x.ProjectReference == projectReference))
+                        continue;
+
                     string assemblyPath = null;
                     var fullProjectLocation = UPath.Combine(RootDirectory, projectReference.Location);
+
                     try
                     {
                         var forwardingLogger = new ForwardingLoggerResult(log);

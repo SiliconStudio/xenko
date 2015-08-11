@@ -103,11 +103,6 @@
     <Compile Include="AppContextType.cs" />
     <Compile Include="BatchBase.cs" />
     <Compile Include="BlendStateSerializer.cs" />
-    <Compile Include="DataOld\GpuBlendStateSerializer.cs" />
-    <Compile Include="DataOld\GpuDepthStencilStateSerializer.cs" />
-    <Compile Include="DataOld\GpuRasterizerStateSerializer.cs" />
-    <Compile Include="DataOld\GpuSamplerStateSerializer2.cs" />
-    <Compile Include="DataOld\GpuTextureSerializer2.cs" />
     <Compile Include="Data\TextureContentSerializer.cs" />
     <Compile Include="Effects\EffectParameterUpdaterDefinition.cs" />
     <Compile Include="Effects\ParameterDependency.cs" />
@@ -391,7 +386,6 @@
     <Compile Include="IndexBufferBinding.cs" />
     <Compile Include="SamplerStateSerializer.cs" />
     <Compile Include="Texture.Extensions1D.cs" />
-    <Compile Include="DataOld\TextureFileTGASerializer.cs" />
     <Compile Include="DepthStencilStencilOpDescription.cs" />
     <Compile Include="GraphicsResourceMap.cs" />
     <Compile Include="ICommandList.cs" />

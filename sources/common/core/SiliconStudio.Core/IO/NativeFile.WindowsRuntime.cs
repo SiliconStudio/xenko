@@ -13,15 +13,15 @@ namespace SiliconStudio.Core.IO
     {
         private const string KERNEL_FILE = "api-ms-win-core-file-l1-2-0.dll";
 
-        [DllImport(KERNEL_FILE, EntryPoint = "GetFileAttributesExW", CharSet = CharSet.Unicode, SetLastError = true)]
+        [DllImport(KERNEL_FILE, EntryPoint = "GetFileAttributesExW", CharSet = CharSet.Unicode, SetLastError = true, BestFitMapping = false)]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool GetFileAttributesEx(string name, int fileInfoLevel, out WIN32_FILE_ATTRIBUTE_DATA lpFileInformation);
 
-        [DllImport(KERNEL_FILE, EntryPoint = "DeleteFileW", CharSet = CharSet.Unicode, SetLastError = true)]
+        [DllImport(KERNEL_FILE, EntryPoint = "DeleteFileW", CharSet = CharSet.Unicode, SetLastError = true, BestFitMapping = false)]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool DeleteFile(string name);
 
-        [DllImport(KERNEL_FILE, EntryPoint = "CreateDirectoryW", CharSet = CharSet.Unicode)]
+        [DllImport(KERNEL_FILE, EntryPoint = "CreateDirectoryW", CharSet = CharSet.Unicode, BestFitMapping = false)]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool CreateDirectory(string lpPathName, IntPtr lpSecurityAttributes);
 
@@ -39,6 +39,9 @@ namespace SiliconStudio.Core.IO
             public uint FileSizeLow;
         }
 
+        [DllImport(KERNEL_FILE, EntryPoint = "MoveFileExW", SetLastError = true, CharSet = CharSet.Unicode, BestFitMapping = false)]
+        static extern bool MoveFileEx(String src, String dst, uint flags);
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void FileDelete(string name)
         {
@@ -46,6 +49,16 @@ namespace SiliconStudio.Core.IO
             {
                 // TODO: Process GetLastError() code.
                 throw new IOException(string.Format("Error deleting file {0}", name));
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void FileMove(string sourceFileName, string destFileName)
+        {
+            if (!MoveFileEx(sourceFileName, destFileName, 2 /* MOVEFILE_COPY_ALLOWED */))
+            {
+                // TODO: Process GetLastError() code.
+                throw new IOException(string.Format("Can't move file {0} to {1}", sourceFileName, destFileName));
             }
         }
 

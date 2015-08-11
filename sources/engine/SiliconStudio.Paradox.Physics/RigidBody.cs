@@ -59,6 +59,33 @@ namespace SiliconStudio.Paradox.Physics
         }
 
         /// <summary>
+        /// Gets the collider shape.
+        /// </summary>
+        /// <value>
+        /// The collider shape.
+        /// </value>
+        public override ColliderShape ColliderShape
+        {
+            get
+            {
+                return colliderShape;
+            }
+            set
+            {
+                if (InternalRigidBody != null)
+                {
+                    InternalCollider.CollisionShape = value.InternalShape;
+
+                    var inertia = colliderShape.InternalShape.CalculateLocalInertia(mass);
+                    InternalRigidBody.SetMassProps(mass, inertia);
+                    InternalRigidBody.UpdateInertiaTensor(); //this was the major headache when I had to debug Slider and Hinge constraint
+                }
+
+                colliderShape = value;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the angular damping.
         /// </summary>
         /// <value>

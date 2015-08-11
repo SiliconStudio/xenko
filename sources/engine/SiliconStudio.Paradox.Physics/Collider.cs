@@ -234,13 +234,26 @@ namespace SiliconStudio.Paradox.Physics
             }
         }
 
+        protected ColliderShape colliderShape;
+
         /// <summary>
         /// Gets the collider shape.
         /// </summary>
         /// <value>
         /// The collider shape.
         /// </value>
-        public ColliderShape ColliderShape { get; internal set; }
+        public virtual ColliderShape ColliderShape 
+        {
+            get
+            {
+                return colliderShape;
+            }
+            set
+            {
+                if (InternalCollider != null) InternalCollider.CollisionShape = value.InternalShape;
+                colliderShape = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether the Contacts list needs to be always valid.

@@ -56,7 +56,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
                         var compilerParameters = new CompilerParameters();
                         effectCompileRequest.UsedParameters.CopyTo(compilerParameters);
                         compilerParameters.Platform = context.GetGraphicsPlatform();
-                        compilerParameters.Profile = context.GetGraphicsProfile();
+                        compilerParameters.Profile = context.GetGameSettingsAsset().DefaultGraphicsProfile;
                         steps.Add(new CommandBuildStep(new EffectCompileCommand(context, urlRoot, effectCompileRequest.EffectName, compilerParameters)));
                     }
                 }

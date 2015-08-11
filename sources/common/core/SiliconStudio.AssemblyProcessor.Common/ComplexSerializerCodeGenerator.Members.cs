@@ -46,11 +46,18 @@ namespace SiliconStudio.AssemblyProcessor
             // Register referenced assemblies serializer factory, so that we can call them recursively
             foreach (var referencedAssemblyName in assembly.MainModule.AssemblyReferences)
             {
-                var referencedAssembly = assembly.MainModule.AssemblyResolver.Resolve(referencedAssemblyName);
+                try
+                {
+                    var referencedAssembly = assembly.MainModule.AssemblyResolver.Resolve(referencedAssemblyName);
 
-                var assemblySerializerFactoryType = GetSerializerFactoryType(referencedAssembly);
-                if (assemblySerializerFactoryType != null)
-                    referencedAssemblySerializerFactoryTypes.Add(assemblySerializerFactoryType);
+                    var assemblySerializerFactoryType = GetSerializerFactoryType(referencedAssembly);
+                    if (assemblySerializerFactoryType != null)
+                        referencedAssemblySerializerFactoryTypes.Add(assemblySerializerFactoryType);
+                }
+                catch (AssemblyResolutionException)
+                {
+                    continue;
+                }
             }
 
             // Find target framework and replicate it for serializer assembly.

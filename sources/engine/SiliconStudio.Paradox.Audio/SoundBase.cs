@@ -15,15 +15,22 @@ namespace SiliconStudio.Paradox.Audio
     public abstract partial class SoundBase : ComponentBase
     {
         /// <summary>
-        /// Create an instance of soundBase.
+        /// Create an empty instance of soundBase. Used for serialization.
+        /// </summary>
+        internal SoundBase()
+        {
+        }
+
+        /// <summary>
+        /// Create the audio engine to the sound base instance.
         /// </summary>
         /// <param name="engine">A valid AudioEngine</param>
         /// <exception cref="ArgumentNullException">The engine argument is null</exception>
-        internal SoundBase(AudioEngine engine)
+        internal void AttachEngine(AudioEngine engine)
         {
             if (engine == null)
                 throw new ArgumentNullException("engine");
-            
+
             AudioEngine = engine;
         }
 

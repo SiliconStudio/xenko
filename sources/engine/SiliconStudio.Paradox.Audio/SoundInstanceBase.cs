@@ -11,8 +11,10 @@ namespace SiliconStudio.Paradox.Audio
     /// </summary>
     public abstract class SoundInstanceBase: SoundBase, IPlayableSound
     {
-        internal SoundInstanceBase(AudioEngine engine)
-            : base(engine)
+        /// <summary>
+        /// Constructor for serialization
+        /// </summary>
+        internal SoundInstanceBase()
         {
             DataBufferLoaded = false;
             PlayState = SoundPlayState.Stopped;

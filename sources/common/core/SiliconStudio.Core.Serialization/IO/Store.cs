@@ -3,40 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 using SiliconStudio.Core.Serialization;
-
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-using Microsoft.Win32.SafeHandles;
-#endif
 
 namespace SiliconStudio.Core.IO
 {
-    class Store
-    {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-        [StructLayout(LayoutKind.Sequential)]
-        public struct OVERLAPPED
-        {
-            public uint internalLow;
-            public uint internalHigh;
-            public uint offsetLow;
-            public uint offsetHigh;
-            public IntPtr hEvent;
-        }
-
-        [DllImport("Kernel32.dll", SetLastError = true)]
-        public static extern bool LockFileEx(SafeFileHandle handle, uint flags, uint reserved, uint countLow, uint countHigh, ref OVERLAPPED overlapped);
-
-        [DllImport("Kernel32.dll", SetLastError = true)]
-        public static extern bool UnlockFileEx(SafeFileHandle handle, uint reserved, uint countLow, uint countHigh, ref OVERLAPPED overlapped);
-
-        public const uint LOCKFILE_EXCLUSIVE_LOCK = 0x00000002;
-#endif
-    }
-    
     /// <summary>
     /// A store that will be incrementally saved on the HDD.
     /// Thread-safe and process-safe.
@@ -327,7 +298,7 @@ namespace SiliconStudio.Core.IO
             var countLow = (uint)count;
             var countHigh = (uint)(count >> 32);
 
-            var overlapped = new Store.OVERLAPPED()
+            var overlapped = new NativeLockFile.OVERLAPPED()
                 {
                     internalLow = 0,
                     internalHigh = 0,
@@ -336,7 +307,7 @@ namespace SiliconStudio.Core.IO
                     hEvent = IntPtr.Zero,
                 };
 
-            if (!Store.LockFileEx(fileStream.SafeFileHandle, exclusive ? Store.LOCKFILE_EXCLUSIVE_LOCK : 0, 0, countLow, countHigh, ref overlapped))
+            if (!NativeLockFile.LockFileEx(fileStream.SafeFileHandle, exclusive ? NativeLockFile.LOCKFILE_EXCLUSIVE_LOCK : 0, 0, countLow, countHigh, ref overlapped))
             {
                 throw new IOException("Couldn't lock file.");
             }
@@ -369,7 +340,7 @@ namespace SiliconStudio.Core.IO
             var countLow = (uint)count;
             var countHigh = (uint)(count >> 32);
 
-            var overlapped = new Store.OVERLAPPED()
+            var overlapped = new NativeLockFile.OVERLAPPED()
                 {
                     internalLow = 0,
                     internalHigh = 0,
@@ -378,7 +349,7 @@ namespace SiliconStudio.Core.IO
                     hEvent = IntPtr.Zero,
                 };
 
-            if (!Store.UnlockFileEx(fileStream.SafeFileHandle, 0, countLow, countHigh, ref overlapped))
+            if (!NativeLockFile.UnlockFileEx(fileStream.SafeFileHandle, 0, countLow, countHigh, ref overlapped))
             {
                 throw new IOException("Couldn't unlock file.");
             }

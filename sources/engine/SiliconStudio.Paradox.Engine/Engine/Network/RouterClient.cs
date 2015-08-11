@@ -2,11 +2,14 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Paradox.Engine.Network
 {
     public class RouterClient
     {
+        public static readonly Logger Log = GlobalLogger.GetLogger("RouterClient");
+
         /// <summary>
         /// The default port to connect to router server.
         /// </summary>
@@ -72,32 +75,40 @@ namespace SiliconStudio.Paradox.Engine.Network
 
             Task.Run(async () =>
             {
-                // If connecting as a client, try once, otherwise try to listen multiple time (in case port is shared)
-                switch (ConnectionMode)
+                try
                 {
-                    case RouterConnectionMode.Connect:
-                        await socketContext.StartClient("127.0.0.1", DefaultPort);
-                        break;
-                    case RouterConnectionMode.Listen:
-                        await socketContext.StartServer(DefaultListenPort, true, 10);
-                        break;
-                    case RouterConnectionMode.ConnectThenListen:
-                        bool clientException = false;
-                        try
-                        {
+                    // If connecting as a client, try once, otherwise try to listen multiple time (in case port is shared)
+                    switch (ConnectionMode)
+                    {
+                        case RouterConnectionMode.Connect:
                             await socketContext.StartClient("127.0.0.1", DefaultPort);
-                        }
-                        catch (Exception) // Ideally we should filter SocketException, but not available on some platforms (maybe it should be wrapped in a type available on all paltforms?)
-                        {
-                            clientException = true;
-                        }
-                        if (clientException)
-                        {
+                            break;
+                        case RouterConnectionMode.Listen:
                             await socketContext.StartServer(DefaultListenPort, true, 10);
-                        }
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                            break;
+                        case RouterConnectionMode.ConnectThenListen:
+                            bool clientException = false;
+                            try
+                            {
+                                await socketContext.StartClient("127.0.0.1", DefaultPort);
+                            }
+                            catch (Exception) // Ideally we should filter SocketException, but not available on some platforms (maybe it should be wrapped in a type available on all paltforms?)
+                            {
+                                clientException = true;
+                            }
+                            if (clientException)
+                            {
+                                await socketContext.StartServer(DefaultListenPort, true, 10);
+                            }
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.Error("Could not connect to connection router using mode {0}: {1}", ConnectionMode, e.Message);
+                    throw;
                 }
             });
 

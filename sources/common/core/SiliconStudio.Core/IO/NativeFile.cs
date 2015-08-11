@@ -21,6 +21,12 @@ namespace SiliconStudio.Core.IO
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void FileMove(string sourceFileName, string destFileName)
+        {
+            File.Move(sourceFileName, destFileName);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long FileSize(string name)
         {
             var fileInfo = new FileInfo(name);

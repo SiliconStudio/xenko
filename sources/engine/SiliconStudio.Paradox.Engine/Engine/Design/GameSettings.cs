@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Engine.Design
     [ContentSerializer(typeof(DataContentSerializer<GameSettings>))]
     public sealed class GameSettings
     {
-        public const string AssetUrl = "__GameSettings__";
+        public const string AssetUrl = "GameSettings";
 
         public GameSettings()
         {

@@ -51,7 +51,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.1.36.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
       <HintPath>..\..\..\..\build\packages\System.Collections.Immutable.1.1.36\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
@@ -95,6 +95,7 @@
     <Compile Include="..\SiliconStudio.Core\Diagnostics\CallerInfo.cs">
       <Link>Diagnostics\CallerInfo.cs</Link>
     </Compile>
+    <Compile Include="AddReferenceProcessor.cs" />
     <Compile Include="AssemblyProcessorApp.cs" />
     <Compile Include="AssemblyProcessorContext.cs" />
     <Compile Include="AssemblyVersionProcessor.cs" />

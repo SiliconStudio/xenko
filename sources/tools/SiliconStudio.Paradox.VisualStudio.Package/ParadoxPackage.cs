@@ -129,9 +129,6 @@ namespace SiliconStudio.Paradox.VisualStudio
             solutionEventsListener = new SolutionEventsListener(this);
             solutionEventsListener.AfterSolutionBackgroundLoadComplete += solutionEventsListener_AfterSolutionBackgroundLoadComplete;
 
-            // Initialize the build monitor, that will display BuildEngine results in the Build Output pane.
-            buildLogPipeGenerator = new BuildLogPipeGenerator(this);
-
             dte2 = GetGlobalService(typeof(SDTE)) as DTE2;
 
             // Register the C# language service
@@ -255,25 +252,37 @@ namespace SiliconStudio.Paradox.VisualStudio
                 }
             }
 
-            try
+            // Initialize the build monitor, that will display BuildEngine results in the Build Output pane.
+            // Seems like VS2015 display <Exec> output directly without waiting end of execution, so no need for all this anymore!
+            // TODO: Need to find a better way to detect VS version?
+            int visualStudioVersion;
+            if (!int.TryParse(dte2.Version.Split('.')[0], out visualStudioVersion))
+                visualStudioVersion = 12;
+
+            if (visualStudioVersion < 14)
             {
-                // Start PackageBuildMonitorRemote in a separate app domain
-                if (buildMonitorDomain != null)
+                buildLogPipeGenerator = new BuildLogPipeGenerator(this);
+
+                try
+                {
+                    // Start PackageBuildMonitorRemote in a separate app domain
+                    if (buildMonitorDomain != null)
+                        AppDomain.Unload(buildMonitorDomain);
+
+                    buildMonitorDomain = ParadoxCommandsProxy.CreateParadoxDomain();
+                    ParadoxCommandsProxy.InitialzeFromSolution(solutionPath, buildMonitorDomain);
+                    var remoteCommands = ParadoxCommandsProxy.CreateProxy(buildMonitorDomain);
+                    remoteCommands.StartRemoteBuildLogServer(new BuildMonitorCallback(), buildLogPipeGenerator.LogPipeUrl);
+                }
+                catch (Exception e)
+                {
+                    generalOutputPane.OutputStringThreadSafe(string.Format("Error loading Paradox SDK: {0}\r\n", e));
+                    generalOutputPane.Activate();
+
+                    // Unload domain right away
                     AppDomain.Unload(buildMonitorDomain);
-
-                buildMonitorDomain = ParadoxCommandsProxy.CreateParadoxDomain();
-                ParadoxCommandsProxy.InitialzeFromSolution(solutionPath, buildMonitorDomain);
-                var remoteCommands = ParadoxCommandsProxy.CreateProxy(buildMonitorDomain);
-                remoteCommands.StartRemoteBuildLogServer(new BuildMonitorCallback(dte2), buildLogPipeGenerator.LogPipeUrl);
-            }
-            catch (Exception e)
-            {
-                generalOutputPane.OutputStringThreadSafe(string.Format("Error loading Paradox SDK: {0}\r\n", e));
-                generalOutputPane.Activate();
-
-                // Unload domain right away
-                AppDomain.Unload(buildMonitorDomain);
-                buildMonitorDomain = null;
+                    buildMonitorDomain = null;
+                }
             }
 
             // Preinitialize the parser in a separate thread

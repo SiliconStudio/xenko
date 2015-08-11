@@ -237,11 +237,19 @@ namespace SiliconStudio.Paradox.Debugger.Target
         void Log_MessageLogged(object sender, MessageLoggedEventArgs e)
         {
             var message = e.Message;
+
             var serializableMessage = message as SerializableLogMessage;
             if (serializableMessage == null)
             {
                 var logMessage = message as LogMessage;
-                serializableMessage = logMessage != null ? new SerializableLogMessage(logMessage) : null;
+                if (logMessage != null)
+                {
+                    // Ignore MicroThreadCancelledException (they are supposed to be intentionally triggered by live scripting reloading)
+                    if (logMessage.Exception is MicroThreadCancelledException)
+                        return;
+
+                    serializableMessage = new SerializableLogMessage(logMessage);
+                }
             }
 
             if (serializableMessage == null)

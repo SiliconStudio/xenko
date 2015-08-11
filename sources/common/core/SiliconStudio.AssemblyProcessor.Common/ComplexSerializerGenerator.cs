@@ -22,23 +22,8 @@ namespace SiliconStudio.AssemblyProcessor
     {
         public static CodeDomProvider codeDomProvider = new Microsoft.CSharp.CSharpCodeProvider();
 
-        public static AssemblyDefinition GenerateSerializationAssembly(PlatformType platformType, BaseAssemblyResolver assemblyResolver, AssemblyDefinition assembly, string serializationAssemblyLocation, string signKeyFile, List<string> serializatonProjectReferencePaths, ILogger log)
+        public static AssemblyDefinition GenerateSerializationAssembly(PlatformType platformType, BaseAssemblyResolver assemblyResolver, AssemblyDefinition assembly, string serializationAssemblyLocation, string signKeyFile, List<string> references, List<AssemblyDefinition> memoryReferences, ILogger log)
         {
-            // Make sure all assemblies in serializatonProjectReferencePaths are referenced (sometimes they might be optimized out if no direct references)
-            foreach (var serializatonProjectReferencePath in serializatonProjectReferencePaths)
-            {
-                var shortAssemblyName = Path.GetFileNameWithoutExtension(serializatonProjectReferencePath);
-
-                // Still in references (not optimized)
-                if (assembly.MainModule.AssemblyReferences.Any(x => x.Name == shortAssemblyName))
-                    continue;
-
-                // For now, use AssemblyDefinition.ReadAssembly to compute full name -- maybe not very efficient but it shouldn't happen often anyway)
-                var referencedAssembly = AssemblyDefinition.ReadAssembly(serializatonProjectReferencePath);
-
-                assembly.MainModule.AssemblyReferences.Add(AssemblyNameReference.Parse(referencedAssembly.FullName));
-            }
-
             // Create the serializer code generator
             var serializerGenerator = new ComplexSerializerCodeGenerator(assemblyResolver, assembly, log);
 
@@ -72,19 +57,16 @@ namespace SiliconStudio.AssemblyProcessor
                 }
             }
 
+            // Add references (files and in-memory PE data)
             var metadataReferences = new List<MetadataReference>();
-            var assemblyLocations = new HashSet<string>();
-            foreach (var referencedAssemblyName in assembly.MainModule.AssemblyReferences)
+            foreach (var reference in references)
             {
-                // We skip both Windows, and current assembly (AssemblyProcessor.Common, which might be added with an alias)
-                if (referencedAssemblyName.FullName != skipWindows && referencedAssemblyName.FullName != typeof(ComplexSerializerGenerator).Assembly.FullName && referencedAssemblyName.FullName != "SiliconStudio.AssemblyProcessor")
-                {
-                    if (assemblyLocations.Add(referencedAssemblyName.Name))
-                    {
-                        //Console.WriteLine("Resolve Assembly for serialization [{0}]", referencedAssemblyName.FullName);
-                        metadataReferences.Add(CreateMetadataReference(assemblyResolver, assemblyResolver.Resolve(referencedAssemblyName)));
-                    }
-                }
+                metadataReferences.Add(MetadataReference.CreateFromFile(reference));
+            }
+
+            foreach (var reference in memoryReferences)
+            {
+                metadataReferences.Add(CreateMetadataReference(assemblyResolver, reference));
             }
 
             // typeof(Dictionary<,>)
@@ -93,29 +75,12 @@ namespace SiliconStudio.AssemblyProcessor
             metadataReferences.Add(CreateMetadataReference(assemblyResolver, mscorlibAssembly));
             var collectionType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(Dictionary<,>).FullName);
             metadataReferences.Add(CreateMetadataReference(assemblyResolver, collectionType.Module.Assembly));
-
-            // Make sure System and System.Reflection are added
-            // TODO: Maybe we should do that for .NETCore and PCL too? (instead of WinRT only)
-            if (platformType == PlatformType.WindowsStore || platformType == PlatformType.WindowsPhone || platformType == PlatformType.Windows10)
-            {
-                if (assemblyLocations.Add("System"))
-                {
-                    metadataReferences.Add(CreateMetadataReference(assemblyResolver, assemblyResolver.Resolve("System")));
-                }
-                if (assemblyLocations.Add("System.Reflection"))
-                {
-                    metadataReferences.Add(CreateMetadataReference(assemblyResolver, assemblyResolver.Resolve("System.Reflection")));
-                }
-            }
-
             metadataReferences.Add(CreateMetadataReference(assemblyResolver, assembly));
-            assemblyLocations.Add(assembly.Name.Name);
 
-            // In case Paradox.Framework.Serialization was not referenced, let's add it.
-            if (!assemblyLocations.Contains("SiliconStudio.Core"))
+            // In case SiliconStudio.Core was not referenced, let's add it.
+            if (assembly.Name.Name != "SiliconStudio.Core" && !references.Any(x => string.Compare(Path.GetFileNameWithoutExtension(x), "SiliconStudio.Core", StringComparison.OrdinalIgnoreCase) == 0))
             {
                 metadataReferences.Add(CreateMetadataReference(assemblyResolver, assemblyResolver.Resolve("SiliconStudio.Core")));
-                assemblyLocations.Add("SiliconStudio.Core");
             }
 
             // Create roslyn compilation object
@@ -150,6 +115,7 @@ namespace SiliconStudio.AssemblyProcessor
                 NoRepackRes = true,
                 InputAssemblies = new[] { serializationAssemblyLocation },
                 SearchDirectories = assemblyResolver.GetSearchDirectories(),
+                SearchAssemblies = references,
             };
 
             // Run ILMerge
@@ -162,7 +128,15 @@ namespace SiliconStudio.AssemblyProcessor
                 //LogFile = "ilmerge.log",
             };
 
-            merge.Repack();
+            try
+            {
+                merge.Repack();
+            }
+            catch (Exception)
+            {
+                log.Log(new LogMessage("ILRepack", LogMessageType.Error, string.Format("Error while ILRepacking {0}", assembly.Name.Name)));
+                throw;
+            }
 
             // Copy name
             merge.TargetAssemblyDefinition.Name.Name = assembly.Name.Name;
@@ -195,6 +169,20 @@ namespace SiliconStudio.AssemblyProcessor
             }
 
             return merge.TargetAssemblyDefinition;
+        }
+
+        private static void TryAddReference(BaseAssemblyResolver assemblyResolver, HashSet<string> assemblyLocations, List<MetadataReference> metadataReferences, string referenceName)
+        {
+            if (assemblyLocations.Add(referenceName))
+            {
+                try
+                {
+                    metadataReferences.Add(CreateMetadataReference(assemblyResolver, assemblyResolver.Resolve(referenceName)));
+                }
+                catch (AssemblyResolutionException)
+                {
+                }
+            }
         }
 
         private static MetadataReference CreateMetadataReference(IAssemblyResolver assemblyResolver, AssemblyDefinition assembly)

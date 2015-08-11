@@ -11,6 +11,8 @@ namespace SiliconStudio.Core.Serialization
     /// <typeparam name="T"></typeparam>
     public sealed class ReferenceSerializer<T> : DataSerializer<T> where T : class
     {
+        private IContentSerializer cachedContentSerializer;
+
         public override void Serialize(ref T obj, ArchiveMode mode, SerializationStream stream)
         {
             var referenceSerialization = stream.Context.Get(ContentSerializerContext.SerializeAttachedReferenceProperty);
@@ -42,8 +44,9 @@ namespace SiliconStudio.Core.Serialization
 
                     if (obj == null && contentSerializerContext.LoadContentReferences)
                     {
+                        var contentSerializer = cachedContentSerializer ?? (cachedContentSerializer = contentSerializerContext.AssetManager.Serializer.GetSerializer(null, typeof(T)));
                         // First time, let's create it
-                        obj = (T)AttachedReferenceManager.CreateSerializableVersion(typeof(T), contentReference.Id, contentReference.Location);
+                        obj = (T)contentSerializer.Construct(contentSerializerContext);
                         contentSerializerContext.AssetManager.RegisterDeserializedObject(contentReference.Location, obj);
                         contentReference.Value = obj;
                     }
