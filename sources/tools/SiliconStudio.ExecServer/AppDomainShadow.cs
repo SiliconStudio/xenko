@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
 using System.Globalization;
 using System.IO;
-using System.Runtime.InteropServices;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,15 +33,15 @@ namespace SiliconStudio.ExecServer
 
         private bool isDllImportShadowCopy;
 
-        private readonly AppDomain appDomain;
+        private AppDomain appDomain;
+
+        private AssemblyLoaderCallback appDomainCallback;
 
         private readonly List<FileLoaded> filesLoaded;
 
         private bool isRunning;
 
         private bool isUpToDate = true;
-
-        private readonly AssemblyLoaderCallback callback;
 
         private DateTime lastRunTime; 
 
@@ -66,8 +64,7 @@ namespace SiliconStudio.ExecServer
             this.nativeDllsPathOrFolderList = nativeDllsPathOrFolderList;
             applicationPath = Path.GetDirectoryName(mainAssemblyPath);
             filesLoaded = new List<FileLoaded>();
-            callback = new AssemblyLoaderCallback(AssemblyLoaded);
-            appDomain = CreateAppDomain();
+            CreateAppDomain();
             lastRunTime = DateTime.Now;
         }
 
@@ -169,9 +166,10 @@ namespace SiliconStudio.ExecServer
                 lastRunTime = DateTime.Now;
                 using (var appDomainRedirectLogger = new AppDomainRedirectLogger(logger))
                 {
-                    var loggerInstaller = new LoggerInstaller(appDomainRedirectLogger, Path.GetFileNameWithoutExtension(mainAssemblyPath), args);
-                    appDomain.DoCallBack(loggerInstaller.InstallLoggerCallback);
-                    var result = loggerInstaller.Result;
+                    appDomainCallback.Logger = appDomainRedirectLogger;
+                    appDomainCallback.Arguments = args;
+                    appDomain.DoCallBack(appDomainCallback.Run);
+                    var result = appDomainCallback.Result;
 
                     //var result = appDomain.ExecuteAssembly(mainAssemblyPath, args);
                     Console.WriteLine("Return result: {0}", result);
@@ -206,8 +204,12 @@ namespace SiliconStudio.ExecServer
 
             if (!isDllImportShadowCopy)
             {
-                ShadowCopyNativeDlls(location);
-                isDllImportShadowCopy = true;
+                var cachePath = GetRootCachePath(location);
+                if (cachePath != null)
+                {
+                    ShadowCopyNativeDlls(cachePath.FullName);
+                    isDllImportShadowCopy = true;
+                }
             }
 
             // Register the assembly in order to unload this appdomain if it is no longer relevant
@@ -215,7 +217,7 @@ namespace SiliconStudio.ExecServer
             RegisterFileLoaded(new FileInfo(Path.Combine(applicationPath, assemblyFileName)));
         }
 
-        private void ShadowCopyNativeDlls(string currentAssemblyPath)
+        private void ShadowCopyNativeDlls(string cachePath)
         {
             // In this method, we copy all native dlls to a subfolder under the shadow cache
             // Each dll has a hash computed from its name and last timestamp
@@ -224,8 +226,7 @@ namespace SiliconStudio.ExecServer
             // The method in PreLoadLibrary will use the dll that have been copied by this instance
 
             // Get the shadow folder for native dlls
-            var rootShadow = GetRootCachePath(currentAssemblyPath).FullName;
-            var nativeDllShadowRootFolder = Path.Combine(rootShadow, "native");
+            var nativeDllShadowRootFolder = Path.Combine(cachePath, "native");
             Directory.CreateDirectory(nativeDllShadowRootFolder);
 
             // Copy check any new native dlls
@@ -244,14 +245,14 @@ namespace SiliconStudio.ExecServer
                 foreach (var file in files)
                 {
                     var fileHash = GetFileHash(hashBuffer, file);
-                    var nativeDllPath = Path.Combine(nativeDllShadowRootFolder, fileHash, file.Name);
-                    if (!File.Exists(nativeDllPath))
+                    var shadowDllPath = Path.Combine(nativeDllShadowRootFolder, fileHash, file.Name);
+                    if (!File.Exists(shadowDllPath))
                     {
-                        SafeCopy(file.FullName, nativeDllPath);
+                        SafeCopy(file.FullName, shadowDllPath);
                     }
 
                     // Register our native path
-                    NativeLibraryInternal.SetShadowPathForNativeDll(appDomain, file.Name, Path.GetDirectoryName(nativeDllPath));
+                    NativeLibraryInternal.SetShadowPathForNativeDll(appDomain, file.Name, Path.GetDirectoryName(shadowDllPath));
 
                     // Register this dll 
                     RegisterFileLoaded(file);
@@ -270,7 +271,7 @@ namespace SiliconStudio.ExecServer
                 }
                 info = info.Parent;
             }
-            throw new InvalidOperationException(String.Format("Unexpected cache layout. Expecting dl3 folder from [{0}]", currentPath));
+            return null;
         }
 
         private static string Hash(byte[] buffer)
@@ -287,7 +288,7 @@ namespace SiliconStudio.ExecServer
         private static string GetFileHash(MemoryStream hashBuffer, FileInfo file)
         {
             hashBuffer.Position = 0;
-            var nameAsBytes = Encoding.UTF8.GetBytes(file.Name);
+            var nameAsBytes = Encoding.UTF8.GetBytes(file.FullName);
             hashBuffer.Write(nameAsBytes, 0, nameAsBytes.Length);
             var timeAsBytes = BitConverter.GetBytes(file.LastWriteTimeUtc.Ticks);
             hashBuffer.Write(timeAsBytes, 0, timeAsBytes.Length);
@@ -306,19 +307,35 @@ namespace SiliconStudio.ExecServer
         {
             var fileName = Path.GetFileName(sourceFilePath);
 
-            var directory = Path.GetDirectoryName(destinationFilePath);
-            var parentDirectory = Directory.GetParent(directory).FullName;
-            var tempPath = Path.Combine(parentDirectory, Guid.NewGuid().ToString());
-            var tempDir = new DirectoryInfo(tempPath);
-            Directory.CreateDirectory(tempPath);
+            var destinationDirectory = Path.GetDirectoryName(destinationFilePath);
+
+            // Case where the directory exists but the file not (not expected but got this case, will have to check why)
+            if (Directory.Exists(destinationDirectory) && !File.Exists(destinationFilePath))
+            {
+                try
+                {
+                    File.Copy(sourceFilePath, destinationFilePath, true);
+                    return;
+                }
+                catch (IOException)
+                {
+                }
+            }
+
+            var destinationParentDirectory = Directory.GetParent(destinationDirectory).FullName;
+            var destinationTempDirectory = Path.Combine(destinationParentDirectory, Guid.NewGuid().ToString());
+            Directory.CreateDirectory(destinationTempDirectory);
             bool tempDirDeleted = false;
             try
             {
-                File.Copy(sourceFilePath, Path.Combine(tempPath, fileName));
+                File.Copy(sourceFilePath, Path.Combine(destinationTempDirectory, fileName), true);
                 try
                 {
-                    tempDir.MoveTo(directory);
-                    tempDirDeleted = true;
+                    if (!Directory.Exists(destinationDirectory))
+                    {
+                        Directory.Move(destinationTempDirectory, destinationDirectory);
+                        tempDirDeleted = true;
+                    }
                 }
                 catch (IOException)
                 {
@@ -333,7 +350,7 @@ namespace SiliconStudio.ExecServer
                 {
                     try
                     {
-                        tempDir.Delete(true);
+                        Directory.Delete(destinationTempDirectory, true);
                     }
                     catch (Exception)
                     {
@@ -342,7 +359,7 @@ namespace SiliconStudio.ExecServer
             }
         }
 
-        private AppDomain CreateAppDomain()
+        private void CreateAppDomain()
         {
             var appDomainSetup = new AppDomainSetup
             {
@@ -351,12 +368,14 @@ namespace SiliconStudio.ExecServer
                 CachePath = Path.Combine(applicationPath, CacheFolder),
             };
 
-            var newAppDomain = AppDomain.CreateDomain(appDomainName, AppDomain.CurrentDomain.Evidence, appDomainSetup);
+            // Create AppDomain
+            appDomain = AppDomain.CreateDomain(appDomainName, AppDomain.CurrentDomain.Evidence, appDomainSetup);
 
-            // Install the callback to prepare the new app domain
-            newAppDomain.DoCallBack(callback.RegisterAssemblyLoad);
+            // Create appDomain Callback
+            appDomainCallback = new AssemblyLoaderCallback(AssemblyLoaded, mainAssemblyPath);
 
-            return newAppDomain;
+            // Install the appDomainCallback to prepare the new app domain
+            appDomain.DoCallBack(appDomainCallback.RegisterAssemblyLoad);
         }
 
         private struct FileLoaded
@@ -393,25 +412,52 @@ namespace SiliconStudio.ExecServer
         [Serializable]
         private class AssemblyLoaderCallback
         {
+            private const string AppDomainExecServerEntryAssemblyKey = "AppDomainExecServerEntryAssembly";
             private readonly Action<string> callback;
 
-            public AssemblyLoaderCallback(Action<string> callback)
+            private readonly string executablePath;
+
+            public AssemblyLoaderCallback(Action<string> callback, string executablePath)
             {
                 this.callback = callback;
+                this.executablePath = executablePath;
             }
+
+            public IServerLogger Logger { get; set; }
+
+            public string[] Arguments { get; set; }
+
+            public int Result { get; private set; }
 
             public void RegisterAssemblyLoad()
             {
+                var currentDomain = AppDomain.CurrentDomain;
+
                 // NOTE: This part is important to have native dlls resolved correctly by Mixed Assemblies
                 var path = Environment.GetEnvironmentVariable("PATH");
-                if (!path.Contains(AppDomain.CurrentDomain.BaseDirectory))
+                if (!path.Contains(currentDomain.BaseDirectory))
                 {
-                    path = AppDomain.CurrentDomain.BaseDirectory + ";" + path;
+                    path = currentDomain.BaseDirectory + ";" + path;
                     Environment.SetEnvironmentVariable("PATH", path);
                 }
 
                 // This method is executed in the child application domain
-                AppDomain.CurrentDomain.AssemblyLoad += AppDomainOnAssemblyLoad;
+                currentDomain.AssemblyLoad += AppDomainOnAssemblyLoad;
+
+                // Preload main entry point assembly
+                var mainAssembly = currentDomain.Load(Path.GetFileNameWithoutExtension(executablePath));
+                currentDomain.SetData(AppDomainExecServerEntryAssemblyKey, mainAssembly);
+            }
+
+            public void Run()
+            {
+                var currentDomain = AppDomain.CurrentDomain;
+                currentDomain.SetData(AppDomainLogToActionKey, new Action<string, ConsoleColor>((text, color) => Logger.OnLog(text, color)));
+                var assembly = (Assembly)currentDomain.GetData(AppDomainExecServerEntryAssemblyKey);
+                Result = Convert.ToInt32(assembly.EntryPoint.Invoke(null, new object[] { Arguments }));
+
+                // Force a GC after the process is finished
+                GC.Collect(2, GCCollectionMode.Forced);
             }
 
             private void AppDomainOnAssemblyLoad(object sender, AssemblyLoadEventArgs args)
@@ -446,31 +492,6 @@ namespace SiliconStudio.ExecServer
             public void Dispose()
             {
                 logger = null;
-            }
-        }
-
-        [Serializable]
-        private class LoggerInstaller
-        {
-            private readonly IServerLogger logger;
-            private readonly string executablePath;
-            private readonly string[] args;
-
-            public LoggerInstaller(IServerLogger logger, string executablePath, string[] args)
-            {
-                this.logger = logger;
-                this.executablePath = executablePath;
-                this.args = args;
-            }
-
-            public int Result { get; private set; }
-
-            public void InstallLoggerCallback()
-            {
-                var currentDomain = AppDomain.CurrentDomain;
-                currentDomain.SetData(AppDomainLogToActionKey, new Action<string, ConsoleColor>((text,color) => logger.OnLog(text, color)));
-                var assembly = currentDomain.Load(executablePath);
-                Result = Convert.ToInt32(assembly.EntryPoint.Invoke(null, new object[] { args }));
             }
         }
 
