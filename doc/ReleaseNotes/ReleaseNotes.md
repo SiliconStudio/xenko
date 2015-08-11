@@ -59,6 +59,7 @@ Release date: 2015/08/11
 - Windows10: With D3D 9.x, we were using RSSetViewports with more than one viewports (MRT), resulting in errors and nothing rendered under Windows 10 (runtime is doing more checks than before)
 - Studio: New Game were not properly tracked for script changes (until reloaded).
 - Studio: Some objects were transparent in the camera preview of the scene editor.
+- Studio: Properly reload available scripts list in property grid after recompiling game assembly.
 - Studio: The button to orient the camera in the left direction was incorrectly implemented.
 - Studio: The property grid was displaying some properties that were supposed to be hidden.
 - Studio: When running "Live Scripting" mode, log of compilation and runtime errors is better (no more huge dialog boxes)
