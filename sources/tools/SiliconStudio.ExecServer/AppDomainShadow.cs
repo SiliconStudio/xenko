@@ -373,7 +373,7 @@ namespace SiliconStudio.ExecServer
 
             public bool IsUpToDate()
             {
-                if (File.Exists(FilePath))
+                if (!File.Exists(FilePath))
                 {
                     return false;
                 }
