@@ -90,8 +90,9 @@ namespace SiliconStudio.ExecServer
                         break;
                     }
 
+
                     // If this exec server is no longer up-to-date with its original exe, we can close it
-                    if (File.GetLastWriteTimeUtc(originalAssemblyPath) != thisAssemblyTime)
+                    if (!File.Exists(originalAssemblyPath) || File.GetLastWriteTimeUtc(originalAssemblyPath) != thisAssemblyTime)
                     {
                         Console.WriteLine("Shutdown server as original exe [{0}] has changed", originalAssemblyPath);
                         break;

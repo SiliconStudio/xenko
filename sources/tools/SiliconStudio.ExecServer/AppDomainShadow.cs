@@ -139,7 +139,7 @@ namespace SiliconStudio.ExecServer
                 {
                     if (!fileLoaded.IsUpToDate())
                     {
-                        Console.WriteLine("Dll File changed: {0}", fileLoaded.filePath);
+                        Console.WriteLine("Dll File changed: {0}", fileLoaded.FilePath);
 
                         isUpToDate = false;
                         break;
@@ -363,19 +363,24 @@ namespace SiliconStudio.ExecServer
         {
             public FileLoaded(FileInfo file)
             {
-                filePath = file.FullName;
+                FilePath = file.FullName;
                 lastWriteTime = file.LastWriteTimeUtc;
             }
 
-            public readonly string filePath;
+            public readonly string FilePath;
 
             private readonly DateTime lastWriteTime;
 
             public bool IsUpToDate()
             {
+                if (File.Exists(FilePath))
+                {
+                    return false;
+                }
+
                 try
                 {
-                    var currentTime = new FileInfo(filePath).LastWriteTimeUtc;
+                    var currentTime = new FileInfo(FilePath).LastWriteTimeUtc;
                     return currentTime == lastWriteTime;
                 }
                 catch (IOException)
