@@ -193,8 +193,6 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                     var imageDictionary = new Dictionary<string, Image>();
                     var imageInfoDictionary = new Dictionary<string, SpriteInfo>();
 
-                    var canUseRotation = true;
-
                     var sprites = AssetParameters.SheetAsset.Sprites;
                     var packingParameters = AssetParameters.SheetAsset.Packing;
 
@@ -203,8 +201,6 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                         var sprite = sprites[i];
                         if (sprite.TextureRegion.Height == 0)
                             continue;
-
-                        canUseRotation &= sprite.Orientation == ImageOrientation.AsIs;
 
                         // Lazy load input texture and cache in the dictionary for the later use
                         Image texture;
@@ -221,7 +217,8 @@ namespace SiliconStudio.Paradox.Assets.Sprite
 
                         var key = Url + "_" + i;
 
-                        textureElements.Add(new AtlasTextureElement(key, texture, sprite.TextureRegion, packingParameters.BorderSize, sprite.BorderModeU, sprite.BorderModeV, sprite.BorderColor));
+                        var sourceRectangle = new RotableRectangle(sprite.TextureRegion, sprite.Orientation == ImageOrientation.Rotated90);
+                        textureElements.Add(new AtlasTextureElement(key, texture, sourceRectangle, packingParameters.BorderSize, sprite.BorderModeU, sprite.BorderModeV, sprite.BorderColor));
 
                         imageInfoDictionary[key] = sprite;
                     }
@@ -233,7 +230,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                         AllowMultipack = packingParameters.AllowMultipacking,
                         MaxHeight = packingParameters.AtlasMaximumSize.X,
                         MaxWidth = packingParameters.AtlasMaximumSize.Y,
-                        AllowRotation = canUseRotation && packingParameters.AllowRotations,
+                        AllowRotation = packingParameters.AllowRotations,
                     };
 
                     var canPackAllTextures = texturePacker.PackTextures(textureElements);

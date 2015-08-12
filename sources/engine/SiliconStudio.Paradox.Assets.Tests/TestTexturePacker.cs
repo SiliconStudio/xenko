@@ -151,6 +151,59 @@ namespace SiliconStudio.Paradox.Assets.Tests
         }
 
         [Test]
+        public void TestRotationElement1()
+        {
+            var textureElements = new List<AtlasTextureElement>
+            {
+                CreateElementFromFile("imageRotated0", 0, TextureAddressMode.Clamp, TextureAddressMode.Clamp)
+            };
+            textureElements[0].SourceRegion.IsRotated = true;
+
+            var texturePacker = new TexturePacker
+            {
+                AllowMultipack = true,
+                AllowRotation = true,
+                MaxWidth = 128,
+                MaxHeight = 256,
+            };
+
+            var canPackAllTextures = texturePacker.PackTextures(textureElements);
+
+            Assert.IsTrue(canPackAllTextures);
+            Assert.AreEqual(1, texturePacker.AtlasTextureLayouts.Count);
+
+            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(texturePacker.AtlasTextureLayouts[0]);
+
+            SaveAndCompareTexture(atlasTexture, "TestRotationElement1");
+        }
+
+        [Test]
+        public void TestRotationElement2()
+        {
+            var textureElements = new List<AtlasTextureElement>
+            {
+                CreateElementFromFile("imageRotated1", 0, TextureAddressMode.Clamp, TextureAddressMode.Clamp)
+            };
+
+            var texturePacker = new TexturePacker
+            {
+                AllowMultipack = true,
+                AllowRotation = true,
+                MaxWidth = 256,
+                MaxHeight = 128,
+            };
+
+            var canPackAllTextures = texturePacker.PackTextures(textureElements);
+
+            Assert.IsTrue(canPackAllTextures);
+            Assert.AreEqual(1, texturePacker.AtlasTextureLayouts.Count);
+
+            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(texturePacker.AtlasTextureLayouts[0]);
+
+            SaveAndCompareTexture(atlasTexture, "TestRotationElement2");
+        }
+
+        [Test]
         public void TestTexturePackerWithMultiPack()
         {
             var textureElements = CreateFakeTextureElements();
@@ -236,15 +289,15 @@ namespace SiliconStudio.Paradox.Assets.Tests
             if (color != null)
                 image = CreateMockTexture(width, height, color.Value);
 
-            return new AtlasTextureElement(name, image, new Rectangle(0, 0, width, height), borderSize, borderMode, borderMode, borderColor);
+            return new AtlasTextureElement(name, image, new RotableRectangle(0, 0, width, height), borderSize, borderMode, borderMode, borderColor);
         }
 
-        private AtlasTextureElement CreateElementFromFile(string name, int borderSize, TextureAddressMode borderModeU, TextureAddressMode borderModeV, Rectangle? imageRegion = null)
+        private AtlasTextureElement CreateElementFromFile(string name, int borderSize, TextureAddressMode borderModeU, TextureAddressMode borderModeV, RotableRectangle? imageRegion = null)
         {
             using (var texTool = new TextureTool())
             {
                 var image = LoadImage(texTool, new UFile(ImageInputPath + "/" + name + ".png"));
-                var region = imageRegion ?? new Rectangle(0, 0, image.Description.Width, image.Description.Height);
+                var region = imageRegion ?? new RotableRectangle(0, 0, image.Description.Width, image.Description.Height);
 
                 return new AtlasTextureElement(name, image, region, borderSize, borderModeU, borderModeV, Color.SteelBlue);
             }
@@ -395,13 +448,13 @@ namespace SiliconStudio.Paradox.Assets.Tests
         {
             var textureElements = new List<AtlasTextureElement>
             {
-                CreateElementFromFile("imagePart0", 26, TextureAddressMode.Border, TextureAddressMode.Mirror, new Rectangle(0, 0, 128, 128)),
-                CreateElementFromFile("imagePart0", 26, TextureAddressMode.Clamp, TextureAddressMode.Clamp, new Rectangle(128, 128, 128, 128)),
-                CreateElementFromFile("imagePart0", 26, TextureAddressMode.MirrorOnce, TextureAddressMode.Wrap, new Rectangle(128, 0, 128, 128)),
-                CreateElementFromFile("imagePart1", 26, TextureAddressMode.Clamp, TextureAddressMode.Mirror, new Rectangle(376, 0, 127, 256)),
-                CreateElementFromFile("imagePart1", 26, TextureAddressMode.Mirror, TextureAddressMode.Clamp, new Rectangle(10, 10, 254, 127)),
+                CreateElementFromFile("imagePart0", 26, TextureAddressMode.Border, TextureAddressMode.Mirror, new RotableRectangle(0, 0, 128, 128)),
+                CreateElementFromFile("imagePart0", 26, TextureAddressMode.Clamp, TextureAddressMode.Clamp, new RotableRectangle(128, 128, 128, 128)),
+                CreateElementFromFile("imagePart0", 26, TextureAddressMode.MirrorOnce, TextureAddressMode.Wrap, new RotableRectangle(128, 0, 128, 128)),
+                CreateElementFromFile("imagePart1", 26, TextureAddressMode.Clamp, TextureAddressMode.Mirror, new RotableRectangle(376, 0, 127, 256)),
+                CreateElementFromFile("imagePart1", 26, TextureAddressMode.Mirror, TextureAddressMode.Clamp, new RotableRectangle(10, 10, 254, 127)),
                 CreateElement("empty", 0, 0, 26),
-                CreateElementFromFile("imagePart2", 26, TextureAddressMode.Clamp, TextureAddressMode.Clamp, new Rectangle(0, 0, 128, 64)),
+                CreateElementFromFile("imagePart2", 26, TextureAddressMode.Clamp, TextureAddressMode.Clamp, new RotableRectangle(0, 0, 128, 64)),
             };
 
             var texturePacker = new TexturePacker

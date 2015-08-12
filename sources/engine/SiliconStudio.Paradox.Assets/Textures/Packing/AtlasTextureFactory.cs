@@ -30,7 +30,8 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
             // Fill in textureData from AtlasTextureLayout
             foreach (var element in atlasTextureLayout.Textures)
             {
-                var isRotated = element.DestinationRegion.IsRotated;
+                var isSourceRotated = element.SourceRegion.IsRotated;
+                var isDestinationRotated = element.DestinationRegion.IsRotated;
                 var sourceTexture = element.Texture;
                 var sourceTextureWidth = sourceTexture.Description.Width;
 
@@ -38,8 +39,8 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
                 var addressModeV = element.BorderModeV;
                 var borderColor = element.BorderColor;
 
-                var targetRegionWidth = isRotated ? element.SourceRegion.Height : element.SourceRegion.Width;
-                var targetRegionHeight = isRotated ? element.SourceRegion.Width : element.SourceRegion.Height;
+                var targetRegionWidth = isDestinationRotated ? element.SourceRegion.Height : element.SourceRegion.Width;
+                var targetRegionHeight = isDestinationRotated ? element.SourceRegion.Width : element.SourceRegion.Height;
 
                 unsafe
                 {
@@ -58,14 +59,23 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
                             // Check if this image uses border mode, and is in the border area
                             var isBorderMode = sourceCoordinateX < 0 || sourceCoordinateY < 0;
 
-                            if (isRotated)
+                            if (isDestinationRotated)
                             {
                                 // Modify index for rotating
                                 var tmp = sourceCoordinateY;
 
-                                // Since intemediateTexture.DestinationRegion contains the border, we need to delete the border out
-                                sourceCoordinateY = (element.DestinationRegion.Width - element.BorderSize * 2) - 1 - sourceCoordinateX;
-                                sourceCoordinateX = tmp;
+                                if (isSourceRotated)
+                                {
+                                    // Since intemediateTexture.DestinationRegion contains the border, we need to delete the border out
+                                    sourceCoordinateY = sourceCoordinateX;
+                                    sourceCoordinateX = (element.DestinationRegion.Height - element.BorderSize * 2) - 1 - tmp;
+                                }
+                                else
+                                {
+                                    // Since intemediateTexture.DestinationRegion contains the border, we need to delete the border out
+                                    sourceCoordinateY = (element.DestinationRegion.Width - element.BorderSize * 2) - 1 - sourceCoordinateX;
+                                    sourceCoordinateX = tmp;
+                                }
                             }
 
                             // Add offset from the region

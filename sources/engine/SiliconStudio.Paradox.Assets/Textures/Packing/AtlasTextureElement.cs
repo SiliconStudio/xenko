@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
         /// <summary>
         /// The region of the atlas element in its original texture.
         /// </summary>
-        public Rectangle SourceRegion;
+        public RotableRectangle SourceRegion;
 
         /// <summary>
         /// The region of the atlas element in the output atlas texture (it includes the border size!).
@@ -53,7 +53,7 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
         /// Create an empty atlas texture element.
         /// </summary>
         public AtlasTextureElement() :
-            this(null, null, new Rectangle(), 0, TextureAddressMode.Wrap, TextureAddressMode.Wrap)
+            this(null, null, new RotableRectangle(), 0, TextureAddressMode.Wrap, TextureAddressMode.Wrap)
         {
         }
 
@@ -67,7 +67,7 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
         /// <param name="borderModeU">The border mode along the U axis</param>
         /// <param name="borderModeV">The border mode along the V axis</param>
         /// <param name="borderColor">The color of the border</param>
-        public AtlasTextureElement(string name, Image texture, Rectangle sourceRegion, int borderSize, TextureAddressMode borderModeU, TextureAddressMode borderModeV, Color? borderColor = null)
+        public AtlasTextureElement(string name, Image texture, RotableRectangle sourceRegion, int borderSize, TextureAddressMode borderModeU, TextureAddressMode borderModeV, Color? borderColor = null)
         {
             Name = name;
             Texture = texture;

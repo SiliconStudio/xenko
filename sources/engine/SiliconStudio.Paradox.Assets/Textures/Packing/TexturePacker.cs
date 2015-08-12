@@ -191,7 +191,7 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
             do
             {
                 // Do not create the atlas if all the elements are "empty". We don't want empty atlas.
-                if (textureElements.All(e => e.SourceRegion.Width <= 0 || e.SourceRegion.Height <= 0))
+                if (textureElements.All(e => e.SourceRegion.IsEmpty()))
                     return true;
 
                 List<AtlasTextureElement> remainingElements;

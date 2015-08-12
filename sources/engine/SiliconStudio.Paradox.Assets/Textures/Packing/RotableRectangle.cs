@@ -1,6 +1,7 @@
 ﻿
 using System.Globalization;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Assets.Textures.Packing
 {
@@ -51,9 +52,32 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
             IsRotated = isRotated;
         }
 
+        /// <summary>
+        /// Initializes a new instance of RotableRectangle from an rectangle
+        /// </summary>
+        /// <param name="rectangle">Reference rectangle</param>
+        /// <param name="isRotated">Indicate if the rectangle is rotated or not</param>
+        public RotableRectangle(Rectangle rectangle, bool isRotated = false)
+        {
+            X = rectangle.X;
+            Y = rectangle.Y;
+            Width = rectangle.Width;
+            Height = rectangle.Height;
+            IsRotated = isRotated;
+        }
+
         public override string ToString()
         {
             return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1} Width:{2} Height:{3} Rotated: {4}", X, Y, Width, Height, IsRotated);
+        }
+
+        /// <summary>
+        /// Specify if the rectangle is empty. That is, if it has a null area.
+        /// </summary>
+        /// <returns><value>True</value> if empty</returns>
+        public bool IsEmpty()
+        {
+            return Width <= 0 || Height <= 0;
         }
     }
 }

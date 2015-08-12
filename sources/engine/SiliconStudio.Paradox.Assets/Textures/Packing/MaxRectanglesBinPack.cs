@@ -70,7 +70,7 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
             // Reason: reduce the size of the atlas and wrap/mirror/clamp border mode are undetermined for empty elements.
             for (int i = elementsToPack.Count-1; i >= 0; --i)
             {
-                if (elementsToPack[i].SourceRegion.Width <= 0 || elementsToPack[i].SourceRegion.Height <= 0)
+                if (elementsToPack[i].SourceRegion.IsEmpty())
                     elementsToPack.RemoveAt(i);
             }
 
