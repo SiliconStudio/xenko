@@ -24,7 +24,8 @@ namespace SiliconStudio.Assets.CompilerApp
             finally
             {
                 // Free all native library loaded from the process
-                NativeLibrary.UnLoadAll();
+                // We cannot free native libraries are some of them are loaded from static module initializer
+                // NativeLibrary.UnLoadAll();
             }
         }
     }
