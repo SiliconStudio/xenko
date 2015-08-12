@@ -101,6 +101,21 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>FXAAShaderEffect.pdxfx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Materials\ComputeColors\ColorVertexStreamDefinition.cs" />
+    <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamBase.cs" />
+    <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamColor.cs" />
+    <Compile Include="Rendering\Materials\ComputeColors\VertexStreamDefinitionBase.cs" />
+    <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamScalar.cs" />
+    <Compile Include="Rendering\Materials\ComputeColors\VertexUserStreamDefinition.cs" />
+    <Compile Include="Rendering\Materials\ComputeColors\IComputeVertexStream.cs" />
+    <Compile Include="Rendering\Materials\ComputeColors\IVertexStreamDefinition.cs" />
+    <Compile Include="Rendering\Materials\ComputeColors\IndexedVertexStreamDefinition.cs" />
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorFromStream.cs">
+      <DependentUpon>ComputeColorFromStream.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Rendering\Materials\MaterialFeature.cs" />
     <Compile Include="Rendering\Materials\MaterialTransparencyBlendFeature.cs" />
     <Compile Include="Shaders.Compiler\RemoteEffectCompiler.cs" />
