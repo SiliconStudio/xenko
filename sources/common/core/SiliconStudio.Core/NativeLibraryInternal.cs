@@ -14,17 +14,23 @@ namespace SiliconStudio.Core
 
         public static void SetShadowPathForNativeDll(AppDomain appDomain, string dllFileName, string dllPath)
         {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             if (dllFileName == null) throw new ArgumentNullException("dllFileName");
             if (dllPath == null) throw new ArgumentNullException("dllPath");
             var key = AppDomainCustomDllPathKey + dllFileName.ToLowerInvariant();
             appDomain.SetData(key, dllPath);
+#endif
         }
 
         public static string GetShadowPathForNativeDll(string dllFileName)
         {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             if (dllFileName == null) throw new ArgumentNullException("dllFileName");
             var key = AppDomainCustomDllPathKey + dllFileName.ToLowerInvariant();
             return (string)AppDomain.CurrentDomain.GetData(key);
+#else
+            return null;
+#endif
         }
     }
 }

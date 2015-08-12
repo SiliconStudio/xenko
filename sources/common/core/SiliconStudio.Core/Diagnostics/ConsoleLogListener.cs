@@ -21,15 +21,6 @@ namespace SiliconStudio.Core.Diagnostics
     {
         private bool isConsoleActive;
 
-        private readonly Func<ConsoleColor> foreGroundColorGetter;
-        private readonly Action<ConsoleColor> foreGroundColorSetter;
-
-        public ConsoleLogListener()
-        {
-            foreGroundColorGetter = () => Console.ForegroundColor;
-            foreGroundColorSetter = color => Console.ForegroundColor = color;
-        }
-
         /// <summary>
         /// Gets or sets the minimum log level handled by this listener.
         /// </summary>
@@ -94,26 +85,26 @@ namespace SiliconStudio.Core.Diagnostics
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             // save initial console color
-            ConsoleColor initialColor = foreGroundColorGetter();
+            ConsoleColor initialColor = Console.ForegroundColor;
 
             // set the color depending on the message log level
             switch (logMessage.Type)
             {
                 case LogMessageType.Debug:
-                    foreGroundColorSetter(ConsoleColor.DarkGray);
+                    Console.ForegroundColor = (ConsoleColor.DarkGray);
                     break;
                 case LogMessageType.Verbose:
-                    foreGroundColorSetter(ConsoleColor.Gray);
+                    Console.ForegroundColor = (ConsoleColor.Gray);
                     break;
                 case LogMessageType.Info:
-                    foreGroundColorSetter(ConsoleColor.Green);
+                    Console.ForegroundColor = (ConsoleColor.Green);
                     break;
                 case LogMessageType.Warning:
-                    foreGroundColorSetter(ConsoleColor.Yellow);
+                    Console.ForegroundColor = (ConsoleColor.Yellow);
                     break;
                 case LogMessageType.Error:
                 case LogMessageType.Fatal:
-                    foreGroundColorSetter(ConsoleColor.Red);
+                    Console.ForegroundColor = (ConsoleColor.Red);
                     break;
             }
 #endif
@@ -145,7 +136,7 @@ namespace SiliconStudio.Core.Diagnostics
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 
             // revert console initial color
-            foreGroundColorSetter(initialColor);
+            Console.ForegroundColor = (initialColor);
 #endif
 #endif // !SILICONSTUDIO_PLATFORM_ANDROID
         }

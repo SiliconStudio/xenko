@@ -92,6 +92,7 @@ namespace SiliconStudio.Core
         /// <param name="libraryName">Name of the library to unload.</param>
         public static void UnLoad(string libraryName)
         {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             lock (LoadedLibraries)
             {
                 var libName = libraryName.ToLowerInvariant();
@@ -103,6 +104,7 @@ namespace SiliconStudio.Core
                     LoadedLibraries.Remove(libName);
                 }
             }
+#endif
         }
 
         /// <summary>
@@ -110,6 +112,7 @@ namespace SiliconStudio.Core
         /// </summary>
         public static void UnLoadAll()
         {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             lock (LoadedLibraries)
             {
                 foreach (var libraryItem in LoadedLibraries)
@@ -118,6 +121,7 @@ namespace SiliconStudio.Core
                 }
                 LoadedLibraries.Clear();
             }
+#endif
         }
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
