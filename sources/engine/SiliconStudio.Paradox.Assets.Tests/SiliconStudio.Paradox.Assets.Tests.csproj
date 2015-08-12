@@ -152,15 +152,7 @@
       <Link>app_data\SiliconStudio.Paradox.Assets.Tests\TX-Factory_Ground.dds</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="GameAssets\blinn1.pdxmat" />
-    <None Include="GameAssets\blinn2.pdxmat" />
-    <None Include="GameAssets\checker.pdxtex" />
-    <None Include="GameAssets\earth.pdxtex" />
-    <None Include="GameAssets\factory Model.pdxm3d" />
     <None Include="GameAssets\MainScene.pdxscene" />
-    <None Include="GameAssets\starMask.pdxtex" />
-    <None Include="GameAssets\TX-Factory_ALL.pdxtex" />
-    <None Include="GameAssets\TX-Factory_Ground.pdxtex" />
     <None Include="materials\testConstantValueKey.pdxmat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
