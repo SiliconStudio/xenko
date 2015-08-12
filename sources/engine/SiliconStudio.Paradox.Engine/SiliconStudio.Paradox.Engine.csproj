@@ -1093,7 +1093,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Materials\TextureChannel.cs" />
+    <Compile Include="Rendering\Materials\ColorChannel.cs" />
     <Compile Include="Rendering\Materials\TextureCoordinate.cs" />
     <Compile Include="Rendering\ParadoxForwardShadingEffect.cs">
       <DependentUpon>ParadoxForwardShadingEffect.pdxfx</DependentUpon>

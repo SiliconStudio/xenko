@@ -35,7 +35,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         public ComputeTextureScalar(Texture texture, TextureCoordinate texcoordIndex, Vector2 scale, Vector2 offset)
             : base(texture, texcoordIndex, scale, offset)
         {
-            Channel = TextureChannel.R;
+            Channel = ColorChannel.R;
         }
 
         /// <summary>
@@ -44,8 +44,8 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         /// <value>The channel.</value>
         /// <userdoc>Selects the RGBA channel to sample from the texture.</userdoc>
         [DataMember(20)]
-        [DefaultValue(TextureChannel.R)]
-        public TextureChannel Channel { get; set; }
+        [DefaultValue(ColorChannel.R)]
+        public ColorChannel Channel { get; set; }
 
         protected override string GetTextureChannelAsString()
         {

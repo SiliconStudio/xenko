@@ -8,8 +8,8 @@ namespace SiliconStudio.Paradox.Rendering.Materials
     /// <summary>
     /// A RGBA channel selected when performing texture sampling.
     /// </summary>
-    [DataContract("TextureChannel")]
-    public enum TextureChannel
+    [DataContract("ColorChannel")]
+    public enum ColorChannel
     {
         /// <summary>
         /// The sampled color is returned as a float4(R, R, R, R)
