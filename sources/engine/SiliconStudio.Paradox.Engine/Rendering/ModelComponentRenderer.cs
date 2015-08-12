@@ -119,6 +119,12 @@ namespace SiliconStudio.Paradox.Rendering
         /// <value>The state of the rasterizer.</value>
         public RasterizerState RasterizerState { get; set; }
 
+        /// <summary>
+        /// Allows to override the culling mode. If null, takes the culling mode from the current <see cref="SceneCameraRenderer"/>
+        /// </summary>
+        /// <value>The culling mode override.</value>
+        public CullingMode? CullingModeOverride { get; set; }
+
         public DynamicEffectCompiler DynamicEffectCompiler
         {
             get
@@ -195,7 +201,7 @@ namespace SiliconStudio.Paradox.Rendering
             var preRenderModel = Callbacks.PreRenderModel;
 
             var sceneCameraRenderer = context.Tags.Get(SceneCameraRenderer.Current);
-            var cullingMode = sceneCameraRenderer != null ? sceneCameraRenderer.CullingMode : CullingMode.None;
+            var cullingMode = CullingModeOverride.HasValue ? CullingModeOverride.Value : sceneCameraRenderer != null ? sceneCameraRenderer.CullingMode : CullingMode.None;
             var frustum = new BoundingFrustum(ref viewProjectionMatrix);
 
             var cameraRenderMode = sceneCameraRenderer != null ? sceneCameraRenderer.Mode : null;

@@ -12,6 +12,7 @@ namespace SiliconStudio.Core
     {
         private const string AppDomainCustomDllPathKey = "native_";
 
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         public static void SetShadowPathForNativeDll(AppDomain appDomain, string dllFileName, string dllPath)
         {
             if (dllFileName == null) throw new ArgumentNullException("dllFileName");
@@ -19,12 +20,17 @@ namespace SiliconStudio.Core
             var key = AppDomainCustomDllPathKey + dllFileName.ToLowerInvariant();
             appDomain.SetData(key, dllPath);
         }
+#endif
 
         public static string GetShadowPathForNativeDll(string dllFileName)
         {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             if (dllFileName == null) throw new ArgumentNullException("dllFileName");
             var key = AppDomainCustomDllPathKey + dllFileName.ToLowerInvariant();
             return (string)AppDomain.CurrentDomain.GetData(key);
+#else
+            return null;
+#endif
         }
     }
 }
