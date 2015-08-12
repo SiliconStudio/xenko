@@ -76,8 +76,8 @@
       <AdditionalOptions>/ignore:4049 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <CustomBuildStep>
-      <Command>copy "..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp.dll" "$(TargetDir)"</Command>
-      <Outputs>$(TargetDir)assimp.dll;%(Outputs)</Outputs>
+      <Command>xcopy /D /Y "..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp.dll" "$(TargetDir)$(Platform)\"</Command>
+      <Outputs>$(TargetDir)$(Platform)\assimp.dll;%(Outputs)</Outputs>
       <Inputs>..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp.dll</Inputs>
       <TreatOutputAsContent>true</TreatOutputAsContent>
     </CustomBuildStep>
@@ -96,8 +96,8 @@
       <AdditionalLibraryDirectories>..\..\..\deps\assimp\lib\assimp_release-dll_$(Platform)</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
-      <Command>copy "..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp.dll" "$(TargetDir)"</Command>
-      <Outputs>$(TargetDir)assimp.dll;%(Outputs)</Outputs>
+      <Command>xcopy /D /Y "..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp.dll" "$(TargetDir)$(Platform)\"</Command>
+      <Outputs>$(TargetDir)$(Platform)\assimp.dll;%(Outputs)</Outputs>
       <Inputs>..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp.dll</Inputs>
       <TreatOutputAsContent>true</TreatOutputAsContent>
     </CustomBuildStep>
@@ -118,8 +118,8 @@
       <AdditionalOptions>/ignore:4049 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <CustomBuildStep>
-      <Command>copy "..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp.dll" "$(TargetDir)"</Command>
-      <Outputs>$(TargetDir)assimp.dll;%(Outputs)</Outputs>
+      <Command>xcopy /D /Y "..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp.dll" "$(TargetDir)$(Platform)\"</Command>
+      <Outputs>$(TargetDir)$(Platform)\assimp.dll;%(Outputs)</Outputs>
       <Inputs>..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp.dll</Inputs>
       <TreatOutputAsContent>true</TreatOutputAsContent>
     </CustomBuildStep>
@@ -138,8 +138,8 @@
       <AdditionalLibraryDirectories>..\..\..\deps\assimp\lib\assimp_release-dll_$(Platform)</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
-      <Command>copy "..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp.dll" "$(TargetDir)"</Command>
-      <Outputs>$(TargetDir)assimp.dll;%(Outputs)</Outputs>
+      <Command>xcopy /D /Y "..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp.dll" "$(TargetDir)$(Platform)\"</Command>
+      <Outputs>$(TargetDir)$(Platform)\assimp.dll;%(Outputs)</Outputs>
       <Inputs>..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp.dll</Inputs>
       <TreatOutputAsContent>true</TreatOutputAsContent>
     </CustomBuildStep>
