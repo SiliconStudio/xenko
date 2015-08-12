@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
         /// Gets or sets MaxRects rectangles placement algorithm
         /// </summary>
         /// <userdoc>The algorithm used to pack the sprites into atlas.</userdoc>
-        [DataMember(10)]
+        [DataMemberIgnore] // hide this for the moment.
         [DefaultValue(TexturePackingMethod.Best)]
         public TexturePackingMethod PackingAlgorithm { get; set; }
 
