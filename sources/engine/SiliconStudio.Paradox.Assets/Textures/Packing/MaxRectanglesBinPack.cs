@@ -86,7 +86,10 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
                 {
                     int score1;
                     int score2;
-                    var pickedRectangle = ChooseTargetPosition(elementsToPack[i].DestinationRegion, method, out score1, out score2);
+                    var element = elementsToPack[i];
+                    var width = element.SourceRegion.Width + 2*element.BorderSize;
+                    var height = element.SourceRegion.Height+ 2*element.BorderSize;
+                    var pickedRectangle = ChooseTargetPosition(width, height, method, out score1, out score2);
 
                     if (score1 < bestScore1 || (score1 == bestScore1 && score2 < bestScore2))
                     // Found the new best free region to hold a rectangle
@@ -216,17 +219,18 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
         /// <summary>
         /// Determines a target position to place a given rectangle by a given heuristic method
         /// </summary>
-        /// <param name="rectangle">A given rectangle to be processed</param>
         /// <param name="method">A heuristic placement method</param>
         /// <param name="score1">First score</param>
         /// <param name="score2">Second score</param>
+        /// <param name="width">The width of the element to place</param>
+        /// <param name="height">The height of the element to place</param>
         /// <returns></returns>
-        private RotableRectangle ChooseTargetPosition(RotableRectangle rectangle, TexturePackingMethod method, out int score1, out int score2)
+        private RotableRectangle ChooseTargetPosition(int width, int height, TexturePackingMethod method, out int score1, out int score2)
         {
             var bestNode = new RotableRectangle();
 
             // null sized rectangle fits everywhere with a perfect score.
-            if (rectangle.Width == 0 || rectangle.Height == 0)
+            if (width == 0 || height == 0)
             {
                 score1 = 0;
                 score2 = 0;
@@ -239,20 +243,20 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
             switch (method)
             {
                 case TexturePackingMethod.BestShortSideFit:
-                    bestNode = FindPositionForNewNodeBestShortSideFit(rectangle.Width, rectangle.Height, out score1, ref score2);
+                    bestNode = FindPositionForNewNodeBestShortSideFit(width, height, out score1, ref score2);
                     break;
                 case TexturePackingMethod.BottomLeftRule:
-                    bestNode = FindPositionForNewNodeBottomLeft(rectangle.Width, rectangle.Height, out score1, ref score2);
+                    bestNode = FindPositionForNewNodeBottomLeft(width, height, out score1, ref score2);
                     break;
                 case TexturePackingMethod.ContactPointRule:
-                    bestNode = FindPositionForNewNodeContactPoint(rectangle.Width, rectangle.Height, out score1);
+                    bestNode = FindPositionForNewNodeContactPoint(width, height, out score1);
                     score1 *= -1;
                     break;
                 case TexturePackingMethod.BestLongSideFit:
-                    bestNode = FindPositionForNewNodeBestLongSideFit(rectangle.Width, rectangle.Height, ref score2, out score1);
+                    bestNode = FindPositionForNewNodeBestLongSideFit(width, height, ref score2, out score1);
                     break;
                 case TexturePackingMethod.BestAreaFit:
-                    bestNode = FindPositionForNewNodeBestAreaFit(rectangle.Width, rectangle.Height, out score1, ref score2);
+                    bestNode = FindPositionForNewNodeBestAreaFit(width, height, out score1, ref score2);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("method");
