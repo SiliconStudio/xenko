@@ -69,6 +69,38 @@ internal:
 	
 	static array<Byte>^ currentBuffer;
 
+	static bool WeightGreater(const std::pair<short, float>& elem1, const std::pair<short, float>& elem2)
+	{
+		return elem1.second > elem2.second;
+	}
+
+	template <class T>
+	int GetGroupIndexForLayerElementTemplate(FbxLayerElementTemplate<T>* layerElement, int controlPointIndex, int vertexIndex, int polygonIndex)
+	{
+		int groupIndex = 0;
+		if (layerElement->GetMappingMode() == FbxLayerElement::eByControlPoint)
+		{
+			groupIndex = (layerElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
+				? layerElement->GetIndexArray().GetAt(controlPointIndex)
+				: controlPointIndex;
+		}
+		else if (layerElement->GetMappingMode() == FbxLayerElement::eByPolygonVertex)
+		{
+			groupIndex = (layerElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
+				? layerElement->GetIndexArray().GetAt(vertexIndex)
+				: vertexIndex;
+		}
+		else if (layerElement->GetMappingMode() == FbxLayerElement::eByPolygon)
+		{
+			groupIndex = (layerElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
+				? layerElement->GetIndexArray().GetAt(polygonIndex)
+				: polygonIndex;
+		}
+
+		return groupIndex;
+	}
+
+
 public:
 	MeshConverter(Logger^ Logger)
 	{
@@ -99,11 +131,6 @@ public:
 		// -----------------------------------------------------
 		System::Threading::Monitor::Exit( globalLock );
 		// -----------------------------------------------------
-	}
-
-	static bool WeightGreater(const std::pair<short, float>& elem1, const std::pair<short, float>& elem2)
-	{
-	   return elem1.second > elem2.second;
 	}
 
 	void ProcessMesh(FbxMesh* pMesh, std::map<FbxMesh*, std::string> meshNames, std::map<FbxSurfaceMaterial*, int> materials)
@@ -232,14 +259,18 @@ public:
 			}
 		}
 
+		// *********************************************************************************
 		// Build the vertex declaration
+		// *********************************************************************************
 		auto vertexElements = gcnew List<VertexElement>();
 
+		// POSITION
 		int vertexStride = 0;
 		int positionOffset = vertexStride;
 		vertexElements->Add(VertexElement::Position<Vector3>(0, vertexStride));
 		vertexStride += 12;
 
+		// NORMAL
 		int normalOffset = vertexStride;
 		if (normalElement != NULL)
 		{
@@ -247,6 +278,7 @@ public:
 			vertexStride += 12;
 		}
 
+		// TEXCOORD
 		std::vector<int> uvOffsets;
 		for (int i = 0; i < (int)uvElements.size(); ++i)
 		{
@@ -256,6 +288,7 @@ public:
 			uvElementMapping[pMesh->GetElementUV(i)->GetName()] = i;
 		}
 
+		// BLENDINDICES
 		int blendIndicesOffset = vertexStride;
 		bool controlPointIndices16 = (AllowUnsignedBlendIndices && totalClusterCount > 256) || (!AllowUnsignedBlendIndices && totalClusterCount > 128);
 		if (!controlPointWeights.empty())
@@ -288,6 +321,7 @@ public:
 			}
 		}
 
+		// BLENDWEIGHT
 		int blendWeightOffset = vertexStride;
 		if (!controlPointWeights.empty())
 		{
@@ -297,12 +331,32 @@ public:
 
 		// Add the smoothing group information at the end of the vertex declaration
 		// Note: it is important that to be the last element of the declaration because it is dropped later in the process by partial memcopys
+		// SMOOTHINGGROUP
 		int smoothingOffset = vertexStride;
 		if (smoothingElement != NULL)
 		{
 			vertexElements->Add(VertexElement("SMOOTHINGGROUP", 0, PixelFormat::R32_UInt, vertexStride));
 			vertexStride += sizeof(int);
 		}
+
+		// COLOR
+		auto elementVertexColorCount = pMesh->GetElementVertexColorCount();
+		int colorOffset = vertexStride;
+		for (int i = 0; i < elementVertexColorCount; i++)
+		{
+			vertexElements->Add(VertexElement::Color<Color>(i, vertexStride));
+			vertexStride += sizeof(Color);
+		}
+
+		// USERDATA
+		// TODO: USERData how to handle then?
+		//auto userDataCount = pMesh->GetElementUserDataCount();
+		//for (int i = 0; i < userDataCount; i++)
+		//{
+		//	auto userData = pMesh->GetElementUserData(i);
+		//	auto dataType = userData->GetDataName(0);
+		//	Console::WriteLine("DataName {0}", gcnew String(dataType));
+		//}
 
 		int polygonCount = pMesh->GetPolygonCount();
 
@@ -384,11 +438,11 @@ public:
 					int vertexIndex = polygonVertexStartIndex + j;
 					int controlPointIndex = controlPointIndices[polygonFanVertex];
 
-					// Get vertex position
+					// POSITION
 					auto controlPoint = sceneMapping->ConvertPointFromFbx(controlPoints[controlPointIndex]);
 					*(Vector3*)(vbPointer + positionOffset) = controlPoint;
 
-					// Get normal
+					// NORMAL
 					if (normalElement != NULL)
 					{
 						FbxVector4 src_normal;
@@ -411,6 +465,7 @@ public:
 						*(Vector3*)(vbPointer + normalOffset) = normal;
 					}
 
+					// UV
 					for (int uvGroupIndex = 0; uvGroupIndex < (int)uvElements.size(); ++uvGroupIndex)
 					{
 						auto uvElement = uvElements[uvGroupIndex];
@@ -440,6 +495,7 @@ public:
 						((float*)(vbPointer + uvOffsets[uvGroupIndex]))[1] = 1.0f - (float)uv[1];
 					}
 
+					// BLENDINDICES and BLENDWEIGHT
 					if (!controlPointWeights.empty())
 					{
 						const auto& blendWeights = controlPointWeights[controlPointIndex];
@@ -462,32 +518,26 @@ public:
 							((float*)(vbPointer + blendWeightOffset))[i] = blendWeights[i].second;
 						}
 					}
+
+					// SMOOTHINGGROUP
 					if (smoothingElement != NULL)
 					{
-						int group;
-						if (smoothingElement->GetMappingMode() == FbxLayerElement::eByControlPoint)
-						{
-							int groupIndex = (smoothingElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
-								? smoothingElement->GetIndexArray().GetAt(controlPointIndex)
-								: controlPointIndex;
-							group = smoothingElement->GetDirectArray().GetAt(groupIndex);
-						}
-						else if (smoothingElement->GetMappingMode() == FbxLayerElement::eByPolygonVertex)
-						{
-							int groupIndex = (smoothingElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
-								? smoothingElement->GetIndexArray().GetAt(vertexIndex)
-								: vertexIndex;
-							group = smoothingElement->GetDirectArray().GetAt(groupIndex);
-						}
-						else if (smoothingElement->GetMappingMode() == FbxLayerElement::eByPolygon)
-						{
-							int groupIndex = (smoothingElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
-								? smoothingElement->GetIndexArray().GetAt(i)
-								: i;
-							group = smoothingElement->GetDirectArray().GetAt(groupIndex);
-						}
+						auto groupIndex = GetGroupIndexForLayerElementTemplate(smoothingElement, controlPointIndex, vertexIndex, i);
+						auto group = smoothingElement->GetDirectArray().GetAt(groupIndex);
 						((int*)(vbPointer + smoothingOffset))[0] = (int)group;
 					}
+
+					// COLOR
+					for (int elementColorIndex = 0; elementColorIndex < elementVertexColorCount; elementColorIndex++)
+					{
+						auto vertexColorElement = pMesh->GetElementVertexColor(elementColorIndex);
+						auto groupIndex = GetGroupIndexForLayerElementTemplate(vertexColorElement, controlPointIndex, vertexIndex, i);
+						auto color = vertexColorElement->GetDirectArray().GetAt(groupIndex);
+						((Color*)(vbPointer + colorOffset))[elementColorIndex] = Color((float)color.mRed, (float)color.mGreen, (float)color.mBlue, (float)color.mAlpha);
+					}
+
+					// USERDATA
+					// TODO HANDLE USERDATA HERE
 
 					vbPointer += vertexStride;
 				}
