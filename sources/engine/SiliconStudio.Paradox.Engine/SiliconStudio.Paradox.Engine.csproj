@@ -264,8 +264,8 @@
     <Compile Include="Rendering\Composers\SceneCameraSlot.cs" />
     <Compile Include="Rendering\Composers\SceneCameraSlotCollection.cs" />
     <Compile Include="Rendering\Composers\SceneCameraSlotIndex.cs" />
-    <Compile Include="Rendering\ComputeColor\ComputeColorSubtract.cs" />
-    <Compile Include="Rendering\ComputeColor\ComputeColorSubtract1.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorSubtract.cs" />
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorSubtract1.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -377,427 +377,427 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Rendering\Composers\RenderFrameRelativeMode.cs" />
-    <Compile Include="Rendering\ComputeColor\3dsMax\ComputeColorAdd3ds.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\3dsMax\ComputeColorAdd3ds.cs">
       <DependentUpon>ComputeColorAdd3ds.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\3dsMax\ComputeColorDarken3ds.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\3dsMax\ComputeColorDarken3ds.cs">
       <DependentUpon>ComputeColorDarken3ds.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\3dsMax\ComputeColorDifference3ds.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\3dsMax\ComputeColorDifference3ds.cs">
       <DependentUpon>ComputeColorDifference3ds.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\3dsMax\ComputeColorLighten3ds.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\3dsMax\ComputeColorLighten3ds.cs">
       <DependentUpon>ComputeColorLighten3ds.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\3dsMax\ComputeColorMask3ds.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\3dsMax\ComputeColorMask3ds.cs">
       <DependentUpon>ComputeColorMask3ds.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\3dsMax\ComputeColorMultiply3ds.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\3dsMax\ComputeColorMultiply3ds.cs">
       <DependentUpon>ComputeColorMultiply3ds.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\3dsMax\ComputeColorOver3ds.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\3dsMax\ComputeColorOver3ds.cs">
       <DependentUpon>ComputeColorOver3ds.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\3dsMax\ComputeColorOverlay3ds.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\3dsMax\ComputeColorOverlay3ds.cs">
       <DependentUpon>ComputeColorOverlay3ds.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\3dsMax\ComputeColorSubtract3ds.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\3dsMax\ComputeColorSubtract3ds.cs">
       <DependentUpon>ComputeColorSubtract3ds.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColor.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColor.cs">
       <DependentUpon>ComputeColor.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColor3.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColor3.cs">
       <DependentUpon>ComputeColor3.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorAdd.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorAdd.cs">
       <DependentUpon>ComputeColorAdd.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorAdd3.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorAdd3.cs">
       <DependentUpon>ComputeColorAdd3.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorAverage.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorAverage.cs">
       <DependentUpon>ComputeColorAverage.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorCave.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorCave.cs">
       <DependentUpon>ComputeColorCave.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorColor.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorColor.cs">
       <DependentUpon>ComputeColorColor.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorColorBurn.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorColorBurn.cs">
       <DependentUpon>ComputeColorColorBurn.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorColorDodge.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorColorDodge.cs">
       <DependentUpon>ComputeColorColorDodge.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorConstantColorLink.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorConstantColorLink.cs">
       <DependentUpon>ComputeColorConstantColorLink.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorConstantFloatLink.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorConstantFloatLink.cs">
       <DependentUpon>ComputeColorConstantFloatLink.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorConstantLink.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorConstantLink.cs">
       <DependentUpon>ComputeColorConstantLink.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorDesaturate.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorDesaturate.cs">
       <DependentUpon>ComputeColorDesaturate.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorDivide.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorDivide.cs">
       <DependentUpon>ComputeColorDivide.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorExclusion.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorExclusion.cs">
       <DependentUpon>ComputeColorExclusion.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorFixed.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorFixed.cs">
       <DependentUpon>ComputeColorFixed.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorHardLight.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorHardLight.cs">
       <DependentUpon>ComputeColorHardLight.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorHardMix.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorHardMix.cs">
       <DependentUpon>ComputeColorHardMix.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorHue.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorHue.cs">
       <DependentUpon>ComputeColorHue.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorIlluminate.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorIlluminate.cs">
       <DependentUpon>ComputeColorIlluminate.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorIn.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorIn.cs">
       <DependentUpon>ComputeColorIn.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorLerpAlpha.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorLerpAlpha.cs">
       <DependentUpon>ComputeColorLerpAlpha.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorLinearBurn.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorLinearBurn.cs">
       <DependentUpon>ComputeColorLinearBurn.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorLinearDodge.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorLinearDodge.cs">
       <DependentUpon>ComputeColorLinearDodge.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorMask.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorMask.cs">
       <DependentUpon>ComputeColorMask.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorMultiply.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorMultiply.cs">
       <DependentUpon>ComputeColorMultiply.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorOne.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorOne.cs">
       <DependentUpon>ComputeColorOne.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorOut.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorOut.cs">
       <DependentUpon>ComputeColorOut.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorOutdoor.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorOutdoor.cs">
       <DependentUpon>ComputeColorOutdoor.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorOverlay.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorOverlay.cs">
       <DependentUpon>ComputeColorOverlay.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorParameter.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorParameter.cs">
       <DependentUpon>ComputeColorParameter.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorPinLight.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorPinLight.cs">
       <DependentUpon>ComputeColorPinLight.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorSaturate.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorSaturate.cs">
       <DependentUpon>ComputeColorSaturate.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorSaturation.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorSaturation.cs">
       <DependentUpon>ComputeColorSaturation.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorScaler.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorScaler.cs">
       <DependentUpon>ComputeColorScaler.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorScreen.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorScreen.cs">
       <DependentUpon>ComputeColorScreen.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorSoftLight.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorSoftLight.cs">
       <DependentUpon>ComputeColorSoftLight.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorStream.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorStream.cs">
       <DependentUpon>ComputeColorStream.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorSubstituteAlpha.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorSubstituteAlpha.cs">
       <DependentUpon>ComputeColorSubstituteAlpha.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorSubstituteAlphaWithColor.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorSubstituteAlphaWithColor.cs">
       <DependentUpon>ComputeColorSubstituteAlphaWithColor.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorSynthetic.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorSynthetic.cs">
       <DependentUpon>ComputeColorSynthetic.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorTexture.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTexture.cs">
       <DependentUpon>ComputeColorTexture.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorTextureDynamicScaledOffset.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureDynamicScaledOffset.cs">
       <DependentUpon>ComputeColorTextureDynamicScaledOffset.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorTextureLodSampler.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureLodSampler.cs">
       <DependentUpon>ComputeColorTextureLodSampler.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorTextureLodScaledOffsetDynamicSampler.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureLodScaledOffsetDynamicSampler.cs">
       <DependentUpon>ComputeColorTextureLodScaledOffsetDynamicSampler.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorTextureLodScaledOffsetSampler.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureLodScaledOffsetSampler.cs">
       <DependentUpon>ComputeColorTextureLodScaledOffsetSampler.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorTextureLodScaledSampler.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureLodScaledSampler.cs">
       <DependentUpon>ComputeColorTextureLodScaledSampler.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorTextureRepeat.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureRepeat.cs">
       <DependentUpon>ComputeColorTextureRepeat.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorTextureSampler.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureSampler.cs">
       <DependentUpon>ComputeColorTextureSampler.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorTextureScaled.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureScaled.cs">
       <DependentUpon>ComputeColorTextureScaled.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorTextureScaledOffset.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureScaledOffset.cs">
       <DependentUpon>ComputeColorTextureScaledOffset.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorTextureScaledOffsetDynamicSampler.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureScaledOffsetDynamicSampler.cs">
       <DependentUpon>ComputeColorTextureScaledOffsetDynamicSampler.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorTextureScaledOffsetSampler.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureScaledOffsetSampler.cs">
       <DependentUpon>ComputeColorTextureScaledOffsetSampler.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorTextureScaledSampler.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureScaledSampler.cs">
       <DependentUpon>ComputeColorTextureScaledSampler.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\ComputeColorValue.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorValue.cs">
       <DependentUpon>ComputeColorValue.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\Maya\ComputeColorAddMaya.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\Maya\ComputeColorAddMaya.cs">
       <DependentUpon>ComputeColorAddMaya.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\Maya\ComputeColorDarkenMaya.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\Maya\ComputeColorDarkenMaya.cs">
       <DependentUpon>ComputeColorDarkenMaya.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\Maya\ComputeColorDifferenceMaya.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\Maya\ComputeColorDifferenceMaya.cs">
       <DependentUpon>ComputeColorDifferenceMaya.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\Maya\ComputeColorLightenMaya.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\Maya\ComputeColorLightenMaya.cs">
       <DependentUpon>ComputeColorLightenMaya.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\Maya\ComputeColorMultiplyMaya.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\Maya\ComputeColorMultiplyMaya.cs">
       <DependentUpon>ComputeColorMultiplyMaya.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\Maya\ComputeColorOverMaya.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\Maya\ComputeColorOverMaya.cs">
       <DependentUpon>ComputeColorOverMaya.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ComputeColor\Maya\ComputeColorSubtractMaya.cs">
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\Maya\ComputeColorSubtractMaya.cs">
       <DependentUpon>ComputeColorSubtractMaya.pdxsl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -2256,291 +2256,295 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>BRDFMicrofacet.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\3dsMax\ComputeColorAdd3ds.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\3dsMax\ComputeColorAdd3ds.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorAdd3ds.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\3dsMax\ComputeColorDarken3ds.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\3dsMax\ComputeColorDarken3ds.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorDarken3ds.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\3dsMax\ComputeColorDifference3ds.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\3dsMax\ComputeColorDifference3ds.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorDifference3ds.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\3dsMax\ComputeColorLighten3ds.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\3dsMax\ComputeColorLighten3ds.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorLighten3ds.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\3dsMax\ComputeColorMask3ds.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\3dsMax\ComputeColorMask3ds.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorMask3ds.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\3dsMax\ComputeColorMultiply3ds.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\3dsMax\ComputeColorMultiply3ds.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorMultiply3ds.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\3dsMax\ComputeColorOver3ds.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\3dsMax\ComputeColorOver3ds.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorOver3ds.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\3dsMax\ComputeColorOverlay3ds.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\3dsMax\ComputeColorOverlay3ds.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorOverlay3ds.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\3dsMax\ComputeColorSubtract3ds.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\3dsMax\ComputeColorSubtract3ds.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorSubtract3ds.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColor.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColor.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColor3.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColor3.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColor3.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorAdd.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorAdd.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorAdd.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorAdd3.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorAdd3.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorAdd3.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorAverage.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorAverage.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorAverage.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorCave.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorCave.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorCave.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorColor.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorColor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorColor.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorColorBurn.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorColorBurn.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorColorBurn.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorColorDodge.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorColorDodge.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorColorDodge.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorConstantColorLink.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorConstantColorLink.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorConstantColorLink.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorConstantFloatLink.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorConstantFloatLink.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorConstantFloatLink.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorConstantLink.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorConstantLink.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorConstantLink.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorDesaturate.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorDesaturate.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorDesaturate.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorDivide.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorDivide.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorDivide.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorExclusion.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorExclusion.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorExclusion.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorFixed.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorFixed.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorFixed.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorHardLight.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorHardLight.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorHardLight.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorHardMix.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorHardMix.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorHardMix.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorHue.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorHue.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorHue.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorIlluminate.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorIlluminate.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorIlluminate.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorIn.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorIn.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorIn.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorLerpAlpha.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorLerpAlpha.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorLerpAlpha.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorLinearBurn.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorLinearBurn.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorLinearBurn.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorLinearDodge.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorLinearDodge.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorLinearDodge.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorMask.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorMask.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorMask.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorMultiply.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorMultiply.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorMultiply.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorOne.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorOne.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorOne.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorOut.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorOut.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorOut.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorOutdoor.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorOutdoor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorOutdoor.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorOverlay.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorOverlay.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorOverlay.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorParameter.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorParameter.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorParameter.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorPinLight.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorPinLight.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorPinLight.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorSaturate.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorSaturate.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorSaturate.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorSaturation.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorSaturation.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorSaturation.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorScaler.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorScaler.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorScaler.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorScreen.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorScreen.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorScreen.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorSoftLight.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorSoftLight.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorSoftLight.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorStream.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorStream.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorStream.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorSubstituteAlpha.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorSubstituteAlpha.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorSubstituteAlpha.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorSubstituteAlphaWithColor.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorSubstituteAlphaWithColor.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorSubstituteAlphaWithColor.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorSubtract.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorSubtract.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorSubtract1.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorSynthetic.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorSynthetic.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorSynthetic.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorTexture.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTexture.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTexture.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorTextureDynamicScaledOffset.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureDynamicScaledOffset.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureDynamicScaledOffset.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorTextureLodSampler.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureLodSampler.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureLodSampler.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorTextureLodScaledOffsetDynamicSampler.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureLodScaledOffsetDynamicSampler.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureLodScaledOffsetDynamicSampler.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorTextureLodScaledOffsetSampler.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureLodScaledOffsetSampler.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureLodScaledOffsetSampler.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorTextureLodScaledSampler.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureLodScaledSampler.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureLodScaledSampler.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorTextureRepeat.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureRepeat.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureRepeat.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorTextureSampler.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureSampler.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureSampler.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorTextureScaled.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorFromStream.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorFromStream.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureScaled.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureScaled.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorTextureScaledOffset.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureScaledOffset.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureScaledOffset.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorTextureScaledOffsetDynamicSampler.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureScaledOffsetDynamicSampler.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureScaledOffsetDynamicSampler.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorTextureScaledOffsetSampler.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureScaledOffsetSampler.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureScaledOffsetSampler.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorTextureScaledSampler.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureScaledSampler.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorTextureScaledSampler.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\ComputeColorValue.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorValue.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorValue.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\Maya\ComputeColorAddMaya.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\Maya\ComputeColorAddMaya.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorAddMaya.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\Maya\ComputeColorDarkenMaya.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\Maya\ComputeColorDarkenMaya.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorDarkenMaya.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\Maya\ComputeColorDifferenceMaya.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\Maya\ComputeColorDifferenceMaya.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorDifferenceMaya.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\Maya\ComputeColorLightenMaya.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\Maya\ComputeColorLightenMaya.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorLightenMaya.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\Maya\ComputeColorMultiplyMaya.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\Maya\ComputeColorMultiplyMaya.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorMultiplyMaya.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\Maya\ComputeColorOverMaya.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\Maya\ComputeColorOverMaya.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorOverMaya.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\ComputeColor\Maya\ComputeColorSubtractMaya.pdxsl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\Maya\ComputeColorSubtractMaya.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorSubtractMaya.cs</LastGenOutput>
     </None>
