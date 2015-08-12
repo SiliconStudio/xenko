@@ -48,15 +48,15 @@ namespace SiliconStudio.Paradox.Physics
         }
 
         //This is called by the physics engine to update the transformation of Dynamic rigidbodies.
-        private static void RigidBodySetWorldTransform(PhysicsElement element, Matrix physicsTransform)
+        private static void RigidBodySetWorldTransform(PhysicsElement element, ref Matrix physicsTransform)
         {
             if (element.BoneIndex == -1)
             {
-                element.UpdateTransformationComponent(physicsTransform);
+                element.UpdateTransformationComponent(ref physicsTransform);
             }
             else
             {
-                element.UpdateBoneTransformation(physicsTransform);
+                element.UpdateBoneTransformation(ref physicsTransform);
             }
         }
 
@@ -76,11 +76,13 @@ namespace SiliconStudio.Paradox.Physics
 
         private void NewElement(PhysicsElement element, AssociatedData data, Entity entity)
         {
-            if (element.Shape == null || element.Shape.Descriptions == null || element.Shape.Shape == null) return; //no shape no purpose
-
-            var shape = element.Shape.Shape;
-
             element.Data = data;
+
+            if (element.ColliderShapes.Count == 0) return; //no shape no purpose
+
+            if(element.ColliderShape == null) element.ComposeShape();
+            var shape = element.ColliderShape;     
+
             element.BoneIndex = -1;
 
             if (!element.LinkedBoneName.IsNullOrEmpty())
@@ -147,7 +149,7 @@ namespace SiliconStudio.Paradox.Physics
 
                         rb.Entity = entity;
                         rb.GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(element, out transform);
-                        rb.SetWorldTransformCallback = transform => RigidBodySetWorldTransform(element, transform);
+                        rb.SetWorldTransformCallback = transform => RigidBodySetWorldTransform(element, ref transform);
                         element.Collider = rb;
                         element.UpdatePhysicsTransformation(); //this will set position and rotation of the collider
 
@@ -170,7 +172,7 @@ namespace SiliconStudio.Paradox.Physics
 
                         rb.Entity = entity;
                         rb.GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(element, out transform);
-                        rb.SetWorldTransformCallback = transform => RigidBodySetWorldTransform(element, transform);
+                        rb.SetWorldTransformCallback = transform => RigidBodySetWorldTransform(element, ref transform);
                         element.Collider = rb;
                         element.UpdatePhysicsTransformation(); //this will set position and rotation of the collider
 
@@ -194,7 +196,7 @@ namespace SiliconStudio.Paradox.Physics
 
                         rb.Entity = entity;
                         rb.GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(element, out transform);
-                        rb.SetWorldTransformCallback = transform => RigidBodySetWorldTransform(element, transform);
+                        rb.SetWorldTransformCallback = transform => RigidBodySetWorldTransform(element, ref transform);
                         element.Collider = rb;
                         element.UpdatePhysicsTransformation(); //this will set position and rotation of the collider
 
@@ -240,6 +242,8 @@ namespace SiliconStudio.Paradox.Physics
 
         private void DeleteElement(PhysicsElement element, bool now = false)
         {
+            element.Data = null;
+
             //might be possible that this element was not valid during creation so it would be already null
             if (element.InternalCollider == null) return;
 
@@ -300,7 +304,14 @@ namespace SiliconStudio.Paradox.Physics
 
         protected override void OnEntityAdding(Entity entity, AssociatedData data)
         {
-            if (Simulation.DisableSimulation) return;
+            if (Simulation.DisableSimulation)
+            {
+                foreach (var element in data.PhysicsComponent.Elements)
+                {
+                    element.Data = data;
+                }
+                return;
+            }
 
             if (elements.Any(x => !x.LinkedBoneName.IsNullOrEmpty()))
             {
@@ -324,7 +335,14 @@ namespace SiliconStudio.Paradox.Physics
 
         protected override void OnEntityRemoved(Entity entity, AssociatedData data)
         {
-            if (Simulation.DisableSimulation) return;
+            if (Simulation.DisableSimulation)
+            {
+                foreach (var element in data.PhysicsComponent.Elements)
+                {
+                    element.Data = null;
+                }
+                return;
+            }
 
             foreach (var element in data.PhysicsComponent.Elements)
             {
@@ -456,7 +474,8 @@ namespace SiliconStudio.Paradox.Physics
             //characters need manual updating
             foreach (var element in characters.Where(x => x.Collider.Enabled))
             {
-                element.UpdateTransformationComponent(element.Collider.PhysicsWorldTransform);
+                var worldTransform = element.Collider.PhysicsWorldTransform;
+                element.UpdateTransformationComponent(ref worldTransform);
             }
         }
 

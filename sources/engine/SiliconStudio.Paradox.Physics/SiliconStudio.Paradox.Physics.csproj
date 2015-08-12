@@ -52,6 +52,7 @@
     <Compile Include="Data\IColliderShapeDesc.cs" />
     <Compile Include="Data\SphereColliderShapeDesc.cs" />
     <Compile Include="Data\StaticPlaneColliderShapeDesc.cs" />
+    <Compile Include="Data\ColliderShapeAssetDesc.cs" />
     <Compile Include="Engine\PhysicsColliderShape.cs" />
     <Compile Include="Engine\PhysicsComponent.cs" />
     <Compile Include="Engine\PhysicsElement.cs" />

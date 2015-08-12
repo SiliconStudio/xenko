@@ -1,12 +1,15 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
 
 // Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.ComponentModel;
+using System.Diagnostics;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -14,8 +17,19 @@ namespace SiliconStudio.Paradox.Physics
     [Display(40, "Element")]
     public class PhysicsElement
     {
+        public PhysicsElement()
+        {
+            CanScaleShape = true;
+            ColliderShapes = new TrackingCollection<IColliderShapeDesc>();
+            ColliderShapes.CollectionChanged += (sender, args) =>
+            {
+                ColliderShapeChanged = true;
+            };
+        }
+
         public enum Types
         {
+            [Display("Trigger")]
             PhantomCollider,
             StaticCollider,
             StaticRigidBody,
@@ -152,28 +166,22 @@ namespace SiliconStudio.Paradox.Physics
             }
         }
 
-        private PhysicsColliderShape shape;
-
         /// <userdoc>
         /// The reference to the collider Shape of this element.
         /// </userdoc>
         [DataMember(20)]
-        public PhysicsColliderShape Shape
-        {
-            get
-            {
-                return shape;
-            }
-            set
-            {
-                if (shape != null && InternalCollider != null && value.Shape != null)
-                {
-                    InternalCollider.ColliderShape = value.Shape;
-                }
+        [Category]
+        public TrackingCollection<IColliderShapeDesc> ColliderShapes { get; private set; }
 
-                shape = value;
-            }
-        }
+        public bool ColliderShapeChanged { get; private set; }
+
+        [DataMemberIgnore]
+        public ColliderShape ColliderShape { get; private set; }
+
+        [DataMemberIgnore]
+        public bool CanScaleShape { get; private set; }
+
+        private Vector3 currentPhysicsScaling;
 
         public enum CollisionFilterGroups //needed for the editor as this is not tagged as flag...
         {
@@ -380,16 +388,27 @@ namespace SiliconStudio.Paradox.Physics
 
             Quaternion rotation;
             Vector3 translation;
-
             Vector3 scale;
             entity.Transform.WorldMatrix.Decompose(out scale, out rotation, out translation);
 
             derivedTransformation = Matrix.RotationQuaternion(rotation) * Matrix.Translation(translation);
 
-            //Handle collider shape offset
-            if (Shape.Shape.LocalOffset != Vector3.Zero || Shape.Shape.LocalRotation != Quaternion.Identity)
+            //handle dynamic scaling if allowed (aka not using assets)
+            if (CanScaleShape)
             {
-                derivedTransformation = Matrix.Multiply(Shape.Shape.PositiveCenterMatrix, derivedTransformation);
+                var newScaling = ColliderShape.Scaling * scale;
+                if (newScaling != currentPhysicsScaling)
+                {
+                    ColliderShape.Scaling = newScaling;
+                    currentPhysicsScaling = newScaling;
+                    ColliderShape.UpdateLocalTransformations();
+                }
+            }
+
+            //Handle collider shape offset
+            if (ColliderShape.LocalOffset != Vector3.Zero || ColliderShape.LocalRotation != Quaternion.Identity)
+            {
+                derivedTransformation = Matrix.Multiply(ColliderShape.PositiveCenterMatrix, derivedTransformation);
             }
         }
 
@@ -405,9 +424,20 @@ namespace SiliconStudio.Paradox.Physics
             derivedTransformation = Matrix.RotationQuaternion(rotation) * Matrix.Translation(translation);
 
             //Handle collider shape offset
-            if (Shape.Shape.LocalOffset != Vector3.Zero || Shape.Shape.LocalRotation != Quaternion.Identity)
+            if (ColliderShape.LocalOffset != Vector3.Zero || ColliderShape.LocalRotation != Quaternion.Identity)
             {
-                derivedTransformation = Matrix.Multiply(Shape.Shape.PositiveCenterMatrix, derivedTransformation);
+                derivedTransformation = Matrix.Multiply(ColliderShape.PositiveCenterMatrix, derivedTransformation);
+            }
+
+            //handle dynamic scaling if allowed (aka not using assets)
+            if (CanScaleShape)
+            {
+                var newScaling = ColliderShape.Scaling * scale;
+                if (newScaling != currentPhysicsScaling)
+                {
+                    ColliderShape.Scaling = newScaling;
+                    currentPhysicsScaling = newScaling;
+                }
             }
         }
 
@@ -415,25 +445,27 @@ namespace SiliconStudio.Paradox.Physics
         /// Updades the graphics transformation from the given physics transformation
         /// </summary>
         /// <param name="physicsTransform"></param>
-        internal void UpdateTransformationComponent(Matrix physicsTransform)
+        internal void UpdateTransformationComponent(ref Matrix physicsTransform)
         {
             var entity = Collider.Entity;
 
-            if (Shape.Shape.LocalOffset != Vector3.Zero || Shape.Shape.LocalRotation != Quaternion.Identity)
+            if (ColliderShape.LocalOffset != Vector3.Zero || ColliderShape.LocalRotation != Quaternion.Identity)
             {
-                physicsTransform = Matrix.Multiply(Shape.Shape.NegativeCenterMatrix, physicsTransform);
+                physicsTransform = Matrix.Multiply(ColliderShape.NegativeCenterMatrix, physicsTransform);
             }
 
-            var rotation = Quaternion.RotationMatrix(physicsTransform);
-            var translation = physicsTransform.TranslationVector;
-            var worldMatrix = entity.Transform.WorldMatrix;
+            //extract from physics transformation matrix
+            var physTranslation = physicsTransform.TranslationVector;
+            var physRotation = Quaternion.RotationMatrix(physicsTransform);
 
+            //we need to extract scale only..
             Vector3 scale;
-            scale.X = (float)Math.Sqrt((worldMatrix.M11 * worldMatrix.M11) + (worldMatrix.M12 * worldMatrix.M12) + (worldMatrix.M13 * worldMatrix.M13));
-            scale.Y = (float)Math.Sqrt((worldMatrix.M21 * worldMatrix.M21) + (worldMatrix.M22 * worldMatrix.M22) + (worldMatrix.M23 * worldMatrix.M23));
-            scale.Z = (float)Math.Sqrt((worldMatrix.M31 * worldMatrix.M31) + (worldMatrix.M32 * worldMatrix.M32) + (worldMatrix.M33 * worldMatrix.M33));
+            scale.X = (float)Math.Sqrt((entity.Transform.WorldMatrix.M11 * entity.Transform.WorldMatrix.M11) + (entity.Transform.WorldMatrix.M12 * entity.Transform.WorldMatrix.M12) + (entity.Transform.WorldMatrix.M13 * entity.Transform.WorldMatrix.M13));
+            scale.Y = (float)Math.Sqrt((entity.Transform.WorldMatrix.M21 * entity.Transform.WorldMatrix.M21) + (entity.Transform.WorldMatrix.M22 * entity.Transform.WorldMatrix.M22) + (entity.Transform.WorldMatrix.M23 * entity.Transform.WorldMatrix.M23));
+            scale.Z = (float)Math.Sqrt((entity.Transform.WorldMatrix.M31 * entity.Transform.WorldMatrix.M31) + (entity.Transform.WorldMatrix.M32 * entity.Transform.WorldMatrix.M32) + (entity.Transform.WorldMatrix.M33 * entity.Transform.WorldMatrix.M33));
 
-            TransformComponent.CreateMatrixTRS(ref translation, ref rotation, ref scale, out entity.Transform.WorldMatrix);
+            TransformComponent.CreateMatrixTRS(ref physTranslation, ref physRotation, ref scale, out entity.Transform.WorldMatrix);
+
             if (entity.Transform.Parent == null)
             {
                 entity.Transform.LocalMatrix = entity.Transform.WorldMatrix;
@@ -446,26 +478,27 @@ namespace SiliconStudio.Paradox.Physics
                 entity.Transform.LocalMatrix = Matrix.Multiply(entity.Transform.WorldMatrix, inverseParent);
             }
 
-            entity.Transform.Position = entity.Transform.LocalMatrix.TranslationVector;
-            entity.Transform.Rotation = Quaternion.RotationMatrix(entity.Transform.LocalMatrix);
+            Vector3 translation;
+            Quaternion rotation;
+            entity.Transform.LocalMatrix.Decompose(out scale, out rotation, out translation);
+            entity.Transform.Position = translation;
+            entity.Transform.Rotation = rotation;
         }
 
-        internal void UpdateBoneTransformation(Matrix physicsTransform)
+        internal void UpdateBoneTransformation(ref Matrix physicsTransform)
         {
-            if (Shape.Shape.LocalOffset != Vector3.Zero || Shape.Shape.LocalRotation != Quaternion.Identity)
+            if (ColliderShape.LocalOffset != Vector3.Zero || ColliderShape.LocalRotation != Quaternion.Identity)
             {
-                physicsTransform = Matrix.Multiply(Shape.Shape.NegativeCenterMatrix, physicsTransform);
+                physicsTransform = Matrix.Multiply(ColliderShape.NegativeCenterMatrix, physicsTransform);
             }
 
             var rotation = Quaternion.RotationMatrix(physicsTransform);
             var translation = physicsTransform.TranslationVector;
 
-            var worldMatrix = BoneWorldMatrix;
-
             Vector3 scale;
-            scale.X = (float)Math.Sqrt((worldMatrix.M11 * worldMatrix.M11) + (worldMatrix.M12 * worldMatrix.M12) + (worldMatrix.M13 * worldMatrix.M13));
-            scale.Y = (float)Math.Sqrt((worldMatrix.M21 * worldMatrix.M21) + (worldMatrix.M22 * worldMatrix.M22) + (worldMatrix.M23 * worldMatrix.M23));
-            scale.Z = (float)Math.Sqrt((worldMatrix.M31 * worldMatrix.M31) + (worldMatrix.M32 * worldMatrix.M32) + (worldMatrix.M33 * worldMatrix.M33));
+            scale.X = (float)Math.Sqrt((BoneWorldMatrix.M11 * BoneWorldMatrix.M11) + (BoneWorldMatrix.M12 * BoneWorldMatrix.M12) + (BoneWorldMatrix.M13 * BoneWorldMatrix.M13));
+            scale.Y = (float)Math.Sqrt((BoneWorldMatrix.M21 * BoneWorldMatrix.M21) + (BoneWorldMatrix.M22 * BoneWorldMatrix.M22) + (BoneWorldMatrix.M23 * BoneWorldMatrix.M23));
+            scale.Z = (float)Math.Sqrt((BoneWorldMatrix.M31 * BoneWorldMatrix.M31) + (BoneWorldMatrix.M32 * BoneWorldMatrix.M32) + (BoneWorldMatrix.M33 * BoneWorldMatrix.M33));
 
             TransformComponent.CreateMatrixTRS(ref translation, ref rotation, ref scale, out BoneWorldMatrixOut);
         }
@@ -487,6 +520,192 @@ namespace SiliconStudio.Paradox.Physics
                 DeriveBonePhysicsTransformation(out t);
             }
             Collider.PhysicsWorldTransform = t;
+        }
+
+        public void ComposeShape()
+        {
+            ColliderShapeChanged = false;
+
+            if (ColliderShape != null)
+            {
+                ColliderShape.Dispose();
+                ColliderShape = null;
+            }
+
+            try
+            {
+                if (ColliderShapes.Count == 1) //single shape case
+                {
+                    if (ColliderShapes[0] != null)
+                    {
+                        ColliderShape = CreateShape(ColliderShapes[0]);
+                        
+                        if (ColliderShape == null) return;
+
+                        currentPhysicsScaling = ColliderShape.Scaling;
+                    }
+                }
+                else if (ColliderShapes.Count > 1) //need a compound shape in this case
+                {
+                    var compound = new CompoundColliderShape();
+                    foreach (var desc in ColliderShapes)
+                    {
+                        if (desc != null)
+                        {
+                            compound.AddChildShape(CreateShape(desc));
+                        }
+                    }
+                    ColliderShape = compound;
+                    currentPhysicsScaling = ColliderShape.Scaling;
+                }
+            }
+            catch (DllNotFoundException)
+            {
+                //during pre process and build process we often don't have the physics native engine running.
+            }
+        }
+
+        public ColliderShape CreateShape(IColliderShapeDesc desc)
+        {
+            ColliderShape shape = null;
+
+            var type = desc.GetType();
+            if (type == typeof(Box2DColliderShapeDesc))
+            {
+                var boxDesc = (Box2DColliderShapeDesc)desc;
+                shape = new Box2DColliderShape(boxDesc.Size) { LocalOffset = boxDesc.LocalOffset, LocalRotation = boxDesc.LocalRotation };
+            }
+            else if (type == typeof(BoxColliderShapeDesc))
+            {
+                var boxDesc = (BoxColliderShapeDesc)desc;
+                shape = new BoxColliderShape(boxDesc.Size) { LocalOffset = boxDesc.LocalOffset, LocalRotation = boxDesc.LocalRotation };
+            }
+            else if (type == typeof(CapsuleColliderShapeDesc))
+            {
+                var capsuleDesc = (CapsuleColliderShapeDesc)desc;
+                shape = new CapsuleColliderShape(capsuleDesc.Is2D, capsuleDesc.Radius, capsuleDesc.Length, capsuleDesc.Orientation) { LocalOffset = capsuleDesc.LocalOffset, LocalRotation = capsuleDesc.LocalRotation };
+            }
+            else if (type == typeof(CylinderColliderShapeDesc))
+            {
+                var cylinderDesc = (CylinderColliderShapeDesc)desc;
+                shape = new CylinderColliderShape(cylinderDesc.Height, cylinderDesc.Radius, cylinderDesc.Orientation) { LocalOffset = cylinderDesc.LocalOffset, LocalRotation = cylinderDesc.LocalRotation };
+            }
+            else if (type == typeof(SphereColliderShapeDesc))
+            {
+                var sphereDesc = (SphereColliderShapeDesc)desc;
+                shape = new SphereColliderShape(sphereDesc.Is2D, sphereDesc.Radius) { LocalOffset = sphereDesc.LocalOffset };
+            }
+            else if (type == typeof(StaticPlaneColliderShapeDesc))
+            {
+                var planeDesc = (StaticPlaneColliderShapeDesc)desc;
+                shape = new StaticPlaneColliderShape(planeDesc.Normal, planeDesc.Offset);
+            }
+            else if (type == typeof(ConvexHullColliderShapeDesc))
+            {
+                var convexDesc = (ConvexHullColliderShapeDesc)desc;
+
+                if (convexDesc.ConvexHulls == null) return null;
+
+                //Optimize performance and focus on less shapes creation since this shape could be nested
+
+                if (convexDesc.ConvexHulls.Count == 1)
+                {
+                    if (convexDesc.ConvexHulls[0].Count == 1)
+                    {
+                        shape = new ConvexHullColliderShape(convexDesc.ConvexHulls[0][0], convexDesc.ConvexHullsIndices[0][0], convexDesc.Scaling)
+                        {
+                            NeedsCustomCollisionCallback = true
+                        };
+
+                        shape.UpdateLocalTransformations();
+                        shape.Description = desc;
+
+                        return shape;
+                    }
+
+                    if (convexDesc.ConvexHulls[0].Count <= 1) return null;
+
+                    var subCompound = new CompoundColliderShape
+                    {
+                        NeedsCustomCollisionCallback = true
+                    };
+
+                    for (var i = 0; i < convexDesc.ConvexHulls[0].Count; i++)
+                    {
+                        var verts = convexDesc.ConvexHulls[0][i];
+                        var indices = convexDesc.ConvexHullsIndices[0][i];
+
+                        var subHull = new ConvexHullColliderShape(verts, indices, convexDesc.Scaling);
+                        subHull.UpdateLocalTransformations();
+                        subCompound.AddChildShape(subHull);
+                    }
+
+                    subCompound.UpdateLocalTransformations();
+                    subCompound.Description = desc;
+
+                    return subCompound;
+                }
+
+                if (convexDesc.ConvexHulls.Count <= 1) return null;
+
+                var compound = new CompoundColliderShape
+                {
+                    NeedsCustomCollisionCallback = true
+                };
+
+                for (var i = 0; i < convexDesc.ConvexHulls.Count; i++)
+                {
+                    var verts = convexDesc.ConvexHulls[i];
+                    var indices = convexDesc.ConvexHullsIndices[i];
+
+                    if (verts.Count == 1)
+                    {
+                        var subHull = new ConvexHullColliderShape(verts[0], indices[0], convexDesc.Scaling);
+                        subHull.UpdateLocalTransformations();
+                        compound.AddChildShape(subHull);
+                    }
+                    else if (verts.Count > 1)
+                    {
+                        var subCompound = new CompoundColliderShape();
+
+                        for (var b = 0; b < verts.Count; b++)
+                        {
+                            var subVerts = verts[b];
+                            var subIndex = indices[b];
+
+                            var subHull = new ConvexHullColliderShape(subVerts, subIndex, convexDesc.Scaling);
+                            subHull.UpdateLocalTransformations();
+                            subCompound.AddChildShape(subHull);
+                        }
+
+                        subCompound.UpdateLocalTransformations();
+
+                        compound.AddChildShape(subCompound);
+                    }
+                }
+
+                compound.UpdateLocalTransformations();
+                compound.Description = desc;
+
+                return compound;
+            }
+            else if (type == typeof(ColliderShapeAssetDesc))
+            {
+                var assetDesc = (ColliderShapeAssetDesc)desc;
+
+                if (assetDesc.Shape == null) return null;
+
+                shape = assetDesc.Shape.Shape;
+                CanScaleShape = false; //if any shape asset is present we should not scale the shape automatically!
+            }
+
+            if (shape != null)
+            {
+                shape.UpdateLocalTransformations();
+                shape.Description = desc;
+            }
+
+            return shape;
         }
 
         #endregion Utility

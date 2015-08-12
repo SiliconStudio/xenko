@@ -37,15 +37,24 @@ namespace SiliconStudio.Paradox.Physics
             switch (orientation)
             {
                 case ShapeOrientation.UpX:
-                    shape = new CapsuleShapeZ(radius, length);
+                    shape = new CapsuleShapeZ(radius, length)
+                    {
+                        LocalScaling = Vector3.One
+                    };
                     rotation = Matrix.RotationX((float)Math.PI / 2.0f);
                     break;
                 case ShapeOrientation.UpY:
-                    shape = new CapsuleShape(radius, length);
+                    shape = new CapsuleShape(radius, length)
+                    {
+                        LocalScaling = Vector3.One
+                    };
                     rotation = Matrix.Identity;
                     break;
                 case ShapeOrientation.UpZ:
-                    shape = new CapsuleShapeX(radius, length);
+                    shape = new CapsuleShapeX(radius, length)
+                    {
+                        LocalScaling = Vector3.One
+                    };
                     rotation = Matrix.RotationZ((float)Math.PI / 2.0f);
                     break;
                 default:

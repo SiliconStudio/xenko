@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
@@ -22,5 +24,13 @@ namespace SiliconStudio.Paradox.Physics
         /// </userdoc>
         [DataMember(20)]
         public float Offset;
+
+        public int CompareTo(object obj)
+        {
+            var other = obj as StaticPlaneColliderShapeDesc;
+            if (other == null) return -1;
+            if (other.Normal == Normal && Math.Abs(other.Offset - Offset) < float.Epsilon) return 0;
+            return 1;
+        }
     }
 }

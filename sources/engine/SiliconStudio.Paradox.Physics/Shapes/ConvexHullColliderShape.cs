@@ -20,7 +20,10 @@ namespace SiliconStudio.Paradox.Physics
             Type = ColliderShapeTypes.ConvexHull;
             Is2D = false;
 
-            InternalShape = new BulletSharp.ConvexHullShape(points);
+            InternalShape = new BulletSharp.ConvexHullShape(points)
+            {
+                LocalScaling = Vector3.One
+            };
 
             DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(1, 1, 1) * 1.01f);
 

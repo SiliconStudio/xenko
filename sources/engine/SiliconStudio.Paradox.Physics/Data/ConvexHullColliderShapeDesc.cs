@@ -1,12 +1,13 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
-using System.Collections.Generic;
-using System.ComponentModel;
-
+using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.Rendering;
+
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -16,12 +17,14 @@ namespace SiliconStudio.Paradox.Physics
     public class ConvexHullColliderShapeDesc : IColliderShapeDesc
     {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+
         [Browsable(false)]
 #endif
         [DataMember(10)]
         public List<List<List<Vector3>>> ConvexHulls; // Multiple meshes -> Multiple Hulls -> Hull points
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+
         [Browsable(false)]
 #endif
         [DataMember(20)]
@@ -42,7 +45,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <userdoc>
         /// The scaling of the generated convex hull.
         /// </userdoc>
-        [DataMember(45)] 
+        [DataMember(45)]
         public Vector3 Scaling = Vector3.One;
 
         /// <userdoc>
@@ -86,5 +89,24 @@ namespace SiliconStudio.Paradox.Physics
         /// </userdoc>
         [DataMember(110)]
         public float Threshold = 0.01f;
+
+        public int CompareTo(object obj)
+        {
+            var other = obj as ConvexHullColliderShapeDesc;
+            if (other == null) return -1;
+
+            if (other.Model == Model &&
+                other.SimpleWrap == SimpleWrap &&
+                other.Scaling == Scaling &&
+                other.Depth == Depth &&
+                other.PosSampling == PosSampling &&
+                other.AngleSampling == AngleSampling &&
+                other.PosRefine == PosRefine &&
+                other.AngleRefine == AngleRefine &&
+                Math.Abs(other.Alpha - Alpha) < float.Epsilon &&
+                Math.Abs(other.Threshold - Threshold) < float.Epsilon) return 0;
+
+            return 1;
+        }
     }
 }

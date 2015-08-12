@@ -47,8 +47,8 @@ namespace SiliconStudio.Paradox.Physics
             var inverseRotation = LocalRotation;
             inverseRotation.Invert();
 
-            PositiveCenterMatrix = Matrix.RotationQuaternion(LocalRotation) * Matrix.Translation(LocalOffset);
-            NegativeCenterMatrix = Matrix.RotationQuaternion(inverseRotation) * Matrix.Translation(-LocalOffset);
+            PositiveCenterMatrix = Matrix.RotationQuaternion(LocalRotation)*Matrix.Translation(LocalOffset * Scaling);// * Matrix.Scaling(Scaling);
+            NegativeCenterMatrix = Matrix.RotationQuaternion(inverseRotation)*Matrix.Translation(-LocalOffset * Scaling);// * Matrix.Scaling(Scaling);
 
             //if we are part of a compund we should update the transformation properly
             if (Parent == null) return;

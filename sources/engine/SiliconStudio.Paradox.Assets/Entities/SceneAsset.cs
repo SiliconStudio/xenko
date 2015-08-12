@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetDescription(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
     [ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName)]
-    [AssetFormatVersion(8)]
+    [AssetFormatVersion(9)]
     [AssetUpgrader(0, 1, typeof(RemoveSourceUpgrader))]
     [AssetUpgrader(1, 2, typeof(RemoveBaseUpgrader))]
     [AssetUpgrader(2, 3, typeof(RemoveModelDrawOrderUpgrader))]
@@ -33,6 +33,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetUpgrader(5, 6, typeof(RemoveModelParametersUpgrader))]
     [AssetUpgrader(6, 7, typeof(RemoveEnabledFromIncompatibleComponent))]
     [AssetUpgrader(7, 8, typeof(SceneIsNotEntityUpgrader))]
+    [AssetUpgrader(8, 9, typeof(ColliderShapeAssetOnlyUpgrader))]
     [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
@@ -223,6 +224,29 @@ namespace SiliconStudio.Paradox.Assets.Entities
 
                 // Move scene component
                 asset.Hierarchy.SceneSettings = rootEntity.Components["SceneComponent.Key"];
+            }
+        }
+
+        class ColliderShapeAssetOnlyUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Entities;
+                foreach (dynamic entity in entities)
+                {
+                    var components = entity.Components;
+                    var physComponent = components["PhysicsComponent.Key"];
+                    if (physComponent != null)
+                    {
+                        foreach (dynamic element in physComponent.Elements)
+                        {
+                            //var index = element.IndexOf("Shape");
+                            //todo perform automatic update
+                            element.RemoveChild("Shape");
+                        }
+                    }
+                }
             }
         }
 

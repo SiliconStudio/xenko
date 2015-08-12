@@ -1,5 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
@@ -28,5 +30,13 @@ namespace SiliconStudio.Paradox.Physics
         /// </userdoc>
         [DataMember(30)] 
         public Quaternion LocalRotation = Quaternion.Identity;
+
+        public int CompareTo(object obj)
+        {
+            var other = obj as Box2DColliderShapeDesc;
+            if (other == null) return -1;
+            if (other.Size == Size && other.LocalOffset == LocalOffset && other.LocalRotation == LocalRotation) return 0;
+            return 1;
+        }
     }
 }

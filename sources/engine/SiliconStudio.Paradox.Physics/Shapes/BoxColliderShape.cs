@@ -18,7 +18,10 @@ namespace SiliconStudio.Paradox.Physics
             Type = ColliderShapeTypes.Box;
             Is2D = false;
 
-            InternalShape = new BulletSharp.BoxShape(size/2);
+            InternalShape = new BulletSharp.BoxShape(size/2)
+            {
+                LocalScaling = Vector3.One
+            };
 
             DebugPrimitiveMatrix = Matrix.Scaling(size * 1.01f);
         }

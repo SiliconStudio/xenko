@@ -27,15 +27,24 @@ namespace SiliconStudio.Paradox.Physics
             switch (orientation)
             {
                 case ShapeOrientation.UpX:
-                    InternalShape = new BulletSharp.CylinderShapeX(new Vector3(height/2, radius, 0));
+                    InternalShape = new BulletSharp.CylinderShapeX(new Vector3(height/2, radius, 0))
+                    {
+                        LocalScaling = Vector3.One
+                    };
                     rotation = Matrix.RotationZ((float)Math.PI / 2.0f);
                     break;
                 case ShapeOrientation.UpY:
-                    InternalShape = new BulletSharp.CylinderShape(new Vector3(radius, height/2, 0));
+                    InternalShape = new BulletSharp.CylinderShape(new Vector3(radius, height/2, 0))
+                    {
+                        LocalScaling = Vector3.One
+                    };
                     rotation = Matrix.Identity;
                     break;
                 case ShapeOrientation.UpZ:
-                    InternalShape = new BulletSharp.CylinderShapeZ(new Vector3(radius, 0, height/2));
+                    InternalShape = new BulletSharp.CylinderShapeZ(new Vector3(radius, 0, height/2))
+                    {
+                        LocalScaling = Vector3.One
+                    };
                     rotation = Matrix.RotationX((float)Math.PI / 2.0f);
                     break;
                 default:

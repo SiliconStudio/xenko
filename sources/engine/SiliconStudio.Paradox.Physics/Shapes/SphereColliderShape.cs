@@ -19,7 +19,10 @@ namespace SiliconStudio.Paradox.Physics
             Type = ColliderShapeTypes.Sphere;
             Is2D = is2D;
 
-            var shape = new BulletSharp.SphereShape(radius);
+            var shape = new BulletSharp.SphereShape(radius)
+            {
+                LocalScaling = Vector3.One
+            };
 
             if (Is2D)
             {

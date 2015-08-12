@@ -1,10 +1,11 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
-using System.ComponentModel;
-
+﻿using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
+
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System.ComponentModel;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -45,5 +46,19 @@ namespace SiliconStudio.Paradox.Physics
         /// </userdoc>
         [DataMember(50)]
         public Quaternion LocalRotation = Quaternion.Identity;
+
+        public int CompareTo(object obj)
+        {
+            var other = obj as CylinderColliderShapeDesc;
+            if (other == null) return -1;
+
+            if (Math.Abs(other.Height - Height) < float.Epsilon &&
+                Math.Abs(other.Radius - Radius) < float.Epsilon &&
+                other.Orientation == Orientation &&
+                other.LocalOffset == LocalOffset &&
+                other.LocalRotation == LocalRotation) return 0;
+
+            return 1;
+        }
     }
 }
