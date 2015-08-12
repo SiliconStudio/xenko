@@ -1,3 +1,4 @@
+using System.Globalization;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 
@@ -88,6 +89,11 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
         public AtlasTextureElement Clone()
         {
             return (AtlasTextureElement)MemberwiseClone();
+        }
+
+        public override string ToString()
+        {
+            return string.Format(CultureInfo.CurrentCulture, "Name: {0} Source: {1} Destination:{2}", Name, SourceRegion, DestinationRegion);
         }
     }
 }

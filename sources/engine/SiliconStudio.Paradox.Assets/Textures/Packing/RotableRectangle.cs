@@ -1,4 +1,7 @@
 ﻿
+using System.Globalization;
+using SiliconStudio.Core;
+
 namespace SiliconStudio.Paradox.Assets.Textures.Packing
 {
     /// <summary>
@@ -46,6 +49,11 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
             Width = width;
             Height = height;
             IsRotated = isRotated;
+        }
+
+        public override string ToString()
+        {
+            return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1} Width:{2} Height:{3} Rotated: {4}", X, Y, Width, Height, IsRotated);
         }
     }
 }
