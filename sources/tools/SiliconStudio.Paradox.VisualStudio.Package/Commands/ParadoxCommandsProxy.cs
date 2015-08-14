@@ -146,6 +146,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
                     currentAppDomain = CreateParadoxDomain();
                     InitialzeFromSolution(solution, currentAppDomain);
                     currentInstance = CreateProxy(currentAppDomain);
+                    currentInstance.Initialize();
                     solutionChanged = false;
                 }
 
