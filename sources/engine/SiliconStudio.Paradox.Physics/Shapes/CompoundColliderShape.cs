@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.Physics
             foreach (var shape in colliderShapes)
             {
                 InternalCompoundShape.RemoveChildShape(shape.InternalShape);
-                shape.Dispose();
+                if(!shape.IsPartOfAsset) shape.Dispose();
             }
             colliderShapes.Clear();
 

@@ -528,16 +528,30 @@ namespace SiliconStudio.Paradox.Physics
 
             if (ColliderShape != null)
             {
-                ColliderShape.Dispose();
-                ColliderShape = null;
+                if (!ColliderShape.IsPartOfAsset)
+                {
+                    ColliderShape.Dispose();
+                    ColliderShape = null;
+                }
+                else
+                {
+                    ColliderShape = null;
+                }
             }
 
             try
             {
+                CanScaleShape = true;
+
                 if (ColliderShapes.Count == 1) //single shape case
                 {
                     if (ColliderShapes[0] != null)
                     {
+                        if (ColliderShapes[0].GetType() == typeof(ColliderShapeAssetDesc))
+                        {
+                            CanScaleShape = false;
+                        }
+
                         ColliderShape = CreateShape(ColliderShapes[0]);
                         
                         if (ColliderShape == null) return;
@@ -552,11 +566,21 @@ namespace SiliconStudio.Paradox.Physics
                     {
                         if (desc != null)
                         {
-                            compound.AddChildShape(CreateShape(desc));
+                            if (desc.GetType() == typeof(ColliderShapeAssetDesc))
+                            {
+                                CanScaleShape = false;
+                            }
+
+                            var subShape = CreateShape(desc);
+                            if (subShape != null)
+                            {
+                                compound.AddChildShape(subShape);
+                            }
                         }
                     }
                     ColliderShape = compound;
                     currentPhysicsScaling = ColliderShape.Scaling;
+                    ColliderShape.UpdateLocalTransformations();
                 }
             }
             catch (DllNotFoundException)
@@ -617,6 +641,7 @@ namespace SiliconStudio.Paradox.Physics
                             NeedsCustomCollisionCallback = true
                         };
 
+                        shape.Parent = null;
                         shape.UpdateLocalTransformations();
                         shape.Description = desc;
 
@@ -640,6 +665,7 @@ namespace SiliconStudio.Paradox.Physics
                         subCompound.AddChildShape(subHull);
                     }
 
+                    subCompound.Parent = null;
                     subCompound.UpdateLocalTransformations();
                     subCompound.Description = desc;
 
@@ -684,6 +710,7 @@ namespace SiliconStudio.Paradox.Physics
                     }
                 }
 
+                compound.Parent = null;
                 compound.UpdateLocalTransformations();
                 compound.Description = desc;
 
@@ -696,11 +723,11 @@ namespace SiliconStudio.Paradox.Physics
                 if (assetDesc.Shape == null) return null;
 
                 shape = assetDesc.Shape.Shape;
-                CanScaleShape = false; //if any shape asset is present we should not scale the shape automatically!
             }
 
             if (shape != null)
             {
+                shape.Parent = null; //from now parent might change
                 shape.UpdateLocalTransformations();
                 shape.Description = desc;
             }

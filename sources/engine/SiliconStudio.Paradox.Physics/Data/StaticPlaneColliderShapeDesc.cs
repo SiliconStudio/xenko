@@ -10,7 +10,7 @@ namespace SiliconStudio.Paradox.Physics
 {
     [ContentSerializer(typeof(DataContentSerializer<StaticPlaneColliderShapeDesc>))]
     [DataContract("StaticPlaneColliderShapeDesc")]
-    [Display(50, "StaticPlaneColliderShape")]
+    [Display(50, "Infinite Plane")]
     public class StaticPlaneColliderShapeDesc : IColliderShapeDesc
     {
         /// <userdoc>

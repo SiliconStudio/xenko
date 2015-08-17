@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Physics
     [ContentSerializer(typeof(DataContentSerializer<PhysicsColliderShape>))]
     [DataSerializerGlobal(typeof(CloneSerializer<PhysicsColliderShape>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(ReferenceSerializer<PhysicsColliderShape>), Profile = "Asset")]
-    public class PhysicsColliderShape
+    public class PhysicsColliderShape : IDisposable
     {
         private List<IColliderShapeDesc> descriptions;
 
@@ -54,6 +54,7 @@ namespace SiliconStudio.Paradox.Physics
                 if (descs.Count == 1) //single shape case
                 {
                     res = CreateShape(descs[0]);
+                    res.IsPartOfAsset = true;
                 }
                 else if (descs.Count > 1) //need a compound shape in this case
                 {
@@ -63,6 +64,7 @@ namespace SiliconStudio.Paradox.Physics
                         compound.AddChildShape(CreateShape(desc));
                     }
                     res = compound;
+                    res.IsPartOfAsset = true;
                 }
             }
             catch (DllNotFoundException)
@@ -200,9 +202,14 @@ namespace SiliconStudio.Paradox.Physics
             {
                 shape.UpdateLocalTransformations();
                 shape.Description = desc;
-            }
+            } 
 
             return shape;
+        }
+
+        public void Dispose()
+        {
+            if(Shape != null) Shape.Dispose();
         }
     }
 }

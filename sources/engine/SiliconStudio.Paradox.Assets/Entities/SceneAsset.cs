@@ -3,12 +3,15 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using SharpYaml.Serialization;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Engine;
@@ -24,7 +27,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetDescription(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
     [ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName)]
-    [AssetFormatVersion(9)]
+    [AssetFormatVersion(10)]
     [AssetUpgrader(0, 1, typeof(RemoveSourceUpgrader))]
     [AssetUpgrader(1, 2, typeof(RemoveBaseUpgrader))]
     [AssetUpgrader(2, 3, typeof(RemoveModelDrawOrderUpgrader))]
@@ -34,6 +37,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetUpgrader(6, 7, typeof(RemoveEnabledFromIncompatibleComponent))]
     [AssetUpgrader(7, 8, typeof(SceneIsNotEntityUpgrader))]
     [AssetUpgrader(8, 9, typeof(ColliderShapeAssetOnlyUpgrader))]
+    [AssetUpgrader(9, 10, typeof(NoBox2DUpgrader))]
     [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
@@ -244,6 +248,38 @@ namespace SiliconStudio.Paradox.Assets.Entities
                             //var index = element.IndexOf("Shape");
                             //todo perform automatic update
                             element.RemoveChild("Shape");
+                        }
+                    }
+                }
+            }
+        }
+
+        class NoBox2DUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Entities;
+                foreach (dynamic entity in entities)
+                {
+                    var components = entity.Components;
+                    var physComponent = components["PhysicsComponent.Key"];
+                    if (physComponent != null)
+                    {
+                        foreach (dynamic element in physComponent.Elements)
+                        {
+                            foreach (dynamic shape in element.ColliderShapes)
+                            {
+                                var tag = shape.Node.Tag;
+                                if (tag == "!Box2DColliderShapeDesc")
+                                {
+                                    shape.Node.Tag = "!BoxColliderShapeDesc";
+                                    shape.Is2D = true;
+                                    shape.Size.X = shape.Size.X;
+                                    shape.Size.Y = shape.Size.Y;
+                                    shape.Size.Z = 0.01f;
+                                }
+                            }
                         }
                     }
                 }

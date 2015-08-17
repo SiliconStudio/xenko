@@ -70,7 +70,8 @@ namespace SiliconStudio.Paradox.Assets.Physics
 
                     var loadSettings = new AssetManagerLoaderSettings
                     {
-                        ContentFilter = AssetManagerLoaderSettings.NewContentFilterByType(typeof(Mesh))
+                        ContentFilter = AssetManagerLoaderSettings.NewContentFilterByType(typeof(Mesh)),
+                        LoadContentReferences = false
                     };
 
                     var modelAsset = assetManager.Load<Model>(AttachedReferenceManager.GetUrl(convexHullDesc.Model), loadSettings);

@@ -130,5 +130,7 @@ namespace SiliconStudio.Paradox.Physics
         public Matrix DebugPrimitiveMatrix;
 
         internal bool NeedsCustomCollisionCallback;
+
+        internal bool IsPartOfAsset = false;
     }
 }

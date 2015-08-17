@@ -1,14 +1,15 @@
 ﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Threading;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Games;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -80,8 +81,10 @@ namespace SiliconStudio.Paradox.Physics
 
             if (element.ColliderShapes.Count == 0) return; //no shape no purpose
 
-            if(element.ColliderShape == null) element.ComposeShape();
-            var shape = element.ColliderShape;     
+            if (element.ColliderShape == null) element.ComposeShape();
+            var shape = element.ColliderShape;
+
+            if (shape == null) return; //no shape no purpose
 
             element.BoneIndex = -1;
 
@@ -286,6 +289,10 @@ namespace SiliconStudio.Paradox.Physics
             }
 
             toDispose.Add(element.Collider);
+            if (element.ColliderShape != null && !element.ColliderShape.IsPartOfAsset)
+            {
+                toDispose.Add(element.ColliderShape);
+            }
             element.Collider = null;
 
             //dispose in another thread for better performance
@@ -364,7 +371,17 @@ namespace SiliconStudio.Paradox.Physics
 
         protected override void OnSystemAdd()
         {
-            physicsSystem = (Bullet2PhysicsSystem)Services.GetSafeServiceAs<IPhysicsSystem>();
+            try
+            {
+                physicsSystem = (Bullet2PhysicsSystem)Services.GetSafeServiceAs<IPhysicsSystem>();
+            }
+            catch (ServiceNotFoundException)
+            {
+                physicsSystem = new Bullet2PhysicsSystem(Services);
+                var game = Services.GetSafeServiceAs<IGame>();
+                game.GameSystems.Add(physicsSystem);
+            }
+
             simulation = physicsSystem.Create(this);
 
             //setup debug device and debug shader

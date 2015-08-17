@@ -9,9 +9,15 @@ namespace SiliconStudio.Paradox.Physics
 {
     [ContentSerializer(typeof(DataContentSerializer<BoxColliderShapeDesc>))]
     [DataContract("BoxColliderShapeDesc")]
-    [Display(50, "BoxColliderShape")]
+    [Display(50, "Box")]
     public class BoxColliderShapeDesc : IColliderShapeDesc
     {
+        /// <userdoc>
+        /// Select this if this shape will represent a Circle 2D shape
+        /// </userdoc>
+        [DataMember(5)]
+        public bool Is2D;
+
         /// <userdoc>
         /// The size of one edge of the box.
         /// </userdoc>

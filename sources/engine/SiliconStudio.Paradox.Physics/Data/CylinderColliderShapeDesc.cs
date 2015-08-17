@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Physics
 {
     [ContentSerializer(typeof(DataContentSerializer<CylinderColliderShapeDesc>))]
     [DataContract("CylinderColliderShapeDesc")]
-    [Display(50, "CylinderColliderShape")]
+    [Display(50, "Cylinder")]
     public class CylinderColliderShapeDesc : IColliderShapeDesc
     {
         /// <userdoc>
