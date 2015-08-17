@@ -118,12 +118,10 @@ namespace SiliconStudio.ExecServer
         /// <returns></returns>
         private AppDomainShadow GetOrNew(bool useCache)
         {
-            string newAppDomainName;
             while (true)
             {
                 lock (appDomainShadows)
                 {
-                    newAppDomainName = Path.GetFileNameWithoutExtension(mainAssemblyPath) + "#" + appDomainShadows.Count;
                     foreach (var appDomainShadow in appDomainShadows)
                     {
                         if (appDomainShadow.TryLock())
@@ -132,29 +130,26 @@ namespace SiliconStudio.ExecServer
                             return appDomainShadow;
                         }
                     }
+
                     if (appDomainShadows.Count < maximumConcurrentAppDomain)
                     {
-                        break;
+
+                        var newAppDomainName = Path.GetFileNameWithoutExtension(mainAssemblyPath) + "#" + appDomainShadows.Count;
+                        Console.WriteLine("Create new AppDomain {0}", newAppDomainName);
+                        var newAppDomain = new AppDomainShadow(newAppDomainName, mainAssemblyPath, nativeDllsPathOrFolderList.ToArray());
+                        newAppDomain.TryLock();
+
+                        if (useCache)
+                        {
+                            appDomainShadows.Add(newAppDomain);
+                        }
+                        return newAppDomain;
                     }
                 }
 
                 // We should better use notify instead
                 Thread.Sleep(200);
             }
-
-            Console.WriteLine("Create new AppDomain {0}", newAppDomainName);
-            var newAppDomain = new AppDomainShadow(newAppDomainName, mainAssemblyPath, nativeDllsPathOrFolderList.ToArray());
-            newAppDomain.TryLock();
-
-            if (useCache)
-            {
-                lock (appDomainShadows)
-                {
-                    appDomainShadows.Add(newAppDomain);
-                }
-            }
-
-            return newAppDomain;
         }
 
         /// <summary>
