@@ -118,11 +118,12 @@ namespace SiliconStudio.ExecServer
         /// <returns></returns>
         private AppDomainShadow GetOrNew(bool useCache)
         {
-            var newAppDomainName = Path.GetFileNameWithoutExtension(mainAssemblyPath) + "#" + appDomainShadows.Count;
+            string newAppDomainName;
             while (true)
             {
                 lock (appDomainShadows)
                 {
+                    newAppDomainName = Path.GetFileNameWithoutExtension(mainAssemblyPath) + "#" + appDomainShadows.Count;
                     foreach (var appDomainShadow in appDomainShadows)
                     {
                         if (appDomainShadow.TryLock())
