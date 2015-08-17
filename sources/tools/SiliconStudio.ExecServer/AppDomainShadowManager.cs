@@ -118,10 +118,10 @@ namespace SiliconStudio.ExecServer
         /// <returns></returns>
         private AppDomainShadow GetOrNew(bool useCache)
         {
-            lock (appDomainShadows)
+            var newAppDomainName = Path.GetFileNameWithoutExtension(mainAssemblyPath) + "#" + appDomainShadows.Count;
+            while (true)
             {
-                var newAppDomainName = Path.GetFileNameWithoutExtension(mainAssemblyPath) + "#" + appDomainShadows.Count;
-                while (true)
+                lock (appDomainShadows)
                 {
                     foreach (var appDomainShadow in appDomainShadows)
                     {
@@ -131,29 +131,29 @@ namespace SiliconStudio.ExecServer
                             return appDomainShadow;
                         }
                     }
-                    
                     if (appDomainShadows.Count < maximumConcurrentAppDomain)
                     {
                         break;
                     }
-                    else
-                    {
-                        // We should better use notify instead
-                        Thread.Sleep(200);
-                    }
                 }
 
-                Console.WriteLine("Create new AppDomain {0}", newAppDomainName);
-                var newAppDomain = new AppDomainShadow(newAppDomainName, mainAssemblyPath, nativeDllsPathOrFolderList.ToArray());
-                newAppDomain.TryLock();
+                // We should better use notify instead
+                Thread.Sleep(200);
+            }
 
-                if (useCache)
+            Console.WriteLine("Create new AppDomain {0}", newAppDomainName);
+            var newAppDomain = new AppDomainShadow(newAppDomainName, mainAssemblyPath, nativeDllsPathOrFolderList.ToArray());
+            newAppDomain.TryLock();
+
+            if (useCache)
+            {
+                lock (appDomainShadows)
                 {
                     appDomainShadows.Add(newAppDomain);
                 }
-
-                return newAppDomain;
             }
+
+            return newAppDomain;
         }
 
         /// <summary>
@@ -161,9 +161,9 @@ namespace SiliconStudio.ExecServer
         /// </summary>
         public void Dispose()
         {
-            lock (appDomainShadows)
+            while (true)
             {
-                while (true)
+                lock (appDomainShadows)
                 {
                     for (int i = appDomainShadows.Count - 1; i >= 0; i--)
                     {
@@ -178,10 +178,10 @@ namespace SiliconStudio.ExecServer
                     {
                         break;
                     }
-
-                    // Active wait, not ideal, we should better have an event based locking mechanism
-                    Thread.Sleep(500);
                 }
+
+                // Active wait, not ideal, we should better have an event based locking mechanism
+                Thread.Sleep(500);
             }
         }
     }
