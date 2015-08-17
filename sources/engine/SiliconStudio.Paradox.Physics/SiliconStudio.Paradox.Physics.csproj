@@ -44,7 +44,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bullet2PhysicsSystem.cs" />
-    <Compile Include="Data\Box2DColliderShapeDesc.cs" />
     <Compile Include="Data\BoxColliderShapeDesc.cs" />
     <Compile Include="Data\CapsuleColliderShapeDesc.cs" />
     <Compile Include="Data\ConvexHullColliderShapeDesc.cs" />

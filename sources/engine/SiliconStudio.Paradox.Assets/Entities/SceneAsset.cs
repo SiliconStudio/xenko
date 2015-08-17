@@ -245,8 +245,15 @@ namespace SiliconStudio.Paradox.Assets.Entities
                     {
                         foreach (dynamic element in physComponent.Elements)
                         {
-                            //var index = element.IndexOf("Shape");
-                            //todo perform automatic update
+                            var index = element.IndexOf("Shape");
+                            if (index == -1) continue;
+
+                            dynamic shapeId = element.Shape;
+                            element.ColliderShapes = new DynamicYamlArray(new YamlSequenceNode());
+                            dynamic subnode = new YamlMappingNode { Tag = "!ColliderShapeAssetDesc" };
+                            subnode.Add("Shape", shapeId.Node.Value);
+                            element.ColliderShapes.Add(subnode);
+
                             element.RemoveChild("Shape");
                         }
                     }

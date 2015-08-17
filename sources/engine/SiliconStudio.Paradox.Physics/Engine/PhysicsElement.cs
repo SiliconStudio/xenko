@@ -169,7 +169,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <userdoc>
         /// The reference to the collider Shape of this element.
         /// </userdoc>
-        [DataMember(20)]
+        [DataMember(100)]
         [Category]
         public TrackingCollection<IColliderShapeDesc> ColliderShapes { get; private set; }
 
@@ -593,38 +593,40 @@ namespace SiliconStudio.Paradox.Physics
         {
             ColliderShape shape = null;
 
-            var type = desc.GetType();
-            if (type == typeof(Box2DColliderShapeDesc))
-            {
-                var boxDesc = (Box2DColliderShapeDesc)desc;
-                shape = new Box2DColliderShape(boxDesc.Size) { LocalOffset = boxDesc.LocalOffset, LocalRotation = boxDesc.LocalRotation };
-            }
-            else if (type == typeof(BoxColliderShapeDesc))
+            var shapeType = desc.GetType();
+            if (shapeType == typeof(BoxColliderShapeDesc))
             {
                 var boxDesc = (BoxColliderShapeDesc)desc;
-                shape = new BoxColliderShape(boxDesc.Size) { LocalOffset = boxDesc.LocalOffset, LocalRotation = boxDesc.LocalRotation };
+                if (boxDesc.Is2D)
+                {
+                    shape = new Box2DColliderShape(new Vector2(boxDesc.Size.X, boxDesc.Size.Y)) { LocalOffset = boxDesc.LocalOffset, LocalRotation = boxDesc.LocalRotation };
+                }
+                else
+                {
+                    shape = new BoxColliderShape(boxDesc.Size) { LocalOffset = boxDesc.LocalOffset, LocalRotation = boxDesc.LocalRotation };
+                }
             }
-            else if (type == typeof(CapsuleColliderShapeDesc))
+            else if (shapeType == typeof(CapsuleColliderShapeDesc))
             {
                 var capsuleDesc = (CapsuleColliderShapeDesc)desc;
                 shape = new CapsuleColliderShape(capsuleDesc.Is2D, capsuleDesc.Radius, capsuleDesc.Length, capsuleDesc.Orientation) { LocalOffset = capsuleDesc.LocalOffset, LocalRotation = capsuleDesc.LocalRotation };
             }
-            else if (type == typeof(CylinderColliderShapeDesc))
+            else if (shapeType == typeof(CylinderColliderShapeDesc))
             {
                 var cylinderDesc = (CylinderColliderShapeDesc)desc;
                 shape = new CylinderColliderShape(cylinderDesc.Height, cylinderDesc.Radius, cylinderDesc.Orientation) { LocalOffset = cylinderDesc.LocalOffset, LocalRotation = cylinderDesc.LocalRotation };
             }
-            else if (type == typeof(SphereColliderShapeDesc))
+            else if (shapeType == typeof(SphereColliderShapeDesc))
             {
                 var sphereDesc = (SphereColliderShapeDesc)desc;
                 shape = new SphereColliderShape(sphereDesc.Is2D, sphereDesc.Radius) { LocalOffset = sphereDesc.LocalOffset };
             }
-            else if (type == typeof(StaticPlaneColliderShapeDesc))
+            else if (shapeType == typeof(StaticPlaneColliderShapeDesc))
             {
                 var planeDesc = (StaticPlaneColliderShapeDesc)desc;
                 shape = new StaticPlaneColliderShape(planeDesc.Normal, planeDesc.Offset);
             }
-            else if (type == typeof(ConvexHullColliderShapeDesc))
+            else if (shapeType == typeof(ConvexHullColliderShapeDesc))
             {
                 var convexDesc = (ConvexHullColliderShapeDesc)desc;
 
@@ -716,7 +718,7 @@ namespace SiliconStudio.Paradox.Physics
 
                 return compound;
             }
-            else if (type == typeof(ColliderShapeAssetDesc))
+            else if (shapeType == typeof(ColliderShapeAssetDesc))
             {
                 var assetDesc = (ColliderShapeAssetDesc)desc;
 

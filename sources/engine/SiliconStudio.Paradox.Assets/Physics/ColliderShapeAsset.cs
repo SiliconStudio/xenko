@@ -1,9 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Collections.Generic;
-using System.ComponentModel;
-
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
@@ -13,6 +10,8 @@ using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Physics;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace SiliconStudio.Paradox.Assets.Physics
 {
@@ -20,8 +19,9 @@ namespace SiliconStudio.Paradox.Assets.Physics
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(ColliderShapeAssetCompiler))]
     [ObjectFactory(typeof(ColliderShapeFactory))]
-    [AssetFormatVersion(1)]
+    [AssetFormatVersion(2)]
     [AssetUpgrader(0, 1, typeof(UpgraderShapeDescriptions))]
+    [AssetUpgrader(1, 2, typeof(Box2DRemovalUpgrader))]
     [Display("Collider Shape", "A physics collider shape")]
     public class ColliderShapeAsset : Asset
     {
@@ -52,7 +52,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
             }
         }
 
-        class UpgraderShapeDescriptions : AssetUpgraderBase
+        private class UpgraderShapeDescriptions : AssetUpgraderBase
         {
             protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
             {
@@ -75,7 +75,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
                     }
                     if (colliderShape.Node.Tag == "!CapsuleColliderShapeDesc" || colliderShape.Node.Tag == "!CylinderColliderShapeDesc")
                     {
-                        var upVector = DynamicYamlExtensions.ConvertTo <Vector3>( colliderShape.UpAxis);
+                        var upVector = DynamicYamlExtensions.ConvertTo<Vector3>(colliderShape.UpAxis);
                         if (upVector == Vector3.UnitX)
                             colliderShape.Orientation = ShapeOrientation.UpX;
                         if (upVector == Vector3.UnitZ)
@@ -94,6 +94,27 @@ namespace SiliconStudio.Paradox.Assets.Physics
                         colliderShape.Height = 2f * (float)colliderShape.HalfExtents.Y;
                         colliderShape.HalfExtents = DynamicYamlEmpty.Default;
                     }
+                }
+            }
+        }
+
+        private class Box2DRemovalUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                if (asset.ColliderShapes == null)
+                    return;
+
+                foreach (dynamic shape in asset.ColliderShapes)
+                {
+                    var tag = shape.Node.Tag;
+                    if (tag != "!Box2DColliderShapeDesc") continue;
+
+                    shape.Node.Tag = "!BoxColliderShapeDesc";
+                    shape.Is2D = true;
+                    shape.Size.X = shape.Size.X;
+                    shape.Size.Y = shape.Size.Y;
+                    shape.Size.Z = 0.01f;
                 }
             }
         }

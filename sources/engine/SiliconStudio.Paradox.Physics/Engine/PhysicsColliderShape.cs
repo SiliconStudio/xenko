@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Paradox.Engine.Design;
@@ -80,15 +81,17 @@ namespace SiliconStudio.Paradox.Physics
             ColliderShape shape = null;
 
             var type = desc.GetType();
-            if (type == typeof(Box2DColliderShapeDesc))
-            {
-                var boxDesc = (Box2DColliderShapeDesc)desc;
-                shape = new Box2DColliderShape(boxDesc.Size) { LocalOffset = boxDesc.LocalOffset, LocalRotation = boxDesc.LocalRotation };
-            }
-            else if (type == typeof(BoxColliderShapeDesc))
+            if (type == typeof(BoxColliderShapeDesc))
             {
                 var boxDesc = (BoxColliderShapeDesc)desc;
-                shape = new BoxColliderShape(boxDesc.Size) { LocalOffset = boxDesc.LocalOffset, LocalRotation = boxDesc.LocalRotation };
+                if (boxDesc.Is2D)
+                {
+                    shape = new Box2DColliderShape(new Vector2(boxDesc.Size.X, boxDesc.Size.Y)) { LocalOffset = boxDesc.LocalOffset, LocalRotation = boxDesc.LocalRotation };
+                }
+                else
+                {
+                    shape = new BoxColliderShape(boxDesc.Size) { LocalOffset = boxDesc.LocalOffset, LocalRotation = boxDesc.LocalRotation };
+                }
             }
             else if (type == typeof(CapsuleColliderShapeDesc))
             {
