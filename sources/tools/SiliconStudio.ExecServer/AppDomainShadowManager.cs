@@ -21,6 +21,10 @@ namespace SiliconStudio.ExecServer
 
         private readonly List<string> nativeDllsPathOrFolderList;
 
+        private readonly object disposingLock = new object();
+
+        private bool isDisposed = false;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AppDomainShadowManager" /> class.
         /// </summary>
@@ -53,20 +57,29 @@ namespace SiliconStudio.ExecServer
         /// <returns>System.Int32.</returns>
         public int Run(string[] args, IServerLogger logger)
         {
-            AppDomainShadow shadowDomain = null;
-            try
+            lock (disposingLock)
             {
-                shadowDomain = GetOrNew(IsCachingAppDomain);
-                return shadowDomain.Run(args, logger);
-            }
-            finally
-            {
-                if (shadowDomain != null)
+                if (isDisposed)
                 {
-                    shadowDomain.EndRun();
-                    if (!IsCachingAppDomain)
+                    logger.OnLog("Error, server is being shutdown, cannot run Compiler", ConsoleColor.Red);
+                    return 1;
+                }
+
+                AppDomainShadow shadowDomain = null;
+                try
+                {
+                    shadowDomain = GetOrNew(IsCachingAppDomain);
+                    return shadowDomain.Run(args, logger);
+                }
+                finally
+                {
+                    if (shadowDomain != null)
                     {
-                        shadowDomain.Dispose();
+                        shadowDomain.EndRun();
+                        if (!IsCachingAppDomain)
+                        {
+                            shadowDomain.Dispose();
+                        }
                     }
                 }
             }
@@ -157,27 +170,32 @@ namespace SiliconStudio.ExecServer
         /// </summary>
         public void Dispose()
         {
-            while (true)
+            lock (disposingLock)
             {
-                lock (appDomainShadows)
+                while (true)
                 {
-                    for (int i = appDomainShadows.Count - 1; i >= 0; i--)
+                    lock (appDomainShadows)
                     {
-                        var appDomainShadow = appDomainShadows[i];
-                        if (appDomainShadow.TryLock())
+                        for (int i = appDomainShadows.Count - 1; i >= 0; i--)
                         {
-                            appDomainShadows.RemoveAt(i);
-                            appDomainShadow.Dispose();
+                            var appDomainShadow = appDomainShadows[i];
+                            if (appDomainShadow.TryLock())
+                            {
+                                appDomainShadows.RemoveAt(i);
+                                appDomainShadow.Dispose();
+                            }
+                        }
+                        if (appDomainShadows.Count == 0)
+                        {
+                            break;
                         }
                     }
-                    if (appDomainShadows.Count == 0)
-                    {
-                        break;
-                    }
+
+                    // Active wait, not ideal, we should better have an event based locking mechanism
+                    Thread.Sleep(500);
                 }
 
-                // Active wait, not ideal, we should better have an event based locking mechanism
-                Thread.Sleep(500);
+                isDisposed = true;
             }
         }
     }
