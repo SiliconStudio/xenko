@@ -340,16 +340,6 @@ public:
 			vertexStride += sizeof(float) * 4;
 		}
 
-		// Add the smoothing group information at the end of the vertex declaration
-		// Note: it is important that to be the last element of the declaration because it is dropped later in the process by partial memcopys
-		// SMOOTHINGGROUP
-		int smoothingOffset = vertexStride;
-		if (smoothingElement != NULL)
-		{
-			vertexElements->Add(VertexElement("SMOOTHINGGROUP", 0, PixelFormat::R32_UInt, vertexStride));
-			vertexStride += sizeof(int);
-		}
-
 		// COLOR
 		auto elementVertexColorCount = pMesh->GetElementVertexColorCount();
 		int colorOffset = vertexStride;
@@ -368,6 +358,19 @@ public:
 		//	auto dataType = userData->GetDataName(0);
 		//	Console::WriteLine("DataName {0}", gcnew String(dataType));
 		//}
+
+		// Add the smoothing group information at the end of the vertex declaration
+		// *************************************************************************
+		// WARNING - DONT PUT ANY VertexElement after SMOOTHINGGROUP
+		// *************************************************************************
+		// Iit is important that to be the LAST ELEMENT of the declaration because it is dropped later in the process by partial memcopys
+		// SMOOTHINGGROUP
+		int smoothingOffset = vertexStride;
+		if (smoothingElement != NULL)
+		{
+			vertexElements->Add(VertexElement("SMOOTHINGGROUP", 0, PixelFormat::R32_UInt, vertexStride));
+			vertexStride += sizeof(int);
+		}
 
 		int polygonCount = pMesh->GetPolygonCount();
 
@@ -497,14 +500,6 @@ public:
 						}
 					}
 
-					// SMOOTHINGGROUP
-					if (smoothingElement != NULL)
-					{
-						auto groupIndex = GetGroupIndexForLayerElementTemplate(smoothingElement, controlPointIndex, vertexIndex, i, true, meshName);
-						auto group = smoothingElement->GetDirectArray().GetAt(groupIndex);
-						((int*)(vbPointer + smoothingOffset))[0] = (int)group;
-					}
-
 					// COLOR
 					for (int elementColorIndex = 0; elementColorIndex < elementVertexColorCount; elementColorIndex++)
 					{
@@ -516,6 +511,14 @@ public:
 
 					// USERDATA
 					// TODO HANDLE USERDATA HERE
+
+					// SMOOTHINGGROUP
+					if (smoothingElement != NULL)
+					{
+						auto groupIndex = GetGroupIndexForLayerElementTemplate(smoothingElement, controlPointIndex, vertexIndex, i, true, meshName);
+						auto group = smoothingElement->GetDirectArray().GetAt(groupIndex);
+						((int*)(vbPointer + smoothingOffset))[0] = (int)group;
+					}
 
 					vbPointer += vertexStride;
 				}
