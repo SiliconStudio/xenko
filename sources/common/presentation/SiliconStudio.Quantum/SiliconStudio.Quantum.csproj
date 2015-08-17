@@ -20,7 +20,6 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Attributes\SealedCollectionAttribute.cs" />
     <Compile Include="Commands\AddNewItemCommand.cs" />
     <Compile Include="Commands\AddPrimitiveKeyCommand.cs" />
     <Compile Include="CombineMode.cs" />
