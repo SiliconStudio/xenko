@@ -157,6 +157,7 @@ namespace SiliconStudio.Paradox.Physics
                         element.UpdatePhysicsTransformation(); //this will set position and rotation of the collider
 
                         rb.Type = RigidBodyTypes.Static;
+                        rb.Mass = 0.0f;
 
                         if (defaultGroups)
                         {
@@ -204,7 +205,7 @@ namespace SiliconStudio.Paradox.Physics
                         element.UpdatePhysicsTransformation(); //this will set position and rotation of the collider
 
                         rb.Type = RigidBodyTypes.Kinematic;
-                        rb.Mass = 0.0f;
+                        rb.Mass = 1.0f;
 
                         if (defaultGroups)
                         {

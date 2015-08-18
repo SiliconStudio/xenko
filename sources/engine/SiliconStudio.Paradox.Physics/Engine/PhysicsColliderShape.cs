@@ -18,35 +18,22 @@ namespace SiliconStudio.Paradox.Physics
     [DataSerializerGlobal(typeof(ReferenceSerializer<PhysicsColliderShape>), Profile = "Asset")]
     public class PhysicsColliderShape : IDisposable
     {
-        private List<IColliderShapeDesc> descriptions;
-
         /// <summary>
         /// Used to serialize one or more collider shapes into one single shape
         /// Reading this value will automatically parse the Shape property into its description
         /// Writing this value will automatically compose, create and populate the Shape property
         /// </summary>
-        public List<IColliderShapeDesc> Descriptions
-        {
-            get { return descriptions; }
-            set
-            {
-                descriptions = value;
-                if (descriptions != null)
-                {
-                    Shape = Compose(descriptions);
-                }
-            }
-        }
+        public List<IColliderShapeDesc> Descriptions { get; set; }
 
         [DataMemberIgnore]
-        public ColliderShape Shape { get; private set; }
+        public ColliderShape Shape { get; internal set; }
 
         public static PhysicsColliderShape New(params IColliderShapeDesc[] descriptions)
         {
             return new PhysicsColliderShape { Descriptions = descriptions.ToList() };
         }
         
-        private static ColliderShape Compose(IReadOnlyList<IColliderShapeDesc> descs)
+        internal static ColliderShape Compose(IReadOnlyList<IColliderShapeDesc> descs)
         {
             ColliderShape res = null;
 

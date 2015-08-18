@@ -25,6 +25,7 @@ namespace SiliconStudio.Paradox.Physics
             {
                 ColliderShapeChanged = true;
             };
+            StepHeight = 0.1f;
         }
 
         public enum Types
@@ -319,6 +320,7 @@ namespace SiliconStudio.Paradox.Physics
         /// Only valid for CharacterController type, describes the max slope height a character can climb.
         /// </userdoc>
         [DataMember(60)]
+        [DefaultValue(0.1f)]
         public float StepHeight
         {
             get
@@ -722,7 +724,15 @@ namespace SiliconStudio.Paradox.Physics
             {
                 var assetDesc = (ColliderShapeAssetDesc)desc;
 
-                if (assetDesc.Shape == null) return null;
+                if (assetDesc.Shape == null)
+                {
+                    return null;
+                }
+
+                if (assetDesc.Shape.Shape == null)
+                {
+                    assetDesc.Shape.Shape = PhysicsColliderShape.Compose(assetDesc.Shape.Descriptions);
+                }
 
                 shape = assetDesc.Shape.Shape;
             }

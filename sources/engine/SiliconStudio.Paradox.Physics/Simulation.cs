@@ -142,6 +142,10 @@ namespace SiliconStudio.Paradox.Physics
                 {
                     case ContactEventType.LastContactEnd:
                         contact.Caller.OnLastContactEnd(contact.Args);
+                        while (contact.Caller.LastContactChannel.Balance < 0)
+                        {
+                            contact.Caller.LastContactChannel.Send(contact.Args.Contact);
+                        }
                         break;
 
                     case ContactEventType.ContactEnd:
@@ -150,6 +154,10 @@ namespace SiliconStudio.Paradox.Physics
 
                     case ContactEventType.FirstContactStart:
                         contact.Caller.OnFirstContactStart(contact.Args);
+                        while (contact.Caller.FirstContactChannel.Balance < 0)
+                        {
+                            contact.Caller.FirstContactChannel.Send(contact.Args.Contact);
+                        }
                         break;
 
                     case ContactEventType.ContactStart:
@@ -170,6 +178,44 @@ namespace SiliconStudio.Paradox.Physics
         private readonly List<ContactEventData> contactsCache = new List<ContactEventData>();
 
         internal static bool CacheContacts = false;
+
+        /* TODO
+         * Collider A
+Collider B
+Collider C
+
+(cannot really make difference between entering and being entered..)
+(A is a box so multiple vertex contacts, 4)
+
+A:
+First time something enters
+First time B enters
+Vertex contact started with B 1
+Vertex contact started with B 2
+Vertex contact started with B 3
+Vertex contact started with B 4
+First time C enters
+Vertex contact started with C 1
+Vertex contact started with C 2
+Vertex contact started with C 3
+Vertex contact started with C 4
+
+B:
+First time penetrating something
+First time penetrating A
+Vertex contact started with A 1
+Vertex contact started with A 2
+Vertex contact started with A 3
+Vertex contact started with A 4
+
+C:
+First time penetrating something
+First time penetrating A
+Vertex contact started with A 1
+Vertex contact started with A 2
+Vertex contact started with A 3
+Vertex contact started with A 4
+         */
 
         private void PersistentManifoldContactDestroyed(object userPersistantData)
         {
@@ -363,7 +409,7 @@ namespace SiliconStudio.Paradox.Physics
             var rb = new RigidBody(collider);
 
             rb.InternalRigidBody = new BulletSharp.RigidBody(0.0f, rb.MotionState, collider.InternalShape, Vector3.Zero);
-            rb.InternalRigidBody.CollisionFlags |= BulletSharp.CollisionFlags.StaticObject; //already set if mass is 0 actually!
+            //rb.InternalRigidBody.CollisionFlags |= BulletSharp.CollisionFlags.StaticObject; //already set if mass is 0 actually!
 
             rb.InternalCollider = rb.InternalRigidBody;
 

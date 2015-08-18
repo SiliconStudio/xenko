@@ -302,8 +302,8 @@ namespace SiliconStudio.Paradox.Physics
         {
             get
             {
-                if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.StaticObject)) return RigidBodyTypes.Static;
-                return InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.KinematicObject) ? RigidBodyTypes.Kinematic : RigidBodyTypes.Dynamic;
+                if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.KinematicObject)) return RigidBodyTypes.Kinematic;
+                return InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.StaticObject) ? RigidBodyTypes.Static : RigidBodyTypes.Dynamic;
             }
             set
             {
@@ -311,17 +311,20 @@ namespace SiliconStudio.Paradox.Physics
                 {
                     case RigidBodyTypes.Dynamic:
                         if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.StaticObject)) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.StaticObject;
-                        else if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.KinematicObject)) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.KinematicObject;
+                        if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.KinematicObject)) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.KinematicObject;
+                        if(InternalRigidBody != null && Simulation != null && !OverrideGravity) InternalRigidBody.Gravity = Simulation.Gravity;
                         break;
 
                     case RigidBodyTypes.Static:
                         if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.KinematicObject)) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.KinematicObject;
                         InternalRigidBody.CollisionFlags |= BulletSharp.CollisionFlags.StaticObject;
+                        if (InternalRigidBody != null && !OverrideGravity) InternalRigidBody.Gravity = Vector3.Zero;
                         break;
 
                     case RigidBodyTypes.Kinematic:
                         if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.StaticObject)) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.StaticObject;
                         InternalRigidBody.CollisionFlags |= BulletSharp.CollisionFlags.KinematicObject;
+                        if (InternalRigidBody != null && !OverrideGravity) InternalRigidBody.Gravity = Vector3.Zero;
                         break;
                 }
             }

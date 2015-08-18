@@ -13,8 +13,8 @@ namespace SiliconStudio.Paradox.Physics
 {
     public class CapsuleColliderShape : ColliderShape
     {
-        private float capsuleLength;
-        private float capsuleRadius;
+        private readonly float capsuleLength;
+        private readonly float capsuleRadius;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CapsuleColliderShape"/> class.

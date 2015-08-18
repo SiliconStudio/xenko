@@ -4,6 +4,7 @@
 using System;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Physics
@@ -17,6 +18,8 @@ namespace SiliconStudio.Paradox.Physics
         public Collider(ColliderShape collider)
         {
             ColliderShape = collider;
+            FirstContactChannel = new Channel<Contact>() { Preference = ChannelPreference.PreferSender };
+            LastContactChannel = new Channel<Contact>() { Preference = ChannelPreference.PreferSender };
         }
 
         /// <summary>
@@ -448,6 +451,20 @@ namespace SiliconStudio.Paradox.Physics
             {
                 return contacts;
             }
+        }
+
+        internal Channel<Contact> LastContactChannel;
+
+        public ChannelMicroThreadAwaiter<Contact> LastContact()
+        {
+            return LastContactChannel.Receive();
+        }
+
+        internal Channel<Contact> FirstContactChannel;
+
+        public ChannelMicroThreadAwaiter<Contact> FirstContact()
+        {
+            return FirstContactChannel.Receive();
         }
 
         /// <summary>

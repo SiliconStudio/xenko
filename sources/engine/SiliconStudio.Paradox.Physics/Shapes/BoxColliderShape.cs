@@ -7,8 +7,10 @@ using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
 
 namespace SiliconStudio.Paradox.Physics
 {
-    public class BoxColliderShape : ColliderShape 
+    public class BoxColliderShape : ColliderShape
     {
+        private static GeometricPrimitive cachedDebugPrimitive;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BoxColliderShape"/> class.
         /// </summary>
@@ -28,7 +30,7 @@ namespace SiliconStudio.Paradox.Physics
 
         public override GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
         {
-            return GeometricPrimitive.Cube.New(device);
+            return cachedDebugPrimitive ?? (cachedDebugPrimitive = GeometricPrimitive.Cube.New(device));
         }
     }
 }

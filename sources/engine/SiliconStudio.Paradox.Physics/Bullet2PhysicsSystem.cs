@@ -32,6 +32,8 @@ namespace SiliconStudio.Paradox.Physics
             registry.AddService(typeof(IPhysicsSystem), this);
 
             Enabled = true; //enabled by default
+
+            Simulation.CacheContacts = true;
         }
 
         protected override void Destroy()
@@ -53,7 +55,7 @@ namespace SiliconStudio.Paradox.Physics
             lock (this)
             {
                 scenes.Add(scene);
-                Simulation.CacheContacts = scenes.Count > 1;
+                //Simulation.CacheContacts = scenes.Count > 1;
             }
             return scene.Simulation;
         }
@@ -66,17 +68,17 @@ namespace SiliconStudio.Paradox.Physics
                 if (scene == null) return;
                 scenes.Remove(scene);
                 scene.Simulation.Dispose();
-                Simulation.CacheContacts = scenes.Count > 1;
+                //Simulation.CacheContacts = scenes.Count > 1;
             }
         }
 
         private void Simulate(float deltaTime)
         {
-            if (scenes.Count == 1)
-            {
-                scenes[0].Simulation.Simulate(deltaTime);
-            }
-            else if (scenes.Count > 1)
+            //if (scenes.Count == 1)
+            //{
+            //    scenes[0].Simulation.Simulate(deltaTime);
+            //}
+            //else if (scenes.Count > 1)
             {
                 var simulationTasks = scenes.Select(simulation1 => Task.Run(() => simulation1.Simulation.Simulate(deltaTime))).ToArray();
                 Task.WaitAll(simulationTasks);

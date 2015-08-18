@@ -11,6 +11,8 @@ namespace SiliconStudio.Paradox.Physics
 {
     public class CylinderColliderShape : ColliderShape
     {
+        private static GeometricPrimitive cachedDebugPrimitive;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CylinderColliderShape"/> class.
         /// </summary>
@@ -56,7 +58,7 @@ namespace SiliconStudio.Paradox.Physics
 
         public override GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
         {
-            return GeometricPrimitive.Cylinder.New(device);
+            return cachedDebugPrimitive ?? (cachedDebugPrimitive = GeometricPrimitive.Cylinder.New(device));
         }
     }
 }
