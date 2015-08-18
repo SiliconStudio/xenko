@@ -5,5 +5,5 @@
 /// </summary>
 class PositionHStream4
 {
-    stream float4 PositionH : POSITIONWS;
+    stream float4 PositionH : POSITIONH;
 };
