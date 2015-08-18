@@ -23,7 +23,7 @@ namespace SiliconStudio.Assets.Compiler
 
         protected TagSymbol DisableCompressionSymbol;
 
-        public ImportStreamCommand()
+        public ImportStreamCommand() : this(null, null)
         {
         }
 
