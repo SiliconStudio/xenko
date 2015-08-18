@@ -57,6 +57,7 @@ namespace SiliconStudio.Assets
         /// Gets the raw imports (a collection of files, or wildcard)
         /// </summary>
         /// <value>The raw imports.</value>
+        [Obsolete]
         public List<RawImport> RawImports
         {
             get
