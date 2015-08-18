@@ -12,8 +12,7 @@
     <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>
-    </StartupObject>
+    <StartupObject></StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <Prefer32Bit>false</Prefer32Bit>
@@ -34,6 +33,7 @@
     <ProjectReference Include="..\..\tools\SiliconStudio.ExecServer\SiliconStudio.ExecServer.csproj">
       <Project>{5e241be1-ffb6-49f2-98b4-7869ba7d9f5a}</Project>
       <Name>SiliconStudio.ExecServer</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
