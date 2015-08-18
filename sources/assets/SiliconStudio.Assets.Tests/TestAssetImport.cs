@@ -22,7 +22,7 @@ namespace SiliconStudio.Assets.Tests
         [Test]
         public void CheckImporter()
         {
-            var importer = AssetRegistry.FindImporterByExtension(".tmp").FirstOrDefault();
+            var importer = AssetRegistry.FindImporterForFile("test.tmp").FirstOrDefault();
             Assert.NotNull(importer);
         }
 

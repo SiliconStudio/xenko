@@ -20,6 +20,8 @@ namespace SiliconStudio.Assets
 
         public abstract string Description { get; }
 
+        public int Order { get; protected set; }
+
         public abstract string SupportedFileExtensions { get; }
 
         public virtual int DisplayRank
@@ -28,6 +30,15 @@ namespace SiliconStudio.Assets
             {
                 return 100;
             }
+        }
+
+        public bool IsSupportingFile(string filePath)
+        {
+            if (filePath == null) throw new ArgumentNullException("filePath");
+            var file = new UFile(filePath);
+            if (file.GetFileExtension() == null) return false;
+
+            return FileUtility.GetFileExtensionsAsSet(SupportedFileExtensions).Contains(file.GetFileExtension());
         }
 
         public abstract AssetImporterParameters GetDefaultParameters(bool isForReImport);

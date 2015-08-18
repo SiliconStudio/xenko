@@ -143,7 +143,7 @@ namespace SiliconStudio.Assets
             }
 
             // Sort by importer display rank
-            var importerList = AssetRegistry.FindImporterByExtension(file.GetFileExtension()).ToList();
+            var importerList = AssetRegistry.FindImporterForFile(file).ToList();
             importerList.Sort((left, right) => -left.DisplayRank.CompareTo(right.DisplayRank));
 
             AssetToImport assetToImport = null;
@@ -283,7 +283,7 @@ namespace SiliconStudio.Assets
             // If not, take the first default importer
             if (importer == null)
             {
-                importer = AssetRegistry.FindImporterByExtension(asset.Source.GetFileExtension()).FirstOrDefault();
+                importer = AssetRegistry.FindImporterForFile(asset.Source).FirstOrDefault();
             }
 
             if (importer == null)

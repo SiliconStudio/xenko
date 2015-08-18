@@ -1141,16 +1141,14 @@ namespace SiliconStudio.Assets
             // If the asset has a source but no import base, then we are going to simulate an original import
             if (assetImport.Base == null)
             {
-                var fileExtension = assetImport.Source.GetFileExtension();
-
                 var assetImportBase = (AssetImport)AssetCloner.Clone(assetImport);
                 assetImportBase.SetAsRootImport();
                 assetImportBase.SetDefaults();
 
                 // Setup default importer
-                if (!String.IsNullOrEmpty(fileExtension))
+                if (!String.IsNullOrEmpty(assetImport.Source.GetFileExtension()))
                 {
-                    var importerId = AssetRegistry.FindImporterByExtension(fileExtension).FirstOrDefault();
+                    var importerId = AssetRegistry.FindImporterForFile(assetImport.Source).FirstOrDefault();
                     if (importerId != null)
                     {
                         assetImport.ImporterId = importerId.Id;
