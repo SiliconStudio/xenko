@@ -81,6 +81,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 { "v|verbose", "Show more verbose progress logs", v => options.Verbose = v != null },
                 { "d|debug", "Show debug logs (imply verbose)", v => options.Debug = v != null },
                 { "log", "Enable file logging", v => options.EnableFileLogging = v != null },
+                { "disable-auto-compile", "Disable auto-compile of projects", v => options.DisableAutoCompileProjects = v != null},
                 { "p|profile=", "Profile name", v => options.BuildProfile = v },
                 { "project-configuration=", "Project configuration", v => options.ProjectConfiguration = v },
                 { "platform=", "Platform name", v => options.Platform = (PlatformType)Enum.Parse(typeof(PlatformType), v) },

@@ -31,6 +31,7 @@ namespace SiliconStudio.Assets
             AutoCompileProjects = true;
             AutoLoadTemporaryAssets = true;
             ConvertUPathToAbsolute = true;
+            BuildConfiguration = "Debug";
         }
 
         /// <summary>
@@ -44,6 +45,12 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value><c>true</c> if [automatic compile projects]; otherwise, <c>false</c>.</value>
         public bool AutoCompileProjects { get; set; }
+
+        /// <summary>
+        /// Gets or sets the build configuration used to <see cref="AutoCompileProjects"/>.
+        /// </summary>
+        /// <value>The build configuration.</value>
+        public string BuildConfiguration { get; set; }
 
         /// <summary>
         /// Gets or sets the extra compile properties, used when <see cref="AutoCompileProjects"/> is true.
