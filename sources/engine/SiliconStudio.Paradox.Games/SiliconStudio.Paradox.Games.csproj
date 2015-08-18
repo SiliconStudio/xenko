@@ -137,15 +137,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Desktop\Win32Native.DirectX.cs" />
-    <None Include="Resources\Logo.ico" />
+    <Content Include="Resources\Logo.ico" />
   </ItemGroup>
   <Choose>
     <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' And '$(ParadoxGraphicsApi)' == 'OpenGLES' ">
       <ItemGroup>
-        <None Include="..\..\..\deps\SDL2\$(SiliconStudioPlatform)\**\SDL2.dll">
+        <Content Include="..\..\..\deps\SDL2\$(SiliconStudioPlatform)\**\SDL2.dll">
           <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
+        </Content>
       </ItemGroup>
     </When>
   </Choose>

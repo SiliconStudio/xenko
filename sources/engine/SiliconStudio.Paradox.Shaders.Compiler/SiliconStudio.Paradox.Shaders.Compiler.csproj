@@ -89,14 +89,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup Condition="'$(SiliconStudioPlatform)' == 'Windows'">
-    <None Include="$(WindowsSdkDir_81)\Redist\D3D\**\d3dcompiler_47.dll">
+    <Content Include="$(WindowsSdkDir_81)\Redist\D3D\**\d3dcompiler_47.dll">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\..\deps\glsl-optimizer\$(SiliconStudioPlatform)\**\glsl_optimizer.dll">
+    </Content>
+    <Content Include="..\..\..\deps\glsl-optimizer\$(SiliconStudioPlatform)\**\glsl_optimizer.dll">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
