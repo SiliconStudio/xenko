@@ -7,6 +7,15 @@ namespace SiliconStudio.BuildEngine
 {
     public abstract class SingleFileImportCommand : IndexFileCommand
     {
+        protected SingleFileImportCommand()
+        {
+        }
+
+        protected SingleFileImportCommand(UFile location, UFile sourcePath)
+        {
+            Location = location;
+            SourcePath = sourcePath;
+        }
 
         /// <summary>
         /// Gets or sets the source path of the raw asset.

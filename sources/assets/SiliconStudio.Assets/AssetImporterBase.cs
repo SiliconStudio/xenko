@@ -32,7 +32,7 @@ namespace SiliconStudio.Assets
             }
         }
 
-        public bool IsSupportingFile(string filePath)
+        public virtual bool IsSupportingFile(string filePath)
         {
             if (filePath == null) throw new ArgumentNullException("filePath");
             var file = new UFile(filePath);

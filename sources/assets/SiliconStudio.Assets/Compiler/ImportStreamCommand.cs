@@ -25,8 +25,12 @@ namespace SiliconStudio.Assets.Compiler
 
         public ImportStreamCommand()
         {
+        }
+
+        public ImportStreamCommand(UFile location, UFile sourcePath)
+            : base(location, sourcePath)
+        {
             DisableCompressionSymbol = RegisterTag(Builder.DoNotCompressTag, () => Builder.DoNotCompressTag);
-            SaveSourcePath = false;
         }
 
         protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
