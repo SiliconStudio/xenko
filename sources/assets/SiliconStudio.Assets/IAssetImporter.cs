@@ -61,13 +61,6 @@ namespace SiliconStudio.Assets
         AssetImporterParameters GetDefaultParameters(bool isForReImport);
 
         /// <summary>
-        /// Gets the rank of this importer, higher is the value, higher the importer is important or commonly used. Default is <c>100</c>.
-        /// </summary>
-        /// <value>The rank.</value>
-        // TODO this could be done also at runtime dynamically based on real usage
-        int DisplayRank { get; }
-
-        /// <summary>
         /// Imports a raw assets from the specified path into the specified package.
         /// </summary>
         /// <param name="rawAssetPath">The path to a raw asset on the disk.</param>

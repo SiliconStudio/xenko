@@ -24,14 +24,6 @@ namespace SiliconStudio.Assets
 
         public abstract string SupportedFileExtensions { get; }
 
-        public virtual int DisplayRank
-        {
-            get
-            {
-                return 100;
-            }
-        }
-
         public virtual bool IsSupportingFile(string filePath)
         {
             if (filePath == null) throw new ArgumentNullException("filePath");
