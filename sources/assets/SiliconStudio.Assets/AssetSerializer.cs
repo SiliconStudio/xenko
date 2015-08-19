@@ -64,6 +64,20 @@ namespace SiliconStudio.Assets
             return null;
         }
 
+
+        /// <summary>
+        /// Deserializes an <see cref="Asset" /> from the specified stream.
+        /// </summary>
+        /// <typeparam name="T">Type of the asset</typeparam>
+        /// <param name="filePath">The file path.</param>
+        /// <param name="log">The logger.</param>
+        /// <returns>An instance of Asset not a valid asset asset object file.</returns>
+        public static T Load<T>(string filePath, ILogger log = null)
+        {
+            bool aliasOccurred;
+            return (T)Load(filePath, log, out aliasOccurred);
+        }
+
         /// <summary>
         /// Deserializes an <see cref="Asset" /> from the specified stream.
         /// </summary>
@@ -75,6 +89,18 @@ namespace SiliconStudio.Assets
         public static T Load<T>(string filePath, ILogger log, out bool aliasOccurred)
         {
             return (T)Load(filePath, log, out aliasOccurred);
+        }
+
+        /// <summary>
+        /// Deserializes an <see cref="Asset" /> from the specified stream.
+        /// </summary>
+        /// <param name="filePath">The file path.</param>
+        /// <param name="log">The logger.</param>
+        /// <returns>An instance of Asset not a valid asset asset object file.</returns>
+        public static object Load(string filePath, ILogger log = null)
+        {
+            bool aliasOccurred;
+            return Load(filePath, log, out aliasOccurred);
         }
 
         /// <summary>
