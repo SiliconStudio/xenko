@@ -17,7 +17,7 @@ namespace SiliconStudio.Core.Yaml
 
         public abstract bool CanVisit(Type type);
 
-        public void Visit(ref VisitorContext context)
+        public virtual void Visit(ref VisitorContext context)
         {
             // For a scalar object, we don't visit its members
             // But we do still visit the instance (either struct or class)
