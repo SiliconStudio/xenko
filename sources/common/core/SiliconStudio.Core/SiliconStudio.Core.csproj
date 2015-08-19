@@ -65,6 +65,7 @@
     <Compile Include="Collections\PoolListStruct.cs" />
     <Compile Include="Collections\SafeList.cs" />
     <Compile Include="Annotations\DataMemberRangeAttribute.cs" />
+    <Compile Include="DataAliasAttribute.cs" />
     <Compile Include="Diagnostics\ForwardingLoggerResult.cs" />
     <Compile Include="DisplayAttribute.cs" />
     <Compile Include="DisposeBase.cs" />
