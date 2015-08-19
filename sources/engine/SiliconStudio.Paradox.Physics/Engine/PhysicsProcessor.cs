@@ -106,7 +106,7 @@ namespace SiliconStudio.Paradox.Physics
             {
                 case PhysicsElement.Types.PhantomCollider:
                     {
-                        var c = Simulation.CreateCollider(shape);
+                        var c = simulation.CreateCollider(shape);
 
                         element.Collider = c; //required by the next call
                         element.Collider.Entity = entity; //required by the next call
@@ -116,7 +116,7 @@ namespace SiliconStudio.Paradox.Physics
 
                         if (defaultGroups)
                         {
-                            simulation.AddCollider(c);
+                            simulation.AddCollider(c, CollisionFilterGroupFlags.DefaultFilter, CollisionFilterGroupFlags.AllFilter);
                         }
                         else
                         {
@@ -127,7 +127,7 @@ namespace SiliconStudio.Paradox.Physics
 
                 case PhysicsElement.Types.StaticCollider:
                     {
-                        var c = Simulation.CreateCollider(shape);
+                        var c = simulation.CreateCollider(shape);
 
                         element.Collider = c; //required by the next call
                         element.Collider.Entity = entity; //required by the next call
@@ -137,7 +137,7 @@ namespace SiliconStudio.Paradox.Physics
 
                         if (defaultGroups)
                         {
-                            simulation.AddCollider(c);
+                            simulation.AddCollider(c, CollisionFilterGroupFlags.DefaultFilter, CollisionFilterGroupFlags.AllFilter);
                         }
                         else
                         {
@@ -148,7 +148,7 @@ namespace SiliconStudio.Paradox.Physics
 
                 case PhysicsElement.Types.StaticRigidBody:
                     {
-                        var rb = Simulation.CreateRigidBody(shape);
+                        var rb = simulation.CreateRigidBody(shape);
 
                         rb.Entity = entity;
                         rb.GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(element, out transform);
@@ -161,7 +161,7 @@ namespace SiliconStudio.Paradox.Physics
 
                         if (defaultGroups)
                         {
-                            simulation.AddRigidBody(rb);
+                            simulation.AddRigidBody(rb, CollisionFilterGroupFlags.DefaultFilter, CollisionFilterGroupFlags.AllFilter);
                         }
                         else
                         {
@@ -172,7 +172,7 @@ namespace SiliconStudio.Paradox.Physics
 
                 case PhysicsElement.Types.DynamicRigidBody:
                     {
-                        var rb = Simulation.CreateRigidBody(shape);
+                        var rb = simulation.CreateRigidBody(shape);
 
                         rb.Entity = entity;
                         rb.GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(element, out transform);
@@ -185,7 +185,7 @@ namespace SiliconStudio.Paradox.Physics
 
                         if (defaultGroups)
                         {
-                            simulation.AddRigidBody(rb);
+                            simulation.AddRigidBody(rb, CollisionFilterGroupFlags.DefaultFilter, CollisionFilterGroupFlags.AllFilter);
                         }
                         else
                         {
@@ -196,7 +196,7 @@ namespace SiliconStudio.Paradox.Physics
 
                 case PhysicsElement.Types.KinematicRigidBody:
                     {
-                        var rb = Simulation.CreateRigidBody(shape);
+                        var rb = simulation.CreateRigidBody(shape);
 
                         rb.Entity = entity;
                         rb.GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(element, out transform);
@@ -209,7 +209,7 @@ namespace SiliconStudio.Paradox.Physics
 
                         if (defaultGroups)
                         {
-                            simulation.AddRigidBody(rb);
+                            simulation.AddRigidBody(rb, CollisionFilterGroupFlags.DefaultFilter, CollisionFilterGroupFlags.AllFilter);
                         }
                         else
                         {
@@ -220,7 +220,7 @@ namespace SiliconStudio.Paradox.Physics
 
                 case PhysicsElement.Types.CharacterController:
                     {
-                        var ch = Simulation.CreateCharacter(shape, element.StepHeight);
+                        var ch = simulation.CreateCharacter(shape, element.StepHeight);
 
                         element.Collider = ch;
                         element.Collider.Entity = entity;
@@ -228,7 +228,7 @@ namespace SiliconStudio.Paradox.Physics
 
                         if (defaultGroups)
                         {
-                            simulation.AddCharacter(ch);
+                            simulation.AddCharacter(ch, CollisionFilterGroupFlags.DefaultFilter, CollisionFilterGroupFlags.AllFilter);
                         }
                         else
                         {

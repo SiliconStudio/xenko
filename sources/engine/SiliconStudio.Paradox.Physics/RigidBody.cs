@@ -68,7 +68,7 @@ namespace SiliconStudio.Paradox.Physics
         {
             get
             {
-                return colliderShape;
+                return ProtectedColliderShape;
             }
             set
             {
@@ -76,12 +76,12 @@ namespace SiliconStudio.Paradox.Physics
                 {
                     InternalCollider.CollisionShape = value.InternalShape;
 
-                    var inertia = colliderShape.InternalShape.CalculateLocalInertia(mass);
+                    var inertia = ProtectedColliderShape.InternalShape.CalculateLocalInertia(mass);
                     InternalRigidBody.SetMassProps(mass, inertia);
                     InternalRigidBody.UpdateInertiaTensor(); //this was the major headache when I had to debug Slider and Hinge constraint
                 }
 
-                colliderShape = value;
+                ProtectedColliderShape = value;
             }
         }
 

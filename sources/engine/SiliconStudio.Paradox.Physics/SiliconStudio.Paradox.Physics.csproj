@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bullet2PhysicsSystem.cs" />
+    <Compile Include="Collision.cs" />
     <Compile Include="Data\BoxColliderShapeDesc.cs" />
     <Compile Include="Data\CapsuleColliderShapeDesc.cs" />
     <Compile Include="Data\ConvexHullColliderShapeDesc.cs" />
@@ -100,7 +101,7 @@
     <Compile Include="ColliderShapeTypes.cs" />
     <Compile Include="CollisionFilterGroups.cs" />
     <Compile Include="ConstraintTypes.cs" />
-    <Compile Include="Contact.cs" />
+    <Compile Include="ContactPoint.cs" />
     <Compile Include="HitResult.cs" />
     <Compile Include="PhysicsEngineFlags.cs" />
     <Compile Include="RigidBodyTypes.cs" />

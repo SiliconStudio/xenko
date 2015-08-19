@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Paradox.Engine;
+using System;
+using System.Collections.Generic;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -17,9 +17,12 @@ namespace SiliconStudio.Paradox.Physics
         /// <param name="collider">The collider.</param>
         public Collider(ColliderShape collider)
         {
-            ColliderShape = collider;
-            FirstContactChannel = new Channel<Contact>() { Preference = ChannelPreference.PreferSender };
-            LastContactChannel = new Channel<Contact>() { Preference = ChannelPreference.PreferSender };
+            ProtectedColliderShape = collider;
+
+            FirstCollisionChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
+            NewPairChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
+            PairEndedChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
+            AllPairsEndedChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
         }
 
         /// <summary>
@@ -33,7 +36,8 @@ namespace SiliconStudio.Paradox.Physics
             InternalCollider = null;
         }
 
-        bool enabled = true;
+        private bool enabled = true;
+
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="Collider"/> is enabled.
         /// </summary>
@@ -61,7 +65,8 @@ namespace SiliconStudio.Paradox.Physics
             }
         }
 
-        bool canSleep = true; //default true
+        private bool canSleep = true; //default true
+
         /// <summary>
         /// Gets or sets a value indicating whether this instance can sleep.
         /// </summary>
@@ -206,10 +211,7 @@ namespace SiliconStudio.Paradox.Physics
         /// </value>
         public bool IsTrigger
         {
-            get
-            {
-                return (InternalCollider.CollisionFlags & BulletSharp.CollisionFlags.NoContactResponse) != 0;
-            }
+            get { return InternalCollider.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.NoContactResponse); }
             set
             {
                 if (value) InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.NoContactResponse;
@@ -237,7 +239,7 @@ namespace SiliconStudio.Paradox.Physics
             }
         }
 
-        protected ColliderShape colliderShape;
+        protected ColliderShape ProtectedColliderShape;
 
         /// <summary>
         /// Gets the collider shape.
@@ -245,16 +247,16 @@ namespace SiliconStudio.Paradox.Physics
         /// <value>
         /// The collider shape.
         /// </value>
-        public virtual ColliderShape ColliderShape 
+        public virtual ColliderShape ColliderShape
         {
             get
             {
-                return colliderShape;
+                return ProtectedColliderShape;
             }
             set
             {
                 if (InternalCollider != null) InternalCollider.CollisionShape = value.InternalShape;
-                colliderShape = value;
+                ProtectedColliderShape = value;
             }
         }
 
@@ -267,204 +269,48 @@ namespace SiliconStudio.Paradox.Physics
         /// </value>
         public bool ContactsAlwaysValid { get; set; }
 
-        int eventUsers; //this helps optimize performance
+        private readonly List<Collision> pairs = new List<Collision>();
 
-        internal bool NeedsCollisionCheck
-        {
-            get
-            {
-                return ContactsAlwaysValid || eventUsers > 0;
-            }
-        }
-
-        readonly object eventsLock = new Object();
-
-        event EventHandler<CollisionArgs> PrivateFirstContactBegin;
-
-        /// <summary>
-        /// Occurs when the first contant with a collider begins.
-        /// </summary>
-        public event EventHandler<CollisionArgs> FirstContactStart
-        {
-            add
-            {
-                lock (eventsLock)
-                {
-                    eventUsers++;
-                    PrivateFirstContactBegin += value;
-                }
-            }
-            remove
-            {
-                lock (eventsLock)
-                {
-                    eventUsers--;
-                    PrivateFirstContactBegin -= value;
-                }
-            }
-        }
-
-        internal void OnFirstContactStart(CollisionArgs args)
-        {
-            var e = PrivateFirstContactBegin;
-            if (e == null) return;
-            e(this, args);
-        }
-
-        event EventHandler<CollisionArgs> PrivateContactStart;
-
-        /// <summary>
-        /// Occurs when a contact begins (there could be multiple contacts and contact points).
-        /// </summary>
-        public event EventHandler<CollisionArgs> ContactStart
-        {
-            add
-            {
-                lock (eventsLock)
-                {
-                    eventUsers++;
-                    PrivateContactStart += value;
-                }
-            }
-            remove
-            {
-                lock (eventsLock)
-                {
-                    eventUsers--;
-                    PrivateContactStart -= value;
-                }
-            }
-        }
-
-        internal void OnContactStart(CollisionArgs args)
-        {
-            var e = PrivateContactStart;
-            if (e == null) return;
-            e(this, args);
-        }
-
-        event EventHandler<CollisionArgs> PrivateContactChange;
-
-        /// <summary>
-        /// Occurs when a contact changed.
-        /// </summary>
-        public event EventHandler<CollisionArgs> ContactChange
-        {
-            add
-            {
-                lock (eventsLock)
-                {
-                    eventUsers++;
-                    PrivateContactChange += value;
-                }
-            }
-            remove
-            {
-                lock (eventsLock)
-                {
-                    eventUsers--;
-                    PrivateContactChange -= value;
-                }
-            }
-        }
-
-        internal void OnContactChange(CollisionArgs args)
-        {
-            var e = PrivateContactChange;
-            if (e == null) return;
-            e(this, args);
-        }
-
-        event EventHandler<CollisionArgs> PrivateLastContactEnd;
-        /// <summary>
-        /// Occurs when the last contact with a collider happened.
-        /// </summary>
-        public event EventHandler<CollisionArgs> LastContactEnd
-        {
-            add
-            {
-                lock (eventsLock)
-                {
-                    eventUsers++;
-                    PrivateLastContactEnd += value;
-                }
-            }
-            remove
-            {
-                lock (eventsLock)
-                {
-                    eventUsers--;
-                    PrivateLastContactEnd -= value;
-                }
-            }
-        }
-
-        internal void OnLastContactEnd(CollisionArgs args)
-        {
-            var e = PrivateLastContactEnd;
-            if (e == null) return;
-            e(this, args);
-        }
-
-        event EventHandler<CollisionArgs> PrivateContactEnd;
-
-        /// <summary>
-        /// Occurs when a contact ended.
-        /// </summary>
-        public event EventHandler<CollisionArgs> ContactEnd
-        {
-            add
-            {
-                lock (eventsLock)
-                {
-                    eventUsers++;
-                    PrivateContactEnd += value;
-                }
-            }
-            remove
-            {
-                lock (eventsLock)
-                {
-                    eventUsers--;
-                    PrivateContactEnd -= value;
-                }
-            }
-        }
-
-        internal void OnContactEnd(CollisionArgs args)
-        {
-            var e = PrivateContactEnd;
-            if (e == null) return;
-            e(this, args);
-        }
-
-        readonly FastList<Contact> contacts = new FastList<Contact>();
         /// <summary>
         /// Gets the contacts.
         /// </summary>
         /// <value>
         /// The contacts.
         /// </value>
-        public FastList<Contact> Contacts
+        public List<Collision> Pairs
         {
             get
             {
-                return contacts;
+                return pairs;
             }
         }
 
-        internal Channel<Contact> LastContactChannel;
+        internal Channel<Collision> FirstCollisionChannel;
 
-        public ChannelMicroThreadAwaiter<Contact> LastContact()
+        public ChannelMicroThreadAwaiter<Collision> FirstCollision()
         {
-            return LastContactChannel.Receive();
+            return FirstCollisionChannel.Receive();
         }
 
-        internal Channel<Contact> FirstContactChannel;
+        internal Channel<Collision> NewPairChannel;
 
-        public ChannelMicroThreadAwaiter<Contact> FirstContact()
+        public ChannelMicroThreadAwaiter<Collision> NewCollision()
         {
-            return FirstContactChannel.Receive();
+            return NewPairChannel.Receive();
+        }
+
+        internal Channel<Collision> PairEndedChannel;
+
+        public ChannelMicroThreadAwaiter<Collision> CollisionEnded()
+        {
+            return PairEndedChannel.Receive();
+        }
+
+        internal Channel<Collision> AllPairsEndedChannel;
+
+        public ChannelMicroThreadAwaiter<Collision> AllCollisionsEnded()
+        {
+            return AllPairsEndedChannel.Receive();
         }
 
         /// <summary>

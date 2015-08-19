@@ -32,10 +32,15 @@ namespace SiliconStudio.Paradox.Physics
         {
             [Display("Trigger")]
             PhantomCollider,
+            [Display("Static Collider")]
             StaticCollider,
+            [Display("Static RigidBody")]
             StaticRigidBody,
+            [Display("Dynamic RigidBody")]
             DynamicRigidBody,
+            [Display("Kinematic RigidBody")]
             KinematicRigidBody,
+            [Display("Character")]
             CharacterController
         };
 
