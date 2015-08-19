@@ -274,7 +274,7 @@ namespace SiliconStudio.Core.Yaml
                             throw new ArgumentOutOfRangeException();
                     }
                     attribute = new YamlMemberAttribute(memberAttribute.Name, mode) { Order = memberAttribute.Order };
-                    Trace.WriteLine(string.Format("Attribute remapped {0}", memberAttribute.Name));
+                    //Trace.WriteLine(string.Format("Attribute remapped {0}", memberAttribute.Name));
                 }
                 else if (originalAttribute is DataMemberIgnoreAttribute)
                 {
