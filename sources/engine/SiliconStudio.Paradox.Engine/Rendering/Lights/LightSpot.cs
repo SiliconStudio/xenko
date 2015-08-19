@@ -26,7 +26,10 @@ namespace SiliconStudio.Paradox.Rendering.Lights
             Range = 3.0f;
             AngleInner = 30.0f;
             AngleOuter = 35.0f;
-            Shadow = new LightStandardShadowMap() { Importance = LightShadowImportance.Medium };
+            Shadow = new LightStandardShadowMap()
+            {
+                Size = LightShadowMapSize.Medium
+            };
         }
 
         /// <summary>

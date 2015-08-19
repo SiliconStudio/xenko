@@ -15,6 +15,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Rendering.Lights;
 
 using IObjectFactory = SiliconStudio.Core.Reflection.IObjectFactory;
 
@@ -27,7 +28,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetDescription(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
     [ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName)]
-    [AssetFormatVersion(10)]
+    [AssetFormatVersion(11)]
     [AssetUpgrader(0, 1, typeof(RemoveSourceUpgrader))]
     [AssetUpgrader(1, 2, typeof(RemoveBaseUpgrader))]
     [AssetUpgrader(2, 3, typeof(RemoveModelDrawOrderUpgrader))]
@@ -38,6 +39,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetUpgrader(7, 8, typeof(SceneIsNotEntityUpgrader))]
     [AssetUpgrader(8, 9, typeof(ColliderShapeAssetOnlyUpgrader))]
     [AssetUpgrader(9, 10, typeof(NoBox2DUpgrader))]
+    [AssetUpgrader(10, 11, typeof(RemoveShadowImportanceUpgrated))]
     [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
@@ -290,6 +292,58 @@ namespace SiliconStudio.Paradox.Assets.Entities
                         }
                     }
                 }
+            }
+        }
+
+        class RemoveShadowImportanceUpgrated : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Entities;
+                foreach (dynamic entity in entities)
+                {
+                    var components = entity.Components;
+                    var lightComponent = components["LightComponent.Key"];
+                    if (lightComponent != null)
+                    {
+                        var lightType = lightComponent.Type;
+                        if (lightType != null)
+                        {
+                            var shadow = lightType.Shadow;
+                            if (shadow != null)
+                            {
+                                var size = (OldLightShadowMapSize)shadow.Size;
+                                var importance = (OldLightShadowImportance)shadow.Importance;
+
+                                // Convert back the old size * importance to the new size
+                                var factor = importance == OldLightShadowImportance.High ? 2.0 : importance == OldLightShadowImportance.Medium ? 1.0 : 0.5;
+                                factor *= Math.Pow(2.0, (int)size - 2.0);
+                                var value = ((int)Math.Log(factor, 2.0)) + 3;
+
+                                var newSize = (LightShadowMapSize)Enum.ToObject(typeof(LightShadowMapSize), value);
+                                shadow.Size = newSize;
+
+                                shadow.RemoveChild("Importance");
+                            }
+                        }
+                    }
+                }
+            }
+
+            private enum OldLightShadowMapSize
+            {
+                Small,
+                Medium,
+                Large
+            }
+
+
+            private enum OldLightShadowImportance
+            {
+                Low,
+                Medium,
+                High
             }
         }
 

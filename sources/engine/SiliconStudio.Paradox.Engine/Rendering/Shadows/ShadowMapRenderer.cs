@@ -26,11 +26,11 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
 
         private PoolListStruct<LightShadowMapTexture> shadowMapTextures;
 
-        private readonly int MaximumTextureSize = (int)(MaximumShadowSize * ComputeSizeFactor(LightShadowImportance.High, LightShadowMapSize.Large) * 2.0f);
+        private readonly int MaximumTextureSize = (int)(ReferenceShadowSize * ComputeSizeFactor(LightShadowMapSize.XLarge) * 2.0f);
 
         private readonly static PropertyKey<ShadowMapRenderer> Current = new PropertyKey<ShadowMapRenderer>("ShadowMapRenderer.Current", typeof(ShadowMapRenderer));
 
-        private const float MaximumShadowSize = 1024;
+        private const float ReferenceShadowSize = 1024;
 
         internal static readonly ParameterKey<ShadowMapReceiverInfo[]> Receivers = ParameterKeys.New(new ShadowMapReceiverInfo[1]);
         internal static readonly ParameterKey<ShadowMapReceiverVsmInfo[]> ReceiversVsm = ParameterKeys.New(new ShadowMapReceiverVsmInfo[1]);
@@ -322,11 +322,11 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
                 var size = light.ComputeScreenCoverage(Context, position, direction);
 
                 // Converts the importance into a shadow size factor
-                var sizeFactor = ComputeSizeFactor(shadowMap.Importance, shadowMap.Size);
+                var sizeFactor = ComputeSizeFactor(shadowMap.Size);
 
                 // Compute the size of the final shadow map
                 // TODO: Handle GraphicsProfile
-                var shadowMapSize = (int)Math.Min(MaximumShadowSize * sizeFactor, MathUtil.NextPowerOfTwo(size * sizeFactor));
+                var shadowMapSize = (int)Math.Min(ReferenceShadowSize * sizeFactor, MathUtil.NextPowerOfTwo(size * sizeFactor));
 
                 if (shadowMapSize <= 0) // TODO: Validate < 0 earlier in the setters
                 {
@@ -340,13 +340,10 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
             }
         }
 
-        private static float ComputeSizeFactor(LightShadowImportance importance, LightShadowMapSize shadowMapSize)
+        private static float ComputeSizeFactor(LightShadowMapSize shadowMapSize)
         {
-            // Calculate a basic factor from the importance of this shadow map
-            var factor = importance == LightShadowImportance.High ? 2.0f : importance == LightShadowImportance.Medium ? 1.0f : 0.5f;
-
             // Then reduce the size based on the shadow map size
-            factor *= (float)Math.Pow(2.0f, (int)shadowMapSize - 2.0f);
+            var factor = (float)Math.Pow(2.0f, (int)shadowMapSize - 3.0f);
             return factor;
         }
 

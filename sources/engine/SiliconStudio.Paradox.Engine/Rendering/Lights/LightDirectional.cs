@@ -18,7 +18,10 @@ namespace SiliconStudio.Paradox.Rendering.Lights
     {
         public LightDirectional()
         {
-            Shadow = new LightDirectionalShadowMap { Importance = LightShadowImportance.High };
+            Shadow = new LightDirectionalShadowMap
+            {
+                Size = LightShadowMapSize.Large
+            };
         }
 
         public override bool HasBoundingBox
