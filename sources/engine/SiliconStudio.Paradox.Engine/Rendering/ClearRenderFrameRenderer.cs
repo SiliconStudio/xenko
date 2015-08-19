@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Rendering
         public ClearRenderFrameRenderer()
         {
             Name = "Clear RenderFrame";
-            ClearFlags = ClearRenderFrameFlags.Color;
+            ClearFlags = ClearRenderFrameFlags.ColorAndDepth;
             Color = Core.Mathematics.Color.CornflowerBlue;
             Depth = 1.0f;
             Stencil = 0;
@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// <value>The clear flags.</value>
         /// <userdoc>Flag indicating which buffers to clear.</userdoc>
         [DataMember(10)]
-        [DefaultValue(ClearRenderFrameFlags.Color)]
+        [DefaultValue(ClearRenderFrameFlags.ColorAndDepth)]
         [Display("Clear Flags")]
         public ClearRenderFrameFlags ClearFlags { get; set; }
 
@@ -76,13 +76,13 @@ namespace SiliconStudio.Paradox.Rendering
             var graphicsDevice = context.GraphicsDevice;
 
             // clear the targets
-            if (output.DepthStencil != null)
+            if (output.DepthStencil != null && (ClearFlags == ClearRenderFrameFlags.ColorAndDepth || ClearFlags == ClearRenderFrameFlags.DepthOnly))
             {
                 const DepthStencilClearOptions ClearOptions = DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil;
                 graphicsDevice.Clear(output.DepthStencil, ClearOptions, Depth, Stencil);
             }
 
-            if (ClearFlags == ClearRenderFrameFlags.Color)
+            if (ClearFlags == ClearRenderFrameFlags.ColorAndDepth || ClearFlags == ClearRenderFrameFlags.ColorOnly)
             {
                 foreach (var renderTarget in output.RenderTargets)
                 {
