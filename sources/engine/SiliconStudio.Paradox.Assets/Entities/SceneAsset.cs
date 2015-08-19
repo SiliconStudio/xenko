@@ -314,7 +314,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
                             if (shadow != null)
                             {
                                 var size = (OldLightShadowMapSize)(shadow.Size ?? OldLightShadowMapSize.Small);
-                                var importance = (OldLightShadowImportance)shadow.Importance;
+                                var importance = (OldLightShadowImportance)(shadow.Importance ?? OldLightShadowImportance.Low);
 
                                 // Convert back the old size * importance to the new size
                                 var factor = importance == OldLightShadowImportance.High ? 2.0 : importance == OldLightShadowImportance.Medium ? 1.0 : 0.5;
