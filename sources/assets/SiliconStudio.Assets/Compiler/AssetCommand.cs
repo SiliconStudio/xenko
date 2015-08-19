@@ -55,7 +55,7 @@ namespace SiliconStudio.Assets.Compiler
                 {
                     var dependentAssetItem = packageSession.FindAsset(dependentAssetReference.Id) ?? packageSession.FindAsset(dependentAssetReference.Location);
                     var dependentAsset = dependentAssetItem != null ? dependentAssetItem.Asset : null;
-                    if (dependentAsset == null)
+                    if (dependentAsset == null || dependentAsset == asset) //prevent overflow as well
                         continue;
                     
                     // Hash asset content (since it is embedded, not a real reference)
