@@ -313,7 +313,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
                             var shadow = lightType.Shadow;
                             if (shadow != null)
                             {
-                                var size = (OldLightShadowMapSize)shadow.Size;
+                                var size = (OldLightShadowMapSize)(shadow.Size ?? OldLightShadowMapSize.Small);
                                 var importance = (OldLightShadowImportance)shadow.Importance;
 
                                 // Convert back the old size * importance to the new size
