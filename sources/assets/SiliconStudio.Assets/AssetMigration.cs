@@ -54,7 +54,8 @@ namespace SiliconStudio.Assets
 
                 var yamlSerializerSettings = YamlSerializer.GetSerializerSettings();
                 var tagTypeRegistry = yamlSerializerSettings.TagTypeRegistry;
-                assetType = tagTypeRegistry.TypeFromTag(mappingStart.Tag);
+                bool typeAliased;
+                assetType = tagTypeRegistry.TypeFromTag(mappingStart.Tag, out typeAliased);
 
                 expectedVersion = AssetRegistry.GetCurrentFormatVersion(assetType);
 

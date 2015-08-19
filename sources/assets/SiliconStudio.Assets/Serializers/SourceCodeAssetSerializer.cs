@@ -24,8 +24,9 @@ namespace SiliconStudio.Assets.Serializers
             RegisteredExtensions.Add(assetFileExtension, assetType);
         }
 
-        public object Load(Stream stream, string assetFileExtension, ILogger log)
+        public object Load(Stream stream, string assetFileExtension, ILogger log, out bool aliasOccurred)
         {
+            aliasOccurred = false;
             var type = RegisteredExtensions[assetFileExtension];
             var asset = (SourceCodeAsset)Activator.CreateInstance(type);
             asset.Load();

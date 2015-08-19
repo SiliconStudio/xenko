@@ -12,7 +12,7 @@ namespace SiliconStudio.Assets.Serializers
 
     public interface IAssetSerializer
     {
-        object Load(Stream stream, string assetFileExtension, ILogger log = null);
+        object Load(Stream stream, string assetFileExtension, ILogger log, out bool aliasOccurred);
 
         void Save(Stream stream, object asset, ILogger log = null);
     }
