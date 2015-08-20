@@ -24,10 +24,6 @@ namespace SiliconStudio.ExecServer
     public class ExecServerApp
     {
         private const string DisableExecServerAppDomainCaching = "DisableExecServerAppDomainCaching";
-
-        // TODO: This setting must be configured by the executable directly
-        public int MaxConcurrentAppDomainProcess = 1;
-
         private const int MaxRetryProcess = 10;
 
         /// <summary>
@@ -48,7 +44,7 @@ namespace SiliconStudio.ExecServer
             {
                 args.RemoveAt(0);
                 var executablePath = ExtractExePath(args);
-                var execServerApp = new ExecServerRemote(executablePath, false, false, 1);
+                var execServerApp = new ExecServerRemote(executablePath, false, false);
                 int result = execServerApp.Run(args.ToArray());
                 return result;
             }
@@ -80,7 +76,7 @@ namespace SiliconStudio.ExecServer
             var useAppDomainCaching = Environment.GetEnvironmentVariable(DisableExecServerAppDomainCaching) != "true";
 
             // Start WCF pipe for communication with process
-            var execServerApp = new ExecServerRemote(executablePath, true, useAppDomainCaching, MaxConcurrentAppDomainProcess);
+            var execServerApp = new ExecServerRemote(executablePath, true, useAppDomainCaching);
             var host = new ServiceHost(execServerApp);
             host.AddServiceEndpoint(typeof(IExecServerRemote), new NetNamedPipeBinding(NetNamedPipeSecurityMode.None)
             {

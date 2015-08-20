@@ -17,8 +17,6 @@ namespace SiliconStudio.ExecServer
 
         private readonly string mainAssemblyPath;
 
-        private readonly int maximumConcurrentAppDomain;
-
         private readonly List<string> nativeDllsPathOrFolderList;
 
         private readonly object disposingLock = new object();
@@ -33,13 +31,11 @@ namespace SiliconStudio.ExecServer
         /// <param name="nativeDllsPathOrFolderList">An array of folders path (containing only native dlls) or directly a specific path to a dll.</param>
         /// <exception cref="System.ArgumentNullException">mainAssemblyPath</exception>
         /// <exception cref="System.InvalidOperationException">If the assembly does not exist</exception>
-        public AppDomainShadowManager(string mainAssemblyPath, IEnumerable<string> nativeDllsPathOrFolderList, int maximumConcurrentAppDomain = 2)
+        public AppDomainShadowManager(string mainAssemblyPath, IEnumerable<string> nativeDllsPathOrFolderList)
         {
             if (mainAssemblyPath == null) throw new ArgumentNullException("mainAssemblyPath");
             if (!File.Exists(mainAssemblyPath)) throw new InvalidOperationException(string.Format("Assembly [{0}] does not exist", mainAssemblyPath));
-            if (maximumConcurrentAppDomain < 1) throw new ArgumentOutOfRangeException("maximumConcurrentAppDomain", "Parameter must be >= 1");
             this.mainAssemblyPath = mainAssemblyPath;
-            this.maximumConcurrentAppDomain = maximumConcurrentAppDomain;
             this.nativeDllsPathOrFolderList = new List<string>(nativeDllsPathOrFolderList);
         }
 
@@ -97,7 +93,9 @@ namespace SiliconStudio.ExecServer
                 {
                     var appDomainShadow = appDomainShadows[i];
                     var deltaTime = DateTime.Now - appDomainShadow.LastRunTime;
-                    var isAppDomainExpired = deltaTime > limitTimeAlive;
+
+                    // All AppDomains are released except one left for a longer time
+                    var isAppDomainExpired = i > 1 || deltaTime > limitTimeAlive;
 
                     if (!appDomainShadow.IsUpToDate() || isAppDomainExpired)
                     {
@@ -131,37 +129,27 @@ namespace SiliconStudio.ExecServer
         /// <returns></returns>
         private AppDomainShadow GetOrNew(bool useCache)
         {
-            while (true)
+            lock (appDomainShadows)
             {
-                lock (appDomainShadows)
+                foreach (var appDomainShadow in appDomainShadows)
                 {
-                    foreach (var appDomainShadow in appDomainShadows)
+                    if (appDomainShadow.TryLock())
                     {
-                        if (appDomainShadow.TryLock())
-                        {
-                            Console.WriteLine("Use cached AppDomain {0}", appDomainShadow.Name);
-                            return appDomainShadow;
-                        }
-                    }
-
-                    if (appDomainShadows.Count < maximumConcurrentAppDomain)
-                    {
-
-                        var newAppDomainName = Path.GetFileNameWithoutExtension(mainAssemblyPath) + "#" + appDomainShadows.Count;
-                        Console.WriteLine("Create new AppDomain {0}", newAppDomainName);
-                        var newAppDomain = new AppDomainShadow(newAppDomainName, mainAssemblyPath, nativeDllsPathOrFolderList.ToArray());
-                        newAppDomain.TryLock();
-
-                        if (useCache)
-                        {
-                            appDomainShadows.Add(newAppDomain);
-                        }
-                        return newAppDomain;
+                        Console.WriteLine("Use cached AppDomain {0}", appDomainShadow.Name);
+                        return appDomainShadow;
                     }
                 }
 
-                // We should better use notify instead
-                Thread.Sleep(200);
+                var newAppDomainName = Path.GetFileNameWithoutExtension(mainAssemblyPath) + "#" + appDomainShadows.Count;
+                Console.WriteLine("Create new AppDomain {0}", newAppDomainName);
+                var newAppDomain = new AppDomainShadow(newAppDomainName, mainAssemblyPath, nativeDllsPathOrFolderList.ToArray());
+                newAppDomain.TryLock();
+
+                if (useCache)
+                {
+                    appDomainShadows.Add(newAppDomain);
+                }
+                return newAppDomain;
             }
         }
 
