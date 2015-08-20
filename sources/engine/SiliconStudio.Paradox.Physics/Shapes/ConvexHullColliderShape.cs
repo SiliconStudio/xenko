@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Physics
 {
     public class ConvexHullColliderShape : ColliderShape
     {
-        private static GeometricPrimitive cachedDebugPrimitive;
+        private GeometricPrimitive cachedDebugPrimitive;
 
         private readonly IReadOnlyList<Vector3> pointsList;
         private readonly IReadOnlyCollection<uint> indicesList; 
