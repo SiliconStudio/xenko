@@ -52,6 +52,15 @@ namespace SiliconStudio.Paradox.Assets.Materials
             get { return 100; }
         }
 
+        [DataMemberIgnore]
+        public Guid MaterialId
+        {
+            get
+            {
+                return Id;
+            }
+        }
+
         /// <summary>
         /// Gets or sets the material attributes.
         /// </summary>

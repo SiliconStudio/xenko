@@ -86,30 +86,42 @@ namespace SiliconStudio.Paradox.Rendering.Materials
             }
 
             // Find the material from the reference
-            var material = context.FindAsset(Material);
+            var material = context.FindAsset(Material) as IMaterialDescriptor;
             if (material == null)
             {
                 context.Log.Error("Unable to find material [{0}]", Material);
                 return;
             }
 
-            // TODO: Because we are not fully supporting Streams declaration in shaders, we have to workaround this limitation by using a dynamic shader (inline)
-            // TODO: Handle MaterialOverrides
+            // Check that material is valid
+            var materialName = context.GetAssetFriendlyName(Material);
+            if (!context.PushMaterial(material, materialName))
+            {
+                return;
+            }
 
-            // Push a layer for the sub-material
-            context.PushOverrides(Overrides);
-            context.PushLayer();
+            try
+            {
+                // TODO: Because we are not fully supporting Streams declaration in shaders, we have to workaround this limitation by using a dynamic shader (inline)
+                // TODO: Handle MaterialOverrides
+                // Push a layer for the sub-material
+                context.PushOverrides(Overrides);
+                context.PushLayer();
 
-            // Generate the material shaders into the current context
-            material.Visit(context);
+                // Generate the material shaders into the current context
+                material.Visit(context);
 
-            // Generate Vertex and Pixel surface shaders
-            foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
-                Generate(stage, context);
-
-            // Pop the stack
-            context.PopLayer();
-            context.PopOverrides();
+                // Generate Vertex and Pixel surface shaders
+                foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
+                    Generate(stage, context);
+            }
+            finally
+            {
+                // Pop the stack
+                context.PopLayer();
+                context.PopOverrides();
+                context.PopMaterial();
+            }
         }
 
         private void Generate(MaterialShaderStage stage, MaterialGeneratorContext context)

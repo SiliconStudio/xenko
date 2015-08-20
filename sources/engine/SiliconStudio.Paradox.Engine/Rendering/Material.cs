@@ -73,7 +73,7 @@ namespace SiliconStudio.Paradox.Rendering
         {
             if (descriptor == null) throw new ArgumentNullException("descriptor");
             var context = new MaterialGeneratorContext(new Material());
-            var result = MaterialGenerator.Generate(descriptor, context);
+            var result = MaterialGenerator.Generate(descriptor, context, string.Format("{0}:RuntimeMaterial", descriptor.MaterialId));
 
             if (result.HasErrors)
             {

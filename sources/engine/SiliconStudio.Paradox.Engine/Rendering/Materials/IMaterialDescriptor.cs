@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Paradox.Rendering.Materials;
 
 namespace SiliconStudio.Paradox.Rendering.Materials
 {
@@ -14,6 +14,14 @@ namespace SiliconStudio.Paradox.Rendering.Materials
     /// </summary>
     public interface IMaterialDescriptor : IMaterialShaderGenerator
     {
+        /// <summary>
+        /// Gets the material identifier used only internaly to match material instance by id (when cloning an asset for example)
+        /// to provide an error when defining a material that is recursively referencing itself.
+        /// </summary>
+        /// <value>The material identifier.</value>
+        [DataMemberIgnore]
+        Guid MaterialId { get; }
+
         /// <summary>
         /// Gets or sets the material attributes.
         /// </summary>

@@ -3,22 +3,51 @@
 
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Rendering.Materials;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
     public static class ShaderGeneratorContextExtensions
     {
-        public static void AddLoadingFromSession(this ShaderGeneratorContextBase shaderGeneratorContext, Package package)
+        public static void AddLoadingFromSession(this ShaderGeneratorContextBase context, Package package)
         {
-            shaderGeneratorContext.FindAsset = material =>
+            var previousGetAssetFriendlyName = context.GetAssetFriendlyName;
+            var previousFindAsset = context.FindAsset;
+
+            // Setup the GetAssetFriendlyName callback
+            context.GetAssetFriendlyName = runtimeAsset =>
             {
-                if (material.Descriptor != null)
+                string assetFriendlyName = null;
+
+                if (previousGetAssetFriendlyName != null)
                 {
-                    return material.Descriptor;
+                    assetFriendlyName = previousGetAssetFriendlyName(runtimeAsset);
                 }
 
-                var reference = AttachedReferenceManager.GetAttachedReference(material);
+                if (string.IsNullOrEmpty(assetFriendlyName))
+                {
+                    var referenceAsset = AttachedReferenceManager.GetAttachedReference(runtimeAsset);
+                    assetFriendlyName = string.Format("{0}:{1}", referenceAsset.Id, referenceAsset.Url);
+                }
+
+                return assetFriendlyName;
+            };
+
+            // Setup the FindAsset callback
+            context.FindAsset = runtimeAsset =>
+            {
+                object newAsset = null; 
+                if (previousFindAsset != null)
+                {
+                    newAsset = previousFindAsset(runtimeAsset);
+                }
+
+                if (newAsset != null)
+                {
+                    return newAsset;
+                }
+
+                var reference = AttachedReferenceManager.GetAttachedReference(runtimeAsset);
+
 
                 var assetItem = package.Session.FindAsset(reference.Id) ?? package.Session.FindAsset(reference.Url);
 
@@ -26,7 +55,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 {
                     return null;
                 }
-                return (IMaterialDescriptor)assetItem.Asset;
+                return assetItem.Asset;
             };            
         }
     }
