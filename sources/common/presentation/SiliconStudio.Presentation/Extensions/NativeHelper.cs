@@ -19,6 +19,10 @@ namespace SiliconStudio.Presentation.Extensions
         public static extern bool SetCursorPos(int x, int y);
 
         [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetCursorPos(out POINT lpPoint);
+
+        [DllImport("user32.dll")]
         public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 
         [DllImport("user32.dll", SetLastError = true)]
@@ -53,7 +57,7 @@ namespace SiliconStudio.Presentation.Extensions
         public static extern IntPtr MonitorFromWindow(IntPtr hwnd, int dwFlags);
 
         [DllImport("user32.dll")]
-        public static extern bool GetMonitorInfo(IntPtr hmonitor,   [In, Out] MONITORINFO monitorInfo);
+        public static extern bool GetMonitorInfo(IntPtr hmonitor, [In, Out] MONITORINFO monitorInfo);
 
         [DllImport("user32.dll", EntryPoint = "DestroyWindow", CharSet = CharSet.Unicode)]
         public static extern bool DestroyWindow(IntPtr hwnd);
@@ -77,7 +81,7 @@ namespace SiliconStudio.Presentation.Extensions
         private static extern IntPtr SetWindowLongPtr64(HandleRef hwnd, WindowLongType index, IntPtr wndProc);
 
         [DllImport("user32.dll", EntryPoint = "SetWindowPos", SetLastError = true)]
-        public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+        public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
 
         #endregion Methods
 
@@ -205,6 +209,34 @@ namespace SiliconStudio.Presentation.Extensions
         public const int WS_TILEDWINDOW = unchecked(WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
         public const int WS_VISIBLE = unchecked(0x10000000);
         public const int WS_VSCROLL = unchecked(0x00200000);
+
+        // Window Extended Styles - https://msdn.microsoft.com/en-us/library/windows/desktop/ff700543(v=vs.85).aspx
+        public const uint WS_EX_DLGMODALFRAME = 0x00000001;
+        public const uint WS_EX_NOPARENTNOTIFY = 0x00000004;
+        public const uint WS_EX_TOPMOST = 0x00000008;
+        public const uint WS_EX_ACCEPTFILES = 0x00000010;
+        public const uint WS_EX_TRANSPARENT = 0x00000020;
+        public const uint WS_EX_MDICHILD = 0x00000040;
+        public const uint WS_EX_TOOLWINDOW = 0x00000080;
+        public const uint WS_EX_WINDOWEDGE = 0x00000100;
+        public const uint WS_EX_CLIENTEDGE = 0x00000200;
+        public const uint WS_EX_CONTEXTHELP = 0x00000400;
+        public const uint WS_EX_RIGHT = 0x00001000;
+        public const uint WS_EX_LEFT = 0x00000000;
+        public const uint WS_EX_RTLREADING = 0x00002000;
+        public const uint WS_EX_LTRREADING = 0x00000000;
+        public const uint WS_EX_LEFTSCROLLBAR = 0x00004000;
+        public const uint WS_EX_RIGHTSCROLLBAR = 0x00000000;
+        public const uint WS_EX_CONTROLPARENT = 0x00010000;
+        public const uint WS_EX_STATICEDGE = 0x00020000;
+        public const uint WS_EX_APPWINDOW = 0x00040000;
+        public const uint WS_EX_OVERLAPPEDWINDOW = (WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE);
+        public const uint WS_EX_PALETTEWINDOW = (WS_EX_WINDOWEDGE | WS_EX_TOOLWINDOW | WS_EX_TOPMOST);
+        public const uint WS_EX_LAYERED = 0x00080000;
+        public const uint WS_EX_NOINHERITLAYOUT = 0x00100000;
+        public const uint WS_EX_LAYOUTRTL = 0x00400000;
+        public const uint WS_EX_COMPOSITED = 0x02000000;
+        public const uint WS_EX_NOACTIVATE = 0x08000000;
 
         public const int SW_HIDE = unchecked(0x00000000);
 
