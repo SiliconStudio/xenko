@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Physics
     [ContentSerializer(typeof(DataContentSerializer<StaticPlaneColliderShapeDesc>))]
     [DataContract("StaticPlaneColliderShapeDesc")]
     [Display(50, "Infinite Plane")]
-    public class StaticPlaneColliderShapeDesc : IColliderShapeDesc
+    public class StaticPlaneColliderShapeDesc : IInlineColliderShapeDesc
     {
         /// <userdoc>
         /// The normal of the infinite plane.

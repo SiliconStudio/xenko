@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
 
         public ColliderShapeAsset()
         {
-            ColliderShapes = new List<IColliderShapeDesc>();
+            ColliderShapes = new List<IAssetColliderShapeDesc>();
         }
 
         protected override int InternalBuildOrder
@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
         /// </userdoc>
         [DataMember(10)]
         [Category]
-        public List<IColliderShapeDesc> ColliderShapes { get; set; }
+        public List<IAssetColliderShapeDesc> ColliderShapes { get; set; }
 
         private class ColliderShapeFactory : IObjectFactory
         {

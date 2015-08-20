@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Physics
     [ContentSerializer(typeof(DataContentSerializer<SphereColliderShapeDesc>))]
     [DataContract("SphereColliderShapeDesc")]
     [Display(50, "Sphere")]
-    public class SphereColliderShapeDesc : IColliderShapeDesc
+    public class SphereColliderShapeDesc : IInlineColliderShapeDesc
     {
         /// <userdoc>
         /// Select this if this shape will represent a Circle 2D shape

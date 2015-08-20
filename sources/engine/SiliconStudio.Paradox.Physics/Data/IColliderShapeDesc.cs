@@ -8,4 +8,12 @@ namespace SiliconStudio.Paradox.Physics
     public interface IColliderShapeDesc : IComparable
     {
     }
+
+    public interface IAssetColliderShapeDesc : IColliderShapeDesc
+    {
+    }
+
+    public interface IInlineColliderShapeDesc : IAssetColliderShapeDesc
+    {
+    }
 }

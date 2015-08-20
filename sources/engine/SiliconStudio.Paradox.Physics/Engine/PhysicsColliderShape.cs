@@ -23,17 +23,17 @@ namespace SiliconStudio.Paradox.Physics
         /// Reading this value will automatically parse the Shape property into its description
         /// Writing this value will automatically compose, create and populate the Shape property
         /// </summary>
-        public List<IColliderShapeDesc> Descriptions { get; set; }
+        public List<IAssetColliderShapeDesc> Descriptions { get; set; }
 
         [DataMemberIgnore]
         public ColliderShape Shape { get; internal set; }
 
-        public static PhysicsColliderShape New(params IColliderShapeDesc[] descriptions)
+        public static PhysicsColliderShape New(params IAssetColliderShapeDesc[] descriptions)
         {
             return new PhysicsColliderShape { Descriptions = descriptions.ToList() };
         }
         
-        internal static ColliderShape Compose(IReadOnlyList<IColliderShapeDesc> descs)
+        internal static ColliderShape Compose(IReadOnlyList<IAssetColliderShapeDesc> descs)
         {
             ColliderShape res = null;
 

@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Physics
     [ContentSerializer(typeof(DataContentSerializer<CapsuleColliderShapeDesc>))]
     [DataContract("CapsuleColliderShapeDesc")]
     [Display(50, "Capsule")]
-    public class CapsuleColliderShapeDesc : IColliderShapeDesc
+    public class CapsuleColliderShapeDesc : IInlineColliderShapeDesc
     {
         /// <userdoc>
         /// Select this if this shape will represent a 2D shape

@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Physics
     [ContentSerializer(typeof(DataContentSerializer<CylinderColliderShapeDesc>))]
     [DataContract("CylinderColliderShapeDesc")]
     [Display(50, "Cylinder")]
-    public class CylinderColliderShapeDesc : IColliderShapeDesc
+    public class CylinderColliderShapeDesc : IInlineColliderShapeDesc
     {
         /// <userdoc>
         /// The height of the cylinder

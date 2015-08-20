@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Physics
         public PhysicsElement()
         {
             CanScaleShape = true;
-            ColliderShapes = new TrackingCollection<IColliderShapeDesc>();
+            ColliderShapes = new TrackingCollection<IInlineColliderShapeDesc>();
             ColliderShapes.CollectionChanged += (sender, args) =>
             {
                 ColliderShapeChanged = true;
@@ -177,7 +177,7 @@ namespace SiliconStudio.Paradox.Physics
         /// </userdoc>
         [DataMember(100)]
         [Category]
-        public TrackingCollection<IColliderShapeDesc> ColliderShapes { get; private set; }
+        public TrackingCollection<IInlineColliderShapeDesc> ColliderShapes { get; private set; }
 
         public bool ColliderShapeChanged { get; private set; }
 
@@ -596,7 +596,7 @@ namespace SiliconStudio.Paradox.Physics
             }
         }
 
-        public ColliderShape CreateShape(IColliderShapeDesc desc)
+        public ColliderShape CreateShape(IInlineColliderShapeDesc desc)
         {
             ColliderShape shape = null;
 
@@ -633,98 +633,6 @@ namespace SiliconStudio.Paradox.Physics
                 var planeDesc = (StaticPlaneColliderShapeDesc)desc;
                 shape = new StaticPlaneColliderShape(planeDesc.Normal, planeDesc.Offset);
             }
-            else if (shapeType == typeof(ConvexHullColliderShapeDesc))
-            {
-                var convexDesc = (ConvexHullColliderShapeDesc)desc;
-
-                if (convexDesc.ConvexHulls == null) return null;
-
-                //Optimize performance and focus on less shapes creation since this shape could be nested
-
-                if (convexDesc.ConvexHulls.Count == 1)
-                {
-                    if (convexDesc.ConvexHulls[0].Count == 1)
-                    {
-                        shape = new ConvexHullColliderShape(convexDesc.ConvexHulls[0][0], convexDesc.ConvexHullsIndices[0][0], convexDesc.Scaling)
-                        {
-                            NeedsCustomCollisionCallback = true
-                        };
-
-                        shape.Parent = null;
-                        shape.UpdateLocalTransformations();
-                        shape.Description = desc;
-
-                        return shape;
-                    }
-
-                    if (convexDesc.ConvexHulls[0].Count <= 1) return null;
-
-                    var subCompound = new CompoundColliderShape
-                    {
-                        NeedsCustomCollisionCallback = true
-                    };
-
-                    for (var i = 0; i < convexDesc.ConvexHulls[0].Count; i++)
-                    {
-                        var verts = convexDesc.ConvexHulls[0][i];
-                        var indices = convexDesc.ConvexHullsIndices[0][i];
-
-                        var subHull = new ConvexHullColliderShape(verts, indices, convexDesc.Scaling);
-                        subHull.UpdateLocalTransformations();
-                        subCompound.AddChildShape(subHull);
-                    }
-
-                    subCompound.Parent = null;
-                    subCompound.UpdateLocalTransformations();
-                    subCompound.Description = desc;
-
-                    return subCompound;
-                }
-
-                if (convexDesc.ConvexHulls.Count <= 1) return null;
-
-                var compound = new CompoundColliderShape
-                {
-                    NeedsCustomCollisionCallback = true
-                };
-
-                for (var i = 0; i < convexDesc.ConvexHulls.Count; i++)
-                {
-                    var verts = convexDesc.ConvexHulls[i];
-                    var indices = convexDesc.ConvexHullsIndices[i];
-
-                    if (verts.Count == 1)
-                    {
-                        var subHull = new ConvexHullColliderShape(verts[0], indices[0], convexDesc.Scaling);
-                        subHull.UpdateLocalTransformations();
-                        compound.AddChildShape(subHull);
-                    }
-                    else if (verts.Count > 1)
-                    {
-                        var subCompound = new CompoundColliderShape();
-
-                        for (var b = 0; b < verts.Count; b++)
-                        {
-                            var subVerts = verts[b];
-                            var subIndex = indices[b];
-
-                            var subHull = new ConvexHullColliderShape(subVerts, subIndex, convexDesc.Scaling);
-                            subHull.UpdateLocalTransformations();
-                            subCompound.AddChildShape(subHull);
-                        }
-
-                        subCompound.UpdateLocalTransformations();
-
-                        compound.AddChildShape(subCompound);
-                    }
-                }
-
-                compound.Parent = null;
-                compound.UpdateLocalTransformations();
-                compound.Description = desc;
-
-                return compound;
-            }
             else if (shapeType == typeof(ColliderShapeAssetDesc))
             {
                 var assetDesc = (ColliderShapeAssetDesc)desc;
@@ -746,7 +654,6 @@ namespace SiliconStudio.Paradox.Physics
             {
                 shape.Parent = null; //from now parent might change
                 shape.UpdateLocalTransformations();
-                shape.Description = desc;
             }
 
             return shape;

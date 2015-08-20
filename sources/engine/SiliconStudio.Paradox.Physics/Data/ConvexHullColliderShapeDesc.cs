@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Physics
     [ContentSerializer(typeof(DataContentSerializer<ConvexHullColliderShapeDesc>))]
     [DataContract("ConvexHullColliderShapeDesc")]
     [Display(50, "Convex Hull")]
-    public class ConvexHullColliderShapeDesc : IColliderShapeDesc
+    public class ConvexHullColliderShapeDesc : IAssetColliderShapeDesc
     {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 
