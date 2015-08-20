@@ -43,12 +43,18 @@ namespace SiliconStudio.Paradox.Assets.Effect
 
         public override void Load()
         {
-            Text = File.ReadAllText(AbsoluteSourceLocation);
+            if (!string.IsNullOrEmpty(AbsoluteSourceLocation))
+            {
+                Text = File.ReadAllText(AbsoluteSourceLocation);
+            }
         }
 
         public override void Save()
         {
-            File.WriteAllText(AbsoluteSourceLocation, Text, Encoding.UTF8);
+            if (!string.IsNullOrEmpty(AbsoluteSourceLocation))
+            {
+                File.WriteAllText(AbsoluteSourceLocation, Text, Encoding.UTF8);
+            }
         }
 
         protected override int InternalBuildOrder
