@@ -128,6 +128,7 @@ private:
 		this->vfsOutputFilename = outputFilename;
 		this->vfsInputPath = VirtualFileSystem::GetParentFolder(inputFilename);
 
+		/*
 		auto stream = VirtualFileSystem::Drive->OpenStream(unixStyleInputFilename, VirtualFileMode::Open, VirtualFileAccess::Read, VirtualFileShare::Read, StreamFlags::None);
 
 		// check and possibly adjust the input parameters
@@ -146,10 +147,17 @@ private:
 		auto buffer = memoryStream->ToArray();
 		Logger->Verbose("File Stream copied - Time taken: {0} ms.", nullptr, internalStopwatch->ElapsedMilliseconds);
 
+		//importer->SetIOHandler(new IOSystemCustom());
+
 		// load the mesh from its original format to Assimp data structures
 		internalStopwatch->StartNew();
+		
 		cli::pin_ptr<System::Byte> bufferStart = &buffer[0];
 		return importer->ReadFileFromMemory(bufferStart, buffer->Length, flags);
+		*/
+		
+		std::string unmanaged = msclr::interop::marshal_as<std::string>(inputFilename);
+		return importer->ReadFile(unmanaged, flags);
 	}
 
 	// Reset all data related to one specific file conversion
