@@ -52,7 +52,12 @@ namespace SiliconStudio.BuildEngine
         public override void Clean(IExecuteContext executeContext, BuilderContext builderContext, bool deleteOutput)
         {
             // try to retrieve result from one of the object store
-            ObjectId commandHash = Command.ComputeCommandHash(executeContext);
+            var commandHash = Command.ComputeCommandHash(executeContext);
+            // If there was an error computing the hash, early exit
+            if (commandHash == ObjectId.Empty)
+            {
+                return;
+            }
 
             var commandResultsFileStream = executeContext.ResultMap.OpenStream(commandHash, VirtualFileMode.OpenOrCreate, VirtualFileAccess.ReadWrite, VirtualFileShare.ReadWrite);
             var commandResultEntries = new ListStore<CommandResultEntry>(commandResultsFileStream) { AutoLoadNewValues = false };
@@ -101,46 +106,58 @@ namespace SiliconStudio.BuildEngine
             // Prevent several command build step to evaluate wheither they should start at the same time. This increase the efficiency of the builder by avoiding the same command to be executed several time in parallel
             // NOTE: Careful here, there's no try/finally block around the monitor Enter/Exit, so no non-fatal exception is allowed!
             Monitor.Enter(executeContext);
-
-            ObjectId commandHash;
-            //await Task.Factory.StartNew(() =>
-            {
-                // try to retrieve result from one of the object store
-                commandHash = Command.ComputeCommandHash(executeContext);
-                var commandResultsFileStream = executeContext.ResultMap.OpenStream(commandHash, VirtualFileMode.OpenOrCreate, VirtualFileAccess.ReadWrite, VirtualFileShare.ReadWrite);
-                commandResultEntries = new ListStore<CommandResultEntry>(commandResultsFileStream) { AutoLoadNewValues = false };
-                commandResultEntries.LoadNewValues();
-            }
-            //);
-
-            // if any external input has changed since the last execution (or if we don't have a successful execution in cache, trigger the command
-            CommandResultEntry matchingResult;
+            bool monitorExited = false;
             var status = ResultStatus.NotProcessed;
+            // if any external input has changed since the last execution (or if we don't have a successful execution in cache, trigger the command
+            CommandResultEntry matchingResult = null;
 
-            if (ShouldExecute(executeContext, commandResultEntries.GetValues(), commandHash, out matchingResult))
+            try
             {
-                CommandBuildStep stepInProgress = executeContext.IsCommandCurrentlyRunning(commandHash);
-                if (stepInProgress != null)
+                ObjectId commandHash;
                 {
-                    Monitor.Exit(executeContext);
-                    executeContext.Logger.Debug("Command {0} delayed because it is currently running...", Command.ToString());
-                    status = (await stepInProgress.ExecutedAsync()).Status;
-                    matchingResult = stepInProgress.Result;
+                    // try to retrieve result from one of the object store
+                    commandHash = Command.ComputeCommandHash(executeContext);
+                    // Early exit if the hash of the command failed
+                    if (commandHash == ObjectId.Empty)
+                    {
+                        return ResultStatus.Failed;
+                    }
+
+                    var commandResultsFileStream = executeContext.ResultMap.OpenStream(commandHash, VirtualFileMode.OpenOrCreate, VirtualFileAccess.ReadWrite, VirtualFileShare.ReadWrite);
+                    commandResultEntries = new ListStore<CommandResultEntry>(commandResultsFileStream) { AutoLoadNewValues = false };
+                    commandResultEntries.LoadNewValues();
                 }
-                else
+
+                if (ShouldExecute(executeContext, commandResultEntries.GetValues(), commandHash, out matchingResult))
                 {
-                    executeContext.NotifyCommandBuildStepStarted(this, commandHash);
-                    Monitor.Exit(executeContext);
+                    CommandBuildStep stepInProgress = executeContext.IsCommandCurrentlyRunning(commandHash);
+                    if (stepInProgress != null)
+                    {
+                        Monitor.Exit(executeContext);
+                        monitorExited = true;
+                        executeContext.Logger.Debug("Command {0} delayed because it is currently running...", Command.ToString());
+                        status = (await stepInProgress.ExecutedAsync()).Status;
+                        matchingResult = stepInProgress.Result;
+                    }
+                    else
+                    {
+                        executeContext.NotifyCommandBuildStepStarted(this, commandHash);
+                        Monitor.Exit(executeContext);
+                        monitorExited = true;
 
-                    executeContext.Logger.Debug("Command {0} scheduled...", Command.ToString());
+                        executeContext.Logger.Debug("Command {0} scheduled...", Command.ToString());
 
-                    status = await StartCommand(executeContext, commandResultEntries, builderContext);
-                    executeContext.NotifyCommandBuildStepFinished(this, commandHash);
+                        status = await StartCommand(executeContext, commandResultEntries, builderContext);
+                        executeContext.NotifyCommandBuildStepFinished(this, commandHash);
+                    }
                 }
             }
-            else
+            finally
             {
-                Monitor.Exit(executeContext);
+                if (!monitorExited)
+                {
+                    Monitor.Exit(executeContext);
+                }
             }
 
             // The command has not been executed
@@ -173,6 +190,7 @@ namespace SiliconStudio.BuildEngine
                     RegisterCommandResult(commandResultEntries, matchingResult, status);
                 }
             }
+
 
             return status;
         }

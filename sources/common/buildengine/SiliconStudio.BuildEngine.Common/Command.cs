@@ -192,13 +192,24 @@ namespace SiliconStudio.BuildEngine
             return tagSymbol;
         }
 
+        /// <summary>
+        /// Computes the command hash. If an error occurecd, the hash is <see cref="ObjectId.Empty"/>
+        /// </summary>
+        /// <param name="prepareContext">The prepare context.</param>
+        /// <returns>Hash of the command.</returns>
         internal ObjectId ComputeCommandHash(IPrepareContext prepareContext)
         {
             var stream = new DigestStream(Stream.Null);
-
-            ComputeCommandHash(stream, prepareContext);
-
-            return stream.CurrentHash;
+            try
+            {
+                ComputeCommandHash(stream, prepareContext);
+                return stream.CurrentHash;
+            }
+            catch (Exception ex)
+            {
+                prepareContext.Logger.Error("Unexpected error while computing the command hash for [{0}]. Reason: {1}", ex, this.GetType().Name, ex.Message);
+            }
+            return ObjectId.Empty;
         }
     }
 }
