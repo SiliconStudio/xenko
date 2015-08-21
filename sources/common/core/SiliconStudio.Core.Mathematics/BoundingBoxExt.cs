@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace SiliconStudio.Core.Mathematics
@@ -119,6 +120,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="value1">The first box to merge.</param>
         /// <param name="value2">The second box to merge.</param>
         /// <param name="result">When the method completes, contains the newly constructed bounding box.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Merge(ref BoundingBoxExt value1, ref BoundingBoxExt value2, out BoundingBoxExt result)
         {
             var maximum = Vector3.Max(value1.Maximum, value2.Maximum);
