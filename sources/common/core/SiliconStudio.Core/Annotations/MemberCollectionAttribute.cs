@@ -21,6 +21,6 @@ namespace SiliconStudio.Core.Annotations
         /// Gets or sets whether the items of this collection can be reordered. If <c>true</c>, applications using
         /// this collection should provide users a way to reorder items.
         /// </summary>
-        public bool Reorderable { get; set; }
+        public bool CanReorderItems { get; set; }
     }
 }
