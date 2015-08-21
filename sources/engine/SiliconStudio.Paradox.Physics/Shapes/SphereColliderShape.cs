@@ -2,14 +2,16 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Extensions;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Physics
 {
     public class SphereColliderShape : ColliderShape
     {
-        private static GeometricPrimitive cachedDebugPrimitive;
+        private static MeshDraw cachedDebugPrimitive;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SphereColliderShape"/> class.
@@ -42,9 +44,9 @@ namespace SiliconStudio.Paradox.Physics
             }
         }
 
-        public override GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
+        public override MeshDraw CreateDebugPrimitive(GraphicsDevice device)
         {
-            return cachedDebugPrimitive ?? (cachedDebugPrimitive = GeometricPrimitive.Sphere.New(device));
+            return cachedDebugPrimitive ?? (cachedDebugPrimitive = GeometricPrimitive.Sphere.New(device).ToMeshDraw());
         }
     }
 }

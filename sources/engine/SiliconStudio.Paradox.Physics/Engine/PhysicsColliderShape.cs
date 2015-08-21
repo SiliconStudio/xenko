@@ -108,7 +108,7 @@ namespace SiliconStudio.Paradox.Physics
 
                 if (convexDesc.ConvexHulls.Count == 1)
                 {
-                    if (convexDesc.ConvexHulls[0].Count == 1)
+                    if (convexDesc.ConvexHulls[0].Count == 1 && convexDesc.ConvexHullsIndices[0][0].Count > 0)
                     {
                         shape = new ConvexHullColliderShape(convexDesc.ConvexHulls[0][0], convexDesc.ConvexHullsIndices[0][0], convexDesc.Scaling)
                         {
@@ -132,6 +132,8 @@ namespace SiliconStudio.Paradox.Physics
                     {
                         var verts = convexDesc.ConvexHulls[0][i];
                         var indices = convexDesc.ConvexHullsIndices[0][i];
+
+                        if(indices.Count == 0) continue;
 
                         var subHull = new ConvexHullColliderShape(verts, indices, convexDesc.Scaling);
                         subHull.UpdateLocalTransformations();
@@ -158,6 +160,8 @@ namespace SiliconStudio.Paradox.Physics
 
                     if (verts.Count == 1)
                     {
+                        if(indices[0].Count == 0) continue;
+
                         var subHull = new ConvexHullColliderShape(verts[0], indices[0], convexDesc.Scaling);
                         subHull.UpdateLocalTransformations();
                         compound.AddChildShape(subHull);
@@ -170,6 +174,8 @@ namespace SiliconStudio.Paradox.Physics
                         {
                             var subVerts = verts[b];
                             var subIndex = indices[b];
+
+                            if (subIndex.Count == 0) continue;
 
                             var subHull = new ConvexHullColliderShape(subVerts, subIndex, convexDesc.Scaling);
                             subHull.UpdateLocalTransformations();

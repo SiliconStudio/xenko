@@ -6,8 +6,9 @@ using BulletSharp;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 using System;
-
+using SiliconStudio.Paradox.Extensions;
 using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -66,9 +67,9 @@ namespace SiliconStudio.Paradox.Physics
             DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(1.01f)) * rotation;
         }
 
-        public override GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
+        public override MeshDraw CreateDebugPrimitive(GraphicsDevice device)
         {
-            return GeometricPrimitive.Capsule.New(device, capsuleLength, capsuleRadius);
+            return GeometricPrimitive.Capsule.New(device, capsuleLength, capsuleRadius).ToMeshDraw();
         }
     }
 }

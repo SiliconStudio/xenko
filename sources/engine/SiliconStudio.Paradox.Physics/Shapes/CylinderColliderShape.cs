@@ -4,14 +4,15 @@
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 using System;
-
+using SiliconStudio.Paradox.Extensions;
 using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Physics
 {
     public class CylinderColliderShape : ColliderShape
     {
-        private static GeometricPrimitive cachedDebugPrimitive;
+        private static MeshDraw cachedDebugPrimitive;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CylinderColliderShape"/> class.
@@ -56,9 +57,9 @@ namespace SiliconStudio.Paradox.Physics
             DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(2*radius, height, 2*radius) * 1.01f) * rotation;
         }
 
-        public override GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
+        public override MeshDraw CreateDebugPrimitive(GraphicsDevice device)
         {
-            return cachedDebugPrimitive ?? (cachedDebugPrimitive = GeometricPrimitive.Cylinder.New(device));
+            return cachedDebugPrimitive ?? (cachedDebugPrimitive = GeometricPrimitive.Cylinder.New(device).ToMeshDraw());
         }
     }
 }
