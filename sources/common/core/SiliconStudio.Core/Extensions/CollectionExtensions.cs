@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 
+using SiliconStudio.Core.Collections;
+
 namespace SiliconStudio.Core.Extensions
 {
     /// <summary>
@@ -30,6 +32,23 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="list">The list.</param>
         /// <param name="index">Index of the item to remove.</param>
         public static void SwapRemoveAt<T>(this IList<T> list, int index)
+        {
+            if (index < 0 || index >= list.Count) throw new ArgumentOutOfRangeException("index");
+
+            if (index < list.Count - 1)
+            {
+                list[index] = list[list.Count - 1];
+            }
+
+            list.RemoveAt(list.Count - 1);
+        }
+
+        /// <summary>
+        /// Remove an item by swapping it with the last item and removing it from the last position. This function prevents to shift values from the list on removal but does not maintain order.
+        /// </summary>
+        /// <param name="list">The list.</param>
+        /// <param name="index">Index of the item to remove.</param>
+        public static void SwapRemoveAt<T>(this FastListStruct<T> list, int index)
         {
             if (index < 0 || index >= list.Count) throw new ArgumentOutOfRangeException("index");
 
