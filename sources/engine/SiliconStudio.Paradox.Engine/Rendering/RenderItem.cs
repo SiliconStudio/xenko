@@ -5,8 +5,6 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-using SiliconStudio.Core.Mathematics;
-
 namespace SiliconStudio.Paradox.Rendering
 {
     /// <summary>

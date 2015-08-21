@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 
-using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Rendering
