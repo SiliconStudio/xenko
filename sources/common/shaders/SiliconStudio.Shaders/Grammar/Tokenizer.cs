@@ -26,7 +26,7 @@ namespace SiliconStudio.Shaders.Grammar
         {
             var grammarStream = new MemoryStream(Resources.Tokenizer); // new FileStream("Preprocessor.cgt", FileMode.Open, FileAccess.Read);
             grammar = new GoldParser.Grammar(new BinaryReader(grammarStream));
-            grammarStream.Close();
+            grammarStream.Dispose();
         }
 
         public Tokenizer(ShaderLanguageData languageData)

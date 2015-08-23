@@ -147,7 +147,11 @@ namespace SiliconStudio.Core.Diagnostics
 
         private void EnsureConsole()
         {
+#if !SILICONSTUDIO_RUNTIME_CORECLR
             if (Debugger.IsAttached || isConsoleActive || Environment.OSVersion.Platform != PlatformID.Win32NT)
+#else
+            if (Debugger.IsAttached || isConsoleActive || !RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+#endif
             {
                 return;
             }

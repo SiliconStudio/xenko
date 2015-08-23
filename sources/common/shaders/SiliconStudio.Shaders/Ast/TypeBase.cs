@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Reflection;
 using System.Collections.Generic;
 
 namespace SiliconStudio.Shaders.Ast
@@ -198,7 +199,7 @@ namespace SiliconStudio.Shaders.Ast
                 return true;
             }
 
-            if (!typeof(TypeBase).IsAssignableFrom(obj.GetType()))
+            if (!typeof(TypeBase).GetTypeInfo().IsAssignableFrom(obj.GetType().GetTypeInfo()))
             {
                 return false;
             }

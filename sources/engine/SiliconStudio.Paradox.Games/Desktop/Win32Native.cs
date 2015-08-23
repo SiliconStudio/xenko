@@ -78,7 +78,7 @@ namespace SiliconStudio.Paradox.Games
         [DllImport("user32.dll", EntryPoint = "SetWindowLong", CharSet = CharSet.Unicode)]
         private static extern IntPtr SetWindowLong32(HandleRef hwnd, WindowLongType index, IntPtr wndProc);
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
         public static extern short GetKeyState(int keyCode);
 
         public static bool ShowWindow(HandleRef hWnd, bool windowVisible)

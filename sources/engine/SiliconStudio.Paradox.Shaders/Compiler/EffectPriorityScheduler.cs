@@ -125,6 +125,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                                     if (t.Task != null)
                                     {
                                         // High priority task (<0) gets an above normal thread priority
+#if !SILICONSTUDIO_RUNTIME_CORECLR
                                         if (t.Scheduler.Priority < 0)
                                             Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
 
@@ -135,6 +136,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
                                         if (t.Scheduler.Priority < 0)
                                             Thread.CurrentThread.Priority = ThreadPriority.Normal;
+#endif
                                     }
                                     else
                                     {
@@ -148,7 +150,9 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
                             })
                             {
                                 Name = string.Format("PriorityScheduler: {0}", i),
+#if !SILICONSTUDIO_RUNTIME_CORECLR
                                 Priority = threadPriority,
+#endif
                                 IsBackground = true,
                             };
                             threads[i].Start();

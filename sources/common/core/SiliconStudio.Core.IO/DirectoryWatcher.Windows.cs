@@ -13,7 +13,7 @@ namespace SiliconStudio.Core.IO
 {
     public partial class DirectoryWatcher
     {
-        private readonly Dictionary<string, DirectoryWatcherItem> watchers = new Dictionary<string, DirectoryWatcherItem>(StringComparer.InvariantCultureIgnoreCase);
+        private readonly Dictionary<string, DirectoryWatcherItem> watchers = new Dictionary<string, DirectoryWatcherItem>(StringComparer.CurrentCultureIgnoreCase);
 
         private void InitializeInternal()
         {
@@ -125,7 +125,7 @@ namespace SiliconStudio.Core.IO
         {
             if (path == null) throw new ArgumentNullException("path");
 
-            path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, path));
+            path = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), path));
 
             // 1) Extract directory information from path
             DirectoryInfo info;

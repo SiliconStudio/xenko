@@ -54,7 +54,7 @@ namespace SiliconStudio.Shaders.Convertor
             } finally
             {
                 if (stream != null)
-                    try { stream.Close(); } catch {}
+                    try { stream.Dispose(); } catch {}
             }
         }
 

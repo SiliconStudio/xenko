@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
 
             try
             {
-                if (location.FileSource.EndsWith(".pdxsl", StringComparison.InvariantCultureIgnoreCase))
+                if (location.FileSource.EndsWith(".pdxsl", StringComparison.CurrentCultureIgnoreCase))
                 {
                     AnalyzeAndGoToDefinition(shaderSource, location, shaderDirectories, navigationResult);
                 }

@@ -96,7 +96,11 @@ namespace Sockets.Plugin
         public Task DisconnectAsync()
         {
             return Task.Run(() => {
+#if !SILICONSTUDIO_RUNTIME_CORECLR
                 _backingTcpClient.Close();
+#else
+                _backingTcpClient.Dispose();
+#endif
                 _secureStream = null;
             });
         }
@@ -171,7 +175,11 @@ namespace Sockets.Plugin
 
         private void InitializeWriteStream()
         {
+#if !SILICONSTUDIO_RUNTIME_CORECLR
             _writeStream = _bufferSize != 0 ? (Stream)new BufferedStream(_backingTcpClient.GetStream(), _bufferSize) : _backingTcpClient.GetStream();
+#else
+            _writeStream = _backingTcpClient.GetStream();
+#endif
         }
 
         private void Dispose(bool disposing)
