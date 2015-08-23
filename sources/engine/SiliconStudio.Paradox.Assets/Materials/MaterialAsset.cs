@@ -81,6 +81,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DataMember(20)]
         [NotNull]
         [Category]
+        [MemberCollection(CanReorderItems = true)]
         public MaterialBlendLayers Layers { get; set; }
 
         /// <summary>

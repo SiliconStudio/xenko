@@ -5,7 +5,6 @@ using System;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -98,7 +97,7 @@ namespace SiliconStudio.Paradox.Physics
                 
                 if (Is2D) newScaling.Z = 1.0f;
 
-                DebugPrimitiveMatrix *= Matrix.Scaling(newScaling);
+                //DebugPrimitiveMatrix *= Matrix.Scaling(newScaling);
 
                 if (Is2D) newScaling.Z = 0.0f;
 
@@ -120,12 +119,10 @@ namespace SiliconStudio.Paradox.Physics
 
         internal CompoundColliderShape Parent;
 
-        public virtual GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
+        public virtual MeshDraw CreateDebugPrimitive(GraphicsDevice device)
         {
             return null;
         }
-
-        public Model DebugModel;
 
         public Matrix DebugPrimitiveMatrix;
 

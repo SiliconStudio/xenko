@@ -4,11 +4,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interactivity;
-using System.Windows.Threading;
 using SiliconStudio.Presentation.Extensions;
 
 // Remark: The drag'n'drop is pretty broken in WPF, especially the DragLeave event (see https://social.msdn.microsoft.com/Forums/vstudio/en-US/d326384b-e182-4f48-ab8b-841a2c2ca4ab/whats-up-with-dragleave-and-egetposition?forum=wpf&prof=required)
-// This behavior could still be improved.
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -17,8 +15,7 @@ namespace SiliconStudio.Presentation.Behaviors
         private readonly object lockObject = new object();
         private bool scrollStarted;
         private CancellationTokenSource cancellationTokenSource;
-        private Dock? mousePosition;
-        private bool draggingInsideControl;
+        private Dock? edgeUnderMouse;
 
         public static readonly DependencyProperty ScrollBorderThicknessProperty = DependencyProperty.Register("ScrollBorderThickness", typeof(Thickness), typeof(DragOverAutoScrollBehavior), new PropertyMetadata(new Thickness(32)));
 
@@ -45,7 +42,6 @@ namespace SiliconStudio.Presentation.Behaviors
             base.OnAttached();
             AssociatedObject.AddHandler(UIElement.PreviewDragOverEvent, (DragEventHandler)DragOver);
             AssociatedObject.AddHandler(UIElement.DragLeaveEvent, (DragEventHandler)DragLeave);
-            AssociatedObject.AddHandler(UIElement.DragEnterEvent, (DragEventHandler)DragEnter);
             AssociatedObject.AddHandler(UIElement.DropEvent, (DragEventHandler)Drop);
         }
 
@@ -58,34 +54,30 @@ namespace SiliconStudio.Presentation.Behaviors
         {
             AssociatedObject.RemoveHandler(UIElement.PreviewDragOverEvent, (DragEventHandler)DragOver);
             AssociatedObject.RemoveHandler(UIElement.DragLeaveEvent, (DragEventHandler)DragLeave);
-            AssociatedObject.RemoveHandler(UIElement.DragEnterEvent, (DragEventHandler)DragEnter);
             AssociatedObject.RemoveHandler(UIElement.DropEvent, (DragEventHandler)Drop);
             base.OnDetaching();
         }
 
         private void DragOver(object sender, DragEventArgs e)
         {
-            Point position = e.GetPosition(AssociatedObject);
+            var position = GetMousePosition();
             lock (lockObject)
             {
-                mousePosition = GetMousePosition(position);
+                edgeUnderMouse = GetEdgeUnderMouse(position);
             }
-            if (mousePosition != null)
+            if (edgeUnderMouse != null)
             {
                 StartScroll();
             }
         }
 
-        private void DragEnter(object sender, DragEventArgs e)
-        {
-            draggingInsideControl = true;
-        }
-
         private void DragLeave(object sender, DragEventArgs e)
         {
-            Point position = e.GetPosition(AssociatedObject);
-            Dispatcher.BeginInvoke(new Action(() => { mousePosition = draggingInsideControl ? GetMousePosition(position) : null; }), DispatcherPriority.Background);
-            draggingInsideControl = false;
+            var position = GetMousePosition();
+            if (position.X <= 0 || position.Y <= 0 || position.X >= AssociatedObject.ActualWidth || position.Y >= AssociatedObject.ActualHeight)
+            {
+                edgeUnderMouse = null;
+            }
         }
 
         private void StopScroll()
@@ -112,6 +104,13 @@ namespace SiliconStudio.Presentation.Behaviors
             }
         }
 
+        private Point GetMousePosition()
+        {
+            NativeHelper.POINT position;
+            NativeHelper.GetCursorPos(out position);
+            return AssociatedObject.PointFromScreen(new Point(position.X, position.Y));
+        }
+
         private async Task ScrollTask(ScrollViewer scrollViewer, double delaySeconds)
         {
             const int refreshDelay = 25;
@@ -122,10 +121,10 @@ namespace SiliconStudio.Presentation.Behaviors
             {
                     Dispatcher.Invoke(() =>
                     {
-                        if (mousePosition.HasValue)
+                        if (edgeUnderMouse.HasValue)
                         {
                             var offset = ScrollingSpeed * refreshDelay / 1000.0;
-                            switch (mousePosition.Value)
+                            switch (edgeUnderMouse.Value)
                             {
                                 case Dock.Left:
                                     scrollViewer.ScrollToHorizontalOffset(scrollViewer.HorizontalOffset - offset);
@@ -150,7 +149,7 @@ namespace SiliconStudio.Presentation.Behaviors
             }
         }
 
-        private Dock? GetMousePosition(Point point)
+        private Dock? GetEdgeUnderMouse(Point point)
         {
             var scrollViewer = AssociatedObject.FindVisualChildOfType<ScrollViewer>();
             if (point.X >= 0 && point.X <= ScrollBorderThickness.Left)
