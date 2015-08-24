@@ -124,7 +124,7 @@ namespace SiliconStudio.Core.Settings
         /// <param name="createInCurrentProfile">If true, the list will be created in the current profile, from the value of its parent profile.</param>
         /// <returns>The value of this settings key.</returns>
         /// <exception cref="KeyNotFoundException">No value can be found in the given profile matching this settings key.</exception>
-        public virtual object GetValue(bool searchInParentProfile = true, SettingsProfile profile = null, bool createInCurrentProfile = false)
+        public object GetValue(bool searchInParentProfile = true, SettingsProfile profile = null, bool createInCurrentProfile = false)
         {
             object value;
             profile = ResolveProfile(profile);
@@ -147,16 +147,17 @@ namespace SiliconStudio.Core.Settings
         }
 
         /// <summary>
-        /// Tries to gets the value of this settings key in the given profile, if it exists.
+        /// Tries to gets the value of this settings key in the given profile, if it exists, and without looking into
+        /// the parent profiles.
         /// </summary>
         /// <param name="value">The resulting value, if found</param>
-        /// <param name="searchInParentProfile">If true, the settings service will look in the parent profile of the given profile if the settings key is not defined into it.</param>
-        /// <param name="profile">The profile in which to look for the value. If <c>null</c>, it will look in the <see cref="SettingsContainer.CurrentProfile"/>.</param>
+        /// <param name="profile">The profile in which to look for the value.</param>
         /// <returns><c>true</c> if the value was found, <c>false</c> otherwise.</returns>
-        public bool TryGetValue(out object value, bool searchInParentProfile = true, SettingsProfile profile = null)
+        public bool TryGetValue(out object value, SettingsProfile profile)
         {
+            if (profile == null) throw new ArgumentNullException("profile");
             profile = ResolveProfile(profile);
-            if (profile.GetValue(Name, out value, searchInParentProfile, false))
+            if (profile.GetValue(Name, out value, false, false))
             {
                 return true;
             }
@@ -256,14 +257,13 @@ namespace SiliconStudio.Core.Settings
         /// </summary>
         /// <param name="searchInParentProfile">If true, the settings service will look in the parent profile of the given profile if the settings key is not defined into it.</param>
         /// <param name="profile">The profile in which to look for the value. If <c>null</c>, it will look in the <see cref="SettingsContainer.CurrentProfile"/>.</param>
-        /// <param name="createInCurrentProfile">If true, the list will be created in the current profile, from the value of its parent profile.</param>
         /// <returns>The value of this settings key.</returns>
         /// <exception cref="KeyNotFoundException">No value can be found in the given profile matching this settings key.</exception>
-        public new T GetValue(bool searchInParentProfile, SettingsProfile profile, bool createInCurrentProfile = false)
+        public T GetValue(bool searchInParentProfile, SettingsProfile profile)
         {
             object value;
             profile = ResolveProfile(profile);
-            if (profile.GetValue(Name, out value, searchInParentProfile, createInCurrentProfile))
+            if (profile.GetValue(Name, out value, searchInParentProfile, false))
             {
                 return (T)value;
             }
@@ -317,6 +317,7 @@ namespace SiliconStudio.Core.Settings
         /// <returns><c>true</c> if the value was found, <c>false</c> otherwise.</returns>
         public bool TryGetValue(out T value, SettingsProfile profile)
         {
+            if (profile == null) throw new ArgumentNullException("profile");
             object obj;
             profile = ResolveProfile(profile);
             if (profile.GetValue(Name, out obj, false, false))
