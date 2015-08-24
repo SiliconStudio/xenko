@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using SharpYaml.Events;
 using SiliconStudio.Core.IO;
@@ -16,22 +17,25 @@ namespace SiliconStudio.Core.Settings
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsFile"/> class.
         /// </summary>
-        public SettingsFile()
+        public SettingsFile(SettingsProfile profile)
         {
-            Settings = new SettingsDictionary();
+            Settings = profile;
         }
 
         /// <summary>
-        /// Gets the collection of settings to serialize.
+        /// Gets the settings profile to serialize.
         /// </summary>
         [DataMemberCustomSerializer]
-        public SettingsDictionary Settings { get; private set; }
+        public SettingsProfile Settings { get; private set; }
     }
 
-    public class SettingsDictionary : Dictionary<UFile, List<ParsingEvent>>
+    /// <summary>
+    /// An internal dictionary class used to serialize a <see cref="SettingsProfile"/>.
+    /// </summary>
+    internal class SettingsDictionary : Dictionary<UFile, List<ParsingEvent>>
     {
         // Used for temporary internal storage
         [DataMemberIgnore]
-        internal object Tags;
+        internal SettingsProfile Profile;
     }
 }

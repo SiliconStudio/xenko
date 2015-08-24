@@ -22,7 +22,7 @@ namespace SiliconStudio.Assets
             this.package = package;
             if (package.FullPath == null)
             {
-                profile = SettingsContainer.CreateSettingsProfile(false);
+                profile = SettingsContainer.CreateSettingsProfile();
             }
             else
             {
@@ -36,7 +36,7 @@ namespace SiliconStudio.Assets
                     e.Ignore();
                 }
                 if (profile == null)
-                    profile = SettingsContainer.CreateSettingsProfile(false);
+                    profile = SettingsContainer.CreateSettingsProfile();
             }
         }
 
@@ -46,7 +46,7 @@ namespace SiliconStudio.Assets
                 return false;
 
             var path = Path.Combine(package.FullPath.GetFullDirectory(), package.FullPath.GetFileName() + SettingsExtension);
-            return SettingsContainer.SaveSettingsProfile(profile, path);
+            return SettingsContainer.SaveSettingsProfile("PackageSettings", profile, path);
         }
 
         public SettingsProfile Profile { get { return profile; } }

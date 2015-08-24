@@ -3,8 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
+using System.Linq;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Core.Settings
 {
@@ -12,6 +13,7 @@ namespace SiliconStudio.Core.Settings
     /// This class represents a collection of values for all registered <see cref="SettingsKey"/>. It may also contains values for settings keys that
     /// are not currently registered, if they exist in the file from which the profile was loaded.
     /// </summary>
+    [DataSerializer(typeof(Serializer))]
     public class SettingsProfile : IDisposable
     {
         internal ActionStack.ActionStack ActionStack = new ActionStack.ActionStack(-1);
@@ -37,7 +39,7 @@ namespace SiliconStudio.Core.Settings
         /// <summary>
         /// Gets the <see cref="SettingsContainer"/> containing this profile.
         /// </summary>
-        public SettingsContainer Container { get; private set; }
+        public SettingsContainer Container { get; internal set; }
         
         /// <summary>
         /// Gets the path of the file in which this profile has been saved.
@@ -71,13 +73,28 @@ namespace SiliconStudio.Core.Settings
             }
         }
 
+        /// <summary>
+        /// Copies the values of this profile into another profile.
+        /// </summary>
+        /// <param name="profile">The profile in which to copy the values.</param>
+        /// <param name="overrideValues">If <c>false</c>, the values already present in the targt profile won't be overriden.</param>
+        public void CopyTo(SettingsProfile profile, bool overrideValues)
+        {
+            foreach (var setting in Settings)
+            {
+                if (!overrideValues && profile.Settings.ContainsKey(setting.Key))
+                    continue;
+
+                profile.SetValue(setting.Key, setting.Value.Value);
+            }
+        }
+        
         public void ValidateSettingsChanges()
         {
             var keys = Container.GetAllSettingsKeys();
-            foreach (var key in keys)
+            foreach (var key in keys.Where(x => modifiedSettings.Contains(x.Name)))
             {
-                if (modifiedSettings.Contains(key.Name))
-                    key.NotifyChangesValidated(this);
+                key.NotifyChangesValidated(this);
             }
             ActionStack.Clear();
             modifiedSettings.Clear();
@@ -221,6 +238,14 @@ namespace SiliconStudio.Core.Settings
                 {
                     Container.ReloadSettingsProfile(this);
                 }
+            }
+        }
+
+        internal class Serializer : DataSerializer<SettingsProfile>
+        {
+            public override void Serialize(ref SettingsProfile obj, ArchiveMode mode, SerializationStream stream)
+            {
+                throw new NotImplementedException();
             }
         }
     }

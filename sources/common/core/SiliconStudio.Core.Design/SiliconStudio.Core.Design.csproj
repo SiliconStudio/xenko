@@ -90,8 +90,8 @@
     <Compile Include="Settings\ChangesValidatedEventArgs.cs" />
     <Compile Include="Settings\FileModifiedEventArgs.cs" />
     <Compile Include="Settings\NamespaceDoc.cs" />
-    <Compile Include="Settings\SettingsCollection.cs" />
     <Compile Include="Settings\SettingsDictionarySerializer.cs" />
+    <Compile Include="Settings\SettingsProfileSerializer.cs" />
     <Compile Include="Windows\FileLock.cs" />
     <Compile Include="Windows\GlobalMutex.cs" />
     <Compile Include="Yaml\DynamicYamlExtensions.cs" />

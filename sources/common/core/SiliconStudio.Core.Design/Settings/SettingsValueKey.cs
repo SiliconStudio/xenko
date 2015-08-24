@@ -79,7 +79,7 @@ namespace SiliconStudio.Core.Settings
         /// <param name="createInCurrentProfile">If true, the list will be created in the current profile, from the value of its parent profile.</param>
         /// <returns>The value of this settings key.</returns>
         /// <exception cref="KeyNotFoundException">No value can be found in the given profile matching this settings key.</exception>
-        public T GetValue(bool searchInParentProfile = true, SettingsProfile profile = null, bool createInCurrentProfile = false)
+        public new T GetValue(bool searchInParentProfile = true, SettingsProfile profile = null, bool createInCurrentProfile = false)
         {
             object value;
             profile = profile ?? Container.CurrentProfile;

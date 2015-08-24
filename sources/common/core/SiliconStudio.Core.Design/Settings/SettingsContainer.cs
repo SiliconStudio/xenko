@@ -88,7 +88,7 @@ namespace SiliconStudio.Core.Settings
         /// <param name="setAsCurrent">If <c>true</c>, the created profile will also be set as <see cref="CurrentProfile"/>.</param>
         /// <param name="parent">The parent profile of the settings to create. If <c>null</c>, the default profile will be used.</param>
         /// <returns>A new instance of the <see cref="SettingsProfile"/> class.</returns>
-        public SettingsProfile CreateSettingsProfile(bool setAsCurrent, SettingsProfile parent = null)
+        public SettingsProfile CreateSettingsProfile(bool setAsCurrent = false, SettingsProfile parent = null)
         {
             var profile = new SettingsProfile(this, parent ?? rootProfile);
             profileList.Add(profile);
@@ -115,17 +115,14 @@ namespace SiliconStudio.Core.Settings
                 return null;
             }
 
-            SettingsProfile profile;
+            var profile = new SettingsProfile(this, parent ?? rootProfile) { FilePath = filePath };
             try
             {
-                SettingsFile settingsFile;
+                var settingsFile = new SettingsFile(profile);
                 using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
-                    settingsFile = (SettingsFile)YamlSerializer.Deserialize(stream);
+                    YamlSerializer.Deserialize(stream, settingsFile);
                 }
-                profile = new SettingsProfile(this, parent ?? rootProfile) { FilePath = filePath };
-
-                DecodeSettings(settingsFile.Settings, profile);
             }
             catch (Exception e)
             {
@@ -163,13 +160,11 @@ namespace SiliconStudio.Core.Settings
 
             try
             {
-                SettingsFile settingsFile;
+                var settingsFile = new SettingsFile(profile);
                 using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
-                    settingsFile = (SettingsFile)YamlSerializer.Deserialize(stream);
+                    YamlSerializer.Deserialize(stream, settingsFile);
                 }
-
-                DecodeSettings(settingsFile.Settings, profile);
             }
             catch (Exception e)
             {
@@ -199,10 +194,11 @@ namespace SiliconStudio.Core.Settings
         /// <summary>
         /// Saves the given settings profile to a file at the given path.
         /// </summary>
+        /// <param name="name">The name of the profile. Can be null or empty.</param>
         /// <param name="profile">The profile to save.</param>
         /// <param name="filePath">The path of the file.</param>
         /// <returns><c>true</c> if the file was correctly saved, <c>false</c> otherwise.</returns>
-        public bool SaveSettingsProfile(SettingsProfile profile, UFile filePath)
+        public bool SaveSettingsProfile(string name, SettingsProfile profile, UFile filePath)
         {
             if (profile == null) throw new ArgumentNullException("profile");
             try
@@ -210,9 +206,7 @@ namespace SiliconStudio.Core.Settings
                 profile.Saving = true;
                 Directory.CreateDirectory(filePath.GetFullDirectory());
 
-                var settingsFile = new SettingsFile();
-                EncodeSettings(profile, settingsFile.Settings);
-
+                var settingsFile = new SettingsFile(profile);
                 using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.Write))
                 {
                     YamlSerializer.Serialize(stream, settingsFile);

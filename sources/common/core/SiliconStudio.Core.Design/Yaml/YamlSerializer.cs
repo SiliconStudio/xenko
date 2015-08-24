@@ -33,7 +33,7 @@ namespace SiliconStudio.Core.Yaml
         /// <summary>
         /// Deserializes an object from the specified stream (expecting a YAML string).
         /// </summary>
-        /// <param name="stream">A YAML string from a stream .</param>
+        /// <param name="stream">A YAML string from a stream.</param>
         /// <returns>An instance of the YAML data.</returns>
         public static object Deserialize(Stream stream)
         {
@@ -42,9 +42,25 @@ namespace SiliconStudio.Core.Yaml
         }
 
         /// <summary>
+        /// Deserializes an object from the specified stream (expecting a YAML string) into an existing object.
+        /// </summary>
+        /// <param name="stream">A YAML string from a stream.</param>
+        /// <param name="existingObject">The object to deserialize into.</param>
+        /// <returns>An instance of the YAML data.</returns>
+        public static object Deserialize(Stream stream, object existingObject)
+        {
+            if (existingObject == null) throw new ArgumentNullException("existingObject");
+            using (var textReader = new StreamReader(stream))
+            {
+                var serializer = GetYamlSerializer(false);
+                return serializer.Deserialize(textReader, existingObject.GetType(), existingObject);
+            }
+        }
+
+        /// <summary>
         /// Deserializes an object from the specified stream (expecting a YAML string).
         /// </summary>
-        /// <param name="stream">A YAML string from a stream .</param>
+        /// <param name="stream">A YAML string from a stream.</param>
         /// <param name="expectedType">The expected type.</param>
         /// <param name="contextSettings">The context settings.</param>
         /// <returns>An instance of the YAML data.</returns>
