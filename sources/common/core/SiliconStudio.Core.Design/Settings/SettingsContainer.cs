@@ -270,7 +270,7 @@ namespace SiliconStudio.Core.Settings
         }
 
         /// <summary>
-        /// Clears the current settings, including registered <see cref="SettingsKey"/> and <see cref="SettingsProfile"/> instances. This method should be used only for tests.
+        /// Clears the current settings, by removing registered <see cref="SettingsKey"/> and <see cref="SettingsProfile"/> instances. This method should be used only for tests.
         /// </summary>
         public void ClearSettings()
         {

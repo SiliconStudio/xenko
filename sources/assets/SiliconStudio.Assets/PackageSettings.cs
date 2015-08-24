@@ -51,17 +51,17 @@ namespace SiliconStudio.Assets
 
         public SettingsProfile Profile { get { return profile; } }
 
-        public T GetOrCreateValue<T>(SettingsValueKey<T> key)
+        public T GetOrCreateValue<T>(SettingsKey<T> key)
         {
             return key.GetValue(true, profile, true);
         }
 
-        public T GetValue<T>(SettingsValueKey<T> key)
+        public T GetValue<T>(SettingsKey<T> key)
         {
             return key.GetValue(true, profile);
         }
 
-        public void SetValue<T>(SettingsValueKey<T> key, T value)
+        public void SetValue<T>(SettingsKey<T> key, T value)
         {
             key.SetValue(value, profile);
         }

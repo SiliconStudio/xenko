@@ -14,30 +14,30 @@ namespace SiliconStudio.Core.Design.Tests
 {
     class ValueSettingsKeys
     {
-        public static SettingsValueKey<int> IntValue;
-        public static SettingsValueKey<double> DoubleValue;
-        public static SettingsValueKey<string> StringValue;
+        public static SettingsKey<int> IntValue;
+        public static SettingsKey<double> DoubleValue;
+        public static SettingsKey<string> StringValue;
 
         public static void Initialize()
         {
-            IntValue = new SettingsValueKey<int>("Test/Simple/IntValue", TestSettings.SettingsContainer, 10);
-            DoubleValue = new SettingsValueKey<double>("Test/Simple/DoubleValue", TestSettings.SettingsContainer, 3.14);
-            StringValue = new SettingsValueKey<string>("Test/Simple/StringValue", TestSettings.SettingsContainer, "Test string");
+            IntValue = new SettingsKey<int>("Test/Simple/IntValue", TestSettings.SettingsContainer, 10);
+            DoubleValue = new SettingsKey<double>("Test/Simple/DoubleValue", TestSettings.SettingsContainer, 3.14);
+            StringValue = new SettingsKey<string>("Test/Simple/StringValue", TestSettings.SettingsContainer, "Test string");
             Console.WriteLine(@"Static settings keys initialized (ValueSettingsKeys)");
         }
     }
 
     class ListSettingsKeys
     {
-        public static SettingsValueKey<List<int>> IntList;
-        public static SettingsValueKey<List<double>> DoubleList;
-        public static SettingsValueKey<List<string>> StringList;
+        public static SettingsKey<List<int>> IntList;
+        public static SettingsKey<List<double>> DoubleList;
+        public static SettingsKey<List<string>> StringList;
 
         public static void Initialize()
         {
-            IntList = new SettingsValueKey<List<int>>("Test/Lists/IntList", TestSettings.SettingsContainer, Enumerable.Empty<int>().ToList());
-            DoubleList = new SettingsValueKey<List<double>>("Test/Lists/DoubleList", TestSettings.SettingsContainer, new[] { 2.0, 6.0, 9.0 }.ToList());
-            StringList = new SettingsValueKey<List<string>>("Test/Lists/StringList", TestSettings.SettingsContainer, new[] { "String 1", "String 2", "String 3" }.ToList());
+            IntList = new SettingsKey<List<int>>("Test/Lists/IntList", TestSettings.SettingsContainer, Enumerable.Empty<int>().ToList());
+            DoubleList = new SettingsKey<List<double>>("Test/Lists/DoubleList", TestSettings.SettingsContainer, new[] { 2.0, 6.0, 9.0 }.ToList());
+            StringList = new SettingsKey<List<string>>("Test/Lists/StringList", TestSettings.SettingsContainer, new[] { "String 1", "String 2", "String 3" }.ToList());
             Console.WriteLine(@"Static settings keys initialized (ListSettingsKeys)");
         }
     }
