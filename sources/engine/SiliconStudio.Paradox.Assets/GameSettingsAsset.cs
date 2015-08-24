@@ -107,7 +107,7 @@ namespace SiliconStudio.Paradox.Assets
             public static T Get<T>(SettingsProfile profile, SettingsKey<T> key)
             {
                 T result;
-                key.TryGetValue(out result, false, profile);
+                key.TryGetValue(out result, profile);
                 return result;
             }
 
