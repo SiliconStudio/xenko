@@ -79,15 +79,6 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="world"></param>
         public void Transform(Matrix world)
         {
-            Transform(ref world);
-        }
-
-        /// <summary>
-        /// Transform this Bounding box (the world matrix will be modified).
-        /// </summary>
-        /// <param name="world"></param>
-        public void Transform(ref Matrix world)
-        {
             // http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
             // Compute transformed AABB (by world)
             var center = Center;
@@ -98,16 +89,13 @@ namespace SiliconStudio.Core.Mathematics
             // Update world matrix into absolute form
             unsafe
             {
-                fixed (void* pMatrix = &world)
+                // Perform an abs on the matrix
+                var matrixData = (float*)&world;
+                for (int j = 0; j < 16; ++j)
                 {
-                    // Perform an abs on the matrix
-                    var matrixData = (float*)pMatrix;
-                    for (int j = 0; j < 16; ++j)
-                    {
-                        //*matrixData &= 0x7FFFFFFF;
-                        *matrixData = Math.Abs(*matrixData);
-                        ++matrixData;
-                    }
+                    //*matrixData &= 0x7FFFFFFF;
+                    *matrixData = Math.Abs(*matrixData);
+                    ++matrixData;
                 }
             }
 
