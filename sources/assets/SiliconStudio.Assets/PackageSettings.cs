@@ -22,7 +22,7 @@ namespace SiliconStudio.Assets
             this.package = package;
             if (package.FullPath == null)
             {
-                profile = SettingsContainer.CreateSettingsProfile();
+                profile = SettingsContainer.CreateSettingsProfile(false);
             }
             else
             {
@@ -36,7 +36,7 @@ namespace SiliconStudio.Assets
                     e.Ignore();
                 }
                 if (profile == null)
-                    profile = SettingsContainer.CreateSettingsProfile();
+                    profile = SettingsContainer.CreateSettingsProfile(false);
             }
         }
 

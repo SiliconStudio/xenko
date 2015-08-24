@@ -88,7 +88,7 @@ namespace SiliconStudio.Core.Settings
         /// <param name="setAsCurrent">If <c>true</c>, the created profile will also be set as <see cref="CurrentProfile"/>.</param>
         /// <param name="parent">The parent profile of the settings to create. If <c>null</c>, the default profile will be used.</param>
         /// <returns>A new instance of the <see cref="SettingsProfile"/> class.</returns>
-        public SettingsProfile CreateSettingsProfile(bool setAsCurrent = false, SettingsProfile parent = null)
+        public SettingsProfile CreateSettingsProfile(bool setAsCurrent, SettingsProfile parent = null)
         {
             var profile = new SettingsProfile(this, parent ?? rootProfile);
             profileList.Add(profile);

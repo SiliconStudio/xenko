@@ -60,7 +60,7 @@ namespace SiliconStudio.Assets
         {
             assetFolders = new AssetFolderCollection();
             InheritProfiles = new List<string>();
-            Properties = SettingsContainer.CreateSettingsProfile();
+            Properties = SettingsContainer.CreateSettingsProfile(false);
             OutputGroupDirectories = new Dictionary<string, UDirectory>();
             ProjectReferences = new List<ProjectReference>();
         }
