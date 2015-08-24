@@ -68,6 +68,24 @@ namespace SiliconStudio.Paradox.Rendering
 
         protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
+            // If no camera, early exit
+            var camera = context.GetCurrentCamera();
+            if (camera == null)
+            {
+                return;
+            }
+
+            // Copy the ViewProjectionMatrix from the camera as it is not automatically picked up by the ModelComponentRenderer
+            modelRenderer.ViewProjectionMatrix = camera.ViewProjectionMatrix;
+            var sceneCameraRenderer = context.Tags.Get(SceneCameraRenderer.Current);
+            var cameraRenderMode = sceneCameraRenderer != null ? sceneCameraRenderer.Mode : null;
+
+            if (cameraRenderMode != null)
+            {
+                modelRenderer.RasterizerState = cameraRenderMode.GetDefaultRasterizerState(false);
+                modelRenderer.RasterizerStateForInvertedGeometry = cameraRenderMode.GetDefaultRasterizerState(true);
+            }                   
+
             modelRenderer.Prepare(context, opaqueList, transparentList);
         }
 

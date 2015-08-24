@@ -1,75 +1,73 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
+
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Rendering
 {
     /// <summary>
     /// Performs blend matrix skinning.
     /// </summary>
-    public static class MeshSkinningUpdater
+    public struct MeshSkinningUpdater
     {
-        [ThreadStatic]
-        private static Matrix[] staticBoneMatrices;
+        Matrix[] boneMatrices;
 
-        public static void Update(ModelViewHierarchyUpdater hierarchy, RenderModel renderModel, int slot)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MeshSkinningUpdater"/> struct.
+        /// </summary>
+        /// <param name="skinningCapacity">The skinning capacity.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">skinningCapacity;Must be >= 0</exception>
+        public MeshSkinningUpdater(int skinningCapacity)
         {
-            var boneMatrices = staticBoneMatrices;
+            if (skinningCapacity < 0) throw new ArgumentOutOfRangeException("skinningCapacity", skinningCapacity, "Must be >= 0");
 
-            var meshes = renderModel.RenderMeshesList[slot];
+            boneMatrices = new Matrix[skinningCapacity];
+        }
+
+        public void Update(ModelViewHierarchyUpdater hierarchyUpdater, RenderMesh renderMesh, out BoundingBoxExt boundingBox)
+        {
+            var mesh = renderMesh.Mesh;
+            var skinning = mesh.Skinning;
+
+            if (skinning == null)
             {
-                if (meshes == null)
-                {
-                    return;
-                }
-
-                foreach (var renderMesh in meshes)
-                {
-                    var mesh = renderMesh.Mesh;
-                    var skinning = mesh.Skinning;
-
-                    if (skinning == null)
-                    {
-                        // For unskinned meshes, use the original bounding box
-                        var boundingBoxExt = (BoundingBoxExt)mesh.BoundingBox;
-                        boundingBoxExt.Transform(renderMesh.WorldMatrix);
-                        renderMesh.BoundingBox = boundingBoxExt;
-
-                        continue;
-                    }
-
-                    var bones = skinning.Bones;
-
-                    // Make sure there is enough spaces in boneMatrices
-                    if (boneMatrices == null || bones.Length > boneMatrices.Length)
-                        staticBoneMatrices = boneMatrices = new Matrix[bones.Length];
-
-                    var bindPoseBoundingBox = new BoundingBoxExt(renderMesh.Mesh.BoundingBox);
-                    renderMesh.BoundingBox = BoundingBoxExt.Empty;
-
-                    for (int index = 0; index < bones.Length; index++)
-                    {
-                        var nodeIndex = bones[index].NodeIndex;
-
-                        // Compute bone matrix
-                        Matrix.Multiply(ref bones[index].LinkToMeshMatrix, ref hierarchy.NodeTransformations[nodeIndex].WorldMatrix, out boneMatrices[index]);
-
-                        // Calculate and extend bounding box for each bone
-                        // TODO: Move runtime bounding box into ModelViewHierarchyUpdater?
-
-                        // Fast AABB transform: http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
-                        // Compute transformed AABB (by world)
-                        var boundingBoxExt = bindPoseBoundingBox;
-                        boundingBoxExt.Transform(boneMatrices[index]);
-                        BoundingBoxExt.Merge(ref renderMesh.BoundingBox, ref boundingBoxExt, out renderMesh.BoundingBox);
-                    }
-
-                    // Upload bones
-                    renderMesh.Parameters.Set(TransformationSkinningKeys.BlendMatrixArray, boneMatrices, 0, bones.Length);
-                }
+                // For unskinned meshes, use the original bounding box
+                var boundingBoxExt = (BoundingBoxExt)mesh.BoundingBox;
+                boundingBoxExt.Transform(renderMesh.WorldMatrix);
+                boundingBox = boundingBoxExt;
+                return;
             }
+
+            var bones = skinning.Bones;
+
+            // Make sure there is enough spaces in boneMatrices
+            if (bones.Length > boneMatrices.Length)
+                boneMatrices = new Matrix[bones.Length];
+
+            var bindPoseBoundingBox = new BoundingBoxExt(renderMesh.Mesh.BoundingBox);
+            boundingBox = BoundingBoxExt.Empty;
+
+            for (int index = 0; index < bones.Length; index++)
+            {
+                var nodeIndex = bones[index].NodeIndex;
+
+                // Compute bone matrix
+                Matrix.Multiply(ref bones[index].LinkToMeshMatrix, ref hierarchyUpdater.NodeTransformations[nodeIndex].WorldMatrix, out boneMatrices[index]);
+
+                // Calculate and extend bounding box for each bone
+                // TODO: Move runtime bounding box into ModelViewHierarchyUpdater?
+
+                // Fast AABB transform: http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
+                // Compute transformed AABB (by world)
+                var boundingBoxExt = bindPoseBoundingBox;
+                boundingBoxExt.Transform(boneMatrices[index]);
+                BoundingBoxExt.Merge(ref boundingBox, ref boundingBoxExt, out boundingBox);
+            }
+
+            // Upload bones
+            renderMesh.Parameters.Set(TransformationSkinningKeys.BlendMatrixArray, boneMatrices, 0, bones.Length);
         }
     }
 }

@@ -15,7 +15,7 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 namespace SiliconStudio.Paradox.Rendering
 {
     /// <summary>
-    /// An effect mesh.
+    /// An mesh associated with an effect to be rendered.
     /// </summary>
     public class RenderMesh : DynamicEffectInstance
     {
@@ -50,7 +50,7 @@ namespace SiliconStudio.Paradox.Rendering
 
         public Matrix WorldMatrix;
 
-        public BoundingBoxExt BoundingBox;
+        public int MatrixCounter;
 
         private readonly ParameterCollection parameters;
         private readonly FastList<ParameterCollection> parameterCollections = new FastList<ParameterCollection>();
@@ -208,13 +208,11 @@ namespace SiliconStudio.Paradox.Rendering
             var materialIndex = Mesh.MaterialIndex;
             Material = RenderModel.GetMaterial(materialIndex);
             var materialInstance = RenderModel.GetMaterialInstance(materialIndex);
-            if (Material != null)
-            {
-                HasTransparency = Material.HasTransparency;
-            }
+            HasTransparency = Material != null && Material.HasTransparency;
 
-            IsShadowCaster = RenderModel.ModelComponent.IsShadowCaster;
-            IsShadowReceiver = RenderModel.ModelComponent.IsShadowReceiver;
+            var modelComponent = RenderModel.ModelComponent;
+            IsShadowCaster = modelComponent.IsShadowCaster;
+            IsShadowReceiver = modelComponent.IsShadowReceiver;
             if (materialInstance != null)
             {
                 IsShadowCaster = IsShadowCaster && materialInstance.IsShadowCaster;
@@ -235,10 +233,9 @@ namespace SiliconStudio.Paradox.Rendering
                 parameterCollections.Add(material.Parameters);
             }
 
-            var modelInstance = RenderModel.ModelComponent;
-            if (modelInstance != null && modelInstance.Parameters != null)
+            if (RenderModel.ModelComponent.Parameters != null)
             {
-                parameterCollections.Add(modelInstance.Parameters);
+                parameterCollections.Add(RenderModel.ModelComponent.Parameters);
             }
 
             // TODO: Should we add RenderMesh.Parameters before ModelComponent.Parameters to allow user overiddes at component level?
