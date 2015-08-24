@@ -112,80 +112,10 @@ namespace SiliconStudio.Core.Settings
         }
 
         /// <summary>
-        /// Gets the default value of this settings key.
+        /// Resolves the profile to use, returning the current profile if the given profile is null and checking the consistency of related <see cref="SettingsContainer"/>.
         /// </summary>
-        public abstract object DefaultValueObject { get; }
-
-        /// <summary>
-        /// Gets the value of this settings key in the given profile.
-        /// </summary>
-        /// <param name="searchInParentProfile">If true, the settings service will look in the parent profile of the given profile if the settings key is not defined into it.</param>
-        /// <param name="profile">The profile in which to look for the value. If <c>null</c>, it will look in the <see cref="SettingsContainer.CurrentProfile"/>.</param>
-        /// <param name="createInCurrentProfile">If true, the list will be created in the current profile, from the value of its parent profile.</param>
-        /// <returns>The value of this settings key.</returns>
-        /// <exception cref="KeyNotFoundException">No value can be found in the given profile matching this settings key.</exception>
-        public object GetValue(bool searchInParentProfile = true, SettingsProfile profile = null, bool createInCurrentProfile = false)
-        {
-            object value;
-            profile = ResolveProfile(profile);
-            if (profile.GetValue(Name, out value, searchInParentProfile, createInCurrentProfile))
-            {
-                return value;
-            }
-            throw new KeyNotFoundException("Settings key not found");
-        }
-
-        /// <summary>
-        /// Sets the value of this settings key in the given profile.
-        /// </summary>
-        /// <param name="value">The new value to set.</param>
-        /// <param name="profile">The profile in which to set the value. If <c>null</c>, it will look in the <see cref="SettingsContainer.CurrentProfile"/>.</param>
-        public void SetValue(object value, SettingsProfile profile = null)
-        {
-            profile = ResolveProfile(profile);
-            profile.SetValue(Name, value);
-        }
-
-        /// <summary>
-        /// Tries to gets the value of this settings key in the given profile, if it exists, and without looking into
-        /// the parent profiles.
-        /// </summary>
-        /// <param name="value">The resulting value, if found</param>
-        /// <param name="profile">The profile in which to look for the value.</param>
-        /// <returns><c>true</c> if the value was found, <c>false</c> otherwise.</returns>
-        public bool TryGetValue(out object value, SettingsProfile profile)
-        {
-            if (profile == null) throw new ArgumentNullException("profile");
-            profile = ResolveProfile(profile);
-            if (profile.GetValue(Name, out value, false, false))
-            {
-                return true;
-            }
-            value = DefaultValueObject;
-            return false;
-        }
-
-        /// <summary>
-        /// Determines whether the specified profile contains key (without checking parent profiles).
-        /// </summary>
-        /// <param name="profile">The profile.</param>
-        /// <returns></returns>
-        public bool ContainsKey(SettingsProfile profile)
-        {
-            object value;
-            return profile.GetValue(Name, out value, false, false);
-        }
-
-        /// <summary>
-        /// Determines whether the specified profile contains key (without checking parent profiles).
-        /// </summary>
-        /// <param name="profile">The profile.</param>
-        /// <returns></returns>
-        public bool Remove(SettingsProfile profile)
-        {
-            return profile.Remove(Name);
-        }
-
+        /// <param name="profile">The profile to resolve.</param>
+        /// <returns>The resolved profile.</returns>
         protected SettingsProfile ResolveProfile(SettingsProfile profile = null)
         {
             profile = profile ?? Container.CurrentProfile;
@@ -241,9 +171,6 @@ namespace SiliconStudio.Core.Settings
         /// </summary>
         public T DefaultValue { get { return DefaultObjectValueCallback != null ? (T)DefaultObjectValueCallback() : (T)DefaultObjectValue; } }
 
-        /// <inheritdoc/>
-        public override object DefaultValueObject { get { return DefaultValue; } }
-
         /// <summary>
         /// Gets or sets a function that returns an enumation of acceptable values for this <see cref="SettingsKey{T}"/>.
         /// </summary>
@@ -265,9 +192,17 @@ namespace SiliconStudio.Core.Settings
             profile = ResolveProfile(profile);
             if (profile.GetValue(Name, out value, searchInParentProfile, false))
             {
-                return (T)value;
+                try
+                {
+                    return (T)value;
+                }
+                catch (Exception e)
+                {
+                    // Return default value
+                    e.Ignore();
+                }
             }
-            throw new KeyNotFoundException("Settings key not found");
+            return DefaultValue;
         }
 
         /// <summary>
@@ -280,7 +215,15 @@ namespace SiliconStudio.Core.Settings
             var profile = ResolveProfile();
             if (profile.GetValue(Name, out value, true, false))
             {
-                return (T)value;
+                try
+                {
+                    return (T)value;
+
+                }
+                catch (Exception)
+                {
+                    return DefaultValue;
+                }
             }
             // This should never happen
             throw new KeyNotFoundException("Settings key not found");
@@ -306,35 +249,6 @@ namespace SiliconStudio.Core.Settings
         {
             var profile = ResolveProfile();
             profile.SetValue(Name, value);
-        }
-
-        /// <summary>
-        /// Tries to gets the value of this settings key in the given profile, if it exists, and without looking into
-        /// the parent profiles.
-        /// </summary>
-        /// <param name="value">The resulting value, if found</param>
-        /// <param name="profile">The profile in which to look for the value.</param>
-        /// <returns><c>true</c> if the value was found, <c>false</c> otherwise.</returns>
-        public bool TryGetValue(out T value, SettingsProfile profile)
-        {
-            if (profile == null) throw new ArgumentNullException("profile");
-            object obj;
-            profile = ResolveProfile(profile);
-            if (profile.GetValue(Name, out obj, false, false))
-            {
-                try
-                {
-                    value = (T)obj;
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    // The cast exception will fallback to the value unfound result.
-                    e.Ignore();
-                }
-            }
-            value = DefaultValue;
-            return false;
         }
 
         /// <inheritdoc/>

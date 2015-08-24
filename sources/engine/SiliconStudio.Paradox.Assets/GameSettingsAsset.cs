@@ -106,9 +106,7 @@ namespace SiliconStudio.Paradox.Assets
 
             public static T Get<T>(SettingsProfile profile, SettingsKey<T> key)
             {
-                T result;
-                key.TryGetValue(out result, profile);
-                return result;
+                return key.GetValue(profile, true);
             }
 
             public static bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
@@ -116,7 +114,7 @@ namespace SiliconStudio.Paradox.Assets
                 var packageSharedProfile = dependentPackage.Profiles.FindSharedProfile();
 
                 // Only do something if there is a default scene defined
-                if (packageSharedProfile != null && DefaultScene.ContainsKey(packageSharedProfile.Properties))
+                if (packageSharedProfile != null && packageSharedProfile.Properties.ContainsKey(DefaultScene))
                 {
                     var defaultScene = Get(packageSharedProfile.Properties, DefaultScene);
 
@@ -125,7 +123,7 @@ namespace SiliconStudio.Paradox.Assets
                     // If available, use graphics profile from Windows platform
                     foreach (var profile in dependentPackage.Profiles)
                     {
-                        if (profile.Platform == PlatformType.Windows && DefaultGraphicsProfile.ContainsKey(profile.Properties))
+                        if (profile.Platform == PlatformType.Windows && profile.Properties.ContainsKey(DefaultGraphicsProfile))
                         {
                             defaultGraphicsProfile = Get(profile.Properties, DefaultGraphicsProfile);
                         }
@@ -151,11 +149,11 @@ namespace SiliconStudio.Paradox.Assets
                     // Clean properties
                     foreach (var profile in dependentPackage.Profiles)
                     {
-                        DefaultScene.Remove(profile.Properties);
-                        BackBufferWidth.Remove(profile.Properties);
-                        BackBufferHeight.Remove(profile.Properties);
-                        DefaultGraphicsProfile.Remove(profile.Properties);
-                        DisplayOrientation.Remove(profile.Properties);
+                        profile.Properties.Remove(DefaultScene.Name);
+                        profile.Properties.Remove(BackBufferWidth.Name);
+                        profile.Properties.Remove(BackBufferHeight.Name);
+                        profile.Properties.Remove(DefaultGraphicsProfile.Name);
+                        profile.Properties.Remove(DisplayOrientation.Name);
                     }
                 }
 

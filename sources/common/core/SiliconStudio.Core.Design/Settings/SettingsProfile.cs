@@ -74,6 +74,50 @@ namespace SiliconStudio.Core.Settings
         }
 
         /// <summary>
+        /// Indicates whether this settings profile directly contains the given settings key, without
+        /// looking into its parent profile.
+        /// </summary>
+        /// <param name="key">The settings key to look for.</param>
+        /// <returns><c>True</c> if the profile contains the given settings key, <c>False</c> otherwise.</returns>
+        public bool ContainsKey(SettingsKey key)
+        {
+            if (key == null) throw new ArgumentNullException("key");
+            return ContainsKey(key.Name);
+        }
+
+        /// <summary>
+        /// Indicates whether this settings profile directly contains the a settings key with the given name, without
+        /// looking into its parent profile.
+        /// </summary>
+        /// <param name="name">The name of the settings key to look for.</param>
+        /// <returns><c>True</c> if the profile contains the given settings key, <c>False</c> otherwise.</returns>
+        public bool ContainsKey(UFile name)
+        {
+            if (name == null) throw new ArgumentNullException("name");
+            return (Settings.ContainsKey(name));
+        }
+
+        /// <summary>
+        /// Removes the given settings key.
+        /// </summary>
+        /// <param name="key">The settings key to remove.</param>
+        /// <returns><c>True</c> if the settings key was removed, <c>false</c> otherwise.</returns>
+        public bool Remove(SettingsKey key)
+        {
+            return Remove(key.Name);
+        }
+
+        /// <summary>
+        /// Removes the settings key that match the given name.
+        /// </summary>
+        /// <param name="name">The name of the settings key to remove.</param>
+        /// <returns><c>True</c> if the settings key was removed, <c>false</c> otherwise.</returns>
+        public bool Remove(UFile name)
+        {
+            return Settings.Remove(name);
+        }
+
+        /// <summary>
         /// Copies the values of this profile into another profile.
         /// </summary>
         /// <param name="profile">The profile in which to copy the values.</param>
@@ -162,16 +206,6 @@ namespace SiliconStudio.Core.Settings
             {
                 Settings[name].Value = value;
             }
-        }
-
-        /// <summary>
-        /// Removes the entry that match the given name.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns>True if value was removed, false otherwise.</returns>
-        internal bool Remove(UFile name)
-        {
-            return Settings.Remove(name);
         }
 
         /// <summary>
