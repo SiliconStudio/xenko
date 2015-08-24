@@ -29,9 +29,13 @@ namespace SiliconStudio.Paradox.Assets
 
         private readonly Dictionary<Color4, Texture> singleColorTextures = new Dictionary<Color4, Texture>();
 
-        public delegate IMaterialDescriptor FindAssetDelegate(Material material);
+        public delegate object FindAssetDelegate(object asset);
 
+        public delegate string GetAssetFriendlyNameDelegate(object asset);
+        
         public FindAssetDelegate FindAsset { get; set; }
+
+        public GetAssetFriendlyNameDelegate GetAssetFriendlyName { get; set; }
 
         public LoggerResult Log { get; set; }
 
@@ -48,8 +52,6 @@ namespace SiliconStudio.Paradox.Assets
             Parameters = new ParameterCollection();
             parameterKeyIndices = new Dictionary<ParameterKey, int>();
             declaredSamplerStates = new Dictionary<SamplerStateDescription, ParameterKey<SamplerState>>();
-            // By default return the asset
-            FindAsset = material => material.Descriptor;
         }
 
         public ParameterCollection Parameters { get; set; }

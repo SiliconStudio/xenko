@@ -4,7 +4,6 @@
 using SiliconStudio.Core.Mathematics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -59,7 +58,7 @@ namespace SiliconStudio.Paradox.Physics
         internal Simulation(PhysicsEngineFlags flags = PhysicsEngineFlags.None)
         {
             MaxSubSteps = 1;
-            FixedTimeStep = 1.0f/60.0f;
+            FixedTimeStep = 1.0f / 60.0f;
 
             collisionConfiguration = new BulletSharp.DefaultCollisionConfiguration();
             dispatcher = new BulletSharp.CollisionDispatcher(collisionConfiguration);
@@ -118,196 +117,202 @@ namespace SiliconStudio.Paradox.Physics
             BulletSharp.PersistentManifold.ContactDestroyed += PersistentManifoldContactDestroyed;
         }
 
-        private enum ContactEventType
-        {
-            LastContactEnd,
-            ContactEnd,
-            FirstContactStart,
-            ContactStart,
-            ContactChange
-        }
+        private readonly List<KeyValuePair<Collider, Collision>> firstPairsCache = new List<KeyValuePair<Collider, Collision>>();
+        private readonly List<KeyValuePair<Collider, Collision>> newPairsCache = new List<KeyValuePair<Collider, Collision>>();
+        private readonly List<KeyValuePair<Collider, Collision>> deletedPairsCache = new List<KeyValuePair<Collider, Collision>>();
+        private readonly List<KeyValuePair<Collider, Collision>> absLastPairsCache = new List<KeyValuePair<Collider, Collision>>();
 
-        private struct ContactEventData
-        {
-            public ContactEventType Type;
-            public Collider Caller;
-            public CollisionArgs Args;
-        }
+        private readonly List<KeyValuePair<Collision, ContactPoint>> newContactsCache = new List<KeyValuePair<Collision, ContactPoint>>();
+        private readonly List<KeyValuePair<Collision, ContactPoint>> updatedContactsCache = new List<KeyValuePair<Collision, ContactPoint>>();
+        private readonly List<KeyValuePair<Collision, ContactPoint>> endedContactsCache = new List<KeyValuePair<Collision, ContactPoint>>();
+
+        private readonly Dictionary<BulletSharp.CollisionObject, Collider> aliveColliders = new Dictionary<BulletSharp.CollisionObject, Collider>(); 
 
         internal void ProcessContacts()
         {
-            foreach (var contact in contactsCache)
+            foreach (var pair in firstPairsCache)
             {
-                switch (contact.Type)
+                while (pair.Key.FirstCollisionChannel.Balance < 0)
                 {
-                    case ContactEventType.LastContactEnd:
-                        contact.Caller.OnLastContactEnd(contact.Args);
-                        break;
-
-                    case ContactEventType.ContactEnd:
-                        contact.Caller.OnContactEnd(contact.Args);
-                        break;
-
-                    case ContactEventType.FirstContactStart:
-                        contact.Caller.OnFirstContactStart(contact.Args);
-                        break;
-
-                    case ContactEventType.ContactStart:
-                        contact.Caller.OnContactStart(contact.Args);
-                        break;
-
-                    case ContactEventType.ContactChange:
-                        contact.Caller.OnContactChange(contact.Args);
-                        break;
-
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                    pair.Key.FirstCollisionChannel.Send(pair.Value);
                 }
             }
-            contactsCache.Clear();
+            firstPairsCache.Clear();
+
+            foreach (var pair in newPairsCache)
+            {
+                while (pair.Key.NewPairChannel.Balance < 0)
+                {
+                    pair.Key.NewPairChannel.Send(pair.Value);
+                }
+            }
+            newPairsCache.Clear();
+
+            foreach (var pair in deletedPairsCache)
+            {
+                while (pair.Key.PairEndedChannel.Balance < 0)
+                {
+                    pair.Key.PairEndedChannel.Send(pair.Value);
+                }
+            }
+            deletedPairsCache.Clear();
+
+            foreach (var pair in absLastPairsCache)
+            {
+                while (pair.Key.AllPairsEndedChannel.Balance < 0)
+                {
+                    pair.Key.AllPairsEndedChannel.Send(pair.Value);
+                }
+            }
+            absLastPairsCache.Clear();
+
+            foreach (var contact in newContactsCache)
+            {
+                while (contact.Key.NewContactChannel.Balance < 0)
+                {
+                    contact.Key.NewContactChannel.Send(contact.Value);
+                }
+            }
+            newContactsCache.Clear();
+
+            foreach (var contact in updatedContactsCache)
+            {
+                while (contact.Key.ContactUpdateChannel.Balance < 0)
+                {
+                    contact.Key.ContactUpdateChannel.Send(contact.Value);
+                }
+            }
+            updatedContactsCache.Clear();
+
+            foreach (var contact in endedContactsCache)
+            {
+                while (contact.Key.ContactEndedChannel.Balance < 0)
+                {
+                    contact.Key.ContactEndedChannel.Send(contact.Value);
+                }
+            }
+            endedContactsCache.Clear();
         }
-
-        private readonly List<ContactEventData> contactsCache = new List<ContactEventData>();
-
-        internal static bool CacheContacts = false;
 
         private void PersistentManifoldContactDestroyed(object userPersistantData)
         {
-            var contact = (Contact)userPersistantData;
-            var args = new CollisionArgs { Contact = contact };
+            var contact = (ContactPoint)userPersistantData;
+            var pair = contact.Pair;
+            var colA = pair.ColliderA;
+            var colB = pair.ColliderB;
 
-            var colA = contact.ColliderA;
-            var colB = contact.ColliderB;
+            //pairs
 
-            colA.Contacts.Remove(contact);
-            colB.Contacts.Remove(contact);
-
-            var colAEnded = false;
-            var previousColAState = colA.Contacts.Where(x => (x.ColliderA == colA && x.ColliderB == colB) || (x.ColliderA == colB && x.ColliderB == colA));
-            if (!previousColAState.Any()) colAEnded = true;
-
-            var colBEnded = false;
-            var previousColBState = colB.Contacts.Where(x => (x.ColliderB == colB && x.ColliderA == colA) || (x.ColliderB == colA && x.ColliderA == colB));
-            if (!previousColBState.Any()) colBEnded = true;
-
-            if (CacheContacts)
+            //are we the last contact of the pair?
+            if (pair.Contacts.Count == 1)
             {
-                contactsCache.Add(new ContactEventData
-                {
-                    Type = colAEnded ? ContactEventType.LastContactEnd : ContactEventType.ContactEnd,
-                    Caller = colA,
-                    Args = args
-                });
+                //if so remove the pair
+                deletedPairsCache.Add(new KeyValuePair<Collider, Collision>(colA, pair));
+                deletedPairsCache.Add(new KeyValuePair<Collider, Collision>(colB, pair));
 
-                contactsCache.Add(new ContactEventData
-                {
-                    Type = colBEnded ? ContactEventType.LastContactEnd : ContactEventType.ContactEnd,
-                    Caller = colB,
-                    Args = args
-                });
-            }
-            else
-            {
-                if (colAEnded) colA.OnLastContactEnd(args);
-                colA.OnContactEnd(args);
+                colA.Pairs.Remove(pair);
+                colB.Pairs.Remove(pair);
 
-                if (colBEnded) colB.OnLastContactEnd(args);
-                colB.OnContactEnd(args);
+                //did we remove all the pairs?
+                if (colA.Pairs.Count == 0)
+                {
+                    absLastPairsCache.Add(new KeyValuePair<Collider, Collision>(colA, pair));
+                }
+                //did we remove all the pairs?
+                if (colB.Pairs.Count == 0)
+                {
+                    absLastPairsCache.Add(new KeyValuePair<Collider, Collision>(colB, pair));
+                }
             }
+
+            //contacts
+            pair.Contacts.Remove(contact);
+            endedContactsCache.Add(new KeyValuePair<Collision, ContactPoint>(pair, contact));
         }
 
         private void PersistentManifoldContactProcessed(BulletSharp.ManifoldPoint cp, BulletSharp.CollisionObject body0, BulletSharp.CollisionObject body1)
         {
-            var colA = (Collider)body0.UserObject;
-            var colB = (Collider)body1.UserObject;
+            var colA = aliveColliders[body0];
+            var colB = aliveColliders[body1];
 
-            if (!colA.NeedsCollisionCheck && !colB.NeedsCollisionCheck) return; //don't process at all if both the objects don't need any collision event
+            if (colA == null || colB == null || !colA.ContactsAlwaysValid && !colB.ContactsAlwaysValid) return;
 
-            if (cp.UserPersistentData == null) //New contact!
+            //Pairs management
+            Collision pair = null;
+            var newPair = true;
+            foreach (var pair1 in colA.Pairs)
             {
-                var contact = new Contact
+                if ((pair1.ColliderA != colA || pair1.ColliderB != colB) && (pair1.ColliderA != colB || pair1.ColliderB != colA)) continue;
+                pair = pair1;
+                newPair = false;
+                break;
+            }
+
+            if (pair == null)
+            {
+                pair = new Collision
                 {
                     ColliderA = colA,
                     ColliderB = colB,
+                    Contacts = new List<ContactPoint>()
+                };
+
+                colA.Pairs.Add(pair);
+                colB.Pairs.Add(pair);
+            }
+
+            //Contacts management
+            ContactPoint contact = null;
+            var newContact = true;
+            foreach (var contact1 in pair.Contacts)
+            {
+                if (contact1 != cp.UserPersistentData) continue;
+                contact = contact1;
+                newContact = false;
+                break;
+            }
+
+            if (contact == null)
+            {
+                contact = new ContactPoint
+                {
                     Distance = cp.Distance,
                     PositionOnA = new Vector3(cp.PositionWorldOnA.X, cp.PositionWorldOnA.Y, cp.PositionWorldOnA.Z),
                     PositionOnB = new Vector3(cp.PositionWorldOnB.X, cp.PositionWorldOnB.Y, cp.PositionWorldOnB.Z),
-                    Normal = new Vector3(cp.NormalWorldOnB.X, cp.NormalWorldOnB.Y, cp.NormalWorldOnB.Z)
+                    Normal = new Vector3(cp.NormalWorldOnB.X, cp.NormalWorldOnB.Y, cp.NormalWorldOnB.Z),
+                    Pair = pair
                 };
 
-                //must figure if we are a really brand new collision for correct event propagation
-                var colABegan = false;
-                var previousColAState = colA.Contacts.Where(x => (x.ColliderA == colA && x.ColliderB == colB) || (x.ColliderA == colB && x.ColliderB == colA));
-                if (!previousColAState.Any()) colABegan = true;
-
-                var colBBegan = false;
-                var previousColBState = colB.Contacts.Where(x => (x.ColliderB == colB && x.ColliderA == colA) || (x.ColliderB == colA && x.ColliderA == colB));
-                if (!previousColBState.Any()) colBBegan = true;
-
-                colA.Contacts.Add(contact);
-                colB.Contacts.Add(contact);
-
-                var args = new CollisionArgs { Contact = contact };
+                pair.Contacts.Add(contact);
 
                 cp.UserPersistentData = contact;
+            }
 
-                if (CacheContacts)
+            if (newPair)
+            {
+                //are we the first pair we detect?
+                if (colA.Pairs.Count == 1)
                 {
-                    contactsCache.Add(new ContactEventData
-                    {
-                        Type = colABegan ? ContactEventType.FirstContactStart : ContactEventType.ContactStart,
-                        Caller = colA,
-                        Args = args
-                    });
-
-                    contactsCache.Add(new ContactEventData
-                    {
-                        Type = colBBegan ? ContactEventType.FirstContactStart : ContactEventType.ContactStart,
-                        Caller = colB,
-                        Args = args
-                    });
+                    firstPairsCache.Add(new KeyValuePair<Collider, Collision>(colA, pair));
                 }
-                else
+
+                //are we the first pair we detect?
+                if (colB.Pairs.Count == 1)
                 {
-                    if (colABegan) colA.OnFirstContactStart(args);
-                    colA.OnContactStart(args);
-
-                    if (colBBegan) colB.OnFirstContactStart(args);
-                    colB.OnContactStart(args);
+                    firstPairsCache.Add(new KeyValuePair<Collider, Collision>(colB, pair));
                 }
+
+                newPairsCache.Add(new KeyValuePair<Collider, Collision>(colA, pair));
+                newPairsCache.Add(new KeyValuePair<Collider, Collision>(colB, pair));
+            }
+
+            if (newContact)
+            {
+                newContactsCache.Add(new KeyValuePair<Collision, ContactPoint>(pair, contact));
             }
             else
             {
-                var contact = (Contact)cp.UserPersistentData;
-
-                contact.Distance = cp.Distance;
-                contact.PositionOnA = new Vector3(cp.PositionWorldOnA.X, cp.PositionWorldOnA.Y, cp.PositionWorldOnA.Z);
-                contact.PositionOnB = new Vector3(cp.PositionWorldOnB.X, cp.PositionWorldOnB.Y, cp.PositionWorldOnB.Z);
-                contact.Normal = new Vector3(cp.NormalWorldOnB.X, cp.NormalWorldOnB.Y, cp.NormalWorldOnB.Z);
-
-                var args = new CollisionArgs { Contact = contact };
-
-                if (CacheContacts)
-                {
-                    contactsCache.Add(new ContactEventData
-                    {
-                        Type = ContactEventType.ContactChange,
-                        Caller = colA,
-                        Args = args
-                    });
-
-                    contactsCache.Add(new ContactEventData
-                    {
-                        Type = ContactEventType.ContactChange,
-                        Caller = colB,
-                        Args = args
-                    });
-                }
-                else
-                {
-                    colA.OnContactChange(args);
-                    colB.OnContactChange(args);
-                }
+                updatedContactsCache.Add(new KeyValuePair<Collision, ContactPoint>(pair, contact));
             }
         }
 
@@ -330,7 +335,7 @@ namespace SiliconStudio.Paradox.Physics
         /// </summary>
         /// <param name="shape">The shape.</param>
         /// <returns></returns>
-        public static Collider CreateCollider(ColliderShape shape)
+        public Collider CreateCollider(ColliderShape shape)
         {
             var collider = new Collider(shape)
             {
@@ -348,8 +353,6 @@ namespace SiliconStudio.Paradox.Physics
                 collider.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.CustomMaterialCallback;
             }
 
-            collider.InternalCollider.UserObject = collider;
-
             return collider;
         }
 
@@ -358,12 +361,12 @@ namespace SiliconStudio.Paradox.Physics
         /// </summary>
         /// <param name="collider">The collider.</param>
         /// <returns></returns>
-        public static RigidBody CreateRigidBody(ColliderShape collider)
+        public RigidBody CreateRigidBody(ColliderShape collider)
         {
             var rb = new RigidBody(collider);
 
             rb.InternalRigidBody = new BulletSharp.RigidBody(0.0f, rb.MotionState, collider.InternalShape, Vector3.Zero);
-            rb.InternalRigidBody.CollisionFlags |= BulletSharp.CollisionFlags.StaticObject; //already set if mass is 0 actually!
+            //rb.InternalRigidBody.CollisionFlags |= BulletSharp.CollisionFlags.StaticObject; //already set if mass is 0 actually!
 
             rb.InternalCollider = rb.InternalRigidBody;
 
@@ -380,8 +383,6 @@ namespace SiliconStudio.Paradox.Physics
                 rb.InternalRigidBody.AngularFactor = new Vector3(0.0f, 0.0f, 1.0f);
             }
 
-            rb.InternalRigidBody.UserObject = rb;
-
             return rb;
         }
 
@@ -391,7 +392,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <param name="collider">The collider.</param>
         /// <param name="stepHeight">Height of the step.</param>
         /// <returns></returns>
-        public static Character CreateCharacter(ColliderShape collider, float stepHeight)
+        public Character CreateCharacter(ColliderShape collider, float stepHeight)
         {
             var ch = new Character(collider)
             {
@@ -412,19 +413,7 @@ namespace SiliconStudio.Paradox.Physics
 
             ch.KinematicCharacter = new BulletSharp.KinematicCharacterController((BulletSharp.PairCachingGhostObject)ch.InternalCollider, (BulletSharp.ConvexShape)collider.InternalShape, stepHeight);
 
-            ch.InternalCollider.UserObject = ch;
-
             return ch;
-        }
-
-        /// <summary>
-        /// Adds the collider to the engine processing pipeline.
-        /// </summary>
-        /// <param name="collider">The collider.</param>
-        public void AddCollider(Collider collider)
-        {
-            collisionWorld.AddCollisionObject(collider.InternalCollider);
-            collider.Simulation = this;
         }
 
         /// <summary>
@@ -436,6 +425,9 @@ namespace SiliconStudio.Paradox.Physics
         public void AddCollider(Collider collider, CollisionFilterGroupFlags group, CollisionFilterGroupFlags mask)
         {
             collisionWorld.AddCollisionObject(collider.InternalCollider, (BulletSharp.CollisionFilterGroups)group, (BulletSharp.CollisionFilterGroups)mask);
+
+            aliveColliders.Add(collider.InternalCollider, collider);
+
             collider.Simulation = this;
         }
 
@@ -446,20 +438,10 @@ namespace SiliconStudio.Paradox.Physics
         public void RemoveCollider(Collider collider)
         {
             collisionWorld.RemoveCollisionObject(collider.InternalCollider);
+
+            aliveColliders.Remove(collider.InternalCollider);
+
             collider.Simulation = null;
-        }
-
-        /// <summary>
-        /// Adds the rigid body to the engine processing pipeline.
-        /// </summary>
-        /// <param name="rigidBody">The rigid body.</param>
-        /// <exception cref="System.Exception">Cannot perform this action when the physics engine is set to CollisionsOnly</exception>
-        public void AddRigidBody(RigidBody rigidBody)
-        {
-            if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
-
-            discreteDynamicsWorld.AddRigidBody(rigidBody.InternalRigidBody);
-            rigidBody.Simulation = this;
         }
 
         /// <summary>
@@ -474,6 +456,9 @@ namespace SiliconStudio.Paradox.Physics
             if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
             discreteDynamicsWorld.AddRigidBody(rigidBody.InternalRigidBody, (short)group, (short)mask);
+
+            aliveColliders.Add(rigidBody.InternalRigidBody, rigidBody);
+
             rigidBody.Simulation = this;
         }
 
@@ -487,24 +472,10 @@ namespace SiliconStudio.Paradox.Physics
             if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
             discreteDynamicsWorld.RemoveRigidBody(rigidBody.InternalRigidBody);
+
+            aliveColliders.Remove(rigidBody.InternalRigidBody);
+
             rigidBody.Simulation = null;
-        }
-
-        /// <summary>
-        /// Adds the character to the engine processing pipeline.
-        /// </summary>
-        /// <param name="character">The character.</param>
-        /// <exception cref="System.Exception">Cannot perform this action when the physics engine is set to CollisionsOnly</exception>
-        public void AddCharacter(Character character)
-        {
-            if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
-
-            var collider = character.InternalCollider;
-            var action = character.KinematicCharacter;
-            discreteDynamicsWorld.AddCollisionObject(collider, BulletSharp.CollisionFilterGroups.CharacterFilter);
-            discreteDynamicsWorld.AddCharacter(action);
-
-            character.Simulation = this;
         }
 
         /// <summary>
@@ -523,6 +494,8 @@ namespace SiliconStudio.Paradox.Physics
             discreteDynamicsWorld.AddCollisionObject(collider, (BulletSharp.CollisionFilterGroups)group, (BulletSharp.CollisionFilterGroups)mask);
             discreteDynamicsWorld.AddCharacter(action);
 
+            aliveColliders.Add(character.InternalCollider, character);
+
             character.Simulation = this;
         }
 
@@ -539,6 +512,8 @@ namespace SiliconStudio.Paradox.Physics
             var action = character.KinematicCharacter;
             discreteDynamicsWorld.RemoveCollisionObject(collider);
             discreteDynamicsWorld.RemoveCharacter(action);
+
+            aliveColliders.Remove(character.InternalCollider);
 
             character.Simulation = null;
         }
@@ -870,7 +845,7 @@ namespace SiliconStudio.Paradox.Physics
 
                 if (rcb.CollisionObject == null) return result;
                 result.Succeeded = true;
-                result.Collider = (Collider)rcb.CollisionObject.UserObject;
+                result.Collider = aliveColliders[rcb.CollisionObject];
                 result.Normal = rcb.HitNormalWorld;
                 result.Point = rcb.HitPointWorld;
             }
@@ -899,7 +874,7 @@ namespace SiliconStudio.Paradox.Physics
                     var singleResult = new HitResult
                     {
                         Succeeded = true,
-                        Collider = (Collider)rcb.CollisionObjects[i].UserObject,
+                        Collider = aliveColliders[rcb.CollisionObjects[i]],
                         Normal = rcb.HitNormalWorld[i],
                         Point = rcb.HitPointWorld[i]
                     };
@@ -932,7 +907,7 @@ namespace SiliconStudio.Paradox.Physics
 
                 if (rcb.HitCollisionObject == null) return result;
                 result.Succeeded = true;
-                result.Collider = (Collider)rcb.HitCollisionObject.UserObject;
+                result.Collider = aliveColliders[rcb.HitCollisionObject];
                 result.Normal = rcb.HitNormalWorld;
                 result.Point = rcb.HitPointWorld;
             }
@@ -965,7 +940,7 @@ namespace SiliconStudio.Paradox.Physics
                     var singleResult = new HitResult
                     {
                         Succeeded = true,
-                        Collider = (Collider)rcb.CollisionObjects[i].UserObject,
+                        Collider = aliveColliders[rcb.CollisionObjects[i]],
                         Normal = rcb.HitNormalWorld[i],
                         Point = rcb.HitPointWorld[i]
                     };
@@ -1003,7 +978,7 @@ namespace SiliconStudio.Paradox.Physics
         }
 
         /// <summary>
-        /// The maximum number of steps that the Simulation is allowed to take each tick. 
+        /// The maximum number of steps that the Simulation is allowed to take each tick.
         /// If the engine is running slow (large deltaTime), then you must increase the number of maxSubSteps to compensate for this, otherwise your simulation is “losing” time.
         /// It's important that frame DeltaTime is always less than MaxSubSteps*FixedTimeStep, otherwise you are losing time.
         /// </summary>

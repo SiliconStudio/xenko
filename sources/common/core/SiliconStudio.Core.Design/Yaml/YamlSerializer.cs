@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.Remoting.Messaging;
+
 using SharpYaml;
 using SharpYaml.Events;
 using SharpYaml.Serialization;
@@ -50,6 +52,23 @@ namespace SiliconStudio.Core.Yaml
         {
             var serializer = GetYamlSerializer(false);
             return serializer.Deserialize(stream, expectedType, contextSettings);
+        }
+
+        /// <summary>
+        /// Deserializes an object from the specified stream (expecting a YAML string).
+        /// </summary>
+        /// <param name="stream">A YAML string from a stream .</param>
+        /// <param name="expectedType">The expected type.</param>
+        /// <param name="contextSettings">The context settings.</param>
+        /// <param name="aliasOccurred">if set to <c>true</c> a class/field/property/enum name has been renamed during deserialization.</param>
+        /// <returns>An instance of the YAML data.</returns>
+        public static object Deserialize(Stream stream, Type expectedType, SerializerContextSettings contextSettings, out bool aliasOccurred)
+        {
+            var serializer = GetYamlSerializer(false);
+            SerializerContext context;
+            var result = serializer.Deserialize(stream, expectedType, contextSettings, out context);
+            aliasOccurred = context.HasRemapOccurred;
+            return result;
         }
 
         /// <summary>
@@ -221,67 +240,75 @@ namespace SiliconStudio.Core.Yaml
         /// </summary>
         private class AtributeRegistryFilter : AttributeRegistry
         {
-            public override List<Attribute> GetAttributes(System.Reflection.MemberInfo memberInfo, bool inherit = true)
+            public AtributeRegistryFilter()
             {
-                var attributes = base.GetAttributes(memberInfo, inherit);
-                for (int i = attributes.Count - 1; i >= 0; i--)
+                AttributeRemap = RemapToYaml;
+            }
+
+            private Attribute RemapToYaml(Attribute originalAttribute)
+            {
+                Attribute attribute = null;
+                var memberAttribute = originalAttribute as DataMemberAttribute;
+                if (memberAttribute != null)
                 {
-                    var attribute = attributes[i] as DataMemberAttribute;
-                    if (attribute != null)
+                    SerializeMemberMode mode;
+                    switch (memberAttribute.Mode)
                     {
-                        SerializeMemberMode mode;
-                        switch (attribute.Mode)
-                        {
-                            case DataMemberMode.Default:
-                            case DataMemberMode.ReadOnly: // ReadOnly is better as default or content?
-                                mode = SerializeMemberMode.Default;
-                                break;
-                            case DataMemberMode.Assign:
-                                mode = SerializeMemberMode.Assign;
-                                break;
-                            case DataMemberMode.Content:
-                                mode = SerializeMemberMode.Content;
-                                break;
-                            case DataMemberMode.Binary:
-                                mode = SerializeMemberMode.Binary;
-                                break;
-                            case DataMemberMode.Never:
-                                mode = SerializeMemberMode.Never;
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
-                        attributes[i] = new YamlMemberAttribute(attribute.Name, mode) { Order = attribute.Order };
+                        case DataMemberMode.Default:
+                        case DataMemberMode.ReadOnly: // ReadOnly is better as default or content?
+                            mode = SerializeMemberMode.Default;
+                            break;
+                        case DataMemberMode.Assign:
+                            mode = SerializeMemberMode.Assign;
+                            break;
+                        case DataMemberMode.Content:
+                            mode = SerializeMemberMode.Content;
+                            break;
+                        case DataMemberMode.Binary:
+                            mode = SerializeMemberMode.Binary;
+                            break;
+                        case DataMemberMode.Never:
+                            mode = SerializeMemberMode.Never;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
-                    else if (attributes[i] is DataMemberIgnoreAttribute)
+                    attribute = new YamlMemberAttribute(memberAttribute.Name, mode) { Order = memberAttribute.Order };
+                    //Trace.WriteLine(string.Format("Attribute remapped {0}", memberAttribute.Name));
+                }
+                else if (originalAttribute is DataMemberIgnoreAttribute)
+                {
+                    attribute = new YamlIgnoreAttribute();
+                }
+                else if (originalAttribute is DataContractAttribute)
+                {
+                    var alias = ((DataContractAttribute)originalAttribute).Alias;
+                    if (!string.IsNullOrWhiteSpace(alias))
                     {
-                        attributes[i] = new YamlIgnoreAttribute();
-                    }
-                    else if (attributes[i] is DataContractAttribute)
-                    {
-                        var alias = ((DataContractAttribute)attributes[i]).Alias;
-                        if (!string.IsNullOrWhiteSpace(alias))
-                        {
-                            attributes[i] = new YamlTagAttribute(alias);
-                        }
-                    }
-                    else if (attributes[i] is DataStyleAttribute)
-                    {
-                        switch (((DataStyleAttribute)attributes[i]).Style)
-                        {
-                            case DataStyle.Any:
-                                attributes[i] = new YamlStyleAttribute(YamlStyle.Any);
-                                break;
-                            case DataStyle.Compact:
-                                attributes[i] = new YamlStyleAttribute(YamlStyle.Flow);
-                                break;
-                            case DataStyle.Normal:
-                                attributes[i] = new YamlStyleAttribute(YamlStyle.Block);
-                                break;
-                        }
+                        attribute = new YamlTagAttribute(alias);
                     }
                 }
-                return attributes;
+                else if (originalAttribute is DataStyleAttribute)
+                {
+                    switch (((DataStyleAttribute)originalAttribute).Style)
+                    {
+                        case DataStyle.Any:
+                            attribute = new YamlStyleAttribute(YamlStyle.Any);
+                            break;
+                        case DataStyle.Compact:
+                            attribute = new YamlStyleAttribute(YamlStyle.Flow);
+                            break;
+                        case DataStyle.Normal:
+                            attribute = new YamlStyleAttribute(YamlStyle.Block);
+                            break;
+                    }
+                }
+                else if (originalAttribute is DataAliasAttribute)
+                {
+                    attribute = new YamlRemapAttribute(((DataAliasAttribute)originalAttribute).Name);
+                }
+
+                return attribute ?? originalAttribute;
             }
         }
 

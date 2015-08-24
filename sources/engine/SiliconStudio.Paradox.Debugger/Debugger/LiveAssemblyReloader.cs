@@ -73,7 +73,8 @@ namespace SiliconStudio.Paradox.Debugger.Target
                 {
                     // Get type info
                     var objectStartTag = objectStart.Tag;
-                    var scriptType = YamlSerializer.GetSerializerSettings().TagTypeRegistry.TypeFromTag(objectStartTag);
+                    bool alias;
+                    var scriptType = YamlSerializer.GetSerializerSettings().TagTypeRegistry.TypeFromTag(objectStartTag, out alias);
                     if (scriptType != null)
                     {
                         reloadedScript.NewScript = (Script)Activator.CreateInstance(scriptType);

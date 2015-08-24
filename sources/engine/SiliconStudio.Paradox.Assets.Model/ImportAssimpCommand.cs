@@ -7,6 +7,7 @@ using System.Linq;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Animations;
+using SiliconStudio.Paradox.Importer.Common;
 using SiliconStudio.Paradox.Rendering.Data;
 
 namespace SiliconStudio.Paradox.Assets.Model
@@ -31,7 +32,8 @@ namespace SiliconStudio.Paradox.Assets.Model
         {
             return new Paradox.Importer.AssimpNET.MeshConverter(commandContext.Logger)
             {
-                AllowUnsignedBlendIndices = this.AllowUnsignedBlendIndices
+                AllowUnsignedBlendIndices = this.AllowUnsignedBlendIndices,
+                ScaleImport = ScaleImport
             };
         }
 

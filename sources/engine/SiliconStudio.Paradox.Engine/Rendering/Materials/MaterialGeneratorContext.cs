@@ -32,6 +32,8 @@ namespace SiliconStudio.Paradox.Rendering.Materials
 
         private Stack<MaterialOverrides> overridesStack = new Stack<MaterialOverrides>();
 
+        private Stack<IMaterialDescriptor> materialStack = new Stack<IMaterialDescriptor>();
+
         public MaterialGeneratorContext(Material material = null)
         {
             this.material = material ?? new Material();
@@ -43,6 +45,10 @@ namespace SiliconStudio.Paradox.Rendering.Materials
             {
                 finalCallbacks[stage] = new List<MaterialGeneratorCallback>();
             }
+
+            // By default return the asset
+            FindAsset = asset => ((Material)asset).Descriptor;
+            GetAssetFriendlyName = asset => ((Material)asset).Descriptor != null ? ((Material)asset).Descriptor.MaterialId.ToString() : string.Empty;
         }
 
         public Dictionary<MaterialShaderStage, HashSet<string>> Streams
@@ -135,6 +141,43 @@ namespace SiliconStudio.Paradox.Rendering.Materials
             {
                 return currentOverrides;
             }
+        }
+
+        /// <summary>
+        /// Push a material for processing.
+        /// </summary>
+        /// <param name="materialDescriptor">The material descriptor.</param>
+        /// <param name="materialName">Friendly name of the material.</param>
+        /// <returns><c>true</c> if the material is valid and can be visited, <c>false</c> otherwise.</returns>
+        /// <exception cref="System.ArgumentNullException">materialDescriptor</exception>
+        public bool PushMaterial(IMaterialDescriptor materialDescriptor, string materialName)
+        {
+            if (materialDescriptor == null) throw new ArgumentNullException("materialDescriptor");
+            bool hasErrors = false;
+            foreach (var previousMaterial in materialStack)
+            {
+                if (ReferenceEquals(previousMaterial, materialDescriptor) || previousMaterial.MaterialId == materialDescriptor.MaterialId)
+                {
+                    Log.Error("The material [{0}] cannot be used recursively.", materialName);
+                    hasErrors = true;
+                }
+            }
+
+            if (!hasErrors)
+            {
+                materialStack.Push(materialDescriptor);
+            }
+
+            return !hasErrors;
+        }
+
+        public IMaterialDescriptor PopMaterial()
+        {
+            if (materialStack.Count == 0)
+            {
+                throw new InvalidOperationException("Cannot PopMaterial more than PushMaterial");
+            }
+            return materialStack.Pop();
         }
 
         public void PopLayer()

@@ -304,7 +304,8 @@ namespace SiliconStudio.Assets.Diff
             {
                 try
                 {
-                    var mergedAsset = (Asset)AssetSerializer.Load(outputPath);
+                    bool aliasOccurred;
+                    var mergedAsset = (Asset)AssetSerializer.Load(outputPath, null, out aliasOccurred);
 
                     if (mergedAsset != null)
                     {

@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Assets
@@ -35,10 +35,23 @@ namespace SiliconStudio.Assets
         string Description { get; }
 
         /// <summary>
-        /// Gets the supported file extensions (separated by ',' for multiple extensions) by this importer.
+        /// Gets the order of precedence between the importers, so that an importer can override another one.
+        /// </summary>
+        /// <value>The order.</value>
+        int Order { get; }
+
+        /// <summary>
+        /// Gets the supported file extensions (separated by ',' for multiple extensions) by this importer. This is used for display purpose only. The method <see cref="IsSupportingFile"/> is used for matching extensions.
         /// </summary>
         /// <returns>Returns a list of supported file extensions handled by this importer.</returns>
         string SupportedFileExtensions { get; }
+
+        /// <summary>
+        /// Determines whether this importer is supporting the specified file.
+        /// </summary>
+        /// <param name="filePath">The file path.</param>
+        /// <returns><c>true</c> if this importer is supporting the specified file; otherwise, <c>false</c>.</returns>
+        bool IsSupportingFile(string filePath);
 
         /// <summary>
         /// Gets the default parameters for this importer.
@@ -48,29 +61,10 @@ namespace SiliconStudio.Assets
         AssetImporterParameters GetDefaultParameters(bool isForReImport);
 
         /// <summary>
-        /// Gets the rank of this importer, higher is the value, higher the importer is important or commonly used. Default is <c>100</c>.
-        /// </summary>
-        /// <value>The rank.</value>
-        // TODO this could be done also at runtime dynamically based on real usage
-        int DisplayRank { get; }
-
-        /// <summary>
         /// Imports a raw assets from the specified path into the specified package.
         /// </summary>
         /// <param name="rawAssetPath">The path to a raw asset on the disk.</param>
         /// <param name="importParameters">The parameters. It is mandatory to call <see cref="GetDefaultParameters"/> and pass the parameters instance here</param>
         IEnumerable<AssetItem> Import(UFile rawAssetPath, AssetImporterParameters importParameters);
     }
-
-    public static class AssetImportExtensions
-    {
-        public static bool IsSupportingFile(this IAssetImporter importer, UFile file)
-        {
-            if (file == null) throw new ArgumentNullException("file");
-            if (file.GetFileExtension() == null) return false;
-
-            return FileUtility.GetFileExtensionsAsSet(importer.SupportedFileExtensions).Contains(file.GetFileExtension());
-        }
-    }
-
 }

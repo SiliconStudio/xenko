@@ -1,14 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Paradox.Rendering.Materials;
-using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Rendering.Materials
 {
@@ -27,7 +26,12 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         {
             Attributes = new MaterialAttributes();
             Layers = new MaterialBlendLayers();
+            // An instance id, only used to match descriptor
+            MaterialId = Guid.NewGuid();
         }
+
+        [DataMemberIgnore]
+        public Guid MaterialId { get; set; }
 
         /// <summary>
         /// Gets or sets the material attributes.

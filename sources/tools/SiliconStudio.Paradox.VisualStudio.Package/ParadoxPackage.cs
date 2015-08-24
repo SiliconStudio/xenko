@@ -68,7 +68,7 @@ namespace SiliconStudio.Paradox.VisualStudio
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
     public sealed class ParadoxPackage : Package, IOleComponent
     {
-        public const string Version = "1.155";
+        public const string Version = "1.156";
 
         private DTE2 dte2;
         private AppDomain buildMonitorDomain;
@@ -291,7 +291,7 @@ namespace SiliconStudio.Paradox.VisualStudio
                 {
                     try
                     {
-                        ParadoxCommandsProxy.GetProxy().Initialize(null);
+                        ParadoxCommandsProxy.GetProxy();
                     }
                     catch (Exception ex)
                     {

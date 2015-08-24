@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 
             // Preload these dlls
             NativeLibrary.PreloadLibrary("libfbxsdk.dll");
-            NativeLibrary.PreloadLibrary("assimp.dll");
+            NativeLibrary.PreloadLibrary("assimp-vc120-mt.dll");
         }
     }
 }

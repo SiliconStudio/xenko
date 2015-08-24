@@ -1,17 +1,18 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
-using System.ComponentModel;
-
+using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
+
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System.ComponentModel;
 
 namespace SiliconStudio.Paradox.Physics
 {
     [ContentSerializer(typeof(DataContentSerializer<CapsuleColliderShapeDesc>))]
     [DataContract("CapsuleColliderShapeDesc")]
-    [Display(50, "CapsuleColliderShape")]
-    public class CapsuleColliderShapeDesc : IColliderShapeDesc
+    [Display(50, "Capsule")]
+    public class CapsuleColliderShapeDesc : IInlineColliderShapeDesc
     {
         /// <userdoc>
         /// Select this if this shape will represent a 2D shape
@@ -26,14 +27,14 @@ namespace SiliconStudio.Paradox.Physics
         [DataMember(20)]
         [DefaultValue(0.5f)]
         public float Length = 0.5f;
-        
+
         /// <userdoc>
         /// The radius of the capsule.
         /// </userdoc>
         [DataMember(30)]
         [DefaultValue(0.25f)]
         public float Radius = 0.25f;
-        
+
         /// <userdoc>
         /// The orientation of the capsule.
         /// </userdoc>
@@ -52,5 +53,20 @@ namespace SiliconStudio.Paradox.Physics
         /// </userdoc>
         [DataMember(60)]
         public Quaternion LocalRotation = Quaternion.Identity;
+
+        public int CompareTo(object obj)
+        {
+            var other = obj as CapsuleColliderShapeDesc;
+            if (other == null) return -1;
+
+            if (other.Is2D == Is2D &&
+                Math.Abs(other.Length - Length) < float.Epsilon &&
+                Math.Abs(other.Radius - Radius) < float.Epsilon &&
+                other.Orientation == Orientation &&
+                other.LocalOffset == LocalOffset &&
+                other.LocalRotation == LocalRotation) return 0;
+
+            return 1;
+        }
     }
 }

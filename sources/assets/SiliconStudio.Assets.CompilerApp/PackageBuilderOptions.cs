@@ -16,6 +16,7 @@ namespace SiliconStudio.Assets.CompilerApp
         public bool Verbose = false;
         public bool Debug = false;
         // This should not be a list
+        public bool DisableAutoCompileProjects { get; set; }
         public string BuildProfile;
         public string ProjectConfiguration { get; set; }
         public string OutputDirectory { get; set; }

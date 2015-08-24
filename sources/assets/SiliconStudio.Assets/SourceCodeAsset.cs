@@ -23,7 +23,19 @@ namespace SiliconStudio.Assets
         [Browsable(false)]
         public string AbsoluteSourceLocation { get; set; }
 
-        public string Text { get; set; }
+        /// <summary>
+        /// Loads the underlying content located at <see cref="AbsoluteSourceLocation"/> if necessary.
+        /// </summary>
+        public virtual void Load()
+        {
+        }
+
+        /// <summary>
+        /// Saves the underlying content located at <see cref="AbsoluteSourceLocation"/> if necessary.
+        /// </summary>
+        public virtual void Save()
+        {
+        }
 
         /// <summary>
         /// Generates a unique identifier from location.

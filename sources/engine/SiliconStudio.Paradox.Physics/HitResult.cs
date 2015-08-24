@@ -7,8 +7,6 @@ namespace SiliconStudio.Paradox.Physics
 {
     public struct HitResult
     {
-        #region Constants and Fields
-
         public Collider Collider;
 
         public Vector3 Normal;
@@ -16,7 +14,5 @@ namespace SiliconStudio.Paradox.Physics
         public Vector3 Point;
 
         public bool Succeeded;
-
-        #endregion
     }
 }

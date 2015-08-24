@@ -23,7 +23,10 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         public LightPoint()
         {
             Radius = 1.0f;
-            Shadow = new LightStandardShadowMap { Importance = LightShadowImportance.Low };
+            Shadow = new LightStandardShadowMap
+            {
+                Size = LightShadowMapSize.Small
+            };
         }
 
         /// <summary>

@@ -209,7 +209,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
             }
 
             // Check that an importer was found
-            IAssetImporter importer = AssetRegistry.FindImporterByExtension(Path.GetExtension(filePathToRawAsset)).FirstOrDefault();
+            IAssetImporter importer = AssetRegistry.FindImporterForFile(Path.GetExtension(filePathToRawAsset)).FirstOrDefault();
             if (importer == null)
             {
                 throw new AssetException("Unable to find a registered importer for the specified file extension [{0}]", filePathToRawAsset);

@@ -92,7 +92,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 materialContext.AddLoadingFromSession(package);
 
                 var materialClone = (MaterialAsset)AssetCloner.Clone(AssetParameters);
-                var result = MaterialGenerator.Generate(new MaterialDescriptor() { Attributes = materialClone.Attributes, Layers = materialClone.Layers}, materialContext);
+                var result = MaterialGenerator.Generate(new MaterialDescriptor() { MaterialId = materialClone.Id, Attributes = materialClone.Attributes, Layers = materialClone.Layers}, materialContext, string.Format("{0}:{1}", materialClone.Id, assetUrl));
 
                 if (result.HasErrors)
                 {

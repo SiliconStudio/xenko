@@ -866,7 +866,7 @@ namespace SiliconStudio.Core.IO
                 if (fileName.IsValid)
                 {
                     var extensionIndex = path.LastIndexOf('.', fileName.Start);
-                    if (extensionIndex > 0)
+                    if (extensionIndex >= 0)
                     {
                         fileName.Length = extensionIndex - fileName.Start;
                         fileExtension.Start = extensionIndex;

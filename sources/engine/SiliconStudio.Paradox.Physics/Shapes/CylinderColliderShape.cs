@@ -4,13 +4,16 @@
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 using System;
-
+using SiliconStudio.Paradox.Extensions;
 using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Physics
 {
     public class CylinderColliderShape : ColliderShape
     {
+        private static MeshDraw cachedDebugPrimitive;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CylinderColliderShape"/> class.
         /// </summary>
@@ -27,15 +30,24 @@ namespace SiliconStudio.Paradox.Physics
             switch (orientation)
             {
                 case ShapeOrientation.UpX:
-                    InternalShape = new BulletSharp.CylinderShapeX(new Vector3(height/2, radius, 0));
+                    InternalShape = new BulletSharp.CylinderShapeX(new Vector3(height/2, radius, 0))
+                    {
+                        LocalScaling = Vector3.One
+                    };
                     rotation = Matrix.RotationZ((float)Math.PI / 2.0f);
                     break;
                 case ShapeOrientation.UpY:
-                    InternalShape = new BulletSharp.CylinderShape(new Vector3(radius, height/2, 0));
+                    InternalShape = new BulletSharp.CylinderShape(new Vector3(radius, height/2, 0))
+                    {
+                        LocalScaling = Vector3.One
+                    };
                     rotation = Matrix.Identity;
                     break;
                 case ShapeOrientation.UpZ:
-                    InternalShape = new BulletSharp.CylinderShapeZ(new Vector3(radius, 0, height/2));
+                    InternalShape = new BulletSharp.CylinderShapeZ(new Vector3(radius, 0, height/2))
+                    {
+                        LocalScaling = Vector3.One
+                    };
                     rotation = Matrix.RotationX((float)Math.PI / 2.0f);
                     break;
                 default:
@@ -45,9 +57,9 @@ namespace SiliconStudio.Paradox.Physics
             DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(2*radius, height, 2*radius) * 1.01f) * rotation;
         }
 
-        public override GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
+        public override MeshDraw CreateDebugPrimitive(GraphicsDevice device)
         {
-            return GeometricPrimitive.Cylinder.New(device);
+            return cachedDebugPrimitive ?? (cachedDebugPrimitive = GeometricPrimitive.Cylinder.New(device).ToMeshDraw());
         }
     }
 }

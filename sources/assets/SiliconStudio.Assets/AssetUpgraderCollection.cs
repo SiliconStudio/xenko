@@ -54,51 +54,60 @@ namespace SiliconStudio.Assets
 
         internal void RegisterUpgrader(Type upgraderType, int startMinVersion, int startMaxVersion, int targetVersion)
         {
-            if (targetVersion > currentVersion)
-                throw new ArgumentException("The upgrader has a target version higher that the current version.");
-
-            var range = new VersionRange(startMinVersion, startMaxVersion, targetVersion);
-
-            if (upgraders.Any(x => x.Key.Overlap(range)))
+            lock (upgraders)
             {
-                throw new ArgumentException("The upgrader overlaps with another upgrader.");
-            }
+                if (targetVersion > currentVersion)
+                    throw new ArgumentException("The upgrader has a target version higher that the current version.");
 
-            upgraders.Add(new VersionRange(startMinVersion, startMaxVersion, targetVersion), upgraderType);
+                var range = new VersionRange(startMinVersion, startMaxVersion, targetVersion);
+
+                if (upgraders.Any(x => x.Key.Overlap(range)))
+                {
+                    throw new ArgumentException("The upgrader overlaps with another upgrader.");
+                }
+
+                upgraders.Add(new VersionRange(startMinVersion, startMaxVersion, targetVersion), upgraderType);
+            }
         }
 
         internal void Validate(int minVersion)
         {
-            int version = minVersion;
-            foreach (var upgrader in upgraders)
+            lock (upgraders)
             {
-                if (!upgrader.Key.Contains(version))
-                    continue;
+                int version = minVersion;
+                foreach (var upgrader in upgraders)
+                {
+                    if (!upgrader.Key.Contains(version))
+                        continue;
 
-                version = upgrader.Key.Target;
-                if (version == currentVersion)
-                    break;
+                    version = upgrader.Key.Target;
+                    if (version == currentVersion)
+                        break;
+                }
+
+                if (version != currentVersion)
+                    throw new InvalidOperationException("No upgrader for asset type [{0}] allow to reach version {1}".ToFormat(AssetType.Name, currentVersion));
             }
-
-            if (version != currentVersion)
-                throw new InvalidOperationException("No upgrader for asset type [{0}] allow to reach version {1}".ToFormat(AssetType.Name, currentVersion));
         }
 
         public IAssetUpgrader GetUpgrader(int initialVersion, out int targetVersion)
         {
-            var upgrader = upgraders.FirstOrDefault(x => x.Key.Contains(initialVersion));
-            if (upgrader.Value == null)
-                throw new InvalidOperationException("No upgrader found for version {0} of asset type [{1}]".ToFormat(currentVersion, AssetType.Name));
-            targetVersion = upgrader.Key.Target;
-
-            IAssetUpgrader result;
-            if (!instances.TryGetValue(upgrader.Value, out result))
+            lock (upgraders)
             {
-                // Cache the upgrader instances
-                result = (IAssetUpgrader)Activator.CreateInstance(upgrader.Value);
-                instances.Add(upgrader.Value, result);
+                var upgrader = upgraders.FirstOrDefault(x => x.Key.Contains(initialVersion));
+                if (upgrader.Value == null)
+                    throw new InvalidOperationException("No upgrader found for version {0} of asset type [{1}]".ToFormat(currentVersion, AssetType.Name));
+                targetVersion = upgrader.Key.Target;
+
+                IAssetUpgrader result;
+                if (!instances.TryGetValue(upgrader.Value, out result))
+                {
+                    // Cache the upgrader instances
+                    result = (IAssetUpgrader)Activator.CreateInstance(upgrader.Value);
+                    instances.Add(upgrader.Value, result);
+                }
+                return result;
             }
-            return result;
         }
     }
 }

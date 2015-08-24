@@ -32,7 +32,8 @@ namespace SiliconStudio.Assets.Tests
 
             var className = fromScalar.Value.Substring(0, lastDot);
 
-            var containingClass = objectContext.SerializerContext.TypeFromTag("!" + className); // Readd initial '!'
+            bool alias;
+            var containingClass = objectContext.SerializerContext.TypeFromTag("!" + className, out alias); // Readd initial '!'
             if (containingClass == null)
             {
                 throw new YamlException(fromScalar.Start, fromScalar.End, "Unable to find class from tag [{0}]".ToFormat(className));

@@ -13,21 +13,38 @@ namespace SiliconStudio.Paradox.Rendering.Lights
     public enum LightShadowMapSize
     {
         /// <summary>
+        /// Use a xtra-small size.
+        /// </summary>
+        /// <userodc>A smaller shadow map (1/8 of the reference size)</userodc>
+        [Display("/ 8")]
+        XSmall = 0, // NOTE: Number are used to compute the size, do not change them
+
+        /// <summary>
         /// Use a small size.
         /// </summary>
-        /// <userodc>A small shadow map</userodc>
-        Small = 0, // NOTE: Number are used to compute the size, do not change them
+        /// <userodc>A small shadow map (1/4 of the reference size)</userodc>
+        [Display("/ 4")]
+        Small = 1, // NOTE: Number are used to compute the size, do not change them
 
         /// <summary>
         /// Use a medium size.
         /// </summary>
-        /// <userodc>A medium shadow map</userodc>
-        Medium = 1,
+        /// <userodc>A medium shadow map (1/2 of the reference size)</userodc>
+        [Display("/ 2")]
+        Medium = 2,
             
         /// <summary>
         /// Use a large size.
         /// </summary>
-        /// <userodc>A large shadow map</userodc>
-        Large = 2,
+        /// <userodc>A large shadow map(x 1 of the reference size)</userodc>
+        [Display("x 1")]
+        Large = 3,
+
+        /// <summary>
+        /// Use a xtra-large size.
+        /// </summary>
+        /// <userodc>A larger shadow map (x 2 of the reference size)</userodc>
+        [Display("x 2")]
+        XLarge = 4,
     }
 }

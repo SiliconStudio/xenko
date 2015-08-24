@@ -6,15 +6,16 @@ using BulletSharp;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 using System;
-
+using SiliconStudio.Paradox.Extensions;
 using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Physics
 {
     public class CapsuleColliderShape : ColliderShape
     {
-        private float capsuleLength;
-        private float capsuleRadius;
+        private readonly float capsuleLength;
+        private readonly float capsuleRadius;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CapsuleColliderShape"/> class.
@@ -37,15 +38,24 @@ namespace SiliconStudio.Paradox.Physics
             switch (orientation)
             {
                 case ShapeOrientation.UpX:
-                    shape = new CapsuleShapeZ(radius, length);
+                    shape = new CapsuleShapeZ(radius, length)
+                    {
+                        LocalScaling = Vector3.One
+                    };
                     rotation = Matrix.RotationX((float)Math.PI / 2.0f);
                     break;
                 case ShapeOrientation.UpY:
-                    shape = new CapsuleShape(radius, length);
+                    shape = new CapsuleShape(radius, length)
+                    {
+                        LocalScaling = Vector3.One
+                    };
                     rotation = Matrix.Identity;
                     break;
                 case ShapeOrientation.UpZ:
-                    shape = new CapsuleShapeX(radius, length);
+                    shape = new CapsuleShapeX(radius, length)
+                    {
+                        LocalScaling = Vector3.One
+                    };
                     rotation = Matrix.RotationZ((float)Math.PI / 2.0f);
                     break;
                 default:
@@ -57,9 +67,9 @@ namespace SiliconStudio.Paradox.Physics
             DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(1.01f)) * rotation;
         }
 
-        public override GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
+        public override MeshDraw CreateDebugPrimitive(GraphicsDevice device)
         {
-            return GeometricPrimitive.Capsule.New(device, capsuleLength, capsuleRadius);
+            return GeometricPrimitive.Capsule.New(device, capsuleLength, capsuleRadius).ToMeshDraw();
         }
     }
 }

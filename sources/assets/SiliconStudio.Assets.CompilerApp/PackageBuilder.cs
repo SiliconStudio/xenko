@@ -74,7 +74,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 // setup auto-compile when loading the session
                 var sessionLoadParameters = new PackageLoadParameters
                 {
-                    AutoCompileProjects = builderOptions.Platform != PlatformType.Windows || builderOptions.ProjectConfiguration != "Debug", // Avoid compiling if Windows|Debug
+                    AutoCompileProjects = builderOptions.Platform != PlatformType.Windows || !builderOptions.DisableAutoCompileProjects,
                     ExtraCompileProperties = builderOptions.ExtraCompileProperties,
                 };
 

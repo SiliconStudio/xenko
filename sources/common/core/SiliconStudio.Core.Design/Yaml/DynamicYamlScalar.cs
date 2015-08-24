@@ -29,7 +29,10 @@ namespace SiliconStudio.Core.Yaml
 
         public override bool TryConvert(ConvertBinder binder, out object result)
         {
-            result = Convert.ChangeType(node.Value, binder.Type);
+            result = binder.Type.IsEnum
+                ? Enum.Parse(binder.Type, node.Value)
+                : Convert.ChangeType(node.Value, binder.Type);
+
             return true;
         }
 

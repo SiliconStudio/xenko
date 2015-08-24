@@ -52,17 +52,6 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         public LightShadowMapSize Size { get; set; }
 
         /// <summary>
-        /// Gets the importance of the shadow. See remarks.
-        /// </summary>
-        /// <value>The shadow importance.</value>
-        /// <returns>System.Single.</returns>
-        /// <remarks>The higher the importance is, the higher the cost of shadow computation is costly</remarks>
-        /// <userdoc>The importance (intensity) of the shadow. The higher the importance is, the higher the cost of shadow computation is costly</userdoc>
-        [DataMember(40)]
-        public LightShadowImportance Importance { get; set; }
-
-
-        /// <summary>
         /// Gets the bias parameters.
         /// </summary>
         /// <value>The bias parameters.</value>

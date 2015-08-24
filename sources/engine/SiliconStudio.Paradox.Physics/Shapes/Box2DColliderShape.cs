@@ -2,13 +2,17 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Extensions;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Physics
 {
     public class Box2DColliderShape : ColliderShape
     {
+        private static MeshDraw cachedDebugPrimitive;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Box2DColliderShape"/> class.
         /// </summary>
@@ -23,9 +27,9 @@ namespace SiliconStudio.Paradox.Physics
             DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(size.X, size.Y, 0f) * 1.01f);
         }
 
-        public override GeometricPrimitive CreateDebugPrimitive(GraphicsDevice device)
+        public override MeshDraw CreateDebugPrimitive(GraphicsDevice device)
         {
-            return GeometricPrimitive.Cube.New(device);
+            return cachedDebugPrimitive ?? (cachedDebugPrimitive = GeometricPrimitive.Cube.New(device).ToMeshDraw());
         }
     }
 }

@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using SiliconStudio.Core;
 using SiliconStudio.Paradox.Games;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -53,7 +53,6 @@ namespace SiliconStudio.Paradox.Physics
             lock (this)
             {
                 scenes.Add(scene);
-                Simulation.CacheContacts = scenes.Count > 1;
             }
             return scene.Simulation;
         }
@@ -66,26 +65,18 @@ namespace SiliconStudio.Paradox.Physics
                 if (scene == null) return;
                 scenes.Remove(scene);
                 scene.Simulation.Dispose();
-                Simulation.CacheContacts = scenes.Count > 1;
             }
         }
 
         private void Simulate(float deltaTime)
         {
-            if (scenes.Count == 1)
-            {
-                scenes[0].Simulation.Simulate(deltaTime);
-            }
-            else if (scenes.Count > 1)
-            {
-                var simulationTasks = scenes.Select(simulation1 => Task.Run(() => simulation1.Simulation.Simulate(deltaTime))).ToArray();
-                Task.WaitAll(simulationTasks);
+            var simulationTasks = scenes.Select(simulation1 => Task.Run(() => simulation1.Simulation.Simulate(deltaTime))).ToArray();
+            Task.WaitAll(simulationTasks);
 
-                //in this case contacts are cached so we proccess after simulations are done
-                foreach (var simulation in scenes)
-                {
-                    simulation.Simulation.ProcessContacts();
-                }
+            //in this case contacts are cached so we proccess after simulations are done
+            foreach (var simulation in scenes)
+            {
+                simulation.Simulation.ProcessContacts();
             }
         }
 

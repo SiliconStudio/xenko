@@ -592,7 +592,8 @@ namespace SiliconStudio.Assets
         public static Guid GetPackageIdFromFile(string filePath)
         {
             if (filePath == null) throw new ArgumentNullException("filePath");
-            return AssetSerializer.Load<Package>(filePath).Id;
+            bool alias;
+            return AssetSerializer.Load<Package>(filePath, null, out alias).Id;
         }
 
         /// <summary>
@@ -643,9 +644,10 @@ namespace SiliconStudio.Assets
 
             try
             {
-                var package = AssetSerializer.Load<Package>(filePath, log);
+                bool aliasOccurred;
+                var package = AssetSerializer.Load<Package>(filePath, log, out aliasOccurred);
                 package.FullPath = filePath;
-                package.IsDirty = false;
+                package.IsDirty = aliasOccurred;
 
                 return package;
             }
@@ -843,12 +845,13 @@ namespace SiliconStudio.Assets
                 var assetFullPath = fileUPath.FullPath;
                 var assetContent = assetFile.AssetContent;
 
-                var asset = LoadAsset(log, assetFullPath, assetPath, fileUPath, assetContent);
+                bool aliasOccurred;
+                var asset = LoadAsset(log, assetFullPath, assetPath, fileUPath, assetContent, out aliasOccurred);
 
                 // Create asset item
-                    var assetItem = new AssetItem(assetPath, asset, this)
+                var assetItem = new AssetItem(assetPath, asset, this)
                 {
-                    IsDirty = assetContent != null,
+                    IsDirty = assetContent != null || aliasOccurred,
                     SourceFolder = sourceFolder.MakeRelative(RootDirectory)
                 };
                 // Set the modified time to the time loaded from disk
@@ -911,11 +914,11 @@ namespace SiliconStudio.Assets
             LoadAssemblyReferencesForPackage(log, loadParameters);
         }
 
-        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, UFile fileUPath, byte[] assetContent)
+        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, UFile fileUPath, byte[] assetContent, out bool assetDirty)
         {
             var asset = assetContent != null
-                ? (Asset)AssetSerializer.Load(new MemoryStream(assetContent), Path.GetExtension(assetFullPath), log)
-                : AssetSerializer.Load<Asset>(assetFullPath, log);
+                ? (Asset)AssetSerializer.Load(new MemoryStream(assetContent), Path.GetExtension(assetFullPath), log, out assetDirty)
+                : AssetSerializer.Load<Asset>(assetFullPath, log, out assetDirty);
 
             // Set location on source code asset
             var sourceCodeAsset = asset as SourceCodeAsset;
@@ -949,7 +952,7 @@ namespace SiliconStudio.Assets
                     try
                     {
                         var forwardingLogger = new ForwardingLoggerResult(log);
-                        assemblyPath = VSProjectHelper.GetOrCompileProjectAssembly(fullProjectLocation, forwardingLogger, loadParameters.AutoCompileProjects, extraProperties: loadParameters.ExtraCompileProperties, onlyErrors: true);
+                        assemblyPath = VSProjectHelper.GetOrCompileProjectAssembly(fullProjectLocation, forwardingLogger, loadParameters.AutoCompileProjects, loadParameters.BuildConfiguration, extraProperties: loadParameters.ExtraCompileProperties, onlyErrors: true);
                         if (String.IsNullOrWhiteSpace(assemblyPath))
                         {
                             log.Error("Unable to locate assembly reference for project [{0}]", fullProjectLocation);
@@ -1043,7 +1046,8 @@ namespace SiliconStudio.Assets
                             continue;
                         }
 
-                        var templateDescription = AssetSerializer.Load<TemplateDescription>(file.FullName);
+                        bool aliasOccurred;
+                        var templateDescription = AssetSerializer.Load<TemplateDescription>(file.FullName, null, out aliasOccurred);
                         templateDescription.FullPath = file.FullName;
                         Templates.Add(templateDescription);
                     }
@@ -1141,16 +1145,14 @@ namespace SiliconStudio.Assets
             // If the asset has a source but no import base, then we are going to simulate an original import
             if (assetImport.Base == null)
             {
-                var fileExtension = assetImport.Source.GetFileExtension();
-
                 var assetImportBase = (AssetImport)AssetCloner.Clone(assetImport);
                 assetImportBase.SetAsRootImport();
                 assetImportBase.SetDefaults();
 
                 // Setup default importer
-                if (!String.IsNullOrEmpty(fileExtension))
+                if (!String.IsNullOrEmpty(assetImport.Source.GetFileExtension()))
                 {
-                    var importerId = AssetRegistry.FindImporterByExtension(fileExtension).FirstOrDefault();
+                    var importerId = AssetRegistry.FindImporterForFile(assetImport.Source).FirstOrDefault();
                     if (importerId != null)
                     {
                         assetImport.ImporterId = importerId.Id;

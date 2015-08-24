@@ -159,7 +159,9 @@
     <Compile Include="AssetBase.cs" />
     <Compile Include="PackageSessionProfilingKeys.cs" />
     <Compile Include="PackageSessionResult.cs" />
+    <Compile Include="RawAsset.cs" />
     <Compile Include="Serializers\AssetItemSerializer.cs" />
+    <Compile Include="Serializers\AssetYamlSerializer.cs" />
     <Compile Include="Serializers\InvariantObjectCloneSerializer.cs" />
     <Compile Include="Serializers\YamlForwardLogger.cs" />
     <Compile Include="SolutionPlatformCollection.cs" />
@@ -168,6 +170,8 @@
     <Compile Include="Templates\TemplateScope.cs" />
     <Compile Include="Templates\TemplateGeneratorContext.cs" />
     <Compile Include="Templates\TemplateStatus.cs" />
+    <Compile Include="RawAssetCompiler.cs" />
+    <Compile Include="RawAssetImporter.cs" />
     <Compile Include="UPathAttribute.cs" />
     <Compile Include="VSProjectHelper.cs" />
     <Compile Include="RawImport.cs" />

@@ -9,14 +9,8 @@ namespace SiliconStudio.Paradox.Physics
     ///     Generic contact between colliders, Always using Vector3 as the engine allows mixed 2D/3D contacts.
     ///     Note: As class because it is shared between the 2 Colliders.. maybe struct is faster?
     /// </summary>
-    public class Contact
+    public class ContactPoint
     {
-        #region Constants and Fields
-
-        public Collider ColliderA;
-
-        public Collider ColliderB;
-
         public float Distance;
 
         public Vector3 Normal;
@@ -25,15 +19,6 @@ namespace SiliconStudio.Paradox.Physics
 
         public Vector3 PositionOnB;
 
-        #endregion
-    }
-
-    public struct CollisionArgs
-    {
-        #region Constants and Fields
-
-        public Contact Contact;
-
-        #endregion
+        public Collision Pair;
     }
 }

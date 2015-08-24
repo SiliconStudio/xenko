@@ -3,15 +3,19 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using SharpYaml.Serialization;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Rendering.Lights;
 
 using IObjectFactory = SiliconStudio.Core.Reflection.IObjectFactory;
 
@@ -24,7 +28,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetDescription(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
     [ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName)]
-    [AssetFormatVersion(8)]
+    [AssetFormatVersion(11)]
     [AssetUpgrader(0, 1, typeof(RemoveSourceUpgrader))]
     [AssetUpgrader(1, 2, typeof(RemoveBaseUpgrader))]
     [AssetUpgrader(2, 3, typeof(RemoveModelDrawOrderUpgrader))]
@@ -33,6 +37,9 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetUpgrader(5, 6, typeof(RemoveModelParametersUpgrader))]
     [AssetUpgrader(6, 7, typeof(RemoveEnabledFromIncompatibleComponent))]
     [AssetUpgrader(7, 8, typeof(SceneIsNotEntityUpgrader))]
+    [AssetUpgrader(8, 9, typeof(ColliderShapeAssetOnlyUpgrader))]
+    [AssetUpgrader(9, 10, typeof(NoBox2DUpgrader))]
+    [AssetUpgrader(10, 11, typeof(RemoveShadowImportanceUpgrated))]
     [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
@@ -223,6 +230,120 @@ namespace SiliconStudio.Paradox.Assets.Entities
 
                 // Move scene component
                 asset.Hierarchy.SceneSettings = rootEntity.Components["SceneComponent.Key"];
+            }
+        }
+
+        class ColliderShapeAssetOnlyUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Entities;
+                foreach (dynamic entity in entities)
+                {
+                    var components = entity.Components;
+                    var physComponent = components["PhysicsComponent.Key"];
+                    if (physComponent != null)
+                    {
+                        foreach (dynamic element in physComponent.Elements)
+                        {
+                            var index = element.IndexOf("Shape");
+                            if (index == -1) continue;
+
+                            dynamic shapeId = element.Shape;
+                            element.ColliderShapes = new DynamicYamlArray(new YamlSequenceNode());
+                            dynamic subnode = new YamlMappingNode { Tag = "!ColliderShapeAssetDesc" };
+                            subnode.Add("Shape", shapeId.Node.Value);
+                            element.ColliderShapes.Add(subnode);
+
+                            element.RemoveChild("Shape");
+                        }
+                    }
+                }
+            }
+        }
+
+        class NoBox2DUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Entities;
+                foreach (dynamic entity in entities)
+                {
+                    var components = entity.Components;
+                    var physComponent = components["PhysicsComponent.Key"];
+                    if (physComponent != null)
+                    {
+                        foreach (dynamic element in physComponent.Elements)
+                        {
+                            foreach (dynamic shape in element.ColliderShapes)
+                            {
+                                var tag = shape.Node.Tag;
+                                if (tag == "!Box2DColliderShapeDesc")
+                                {
+                                    shape.Node.Tag = "!BoxColliderShapeDesc";
+                                    shape.Is2D = true;
+                                    shape.Size.X = shape.Size.X;
+                                    shape.Size.Y = shape.Size.Y;
+                                    shape.Size.Z = 0.01f;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        class RemoveShadowImportanceUpgrated : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Entities;
+                foreach (dynamic entity in entities)
+                {
+                    var components = entity.Components;
+                    var lightComponent = components["LightComponent.Key"];
+                    if (lightComponent != null)
+                    {
+                        var lightType = lightComponent.Type;
+                        if (lightType != null)
+                        {
+                            var shadow = lightType.Shadow;
+                            if (shadow != null)
+                            {
+                                var size = (OldLightShadowMapSize)(shadow.Size ?? OldLightShadowMapSize.Small);
+                                var importance = (OldLightShadowImportance)(shadow.Importance ?? OldLightShadowImportance.Low);
+
+                                // Convert back the old size * importance to the new size
+                                var factor = importance == OldLightShadowImportance.High ? 2.0 : importance == OldLightShadowImportance.Medium ? 1.0 : 0.5;
+                                factor *= Math.Pow(2.0, (int)size - 2.0);
+                                var value = ((int)Math.Log(factor, 2.0)) + 3;
+
+                                var newSize = (LightShadowMapSize)Enum.ToObject(typeof(LightShadowMapSize), value);
+                                shadow.Size = newSize;
+
+                                shadow.RemoveChild("Importance");
+                            }
+                        }
+                    }
+                }
+            }
+
+            private enum OldLightShadowMapSize
+            {
+                Small,
+                Medium,
+                Large
+            }
+
+
+            private enum OldLightShadowImportance
+            {
+                Low,
+                Medium,
+                High
             }
         }
 

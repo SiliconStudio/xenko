@@ -5,6 +5,7 @@ using SharpYaml;
 using SharpYaml.Events;
 using SharpYaml.Serialization;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets.Serializers
@@ -33,6 +34,12 @@ namespace SiliconStudio.Assets.Serializers
         public override string ConvertTo(ref ObjectContext objectContext)
         {
             return objectContext.Instance.ToString();
+        }
+
+        public override void Visit(ref VisitorContext context)
+        {
+            // For a package reference, we visit its members to allow to update the paths when loading, saving
+            context.Visitor.VisitObject(context.Instance, context.Descriptor, true);
         }
     }
 }

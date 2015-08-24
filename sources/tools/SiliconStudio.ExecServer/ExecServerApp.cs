@@ -8,6 +8,7 @@ using System.Reflection;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace SiliconStudio.ExecServer
 {
@@ -23,10 +24,6 @@ namespace SiliconStudio.ExecServer
     public class ExecServerApp
     {
         private const string DisableExecServerAppDomainCaching = "DisableExecServerAppDomainCaching";
-
-        // TODO: This setting must be configured by the executable directly
-        public int MaxConcurrentAppDomainProcess = 1;
-
         private const int MaxRetryProcess = 10;
 
         /// <summary>
@@ -47,7 +44,7 @@ namespace SiliconStudio.ExecServer
             {
                 args.RemoveAt(0);
                 var executablePath = ExtractExePath(args);
-                var execServerApp = new ExecServerRemote(executablePath, false, false, 1);
+                var execServerApp = new ExecServerRemote(executablePath, false, false);
                 int result = execServerApp.Run(args.ToArray());
                 return result;
             }
@@ -79,7 +76,7 @@ namespace SiliconStudio.ExecServer
             var useAppDomainCaching = Environment.GetEnvironmentVariable(DisableExecServerAppDomainCaching) != "true";
 
             // Start WCF pipe for communication with process
-            var execServerApp = new ExecServerRemote(executablePath, true, useAppDomainCaching, MaxConcurrentAppDomainProcess);
+            var execServerApp = new ExecServerRemote(executablePath, true, useAppDomainCaching);
             var host = new ServiceHost(execServerApp);
             host.AddServiceEndpoint(typeof(IExecServerRemote), new NetNamedPipeBinding(NetNamedPipeSecurityMode.None)
             {
@@ -116,58 +113,56 @@ namespace SiliconStudio.ExecServer
                 ReceiveTimeout = TimeSpan.FromHours(1),
             };
 
-            var redirectLog = new RedirectLogger();
-            var client = new ExecServerRemoteClient(redirectLog, binding, new EndpointAddress(address));
-            try
+            bool tryToRunServerProcess = false;
+            for (int i = 0; i < MaxRetryProcess; i++)
             {
-                bool tryToRunServerProcess = false;
-                for (int i = 0; i < MaxRetryProcess; i++)
-                {
-                    //Console.WriteLine("{0}: ExecServer Try to connect", DateTime.Now);
+                var redirectLog = new RedirectLogger();
+                var client = new ExecServerRemoteClient(redirectLog, binding, new EndpointAddress(address));
+                // Console.WriteLine("{0}: ExecServer Try to connect", DateTime.Now);
 
-                    var service = client.ChannelFactory.CreateChannel();
-                    try
-                    {
-                        service.Check();
-
-                        //Console.WriteLine("{0}: ExecServer - running start", DateTime.Now);
-                        try
-                        {
-                            var result = service.Run(args.ToArray());
-                            //Console.WriteLine("{0}: ExecServer - running end", DateTime.Now);
-                            return result;
-                        }
-                        finally
-                        {
-                            CloseService(service);
-                        }
-                    }
-                    catch (EndpointNotFoundException ex)
-                    {
-                        CloseService(service);
-
-                        if (!tryToRunServerProcess)
-                        {
-                            // The server is not running, we need to run it
-                            RunServerProcess(executablePath);
-                            tryToRunServerProcess = true;
-                        }
-                    }
-
-                    // Wait for 
-                    Thread.Sleep(100);
-                }
-            }
-            finally
-            {
+                var service = client.ChannelFactory.CreateChannel();
                 try
                 {
-                    client.Close();
+                    service.Check();
+
+                    //Console.WriteLine("{0}: ExecServer - running start", DateTime.Now);
+                    try
+                    {
+                        var result = service.Run(args.ToArray());
+                        //Console.WriteLine("{0}: ExecServer - running end", DateTime.Now);
+                        return result;
+                    }
+                    finally
+                    {
+                        CloseService(service);
+                    }
                 }
-                catch (Exception ex)
+                catch (EndpointNotFoundException ex)
                 {
-                    //Console.WriteLine("Exception while closing {0}", client);
+                    CloseService(service);
+
+                    if (!tryToRunServerProcess)
+                    {
+                        // The server is not running, we need to run it
+                        RunServerProcess(executablePath);
+                        tryToRunServerProcess = true;
+                    }
                 }
+                finally
+                {
+                    try
+                    {
+                        //Console.WriteLine("Closing client");
+                        client.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        //Console.WriteLine("Exception while closing {0}", client);
+                    }
+                }
+
+                // Wait for 
+                Thread.Sleep(100);
             }
 
             Console.WriteLine("ERROR cannot run command: {0} {1}", Assembly.GetEntryAssembly().Location, string.Join(" ", args));

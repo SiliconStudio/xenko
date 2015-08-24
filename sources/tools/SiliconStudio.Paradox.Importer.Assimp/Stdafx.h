@@ -8,9 +8,12 @@
 
 #include "assimp/Importer.hpp"
 #include "assimp/Scene.h"
+#include "assimp/IOSystem.hpp"
 #pragma make_public(aiScene)
 
 #include "assimp/PostProcess.h"
+
+#include <msclr/marshal_cppstd.h>
 
 #include "UtilityFunctions.h"
 
