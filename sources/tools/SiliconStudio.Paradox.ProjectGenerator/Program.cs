@@ -321,7 +321,7 @@ namespace SiliconStudio.Paradox.ProjectGenerator
             foreach (var solutionProject in solution.Projects.ToArray())
             {
                 // Is it really a project?
-                if (!solutionProject.FullPath.EndsWith(".csproj") && !solutionProject.FullPath.EndsWith(".vcxproj"))
+                if (!solutionProject.FullPath.EndsWith(".csproj") && !solutionProject.FullPath.EndsWith(".vcxproj") && !solutionProject.FullPath.EndsWith(".shproj"))
                     continue;
 
                 // Load XML project
