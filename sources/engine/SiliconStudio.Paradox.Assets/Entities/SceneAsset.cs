@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetDescription(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
     [ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName)]
-    [AssetFormatVersion(11)]
+    [AssetFormatVersion(12)]
     [AssetUpgrader(0, 1, typeof(RemoveSourceUpgrader))]
     [AssetUpgrader(1, 2, typeof(RemoveBaseUpgrader))]
     [AssetUpgrader(2, 3, typeof(RemoveModelDrawOrderUpgrader))]
@@ -39,7 +39,8 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetUpgrader(7, 8, typeof(SceneIsNotEntityUpgrader))]
     [AssetUpgrader(8, 9, typeof(ColliderShapeAssetOnlyUpgrader))]
     [AssetUpgrader(9, 10, typeof(NoBox2DUpgrader))]
-    [AssetUpgrader(10, 11, typeof(RemoveShadowImportanceUpgrated))]
+    [AssetUpgrader(10, 11, typeof(RemoveShadowImportanceUpgrader))]
+    [AssetUpgrader(11, 12, typeof(NewElementLayoutUpgrader))]
     [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
@@ -295,7 +296,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
             }
         }
 
-        class RemoveShadowImportanceUpgrated : AssetUpgraderBase
+        class RemoveShadowImportanceUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
             {
@@ -344,6 +345,60 @@ namespace SiliconStudio.Paradox.Assets.Entities
                 Low,
                 Medium,
                 High
+            }
+        }
+
+        class NewElementLayoutUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Entities;
+                foreach (dynamic entity in entities)
+                {
+                    var components = entity.Components;
+                    var physComponent = components["PhysicsComponent.Key"];
+                    if (physComponent != null)
+                    {
+                        foreach (dynamic element in physComponent.Elements)
+                        {
+                            var type = element.Type.Node.Value;
+
+                            if (type == "PhantomCollider")
+                            {
+                                element.Node.Tag = "!TriggerElement";
+                                element.RemoveChild("StepHeight");
+                            }
+                            else if (type == "StaticCollider")
+                            {
+                                element.Node.Tag = "!StaticColliderElement";
+                                element.RemoveChild("StepHeight");
+                            }
+                            else if (type == "StaticRigidBody")
+                            {
+                                element.Node.Tag = "!StaticRigidbodyElement";
+                                element.RemoveChild("StepHeight");
+                            }
+                            else if (type == "DynamicRigidBody")
+                            {
+                                element.Node.Tag = "!DynamicRigidbodyElement";
+                                element.RemoveChild("StepHeight");
+                            }
+                            else if (type == "KinematicRigidBody")
+                            {
+                                element.Node.Tag = "!KinematicRigidbodyElement";
+                                element.RemoveChild("StepHeight");
+                            }
+                            else if (type == "CharacterController")
+                            {
+                                element.Node.Tag = "!CharacterElement";
+                                element.RemoveChild("LinkedBoneName");
+                            }
+                            
+                            element.RemoveChild("Type");
+                        }
+                    }
+                }
             }
         }
 
