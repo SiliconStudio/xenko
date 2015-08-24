@@ -127,7 +127,7 @@ namespace SiliconStudio.Core.Settings
         public virtual object GetValue(bool searchInParentProfile = true, SettingsProfile profile = null, bool createInCurrentProfile = false)
         {
             object value;
-            profile = profile ?? Container.CurrentProfile;
+            profile = ResolveProfile(profile);
             if (profile.GetValue(Name, out value, searchInParentProfile, createInCurrentProfile))
             {
                 return value;
@@ -142,7 +142,7 @@ namespace SiliconStudio.Core.Settings
         /// <param name="profile">The profile in which to set the value. If <c>null</c>, it will look in the <see cref="SettingsContainer.CurrentProfile"/>.</param>
         public void SetValue(object value, SettingsProfile profile = null)
         {
-            profile = profile ?? Container.CurrentProfile;
+            profile = ResolveProfile(profile);
             profile.SetValue(Name, value);
         }
 
@@ -155,7 +155,7 @@ namespace SiliconStudio.Core.Settings
         /// <returns><c>true</c> if the value was found, <c>false</c> otherwise.</returns>
         public bool TryGetValue(out object value, bool searchInParentProfile = true, SettingsProfile profile = null)
         {
-            profile = profile ?? Container.CurrentProfile;
+            profile = ResolveProfile(profile);
             if (profile.GetValue(Name, out value, searchInParentProfile, false))
             {
                 return true;
@@ -183,6 +183,14 @@ namespace SiliconStudio.Core.Settings
         public bool Remove(SettingsProfile profile)
         {
             return profile.Remove(Name);
+        }
+
+        protected SettingsProfile ResolveProfile(SettingsProfile profile = null)
+        {
+            profile = profile ?? Container.CurrentProfile;
+            if (profile.Container != Container)
+                throw new ArgumentException("This settings key has a different container that the given settings profile.");
+            return profile;
         }
     }
 
@@ -254,7 +262,7 @@ namespace SiliconStudio.Core.Settings
         public new T GetValue(bool searchInParentProfile = true, SettingsProfile profile = null, bool createInCurrentProfile = false)
         {
             object value;
-            profile = profile ?? Container.CurrentProfile;
+            profile = ResolveProfile(profile);
             if (profile.GetValue(Name, out value, searchInParentProfile, createInCurrentProfile))
             {
                 return (T)value;
@@ -269,7 +277,7 @@ namespace SiliconStudio.Core.Settings
         /// <param name="profile">The profile in which to set the value. If <c>null</c>, it will look in the <see cref="SettingsContainer.CurrentProfile"/>.</param>
         public void SetValue(T value, SettingsProfile profile = null)
         {
-            profile = profile ?? Container.CurrentProfile;
+            profile = ResolveProfile(profile);
             profile.SetValue(Name, value);
         }
 
@@ -283,7 +291,7 @@ namespace SiliconStudio.Core.Settings
         public bool TryGetValue(out T value, bool searchInParentProfile = true, SettingsProfile profile = null)
         {
             object obj;
-            profile = profile ?? Container.CurrentProfile;
+            profile = ResolveProfile(profile);
             if (profile.GetValue(Name, out obj, searchInParentProfile, false))
             {
                 try
