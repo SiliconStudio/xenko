@@ -57,7 +57,7 @@ namespace SiliconStudio.Assets
 
         public T GetValue<T>(SettingsKey<T> key)
         {
-            return key.GetValue(true, profile);
+            return key.GetValue(profile, true);
         }
 
         public void SetValue<T>(SettingsKey<T> key, T value)

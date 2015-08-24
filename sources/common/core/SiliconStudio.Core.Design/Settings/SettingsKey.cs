@@ -255,11 +255,11 @@ namespace SiliconStudio.Core.Settings
         /// <summary>
         /// Gets the value of this settings key in the given profile.
         /// </summary>
-        /// <param name="searchInParentProfile">If true, the settings service will look in the parent profile of the given profile if the settings key is not defined into it.</param>
         /// <param name="profile">The profile in which to look for the value. If <c>null</c>, it will look in the <see cref="SettingsContainer.CurrentProfile"/>.</param>
+        /// <param name="searchInParentProfile">If true, the settings service will look in the parent profile of the given profile if the settings key is not defined into it.</param>
         /// <returns>The value of this settings key.</returns>
         /// <exception cref="KeyNotFoundException">No value can be found in the given profile matching this settings key.</exception>
-        public T GetValue(bool searchInParentProfile, SettingsProfile profile)
+        public T GetValue(SettingsProfile profile, bool searchInParentProfile)
         {
             object value;
             profile = ResolveProfile(profile);
