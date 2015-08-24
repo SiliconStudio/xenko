@@ -94,7 +94,10 @@ namespace SiliconStudio.Core.Settings
         public bool ContainsKey(UFile name)
         {
             if (name == null) throw new ArgumentNullException("name");
-            return (Settings.ContainsKey(name));
+            lock (Settings)
+            {
+                return Settings.ContainsKey(name);
+            }
         }
 
         /// <summary>
@@ -114,7 +117,10 @@ namespace SiliconStudio.Core.Settings
         /// <returns><c>True</c> if the settings key was removed, <c>false</c> otherwise.</returns>
         public bool Remove(UFile name)
         {
-            return Settings.Remove(name);
+            lock (Settings)
+            {
+                return Settings.Remove(name);
+            }
         }
 
         /// <summary>
@@ -124,19 +130,30 @@ namespace SiliconStudio.Core.Settings
         /// <param name="overrideValues">If <c>false</c>, the values already present in the targt profile won't be overriden.</param>
         public void CopyTo(SettingsProfile profile, bool overrideValues)
         {
-            foreach (var setting in Settings)
+            lock (Settings)
             {
-                if (!overrideValues && profile.Settings.ContainsKey(setting.Key))
-                    continue;
+                lock (profile.Settings)
+                {
+                    foreach (var setting in Settings)
+                    {
+                        if (!overrideValues && profile.Settings.ContainsKey(setting.Key))
+                            continue;
 
-                profile.SetValue(setting.Key, setting.Value.Value);
+                        profile.SetValue(setting.Key, setting.Value.Value);
+                    }
+                }
             }
         }
         
         public void ValidateSettingsChanges()
         {
             var keys = Container.GetAllSettingsKeys();
-            foreach (var key in keys.Where(x => modifiedSettings.Contains(x.Name)))
+            List<SettingsKey> modified;
+            lock (modifiedSettings)
+            {
+                modified = keys.Where(x => modifiedSettings.Contains(x.Name)).ToList();
+            }
+            foreach (var key in modified)
             {
                 key.NotifyChangesValidated(this);
             }
@@ -147,12 +164,15 @@ namespace SiliconStudio.Core.Settings
         public void DiscardSettingsChanges()
         {
             IsDiscarding = true;
-            while (ActionStack.CanUndo)
+            lock (modifiedSettings)
             {
-                ActionStack.Undo();
+                while (ActionStack.CanUndo)
+                {
+                    ActionStack.Undo();
+                }
+                ActionStack.Clear();
+                modifiedSettings.Clear();
             }
-            ActionStack.Clear();
-            modifiedSettings.Clear();
             IsDiscarding = false;
         }
         
@@ -163,7 +183,10 @@ namespace SiliconStudio.Core.Settings
         internal void RegisterEntry(SettingsEntry entry)
         {
             if (entry == null) throw new ArgumentNullException("entry");
-            Settings.Add(entry.Name, entry);
+            lock (Settings)
+            {
+                Settings.Add(entry.Name, entry);
+            }
         }
 
         /// <summary>
@@ -196,15 +219,18 @@ namespace SiliconStudio.Core.Settings
         {
             if (name == null) throw new ArgumentNullException("name");
 
-            SettingsEntry entry;
-            if (!Settings.TryGetValue(name, out entry))
+            lock (Settings)
             {
-                entry = SettingsEntry.CreateFromValue(this, name, value);
-                Settings[name] = entry;
-            }
-            else
-            {
-                Settings[name].Value = value;
+                SettingsEntry entry;
+                if (!Settings.TryGetValue(name, out entry))
+                {
+                    entry = SettingsEntry.CreateFromValue(this, name, value);
+                    Settings[name] = entry;
+                }
+                else
+                {
+                    Settings[name].Value = value;
+                }
             }
         }
 
@@ -214,7 +240,10 @@ namespace SiliconStudio.Core.Settings
         /// <param name="name">The name of the entry that has changed.</param>
         internal void NotifyEntryChanged(UFile name)
         {
-            modifiedSettings.Add(name);
+            lock (modifiedSettings)
+            {
+                modifiedSettings.Add(name);
+            }
         }
 
         /// <summary>
@@ -228,16 +257,19 @@ namespace SiliconStudio.Core.Settings
         {
             if (name == null) throw new ArgumentNullException("name");
 
-            SettingsEntry entry;
-            if (Settings.TryGetValue(name, out entry))
-                return entry;
-
-            if (createInCurrentProfile)
+            lock (Settings)
             {
-                entry = parentProfile.GetEntry(name, true, false);
-                entry = SettingsEntry.CreateFromValue(this, name, entry.Value);
-                RegisterEntry(entry);
-                return entry;
+                SettingsEntry entry;
+                if (Settings.TryGetValue(name, out entry))
+                    return entry;
+
+                if (createInCurrentProfile)
+                {
+                    entry = parentProfile.GetEntry(name, true, false);
+                    entry = SettingsEntry.CreateFromValue(this, name, entry.Value);
+                    RegisterEntry(entry);
+                    return entry;
+                }
             }
 
             return parentProfile != null && searchInParent ? parentProfile.GetEntry(name, true, false) : null;

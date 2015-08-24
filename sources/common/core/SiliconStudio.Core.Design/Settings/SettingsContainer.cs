@@ -225,34 +225,40 @@ namespace SiliconStudio.Core.Settings
 
         internal void EncodeSettings(SettingsProfile profile, SettingsDictionary settingsDictionary)
         {
-            foreach (var entry in profile.Settings.Values)
+            lock (profile.Settings)
             {
-                try
+                foreach (var entry in profile.Settings.Values)
                 {
-                    // Find key
-                    SettingsKey key;
-                    settingsKeys.TryGetValue(entry.Name, out key);
-                    settingsDictionary.Add(entry.Name, entry.GetSerializableValue(key));
-                }
-                catch (Exception e)
-                {
-                    e.Ignore();
+                    try
+                    {
+                        // Find key
+                        SettingsKey key;
+                        settingsKeys.TryGetValue(entry.Name, out key);
+                        settingsDictionary.Add(entry.Name, entry.GetSerializableValue(key));
+                    }
+                    catch (Exception e)
+                    {
+                        e.Ignore();
+                    }
                 }
             }
         }
 
         internal void DecodeSettings(SettingsDictionary settingsDictionary, SettingsProfile profile)
         {
-            foreach (var settings in settingsDictionary)
+            lock (profile.Settings)
             {
-                SettingsKey key;
-                var value = settings.Value;
-                object finalValue = value;
-                if (settingsKeys.TryGetValue(settings.Key, out key))
+                foreach (var settings in settingsDictionary)
                 {
-                    finalValue = key.ConvertValue(value);
+                    SettingsKey key;
+                    var value = settings.Value;
+                    object finalValue = value;
+                    if (settingsKeys.TryGetValue(settings.Key, out key))
+                    {
+                        finalValue = key.ConvertValue(value);
+                    }
+                    profile.SetValue(settings.Key, finalValue);
                 }
-                profile.SetValue(settings.Key, finalValue);
             }
         }
 
@@ -273,11 +279,14 @@ namespace SiliconStudio.Core.Settings
         /// </summary>
         public void ClearSettings()
         {
-            CurrentProfile = rootProfile;
-            CurrentProfile.ValidateSettingsChanges();
-            profileList.Clear();
-            rootProfile.Settings.Clear();
-            settingsKeys.Clear();
+            lock (rootProfile.Settings)
+            {
+                CurrentProfile = rootProfile;
+                CurrentProfile.ValidateSettingsChanges();
+                profileList.Clear();
+                rootProfile.Settings.Clear();
+                settingsKeys.Clear();
+            }
         }
         
         internal void RegisterSettingsKey(UFile name, object defaultValue, SettingsKey settingsKey)
@@ -285,15 +294,19 @@ namespace SiliconStudio.Core.Settings
             settingsKeys.Add(name, settingsKey);
             var entry = SettingsEntry.CreateFromValue(rootProfile, name, defaultValue);
             rootProfile.RegisterEntry(entry);
+       
             // Ensure that the value is converted to the key type in each loaded profile.
             foreach (var profile in Profiles.Where(x => x != rootProfile))
             {
-                if (profile.Settings.TryGetValue(name, out entry))
+                lock (profile.Settings)
                 {
-                    var parsingEvents = entry.Value as List<ParsingEvent>;
-                    var convertedValue = parsingEvents != null ? settingsKey.ConvertValue(parsingEvents) : entry.Value;
-                    entry = SettingsEntry.CreateFromValue(profile, name, convertedValue);
-                    profile.Settings[name] = entry;
+                    if (profile.Settings.TryGetValue(name, out entry))
+                    {
+                        var parsingEvents = entry.Value as List<ParsingEvent>;
+                        var convertedValue = parsingEvents != null ? settingsKey.ConvertValue(parsingEvents) : entry.Value;
+                        entry = SettingsEntry.CreateFromValue(profile, name, convertedValue);
+                        profile.Settings[name] = entry;
+                    }
                 }
             }
         }
