@@ -274,10 +274,21 @@ namespace SiliconStudio.Core.Settings
         /// Sets the value of this settings key in the given profile.
         /// </summary>
         /// <param name="value">The new value to set.</param>
-        /// <param name="profile">The profile in which to set the value. If <c>null</c>, it will look in the <see cref="SettingsContainer.CurrentProfile"/>.</param>
-        public void SetValue(T value, SettingsProfile profile = null)
+        /// <param name="profile">The profile in which to set the value. Must be a non-null that uses the same <see cref="SettingsContainer"/> that this <see cref="SettingsKey"/>.</param>
+        public void SetValue(T value, SettingsProfile profile)
         {
+            if (profile == null) throw new ArgumentNullException("profile");
             profile = ResolveProfile(profile);
+            profile.SetValue(Name, value);
+        }
+
+        /// <summary>
+        /// Sets the value of this settings key in the current profile.
+        /// </summary>
+        /// <param name="value">The new value to set.</param>
+        public void SetValue(T value)
+        {
+            var profile = ResolveProfile();
             profile.SetValue(Name, value);
         }
 

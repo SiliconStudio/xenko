@@ -135,7 +135,7 @@ namespace SiliconStudio.Core.Design.Tests
         {
             TestSettingsWrite();
             TestSettingsList();
-            SettingsContainer.SaveSettingsProfile("TestSettingsSaveAndLoad", SettingsContainer.CurrentProfile, TempPath("TestSettingsSaveAndLoad.txt"));
+            SettingsContainer.SaveSettingsProfile(SettingsContainer.CurrentProfile, TempPath("TestSettingsSaveAndLoad.txt"));
             SettingsContainer.LoadSettingsProfile(TempPath("TestSettingsSaveAndLoad.txt"), true);
 
             Assert.AreEqual(30, ValueSettingsKeys.IntValue.GetValue());

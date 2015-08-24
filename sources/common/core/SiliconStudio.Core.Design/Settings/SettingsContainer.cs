@@ -194,11 +194,10 @@ namespace SiliconStudio.Core.Settings
         /// <summary>
         /// Saves the given settings profile to a file at the given path.
         /// </summary>
-        /// <param name="name">The name of the profile. Can be null or empty.</param>
         /// <param name="profile">The profile to save.</param>
         /// <param name="filePath">The path of the file.</param>
         /// <returns><c>true</c> if the file was correctly saved, <c>false</c> otherwise.</returns>
-        public bool SaveSettingsProfile(string name, SettingsProfile profile, UFile filePath)
+        public bool SaveSettingsProfile(SettingsProfile profile, UFile filePath)
         {
             if (profile == null) throw new ArgumentNullException("profile");
             try

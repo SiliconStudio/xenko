@@ -46,7 +46,7 @@ namespace SiliconStudio.Assets
                 return false;
 
             var path = Path.Combine(package.FullPath.GetFullDirectory(), package.FullPath.GetFileName() + SettingsExtension);
-            return SettingsContainer.SaveSettingsProfile("PackageSettings", profile, path);
+            return SettingsContainer.SaveSettingsProfile(profile, path);
         }
 
         public SettingsProfile Profile { get { return profile; } }
