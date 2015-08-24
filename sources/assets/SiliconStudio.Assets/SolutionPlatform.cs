@@ -23,7 +23,7 @@ namespace SiliconStudio.Assets
         {
             PlatformsPart = new SolutionPlatformPartCollection();
             DefineConstants = new List<string>();
-            Properties = new SettingsCollection(PackageProfile.SettingsGroup);
+            Properties = new SettingsCollection(PackageProfile.SettingsContainer);
         }
 
         /// <summary>

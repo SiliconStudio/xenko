@@ -92,19 +92,19 @@ namespace SiliconStudio.Paradox.Assets
 
         internal class UpgraderVersion130
         {
-            public static SettingsValueKey<DisplayOrientation> DisplayOrientation = new SettingsValueKey<DisplayOrientation>("Paradox.DisplayOrientation", PackageProfile.SettingsGroup);
+            public static SettingsValueKey<DisplayOrientation> DisplayOrientation = new SettingsValueKey<DisplayOrientation>("Paradox.DisplayOrientation", PackageProfile.SettingsContainer);
 
-            public static SettingsValueKey<GraphicsPlatform> GraphicsPlatform = new SettingsValueKey<GraphicsPlatform>("Paradox.GraphicsPlatform", PackageProfile.SettingsGroup);
+            public static SettingsValueKey<GraphicsPlatform> GraphicsPlatform = new SettingsValueKey<GraphicsPlatform>("Paradox.GraphicsPlatform", PackageProfile.SettingsContainer);
 
-            public static SettingsValueKey<TextureQuality> TextureQuality = new SettingsValueKey<TextureQuality>("Paradox.TextureQuality", PackageProfile.SettingsGroup);
+            public static SettingsValueKey<TextureQuality> TextureQuality = new SettingsValueKey<TextureQuality>("Paradox.TextureQuality", PackageProfile.SettingsContainer);
 
-            public static readonly SettingsValueKey<AssetReference<SceneAsset>> DefaultScene = new SettingsValueKey<AssetReference<SceneAsset>>("GameSettingsAsset.DefaultScene", PackageProfile.SettingsGroup);
+            public static readonly SettingsValueKey<AssetReference<SceneAsset>> DefaultScene = new SettingsValueKey<AssetReference<SceneAsset>>("GameSettingsAsset.DefaultScene", PackageProfile.SettingsContainer);
 
-            public static readonly SettingsValueKey<int> BackBufferWidth = new SettingsValueKey<int>("GameSettingsAsset.BackBufferWidth", PackageProfile.SettingsGroup, 1280);
+            public static readonly SettingsValueKey<int> BackBufferWidth = new SettingsValueKey<int>("GameSettingsAsset.BackBufferWidth", PackageProfile.SettingsContainer, 1280);
 
-            public static readonly SettingsValueKey<int> BackBufferHeight = new SettingsValueKey<int>("GameSettingsAsset.BackBufferHeight", PackageProfile.SettingsGroup, 720);
+            public static readonly SettingsValueKey<int> BackBufferHeight = new SettingsValueKey<int>("GameSettingsAsset.BackBufferHeight", PackageProfile.SettingsContainer, 720);
 
-            public static readonly SettingsValueKey<GraphicsProfile> DefaultGraphicsProfile = new SettingsValueKey<GraphicsProfile>("GameSettingsAsset.DefaultGraphicsProfile", PackageProfile.SettingsGroup, GraphicsProfile.Level_10_0);
+            public static readonly SettingsValueKey<GraphicsProfile> DefaultGraphicsProfile = new SettingsValueKey<GraphicsProfile>("GameSettingsAsset.DefaultGraphicsProfile", PackageProfile.SettingsContainer, GraphicsProfile.Level_10_0);
             
             public static bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
             {

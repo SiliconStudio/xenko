@@ -13,7 +13,12 @@ using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Core.Settings
 {
-    public class SettingsGroup
+    /// <summary>
+    /// A container object that contains a collection of <see cref="SettingsKey"/>. Each settings key can store a corresponding value into a <see cref="SettingsProfile"/>.
+    /// When a <see cref="SettingsContainer"/> is created, it will contain a default root <see cref="SettingsProfile"/>. This profile has no parent, and every profile created
+    /// or loaded afterward will have the default profile as parent, unless another non-null parent is specified.
+    /// </summary>
+    public class SettingsContainer
     {
         /// <summary>
         /// A dictionary containing every existing <see cref="SettingsKey"/>.
@@ -23,24 +28,35 @@ namespace SiliconStudio.Core.Settings
         /// <summary>
         /// A <see cref="SettingsProfile"/> that contains the default value of all registered <see cref="SettingsKey"/>.
         /// </summary>
-        private readonly SettingsProfile defaultProfile;
+        private readonly SettingsProfile rootProfile;
 
+        /// <summary>
+        /// A list containing every <see cref="SettingsProfile"/> registered in the <see cref="SettingsContainer"/>.
+        /// </summary>
         private readonly List<SettingsProfile> profileList = new List<SettingsProfile>();
 
+        /// <summary>
+        /// The settings profile that is currently active.
+        /// </summary>
         private SettingsProfile currentProfile;
 
-        public SettingsGroup()
+        public SettingsContainer()
         {
-            defaultProfile = new SettingsProfile(this, null);
-            profileList.Add(defaultProfile);
-            currentProfile = defaultProfile;
+            rootProfile = new SettingsProfile(this, null);
+            profileList.Add(rootProfile);
+            currentProfile = rootProfile;
             Logger = new LoggerResult();
         }
 
         /// <summary>
-        /// Gets the logger associated to the <see cref="SettingsGroup"/>.
+        /// Gets the logger associated to the <see cref="SettingsContainer"/>.
         /// </summary>
         public LoggerResult Logger { get; private set; }
+
+        /// <summary>
+        /// Gets the root profile of this settings container.
+        /// </summary>
+        public SettingsProfile RootProfile { get { return rootProfile; } }
 
         /// <summary>
         /// Gets or sets the <see cref="SettingsProfile"/> that is currently active.
@@ -70,11 +86,11 @@ namespace SiliconStudio.Core.Settings
         /// Creates a new settings profile.
         /// </summary>
         /// <param name="setAsCurrent">If <c>true</c>, the created profile will also be set as <see cref="CurrentProfile"/>.</param>
-        /// <param name="parent">The parent profile of the settings to create. If <c>null</c>, a default profile will be used.</param>
+        /// <param name="parent">The parent profile of the settings to create. If <c>null</c>, the default profile will be used.</param>
         /// <returns>A new instance of the <see cref="SettingsProfile"/> class.</returns>
         public SettingsProfile CreateSettingsProfile(bool setAsCurrent, SettingsProfile parent = null)
         {
-            var profile = new SettingsProfile(this, parent ?? defaultProfile);
+            var profile = new SettingsProfile(this, parent ?? rootProfile);
             profileList.Add(profile);
             if (setAsCurrent)
                 CurrentProfile = profile;
@@ -107,7 +123,7 @@ namespace SiliconStudio.Core.Settings
                 {
                     settingsFile = (SettingsFile)YamlSerializer.Deserialize(stream);
                 }
-                profile = new SettingsProfile(this, parent ?? defaultProfile) { FilePath = filePath };
+                profile = new SettingsProfile(this, parent ?? rootProfile) { FilePath = filePath };
 
                 DecodeSettings(settingsFile.Settings, profile);
             }
@@ -173,7 +189,7 @@ namespace SiliconStudio.Core.Settings
         /// <param name="profile">The profile to unload.</param>
         public void UnloadSettingsProfile(SettingsProfile profile)
         {
-            if (profile == defaultProfile)
+            if (profile == rootProfile)
                 throw new ArgumentException("The default profile cannot be unloaded");
             if (profile == CurrentProfile)
                 throw new InvalidOperationException("Unable to unload the current profile.");
@@ -225,8 +241,9 @@ namespace SiliconStudio.Core.Settings
                     settingsKeys.TryGetValue(entry.Name, out key);
                     settingsDictionary.Add(entry.Name, entry.GetSerializableValue(key));
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    e.Ignore();
                 }
             }
         }
@@ -263,20 +280,20 @@ namespace SiliconStudio.Core.Settings
         /// </summary>
         public void ClearSettings()
         {
-            CurrentProfile = defaultProfile;
+            CurrentProfile = rootProfile;
             CurrentProfile.ValidateSettingsChanges();
             profileList.Clear();
-            defaultProfile.Settings.Clear();
+            rootProfile.Settings.Clear();
             settingsKeys.Clear();
         }
         
         internal void RegisterSettingsKey(UFile name, object defaultValue, SettingsKey settingsKey)
         {
             settingsKeys.Add(name, settingsKey);
-            var entry = SettingsEntry.CreateFromValue(defaultProfile, name, defaultValue);
-            defaultProfile.RegisterEntry(entry);
+            var entry = SettingsEntry.CreateFromValue(rootProfile, name, defaultValue);
+            rootProfile.RegisterEntry(entry);
             // Ensure that the value is converted to the key type in each loaded profile.
-            foreach (var profile in Profiles.Where(x => x != defaultProfile))
+            foreach (var profile in Profiles.Where(x => x != rootProfile))
             {
                 if (profile.Settings.TryGetValue(name, out entry))
                 {

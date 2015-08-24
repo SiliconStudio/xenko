@@ -102,7 +102,7 @@
     <Compile Include="Settings\SettingsFileLoadedEventArgs.cs" />
     <Compile Include="Settings\SettingsKey.cs" />
     <Compile Include="Settings\SettingsProfile.cs" />
-    <Compile Include="Settings\SettingsGroup.cs" />
+    <Compile Include="Settings\SettingsContainer.cs" />
     <Compile Include="Settings\SettingsValueKey.cs" />
     <Compile Include="Settings\Utils.cs" />
     <Compile Include="StringSpan.cs" />

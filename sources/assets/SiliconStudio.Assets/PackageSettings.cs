@@ -14,7 +14,7 @@ namespace SiliconStudio.Assets
         private readonly Package package;
         private readonly SettingsProfile profile;
 
-        public static SettingsGroup SettingsGroup = new SettingsGroup();
+        public static SettingsContainer SettingsContainer = new SettingsContainer();
 
         internal PackageSettings(Package package)
         {
@@ -22,21 +22,21 @@ namespace SiliconStudio.Assets
             this.package = package;
             if (package.FullPath == null)
             {
-                profile = SettingsGroup.CreateSettingsProfile(false);
+                profile = SettingsContainer.CreateSettingsProfile(false);
             }
             else
             {
                 var path = Path.Combine(package.FullPath.GetFullDirectory(), package.FullPath.GetFileName() + SettingsExtension);
                 try
                 {
-                    profile = SettingsGroup.LoadSettingsProfile(path, false);
+                    profile = SettingsContainer.LoadSettingsProfile(path, false);
                 }
                 catch (Exception e)
                 {
                     e.Ignore();
                 }
                 if (profile == null)
-                    profile = SettingsGroup.CreateSettingsProfile(false);
+                    profile = SettingsContainer.CreateSettingsProfile(false);
             }
         }
 
@@ -46,7 +46,7 @@ namespace SiliconStudio.Assets
                 return false;
 
             var path = Path.Combine(package.FullPath.GetFullDirectory(), package.FullPath.GetFileName() + SettingsExtension);
-            return SettingsGroup.SaveSettingsProfile(profile, path);
+            return SettingsContainer.SaveSettingsProfile(profile, path);
         }
 
         public SettingsProfile Profile { get { return profile; } }

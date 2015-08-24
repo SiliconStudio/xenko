@@ -26,7 +26,7 @@ namespace SiliconStudio.Core.Settings
 
             if (objectContext.SerializerContext.IsSerializing)
             {
-                settingsCollection.Profile.Group.EncodeSettings(settingsCollection.Profile, settingsDictionary);
+                settingsCollection.Profile.Container.EncodeSettings(settingsCollection.Profile, settingsDictionary);
             }
 
             objectContext.Instance = settingsDictionary;
@@ -41,7 +41,7 @@ namespace SiliconStudio.Core.Settings
                 var settingsDictionary = (SettingsDictionary)objectContext.Instance;
                 var settingsCollection = (SettingsCollection)settingsDictionary.Tags;
 
-                settingsCollection.Profile.Group.DecodeSettings(settingsDictionary, settingsCollection.Profile);
+                settingsCollection.Profile.Container.DecodeSettings(settingsDictionary, settingsCollection.Profile);
 
                 objectContext.Instance = settingsCollection;
             }

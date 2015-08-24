@@ -11,11 +11,11 @@ namespace SiliconStudio.Paradox.Assets
     {
         public static class Effect
         {
-            public static SettingsValueKey<EffectCompilationMode> EffectCompilation = new SettingsValueKey<EffectCompilationMode>("Package/Game/Effect/EffectCompilation", PackageSettings.SettingsGroup, EffectCompilationMode.LocalOrRemote)
+            public static SettingsValueKey<EffectCompilationMode> EffectCompilation = new SettingsValueKey<EffectCompilationMode>("Package/Game/Effect/EffectCompilation", PackageSettings.SettingsContainer, EffectCompilationMode.LocalOrRemote)
             {
                 DisplayName = "Effect Compiler"
             };
-            public static SettingsValueKey<bool> RecordUsedEffects = new SettingsValueKey<bool>("Package/Game/Effect/RecordUsedEffects", PackageSettings.SettingsGroup, true)
+            public static SettingsValueKey<bool> RecordUsedEffects = new SettingsValueKey<bool>("Package/Game/Effect/RecordUsedEffects", PackageSettings.SettingsContainer, true)
             {
                 DisplayName = "Record used effects"
             };

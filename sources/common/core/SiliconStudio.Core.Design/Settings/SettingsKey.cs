@@ -27,30 +27,30 @@ namespace SiliconStudio.Core.Settings
         /// Initializes a new instance of the <see cref="SettingsKey"/> class.
         /// </summary>
         /// <param name="name">The name of this settings key. Must be unique amongst the application.</param>
-        /// <param name="group">The <see cref="SettingsGroup"/> containing this <see cref="SettingsKey"/>.</param>
+        /// <param name="container">The <see cref="SettingsContainer"/> containing this <see cref="SettingsKey"/>.</param>
         /// <param name="defaultValue">The default value associated to this settings key.</param>
-        protected SettingsKey(UFile name, SettingsGroup group, object defaultValue)
+        protected SettingsKey(UFile name, SettingsContainer container, object defaultValue)
         {
             Name = name;
             DisplayName = name;
             DefaultObjectValue = defaultValue;
-            Group = group;
-            Group.RegisterSettingsKey(name, defaultValue, this);
+            Container = container;
+            Container.RegisterSettingsKey(name, defaultValue, this);
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsKey"/> class.
         /// </summary>
         /// <param name="name">The name of this settings key. Must be unique amongst the application.</param>
-        /// <param name="group">The <see cref="SettingsGroup"/> containing this <see cref="SettingsKey"/>.</param>
+        /// <param name="container">The <see cref="SettingsContainer"/> containing this <see cref="SettingsKey"/>.</param>
         /// <param name="defaultValueCallback">A function that returns the default value associated to this settings key.</param>
-        protected SettingsKey(UFile name, SettingsGroup group, Func<object> defaultValueCallback)
+        protected SettingsKey(UFile name, SettingsContainer container, Func<object> defaultValueCallback)
         {
             Name = name;
             DisplayName = name;
             DefaultObjectValueCallback = defaultValueCallback;
-            Group = group;
-            Group.RegisterSettingsKey(name, defaultValueCallback(), this);
+            Container = container;
+            Container.RegisterSettingsKey(name, defaultValueCallback(), this);
         }
 
         /// <summary>
@@ -64,9 +64,9 @@ namespace SiliconStudio.Core.Settings
         public abstract Type Type { get; }
 
         /// <summary>
-        /// Gets the <see cref="SettingsGroup"/> containing this <see cref="SettingsKey"/>.
+        /// Gets the <see cref="SettingsContainer"/> containing this <see cref="SettingsKey"/>.
         /// </summary>
-        public SettingsGroup Group { get; private set; }
+        public SettingsContainer Container { get; private set; }
 
         /// <summary>
         /// Gets or sets the display name of the <see cref="SettingsKey"/>.
@@ -117,14 +117,14 @@ namespace SiliconStudio.Core.Settings
         /// Gets the value of this settings key in the given profile.
         /// </summary>
         /// <param name="searchInParentProfile">If true, the settings service will look in the parent profile of the given profile if the settings key is not defined into it.</param>
-        /// <param name="profile">The profile in which to look for the value. If <c>null</c>, it will look in the <see cref="SettingsGroup.CurrentProfile"/>.</param>
+        /// <param name="profile">The profile in which to look for the value. If <c>null</c>, it will look in the <see cref="SettingsContainer.CurrentProfile"/>.</param>
         /// <param name="createInCurrentProfile">If true, the list will be created in the current profile, from the value of its parent profile.</param>
         /// <returns>The value of this settings key.</returns>
         /// <exception cref="KeyNotFoundException">No value can be found in the given profile matching this settings key.</exception>
         public virtual object GetValue(bool searchInParentProfile = true, SettingsProfile profile = null, bool createInCurrentProfile = false)
         {
             object value;
-            profile = profile ?? Group.CurrentProfile;
+            profile = profile ?? Container.CurrentProfile;
             if (profile.GetValue(Name, out value, searchInParentProfile, createInCurrentProfile))
             {
                 return value;
@@ -136,10 +136,10 @@ namespace SiliconStudio.Core.Settings
         /// Sets the value of this settings key in the given profile.
         /// </summary>
         /// <param name="value">The new value to set.</param>
-        /// <param name="profile">The profile in which to set the value. If <c>null</c>, it will look in the <see cref="SettingsGroup.CurrentProfile"/>.</param>
+        /// <param name="profile">The profile in which to set the value. If <c>null</c>, it will look in the <see cref="SettingsContainer.CurrentProfile"/>.</param>
         public void SetValue(object value, SettingsProfile profile = null)
         {
-            profile = profile ?? Group.CurrentProfile;
+            profile = profile ?? Container.CurrentProfile;
             profile.SetValue(Name, value);
         }
 
@@ -148,11 +148,11 @@ namespace SiliconStudio.Core.Settings
         /// </summary>
         /// <param name="value">The resulting value, if found</param>
         /// <param name="searchInParentProfile">If true, the settings service will look in the parent profile of the given profile if the settings key is not defined into it.</param>
-        /// <param name="profile">The profile in which to look for the value. If <c>null</c>, it will look in the <see cref="SettingsGroup.CurrentProfile"/>.</param>
+        /// <param name="profile">The profile in which to look for the value. If <c>null</c>, it will look in the <see cref="SettingsContainer.CurrentProfile"/>.</param>
         /// <returns><c>true</c> if the value was found, <c>false</c> otherwise.</returns>
         public bool TryGetValue(out object value, bool searchInParentProfile = true, SettingsProfile profile = null)
         {
-            profile = profile ?? Group.CurrentProfile;
+            profile = profile ?? Container.CurrentProfile;
             if (profile.GetValue(Name, out value, searchInParentProfile, false))
             {
                 return true;

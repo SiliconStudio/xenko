@@ -16,7 +16,7 @@ namespace SiliconStudio.Assets.Compiler
         public CompilerContext()
         {
             Properties = new PropertyCollection();
-            PackageProperties = new SettingsCollection(PackageProfile.SettingsGroup);
+            PackageProperties = new SettingsCollection(PackageProfile.SettingsContainer);
         }
 
         /// <summary>

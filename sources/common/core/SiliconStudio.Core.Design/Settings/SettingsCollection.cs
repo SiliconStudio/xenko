@@ -10,9 +10,9 @@ namespace SiliconStudio.Core.Settings
     {
         private readonly SettingsProfile profile;
 
-        public SettingsCollection(SettingsGroup settingsGroup)
+        public SettingsCollection(SettingsContainer settingsContainer)
         {
-            profile = settingsGroup.CreateSettingsProfile(false);
+            profile = settingsContainer.CreateSettingsProfile(false);
         }
 
         public SettingsProfile Profile { get { return profile; } }

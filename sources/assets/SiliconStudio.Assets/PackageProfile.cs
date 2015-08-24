@@ -48,7 +48,7 @@ namespace SiliconStudio.Assets
     [DataContract("PackageProfile")]
     public sealed class PackageProfile
     {
-        public static SettingsGroup SettingsGroup = new SettingsGroup();
+        public static SettingsContainer SettingsContainer = new SettingsContainer();
 
         private readonly AssetFolderCollection assetFolders;
 
@@ -61,7 +61,7 @@ namespace SiliconStudio.Assets
         {
             assetFolders = new AssetFolderCollection();
             InheritProfiles = new List<string>();
-            Properties = new SettingsCollection(SettingsGroup);
+            Properties = new SettingsCollection(SettingsContainer);
             OutputGroupDirectories = new Dictionary<string, UDirectory>();
             ProjectReferences = new List<ProjectReference>();
         }
