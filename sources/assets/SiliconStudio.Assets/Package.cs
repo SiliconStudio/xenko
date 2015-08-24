@@ -74,7 +74,7 @@ namespace SiliconStudio.Assets
 
         private UFile packagePath;
         private bool isDirty;
-        private Lazy<PackageSettings> settings;
+        private Lazy<PackageUserSettings> settings;
 
         /// <summary>
         /// The file extension used for <see cref="Package"/>.
@@ -102,7 +102,7 @@ namespace SiliconStudio.Assets
             Templates = new List<TemplateDescription>();
             Profiles = new PackageProfileCollection();
             IsDirty = true;
-            settings = new Lazy<PackageSettings>(() => new PackageSettings(this));
+            settings = new Lazy<PackageUserSettings>(() => new PackageUserSettings(this));
         }
 
         /// <summary>
@@ -274,13 +274,13 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Gets the package settings. Usually stored in a .user file alongside the package. Lazily loaded on first time.
+        /// Gets the package user settings. Usually stored in a .user file alongside the package. Lazily loaded on first time.
         /// </summary>
         /// <value>
-        /// The package settings.
+        /// The package user settings.
         /// </value>
         [DataMemberIgnore]
-        public PackageSettings Settings
+        public PackageUserSettings UserSettings
         {
             get { return settings.Value; }
         }

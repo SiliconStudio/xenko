@@ -133,7 +133,7 @@
     <Compile Include="PackageSessionHelper.cs" />
     <Compile Include="PackageSessionHelper.Solution.cs" />
     <Compile Include="PackageLoadParameters.cs" />
-    <Compile Include="PackageSettings.cs" />
+    <Compile Include="PackageUserSettings.cs" />
     <Compile Include="PackageStore.cs" />
     <Compile Include="PackageMeta.cs" />
     <Compile Include="PackageReference.cs" />

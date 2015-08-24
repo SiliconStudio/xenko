@@ -8,7 +8,11 @@ using SiliconStudio.Core.Settings;
 
 namespace SiliconStudio.Assets
 {
-    public class PackageSettings
+    /// <summary>
+    /// A class representing the user settings related to a <see cref="Package"/>. These settings are stored in a .user
+    /// file along the package file.
+    /// </summary>
+    public class PackageUserSettings
     {
         private const string SettingsExtension = ".pdxpkg.user";
         private readonly Package package;
@@ -16,7 +20,7 @@ namespace SiliconStudio.Assets
 
         public static SettingsContainer SettingsContainer = new SettingsContainer();
 
-        internal PackageSettings(Package package)
+        internal PackageUserSettings(Package package)
         {
             if (package == null) throw new ArgumentNullException("package");
             this.package = package;
