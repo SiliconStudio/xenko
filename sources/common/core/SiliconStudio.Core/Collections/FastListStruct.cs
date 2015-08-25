@@ -51,6 +51,14 @@ namespace SiliconStudio.Core.Collections
             this.Items[this.Count++] = item;
         }
 
+        public void AddRange(FastListStruct<T> items)
+        {
+            for (int i = 0; i < items.Count; i++)
+            {
+                Add(items[i]);
+            }
+        }
+
         public void Insert(int index, T item)
         {
             if (Count == Items.Length)
@@ -81,6 +89,13 @@ namespace SiliconStudio.Core.Collections
         public void Clear()
         {
             this.Count = 0;
+        }
+
+        public T[] ToArray()
+        {
+            var destinationArray = new T[Count];
+            Array.Copy(Items, 0, destinationArray, 0, Count);
+            return destinationArray;            
         }
 
         public void EnsureCapacity(int newCapacity)
