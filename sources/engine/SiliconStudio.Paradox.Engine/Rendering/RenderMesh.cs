@@ -112,6 +112,7 @@ namespace SiliconStudio.Paradox.Rendering
             var material = Material;
             var vao = vertexArrayObject;
             var drawCount = currentRenderData.DrawCount;
+            var primitiveType = currentRenderData.PrimitiveType;
 
             parameters.Set(TransformationKeys.World, WorldMatrix);
 
@@ -138,7 +139,7 @@ namespace SiliconStudio.Paradox.Rendering
                     vao = GetOrCreateVertexArrayObjectAEN(context);
                     drawCount = 12 / 3 * drawCount;
                 }
-                currentRenderData.PrimitiveType = tessellationMethod.GetPrimitiveType();
+                primitiveType = tessellationMethod.GetPrimitiveType();
             }
 
             //using (Profiler.Begin(ProfilingKeys.PrepareMesh))
@@ -183,11 +184,11 @@ namespace SiliconStudio.Paradox.Rendering
 
                     if (currentRenderData.IndexBuffer == null)
                     {
-                        graphicsDevice.Draw(currentRenderData.PrimitiveType, drawCount, currentRenderData.StartLocation);
+                        graphicsDevice.Draw(primitiveType, drawCount, currentRenderData.StartLocation);
                     }
                     else
                     {
-                        graphicsDevice.DrawIndexed(currentRenderData.PrimitiveType, drawCount, currentRenderData.StartLocation);
+                        graphicsDevice.DrawIndexed(primitiveType, drawCount, currentRenderData.StartLocation);
                     }
                 }
             }
