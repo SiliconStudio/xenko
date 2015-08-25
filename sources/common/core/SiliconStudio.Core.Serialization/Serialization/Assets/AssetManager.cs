@@ -424,63 +424,70 @@ namespace SiliconStudio.Core.Serialization.Assets
             object result;
 
             // Open asset binary stream
-            using (var stream = FileProvider.OpenStream(url, VirtualFileMode.Open, VirtualFileAccess.Read))
+            try
             {
-                // File does not exist
-                // TODO/Benlitz: Add a log entry for that, it's not expected to happen
-                if (stream == null)
-                    return null;
-
-                Type headerObjType = null;
-
-                // Read header
-                var streamReader = new BinarySerializationReader(stream);
-                var chunkHeader = ChunkHeader.Read(streamReader);
-                if (chunkHeader != null)
+                using (var stream = FileProvider.OpenStream(url, VirtualFileMode.Open, VirtualFileAccess.Read))
                 {
-                    headerObjType = Type.GetType(chunkHeader.Type);
+                    // File does not exist
+                    // TODO/Benlitz: Add a log entry for that, it's not expected to happen
+                    if (stream == null)
+                        return null;
+
+                    Type headerObjType = null;
+
+                    // Read header
+                    var streamReader = new BinarySerializationReader(stream);
+                    var chunkHeader = ChunkHeader.Read(streamReader);
+                    if (chunkHeader != null)
+                    {
+                        headerObjType = Type.GetType(chunkHeader.Type);
+                    }
+
+                    // Find serializer
+                    var serializer = Serializer.GetSerializer(headerObjType, objType);
+                    if (serializer == null)
+                        throw new InvalidOperationException(string.Format("Content serializer for {0}/{1} could not be found.", headerObjType, objType));
+                    contentSerializerContext = new ContentSerializerContext(url, ArchiveMode.Deserialize, this) { LoadContentReferences = settings.LoadContentReferences };
+
+                    // Read chunk references
+                    if (chunkHeader != null && chunkHeader.OffsetToReferences != -1)
+                    {
+                        // Seek to where references are stored and deserialize them
+                        streamReader.NativeStream.Seek(chunkHeader.OffsetToReferences, SeekOrigin.Begin);
+                        contentSerializerContext.SerializeReferences(streamReader);
+                        streamReader.NativeStream.Seek(chunkHeader.OffsetToObject, SeekOrigin.Begin);
+                    }
+
+                    if (assetReference == null)
+                    {
+                        // Create AssetReference
+                        assetReference = new AssetReference(url, parentAssetReference == null);
+                        contentSerializerContext.AssetReference = assetReference;
+                        result = obj ?? serializer.Construct(contentSerializerContext);
+                        SetAssetObject(assetReference, result);
+                    }
+                    else
+                    {
+                        result = assetReference.Object;
+                        contentSerializerContext.AssetReference = assetReference;
+                    }
+
+                    assetReference.Deserialized = true;
+
+                    PrepareSerializerContext(contentSerializerContext, streamReader.Context);
+
+                    contentSerializerContext.SerializeContent(streamReader, serializer, result);
+
+                    // Add reference
+                    if (parentAssetReference != null)
+                    {
+                        parentAssetReference.References.Add(assetReference);
+                    }
                 }
-
-                // Find serializer
-                var serializer = Serializer.GetSerializer(headerObjType, objType);
-                if (serializer == null)
-                    throw new InvalidOperationException(string.Format("Content serializer for {0}/{1} could not be found.", headerObjType, objType));
-                contentSerializerContext = new ContentSerializerContext(url, ArchiveMode.Deserialize, this) { LoadContentReferences = settings.LoadContentReferences };
-
-                // Read chunk references
-                if (chunkHeader != null && chunkHeader.OffsetToReferences != -1)
-                {
-                    // Seek to where references are stored and deserialize them
-                    streamReader.NativeStream.Seek(chunkHeader.OffsetToReferences, SeekOrigin.Begin);
-                    contentSerializerContext.SerializeReferences(streamReader);
-                    streamReader.NativeStream.Seek(chunkHeader.OffsetToObject, SeekOrigin.Begin);
-                }
-
-                if (assetReference == null)
-                {
-                    // Create AssetReference
-                    assetReference = new AssetReference(url, parentAssetReference == null);
-                    contentSerializerContext.AssetReference = assetReference;
-                    result = obj ?? serializer.Construct(contentSerializerContext);
-                    SetAssetObject(assetReference, result);
-                }
-                else
-                {
-                    result = assetReference.Object;
-                    contentSerializerContext.AssetReference = assetReference;
-                }
-
-                assetReference.Deserialized = true;
-
-                PrepareSerializerContext(contentSerializerContext, streamReader.Context);
-
-                contentSerializerContext.SerializeContent(streamReader, serializer, result);
-
-                // Add reference
-                if (parentAssetReference != null)
-                {
-                    parentAssetReference.References.Add(assetReference);
-                }
+            }
+            catch (Exception exception)
+            {
+                throw new AssetManagerException(string.Format("Unexpected exception while loading asset [{0}]. Reason: {1}. Check inner-exception for details.", url, exception.Message), exception);
             }
 
             if (settings.LoadContentReferences)
