@@ -4,7 +4,7 @@ namespace SiliconStudio.Paradox.Physics
 {
     [DataContract("DynamicRigidbodyElement")]
     [Display(40, "Dynamic RigidBody")]
-    public class DynamicRigidbodyElement : PhysicsSkinnedElementBase, IPhysicsElement
+    public class DynamicRigidbodyElement : PhysicsElementBase, IPhysicsElement
     {
         public override Types Type
         {

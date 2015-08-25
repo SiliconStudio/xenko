@@ -88,10 +88,9 @@ namespace SiliconStudio.Paradox.Physics
 
             element.BoneIndex = -1;
 
-            var skinnedElement = element as PhysicsSkinnedElementBase;
-            if (skinnedElement != null && !skinnedElement.LinkedBoneName.IsNullOrEmpty())
+            if (!element.LinkedBoneName.IsNullOrEmpty())
             {
-                element.BoneIndex = data.ModelComponent.ModelViewHierarchy.Nodes.IndexOf(x => x.Name == skinnedElement.LinkedBoneName);
+                element.BoneIndex = data.ModelComponent.ModelViewHierarchy.Nodes.IndexOf(x => x.Name == element.LinkedBoneName);
 
                 if (element.BoneIndex == -1)
                 {
@@ -326,8 +325,7 @@ namespace SiliconStudio.Paradox.Physics
 
             foreach (var element in elements)
             {
-                var skinnedElement = element as PhysicsSkinnedElementBase;
-                if (skinnedElement != null && !skinnedElement.LinkedBoneName.IsNullOrEmpty())
+                if (!element.LinkedBoneName.IsNullOrEmpty())
                 {
                    if (data.ModelComponent == null)
                     {

@@ -392,7 +392,6 @@ namespace SiliconStudio.Paradox.Assets.Entities
                             else if (type == "CharacterController")
                             {
                                 element.Node.Tag = "!CharacterElement";
-                                element.RemoveChild("LinkedBoneName");
                             }
                             
                             element.RemoveChild("Type");
