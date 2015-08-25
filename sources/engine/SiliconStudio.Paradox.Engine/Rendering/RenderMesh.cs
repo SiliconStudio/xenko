@@ -53,9 +53,9 @@ namespace SiliconStudio.Paradox.Rendering
         public int MatrixCounter;
 
         private readonly ParameterCollection parameters;
-        private readonly FastList<ParameterCollection> parameterCollections = new FastList<ParameterCollection>();
+        private FastListStruct<ParameterCollection> parameterCollections;
         private EffectParameterCollectionGroup parameterCollectionGroup;
-        private ParameterCollection[] previousParameterCollections;
+        private FastListStruct<ParameterCollection> previousParameterCollections;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderMesh" /> class.
@@ -70,6 +70,8 @@ namespace SiliconStudio.Paradox.Rendering
             RenderModel = renderModel;
             Mesh = mesh;
             Enabled = true;
+            parameterCollections = new FastListStruct<ParameterCollection>(8);
+            previousParameterCollections = new FastListStruct<ParameterCollection>(8);
 
             UpdateMaterial();
 
@@ -156,15 +158,16 @@ namespace SiliconStudio.Paradox.Rendering
                 parameterCollections.Clear();
 
                 parameterCollections.Add(context.Parameters);
-                FillParameterCollections(parameterCollections);
+                FillParameterCollections(ref parameterCollections);
 
                 // Check if we need to recreate the EffectParameterCollectionGroup
                 // TODO: We can improve performance by redesigning FillParameterCollections to avoid ArrayExtensions.ArraysReferenceEqual (or directly check the appropriate parameter collections)
                 // This also happens in another place: DynamicEffectCompiler (we probably want to factorize it when doing additional optimizations)
-                if (parameterCollectionGroup == null || parameterCollectionGroup.Effect != Effect || !ArrayExtensions.ArraysReferenceEqual(previousParameterCollections, parameterCollections))
+                if (parameterCollectionGroup == null || parameterCollectionGroup.Effect != Effect || !ArrayExtensions.ArraysReferenceEqual(ref previousParameterCollections, ref parameterCollections))
                 {
-                    parameterCollectionGroup = new EffectParameterCollectionGroup(context.GraphicsDevice, Effect, parameterCollections);
-                    previousParameterCollections = parameterCollections.ToArray();
+                    previousParameterCollections.Clear();
+                    previousParameterCollections.AddRange(parameterCollections);
+                    parameterCollectionGroup = new EffectParameterCollectionGroup(context.GraphicsDevice, Effect, previousParameterCollections.Count, previousParameterCollections.Items);
                 }
 
                 Effect.Apply(context.GraphicsDevice, parameterCollectionGroup, true);
@@ -225,7 +228,7 @@ namespace SiliconStudio.Paradox.Rendering
             vertexArrayObject = VertexArrayObject.New(device, Effect.InputSignature, Mesh.Draw.IndexBuffer, Mesh.Draw.VertexBuffers);
         }
 
-        public override void FillParameterCollections(FastList<ParameterCollection> parameterCollections)
+        public override void FillParameterCollections(ref FastListStruct<ParameterCollection> parameterCollections)
         {
             var material = Material;
             if (material != null && material.Parameters != null)
