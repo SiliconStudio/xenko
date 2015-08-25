@@ -1,23 +1,51 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+using System;
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
 
-// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
-
 namespace SiliconStudio.Paradox.Physics
 {
-    [DataContract("PhysicsElement")]
-    [Display(40, "Element")]
-    public class PhysicsElement
+    [DataContract("PhysicsSkinnedElementBase")]
+    [Display(40, "PhysicsSkinnedElementBase")]
+    public abstract class PhysicsSkinnedElementBase : PhysicsElementBase
     {
-        public PhysicsElement()
+        private string linkedBoneName;
+
+        /// <summary>
+        /// Gets or sets the link (usually a bone).
+        /// </summary>
+        /// <value>
+        /// The mesh's linked bone name
+        /// </value>
+        /// <userdoc>
+        /// In the case of skinned mesh this must be the bone node name linked with this element.
+        /// </userdoc>
+        [DataMember(50)]
+        public string LinkedBoneName
+        {
+            get
+            {
+                return linkedBoneName;
+            }
+            set
+            {
+                if (InternalCollider != null)
+                {
+                    throw new Exception("Cannot change LinkedBoneName when the entity is already in the scene.");
+                }
+
+                linkedBoneName = value;
+            }
+        }   
+    }
+
+    [DataContract("PhysicsElementBase")]
+    [Display(40, "PhysicsElementBase")]
+    public abstract class PhysicsElementBase
+    {
+        protected PhysicsElementBase()
         {
             CanScaleShape = true;
             ColliderShapes = new TrackingCollection<IInlineColliderShapeDesc>();
@@ -25,7 +53,6 @@ namespace SiliconStudio.Paradox.Physics
             {
                 ColliderShapeChanged = true;
             };
-            StepHeight = 0.1f;
         }
 
         public enum Types
@@ -44,133 +71,7 @@ namespace SiliconStudio.Paradox.Physics
             CharacterController
         };
 
-        private Types type;
-
-        /// <userdoc>
-        /// The physics type of this element.
-        /// </userdoc>
-        [DataMember(10)]
-        public Types Type
-        {
-            get
-            {
-                return type;
-            }
-            set
-            {
-                if (InternalCollider != null)
-                {
-                    switch (value)
-                    {
-                        case Types.PhantomCollider:
-                            switch (type)
-                            {
-                                case Types.PhantomCollider:
-                                    break;
-
-                                case Types.StaticCollider:
-                                    InternalCollider.IsTrigger = true;
-                                    break;
-
-                                case Types.StaticRigidBody:
-                                case Types.DynamicRigidBody:
-                                case Types.KinematicRigidBody:
-                                    throw new Exception("Cannot change a RigidBody type to PhantomCollider when the entity is already in the scene. If you need this behavior please programmatically manage and set the Collider object.");
-                                case Types.CharacterController:
-                                    throw new Exception("Cannot change type CharacterController to PhantomCollider when the entity is already in the scene. If you need this behavior please programmatically manage and set the Collider object.");
-                                default:
-                                    throw new ArgumentOutOfRangeException();
-                            }
-                            break;
-
-                        case Types.StaticCollider:
-                            switch (type)
-                            {
-                                case Types.PhantomCollider:
-                                    InternalCollider.IsTrigger = false;
-                                    break;
-
-                                case Types.StaticCollider:
-                                    break;
-
-                                case Types.StaticRigidBody:
-                                case Types.DynamicRigidBody:
-                                case Types.KinematicRigidBody:
-                                    throw new Exception("Cannot change a RigidBody type to a simple Collider type when the entity is already in the scene. If you need this behavior please programmatically manage and set the Collider object or use StaticRigidBody instead.");
-                                case Types.CharacterController:
-                                    throw new Exception("Cannot change type CharacterController to StaticCollider when the entity is already in the scene. If you need this behavior please programmatically manage and set the Collider object.");
-                                default:
-                                    throw new ArgumentOutOfRangeException();
-                            }
-                            break;
-
-                        case Types.StaticRigidBody:
-                            switch (type)
-                            {
-                                case Types.PhantomCollider:
-                                case Types.StaticCollider:
-                                    throw new Exception("Cannot change a simple Collider type to a RigidBody type when the entity is already in the scene. If you need this behavior please programmatically manage and set the Collider object.");
-                                case Types.StaticRigidBody:
-                                case Types.DynamicRigidBody:
-                                case Types.KinematicRigidBody:
-                                    RigidBody.Type = RigidBodyTypes.Static;
-                                    break;
-
-                                case Types.CharacterController:
-                                    throw new Exception("Cannot change type CharacterController to a RigidBody type when the entity is already in the scene. If you need this behavior please programmatically manage and set the Collider object.");
-                                default:
-                                    throw new ArgumentOutOfRangeException();
-                            }
-                            break;
-
-                        case Types.DynamicRigidBody:
-                            switch (type)
-                            {
-                                case Types.PhantomCollider:
-                                case Types.StaticCollider:
-                                    throw new Exception("Cannot change a simple Collider type to a RigidBody type when the entity is already in the scene. If you need this behavior please programmatically manage and set the Collider object.");
-                                case Types.StaticRigidBody:
-                                case Types.DynamicRigidBody:
-                                case Types.KinematicRigidBody:
-                                    RigidBody.Type = RigidBodyTypes.Dynamic;
-                                    break;
-
-                                case Types.CharacterController:
-                                    throw new Exception("Cannot change type CharacterController to a RigidBody type when the entity is already in the scene. If you need this behavior please programmatically manage and set the Collider object.");
-                                default:
-                                    throw new ArgumentOutOfRangeException();
-                            }
-                            break;
-
-                        case Types.KinematicRigidBody:
-                            switch (type)
-                            {
-                                case Types.PhantomCollider:
-                                case Types.StaticCollider:
-                                    throw new Exception("Cannot change a simple Collider type to a RigidBody type when the entity is already in the scene. If you need this behavior please programmatically manage and set the Collider object.");
-                                case Types.StaticRigidBody:
-                                case Types.DynamicRigidBody:
-                                case Types.KinematicRigidBody:
-                                    RigidBody.Type = RigidBodyTypes.Kinematic;
-                                    break;
-
-                                case Types.CharacterController:
-                                    throw new Exception("Cannot change type CharacterController to a RigidBody type when the entity is already in the scene. If you need this behavior please programmatically manage and set the Collider object.");
-                                default:
-                                    throw new ArgumentOutOfRangeException();
-                            }
-                            break;
-
-                        case Types.CharacterController:
-                            throw new Exception("Cannot change to CharacterController type when the entity is already in the scene. If you need this behavior please programmatically manage and set the Collider object.");
-                        default:
-                            throw new ArgumentOutOfRangeException("value", value, null);
-                    }
-                }
-
-                type = value;
-            }
-        }
+        public abstract Types Type { get; }
 
         /// <userdoc>
         /// The reference to the collider Shape of this element.
@@ -179,6 +80,7 @@ namespace SiliconStudio.Paradox.Physics
         [Category]
         public TrackingCollection<IInlineColliderShapeDesc> ColliderShapes { get; private set; }
 
+        [DataMemberIgnore]
         public bool ColliderShapeChanged { get; private set; }
 
         [DataMemberIgnore]
@@ -188,43 +90,6 @@ namespace SiliconStudio.Paradox.Physics
         public bool CanScaleShape { get; private set; }
 
         private Vector3 currentPhysicsScaling;
-
-        public enum CollisionFilterGroups //needed for the editor as this is not tagged as flag...
-        {
-            DefaultFilter = 0x1,
-
-            StaticFilter = 0x2,
-
-            KinematicFilter = 0x4,
-
-            DebrisFilter = 0x8,
-
-            SensorTrigger = 0x10,
-
-            CharacterFilter = 0x20,
-
-            CustomFilter1 = 0x40,
-
-            CustomFilter2 = 0x80,
-
-            CustomFilter3 = 0x100,
-
-            CustomFilter4 = 0x200,
-
-            CustomFilter5 = 0x400,
-
-            CustomFilter6 = 0x800,
-
-            CustomFilter7 = 0x1000,
-
-            CustomFilter8 = 0x2000,
-
-            CustomFilter9 = 0x4000,
-
-            CustomFilter10 = 0x8000,
-
-            AllFilter = 0xFFFF
-        }
 
         private CollisionFilterGroups collisionGroup;
 
@@ -281,65 +146,6 @@ namespace SiliconStudio.Paradox.Physics
                 }
 
                 canCollideWith = value;
-            }
-        }
-
-        private string linkedBoneName;
-
-        /// <summary>
-        /// Gets or sets the link (usually a bone).
-        /// </summary>
-        /// <value>
-        /// The mesh's linked bone name
-        /// </value>
-        /// <userdoc>
-        /// In the case of skinned mesh this must be the bone node name linked with this element.
-        /// </userdoc>
-        [DataMember(50)]
-        public string LinkedBoneName
-        {
-            get
-            {
-                return linkedBoneName;
-            }
-            set
-            {
-                if (InternalCollider != null)
-                {
-                    throw new Exception("Cannot change LinkedBoneName when the entity is already in the scene.");
-                }
-
-                linkedBoneName = value;
-            }
-        }
-
-        private float stepHeight;
-
-        /// <summary>
-        /// Gets or sets the height of the character step.
-        /// </summary>
-        /// <value>
-        /// The height of the character step.
-        /// </value>
-        /// <userdoc>
-        /// Only valid for CharacterController type, describes the max slope height a character can climb.
-        /// </userdoc>
-        [DataMember(60)]
-        [DefaultValue(0.1f)]
-        public float StepHeight
-        {
-            get
-            {
-                return stepHeight;
-            }
-            set
-            {
-                if (InternalCollider != null)
-                {
-                    throw new Exception("Cannot change StepHeight when the entity is already in the scene.");
-                }
-
-                stepHeight = value;
             }
         }
 
@@ -560,7 +366,7 @@ namespace SiliconStudio.Paradox.Physics
                         }
 
                         ColliderShape = CreateShape(ColliderShapes[0]);
-                        
+
                         if (ColliderShape == null) return;
 
                         currentPhysicsScaling = ColliderShape.Scaling;

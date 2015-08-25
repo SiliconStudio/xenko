@@ -50,13 +50,20 @@
     <Compile Include="Data\ConvexHullColliderShapeDesc.cs" />
     <Compile Include="Data\CylinderColliderShapeDesc.cs" />
     <Compile Include="Data\IColliderShapeDesc.cs" />
+    <Compile Include="Elements\CharacterElement.cs" />
+    <Compile Include="Elements\DynamicRigidbodyElement.cs" />
+    <Compile Include="Elements\IPhysicsElement.cs" />
     <Compile Include="Data\SphereColliderShapeDesc.cs" />
     <Compile Include="Data\StaticPlaneColliderShapeDesc.cs" />
     <Compile Include="Data\ColliderShapeAssetDesc.cs" />
+    <Compile Include="Elements\KinematicRigidbodyElement.cs" />
+    <Compile Include="Elements\PhysicsElementBase.cs" />
+    <Compile Include="Elements\StaticColliderElement.cs" />
+    <Compile Include="Elements\StaticRigidbodyElement.cs" />
     <Compile Include="Engine\PhysicsColliderShape.cs" />
     <Compile Include="Engine\PhysicsComponent.cs" />
-    <Compile Include="Engine\PhysicsElement.cs" />
     <Compile Include="Engine\PhysicsProcessor.cs" />
+    <Compile Include="Elements\TriggerElement.cs" />
     <Compile Include="IPhysicsSystem.cs" />
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
@@ -99,7 +106,7 @@
     <Compile Include="Shapes\StaticPlaneColliderShape.cs" />
     <Compile Include="Constraints\TranslationalLimitMotor.cs" />
     <Compile Include="ColliderShapeTypes.cs" />
-    <Compile Include="CollisionFilterGroups.cs" />
+    <Compile Include="Elements\CollisionFilterGroups.cs" />
     <Compile Include="ConstraintTypes.cs" />
     <Compile Include="ContactPoint.cs" />
     <Compile Include="HitResult.cs" />

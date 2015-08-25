@@ -60,22 +60,23 @@ namespace SiliconStudio.ExecServer
                     logger.OnLog("Error, server is being shutdown, cannot run Compiler", ConsoleColor.Red);
                     return 1;
                 }
+            }
 
-                AppDomainShadow shadowDomain = null;
-                try
+
+            AppDomainShadow shadowDomain = null;
+            try
+            {
+                shadowDomain = GetOrNew(IsCachingAppDomain);
+                return shadowDomain.Run(args, logger);
+            }
+            finally
+            {
+                if (shadowDomain != null)
                 {
-                    shadowDomain = GetOrNew(IsCachingAppDomain);
-                    return shadowDomain.Run(args, logger);
-                }
-                finally
-                {
-                    if (shadowDomain != null)
+                    shadowDomain.EndRun();
+                    if (!IsCachingAppDomain)
                     {
-                        shadowDomain.EndRun();
-                        if (!IsCachingAppDomain)
-                        {
-                            shadowDomain.Dispose();
-                        }
+                        shadowDomain.Dispose();
                     }
                 }
             }

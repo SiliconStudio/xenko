@@ -18,17 +18,17 @@ namespace SiliconStudio.Paradox.Engine
 
         public PhysicsComponent()
         {
-            Elements = new List<PhysicsElement>();
+            Elements = new List<IPhysicsElement>();
         }
 
         /// <summary>
         /// Elements describing the physical colliders/rigidbodies/character of this entity
         /// Any runtime dynamic change should happen while the entity is not added to the Game object
         /// </summary>
-        public List<PhysicsElement> Elements { get; private set; }
+        public List<IPhysicsElement> Elements { get; private set; }
 
         [DataMemberIgnore]
-        public PhysicsElement this[int i]
+        public IPhysicsElement this[int i]
         {
             get { return Elements[i]; }
         }
