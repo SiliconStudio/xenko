@@ -20,6 +20,7 @@ namespace SiliconStudio.Paradox.Physics
             public PhysicsComponent PhysicsComponent;
             public TransformComponent TransformComponent;
             public ModelComponent ModelComponent; //not mandatory, could be null e.g. invisible triggers
+            public bool BoneMatricesUpdated;
         }
 
         private readonly List<PhysicsElementBase> elements = new List<PhysicsElementBase>();
@@ -88,9 +89,16 @@ namespace SiliconStudio.Paradox.Physics
 
             element.BoneIndex = -1;
 
-            if (!element.LinkedBoneName.IsNullOrEmpty())
+            var skinnedElement = element as PhysicsSkinnedElementBase;
+            if (skinnedElement != null && !skinnedElement.LinkedBoneName.IsNullOrEmpty())
             {
-                element.BoneIndex = data.ModelComponent.ModelViewHierarchy.Nodes.IndexOf(x => x.Name == element.LinkedBoneName);
+                if (!data.BoneMatricesUpdated)
+                {
+                    data.ModelComponent.ModelViewHierarchy.UpdateMatrices();
+                    data.BoneMatricesUpdated = true;
+                }
+
+                skinnedElement.BoneIndex = data.ModelComponent.ModelViewHierarchy.Nodes.IndexOf(x => x.Name == skinnedElement.LinkedBoneName);
 
                 if (element.BoneIndex == -1)
                 {
@@ -323,20 +331,6 @@ namespace SiliconStudio.Paradox.Physics
                 return;
             }
 
-            foreach (var element in elements)
-            {
-                if (!element.LinkedBoneName.IsNullOrEmpty())
-                {
-                   if (data.ModelComponent == null)
-                    {
-                        throw new Exception("Physics entity with bones detected but no model component is present in this entity.");
-                    }
-
-                    //this is not optimal as UpdateMatrices will end up being called twice this frame.. but we need to ensure that we have valid data.
-                    data.ModelComponent.ModelViewHierarchy.UpdateMatrices();
-                }
-            }
-
             //this is not optimal as UpdateWorldMatrix will end up being called twice this frame.. but we need to ensure that we have valid data.
             entity.Transform.UpdateWorldMatrix();
 
@@ -518,7 +512,7 @@ namespace SiliconStudio.Paradox.Physics
                 element.BoneWorldMatrix = model.ModelViewHierarchy.NodeTransformations[element.BoneIndex].WorldMatrix;
 
                 //write to ModelViewHierarchy
-                if (element.RigidBody != null && element.RigidBody.Type == RigidBodyTypes.Dynamic)
+                if ((element.Collider as RigidBody) != null && element.RigidBody.Type == RigidBodyTypes.Dynamic)
                 {
                     model.ModelViewHierarchy.NodeTransformations[element.BoneIndex].WorldMatrix = element.BoneWorldMatrixOut;
                 }

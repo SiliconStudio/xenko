@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetDescription(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
     [ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName)]
-    [AssetFormatVersion(12)]
+    [AssetFormatVersion(13)]
     [AssetUpgrader(0, 1, typeof(RemoveSourceUpgrader))]
     [AssetUpgrader(1, 2, typeof(RemoveBaseUpgrader))]
     [AssetUpgrader(2, 3, typeof(RemoveModelDrawOrderUpgrader))]
@@ -41,6 +41,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetUpgrader(9, 10, typeof(NoBox2DUpgrader))]
     [AssetUpgrader(10, 11, typeof(RemoveShadowImportanceUpgrader))]
     [AssetUpgrader(11, 12, typeof(NewElementLayoutUpgrader))]
+    [AssetUpgrader(12, 13, typeof(NewElementLayoutUpgrader2))]
     [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
@@ -395,6 +396,34 @@ namespace SiliconStudio.Paradox.Assets.Entities
                             }
                             
                             element.RemoveChild("Type");
+                        }
+                    }
+                }
+            }
+        }
+
+        class NewElementLayoutUpgrader2 : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Entities;
+                foreach (dynamic entity in entities)
+                {
+                    var components = entity.Components;
+                    var physComponent = components["PhysicsComponent.Key"];
+                    if (physComponent != null)
+                    {
+                        foreach (dynamic element in physComponent.Elements)
+                        {
+                            if (element.Node.Tag == "!TriggerElement" ||
+                                element.Node.Tag == "!StaticColliderElement" ||
+                                element.Node.Tag == "!StaticRigidbodyElement" ||
+                                element.Node.Tag == "!CharacterElement"
+                                )
+                            {
+                                element.RemoveChild("LinkedBoneName");
+                            }
                         }
                     }
                 }

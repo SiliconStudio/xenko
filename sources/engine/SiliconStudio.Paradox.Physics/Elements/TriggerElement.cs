@@ -9,7 +9,7 @@ namespace SiliconStudio.Paradox.Physics
 {
     [DataContract("TriggerElement")]
     [Display(40, "Trigger")]
-    public class TriggerElement : PhysicsElementBase, IPhysicsElement
+    public class TriggerElement : PhysicsSkinnedElementBase, IPhysicsElement
     {
         public override Types Type
         {
