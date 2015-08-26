@@ -12,6 +12,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Assets.Diagnostics;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using ILogger = SiliconStudio.Core.Diagnostics.ILogger;
 
@@ -531,6 +532,73 @@ namespace SiliconStudio.Assets
                         return;
                     }
 
+                    // Save all dirty assets
+                    packagesCopy.Clear();
+                    foreach (var package in LocalPackages)
+                    {
+                        // Copy source assets marked copy local (if not done yet)
+                        var importAssetsWithCopyLocal = package.Assets.Where(FilterAssetWithCopyLocal);
+
+                        foreach (var assetItem in importAssetsWithCopyLocal)
+                        {
+                            // Copy raw asset alongside new asset location
+                            var assetPath = assetItem.FullPath;
+                            var assetImport = (AssetImport)assetItem.Asset;
+                            var sourcePath = assetImport.Source;
+
+                            // Already copied?
+                            if (assetPath.GetFullPathWithoutExtension() != sourcePath.GetFullPathWithoutExtension())
+                            {
+                                var sourceCopyPath = assetPath.GetFullPathWithoutExtension() + sourcePath.GetFileExtension();
+                                try
+                                {
+                                    File.Copy(sourcePath, sourceCopyPath, true);
+
+                                    assetImport.Source = sourceCopyPath;
+                                    assetItem.IsDirty = true;
+                                }
+                                catch (Exception ex)
+                                {
+                                    // File locked?
+                                    log.Warning(assetItem.Package, assetItem.ToReference(), AssetMessageCode.AssetCannotSave, ex, sourceCopyPath);
+                                }
+                            }
+                        }
+
+                        // Delete source assets not needed anymore
+                        // TODO: Need to backup the source file in the action stack when it was removed, so that we can restore it if needed
+                        var deletedImportAssetsWithCopyLocal = assetsOrPackagesToRemove
+                            .Where(x => x.Value is AssetItem && FilterAssetWithCopyLocal((AssetItem)x.Value));
+
+                        foreach (var assetItemWithName in deletedImportAssetsWithCopyLocal)
+                        {
+                            var assetItem = (AssetItem)assetItemWithName.Value;
+                            var assetImport = (AssetImport)assetItem.Asset;
+
+                            // Recompute source path from old name and current extension
+                            // (asset might be already modified when moved/renamed, as it is not cloned)
+                            // TODO: Shouldn't we clone asset on move to avoid this problem?
+                            var sourcePath = assetItemWithName.Key.GetFullPathWithoutExtension() + assetImport.Source.GetFileExtension();
+
+                            try
+                            {
+                                File.Delete(sourcePath);
+                            }
+                            catch (Exception ex)
+                            {
+                                // File locked?
+                                log.Warning(assetItem.Package, assetItem.ToReference(), AssetMessageCode.AssetCannotDelete, ex, sourcePath);
+                            }
+                        }
+
+                        // Save the package to disk and all its assets
+                        package.Save(log);
+
+                        // Clone the package (but not all assets inside, just the structure)
+                        var packageClone = package.Clone(false);
+                        packagesCopy.Add(packageClone);
+                    }
+
                     // Delete previous files
                     foreach (var fileIt in assetsOrPackagesToRemove)
                     {
@@ -562,18 +630,6 @@ namespace SiliconStudio.Assets
                         }
                     }
 
-                    // Save all dirty assets
-                    packagesCopy.Clear();
-                    foreach (var package in LocalPackages)
-                    {
-                        // Save the package to disk and all its assets
-                        package.Save(log);
-
-                        // Clone the package (but not all assets inside, just the structure)
-                        var packageClone = package.Clone(false);
-                        packagesCopy.Add(packageClone);
-                    }
-
                     packagesSaved = true;
                 }
                 finally
@@ -594,6 +650,11 @@ namespace SiliconStudio.Assets
                 //System.Diagnostics.Trace.WriteLine("Elapsed saved: " + clock.ElapsedMilliseconds);
                 IsDirty = false;
             }
+        }
+
+        private bool FilterAssetWithCopyLocal(AssetItem x)
+        {
+            return x.Asset is AssetImport && ((AssetImport)x.Asset).Source != null && ((AssetImport)x.Asset).SourceKeepSideBySide;
         }
 
         /// <summary>
