@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// A base class for rendering tests
     /// </summary>
-    public class UnitTestGameBase : GraphicsTestBase
+    public class UITestGameBase : GraphicsTestBase
     {
         protected readonly Logger Logger = GlobalLogger.GetLogger("Test Game");
         
@@ -49,7 +49,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         /// <summary>
         /// Create an instance of the game test
         /// </summary>
-        public UnitTestGameBase()
+        public UITestGameBase()
         {
             StopOnFrameCount = -1;
 

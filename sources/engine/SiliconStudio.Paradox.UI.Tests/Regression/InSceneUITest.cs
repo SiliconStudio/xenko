@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Test for UI on scene entities
     /// </summary>
-    public class InSceneUITest : UnitTestGameBase
+    public class InSceneUITest : UITestGameBase
     {
         private List<Entity> elements = new List<Entity>();
 

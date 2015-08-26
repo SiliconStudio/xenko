@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Test for UI on scene entities
     /// </summary>
-    public class BillboardModeTests : UnitTestGameBase
+    public class BillboardModeTests : UITestGameBase
     {
         public BillboardModeTests()
         {

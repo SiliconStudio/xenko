@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Class for dynamic sized text rendering tests.
     /// </summary>
-    public class DynamicFontTest : UnitTestGameBase
+    public class DynamicFontTest : UITestGameBase
     {
         private ContentDecorator decorator;
         private TextBlock textBlock;

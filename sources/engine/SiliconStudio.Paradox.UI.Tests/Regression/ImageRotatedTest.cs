@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Class for rendering tests on the <see cref="ScrollViewer"/> 
     /// </summary>
-    public class ImageRotatedTest : UnitTestGameBase
+    public class ImageRotatedTest : UITestGameBase
     {
         public ImageRotatedTest()
         {
