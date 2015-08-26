@@ -53,7 +53,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
             // Apply ToneMapping
 	        color = ToneMap(color, avgLuminance);
 
-	        return float4(color, 1.0);
+	        return float4(color, inputColor.a);
         }
 
         float CalculateExposure(float avgLuminance)

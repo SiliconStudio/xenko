@@ -119,7 +119,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         public float AdaptationRate { get; set; }
 
         /// <summary>
-        /// Gets or sets the luminance local factor.
+        /// Gets or sets the luminance local factor. 0.0: No local influence, only global influence, 1.0: No global influence, Only local influence.
         /// </summary>
         /// <value>The luminance local factor.</value>
         [DataMember(50)]
