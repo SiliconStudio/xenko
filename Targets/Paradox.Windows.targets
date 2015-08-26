@@ -3,6 +3,7 @@
 
   <PropertyGroup>
     <SiliconStudioNETFrameworkVersion>v4.5</SiliconStudioNETFrameworkVersion>
+    <UserLibrariesPath Condition="'$(SiliconStudioCurrentPackagePath)' != ''">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\Libs</UserLibrariesPath>
   </PropertyGroup>
   
   <!-- Embed native libraries -->
@@ -13,6 +14,8 @@
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\**\d3dcompiler_47.dll"/>
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\**\glsl_optimizer.dll"/>
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\**\SDL2.dll"/>
+    <!-- Users custom native libraries -->
+    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(UserLibrariesPath)\$(SiliconStudioPlatform)\**\*.dll" />
   </ItemGroup>
 
   <!-- On Windows platform automatically add the following references -->
@@ -29,6 +32,6 @@
           <Visible>False</Visible>
         </Content>
       </ItemGroup>
-	</When>
+	  </When>
   </Choose>
 </Project>

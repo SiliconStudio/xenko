@@ -18,6 +18,8 @@
     <AppxPackageDir>$(OutputPath)\$(AppxPackageDirName)\</AppxPackageDir>
     <AppxPackageTestDir>$(AppxPackageDir)Test\</AppxPackageTestDir>
     <AppxPackageName>$(AssemblyName)</AppxPackageName>
+
+    <UserLibrariesPath Condition="'$(SiliconStudioCurrentPackagePath)' != ''">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\Libs</UserLibrariesPath>
   </PropertyGroup>
   
   <!-- Embed native libraries -->
@@ -25,6 +27,8 @@
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\$(SiliconStudioCPU)\freetype.dll" />
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\$(SiliconStudioCPU)\libcore.dll"/>
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\$(SiliconStudioCPU)\libbulletc.dll"/>
+    <!-- Users custom native libraries -->
+    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(UserLibrariesPath)\$(SiliconStudioPlatform)\*.dll" />
   </ItemGroup>
 
   <!-- On Windows platform automatically add the following references -->
