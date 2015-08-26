@@ -361,6 +361,20 @@ namespace SiliconStudio.Assets
                         //session.DependencyManager.InitializeDeferred();
                     }
 
+                    // Setup the current package when loading it
+                    if (packagePaths.Count == 1)
+                    {
+                        var currentPackagePath = new UFile(packagePaths[0]);
+                        foreach (var package in packagesLoaded)
+                        {
+                            if (package.FullPath == currentPackagePath)
+                            {
+                                session.CurrentPackage = package;
+                                break;
+                            }
+                        }
+                    }
+
                     // The session is not dirty when loading it
                     session.IsDirty = false;
                 }
