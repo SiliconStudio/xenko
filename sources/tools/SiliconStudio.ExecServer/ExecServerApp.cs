@@ -43,23 +43,24 @@ namespace SiliconStudio.ExecServer
             if (args[0] == "/direct")
             {
                 args.RemoveAt(0);
-                var executablePath = ExtractExePath(args);
+                var executablePath = ExtractPath(args, "executable");
                 var execServerApp = new ExecServerRemote(executablePath, false, false);
-                int result = execServerApp.Run(args.ToArray());
+                int result = execServerApp.Run(Environment.CurrentDirectory, args.ToArray());
                 return result;
             }
 
             if (args[0] == "/server")
             {
                 args.RemoveAt(0);
-                var executablePath = ExtractExePath(args);
+                var executablePath = ExtractPath(args, "executable");
                 RunServer(executablePath);
                 return 0;
             }
             else
             {
-                var executablePath = ExtractExePath(args);
-                var result = RunClient(executablePath, args);
+                var executablePath = ExtractPath(args, "executable");
+                var workingDirectory = ExtractPath(args, "working directory");
+                var result = RunClient(executablePath, workingDirectory, args);
                 return result;
             }
         }
@@ -99,9 +100,10 @@ namespace SiliconStudio.ExecServer
         /// it will start it automatically.
         /// </summary>
         /// <param name="executablePath">The executable path.</param>
+        /// <param name="workingDirectory">The working directory.</param>
         /// <param name="args">The arguments.</param>
         /// <returns>Return status.</returns>
-        private int RunClient(string executablePath, List<string> args)
+        private int RunClient(string executablePath, string workingDirectory, List<string> args)
         {
             var address = GetEndpointAddress(executablePath);
 
@@ -128,7 +130,7 @@ namespace SiliconStudio.ExecServer
                     //Console.WriteLine("{0}: ExecServer - running start", DateTime.Now);
                     try
                     {
-                        var result = service.Run(args.ToArray());
+                        var result = service.Run(workingDirectory, args.ToArray());
                         //Console.WriteLine("{0}: ExecServer - running end", DateTime.Now);
                         return result;
                     }
@@ -248,20 +250,17 @@ namespace SiliconStudio.ExecServer
             return address;
         }
 
-        private static string ExtractExePath(List<string> args)
+        private static string ExtractPath(List<string> args, string type)
         {
             if (args.Count == 0)
             {
-                throw new InvalidOperationException("Expecting path to executable argument");
+                throw new InvalidOperationException(string.Format("Expecting path to {0} argument", type));
             }
 
-            var fullExePath = args[0];
+            var path = args[0];
             args.RemoveAt(0);
-
-            // Make sure the executable has a directory
-            fullExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fullExePath);
-
-            return fullExePath;
+            path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
+            return path;
         }
 
         private class ExecServerRemoteClient : DuplexClientBase<IExecServerRemote>

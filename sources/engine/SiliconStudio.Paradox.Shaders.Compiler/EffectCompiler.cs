@@ -163,7 +163,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             var shaderId = ObjectId.FromBytes(Encoding.UTF8.GetBytes(shaderSourceText));
 
-            var logDir = "log";
+            var logDir = Path.Combine(Environment.CurrentDirectory, "log");
             if (!Directory.Exists(logDir))
             {
                 Directory.CreateDirectory(logDir);
