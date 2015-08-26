@@ -64,11 +64,19 @@ namespace SiliconStudio.Presentation.Behaviors
             if (Command != null)
             {
                 canExecuteRoutedEventArgs.CanExecute = IsEnabled && Command.CanExecute(canExecuteRoutedEventArgs.Parameter);
+            }
+            else
+            {
+                canExecuteRoutedEventArgs.CanExecute = false;
+            }
+
+            if (canExecuteRoutedEventArgs.CanExecute)
+            {
                 canExecuteRoutedEventArgs.Handled = true;
             }
             else
             {
-                canExecuteRoutedEventArgs.CanExecute = true;
+                canExecuteRoutedEventArgs.ContinueRouting = true;
             }
         }
 
