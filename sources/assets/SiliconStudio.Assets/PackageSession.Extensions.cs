@@ -32,7 +32,8 @@ namespace SiliconStudio.Assets
         /// <returns>An <see cref="AssetItem" /> or <c>null</c> if not found.</returns>
         public static AssetItem FindAsset(this PackageSession session, Guid assetId)
         {
-            return session.Packages.Select(packageItem => packageItem.Assets.Find(assetId)).FirstOrDefault(asset => asset != null);
+            var packages = session.CurrentPackage != null ? session.GetPackagesFromCurrent() : session.Packages;
+            return packages.Select(packageItem => packageItem.Assets.Find(assetId)).FirstOrDefault(asset => asset != null);
         }
 
         /// <summary>
