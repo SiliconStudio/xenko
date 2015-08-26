@@ -16,5 +16,10 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// The shader used by <see cref="ColorTransformBase"/>.
         /// </summary>
         public static readonly ParameterKey<string> Shader = ParameterKeys.New("ColorTransformShader");
+
+        /// <summary>
+        /// The shader used by <see cref="ColorTransformBase"/>.
+        /// </summary>
+        public static readonly ParameterKey<object[]> GenericArguments = ParameterKeys.New((object[])null);
     }
 }

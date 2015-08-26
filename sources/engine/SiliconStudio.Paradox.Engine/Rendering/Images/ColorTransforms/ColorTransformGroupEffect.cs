@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
             {
                 if (context.GetParam(ColorTransformKeys.Enabled))
                 {
-                    context.Mixin(mixin, context.GetParam(ColorTransformKeys.Shader));
+                    context.Mixin(mixin, context.GetParam(ColorTransformKeys.Shader), context.GetParam(ColorTransformKeys.GenericArguments));
                 }
                 else
                 {
