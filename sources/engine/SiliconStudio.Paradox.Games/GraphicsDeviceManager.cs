@@ -199,6 +199,12 @@ namespace SiliconStudio.Paradox.Games
         public DeviceCreationFlags DeviceCreationFlags { get; set; }
 
         /// <summary>
+        /// Gets or sets the default color space.
+        /// </summary>
+        /// <value>The default color space.</value>
+        public ColorSpace DefaultColorSpace { get; set; }
+
+        /// <summary>
         /// Sets the preferred graphics profile.
         /// </summary>
         /// <param name="levels">The levels.</param>
@@ -999,6 +1005,9 @@ namespace SiliconStudio.Paradox.Games
                     {
                         height = presentationParameters.BackBufferHeight;
                     }
+
+                    // Copy the color space
+                    GraphicsDevice.DefaultColorSpace = DefaultColorSpace;
 
                     deviceSettingsChanged = false;
                 }

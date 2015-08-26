@@ -220,6 +220,12 @@ namespace SiliconStudio.Paradox.Graphics
         public bool IsProfilingSupported { get; private set; }
 
         /// <summary>
+        /// Gets the default color space.
+        /// </summary>
+        /// <value>The default color space.</value>
+        public ColorSpace DefaultColorSpace { get; internal set; }
+
+        /// <summary>
         ///     Gets the parameters attached to this particular device. This Parameters are used to override <see cref="Effect" /> parameters.
         /// </summary>
         /// <value>The parameters used to override all effects.</value>
