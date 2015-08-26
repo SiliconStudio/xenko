@@ -79,5 +79,15 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
         {
             return Width <= 0 || Height <= 0;
         }
+
+        /// <summary>
+        /// Gets the position of the right border of the triangle
+        /// </summary>
+        public int Right { get { return X + Width; } }
+
+        /// <summary>
+        /// Gets the position of the bottom border of the triangle
+        /// </summary>
+        public int Bottom { get { return Y + Height; } }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 
@@ -39,8 +40,26 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
                 var addressModeV = element.BorderModeV;
                 var borderColor = element.BorderColor;
 
-                var targetRegionWidth = isDestinationRotated ? element.SourceRegion.Height : element.SourceRegion.Width;
-                var targetRegionHeight = isDestinationRotated ? element.SourceRegion.Width : element.SourceRegion.Height;
+                // calculate the source region guaranteed to be in the source texture.
+                var sourceSize = new Int2(sourceTexture.Description.Width, sourceTexture.Description.Height);
+                var safeSourceRegion = new Rectangle
+                {
+                    X = Math.Max(0, element.SourceRegion.X),
+                    Y = Math.Max(0, element.SourceRegion.Y),
+                    Width = Math.Min(sourceSize.X, element.SourceRegion.Right),
+                    Height = Math.Min(sourceSize.Y, element.SourceRegion.Bottom),
+                };
+                safeSourceRegion.Width -= safeSourceRegion.X;
+                safeSourceRegion.Height -= safeSourceRegion.Y;
+
+                // calculate the size of the source region and the starting offsets taking into account the rotation
+                var sourceRegionSize = new Int2(safeSourceRegion.Width, safeSourceRegion.Height);
+                var sourceStartOffsets = new Int2(Math.Min(0, element.SourceRegion.X), Math.Min(0, element.SourceRegion.Y));
+                if (isDestinationRotated)
+                {
+                    Utilities.Swap(ref sourceRegionSize.X, ref sourceRegionSize.Y);
+                    Utilities.Swap(ref sourceStartOffsets.X, ref sourceStartOffsets.Y);
+                }
 
                 unsafe
                 {
@@ -53,8 +72,8 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
                         for (var x = 0; x < element.DestinationRegion.Width; ++x)
                         {
                             // Get index of source image, if it's the border at this point sourceIndexX and sourceIndexY will be -1
-                            var sourceCoordinateX = GetSourceTextureCoordinate(x - element.BorderSize, targetRegionWidth, addressModeU);
-                            var sourceCoordinateY = GetSourceTextureCoordinate(y - element.BorderSize, targetRegionHeight, addressModeV);
+                            var sourceCoordinateX = GetSourceTextureCoordinate(x - element.BorderSize + sourceStartOffsets.X, sourceRegionSize.X, addressModeU);
+                            var sourceCoordinateY = GetSourceTextureCoordinate(y - element.BorderSize + sourceStartOffsets.Y, sourceRegionSize.Y, addressModeV);
 
                             // Check if this image uses border mode, and is in the border area
                             var isBorderMode = sourceCoordinateX < 0 || sourceCoordinateY < 0;
@@ -68,19 +87,19 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
                                 {
                                     // Since intemediateTexture.DestinationRegion contains the border, we need to delete the border out
                                     sourceCoordinateY = sourceCoordinateX;
-                                    sourceCoordinateX = (element.DestinationRegion.Height - element.BorderSize * 2) - 1 - tmp;
+                                    sourceCoordinateX = safeSourceRegion.Width - 1 - tmp;
                                 }
                                 else
                                 {
                                     // Since intemediateTexture.DestinationRegion contains the border, we need to delete the border out
-                                    sourceCoordinateY = (element.DestinationRegion.Width - element.BorderSize * 2) - 1 - sourceCoordinateX;
+                                    sourceCoordinateY = safeSourceRegion.Height - 1 - sourceCoordinateX;
                                     sourceCoordinateX = tmp;
                                 }
                             }
 
                             // Add offset from the region
-                            sourceCoordinateX += element.SourceRegion.X;
-                            sourceCoordinateY += element.SourceRegion.Y;
+                            sourceCoordinateX += safeSourceRegion.X;
+                            sourceCoordinateY += safeSourceRegion.Y;
                             var readFromIndex = sourceCoordinateY*sourceTextureWidth + sourceCoordinateX; // read index from source image
 
                             // Prepare writeToIndex
