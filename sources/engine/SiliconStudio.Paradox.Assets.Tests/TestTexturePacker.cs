@@ -444,6 +444,45 @@ namespace SiliconStudio.Paradox.Assets.Tests
         }
 
         [Test]
+        public void TestRegionOutOfTexture()
+        {
+            var textureElements = new List<AtlasTextureElement>
+            {
+                CreateElementFromFile("image9", 10, TextureAddressMode.Mirror, TextureAddressMode.Clamp, new RotableRectangle(-100, 30, 400, 250)),
+                CreateElementFromFile("image10", 10, TextureAddressMode.Wrap, TextureAddressMode.Border, new RotableRectangle(-50, -30, 300, 400, true)),
+            };
+
+            var texturePacker = new TexturePacker
+            {
+                AllowMultipack = false,
+                AllowRotation = true,
+                AllowNonPowerOfTwo = true,
+                MaxWidth = 1024,
+                MaxHeight = 1024,
+            };
+
+            var canPackAllTextures = texturePacker.PackTextures(textureElements);
+
+            Assert.IsTrue(canPackAllTextures);
+
+            // Obtain texture atlases
+            var textureAtlases = texturePacker.AtlasTextureLayouts;
+
+            Assert.AreEqual(1, textureAtlases.Count);
+
+            // Create atlas texture
+            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(textureAtlases[0]);
+
+            Assert.AreEqual(textureAtlases[0].Width, atlasTexture.Description.Width);
+            Assert.AreEqual(textureAtlases[0].Height, atlasTexture.Description.Height);
+
+            SaveAndCompareTexture(atlasTexture, "TestRegionOutOfTexture");
+
+            textureElements[0].Texture.Dispose();
+            atlasTexture.Dispose();
+        }
+
+        [Test]
         public void TestTextureAtlasFactoryImageParts()
         {
             var textureElements = new List<AtlasTextureElement>
