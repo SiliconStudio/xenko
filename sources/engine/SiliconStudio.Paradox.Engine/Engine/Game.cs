@@ -229,6 +229,7 @@ namespace SiliconStudio.Paradox.Engine
                     if (gameSettings.DefaultGraphicsProfileUsed > 0) deviceManager.PreferredGraphicsProfile = new[] { gameSettings.DefaultGraphicsProfileUsed };
                     if (gameSettings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = gameSettings.DefaultBackBufferWidth;
                     if (gameSettings.DefaultBackBufferHeight > 0) deviceManager.PreferredBackBufferHeight = gameSettings.DefaultBackBufferHeight;
+                    deviceManager.DefaultColorSpace = gameSettings.ColorSpace;
                     SceneSystem.InitialSceneUrl = gameSettings.DefaultSceneUrl;
                 }
             }

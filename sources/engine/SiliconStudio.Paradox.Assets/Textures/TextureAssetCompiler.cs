@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Threading.Tasks;
 
 using SiliconStudio.Assets.Compiler;
@@ -28,7 +29,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
 
             var gameSettingsAsset = context.GetGameSettingsAsset();
 
-            var parameter = new TextureConvertParameters(assetSource, asset, context.Platform, context.GetGraphicsPlatform(), gameSettingsAsset.DefaultGraphicsProfile, gameSettingsAsset.TextureQuality);
+            var parameter = new TextureConvertParameters(assetSource, asset, context.Platform, context.GetGraphicsPlatform(), gameSettingsAsset.DefaultGraphicsProfile, gameSettingsAsset.TextureQuality, gameSettingsAsset.ColorSpace);
             result.BuildSteps = new AssetBuildStep(AssetItem) { new TextureConvertCommand(urlInStorage, parameter) };
         }
 
@@ -88,7 +89,8 @@ namespace SiliconStudio.Paradox.Assets.Textures
             PlatformType platform, 
             GraphicsPlatform graphicsPlatform, 
             GraphicsProfile graphicsProfile, 
-            TextureQuality textureQuality)
+            TextureQuality textureQuality,
+            ColorSpace colorSpace)
         {
             SourcePathFromDisk = sourcePathFromDisk;
             Texture = texture;
@@ -96,6 +98,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
             GraphicsPlatform = graphicsPlatform;
             GraphicsProfile = graphicsProfile;
             TextureQuality = textureQuality;
+            ColorSpace = colorSpace;
         }
 
         public UFile SourcePathFromDisk;
@@ -109,5 +112,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
         public GraphicsProfile GraphicsProfile;
 
         public TextureQuality TextureQuality;
+
+        public ColorSpace ColorSpace;
     }
 }

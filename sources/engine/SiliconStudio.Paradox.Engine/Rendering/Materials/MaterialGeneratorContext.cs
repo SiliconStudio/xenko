@@ -67,6 +67,8 @@ namespace SiliconStudio.Paradox.Rendering.Materials
             }
         }
 
+        public ColorSpace ColorSpace { get; set; }
+
         private MaterialBlendLayerNode Current { get; set; }
 
         private MaterialShadingModelCollection CurrentShadingModel { get; set; }

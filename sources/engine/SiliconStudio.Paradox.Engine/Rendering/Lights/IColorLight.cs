@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Rendering.Lights
 {
@@ -19,8 +20,9 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         /// <summary>
         /// Computes the color.
         /// </summary>
+        /// <param name="colorSpace"></param>
         /// <param name="intensity">The intensity.</param>
         /// <returns>Color3.</returns>
-        Color3 ComputeColor(float intensity);
+        Color3 ComputeColor(ColorSpace colorSpace, float intensity);
     }
 }

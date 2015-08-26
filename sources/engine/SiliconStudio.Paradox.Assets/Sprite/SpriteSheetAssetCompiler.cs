@@ -73,7 +73,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                     result.BuildSteps.Add(
                         new TextureAssetCompiler.TextureConvertCommand(
                             SpriteSheetAsset.BuildTextureUrl(urlInStorage, i),
-                            new TextureConvertParameters(assetSource, textureAsset, context.Platform, context.GetGraphicsPlatform(), gameSettingsAsset.DefaultGraphicsProfile, gameSettingsAsset.TextureQuality)));
+                            new TextureConvertParameters(assetSource, textureAsset, context.Platform, context.GetGraphicsPlatform(), gameSettingsAsset.DefaultGraphicsProfile, gameSettingsAsset.TextureQuality, gameSettingsAsset.ColorSpace)));
                 }
 
                 result.BuildSteps.Add(new WaitBuildStep()); // wait the textures to be imported

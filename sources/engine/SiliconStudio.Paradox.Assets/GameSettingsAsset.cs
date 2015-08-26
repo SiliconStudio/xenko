@@ -42,6 +42,7 @@ namespace SiliconStudio.Paradox.Assets
             BackBufferWidth = 1280;
             BackBufferHeight = 720;
             DefaultGraphicsProfile = GraphicsProfile.Level_10_0;
+            ColorSpace = ColorSpace.Linear;
         }
 
         /// <summary>
@@ -87,6 +88,13 @@ namespace SiliconStudio.Paradox.Assets
         /// </summary>
         /// <userdoc>The texture quality when encoding textures. Higher settings might result in much slower build depending on the target platform.</userdoc>
         public TextureQuality TextureQuality { get; set; }
+
+        /// <summary>
+        /// Gets or sets the colorspace.
+        /// </summary>
+        /// <value>The colorspace.</value>
+        /// <userdoc>The colorspace used for rendering.</userdoc>
+        public ColorSpace ColorSpace { get; set; }
 
         internal class UpgraderVersion130
         {

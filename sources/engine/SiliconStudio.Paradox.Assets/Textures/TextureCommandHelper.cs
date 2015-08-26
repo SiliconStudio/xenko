@@ -148,9 +148,9 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// <param name="textureAsset">The texture asset</param>
         /// <param name="alphaDepth">The depth of the alpha channel</param>
         /// <returns>The pixel format to use as output</returns>
-        public static PixelFormat DetermineOutputFormat(TextureAsset textureAsset, TextureConvertParameters parameters, Int2 imageSize, PixelFormat inputImageFormat, int alphaDepth)
+        public static PixelFormat DetermineOutputFormat(TextureAsset textureAsset, TextureConvertParameters parameters, Int2 imageSize, PixelFormat inputImageFormat, int alphaDepth, bool isSRgb)
         {
-            if (textureAsset.SRgb && ((int)parameters.GraphicsProfile < (int)GraphicsProfile.Level_9_2 && parameters.GraphicsPlatform != GraphicsPlatform.Direct3D11))
+            if (isSRgb && ((int)parameters.GraphicsProfile < (int)GraphicsProfile.Level_9_2 && parameters.GraphicsPlatform != GraphicsPlatform.Direct3D11))
                 throw new NotSupportedException("sRGB is not supported on OpenGl profile level {0}".ToFormat(parameters.GraphicsProfile));
 
             var hint = textureAsset.Hint;
@@ -184,7 +184,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                             {
                                 outputFormat = inputImageFormat;
                             }
-                            else if (textureAsset.SRgb)
+                            else if (isSRgb)
                             {
                                 outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
                             }
@@ -216,7 +216,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                             {
                                 outputFormat = inputImageFormat;
                             }
-                            else if (textureAsset.SRgb)
+                            else if (isSRgb)
                             {
                                 outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
                             }
@@ -275,15 +275,15 @@ namespace SiliconStudio.Paradox.Assets.Textures
                                         case AlphaFormat.None:
                                         case AlphaFormat.Mask:
                                             // DXT1 handles 1-bit alpha channel
-                                            outputFormat = textureAsset.SRgb ? PixelFormat.BC1_UNorm_SRgb : PixelFormat.BC1_UNorm;
+                                            outputFormat = isSRgb ? PixelFormat.BC1_UNorm_SRgb : PixelFormat.BC1_UNorm;
                                             break;
                                         case AlphaFormat.Explicit:
                                             // DXT3 is good at sharp alpha transitions
-                                            outputFormat = textureAsset.SRgb ? PixelFormat.BC2_UNorm_SRgb : PixelFormat.BC2_UNorm;
+                                            outputFormat = isSRgb ? PixelFormat.BC2_UNorm_SRgb : PixelFormat.BC2_UNorm;
                                             break;
                                         case AlphaFormat.Interpolated:
                                             // DXT5 is good at alpha gradients
-                                            outputFormat = textureAsset.SRgb ? PixelFormat.BC3_UNorm_SRgb : PixelFormat.BC3_UNorm;
+                                            outputFormat = isSRgb ? PixelFormat.BC3_UNorm_SRgb : PixelFormat.BC3_UNorm;
                                             break;
                                         default:
                                             throw new ArgumentOutOfRangeException();
@@ -315,7 +315,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                                     {
                                         outputFormat = inputImageFormat;
                                     }
-                                    else if (textureAsset.SRgb)
+                                    else if (isSRgb)
                                     {
                                         outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
                                     }
@@ -344,7 +344,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                                 default:
                                     // OpenGL on Windows
                                     // TODO: Need to handle OpenGL Desktop compression
-                                    outputFormat = textureAsset.SRgb ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm;
+                                    outputFormat = isSRgb ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm;
                                     break;
                             }
                             break;
@@ -353,7 +353,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                     }
                     break;
                 case TextureFormat.Color16Bits:
-                    if (textureAsset.SRgb)
+                    if (isSRgb)
                     {
                         outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
                     }
@@ -370,7 +370,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                     }
                     break;
                 case TextureFormat.Color32Bits:
-                    if (textureAsset.SRgb)
+                    if (isSRgb)
                     {
                         outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
                     }
@@ -388,11 +388,15 @@ namespace SiliconStudio.Paradox.Assets.Textures
         {
             var assetManager = new AssetManager();
 
+            // Compute SRgb usage
+            // If Texture is in auto mode, use the global settings, else use the settings overridden by the texture asset. 
+            var isSRgb = textureAsset.ColorSpace == TextureColorSpace.Auto ? parameters.ColorSpace == ColorSpace.Linear : textureAsset.ColorSpace == TextureColorSpace.Linear;
+
             using (var texTool = new TextureTool())
-            using (var texImage = texTool.Load(sourcePath, textureAsset.SRgb))
+            using (var texImage = texTool.Load(sourcePath, isSRgb))
             {
                 // Apply transformations
-                texTool.Decompress(texImage, textureAsset.SRgb);
+                texTool.Decompress(texImage, isSRgb);
 
                 if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
                     return ResultStatus.Cancelled;
@@ -450,7 +454,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
 
                 // Convert/Compress to output format
                 // TODO: Change alphaFormat depending on actual image content (auto-detection)?
-                var outputFormat = DetermineOutputFormat(textureAsset, parameters, textureSize, texImage.Format, texImage.GetAlphaDepth());
+                var outputFormat = DetermineOutputFormat(textureAsset, parameters, textureSize, texImage.Format, texImage.GetAlphaDepth(), isSRgb);
                 texTool.Compress(texImage, outputFormat, (TextureConverter.Requests.TextureQuality)parameters.TextureQuality);
 
                 if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded

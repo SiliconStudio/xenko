@@ -8,6 +8,7 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Rendering.Materials;
 
 namespace SiliconStudio.Paradox.Assets.Materials
@@ -26,6 +27,8 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
             private readonly Package package;
 
+            private readonly ColorSpace colorSpace;
+
             private UFile assetUrl;
 
             public MaterialCompileCommand(string url, AssetItem assetItem, MaterialAsset value, AssetCompilerContext context)
@@ -33,6 +36,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             {
                 this.assetItem = assetItem;
                 package = context.Package;
+                colorSpace = context.GetGameSettingsAsset().ColorSpace;
                 assetUrl = new UFile(url);
             }
 
@@ -88,7 +92,11 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 //}
 
                 var assetManager = new AssetManager();
-                var materialContext = new MaterialGeneratorContext() { Assets = assetManager };
+                var materialContext = new MaterialGeneratorContext
+                {
+                    Assets = assetManager,
+                    ColorSpace = colorSpace
+                };
                 materialContext.AddLoadingFromSession(package);
 
                 var materialClone = (MaterialAsset)AssetCloner.Clone(AssetParameters);

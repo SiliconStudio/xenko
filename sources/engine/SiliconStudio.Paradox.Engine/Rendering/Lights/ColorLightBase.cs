@@ -5,6 +5,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Rendering.Lights
 {
@@ -32,9 +33,15 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         /// Computes the color with intensity, result is in linear space.
         /// </summary>
         /// <returns>Gets the color of this light in linear space.</returns>
-        public Color3 ComputeColor(float intensity)
+        public Color3 ComputeColor(ColorSpace colorSpace, float intensity)
         {
-            return (Color != null ? Color.ComputeColor() : new Color3(1.0f)).ToLinear() * intensity;
+            var gammaColor = (Color != null ? Color.ComputeColor() : new Color3(1.0f));
+            if (colorSpace == ColorSpace.Linear)
+            {
+                gammaColor = gammaColor.ToLinear();
+            }
+            gammaColor *= intensity;
+            return gammaColor;
         }
 
         public abstract bool Update(LightComponent lightComponent);

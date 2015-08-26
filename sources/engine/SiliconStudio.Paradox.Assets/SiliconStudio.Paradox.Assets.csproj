@@ -192,6 +192,7 @@
     <Compile Include="Skyboxes\SkyboxGenerator.cs" />
     <Compile Include="Skyboxes\SkyboxPreFilteringDiffuseOrder.cs" />
     <Compile Include="Sprite\SpriteSheetType.cs" />
+    <Compile Include="Textures\TextureColorSpace.cs" />
     <Compile Include="Textures\TextureCommandHelper.cs" />
     <Compile Include="Textures\TextureHint.cs" />
     <Compile Include="Textures\TextureQuality.cs" />

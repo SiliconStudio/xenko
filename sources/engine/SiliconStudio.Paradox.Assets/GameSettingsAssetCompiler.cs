@@ -49,13 +49,18 @@ namespace SiliconStudio.Paradox.Assets
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                var result = new GameSettings();
+                var result = new GameSettings
+                {
+                    PackageId = package.Id,
+                    DefaultSceneUrl = AssetParameters.DefaultScene != null ? AttachedReferenceManager.GetUrl(AssetParameters.DefaultScene) : null,
+                    DefaultBackBufferWidth = AssetParameters.BackBufferWidth,
+                    DefaultBackBufferHeight = AssetParameters.BackBufferHeight,
+                    DefaultGraphicsProfileUsed = AssetParameters.DefaultGraphicsProfile,
+                    ColorSpace = AssetParameters.ColorSpace,
+                    EffectCompilation = package.UserSettings.GetValue(GameUserSettings.Effect.EffectCompilation),
+                    RecordUsedEffects = package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects)
+                };
 
-                result.DefaultSceneUrl = AssetParameters.DefaultScene != null ? AttachedReferenceManager.GetUrl(AssetParameters.DefaultScene) : null;
-                result.DefaultBackBufferWidth = AssetParameters.BackBufferWidth;
-                result.DefaultBackBufferHeight = AssetParameters.BackBufferHeight;
-                result.DefaultGraphicsProfileUsed = AssetParameters.DefaultGraphicsProfile;
-                
                 // TODO: Platform-specific settings have priority
                 //if (platform != PlatformType.Shared)
                 //{
@@ -66,13 +71,6 @@ namespace SiliconStudio.Paradox.Assets
                 //        result.DefaultGraphicsProfileUsed = customProfile;
                 //    }
                 //}
-
-                // Save package id
-                result.PackageId = package.Id;
-
-                // Save some package user settings
-                result.EffectCompilation = package.UserSettings.GetValue(GameUserSettings.Effect.EffectCompilation);
-                result.RecordUsedEffects = package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects);
 
                 var assetManager = new AssetManager();
                 assetManager.Save(Url, result);

@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
                     var gameSettingsAsset = context.GetGameSettingsAsset();
 
                     // Create and add the texture command.
-                    var textureParameters = new TextureConvertParameters(assetSource, textureAsset, PlatformType.Windows, GraphicsPlatform.Direct3D11, GraphicsProfile.Level_10_0, gameSettingsAsset.TextureQuality);
+                    var textureParameters = new TextureConvertParameters(assetSource, textureAsset, PlatformType.Windows, GraphicsPlatform.Direct3D11, GraphicsProfile.Level_10_0, gameSettingsAsset.TextureQuality, gameSettingsAsset.ColorSpace);
                     result.BuildSteps.Add(new AssetBuildStep(AssetItem) { new TextureAssetCompiler.TextureConvertCommand(textureUrl, textureParameters) });
                 }
             }
