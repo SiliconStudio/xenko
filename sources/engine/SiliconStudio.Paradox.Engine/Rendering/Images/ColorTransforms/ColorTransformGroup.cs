@@ -22,7 +22,9 @@ namespace SiliconStudio.Paradox.Rendering.Images
         private readonly ParameterCollection transformsParameters;
         private ImageEffectShader transformGroupEffect;
         private readonly Dictionary<ParameterCompositeKey, ParameterKey> compositeKeys;
+        private readonly ColorTransformCollection preTransforms;
         private readonly ColorTransformCollection transforms;
+        private readonly ColorTransformCollection postTransforms;
         private readonly List<ColorTransform> collectTransforms;
         private readonly List<ColorTransform> enabledTransforms;
         private readonly GammaTransform gammaTransform;
@@ -44,7 +46,9 @@ namespace SiliconStudio.Paradox.Rendering.Images
             : base(colorTransformGroupEffect)
         {
             compositeKeys = new Dictionary<ParameterCompositeKey, ParameterKey>();
+            preTransforms = new ColorTransformCollection();
             transforms = new ColorTransformCollection();
+            postTransforms = new ColorTransformCollection();
             enabledTransforms = new List<ColorTransform>();
             collectTransforms = new List<ColorTransform>();
             transformsParameters = new ParameterCollection();
@@ -68,6 +72,19 @@ namespace SiliconStudio.Paradox.Rendering.Images
         }
 
         /// <summary>
+        /// Gets the pre transforms applied before the standard <see cref="Transforms"/>.
+        /// </summary>
+        /// <value>The pre transforms.</value>
+        [DataMemberIgnore]
+        public ColorTransformCollection PreTransforms
+        {
+            get
+            {
+                return preTransforms;
+            }
+        }
+
+        /// <summary>
         /// Gets the color transforms.
         /// </summary>
         /// <value>The transforms.</value>
@@ -79,6 +96,19 @@ namespace SiliconStudio.Paradox.Rendering.Images
             get
             {
                 return transforms;
+            }
+        }
+
+        /// <summary>
+        /// Gets the post transforms applied after the standard <see cref="Transforms"/>.
+        /// </summary>
+        /// <value>The post transforms.</value>
+        [DataMemberIgnore]
+        public ColorTransformCollection PostTransforms
+        {
+            get
+            {
+                return postTransforms;
             }
         }
 
@@ -117,12 +147,20 @@ namespace SiliconStudio.Paradox.Rendering.Images
 
         protected virtual void CollectPreTransforms()
         {
+            foreach (var transform in preTransforms)
+            {
+                AddTemporaryTransform(transform);
+            }
         }
-
 
         protected virtual void CollectPostTransforms()
         {
             AddTemporaryTransform(gammaTransform);
+
+            foreach (var transform in postTransforms)
+            {
+                AddTemporaryTransform(transform);
+            }
         }
 
         protected void AddTemporaryTransform(ColorTransform transform)
