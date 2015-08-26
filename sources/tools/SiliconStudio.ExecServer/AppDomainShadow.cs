@@ -153,11 +153,12 @@ namespace SiliconStudio.ExecServer
         /// <summary>
         /// Runs the main entry point method passing arguments to it
         /// </summary>
+        /// <param name="workingDirectory"></param>
         /// <param name="args">The arguments.</param>
         /// <param name="logger">The logger.</param>
         /// <returns>System.Int32.</returns>
         /// <exception cref="System.InvalidOperationException">Must call TryLock before calling this method</exception>
-        public int Run(string[] args, IServerLogger logger)
+        public int Run(string workingDirectory, string[] args, IServerLogger logger)
         {
             if (!isRunning)
             {
@@ -170,6 +171,7 @@ namespace SiliconStudio.ExecServer
                 using (var appDomainRedirectLogger = new AppDomainRedirectLogger(logger))
                 {
                     appDomainCallback.Logger = appDomainRedirectLogger;
+                    appDomainCallback.CurrentDirectory = workingDirectory;
                     appDomainCallback.Arguments = args;
                     appDomain.DoCallBack(appDomainCallback.Run);
                     var result = appDomainCallback.Result;
@@ -428,6 +430,8 @@ namespace SiliconStudio.ExecServer
 
             public IServerLogger Logger { get; set; }
 
+            public string CurrentDirectory { get; set; }
+
             public string[] Arguments { get; set; }
 
             public int Result { get; private set; }
@@ -455,6 +459,7 @@ namespace SiliconStudio.ExecServer
             public void Run()
             {
                 var currentDomain = AppDomain.CurrentDomain;
+                Environment.CurrentDirectory = CurrentDirectory;
                 currentDomain.SetData(AppDomainLogToActionKey, new Action<string, ConsoleColor>((text, color) => Logger.OnLog(text, color)));
                 var assembly = (Assembly)currentDomain.GetData(AppDomainExecServerEntryAssemblyKey);
                 Result = Convert.ToInt32(assembly.EntryPoint.Invoke(null, new object[] { Arguments }));

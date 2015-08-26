@@ -950,7 +950,8 @@ namespace SiliconStudio.Assets
             {
                 // Use an id generated from the location instead of the default id
                 sourceCodeAsset.Id = SourceCodeAsset.GenerateGuidFromLocation(assetPath);
-                sourceCodeAsset.AbsoluteSourceLocation = fileUPath;
+                sourceCodeAsset.AbsoluteSourceLocation = assetFullPath;
+                sourceCodeAsset.Load();
             }
 
             return asset;
