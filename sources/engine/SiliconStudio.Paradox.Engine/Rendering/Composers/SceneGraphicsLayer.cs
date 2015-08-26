@@ -86,6 +86,7 @@ namespace SiliconStudio.Paradox.Rendering.Composers
         [DataMember(50)]
         [Category]
         [NotNullItems]
+        [MemberCollection(CanReorderItems = true)]
         public SceneRendererCollection Renderers { get; private set; }
 
         internal bool IsMaster { get; set; }

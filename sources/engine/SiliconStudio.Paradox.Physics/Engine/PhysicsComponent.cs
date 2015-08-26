@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Paradox.Engine.Design;
 using SiliconStudio.Paradox.Physics;
 
@@ -25,6 +26,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Elements describing the physical colliders/rigidbodies/character of this entity
         /// Any runtime dynamic change should happen while the entity is not added to the Game object
         /// </summary>
+        [MemberCollection(CanReorderItems = true)]
         public List<IPhysicsElement> Elements { get; private set; }
 
         [DataMemberIgnore]
