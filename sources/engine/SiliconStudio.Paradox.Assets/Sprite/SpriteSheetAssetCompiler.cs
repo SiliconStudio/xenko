@@ -121,9 +121,12 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                 // add the sprite data to the sprite list.
                 foreach (var image in AssetParameters.SheetAsset.Sprites)
                 {
+                    string textureUrl;
                     RectangleF region;
                     ImageOrientation orientation;
-                    string textureUrl;
+
+                    var borders = image.Borders;
+                    var center = image.Center + (image.CenterFromMiddle ? new Vector2(image.TextureRegion.Width, image.TextureRegion.Height) / 2 : Vector2.Zero);
 
                     if (isPacking)
                     {
@@ -136,6 +139,36 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                         region = packedSprite.Region;
                         orientation = (packedSprite.IsRotated ^ isOriginalSpriteRotated) ? ImageOrientation.Rotated90 : ImageOrientation.AsIs;
                         textureUrl = SpriteSheetAsset.BuildTextureAtlasUrl(Url, spriteToPackedSprite[image].AtlasTextureIndex);
+
+                        // update the center and border info, if the packer rotated the sprite 
+                        if (packedSprite.IsRotated)
+                        {
+                            // turned the sprite CCW
+                            if (isOriginalSpriteRotated)
+                            {
+                                var oldCenterX = center.X;
+                                center.X = center.Y;
+                                center.Y = region.Height - oldCenterX;
+
+                                var oldBorderW = borders.W;
+                                borders.W = borders.X;
+                                borders.X = borders.Z;
+                                borders.Z = borders.Y;
+                                borders.Y = oldBorderW;
+                            }
+                            else // turned the sprite CW
+                            {
+                                var oldCenterX = center.X;
+                                center.X = region.Width - center.Y;
+                                center.Y = oldCenterX;
+
+                                var oldBorderW = borders.W;
+                                borders.W = borders.Y;
+                                borders.Y = borders.Z;
+                                borders.Z = borders.X;
+                                borders.X = oldBorderW;
+                            }
+                        }
                     }
                     else
                     {
@@ -161,8 +194,8 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                         Region = region,
                         IsTransparent = AssetParameters.SheetAsset.Alpha != AlphaFormat.None, // todo analyze texture region texture data to auto-determine alpha?
                         Orientation = orientation,
-                        Center = image.Center + (image.CenterFromMiddle ? new Vector2(image.TextureRegion.Width, image.TextureRegion.Height) / 2 : Vector2.Zero),
-                        Borders = image.Borders,
+                        Center = center,
+                        Borders = borders,
                         PixelsPerUnit = new Vector2(image.PixelsPerUnit),
                         Texture = texture
                     });
@@ -199,7 +232,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                     for (var i = 0; i < sprites.Count; ++i)
                     {
                         var sprite = sprites[i];
-                        if (sprite.TextureRegion.Height == 0)
+                        if (sprite.TextureRegion.Height == 0 || sprite.TextureRegion.Width == 0 || sprite.Source == null)
                             continue;
 
                         // Lazy load input texture and cache in the dictionary for the later use
@@ -228,8 +261,8 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                     {
                         Algorithm = packingParameters.PackingAlgorithm,
                         AllowMultipack = packingParameters.AllowMultipacking,
-                        MaxHeight = packingParameters.AtlasMaximumSize.X,
-                        MaxWidth = packingParameters.AtlasMaximumSize.Y,
+                        MaxHeight = packingParameters.AtlasMaximumSize.Y,
+                        MaxWidth = packingParameters.AtlasMaximumSize.X,
                         AllowRotation = packingParameters.AllowRotations,
                     };
 
