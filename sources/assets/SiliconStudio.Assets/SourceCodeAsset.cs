@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel;
+using System.IO;
 using System.Text;
 
 using SiliconStudio.Core;
@@ -33,7 +34,8 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Saves the underlying content located at <see cref="AbsoluteSourceLocation"/> if necessary.
         /// </summary>
-        public virtual void Save()
+        /// <param name="stream"></param>
+        public virtual void Save(Stream stream)
         {
         }
 
