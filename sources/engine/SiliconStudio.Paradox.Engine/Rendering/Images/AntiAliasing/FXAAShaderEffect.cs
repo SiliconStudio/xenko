@@ -22,6 +22,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
+                mixin.AddMacro("FXAA_GREEN_AS_LUMA", context.GetParam(FXAAEffect.GreenAsLumaKey));
                 mixin.AddMacro("FXAA_QUALITY__PRESET", context.GetParam(FXAAEffect.QualityKey));
                 context.Mixin(mixin, "FXAAShader");
             }

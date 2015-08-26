@@ -7,6 +7,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         using params FXAAEffect;
 
         // Mixin 
+        mixin macro FXAA_GREEN_AS_LUMA = FXAAEffect.GreenAsLumaKey;
         mixin macro FXAA_QUALITY__PRESET = FXAAEffect.QualityKey;
         mixin FXAAShader;
     };

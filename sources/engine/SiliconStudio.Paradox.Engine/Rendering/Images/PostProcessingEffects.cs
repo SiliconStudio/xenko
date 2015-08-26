@@ -7,6 +7,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Rendering.Composers;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Rendering.Materials;
 
 namespace SiliconStudio.Paradox.Rendering.Images
 {
@@ -320,6 +321,25 @@ namespace SiliconStudio.Paradox.Rendering.Images
             if (ssaa != null && ssaa.Enabled)
             {
                 outputForLastEffectBeforeAntiAliasing = NewScopedRenderTarget2D(output.Width, output.Height, output.Format);
+            }
+
+            // When FXAA is enabled we need to detect whether the ColorTransformGroup should output the Luminance into the alpha or not
+            var fxaa = ssaa as FXAAEffect;
+            var luminanceToChannelTransform = colorTransformsGroup.PostTransforms.Get<LuminanceToChannelTransform>();
+            if (fxaa != null)
+            {
+                if (luminanceToChannelTransform == null)
+                {
+                    luminanceToChannelTransform = new LuminanceToChannelTransform { ColorChannel = ColorChannel.A };
+                    colorTransformsGroup.PostTransforms.Add(luminanceToChannelTransform);
+                }
+
+                // Only enabled when FXAA is enabled and InputLuminanceInAlpha is true
+                luminanceToChannelTransform.Enabled = fxaa.Enabled && fxaa.InputLuminanceInAlpha;
+            }
+            else if (luminanceToChannelTransform != null)
+            {
+                luminanceToChannelTransform.Enabled = false;
             }
 
             // Color transform group pass (tonemap, color grading, gamma correction)
