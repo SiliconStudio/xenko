@@ -180,6 +180,21 @@ namespace SiliconStudio.Paradox.Rendering.Images
             }
         }
 
+        /// <summary>
+        /// Disables all post processing effects.
+        /// </summary>
+        public void DisableAll()
+        {
+            depthOfField.Enabled = false;
+            luminanceEffect.Enabled = false;
+            brightFilter.Enabled = false;
+            bloom.Enabled = false;
+            lightStreak.Enabled = false;
+            lensFlare.Enabled = false;
+            ssaa.Enabled = false;
+            colorTransformsGroup.Enabled = false;
+        }
+
         protected override void InitializeCore()
         {
             base.InitializeCore();
