@@ -101,6 +101,13 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>FXAAShaderEffect.pdxfx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Images\ColorTransforms\LuminanceToChannelShader.cs">
+      <DependentUpon>LuminanceToChannelShader.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Images\ColorTransforms\LuminanceToChannelTransform.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ColorVertexStreamDefinition.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamBase.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamColor.cs" />
@@ -2270,6 +2277,10 @@
     <None Include="Rendering\BRDF\BRDFMicrofacet.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>BRDFMicrofacet.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\ColorTransforms\LuminanceToChannelShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>LuminanceToChannelShader.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\ComputeColors\Shaders\3dsMax\ComputeColorAdd3ds.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
