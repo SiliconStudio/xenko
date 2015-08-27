@@ -329,7 +329,6 @@ namespace System.Windows.Controls
             // Ensure everything is unloaded before reloading!
             OnUnLoaded(sender, e);
 
-            var autoScroller = new AutoScroller();
             if (SelectionMode == SelectionMode.Single)
             {
                 var selectionSingle = new SelectionSingle(this);
@@ -344,7 +343,6 @@ namespace System.Windows.Controls
 
             inputEventRouter = new InputEventRouter(this);
             inputEventRouter.Add(IsEditingManager);
-            inputEventRouter.Add(autoScroller);
             inputEventRouter.Add((InputSubscriberBase)Selection);
             isInitialized = true;
         }

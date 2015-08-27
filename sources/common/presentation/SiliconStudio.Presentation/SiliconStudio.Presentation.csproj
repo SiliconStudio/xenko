@@ -52,14 +52,9 @@
     <Compile Include="Behaviors\SliderDragFromTrackBehavior.cs" />
     <Compile Include="Behaviors\TextBoxCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\ThumbTransactionalDragBehavior.cs" />
-    <Compile Include="Controls\TreeView\AutoScroller.cs" />
-    <Compile Include="Controls\TreeView\BoolToVisibilityConverterHidden.cs" />
     <Compile Include="Controls\TreeView\BorderSelectionAdorner.cs" />
     <Compile Include="Controls\TreeView\BorderSelectionLogic.cs" />
-    <Compile Include="Controls\TreeView\Constants.cs" />
-    <Compile Include="Controls\TreeView\DoubleToThicknessLeftConverter.cs" />
     <Compile Include="Controls\TreeView\DoubleUtil.cs" />
-    <Compile Include="Controls\TreeView\DummyConverter.cs" />
     <Compile Include="Controls\TreeView\EditTextBox.cs" />
     <Compile Include="Controls\TreeView\FocusHelper.cs" />
     <Compile Include="Controls\TreeView\IEnumerableExtenstions.cs" />
