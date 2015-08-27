@@ -1,65 +1,29 @@
-﻿using SiliconStudio.Presentation.Collections;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Input;
+using SiliconStudio.Presentation.Collections;
 
 namespace System.Windows.Controls
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Windows.Input;
-    using System.Windows.Media;
 
     /// <summary>
     /// Logic for the multiple selection
     /// </summary>
-    internal class SelectionMultiple : InputSubscriberBase, ISelectionStrategy
+    internal class SelectionMultiple : SelectionStrategyBase
     {
-        #region Private fields and constructor
         private readonly TreeViewEx treeViewEx;
 
         private object lastShiftRoot;
         private bool mouseDown;
 
-        public SelectionMultiple(TreeViewEx treeViewEx)
+        public SelectionMultiple(TreeViewEx treeViewEx) : base(treeViewEx)
         {
             this.treeViewEx = treeViewEx;
-
             BorderSelectionLogic = new BorderSelectionLogic(treeViewEx, TreeViewElementFinder.FindAll(treeViewEx, false));
         }
-        #endregion
-
-        #region Properties
 
         internal BorderSelectionLogic BorderSelectionLogic { get; private set; }
-
-        internal static bool IsControlKeyDown
-        {
-            get
-            {
-                return (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
-            }
-        }
-
-        private static bool IsShiftKeyDown
-        {
-            get
-            {
-                return (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
-            }
-        }
-
-        #endregion
-
-        #region Private helper methods
-
-        private TreeViewExItem GetFocusedItem()
-        {
-            foreach (var item in TreeViewElementFinder.FindAll(treeViewEx, false))
-            {
-                if (item.IsFocused) return item;
-            }
-
-            return null;
-        }
-        #endregion
 
         #region Private modify selection methods
 
@@ -185,7 +149,7 @@ namespace System.Windows.Controls
             }
         }
 
-        private void SelectSingleItem(TreeViewExItem item)
+        protected override void SelectSingleItem(TreeViewExItem item)
         {
 
             // selection with SHIFT is not working in virtualized mode. Thats because the Items are not visible.
@@ -251,14 +215,7 @@ namespace System.Windows.Controls
             }
             else
             {
-                if (treeViewEx.SelectedItems.Count > 0)
-                {
-                    firstSelectedItem = treeViewEx.SelectedItems[0];
-                }
-                else
-                {
-                    firstSelectedItem = null;
-                }
+                firstSelectedItem = treeViewEx.SelectedItems.Count > 0 ? treeViewEx.SelectedItems[0] : null;
             }
 
             TreeViewExItem shiftRootItem = treeViewEx.GetTreeViewItemsFor(new List<object> { firstSelectedItem }).First();
@@ -293,101 +250,20 @@ namespace System.Windows.Controls
 
         #endregion
 
-        #region ISelectionStrategy Members
-
-        public void SelectFromUiAutomation(TreeViewExItem item)
+        public override void SelectFromProperty(TreeViewExItem item, bool isSelected)
         {
-            SelectSingleItem(item);
-
-            FocusHelper.Focus(item);
-        }
-
-        public void SelectFromProperty(TreeViewExItem item, bool isSelected)
-        {
-            // we do not check if selection is allowed, because selecting on that way is no user action.
-            // Hopefully the programmer knows what he does...
             if (isSelected)
             {
-                treeViewEx.SelectedItems.Add(item.DataContext);
                 lastShiftRoot = item.DataContext;
-                FocusHelper.Focus(item);
             }
-            else
-            {
-                treeViewEx.SelectedItems.Remove(item.DataContext);
-            }
+            base.SelectFromProperty(item, isSelected);
         }
 
-        public void SelectFirst()
+        public override void ClearObsoleteItems(IList items)
         {
-            TreeViewExItem item = TreeViewElementFinder.FindFirst(treeViewEx, true);
-            if (item != null)
-            {
-                SelectSingleItem(item);
-            }
-
-            FocusHelper.Focus(item);
+            base.ClearObsoleteItems(items);
+            if (items.Contains(lastShiftRoot))
+                lastShiftRoot = null;
         }
-
-        public void SelectLast()
-        {
-            TreeViewExItem item = TreeViewElementFinder.FindLast(treeViewEx, true);
-            if (item != null)
-            {
-                SelectSingleItem(item);
-            }
-
-            FocusHelper.Focus(item);
-        }
-
-        public void SelectNextFromKey()
-        {
-            TreeViewExItem item = GetFocusedItem();
-            item = TreeViewElementFinder.FindNext(item, true);
-            if (item == null) return;
-
-            // if ctrl is pressed just focus it, so it can be selected by space. Otherwise select it.
-            if (!IsControlKeyDown)
-            {
-                SelectSingleItem(item);
-            }
-
-            FocusHelper.Focus(item);
-        }
-
-        public void SelectPreviousFromKey()
-        {
-            List<TreeViewExItem> items = TreeViewElementFinder.FindAll(treeViewEx, true).ToList();
-            TreeViewExItem item = GetFocusedItem();
-            item = treeViewEx.GetPreviousItem(item, items);
-            if (item == null) return;
-
-            // if ctrl is pressed just focus it, so it can be selected by space. Otherwise select it.
-            if (!IsControlKeyDown)
-            {
-                SelectSingleItem(item);
-            }
-
-            FocusHelper.Focus(item);
-        }
-
-        public void SelectCurrentBySpace()
-        {
-            TreeViewExItem item = GetFocusedItem();
-            SelectSingleItem(item);
-            FocusHelper.Focus(item);
-        }
-
-        public void ClearObsoleteItems(IEnumerable<object> items)
-        {
-            foreach (object itemToUnSelect in items)
-            {
-                if (treeViewEx.SelectedItems.Contains(itemToUnSelect)) treeViewEx.SelectedItems.Remove(itemToUnSelect);
-            }
-
-            if (items.Contains(lastShiftRoot)) lastShiftRoot = null;
-        }
-
-        #endregion
     }
 }

@@ -664,8 +664,7 @@ namespace System.Windows.Controls
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Remove:
-                    if (Selection != null) // happens during unload
-                        Selection.ClearObsoleteItems(e.OldItems.Cast<object>());
+                    Selection?.ClearObsoleteItems(e.OldItems);
                     break;
 
                 case NotifyCollectionChangedAction.Reset:

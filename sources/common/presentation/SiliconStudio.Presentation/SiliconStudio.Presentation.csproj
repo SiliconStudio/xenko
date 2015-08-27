@@ -62,10 +62,10 @@
     <Compile Include="Controls\TreeView\SelectionChangedCancelEventArgs.cs" />
     <Compile Include="Controls\TreeView\SelectionMultiple.cs" />
     <Compile Include="Controls\TreeView\SelectionSingle.cs" />
+    <Compile Include="Controls\TreeView\SelectionStrategyBase.cs" />
     <Compile Include="Controls\TreeView\SizesCache.cs" />
     <Compile Include="Controls\TreeView\TreeViewElementFinder.cs" />
     <Compile Include="Controls\TreeView\TreeViewEx.cs" />
-    <Compile Include="Controls\TreeView\TreeViewExItem.Brushes.cs" />
     <Compile Include="Controls\TreeView\TreeViewExItem.cs" />
     <Compile Include="Controls\TreeView\VerticalArea.cs" />
     <Compile Include="Controls\TreeView\VirtualizingTreePanel.cs" />
