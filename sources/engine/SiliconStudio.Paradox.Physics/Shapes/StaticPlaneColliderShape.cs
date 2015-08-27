@@ -20,7 +20,10 @@ namespace SiliconStudio.Paradox.Physics
             Type = ColliderShapeTypes.StaticPlane;
             Is2D = false;
 
-            InternalShape = new BulletSharp.StaticPlaneShape(normal, offset);
+            InternalShape = new BulletSharp.StaticPlaneShape(normal, offset)
+            {
+                LocalScaling = Vector3.One
+            };
         }
     }
 }
