@@ -6,6 +6,7 @@
 
 using System.Windows.Core;
 using SiliconStudio.Presentation.Collections;
+using SiliconStudio.Presentation.Extensions;
 
 namespace System.Windows.Controls
 {
@@ -302,11 +303,11 @@ namespace System.Windows.Controls
                 {
                     // The Tree template has not named the ItemsPresenter, 
                     // so walk the descendents and find the child.
-                    itemsPresenter = TreeHelper.FindVisualChild<ItemsPresenter>(container);
+                    itemsPresenter = container.FindVisualChildOfType<ItemsPresenter>();
                     if (itemsPresenter == null)
                     {
                         container.UpdateLayout();
-                        itemsPresenter = TreeHelper.FindVisualChild<ItemsPresenter>(container);
+                        itemsPresenter = container.FindVisualChildOfType<ItemsPresenter>();
                     }
                 }
                 if (itemsPresenter == null)
