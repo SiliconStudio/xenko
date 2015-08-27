@@ -1,146 +1,74 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Input;
 using SiliconStudio.Presentation.Collections;
 
 namespace System.Windows.Controls
 {
-
     /// <summary>
     /// Logic for the multiple selection
     /// </summary>
     internal class SelectionMultiple : SelectionStrategyBase
     {
         private object lastShiftRoot;
-        private bool mouseDown;
 
         public SelectionMultiple(TreeViewEx treeViewEx) : base(treeViewEx)
         {
         }
 
-        #region Private modify selection methods
-
         private void ToggleItem(TreeViewExItem item)
         {
+            if (item.DataContext == null)
+                return;
+
             if (TreeViewEx.SelectedItems.Contains(item.DataContext))
             {
-                ModifySelection(null, item.DataContext);
+                ModifySelection(new List<object>(), new List<object>(1) { item.DataContext });
             }
             else
             {
-                ModifySelection(item.DataContext, null);
+                ModifySelection(new List<object>(1) { item.DataContext }, new List<object>());
             }
         }
 
-        private bool ModifySelection(object itemToSelect, List<object> itemsToUnselect)
-        {
-            var itemsToSelect = new List<object>(1) { itemToSelect };
-            if (itemsToUnselect == null) itemsToUnselect = new List<object>();
-            return ModifySelection(itemsToSelect, itemsToUnselect);
-        }
-
-        private bool ModifySelection(List<object> itemsToSelect, object itemToUnselect)
-        {
-            if (itemsToSelect == null) itemsToSelect = new List<object>();
-
-            List<object> itemsToUnselect = new List<object>();
-            if (itemToUnselect != null) itemsToUnselect.Add(itemToUnselect);
-
-            return ModifySelection(itemsToSelect, itemsToUnselect);
-        }
-
-        private bool ModifySelection(List<object> itemsToSelect, List<object> itemsToUnselect)
+        private void ModifySelection(List<object> itemsToSelect, List<object> itemsToUnselect)
         {
             //clean up any duplicate or unnecessery input
-            OptimizeModifySelection(itemsToSelect, itemsToUnselect);
+            // check for itemsToUnselect also in itemsToSelect
+            foreach (var item in itemsToSelect)
+            {
+                itemsToUnselect.Remove(item);
+            }
+
+            // check for itemsToSelect already in SelectedItems
+            foreach (var item in TreeViewEx.SelectedItems)
+            {
+                itemsToSelect.Remove(item);
+            }
+
+            // check for itemsToUnSelect not in SelectedItems
+            foreach (var item in itemsToUnselect.Where(x => !TreeViewEx.SelectedItems.Contains(x)).ToList())
+            {
+                itemsToUnselect.Remove(item);
+            }
 
             //check if there's anything to do.
             if (itemsToSelect.Count == 0 && itemsToUnselect.Count == 0)
-            {
-                return false;
-            }
-
-            // notify listeners what is about to change.
-            // Let them cancel and/or handle the selection list themself
-            bool allowed = TreeViewEx.CheckSelectionAllowed(itemsToSelect, itemsToUnselect);
-            if (!allowed) return false;
+                return;
 
             // Unselect and then select items
-            foreach (object itemToUnSelect in itemsToUnselect)
+            foreach (var itemToUnSelect in itemsToUnselect)
             {
                 TreeViewEx.SelectedItems.Remove(itemToUnSelect);
             }
 
             ((NonGenericObservableListWrapper<object>)TreeViewEx.SelectedItems).AddRange(itemsToSelect);
 
-            object lastSelectedItem = itemsToSelect.LastOrDefault();
+            if (itemsToUnselect.Contains(lastShiftRoot))
+                lastShiftRoot = null;
 
-            if (itemsToUnselect.Contains(lastShiftRoot)) lastShiftRoot = null;
-            if (!(TreeView.SelectedItems.Contains(lastShiftRoot) && IsShiftKeyDown)) lastShiftRoot = lastSelectedItem;
-
-            return true;
-        }
-
-        private void OptimizeModifySelection(List<object> itemsToSelect, List<object> itemsToUnselect)
-        {
-            // check for items in both lists and remove them in unselect list
-            List<object> biggerList;
-            List<object> smallerList;
-            if (itemsToSelect.Count > itemsToUnselect.Count)
-            {
-                biggerList = itemsToSelect;
-                smallerList = itemsToUnselect;
-            }
-            else
-            {
-                smallerList = itemsToUnselect;
-                biggerList = itemsToSelect;
-            }
-
-            List<object> temporaryList = new List<object>();
-            foreach (object item in biggerList)
-            {
-                if (smallerList.Contains(item))
-                {
-                    temporaryList.Add(item);
-                }
-            }
-
-            foreach (var item in temporaryList)
-            {
-                itemsToUnselect.Remove(item);
-            }
-
-            // check for itemsToSelect allready in treeViewEx.SelectedItems
-            temporaryList.Clear();
-            foreach (object item in itemsToSelect)
-            {
-                if (TreeViewEx.SelectedItems.Contains(item))
-                {
-                    temporaryList.Add(item);
-                }
-            }
-
-            foreach (var item in temporaryList)
-            {
-                itemsToSelect.Remove(item);
-            }
-
-            // check for itemsToUnSelect not in treeViewEx.SelectedItems
-            temporaryList.Clear();
-            foreach (object item in itemsToUnselect)
-            {
-                if (!TreeViewEx.SelectedItems.Contains(item))
-                {
-                    temporaryList.Add(item);
-                }
-            }
-
-            foreach (var item in temporaryList)
-            {
-                itemsToUnselect.Remove(item);
-            }
+            if (!(TreeView.SelectedItems.Contains(lastShiftRoot) && IsShiftKeyDown))
+                lastShiftRoot = itemsToSelect.LastOrDefault();
         }
 
         protected override void SelectSingleItem(TreeViewExItem item)
@@ -159,45 +87,8 @@ namespace System.Windows.Controls
             else
             {
                 TreeViewEx.SelectedItems.Clear();
-                ModifySelection(item.DataContext, null);
+                ModifySelection(new List<object>(1) { item.DataContext }, new List<object>());
             }
-
-        }
-        #endregion
-
-        #region Overrides InputSubscriberBase
-        internal override void OnMouseDown(MouseButtonEventArgs e)
-        {
-            base.OnMouseDown(e);
-
-            mouseDown = e.ChangedButton == MouseButton.Left;
-
-            TreeViewExItem item = GetTreeViewItemUnderMouse(e.GetPosition(TreeViewEx));
-            if (item == null) return;
-            if (e.ChangedButton != MouseButton.Right || item.ContextMenu == null) return;            
-            if (item.IsEditing) return;
-
-            SelectSingleItem(item);
-
-            FocusHelper.Focus(item);
-        }
-
-        internal override void OnMouseUp(MouseButtonEventArgs e)
-        {
-            base.OnMouseUp(e);
-
-            if (mouseDown)
-            {
-                TreeViewExItem item = GetTreeViewItemUnderMouse(e.GetPosition(TreeViewEx));
-                if (item == null) return;
-                if (e.ChangedButton != MouseButton.Left) return;
-                if (item.IsEditing) return;
-
-                SelectSingleItem(item);
-
-                FocusHelper.Focus(item);
-            }
-            mouseDown = false;
         }
 
         private void SelectWithShift(TreeViewExItem item)
@@ -212,14 +103,13 @@ namespace System.Windows.Controls
                 firstSelectedItem = TreeViewEx.SelectedItems.Count > 0 ? TreeViewEx.SelectedItems[0] : null;
             }
 
-            TreeViewExItem shiftRootItem = TreeViewEx.GetTreeViewItemsFor(new List<object> { firstSelectedItem }).First();
+            var shiftRootItem = TreeViewEx.GetTreeViewItemsFor(new List<object> { firstSelectedItem }).First();
 
-            List<object> itemsToSelect = TreeViewEx.GetNodesToSelectBetween(shiftRootItem, item).Select(x => x.DataContext).ToList();
-            List<object> itemsToUnSelect = ((IEnumerable<object>)TreeViewEx.SelectedItems).ToList();
+            var itemsToSelect = TreeViewEx.GetNodesToSelectBetween(shiftRootItem, item).Select(x => x.DataContext).ToList();
+            var itemsToUnSelect = ((IEnumerable<object>)TreeViewEx.SelectedItems).ToList();
 
             ModifySelection(itemsToSelect, itemsToUnSelect);
         }
-        #endregion
 
         public override void SelectFromProperty(TreeViewExItem item, bool isSelected)
         {

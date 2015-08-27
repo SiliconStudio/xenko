@@ -25,7 +25,6 @@ namespace System.Windows.Controls
 
     public class TreeViewEx : ItemsControl
     {
-        #region Constants and Fields
         // the space where items will be realized if virtualization is enabled. This is set by virtualizingtreepanel.
         internal VerticalArea realizationSpace = new VerticalArea();
         internal SizesCache cachedSizes = new SizesCache();
@@ -72,10 +71,6 @@ namespace System.Windows.Controls
 
         private ScrollViewer scroller;
 
-        #endregion
-
-        #region Constructors and Destructors
-
         static TreeViewEx()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(TreeViewEx), new FrameworkPropertyMetadata(typeof(TreeViewEx)));
@@ -94,14 +89,6 @@ namespace System.Windows.Controls
         {
             SelectedItems = new NonGenericObservableListWrapper<object>(new ObservableList<object>());
         }
-
-        #endregion
-
-        #region Public Events
-
-        public event EventHandler<SelectionChangedCancelEventArgs> OnSelecting;
-
-        #endregion
 
         #region Properties
 
@@ -326,45 +313,6 @@ namespace System.Windows.Controls
             Keyboard.Focus(editedItem);
             FocusHelper.Focus(editedItem);
             editedItem = null;
-        }
-
-        internal bool CheckSelectionAllowed(object item, bool isItemAdded)
-        {
-            if (isItemAdded)
-            {
-                return CheckSelectionAllowed(new List<object> { item }, new List<object>());
-            }
-
-            return CheckSelectionAllowed(new List<object>(), new List<object> { item });
-        }
-
-        internal bool CheckSelectionAllowed(object itemAdded, object itemRemoved)
-        {
-            var added = itemAdded != null ? new List<object> { itemAdded } : new List<object>(0);
-            var removed = itemRemoved != null ? new List<object> { itemRemoved } : new List<object>(0);
-            return CheckSelectionAllowed(added, removed);
-        }
-
-        internal bool CheckSelectionAllowed(IEnumerable<object> itemsToSelect, IEnumerable<object> itemsToUnselect)
-        {
-            if (OnSelecting != null)
-            {
-                var e = new SelectionChangedCancelEventArgs(itemsToSelect, itemsToUnselect);
-                foreach (var method in OnSelecting.GetInvocationList())
-                {
-                    method.Method.Invoke(method.Target, new object[] { this, e });
-
-                    // stop iteration if one subscriber wants to cancel
-                    if (e.Cancel)
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
-
-            return true;
         }
 
         internal IEnumerable<TreeViewExItem> GetChildren(TreeViewExItem item)

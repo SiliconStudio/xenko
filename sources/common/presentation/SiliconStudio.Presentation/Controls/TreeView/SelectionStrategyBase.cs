@@ -8,6 +8,7 @@ namespace System.Windows.Controls
     internal abstract class SelectionStrategyBase : InputSubscriberBase, ISelectionStrategy
     {
         protected TreeViewEx TreeViewEx;
+        private bool mouseDown;
 
         protected SelectionStrategyBase(TreeViewEx treeViewEx)
         {
@@ -101,10 +102,44 @@ namespace System.Windows.Controls
 
         public virtual void ClearObsoleteItems(IList items)
         {
-            foreach (object itemToUnSelect in items.Cast<object>().Where(x => TreeViewEx.SelectedItems.Contains(x)))
+            foreach (var itemToUnSelect in items)
             {
                 TreeViewEx.SelectedItems.Remove(itemToUnSelect);
             }
+        }
+
+        internal override void OnMouseDown(MouseButtonEventArgs e)
+        {
+            base.OnMouseDown(e);
+
+            mouseDown = e.ChangedButton == MouseButton.Left;
+
+            TreeViewExItem item = GetTreeViewItemUnderMouse(e.GetPosition(TreeViewEx));
+            if (item == null) return;
+            if (e.ChangedButton != MouseButton.Right || item.ContextMenu == null) return;
+            if (item.IsEditing) return;
+
+            SelectSingleItem(item);
+
+            FocusHelper.Focus(item);
+        }
+
+        internal override void OnMouseUp(MouseButtonEventArgs e)
+        {
+            base.OnMouseUp(e);
+
+            if (mouseDown)
+            {
+                TreeViewExItem item = GetTreeViewItemUnderMouse(e.GetPosition(TreeViewEx));
+                if (item == null) return;
+                if (e.ChangedButton != MouseButton.Left) return;
+                if (item.IsEditing) return;
+
+                SelectSingleItem(item);
+
+                FocusHelper.Focus(item);
+            }
+            mouseDown = false;
         }
 
         protected abstract void SelectSingleItem(TreeViewExItem item);
