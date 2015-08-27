@@ -1,4 +1,5 @@
 ﻿using System.Windows.Core;
+using SiliconStudio.Presentation.Collections;
 
 namespace System.Windows.Controls
 {
@@ -114,7 +115,7 @@ namespace System.Windows.Controls
                 treeViewEx.SelectedItems.Remove(itemToUnSelect);
             }
 
-            ((ObservableList<object>)treeViewEx.SelectedItems).AddRange(itemsToSelect);
+            ((NonGenericObservableListWrapper<object>)treeViewEx.SelectedItems).AddRange(itemsToSelect);
 
             object lastSelectedItem = itemsToSelect.LastOrDefault();
 

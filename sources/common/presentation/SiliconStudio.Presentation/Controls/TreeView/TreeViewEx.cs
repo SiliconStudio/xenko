@@ -5,6 +5,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System.Windows.Core;
+using SiliconStudio.Presentation.Collections;
 
 namespace System.Windows.Controls
 {
@@ -103,7 +104,7 @@ namespace System.Windows.Controls
 
         public TreeViewEx()
         {
-            SelectedItems = new ObservableList<object>();
+            SelectedItems = new NonGenericObservableListWrapper<object>(new ObservableList<object>());
         }
 
         #endregion

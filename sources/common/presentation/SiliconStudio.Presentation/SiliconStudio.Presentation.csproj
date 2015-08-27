@@ -65,7 +65,6 @@
     <Compile Include="Controls\TreeView\ISelectionStrategy.cs" />
     <Compile Include="Controls\TreeView\ItemWrapper.cs" />
     <Compile Include="Controls\TreeView\MethodBinding.cs" />
-    <Compile Include="Controls\TreeView\ObservableList.cs" />
     <Compile Include="Controls\TreeView\PropertyChangedNotifier.cs" />
     <Compile Include="Controls\TreeView\SelectionChangedCancelEventArgs.cs" />
     <Compile Include="Controls\TreeView\SelectionMultiple.cs" />
