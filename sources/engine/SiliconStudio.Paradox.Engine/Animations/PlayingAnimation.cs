@@ -105,6 +105,13 @@ namespace SiliconStudio.Paradox.Animations
                 }
             }
 
+            //Make sure Evaluator is populated
+            //TODO this is not optimal, but since evaluators are being pooled there is no other safe way
+            if (Evaluator == null)
+            {
+                Evaluator = AnimationComponent.Blender.CreateEvaluator(Clip);
+            }
+
             // Update animation channel factors
             var blenderChannels = Evaluator.BlenderChannels;
             var channels = Evaluator.Channels.Items;
