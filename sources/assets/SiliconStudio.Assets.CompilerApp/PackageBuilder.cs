@@ -89,7 +89,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 var projectSession = projectSessionResult.Session;
 
                 // Check build configuration
-                var package = projectSession.LocalPackages.First();
+                var package = projectSession.LocalPackages.Last();
 
                 // Check build profile
                 var sharedProfile = package.Profiles.FindSharedProfile();
