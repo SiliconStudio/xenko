@@ -54,11 +54,23 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
 
                 // calculate the size of the source region and the starting offsets taking into account the rotation
                 var sourceRegionSize = new Int2(safeSourceRegion.Width, safeSourceRegion.Height);
+                var destRegionSize = new Int2(element.DestinationRegion.Width, element.DestinationRegion.Height);
                 var sourceStartOffsets = new Int2(Math.Min(0, element.SourceRegion.X), Math.Min(0, element.SourceRegion.Y));
                 if (isDestinationRotated)
                 {
+                    var oldSourceStartOffsetX = sourceStartOffsets.X;
+                    if (isSourceRotated)
+                    {
+                        sourceStartOffsets.X = sourceStartOffsets.Y;
+                        sourceStartOffsets.Y = sourceRegionSize.X - sourceStartOffsets.X - destRegionSize.Y + 2*element.BorderSize;
+                    }
+                    else
+                    {
+                        sourceStartOffsets.X = sourceRegionSize.Y - sourceStartOffsets.Y - destRegionSize.X + 2*element.BorderSize;
+                        sourceStartOffsets.Y = oldSourceStartOffsetX;
+                    }
+
                     Utilities.Swap(ref sourceRegionSize.X, ref sourceRegionSize.Y);
-                    Utilities.Swap(ref sourceStartOffsets.X, ref sourceStartOffsets.Y);
                 }
 
                 unsafe
