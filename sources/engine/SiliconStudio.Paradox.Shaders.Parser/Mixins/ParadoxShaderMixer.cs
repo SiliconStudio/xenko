@@ -1378,23 +1378,35 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             {
                 if (!duplicateVariables.Contains(variable))
                 {
+                    var sourceMixinName = (variable.GetTag(ParadoxTags.ShaderScope) as ModuleMixin).MixinName;
+
                     var semantic = variable.Qualifiers.OfType<Semantic>().First();
 
                     var sameSemanticVariables = allVariablesWithSemantic.Where(x => x != variable && x.Qualifiers.Values.OfType<Semantic>().Any(y => AreSameSemantics(y.Name.Text, semantic.Name.Text))).ToList();
-                    
+
                     foreach (var sameSemVar in sameSemanticVariables)
                     {
+                        var newMixinName = (sameSemVar.GetTag(ParadoxTags.ShaderScope) as ModuleMixin).MixinName;
+
+                        // Check if declared in the same constant buffer
                         var cbufferName = variable.ContainsTag(ParadoxTags.ConstantBuffer) ? variable.GetTag(ParadoxTags.ConstantBuffer) as string : null;
                         var newcbufferName = sameSemVar.ContainsTag(ParadoxTags.ConstantBuffer) ? sameSemVar.GetTag(ParadoxTags.ConstantBuffer) as string : null;
                         if (cbufferName != null ^ newcbufferName != null)
+                        {
                             variable.SetTag(ParadoxTags.ConstantBuffer, cbufferName ?? newcbufferName);
+                        }
                         else if (cbufferName != null && cbufferName != newcbufferName)
                         {
-                            var sourceMixinName = (variable.GetTag(ParadoxTags.ShaderScope) as ModuleMixin).MixinName;
-                            var newMixinName = (sameSemVar.GetTag(ParadoxTags.ShaderScope) as ModuleMixin).MixinName;
                             log.Error(ParadoxMessageCode.ErrorSemanticCbufferConflict, variable.Span, variable, sourceMixinName, sameSemVar, newMixinName, semantic, cbufferName, newcbufferName);
                         }
 
+                        // Check if declared as the same type
+                        if (variable.Type != sameSemVar.Type)
+                        {
+                            log.Error(ParadoxMessageCode.ErrorSemanticTypeConflict, variable.Span, variable, sourceMixinName, sameSemVar, newMixinName, semantic, variable.Type, sameSemVar.Type);
+                        }
+
+                        // Rewrite references
                         foreach (var exp in mainModuleMixin.ClassReferences.VariablesReferences[sameSemVar])
                         {
                             if (exp.Expression is VariableReferenceExpression)
