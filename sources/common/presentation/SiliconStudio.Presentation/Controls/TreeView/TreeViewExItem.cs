@@ -276,11 +276,11 @@ namespace System.Windows.Controls
             var newValue = (bool)e.NewValue;
             if (newValue)
             {
-                item.ParentTreeView.IsEditingManager.StartEditing(item);
+                item.ParentTreeView.StartEditing(item);
             }
-            else if (!newValue)
+            else
             {
-                item.ParentTreeView.IsEditingManager.StopEditing();
+                item.ParentTreeView.StopEditing();
             }
         }
 

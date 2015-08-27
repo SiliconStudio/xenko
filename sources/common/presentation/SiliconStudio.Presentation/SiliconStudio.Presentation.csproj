@@ -58,7 +58,6 @@
     <Compile Include="Controls\TreeView\FocusHelper.cs" />
     <Compile Include="Controls\TreeView\InputEventRouter.cs" />
     <Compile Include="Controls\TreeView\InputSubscriberBase.cs" />
-    <Compile Include="Controls\TreeView\IsEditingManager.cs" />
     <Compile Include="Controls\TreeView\ISelectionStrategy.cs" />
     <Compile Include="Controls\TreeView\SelectionChangedCancelEventArgs.cs" />
     <Compile Include="Controls\TreeView\SelectionMultiple.cs" />

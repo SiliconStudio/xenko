@@ -30,6 +30,7 @@ namespace System.Windows.Controls
         internal VerticalArea realizationSpace = new VerticalArea();
         internal SizesCache cachedSizes = new SizesCache();
         private bool updatingSelection;
+        TreeViewExItem editedItem;
 
         public static DependencyProperty BackgroundSelectionRectangleProperty =
            DependencyProperty.Register(
@@ -152,8 +153,6 @@ namespace System.Windows.Controls
             }
         }
 
-        internal IsEditingManager IsEditingManager { get; set; }
-
         /// <summary>
         ///   Gets or sets a list of selected items and can be bound to another list. If the source list implements <see
         ///    cref="INotifyPropertyChanged" /> the changes are automatically taken over.
@@ -273,6 +272,12 @@ namespace System.Windows.Controls
             return true;
         }
 
+        protected override void OnMouseDown(MouseButtonEventArgs e)
+        {
+            base.OnMouseDown(e);
+            StopEditing();
+        }
+
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             // Ensure everything is unloaded before reloading!
@@ -288,10 +293,8 @@ namespace System.Windows.Controls
                 var selectionMultiple = new SelectionMultiple(this);
                 Selection = selectionMultiple;
             }
-            IsEditingManager = new IsEditingManager(this);
 
             inputEventRouter = new InputEventRouter(this);
-            inputEventRouter.Add(IsEditingManager);
             inputEventRouter.Add((InputSubscriberBase)Selection);
             isInitialized = true;
         }
@@ -306,6 +309,23 @@ namespace System.Windows.Controls
 
             Selection = null;
             scroller = null;
+        }
+
+        internal void StartEditing(TreeViewExItem item)
+        {
+            if (item == null) throw new ArgumentNullException(nameof(item));
+            StopEditing();
+            editedItem = item;
+        }
+
+        internal void StopEditing()
+        {
+            if (editedItem == null)
+                return;
+
+            Keyboard.Focus(editedItem);
+            FocusHelper.Focus(editedItem);
+            editedItem = null;
         }
 
         internal bool CheckSelectionAllowed(object item, bool isItemAdded)
