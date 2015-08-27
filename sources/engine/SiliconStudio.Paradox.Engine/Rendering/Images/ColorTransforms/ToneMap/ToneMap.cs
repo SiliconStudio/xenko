@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         {
             timer = new Stopwatch();
             AutoKeyValue = true;
-            Operator = new ToneMapHejlDawsonOperator();
+            Operator = new ToneMapHejl2Operator();
             AdaptationRate = 1.0f;
         }
 
@@ -123,7 +123,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// </summary>
         /// <value>The luminance local factor.</value>
         [DataMember(50)]
-        [DefaultValue(0.5f)]
+        [DefaultValue(0.0f)]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
         public float LuminanceLocalFactor
         {

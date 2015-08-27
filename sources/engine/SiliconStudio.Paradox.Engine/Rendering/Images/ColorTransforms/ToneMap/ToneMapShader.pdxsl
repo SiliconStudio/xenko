@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         // Exposure
         float KeyValue = 0.18f;
         bool  AutoKeyValue = false;
-        float LuminanceLocalFactor = 0.5f;
+        float LuminanceLocalFactor = 0.0f;
         float LuminanceAverageGlobal;
 
         // Color/Gamma correction

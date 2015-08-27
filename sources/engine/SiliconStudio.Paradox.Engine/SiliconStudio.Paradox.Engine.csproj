@@ -108,6 +108,13 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Rendering\Images\ColorTransforms\LuminanceToChannelTransform.cs" />
+    <Compile Include="Rendering\Images\ColorTransforms\ToneMap\ToneMapHejl2Operator.cs" />
+    <Compile Include="Rendering\Images\ColorTransforms\ToneMap\ToneMapHejl2OperatorShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ToneMapHejl2OperatorShader.pdxsl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Materials\ComputeColors\ColorVertexStreamDefinition.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamBase.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamColor.cs" />
@@ -2281,6 +2288,10 @@
     <None Include="Rendering\Images\ColorTransforms\LuminanceToChannelShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>LuminanceToChannelShader.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\ColorTransforms\ToneMap\ToneMapHejl2OperatorShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ToneMapHejl2OperatorShader.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\ComputeColors\Shaders\3dsMax\ComputeColorAdd3ds.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
