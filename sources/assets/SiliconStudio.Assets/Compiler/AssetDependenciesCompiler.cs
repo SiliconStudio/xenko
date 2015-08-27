@@ -35,7 +35,7 @@ namespace SiliconStudio.Assets.Compiler
             assetCompilerContext.Package = dependenciesCompilePackage.LocalPackages.FirstOrDefault();
             var clonedAsset = dependenciesCompilePackage.FindAsset(assetItem.Id);
 
-            CompileWithDependencies(assetCompilerContext, clonedAsset, compilerResult);
+            CompileWithDependencies(assetCompilerContext, clonedAsset, assetItem, compilerResult);
 
             return compilerResult;
         }
@@ -45,8 +45,9 @@ namespace SiliconStudio.Assets.Compiler
         /// </summary>
         /// <param name="context">The asset compiler context.</param>
         /// <param name="assetItem">The asset to compile with its dependencies.</param>
+        /// <param name="originalItem"></param>
         /// <param name="compilationResult">The result of the compilation.</param>
-        protected virtual void CompileWithDependencies(AssetCompilerContext context, AssetItem assetItem, AssetCompilerResult compilationResult)
+        protected virtual void CompileWithDependencies(AssetCompilerContext context, AssetItem assetItem, AssetItem originalItem, AssetCompilerResult compilationResult)
         {
             CompilePackage(context, compilationResult);
         }
