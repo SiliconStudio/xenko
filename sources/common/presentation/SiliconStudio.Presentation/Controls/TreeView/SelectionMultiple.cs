@@ -1,5 +1,4 @@
-﻿using System.Windows.Core;
-using SiliconStudio.Presentation.Collections;
+﻿using SiliconStudio.Presentation.Collections;
 
 namespace System.Windows.Controls
 {

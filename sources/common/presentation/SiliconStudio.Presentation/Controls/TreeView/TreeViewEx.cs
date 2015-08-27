@@ -4,7 +4,6 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System.Windows.Core;
 using SiliconStudio.Presentation.Collections;
 using SiliconStudio.Presentation.Extensions;
 
@@ -31,19 +30,6 @@ namespace System.Windows.Controls
         internal VerticalArea realizationSpace = new VerticalArea();
         internal SizesCache cachedSizes = new SizesCache();
         private bool updatingSelection;
-
-        public static readonly DependencyProperty DragTemplateProperty = DependencyProperty.Register(
-           "DragTemplate", typeof(DataTemplate), typeof(TreeViewEx), new PropertyMetadata(null));
-
-        public static readonly DependencyProperty InsertTemplateProperty = DependencyProperty.Register(
-           "InsertTemplate", typeof(DataTemplate), typeof(TreeViewEx), new PropertyMetadata(null));
-
-        public static DependencyProperty InsertionMarkerBrushProperty =
-           DependencyProperty.Register(
-              "InsertionMarkerBrush",
-              typeof(Brush),
-              typeof(TreeViewEx),
-              new FrameworkPropertyMetadata(Brushes.Black, null));
 
         public static DependencyProperty BackgroundSelectionRectangleProperty =
            DependencyProperty.Register(
@@ -147,45 +133,6 @@ namespace System.Windows.Controls
             set
             {
                 SetValue(BorderBrushSelectionRectangleProperty, value);
-            }
-        }
-
-        public Brush InsertionMarkerBrush
-        {
-            get
-            {
-                return (Brush)GetValue(InsertionMarkerBrushProperty);
-            }
-
-            set
-            {
-                SetValue(InsertionMarkerBrushProperty, value);
-            }
-        }
-
-        public DataTemplate DragTemplate
-        {
-            get
-            {
-                return (DataTemplate)GetValue(DragTemplateProperty);
-            }
-
-            set
-            {
-                SetValue(DragTemplateProperty, value);
-            }
-        }
-
-        public DataTemplate InsertTemplate
-        {
-            get
-            {
-                return (DataTemplate)GetValue(InsertTemplateProperty);
-            }
-
-            set
-            {
-                SetValue(InsertTemplateProperty, value);
             }
         }
 

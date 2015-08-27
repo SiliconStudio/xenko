@@ -14,14 +14,6 @@
 	/// </summary>
 	public static class FocusHelper
 	{
-		#region Public Methods
-
-		public static void Focus(EditTextBox element)
-		{
-			//System.Diagnostics.Debug.WriteLine("Focus textbox with helper:" + element.Text);
-			FocusCore(element);
-		}
-
 		public static void Focus(TreeViewExItem element)
 		{
 			// System.Diagnostics.Debug.WriteLine("Focus with helper item: " + element.DataContext);
@@ -56,7 +48,5 @@
 			}
 #endif
 		}
-
-		#endregion
 	}
 }
