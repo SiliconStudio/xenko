@@ -53,14 +53,14 @@ namespace SiliconStudio.ExecServer
         {
         }
 
-        public int Run(string[] args)
+        public int Run(string currentDirectory, string[] args)
         {
             Console.WriteLine("Run Received {0}", string.Join(" ", args));
 
             upTime.Restart();
 
             var logger = OperationContext.Current.GetCallbackChannel<IServerLogger>();
-            var result = shadowManager.Run(args, logger);
+            var result = shadowManager.Run(currentDirectory, args, logger);
             return result;
         }
 

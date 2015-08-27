@@ -2,14 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
-
-using Microsoft.Build.Utilities;
 
 using SharpYaml;
 using SiliconStudio.Assets.Analysis;
@@ -20,8 +16,6 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Storage;
-
-using Logger = SiliconStudio.Core.Diagnostics.Logger;
 
 namespace SiliconStudio.Assets
 {
@@ -56,8 +50,12 @@ namespace SiliconStudio.Assets
     [DataContract("Package")]
     [AssetDescription(PackageFileExtension)]
     [DebuggerDisplay("Id: {Id}, Name: {Meta.Name}, Version: {Meta.Version}, Assets [{Assets.Count}]")]
+    [AssetFormatVersion(PackageFileVersion)]
+    [AssetUpgrader(0, 1, typeof(RemoveRawImports))]
     public sealed class Package : Asset, IFileSynchronizable
     {
+        private const int PackageFileVersion = 1;
+
         private readonly PackageAssetCollection assets;
 
         private readonly AssetItemCollection temporaryAssets;
@@ -74,7 +72,7 @@ namespace SiliconStudio.Assets
 
         private UFile packagePath;
         private bool isDirty;
-        private Lazy<PackageSettings> settings;
+        private Lazy<PackageUserSettings> settings;
 
         /// <summary>
         /// The file extension used for <see cref="Package"/>.
@@ -102,7 +100,8 @@ namespace SiliconStudio.Assets
             Templates = new List<TemplateDescription>();
             Profiles = new PackageProfileCollection();
             IsDirty = true;
-            settings = new Lazy<PackageSettings>(() => new PackageSettings(this));
+            settings = new Lazy<PackageUserSettings>(() => new PackageUserSettings(this));
+            SerializedVersion = PackageFileVersion;
         }
 
         /// <summary>
@@ -274,13 +273,13 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Gets the package settings. Usually stored in a .user file alongside the package. Lazily loaded on first time.
+        /// Gets the package user settings. Usually stored in a .user file alongside the package. Lazily loaded on first time.
         /// </summary>
         /// <value>
-        /// The package settings.
+        /// The package user settings.
         /// </value>
         [DataMemberIgnore]
-        public PackageSettings Settings
+        public PackageUserSettings UserSettings
         {
             get { return settings.Value; }
         }
@@ -592,8 +591,27 @@ namespace SiliconStudio.Assets
         public static Guid GetPackageIdFromFile(string filePath)
         {
             if (filePath == null) throw new ArgumentNullException("filePath");
-            bool alias;
-            return AssetSerializer.Load<Package>(filePath, null, out alias).Id;
+
+            var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            bool hasPackage = false;
+            using (var reader = new StreamReader(stream))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (line.StartsWith("!Package"))
+                    {
+                        hasPackage = true;
+                    }
+
+                    if (hasPackage && line.StartsWith("Id:"))
+                    {
+                        var id = line.Substring("Id:".Length).Trim();
+                        return Guid.Parse(id);
+                    }
+                }
+            }
+            throw new IOException(string.Format("File {0} doesn't appear to be a valid package", filePath));
         }
 
         /// <summary>
@@ -645,9 +663,15 @@ namespace SiliconStudio.Assets
             try
             {
                 bool aliasOccurred;
-                var package = AssetSerializer.Load<Package>(filePath, log, out aliasOccurred);
+                var packageFile = new PackageLoadingAssetFile(filePath, Path.GetDirectoryName(filePath));
+                AssetMigration.MigrateAssetIfNeeded(log, packageFile);
+
+                var package = packageFile.AssetContent != null
+                    ? (Package)AssetSerializer.Load(new MemoryStream(packageFile.AssetContent), Path.GetExtension(filePath), log, out aliasOccurred)
+                    : AssetSerializer.Load<Package>(filePath, log, out aliasOccurred);
+
                 package.FullPath = filePath;
-                package.IsDirty = aliasOccurred;
+                package.IsDirty = packageFile.AssetContent != null || aliasOccurred;
 
                 return package;
             }
@@ -668,16 +692,50 @@ namespace SiliconStudio.Assets
         /// <returns></returns>
         internal bool LoadAssembliesAndAssets(ILogger log, PackageLoadParameters loadParametersArg)
         {
+            return LoadAssemblies(log, loadParametersArg) && LoadAssets(log, loadParametersArg);
+        }
+
+        /// <summary>
+        /// Load only assembly references
+        /// </summary>
+        /// <param name="package">The package.</param>
+        /// <param name="log">The log.</param>
+        /// <param name="loadParametersArg">The load parameters argument.</param>
+        /// <returns></returns>
+        internal bool LoadAssemblies(ILogger log, PackageLoadParameters loadParametersArg)
+        {
             var loadParameters = loadParametersArg ?? PackageLoadParameters.Default();
 
             try
             {
-
                 // Load assembly references
                 if (loadParameters.LoadAssemblyReferences)
                 {
                     LoadAssemblyReferencesForPackage(log, loadParameters);
                 }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error while pre-loading package [{0}]", ex, FullPath);
+
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Load assets and perform package analysis.
+        /// </summary>
+        /// <param name="package">The package.</param>
+        /// <param name="log">The log.</param>
+        /// <param name="loadParametersArg">The load parameters argument.</param>
+        /// <returns></returns>
+        internal bool LoadAssets(ILogger log, PackageLoadParameters loadParametersArg)
+        {
+            var loadParameters = loadParametersArg ?? PackageLoadParameters.Default();
+
+            try
+            {
                 // Load assets
                 if (loadParameters.AutoLoadTemporaryAssets)
                 {
@@ -926,7 +984,8 @@ namespace SiliconStudio.Assets
             {
                 // Use an id generated from the location instead of the default id
                 sourceCodeAsset.Id = SourceCodeAsset.GenerateGuidFromLocation(assetPath);
-                sourceCodeAsset.AbsoluteSourceLocation = fileUPath;
+                sourceCodeAsset.AbsoluteSourceLocation = assetFullPath;
+                sourceCodeAsset.Load();
             }
 
             return asset;
@@ -1166,6 +1225,32 @@ namespace SiliconStudio.Assets
 
                 assetImport.Base = new AssetBase(assetImportBase);
                 item.IsDirty = true;
+            }
+        }
+
+        private class RemoveRawImports : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                if (asset.Profiles != null)
+                {
+                    var profiles = asset.Profiles;
+
+                    foreach (var profile in profiles)
+                    {
+                        var folders = profile.AssetFolders;
+                        if (folders != null)
+                        {
+                            foreach (var folder in folders)
+                            {
+                                if (folder.RawImports != null)
+                                {
+                                    folder.RemoveChild("RawImports");
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

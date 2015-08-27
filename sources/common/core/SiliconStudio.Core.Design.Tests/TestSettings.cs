@@ -14,30 +14,30 @@ namespace SiliconStudio.Core.Design.Tests
 {
     class ValueSettingsKeys
     {
-        public static SettingsValueKey<int> IntValue;
-        public static SettingsValueKey<double> DoubleValue;
-        public static SettingsValueKey<string> StringValue;
+        public static SettingsKey<int> IntValue;
+        public static SettingsKey<double> DoubleValue;
+        public static SettingsKey<string> StringValue;
 
         public static void Initialize()
         {
-            IntValue = new SettingsValueKey<int>("Test/Simple/IntValue", TestSettings.SettingsGroup, 10);
-            DoubleValue = new SettingsValueKey<double>("Test/Simple/DoubleValue", TestSettings.SettingsGroup, 3.14);
-            StringValue = new SettingsValueKey<string>("Test/Simple/StringValue", TestSettings.SettingsGroup, "Test string");
+            IntValue = new SettingsKey<int>("Test/Simple/IntValue", TestSettings.SettingsContainer, 10);
+            DoubleValue = new SettingsKey<double>("Test/Simple/DoubleValue", TestSettings.SettingsContainer, 3.14);
+            StringValue = new SettingsKey<string>("Test/Simple/StringValue", TestSettings.SettingsContainer, "Test string");
             Console.WriteLine(@"Static settings keys initialized (ValueSettingsKeys)");
         }
     }
 
     class ListSettingsKeys
     {
-        public static SettingsValueKey<List<int>> IntList;
-        public static SettingsValueKey<List<double>> DoubleList;
-        public static SettingsValueKey<List<string>> StringList;
+        public static SettingsKey<List<int>> IntList;
+        public static SettingsKey<List<double>> DoubleList;
+        public static SettingsKey<List<string>> StringList;
 
         public static void Initialize()
         {
-            IntList = new SettingsValueKey<List<int>>("Test/Lists/IntList", TestSettings.SettingsGroup, Enumerable.Empty<int>().ToList());
-            DoubleList = new SettingsValueKey<List<double>>("Test/Lists/DoubleList", TestSettings.SettingsGroup, new[] { 2.0, 6.0, 9.0 }.ToList());
-            StringList = new SettingsValueKey<List<string>>("Test/Lists/StringList", TestSettings.SettingsGroup, new[] { "String 1", "String 2", "String 3" }.ToList());
+            IntList = new SettingsKey<List<int>>("Test/Lists/IntList", TestSettings.SettingsContainer, Enumerable.Empty<int>().ToList());
+            DoubleList = new SettingsKey<List<double>>("Test/Lists/DoubleList", TestSettings.SettingsContainer, new[] { 2.0, 6.0, 9.0 }.ToList());
+            StringList = new SettingsKey<List<string>>("Test/Lists/StringList", TestSettings.SettingsContainer, new[] { "String 1", "String 2", "String 3" }.ToList());
             Console.WriteLine(@"Static settings keys initialized (ListSettingsKeys)");
         }
     }
@@ -46,11 +46,11 @@ namespace SiliconStudio.Core.Design.Tests
     class TestSettings
     {
         public static Guid SessionGuid = Guid.NewGuid();
-        public static SettingsGroup SettingsGroup = new SettingsGroup();
+        public static SettingsContainer SettingsContainer = new SettingsContainer();
         [SetUp]
         public static void InitializeSettings()
         {
-            SettingsGroup.ClearSettings();
+            SettingsContainer.ClearSettings();
         }
 
         public static string TempPath(string file)
@@ -103,7 +103,7 @@ namespace SiliconStudio.Core.Design.Tests
             ValueSettingsKeys.IntValue.SetValue(20);
             ValueSettingsKeys.DoubleValue.SetValue(6.5);
             ValueSettingsKeys.StringValue.SetValue("New string");
-            SettingsGroup.CurrentProfile.ValidateSettingsChanges();
+            SettingsContainer.CurrentProfile.ValidateSettingsChanges();
             Assert.AreEqual(3, settingsChangedCount[0]);
             settingsChangedCount[0] = 0;
         }
@@ -135,8 +135,8 @@ namespace SiliconStudio.Core.Design.Tests
         {
             TestSettingsWrite();
             TestSettingsList();
-            SettingsGroup.SaveSettingsProfile(SettingsGroup.CurrentProfile, TempPath("TestSettingsSaveAndLoad.txt"));
-            SettingsGroup.LoadSettingsProfile(TempPath("TestSettingsSaveAndLoad.txt"), true);
+            SettingsContainer.SaveSettingsProfile(SettingsContainer.CurrentProfile, TempPath("TestSettingsSaveAndLoad.txt"));
+            SettingsContainer.LoadSettingsProfile(TempPath("TestSettingsSaveAndLoad.txt"), true);
 
             Assert.AreEqual(30, ValueSettingsKeys.IntValue.GetValue());
             Assert.AreEqual(9.1, ValueSettingsKeys.DoubleValue.GetValue());
@@ -174,7 +174,7 @@ Settings:
             {
                 writer.Write(TestSettingsLoadFileText);
             }
-            SettingsGroup.LoadSettingsProfile(TempPath("TestSettingsLoad.txt"), true);
+            SettingsContainer.LoadSettingsProfile(TempPath("TestSettingsLoad.txt"), true);
 
             ValueSettingsKeys.Initialize();
             ListSettingsKeys.Initialize();
@@ -225,8 +225,8 @@ Settings:
             ListSettingsKeys.DoubleList.ChangesValidated += (s, e) => ++doubleListChangeCount;
             ListSettingsKeys.StringList.ChangesValidated += (s, e) => ++stringListChangeCount;
 
-            SettingsGroup.LoadSettingsProfile(TempPath("TestSettingsValueChangedOnLoadText.txt"), true);
-            SettingsGroup.CurrentProfile.ValidateSettingsChanges();
+            SettingsContainer.LoadSettingsProfile(TempPath("TestSettingsValueChangedOnLoadText.txt"), true);
+            SettingsContainer.CurrentProfile.ValidateSettingsChanges();
 
             Assert.AreEqual(1, intValueChangeCount);
             Assert.AreEqual(0, doubleValueChangeCount);
@@ -255,7 +255,7 @@ Settings:
             {
                 writer.Write(TestSettingsLoadWrongTypeFileText);
             }
-            SettingsGroup.LoadSettingsProfile(TempPath("TestSettingsLoadWrongType.txt"), true);
+            SettingsContainer.LoadSettingsProfile(TempPath("TestSettingsLoadWrongType.txt"), true);
 
             ValueSettingsKeys.Initialize();
             ListSettingsKeys.Initialize();
@@ -293,14 +293,14 @@ Settings:
                         {
                             writer.Write(TestSettingsFileModifiedText1);
                         }
-                        SettingsGroup.LoadSettingsProfile(TempPath("TestSettingsFileModified.txt"), true);
-                        SettingsGroup.CurrentProfile.MonitorFileModification = true;
-                        SettingsGroup.CurrentProfile.FileModified += settingsModified;
+                        SettingsContainer.LoadSettingsProfile(TempPath("TestSettingsFileModified.txt"), true);
+                        SettingsContainer.CurrentProfile.MonitorFileModification = true;
+                        SettingsContainer.CurrentProfile.FileModified += settingsModified;
                         ValueSettingsKeys.Initialize();
                         ListSettingsKeys.Initialize();
                         Assert.AreEqual(55, ValueSettingsKeys.IntValue.GetValue());
 
-                        SettingsGroup.SettingsFileLoaded += settingsLoaded;
+                        SettingsContainer.SettingsFileLoaded += settingsLoaded;
 
                         using (var writer = new StreamWriter(TempPath("TestSettingsFileModified.txt")))
                         {
@@ -311,11 +311,11 @@ Settings:
                         await tcs.Task;
 
                         Assert.AreEqual(75, ValueSettingsKeys.IntValue.GetValue());
-                        SettingsGroup.SettingsFileLoaded -= settingsLoaded;
+                        SettingsContainer.SettingsFileLoaded -= settingsLoaded;
                     }
                     catch
                     {
-                        SettingsGroup.SettingsFileLoaded -= settingsLoaded;
+                        SettingsContainer.SettingsFileLoaded -= settingsLoaded;
                     }
                 });
 

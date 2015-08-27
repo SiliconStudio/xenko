@@ -41,9 +41,12 @@ namespace SiliconStudio.Paradox.Rendering
         /// <exception cref="System.InvalidOperationException">Cannot use a different context between Load and Draw</exception>
         public void Draw(RenderContext context)
         {
-            PreDrawCoreInternal(context);
-            DrawCore(context);
-            PostDrawCoreInternal(context);
+            if (Enabled)
+            {
+                PreDrawCoreInternal(context);
+                DrawCore(context);
+                PostDrawCoreInternal(context);
+            }
         }
     }
 }

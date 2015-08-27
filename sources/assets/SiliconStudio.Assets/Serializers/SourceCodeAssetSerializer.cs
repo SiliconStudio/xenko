@@ -29,13 +29,12 @@ namespace SiliconStudio.Assets.Serializers
             aliasOccurred = false;
             var type = RegisteredExtensions[assetFileExtension];
             var asset = (SourceCodeAsset)Activator.CreateInstance(type);
-            asset.Load();
             return asset;
         }
 
         public void Save(Stream stream, object asset, ILogger log)
         {
-            ((SourceCodeAsset)asset).Save();
+            ((SourceCodeAsset)asset).Save(stream);
         }
 
         public IAssetSerializer TryCreate(string assetFileExtension)

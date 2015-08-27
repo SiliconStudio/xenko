@@ -40,11 +40,7 @@ namespace SiliconStudio.Assets
 
             // If a folder is already added, use it and squash the item to add to the existing folder.
             var existingFolder = Find(item.Path);
-            if (existingFolder != null)
-            {
-                existingFolder.RawImports.AddRange(item.RawImports);
-            }
-            else
+            if (existingFolder == null)
             {
                 folders.Add(item);
             }

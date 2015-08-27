@@ -1,10 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
@@ -92,20 +90,25 @@ namespace SiliconStudio.Paradox.Assets
 
         internal class UpgraderVersion130
         {
-            public static SettingsValueKey<DisplayOrientation> DisplayOrientation = new SettingsValueKey<DisplayOrientation>("Paradox.DisplayOrientation", PackageProfile.SettingsGroup);
+            public static SettingsKey<DisplayOrientation> DisplayOrientation = new SettingsKey<DisplayOrientation>("Paradox.DisplayOrientation", PackageProfile.SettingsContainer);
 
-            public static SettingsValueKey<GraphicsPlatform> GraphicsPlatform = new SettingsValueKey<GraphicsPlatform>("Paradox.GraphicsPlatform", PackageProfile.SettingsGroup);
+            public static SettingsKey<GraphicsPlatform> GraphicsPlatform = new SettingsKey<GraphicsPlatform>("Paradox.GraphicsPlatform", PackageProfile.SettingsContainer);
 
-            public static SettingsValueKey<TextureQuality> TextureQuality = new SettingsValueKey<TextureQuality>("Paradox.TextureQuality", PackageProfile.SettingsGroup);
+            public static SettingsKey<TextureQuality> TextureQuality = new SettingsKey<TextureQuality>("Paradox.TextureQuality", PackageProfile.SettingsContainer);
 
-            public static readonly SettingsValueKey<AssetReference<SceneAsset>> DefaultScene = new SettingsValueKey<AssetReference<SceneAsset>>("GameSettingsAsset.DefaultScene", PackageProfile.SettingsGroup);
+            public static readonly SettingsKey<AssetReference<SceneAsset>> DefaultScene = new SettingsKey<AssetReference<SceneAsset>>("GameSettingsAsset.DefaultScene", PackageProfile.SettingsContainer);
 
-            public static readonly SettingsValueKey<int> BackBufferWidth = new SettingsValueKey<int>("GameSettingsAsset.BackBufferWidth", PackageProfile.SettingsGroup, 1280);
+            public static readonly SettingsKey<int> BackBufferWidth = new SettingsKey<int>("GameSettingsAsset.BackBufferWidth", PackageProfile.SettingsContainer, 1280);
 
-            public static readonly SettingsValueKey<int> BackBufferHeight = new SettingsValueKey<int>("GameSettingsAsset.BackBufferHeight", PackageProfile.SettingsGroup, 720);
+            public static readonly SettingsKey<int> BackBufferHeight = new SettingsKey<int>("GameSettingsAsset.BackBufferHeight", PackageProfile.SettingsContainer, 720);
 
-            public static readonly SettingsValueKey<GraphicsProfile> DefaultGraphicsProfile = new SettingsValueKey<GraphicsProfile>("GameSettingsAsset.DefaultGraphicsProfile", PackageProfile.SettingsGroup, GraphicsProfile.Level_10_0);
-            
+            public static readonly SettingsKey<GraphicsProfile> DefaultGraphicsProfile = new SettingsKey<GraphicsProfile>("GameSettingsAsset.DefaultGraphicsProfile", PackageProfile.SettingsContainer, GraphicsProfile.Level_10_0);
+
+            public static T Get<T>(SettingsProfile profile, SettingsKey<T> key)
+            {
+                return key.GetValue(profile, true);
+            }
+
             public static bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
             {
                 var packageSharedProfile = dependentPackage.Profiles.FindSharedProfile();
@@ -113,16 +116,16 @@ namespace SiliconStudio.Paradox.Assets
                 // Only do something if there is a default scene defined
                 if (packageSharedProfile != null && packageSharedProfile.Properties.ContainsKey(DefaultScene))
                 {
-                    var defaultScene = packageSharedProfile.Properties.Get(DefaultScene);
+                    var defaultScene = Get(packageSharedProfile.Properties, DefaultScene);
 
-                    var defaultGraphicsProfile = packageSharedProfile.Properties.Get(DefaultGraphicsProfile);
+                    var defaultGraphicsProfile = Get(packageSharedProfile.Properties, DefaultGraphicsProfile);
 
                     // If available, use graphics profile from Windows platform
                     foreach (var profile in dependentPackage.Profiles)
                     {
                         if (profile.Platform == PlatformType.Windows && profile.Properties.ContainsKey(DefaultGraphicsProfile))
                         {
-                            defaultGraphicsProfile = profile.Properties.Get(DefaultGraphicsProfile);
+                            defaultGraphicsProfile = Get(profile.Properties, DefaultGraphicsProfile);
                         }
                     }
 
@@ -130,10 +133,10 @@ namespace SiliconStudio.Paradox.Assets
                     var gameSettingsAsset = new GameSettingsAsset
                     {
                         DefaultScene = AttachedReferenceManager.CreateSerializableVersion<Scene>(defaultScene.Id, defaultScene.Location),
-                        BackBufferWidth = packageSharedProfile.Properties.Get(BackBufferWidth),
-                        BackBufferHeight = packageSharedProfile.Properties.Get(BackBufferHeight),
+                        BackBufferWidth = Get(packageSharedProfile.Properties, BackBufferWidth),
+                        BackBufferHeight = Get(packageSharedProfile.Properties, BackBufferHeight),
                         DefaultGraphicsProfile = defaultGraphicsProfile,
-                        DisplayOrientation = packageSharedProfile.Properties.Get(DisplayOrientation),
+                        DisplayOrientation = Get(packageSharedProfile.Properties, DisplayOrientation),
                     };
 
                     // Add asset
@@ -146,11 +149,11 @@ namespace SiliconStudio.Paradox.Assets
                     // Clean properties
                     foreach (var profile in dependentPackage.Profiles)
                     {
-                        profile.Properties.Remove(DefaultScene);
-                        profile.Properties.Remove(BackBufferWidth);
-                        profile.Properties.Remove(BackBufferHeight);
-                        profile.Properties.Remove(DefaultGraphicsProfile);
-                        profile.Properties.Remove(DisplayOrientation);
+                        profile.Properties.Remove(DefaultScene.Name);
+                        profile.Properties.Remove(BackBufferWidth.Name);
+                        profile.Properties.Remove(BackBufferHeight.Name);
+                        profile.Properties.Remove(DefaultGraphicsProfile.Name);
+                        profile.Properties.Remove(DisplayOrientation.Name);
                     }
                 }
 

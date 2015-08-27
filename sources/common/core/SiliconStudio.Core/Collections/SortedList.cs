@@ -320,12 +320,7 @@ namespace SiliconStudio.Core.Collections
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            for (int i = 0; i < inUse; i++)
-            {
-                KeyValuePair<TKey, TValue> current = this.table[i];
-
-                yield return new KeyValuePair<TKey, TValue>(current.Key, current.Value);
-            }
+            return new Enumerator(this);
         }
 
         public bool Remove(TKey key)
@@ -414,12 +409,7 @@ namespace SiliconStudio.Core.Collections
 
         IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
         {
-            for (int i = 0; i < inUse; i++)
-            {
-                KeyValuePair<TKey, TValue> current = this.table[i];
-
-                yield return new KeyValuePair<TKey, TValue>(current.Key, current.Value);
-            }
+            return new Enumerator(this);
         }
 
         // IEnumerable
@@ -448,7 +438,7 @@ namespace SiliconStudio.Core.Collections
 
         IDictionaryEnumerator IDictionary.GetEnumerator()
         {
-            return new Enumerator(this, EnumeratorMode.ENTRY_MODE);
+            return new DictionaryEnumerator(this, EnumeratorMode.ENTRY_MODE);
         }
 
         void IDictionary.Remove(object key)
@@ -690,7 +680,7 @@ namespace SiliconStudio.Core.Collections
             if (i < 0 || i + this.Count > arr.Length)
                 throw new ArgumentOutOfRangeException("i");
 
-            IEnumerator it = new Enumerator(this, mode);
+            IEnumerator it = new DictionaryEnumerator(this, mode);
 
             while (it.MoveNext())
             {
@@ -758,8 +748,44 @@ namespace SiliconStudio.Core.Collections
         // Inner classes
         //
 
+        private sealed class Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>
+        {
+            private SortedList<TKey, TValue> host;
+            private int pos = -1;
 
-        private sealed class Enumerator : IDictionaryEnumerator, IEnumerator
+            public Enumerator(SortedList<TKey, TValue> host)
+            {
+                this.host = host;
+            }
+
+            public void Dispose()
+            {
+                host = null;
+            }
+
+            public bool MoveNext()
+            {
+                return ++pos < host.inUse;
+            }
+
+            public void Reset()
+            {
+                throw new NotSupportedException();
+            }
+
+            object IEnumerator.Current
+            {
+                get { return Current; }
+            }
+
+            public KeyValuePair<TKey, TValue> Current
+            {
+                get { return host.table[pos]; }
+            }
+        }
+
+
+        private sealed class DictionaryEnumerator : IDictionaryEnumerator, IEnumerator
         {
 
             private SortedList<TKey, TValue> host;
@@ -775,7 +801,7 @@ namespace SiliconStudio.Core.Collections
 
             private readonly static string xstr = "SortedList.Enumerator: snapshot out of sync.";
 
-            public Enumerator(SortedList<TKey, TValue> host, EnumeratorMode mode)
+            public DictionaryEnumerator(SortedList<TKey, TValue> host, EnumeratorMode mode)
             {
                 this.host = host;
                 stamp = host.modificationCount;
@@ -784,7 +810,7 @@ namespace SiliconStudio.Core.Collections
                 Reset();
             }
 
-            public Enumerator(SortedList<TKey, TValue> host)
+            public DictionaryEnumerator(SortedList<TKey, TValue> host)
                 : this(host, EnumeratorMode.ENTRY_MODE)
             {
             }
@@ -878,7 +904,7 @@ namespace SiliconStudio.Core.Collections
 
             public object Clone()
             {
-                Enumerator e = new Enumerator(host, mode);
+                DictionaryEnumerator e = new DictionaryEnumerator(host, mode);
                 e.stamp = stamp;
                 e.pos = pos;
                 e.size = size;

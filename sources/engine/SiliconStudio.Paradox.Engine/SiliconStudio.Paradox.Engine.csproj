@@ -2168,7 +2168,7 @@
     <Compile Include="Rendering\ModelNodeTransformation.cs" />
     <Compile Include="Rendering\EffectSystemExtensions.cs" />
     <Compile Include="Rendering\MeshAnimationUpdater.cs" />
-    <Compile Include="Rendering\ModelRendererState.cs" />
+    <Compile Include="Rendering\RenderModelEffectSlotManager.cs" />
     <Compile Include="Rendering\ProfilingKeys.cs" />
     <Compile Include="Rendering\RendererExtensions.cs" />
     <Compile Include="Engine\EntityGroup.cs" />

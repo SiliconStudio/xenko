@@ -122,9 +122,6 @@ namespace SiliconStudio.Assets.Tests
             Assert.NotNull(folder);
             Assert.NotNull(folder.Path);
             Assert.NotNull(folder.Path.IsAbsolute);
-            var import = folder.RawImports.FirstOrDefault();
-            Assert.NotNull(import);
-            Assert.IsTrue(import.SourceDirectory != null && import.SourceDirectory.IsRelative);
 
             // Save project back to disk on a different location
             project.FullPath = Path.Combine(DirectoryTestBase, @"TestPackage2\TestPackage2.pdxpkg");

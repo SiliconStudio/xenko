@@ -49,11 +49,12 @@ namespace SiliconStudio.Paradox.Assets.Effect
             }
         }
 
-        public override void Save()
+        public override void Save(Stream stream)
         {
-            if (!string.IsNullOrEmpty(AbsoluteSourceLocation))
+            if (Text != null)
             {
-                File.WriteAllText(AbsoluteSourceLocation, Text, Encoding.UTF8);
+                var buffer = Encoding.UTF8.GetBytes(Text);
+                stream.Write(buffer, 0, buffer.Length);
             }
         }
 

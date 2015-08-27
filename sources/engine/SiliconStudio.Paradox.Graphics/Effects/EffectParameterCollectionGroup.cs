@@ -23,6 +23,14 @@ namespace SiliconStudio.Paradox.Graphics.Internals
             Effect = effect;
         }
 
+        public EffectParameterCollectionGroup(GraphicsDevice graphicsDevice, Effect effect, int count, ParameterCollection[] values)
+            : base(CreateParameterCollections(graphicsDevice, effect, count, values))
+        {
+            if (graphicsDevice == null) throw new ArgumentNullException("graphicsDevice");
+            if (effect == null) throw new ArgumentNullException("effect");
+            Effect = effect;
+        }
+
         private static ParameterCollection[] CreateParameterCollections(GraphicsDevice graphicsDevice, Effect effect, IList<ParameterCollection> parameterCollections)
         {
             var result = new ParameterCollection[2 + parameterCollections.Count];
@@ -32,6 +40,19 @@ namespace SiliconStudio.Paradox.Graphics.Internals
                 result[i + 1] = parameterCollections[i];
             }
             result[parameterCollections.Count + 1] = graphicsDevice.Parameters;
+
+            return result;
+        }
+
+        private static ParameterCollection[] CreateParameterCollections(GraphicsDevice graphicsDevice, Effect effect, int count, ParameterCollection[] parameterCollections)
+        {
+            var result = new ParameterCollection[2 + count];
+            result[0] = effect.DefaultParameters;
+            for (int i = 0; i < count; ++i)
+            {
+                result[i + 1] = parameterCollections[i];
+            }
+            result[count + 1] = graphicsDevice.Parameters;
 
             return result;
         }

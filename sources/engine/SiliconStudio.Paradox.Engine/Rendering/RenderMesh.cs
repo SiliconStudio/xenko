@@ -15,7 +15,7 @@ using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
 namespace SiliconStudio.Paradox.Rendering
 {
     /// <summary>
-    /// An effect mesh.
+    /// An mesh associated with an effect to be rendered.
     /// </summary>
     public class RenderMesh : DynamicEffectInstance
     {
@@ -50,12 +50,12 @@ namespace SiliconStudio.Paradox.Rendering
 
         public Matrix WorldMatrix;
 
-        public BoundingBoxExt BoundingBox;
+        public int MatrixCounter;
 
         private readonly ParameterCollection parameters;
-        private readonly FastList<ParameterCollection> parameterCollections = new FastList<ParameterCollection>();
+        private FastListStruct<ParameterCollection> parameterCollections;
         private EffectParameterCollectionGroup parameterCollectionGroup;
-        private ParameterCollection[] previousParameterCollections;
+        private FastListStruct<ParameterCollection> previousParameterCollections;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderMesh" /> class.
@@ -70,6 +70,8 @@ namespace SiliconStudio.Paradox.Rendering
             RenderModel = renderModel;
             Mesh = mesh;
             Enabled = true;
+            parameterCollections = new FastListStruct<ParameterCollection>(8);
+            previousParameterCollections = new FastListStruct<ParameterCollection>(8);
 
             UpdateMaterial();
 
@@ -110,6 +112,7 @@ namespace SiliconStudio.Paradox.Rendering
             var material = Material;
             var vao = vertexArrayObject;
             var drawCount = currentRenderData.DrawCount;
+            var primitiveType = currentRenderData.PrimitiveType;
 
             parameters.Set(TransformationKeys.World, WorldMatrix);
 
@@ -136,7 +139,7 @@ namespace SiliconStudio.Paradox.Rendering
                     vao = GetOrCreateVertexArrayObjectAEN(context);
                     drawCount = 12 / 3 * drawCount;
                 }
-                currentRenderData.PrimitiveType = tessellationMethod.GetPrimitiveType();
+                primitiveType = tessellationMethod.GetPrimitiveType();
             }
 
             //using (Profiler.Begin(ProfilingKeys.PrepareMesh))
@@ -156,15 +159,16 @@ namespace SiliconStudio.Paradox.Rendering
                 parameterCollections.Clear();
 
                 parameterCollections.Add(context.Parameters);
-                FillParameterCollections(parameterCollections);
+                FillParameterCollections(ref parameterCollections);
 
                 // Check if we need to recreate the EffectParameterCollectionGroup
                 // TODO: We can improve performance by redesigning FillParameterCollections to avoid ArrayExtensions.ArraysReferenceEqual (or directly check the appropriate parameter collections)
                 // This also happens in another place: DynamicEffectCompiler (we probably want to factorize it when doing additional optimizations)
-                if (parameterCollectionGroup == null || parameterCollectionGroup.Effect != Effect || !ArrayExtensions.ArraysReferenceEqual(previousParameterCollections, parameterCollections))
+                if (parameterCollectionGroup == null || parameterCollectionGroup.Effect != Effect || !ArrayExtensions.ArraysReferenceEqual(ref previousParameterCollections, ref parameterCollections))
                 {
-                    parameterCollectionGroup = new EffectParameterCollectionGroup(context.GraphicsDevice, Effect, parameterCollections);
-                    previousParameterCollections = parameterCollections.ToArray();
+                    previousParameterCollections.Clear();
+                    previousParameterCollections.AddRange(parameterCollections);
+                    parameterCollectionGroup = new EffectParameterCollectionGroup(context.GraphicsDevice, Effect, previousParameterCollections.Count, previousParameterCollections.Items);
                 }
 
                 Effect.Apply(context.GraphicsDevice, parameterCollectionGroup, true);
@@ -180,11 +184,11 @@ namespace SiliconStudio.Paradox.Rendering
 
                     if (currentRenderData.IndexBuffer == null)
                     {
-                        graphicsDevice.Draw(currentRenderData.PrimitiveType, drawCount, currentRenderData.StartLocation);
+                        graphicsDevice.Draw(primitiveType, drawCount, currentRenderData.StartLocation);
                     }
                     else
                     {
-                        graphicsDevice.DrawIndexed(currentRenderData.PrimitiveType, drawCount, currentRenderData.StartLocation);
+                        graphicsDevice.DrawIndexed(primitiveType, drawCount, currentRenderData.StartLocation);
                     }
                 }
             }
@@ -208,13 +212,11 @@ namespace SiliconStudio.Paradox.Rendering
             var materialIndex = Mesh.MaterialIndex;
             Material = RenderModel.GetMaterial(materialIndex);
             var materialInstance = RenderModel.GetMaterialInstance(materialIndex);
-            if (Material != null)
-            {
-                HasTransparency = Material.HasTransparency;
-            }
+            HasTransparency = Material != null && Material.HasTransparency;
 
-            IsShadowCaster = RenderModel.ModelComponent.IsShadowCaster;
-            IsShadowReceiver = RenderModel.ModelComponent.IsShadowReceiver;
+            var modelComponent = RenderModel.ModelComponent;
+            IsShadowCaster = modelComponent.IsShadowCaster;
+            IsShadowReceiver = modelComponent.IsShadowReceiver;
             if (materialInstance != null)
             {
                 IsShadowCaster = IsShadowCaster && materialInstance.IsShadowCaster;
@@ -227,7 +229,7 @@ namespace SiliconStudio.Paradox.Rendering
             vertexArrayObject = VertexArrayObject.New(device, Effect.InputSignature, Mesh.Draw.IndexBuffer, Mesh.Draw.VertexBuffers);
         }
 
-        public override void FillParameterCollections(FastList<ParameterCollection> parameterCollections)
+        public override void FillParameterCollections(ref FastListStruct<ParameterCollection> parameterCollections)
         {
             var material = Material;
             if (material != null && material.Parameters != null)
@@ -235,10 +237,9 @@ namespace SiliconStudio.Paradox.Rendering
                 parameterCollections.Add(material.Parameters);
             }
 
-            var modelInstance = RenderModel.ModelComponent;
-            if (modelInstance != null && modelInstance.Parameters != null)
+            if (RenderModel.ModelComponent.Parameters != null)
             {
-                parameterCollections.Add(modelInstance.Parameters);
+                parameterCollections.Add(RenderModel.ModelComponent.Parameters);
             }
 
             // TODO: Should we add RenderMesh.Parameters before ModelComponent.Parameters to allow user overiddes at component level?
