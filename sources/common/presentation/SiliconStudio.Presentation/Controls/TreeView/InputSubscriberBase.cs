@@ -1,7 +1,6 @@
 ﻿namespace System.Windows.Controls
 {
     using System.Diagnostics;
-    using System.Windows.Controls.DragNDrop;
     using System.Windows.Documents;
     using System.Windows.Input;
     using System.Windows.Media;
@@ -80,7 +79,6 @@
             do
             {
                 if (child is TreeViewExItem) return GetVisible(child as TreeViewExItem);
-                if (child.DataContext is InsertContent) return  GetVisible((child.DataContext as InsertContent).Item);
                 if (child is TreeViewEx) return null;
                 child = VisualTreeHelper.GetParent(child) as FrameworkElement;
             } while (child != null);

@@ -59,12 +59,6 @@
     <Compile Include="Controls\TreeView\Constants.cs" />
     <Compile Include="Controls\TreeView\DoubleToThicknessLeftConverter.cs" />
     <Compile Include="Controls\TreeView\DoubleUtil.cs" />
-    <Compile Include="Controls\TreeView\DragNDrop\CanInsertReturn.cs" />
-    <Compile Include="Controls\TreeView\DragNDrop\DragAdorner.cs" />
-    <Compile Include="Controls\TreeView\DragNDrop\DragContent.cs" />
-    <Compile Include="Controls\TreeView\DragNDrop\DragNDropController.cs" />
-    <Compile Include="Controls\TreeView\DragNDrop\InsertAdorner.cs" />
-    <Compile Include="Controls\TreeView\DragNDrop\InsertContent.cs" />
     <Compile Include="Controls\TreeView\DummyConverter.cs" />
     <Compile Include="Controls\TreeView\EditTextBox.cs" />
     <Compile Include="Controls\TreeView\FocusHelper.cs" />
@@ -87,7 +81,6 @@
     <Compile Include="Controls\TreeView\TreeViewEx.cs" />
     <Compile Include="Controls\TreeView\TreeViewExItem.Brushes.cs" />
     <Compile Include="Controls\TreeView\TreeViewExItem.cs" />
-    <Compile Include="Controls\TreeView\TreeViewExItem.DragNDropProperties.cs" />
     <Compile Include="Controls\TreeView\VerticalArea.cs" />
     <Compile Include="Controls\TreeView\VirtualizingTreePanel.cs" />
     <Compile Include="Controls\Trimming.cs" />

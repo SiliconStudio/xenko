@@ -17,7 +17,6 @@ namespace System.Windows.Controls
     using System.ComponentModel;
     using System.Linq;
     using System.Windows.Automation.Peers;
-    using System.Windows.Controls.DragNDrop;
     using System.Windows.Input;
     using System.Windows.Media;
 
@@ -43,10 +42,6 @@ namespace System.Windows.Controls
               typeof(Brush),
               typeof(TreeViewEx),
               new FrameworkPropertyMetadata(Brushes.Black, null));
-
-        public static readonly DependencyProperty IsDragNDropEnabledProperty =
-           DependencyProperty.Register(
-              "IsDragNDropEnabled", typeof(bool), typeof(TreeViewEx), new PropertyMetadata(false));
 
         public static DependencyProperty BackgroundSelectionRectangleProperty =
            DependencyProperty.Register(
@@ -82,9 +77,6 @@ namespace System.Windows.Controls
         public static readonly DependencyProperty IsVirtualizingProperty =
             DependencyProperty.Register("IsVirtualizing", typeof(bool), typeof(TreeViewEx), new PropertyMetadata(false));
         
-
-        private DragNDropController dragNDropController;
-
         private InputEventRouter inputEventRouter;
 
         private bool isInitialized;
@@ -112,9 +104,6 @@ namespace System.Windows.Controls
         public TreeViewEx()
         {
             SelectedItems = new ObservableList<object>();
-
-            var depPropDescriptorIsDragNDropEnabled = DependencyPropertyDescriptor.FromProperty(IsDragNDropEnabledProperty, typeof(TreeViewEx));
-            depPropDescriptorIsDragNDropEnabled.AddValueChanged(this, OnIsDragNDropEnabledChanged);
         }
 
         #endregion
@@ -198,19 +187,6 @@ namespace System.Windows.Controls
             }
         }
 
-        public bool IsDragNDropEnabled
-        {
-            get
-            {
-                return (bool)GetValue(IsDragNDropEnabledProperty);
-            }
-
-            set
-            {
-                SetValue(IsDragNDropEnabledProperty, value);
-            }
-        }
-
         /// <summary>
         ///   Gets the last selected item.
         /// </summary>
@@ -255,13 +231,6 @@ namespace System.Windows.Controls
             set
             {
                 SetValue(SelectionModeProperty, value);
-            }
-        }
-        internal DragNDropController DragNDropController
-        {
-            get
-            {
-                return dragNDropController;
             }
         }
 
@@ -361,7 +330,6 @@ namespace System.Windows.Controls
             OnUnLoaded(sender, e);
 
             var autoScroller = new AutoScroller();
-            dragNDropController = new DragNDropController(autoScroller);
             if (SelectionMode == SelectionMode.Single)
             {
                 var selectionSingle = new SelectionSingle(this);
@@ -377,7 +345,6 @@ namespace System.Windows.Controls
             inputEventRouter = new InputEventRouter(this);
             inputEventRouter.Add(IsEditingManager);
             inputEventRouter.Add(autoScroller);
-            inputEventRouter.Add(dragNDropController);
             inputEventRouter.Add((InputSubscriberBase)Selection);
             isInitialized = true;
         }
@@ -388,12 +355,6 @@ namespace System.Windows.Controls
             {
                 inputEventRouter.Dispose();
                 inputEventRouter = null;
-            }
-
-            if (dragNDropController != null)
-            {
-                dragNDropController.Dispose();
-                dragNDropController = null;
             }
 
             Selection = null;
@@ -668,11 +629,6 @@ namespace System.Windows.Controls
             }
             if (treeView.inputEventRouter != null)
                 treeView.inputEventRouter.Add((InputSubscriberBase)treeView.Selection);
-        }
-
-        private void OnIsDragNDropEnabledChanged(object sender, EventArgs e)
-        {
-            dragNDropController.Enabled = IsDragNDropEnabled;
         }
 
         private void OnSelectedItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
