@@ -511,7 +511,7 @@ namespace SiliconStudio.Paradox.ProjectGenerator
             }
             else if (platform == "Windows10")
             {
-                configurations.Add("Windows10", "Windows10");
+                configurations.Add("Windows10", "Any CPU");
                 needDeploy = true;
             }
             else if (platform == "iOS")
