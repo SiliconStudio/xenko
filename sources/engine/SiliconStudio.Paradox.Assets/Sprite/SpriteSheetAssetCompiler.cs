@@ -128,11 +128,9 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                     var borders = image.Borders;
                     var center = image.Center + (image.CenterFromMiddle ? new Vector2(image.TextureRegion.Width, image.TextureRegion.Height) / 2 : Vector2.Zero);
 
-                    if (isPacking)
+                    if (isPacking
+                        && spriteToPackedSprite.ContainsKey(image)) // ensure that unpackable elements (invalid because of null size/texture) are properly added in the sheet using the normal path
                     {
-                        if (!spriteToPackedSprite.ContainsKey(image)) 
-                            continue;
-
                         var packedSprite = spriteToPackedSprite[image];
                         var isOriginalSpriteRotated = image.Orientation == ImageOrientation.Rotated90;
 
