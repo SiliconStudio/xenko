@@ -98,7 +98,9 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// Gets or sets the current frame of the animation.
         /// </summary>
-        [DataMemberIgnore]
+        /// <userdoc>The index of the default frame of the sprite sheet to use.</userdoc>
+        [DataMember(8)]
+        [Display("Default Frame")]
         public int CurrentFrame { get; set; }
 
         /// <summary>
