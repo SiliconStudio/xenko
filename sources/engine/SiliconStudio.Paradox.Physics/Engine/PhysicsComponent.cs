@@ -30,10 +30,10 @@ namespace SiliconStudio.Paradox.Engine
         public List<IPhysicsElement> Elements { get; private set; }
 
         [DataMemberIgnore]
-        public IPhysicsElement this[int i]
-        {
-            get { return Elements[i]; }
-        }
+        public IPhysicsElement this[int i] => Elements[i];
+
+        [DataMemberIgnore]
+        public int Count => Elements.Count;
 
         [DataMemberIgnore]
         public Simulation Simulation { get; internal set; }

@@ -48,6 +48,7 @@ namespace SiliconStudio.Paradox.Physics
         protected PhysicsElementBase()
         {
             CanScaleShape = true;
+
             ColliderShapes = new TrackingCollection<IInlineColliderShapeDesc>();
             ColliderShapes.CollectionChanged += (sender, args) =>
             {
@@ -88,8 +89,6 @@ namespace SiliconStudio.Paradox.Physics
 
         [DataMemberIgnore]
         public bool CanScaleShape { get; private set; }
-
-        private Vector3 currentPhysicsScaling;
 
         private CollisionFilterGroups collisionGroup;
 
@@ -165,20 +164,17 @@ namespace SiliconStudio.Paradox.Physics
 
                 return InternalCollider;
             }
-            internal set { InternalCollider = value; }
+            internal set
+            {
+                InternalCollider = value;
+            }
         }
 
         [DataMemberIgnore]
-        public RigidBody RigidBody
-        {
-            get { return (RigidBody)Collider; }
-        }
+        public RigidBody RigidBody => (RigidBody)Collider;
 
         [DataMemberIgnore]
-        public Character Character
-        {
-            get { return (Character)Collider; }
-        }
+        public Character Character => (Character)Collider;
 
         internal Matrix BoneWorldMatrix;
         internal Matrix BoneWorldMatrixOut;
@@ -209,11 +205,9 @@ namespace SiliconStudio.Paradox.Physics
             //handle dynamic scaling if allowed (aka not using assets)
             if (CanScaleShape)
             {
-                var newScaling = ColliderShape.Scaling * scale;
-                if (newScaling != currentPhysicsScaling)
+                if (scale != ColliderShape.Scaling)
                 {
-                    ColliderShape.Scaling = newScaling;
-                    currentPhysicsScaling = newScaling;
+                    ColliderShape.Scaling = scale;
                     ColliderShape.UpdateLocalTransformations();
                 }
             }
@@ -236,21 +230,20 @@ namespace SiliconStudio.Paradox.Physics
 
             derivedTransformation = Matrix.RotationQuaternion(rotation) * Matrix.Translation(translation);
 
+            //handle dynamic scaling if allowed (aka not using assets)
+            if (CanScaleShape)
+            {
+                if (scale != ColliderShape.Scaling)
+                {
+                    ColliderShape.Scaling = scale;
+                    ColliderShape.UpdateLocalTransformations();
+                }
+            }
+
             //Handle collider shape offset
             if (ColliderShape.LocalOffset != Vector3.Zero || ColliderShape.LocalRotation != Quaternion.Identity)
             {
                 derivedTransformation = Matrix.Multiply(ColliderShape.PositiveCenterMatrix, derivedTransformation);
-            }
-
-            //handle dynamic scaling if allowed (aka not using assets)
-            if (CanScaleShape)
-            {
-                var newScaling = ColliderShape.Scaling * scale;
-                if (newScaling != currentPhysicsScaling)
-                {
-                    ColliderShape.Scaling = newScaling;
-                    currentPhysicsScaling = newScaling;
-                }
             }
         }
 
@@ -369,7 +362,7 @@ namespace SiliconStudio.Paradox.Physics
 
                         if (ColliderShape == null) return;
 
-                        currentPhysicsScaling = ColliderShape.Scaling;
+                        ColliderShape.UpdateLocalTransformations();
                     }
                 }
                 else if (ColliderShapes.Count > 1) //need a compound shape in this case
@@ -391,8 +384,9 @@ namespace SiliconStudio.Paradox.Physics
                             }
                         }
                     }
+
                     ColliderShape = compound;
-                    currentPhysicsScaling = ColliderShape.Scaling;
+
                     ColliderShape.UpdateLocalTransformations();
                 }
             }
