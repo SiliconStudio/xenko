@@ -36,11 +36,11 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            using (var pngStream = AssetManager.FileProvider.OpenStream("PngImage.png", VirtualFileMode.Open, VirtualFileAccess.Read))
+            using (var pngStream = AssetManager.FileProvider.OpenStream("PngImage", VirtualFileMode.Open, VirtualFileAccess.Read))
             using (var pngImage = Image.Load(pngStream))
                 png = Texture.New(GraphicsDevice, pngImage);
 
-            using (var jpgStream = AssetManager.FileProvider.OpenStream("JpegImage.jpg", VirtualFileMode.Open, VirtualFileAccess.Read))
+            using (var jpgStream = AssetManager.FileProvider.OpenStream("JpegImage", VirtualFileMode.Open, VirtualFileAccess.Read))
             using (var jpgImage = Image.Load(jpgStream))
                 jpg = Texture.New(GraphicsDevice, jpgImage);
         }
