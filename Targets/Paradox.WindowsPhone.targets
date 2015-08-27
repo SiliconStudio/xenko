@@ -19,7 +19,7 @@
     <AppxPackageTestDir>$(AppxPackageDir)Test\</AppxPackageTestDir>
     <AppxPackageName>$(AssemblyName)</AppxPackageName>
 
-    <UserLibrariesPath Condition="'$(SiliconStudioCurrentPackagePath)' != ''">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\Libs</UserLibrariesPath>
+    <UserLibrariesPath Condition="'$(SiliconStudioCurrentPackagePath)' != ''">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\NativeLibs</UserLibrariesPath>
   </PropertyGroup>
   
   <!-- Embed native libraries -->
