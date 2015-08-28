@@ -164,8 +164,8 @@ namespace SiliconStudio.Presentation.Controls
             UIElementCollection children = InternalChildren;
             IItemContainerGenerator generator = ItemContainerGenerator;
             ItemsControl itemsControl = ItemsControl.GetItemsOwner(this);
-            TreeViewExItem treeViewItem = itemsControl as TreeViewExItem;
-            TreeViewEx treeView = itemsControl as TreeViewEx ?? treeViewItem.ParentTreeView;
+            TreeViewItem treeViewItem = itemsControl as TreeViewItem;
+            TreeView treeView = itemsControl as TreeView ?? treeViewItem.ParentTreeView;
             Debug(treeViewItem, "Measuring");
             double maxWidth = 0;
             double currentYinItemSystem = 0;
@@ -235,7 +235,7 @@ namespace SiliconStudio.Presentation.Controls
 
                             // Get or create the child
                             bool newlyRealized;
-                            TreeViewExItem child = generator.GenerateNext(out newlyRealized) as TreeViewExItem;
+                            TreeViewItem child = generator.GenerateNext(out newlyRealized) as TreeViewItem;
                             Debug(treeViewItem, "Found visible child: " + child.DataContext);
 
                             if (newlyRealized)
@@ -317,7 +317,7 @@ namespace SiliconStudio.Presentation.Controls
                     {
                         // Get or create the child
                         bool newlyRealized;
-                        TreeViewExItem child = generator.GenerateNext(out newlyRealized) as TreeViewExItem;
+                        TreeViewItem child = generator.GenerateNext(out newlyRealized) as TreeViewItem;
                         if (newlyRealized)
                         {
                             // Figure out if we need to insert the child at the end or somewhere in the middle
@@ -348,7 +348,7 @@ namespace SiliconStudio.Presentation.Controls
             return Extent;
         }
 
-        private static void InvalidateMeasure(TreeViewExItem child)
+        private static void InvalidateMeasure(TreeViewItem child)
         {
             var itemsPresenter = child.Template.FindName("itemsPresenter", child) as FrameworkElement;
             if (itemsPresenter != null)
@@ -373,8 +373,8 @@ namespace SiliconStudio.Presentation.Controls
         protected override Size ArrangeOverride(Size finalSize)
         {
             ItemsControl itemsControl = ItemsControl.GetItemsOwner(this);
-            TreeViewExItem treeViewItem = itemsControl as TreeViewExItem;
-            TreeViewEx treeView = itemsControl as TreeViewEx ?? treeViewItem.ParentTreeView;
+            TreeViewItem treeViewItem = itemsControl as TreeViewItem;
+            TreeView treeView = itemsControl as TreeView ?? treeViewItem.ParentTreeView;
             IItemContainerGenerator generator = this.ItemContainerGenerator;
 
             //Extent = finalSize;
@@ -385,7 +385,7 @@ namespace SiliconStudio.Presentation.Controls
                 //Debug("Arrange-" + itemsControl.DataContext);
                 for (int i = 0; i < itemsControl.Items.Count; i++)
                 {
-                    TreeViewExItem child = itemsControl.ItemContainerGenerator.ContainerFromIndex(i) as TreeViewExItem;
+                    TreeViewItem child = itemsControl.ItemContainerGenerator.ContainerFromIndex(i) as TreeViewItem;
                     int childHierarchyLevel = 0;
                     if (child != null) childHierarchyLevel = child.HierachyLevel;
 
@@ -431,7 +431,7 @@ namespace SiliconStudio.Presentation.Controls
             return finalSize;
         }
 
-        private void AddOrInsertItemToInternalChildren(int itemGeneratorIndex, TreeViewExItem child)
+        private void AddOrInsertItemToInternalChildren(int itemGeneratorIndex, TreeViewItem child)
         {
             if (itemGeneratorIndex >= InternalChildren.Count)
             {
@@ -497,14 +497,14 @@ namespace SiliconStudio.Presentation.Controls
         /// containers. If no container is cached, returns zero. 
         /// One case it fails is, if all cached items are bigger
         /// than the estimated items. This leads to jumping scrollbars. The effect is not that bad, if many items will be visualized.</remarks>
-        private double GetCachedOrEstimatedHeight(TreeViewEx tree, int level)
+        private double GetCachedOrEstimatedHeight(TreeView tree, int level)
         {
             if (cachedSizes.ContainsItems(0)) return cachedSizes.GetEstimate(0);
 
             return tree.CachedSizes.GetEstimate(level);
         }
 
-        private void RegisterHeight(TreeViewEx tree, int level, double size)
+        private void RegisterHeight(TreeView tree, int level, double size)
         {
             cachedSizes.AddOrChange(0, size);
             tree.CachedSizes.AddOrChange(level, size);
@@ -554,7 +554,7 @@ namespace SiliconStudio.Presentation.Controls
         }
 
         [Conditional("DEBUGVIRTUALIZATION")]
-        private void Debug(TreeViewExItem item, string message)
+        private void Debug(TreeViewItem item, string message)
         {
             if (item != null)
             {
@@ -573,7 +573,7 @@ namespace SiliconStudio.Presentation.Controls
 
         private int GetHierarchyLevel()
         {
-            TreeViewExItem treeViewItem = ItemsControl.GetItemsOwner(this) as TreeViewExItem;
+            TreeViewItem treeViewItem = ItemsControl.GetItemsOwner(this) as TreeViewItem;
             if (treeViewItem == null) return 0;
             return treeViewItem.HierachyLevel;
         }
@@ -656,11 +656,11 @@ namespace SiliconStudio.Presentation.Controls
                 return Rect.Empty;
             }
 
-            TreeViewExItem treeViewExItem = visual as TreeViewExItem;
+            TreeViewItem treeViewItem = visual as TreeViewItem;
             FrameworkElement element;
-            if (treeViewExItem != null)
+            if (treeViewItem != null)
             {
-                element = treeViewExItem.Template.FindName("border", treeViewExItem) as FrameworkElement;
+                element = treeViewItem.Template.FindName("border", treeViewItem) as FrameworkElement;
             }
             else
             {
@@ -675,7 +675,7 @@ namespace SiliconStudio.Presentation.Controls
             {
                 SetHorizontalOffset(HorizontalOffset + rect.X);
             }
-            else if (treeViewExItem != null && treeViewExItem.ParentTreeView.ActualWidth < rect.X)
+            else if (treeViewItem != null && treeViewItem.ParentTreeView.ActualWidth < rect.X)
             {
                 SetHorizontalOffset(HorizontalOffset + rect.X);
             }
@@ -684,10 +684,10 @@ namespace SiliconStudio.Presentation.Controls
             {
                 SetVerticalOffset(VerticalOffset + rect.Y);
             }
-            else if (treeViewExItem != null && treeViewExItem.ParentTreeView.ActualHeight < rect.Y + rect.Height)
+            else if (treeViewItem != null && treeViewItem.ParentTreeView.ActualHeight < rect.Y + rect.Height)
             {
                 // set 5 more, so the next item is realized for sure.
-                double verticalOffset = rect.Y + rect.Height + VerticalOffset - treeViewExItem.ParentTreeView.ActualHeight + 5;
+                double verticalOffset = rect.Y + rect.Height + VerticalOffset - treeViewItem.ParentTreeView.ActualHeight + 5;
                 SetVerticalOffset(verticalOffset);
             }
 

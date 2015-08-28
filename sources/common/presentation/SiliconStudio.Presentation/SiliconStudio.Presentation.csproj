@@ -54,8 +54,8 @@
     <Compile Include="Behaviors\ThumbTransactionalDragBehavior.cs" />
     <Compile Include="Controls\ExpandableItemsControl.cs" />
     <Compile Include="Controls\TreeViewElementFinder.cs" />
-    <Compile Include="Controls\TreeViewEx.cs" />
-    <Compile Include="Controls\TreeViewExItem.cs" />
+    <Compile Include="Controls\TreeView.cs" />
+    <Compile Include="Controls\TreeViewItem.cs" />
     <Compile Include="Controls\VirtualizingTreePanel.cs" />
     <Compile Include="Controls\Trimming.cs" />
     <Compile Include="Collections\IObservableCollection.cs" />

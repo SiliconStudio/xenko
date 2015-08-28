@@ -11,39 +11,39 @@ using System.Windows.Threading;
 namespace SiliconStudio.Presentation.Controls
 {
     /// <summary>
-    /// An item of the TreeViewEx.
+    /// An item of the TreeView.
     /// </summary>
-    public class TreeViewExItem : HeaderedItemsControl
+    public class TreeViewItem : HeaderedItemsControl
     {
         internal double ItemTopInTreeSystem; // for virtualization purposes
         internal int HierachyLevel;// for virtualization purposes
 
-        public static DependencyProperty IsEditableProperty = DependencyProperty.Register("IsEditable", typeof(bool), typeof(TreeViewExItem), new FrameworkPropertyMetadata(true, null));
+        public static DependencyProperty IsEditableProperty = DependencyProperty.Register("IsEditable", typeof(bool), typeof(TreeViewItem), new FrameworkPropertyMetadata(true, null));
 
-        public static DependencyProperty IsEditingProperty = DependencyProperty.Register("IsEditing", typeof(bool), typeof(TreeViewExItem), new FrameworkPropertyMetadata(false, OnIsEditingChanged));
+        public static DependencyProperty IsEditingProperty = DependencyProperty.Register("IsEditing", typeof(bool), typeof(TreeViewItem), new FrameworkPropertyMetadata(false, OnIsEditingChanged));
 
-        public static DependencyProperty IsExpandedProperty = DependencyProperty.Register("IsExpanded", typeof(bool), typeof(TreeViewExItem), new FrameworkPropertyMetadata(true));
+        public static DependencyProperty IsExpandedProperty = DependencyProperty.Register("IsExpanded", typeof(bool), typeof(TreeViewItem), new FrameworkPropertyMetadata(true));
 
-        public static DependencyProperty IsSelectedProperty = DependencyProperty.Register("IsSelected", typeof(bool), typeof(TreeViewExItem), new FrameworkPropertyMetadata(false, null));
+        public static DependencyProperty IsSelectedProperty = DependencyProperty.Register("IsSelected", typeof(bool), typeof(TreeViewItem), new FrameworkPropertyMetadata(false, null));
 
-        public static DependencyProperty TemplateEditProperty = DependencyProperty.Register("TemplateEdit", typeof(DataTemplate), typeof(TreeViewExItem), new FrameworkPropertyMetadata(null, null));
+        public static DependencyProperty TemplateEditProperty = DependencyProperty.Register("TemplateEdit", typeof(DataTemplate), typeof(TreeViewItem), new FrameworkPropertyMetadata(null, null));
 
-        public static DependencyProperty TemplateSelectorEditProperty = DependencyProperty.Register("TemplateSelectorEdit", typeof(DataTemplateSelector), typeof(TreeViewExItem), new FrameworkPropertyMetadata(null, null));
+        public static DependencyProperty TemplateSelectorEditProperty = DependencyProperty.Register("TemplateSelectorEdit", typeof(DataTemplateSelector), typeof(TreeViewItem), new FrameworkPropertyMetadata(null, null));
 
-        public static readonly DependencyProperty IndentationProperty = DependencyProperty.Register("Indentation", typeof(double), typeof(TreeViewExItem), new PropertyMetadata(10.0));
+        public static readonly DependencyProperty IndentationProperty = DependencyProperty.Register("Indentation", typeof(double), typeof(TreeViewItem), new PropertyMetadata(10.0));
 
-        static TreeViewExItem()
+        static TreeViewItem()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(TreeViewExItem), new FrameworkPropertyMetadata(typeof(TreeViewExItem)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(TreeViewItem), new FrameworkPropertyMetadata(typeof(TreeViewItem)));
 
             FrameworkElementFactory vPanel = new FrameworkElementFactory(typeof(VirtualizingTreePanel));
             vPanel.SetValue(Panel.IsItemsHostProperty, true);
             ItemsPanelTemplate vPanelTemplate = new ItemsPanelTemplate { VisualTree = vPanel };
-            ItemsPanelProperty.OverrideMetadata(typeof(TreeViewExItem), new FrameworkPropertyMetadata(vPanelTemplate));
+            ItemsPanelProperty.OverrideMetadata(typeof(TreeViewItem), new FrameworkPropertyMetadata(vPanelTemplate));
 
-            KeyboardNavigation.DirectionalNavigationProperty.OverrideMetadata(typeof(TreeViewExItem), new FrameworkPropertyMetadata(KeyboardNavigationMode.Continue));
-            KeyboardNavigation.TabNavigationProperty.OverrideMetadata(typeof(TreeViewExItem), new FrameworkPropertyMetadata(KeyboardNavigationMode.None));
-            IsTabStopProperty.OverrideMetadata(typeof(TreeViewExItem), new FrameworkPropertyMetadata(false));
+            KeyboardNavigation.DirectionalNavigationProperty.OverrideMetadata(typeof(TreeViewItem), new FrameworkPropertyMetadata(KeyboardNavigationMode.Continue));
+            KeyboardNavigation.TabNavigationProperty.OverrideMetadata(typeof(TreeViewItem), new FrameworkPropertyMetadata(KeyboardNavigationMode.None));
+            IsTabStopProperty.OverrideMetadata(typeof(TreeViewItem), new FrameworkPropertyMetadata(false));
         }
 
         public bool IsEditable { get { return (bool)GetValue(IsEditableProperty); } set { SetValue(IsEditableProperty, value); } }
@@ -63,9 +63,9 @@ namespace SiliconStudio.Presentation.Controls
         [DependsOn("Indentation")]
         public double Offset => ParentTreeViewItem?.Offset + Indentation ?? 0;
 
-        public TreeViewExItem ParentTreeViewItem => ItemsControlFromItemContainer(this) as TreeViewExItem;
+        public TreeViewItem ParentTreeViewItem => ItemsControlFromItemContainer(this) as TreeViewItem;
 
-        public TreeViewEx ParentTreeView { get; internal set; }
+        public TreeView ParentTreeView { get; internal set; }
 
         public new bool IsVisible
         {
@@ -124,7 +124,7 @@ namespace SiliconStudio.Presentation.Controls
 
         private static void OnIsEditingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var item = (TreeViewExItem)d;
+            var item = (TreeViewItem)d;
             var newValue = (bool)e.NewValue;
             if (newValue)
             {
@@ -143,7 +143,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <returns>true if its type matches the container type.</returns>
         protected override bool IsItemItsOwnContainerOverride(object item)
         {
-            return item is TreeViewExItem;
+            return item is TreeViewItem;
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <returns>The container.</returns>
         protected override DependencyObject GetContainerForItemOverride()
         {
-            return new TreeViewExItem();
+            return new TreeViewItem();
         }
 
         public override string ToString()
@@ -277,8 +277,8 @@ namespace SiliconStudio.Presentation.Controls
                     case Key.Add:
                     case Key.Subtract:
                     case Key.Space:
-                        IEnumerable<TreeViewExItem> items = TreeViewElementFinder.FindAll(ParentTreeView, false);
-                        TreeViewExItem focusedItem = items.FirstOrDefault(x => x.IsFocused);
+                        IEnumerable<TreeViewItem> items = TreeViewElementFinder.FindAll(ParentTreeView, false);
+                        TreeViewItem focusedItem = items.FirstOrDefault(x => x.IsFocused);
 
                         focusedItem?.BringIntoView(new Rect(1, 1, 1, 1));
 

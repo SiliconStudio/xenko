@@ -5,12 +5,12 @@ namespace SiliconStudio.Presentation.Controls
 {
     public static class TreeViewElementFinder
     {
-        public static TreeViewExItem FindNext(TreeViewExItem treeViewItem, bool visibleOnly)
+        public static TreeViewItem FindNext(TreeViewItem treeViewItem, bool visibleOnly)
         {
             // find first child
             if (treeViewItem.IsExpanded || !visibleOnly)
             {
-                TreeViewExItem item = GetFirstVirtualizedItem(treeViewItem);
+                TreeViewItem item = GetFirstVirtualizedItem(treeViewItem);
                 if (item != null)
                 {
                     if (item.IsEnabled)
@@ -28,7 +28,7 @@ namespace SiliconStudio.Presentation.Controls
             }
 
             // find next sibling
-            TreeViewExItem sibling = FindNextSiblingRecursive(treeViewItem) as TreeViewExItem;
+            TreeViewItem sibling = FindNextSiblingRecursive(treeViewItem) as TreeViewItem;
             if (sibling == null)
                 return null;
             if (!visibleOnly || sibling.IsVisible)
@@ -36,11 +36,11 @@ namespace SiliconStudio.Presentation.Controls
             return null;
         }
 
-        public static TreeViewExItem GetFirstVirtualizedItem(TreeViewExItem treeViewItem)
+        public static TreeViewItem GetFirstVirtualizedItem(TreeViewItem treeViewItem)
         {
             for (int i = 0; i < treeViewItem.Items.Count; i++)
             {
-                TreeViewExItem item = treeViewItem.ItemContainerGenerator.ContainerFromIndex(i) as TreeViewExItem;
+                TreeViewItem item = treeViewItem.ItemContainerGenerator.ContainerFromIndex(i) as TreeViewItem;
                 if (item != null) return item;
 
             }
@@ -73,12 +73,12 @@ namespace SiliconStudio.Presentation.Controls
         /// Returns the first item. If tree is virtualized, it is the first realized item.
         /// </summary>
         /// <param name="treeView">The tree.</param>
-        /// <returns>Returns a TreeViewExItem.</returns>
-        public static TreeViewExItem FindFirst(TreeViewEx treeView, bool visibleOnly)
+        /// <returns>Returns a TreeViewItem.</returns>
+        public static TreeViewItem FindFirst(TreeView treeView, bool visibleOnly)
         {
             for (int i = 0; i < treeView.Items.Count; i++)
             {
-                var item = treeView.ItemContainerGenerator.ContainerFromIndex(i) as TreeViewExItem;
+                var item = treeView.ItemContainerGenerator.ContainerFromIndex(i) as TreeViewItem;
                 if (item == null) continue;
                 if (!visibleOnly || item.IsVisible) return item;
             }
@@ -90,12 +90,12 @@ namespace SiliconStudio.Presentation.Controls
         /// Returns the last item. If tree is virtualized, it is the last realized item.
         /// </summary>
         /// <param name="treeView">The tree.</param>
-        /// <returns>Returns a TreeViewExItem.</returns>
-        public static TreeViewExItem FindLast(TreeViewEx treeView, bool visibleOnly)
+        /// <returns>Returns a TreeViewItem.</returns>
+        public static TreeViewItem FindLast(TreeView treeView, bool visibleOnly)
         {
             for (int i = treeView.Items.Count - 1; i >= 0; i--)
             {
-                var item = treeView.ItemContainerGenerator.ContainerFromIndex(i) as TreeViewExItem;
+                var item = treeView.ItemContainerGenerator.ContainerFromIndex(i) as TreeViewItem;
                 if (item == null) continue;
                 if (!visibleOnly || item.IsVisible) return item;
             }
@@ -109,9 +109,9 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="treeView">The tree.</param>
         /// <param name="visibleOnly">True if only visible items should be returned.</param>
         /// <returns>Returns an enumerable of items.</returns>
-        public static IEnumerable<TreeViewExItem> FindAll(TreeViewEx treeView, bool visibleOnly)
+        public static IEnumerable<TreeViewItem> FindAll(TreeView treeView, bool visibleOnly)
         {
-            TreeViewExItem currentItem = FindFirst(treeView, visibleOnly);
+            TreeViewItem currentItem = FindFirst(treeView, visibleOnly);
             while (currentItem != null)
             {
                 if (!visibleOnly || currentItem.IsVisible) yield return currentItem;

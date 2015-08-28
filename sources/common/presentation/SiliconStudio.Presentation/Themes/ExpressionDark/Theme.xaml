@@ -4362,7 +4362,7 @@
         <Setter Property="SnapsToDevicePixels" Value="True"/>
     </Style>
 
-    <Style TargetType="{x:Type ctrl:TreeViewEx}">
+    <Style TargetType="{x:Type ctrl:TreeView}">
         <Style.Resources>
             <ResourceDictionary />
         </Style.Resources>
@@ -4377,7 +4377,7 @@
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ctrl:TreeViewEx}">
+                <ControlTemplate TargetType="{x:Type ctrl:TreeView}">
                     <Border BorderThickness="{TemplateBinding Border.BorderThickness}"
                             BorderBrush="{TemplateBinding Border.BorderBrush}" Name="Bd" SnapsToDevicePixels="True">
                         <ScrollViewer CanContentScroll="True" x:Name="scroller"
@@ -4404,7 +4404,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type ctrl:TreeViewExItem}">
+    <Style TargetType="{x:Type ctrl:TreeViewItem}">
         <Style.Resources>
             <ResourceDictionary />
         </Style.Resources>
@@ -4433,7 +4433,7 @@
         </Setter>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ctrl:TreeViewExItem}">
+                <ControlTemplate TargetType="{x:Type ctrl:TreeViewItem}">
                     <StackPanel Background="Transparent" x:Name="stacki">
                         <Grid Background="Transparent" SnapsToDevicePixels="True" VerticalAlignment="Center" x:Name="border">
                             <Rectangle x:Name="Background" IsHitTestVisible="False" Opacity="0.25" Fill="{TemplateBinding Background}"/>
@@ -4442,8 +4442,8 @@
                             <DockPanel x:Name="ct" Margin="{TemplateBinding Padding}">
                                 <FrameworkElement DockPanel.Dock="Left" Margin="{Binding Offset, RelativeSource={RelativeSource TemplatedParent}, Converter={cvt:NumericToThickness}, ConverterParameter={me:Thickness 1,0,0,0}}"/>
                                 <ToggleButton DockPanel.Dock="Left" 
-                                    IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ctrl:TreeViewExItem}},Path=IsExpanded,FallbackValue=False}"
-                                    Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type ctrl:TreeViewExItem}},Path=HasItems, Converter={cvt:VisibleOrHidden},FallbackValue=Hidden}"
+                                    IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ctrl:TreeViewItem}},Path=IsExpanded,FallbackValue=False}"
+                                    Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type ctrl:TreeViewItem}},Path=HasItems, Converter={cvt:VisibleOrHidden},FallbackValue=Hidden}"
                                     ClickMode="Press" Name="Expander" HorizontalAlignment="Right">
                                     <ToggleButton.Style>
                                         <Style TargetType="{x:Type ToggleButton}">
@@ -4491,11 +4491,11 @@
                             <Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}" />
                         </Trigger>
 
-                        <Trigger Property="ctrl:TreeViewExItem.IsEditing" Value="True">
+                        <Trigger Property="ctrl:TreeViewItem.IsEditing" Value="True">
                             <Setter TargetName="content" Property="ContentPresenter.ContentTemplate" 
-                                    Value="{Binding TemplateEdit, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ctrl:TreeViewExItem}, AncestorLevel=1}}"/>
+                                    Value="{Binding TemplateEdit, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ctrl:TreeViewItem}, AncestorLevel=1}}"/>
                             <Setter TargetName="content" Property="ContentPresenter.ContentTemplateSelector" 
-                                    Value="{Binding TemplateSelectorEdit, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ctrl:TreeViewExItem}, AncestorLevel=1}}"/>
+                                    Value="{Binding TemplateSelectorEdit, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ctrl:TreeViewItem}, AncestorLevel=1}}"/>
                             <Setter Property="Padding" Value="0" />
                         </Trigger>
                     </ControlTemplate.Triggers>
