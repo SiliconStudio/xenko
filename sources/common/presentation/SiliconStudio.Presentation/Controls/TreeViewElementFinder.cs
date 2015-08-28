@@ -7,42 +7,36 @@ namespace SiliconStudio.Presentation.Controls
     {
         public static TreeViewItem FindNext(TreeViewItem treeViewItem, bool visibleOnly)
         {
-            // find first child
-            if (treeViewItem.IsExpanded || !visibleOnly)
+            while (true)
             {
-                TreeViewItem item = GetFirstVirtualizedItem(treeViewItem);
-                if (item != null)
+                // find first child
+                if (treeViewItem.IsExpanded || !visibleOnly)
                 {
-                    if (item.IsEnabled)
+                    var item = GetFirstVirtualizedItem(treeViewItem);
+                    if (item != null)
                     {
-                        if (visibleOnly && !item.IsVisible)
-                            return FindNext(item, visibleOnly);
-                        else
+                        if (item.IsEnabled && !visibleOnly || item.IsVisible)
+                        {
                             return item;
-                    }
-                    else
-                    {
-                        return FindNext(item, visibleOnly);
+                        }
+                        treeViewItem = item;
+                        continue;
                     }
                 }
-            }
 
-            // find next sibling
-            TreeViewItem sibling = FindNextSiblingRecursive(treeViewItem) as TreeViewItem;
-            if (sibling == null)
-                return null;
-            if (!visibleOnly || sibling.IsVisible)
-                return sibling;
-            return null;
+                // find next sibling
+                var sibling = FindNextSiblingRecursive(treeViewItem) as TreeViewItem;
+                return sibling != null ? (!visibleOnly || sibling.IsVisible ? sibling : null) : null;
+            }
         }
 
         public static TreeViewItem GetFirstVirtualizedItem(TreeViewItem treeViewItem)
         {
             for (int i = 0; i < treeViewItem.Items.Count; i++)
             {
-                TreeViewItem item = treeViewItem.ItemContainerGenerator.ContainerFromIndex(i) as TreeViewItem;
-                if (item != null) return item;
-
+                var item = treeViewItem.ItemContainerGenerator.ContainerFromIndex(i) as TreeViewItem;
+                if (item != null)
+                    return item;
             }
 
             return null;
@@ -51,28 +45,34 @@ namespace SiliconStudio.Presentation.Controls
         public static ItemsControl FindNextSibling(ItemsControl itemsControl)
         {
             ItemsControl parentIc = ItemsControl.ItemsControlFromItemContainer(itemsControl);
-            if (parentIc == null) return null;
+            if (parentIc == null)
+                return null;
             int index = parentIc.ItemContainerGenerator.IndexFromContainer(itemsControl);
             return parentIc.ItemContainerGenerator.ContainerFromIndex(index + 1) as ItemsControl; // returns null if index to large or nothing found
         }
 
         public static ItemsControl FindNextSiblingRecursive(ItemsControl itemsControl)
         {
-            ItemsControl parentIc = ItemsControl.ItemsControlFromItemContainer(itemsControl);
-            if (parentIc == null) return null;
-            int index = parentIc.ItemContainerGenerator.IndexFromContainer(itemsControl);
-            if (index < parentIc.Items.Count - 1)
+            while (true)
             {
-                return parentIc.ItemContainerGenerator.ContainerFromIndex(index + 1) as ItemsControl; // returns null if index to large or nothing found
-            }
+                var parentIc = ItemsControl.ItemsControlFromItemContainer(itemsControl);
+                if (parentIc == null)
+                    return null;
+                var index = parentIc.ItemContainerGenerator.IndexFromContainer(itemsControl);
+                if (index < parentIc.Items.Count - 1)
+                {
+                    return parentIc.ItemContainerGenerator.ContainerFromIndex(index + 1) as ItemsControl; // returns null if index to large or nothing found
+                }
 
-            return FindNextSiblingRecursive(parentIc);
+                itemsControl = parentIc;
+            }
         }
 
         /// <summary>
         /// Returns the first item. If tree is virtualized, it is the first realized item.
         /// </summary>
         /// <param name="treeView">The tree.</param>
+        /// <param name="visibleOnly">If true, returns the first visible item.</param>
         /// <returns>Returns a TreeViewItem.</returns>
         public static TreeViewItem FindFirst(TreeView treeView, bool visibleOnly)
         {
@@ -82,7 +82,6 @@ namespace SiliconStudio.Presentation.Controls
                 if (item == null) continue;
                 if (!visibleOnly || item.IsVisible) return item;
             }
-
             return null;
         }
 
@@ -90,16 +89,19 @@ namespace SiliconStudio.Presentation.Controls
         /// Returns the last item. If tree is virtualized, it is the last realized item.
         /// </summary>
         /// <param name="treeView">The tree.</param>
+        /// <param name="visibleOnly">If true, returns the last visible item.</param>
         /// <returns>Returns a TreeViewItem.</returns>
         public static TreeViewItem FindLast(TreeView treeView, bool visibleOnly)
         {
             for (int i = treeView.Items.Count - 1; i >= 0; i--)
             {
                 var item = treeView.ItemContainerGenerator.ContainerFromIndex(i) as TreeViewItem;
-                if (item == null) continue;
-                if (!visibleOnly || item.IsVisible) return item;
+                if (item != null)
+                {
+                    if (!visibleOnly || item.IsVisible)
+                        return item;
+                }
             }
-
             return null;
         }
 

@@ -27,7 +27,7 @@ namespace SiliconStudio.Presentation.Controls
 
         internal class SizesCache
         {
-            Dictionary<int, List<CachedSize>> cache;
+            readonly Dictionary<int, List<CachedSize>> cache;
 
             public SizesCache()
             {
@@ -136,7 +136,7 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
-        private SizesCache cachedSizes;
+        private readonly SizesCache cachedSizes;
         private Size extent = new Size(0, 0);
         private Size viewport = new Size(0, 0);
 
