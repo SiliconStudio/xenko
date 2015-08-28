@@ -61,7 +61,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
             // 1) Clear the cache of current lights (without destroying collections but keeping previously allocated ones)
             lightsCollected.Clear();
 
-            var colorSpace = context.GraphicsDevice.DefaultColorSpace;
+            var colorSpace = context.GraphicsDevice.ColorSpace;
 
             // 2) Prepare lights to be dispatched to the correct light group
             for (int i = 0; i < lights.Count; i++)

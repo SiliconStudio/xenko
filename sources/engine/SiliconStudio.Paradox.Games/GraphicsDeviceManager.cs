@@ -1007,7 +1007,7 @@ namespace SiliconStudio.Paradox.Games
                     }
 
                     // Copy the color space
-                    GraphicsDevice.DefaultColorSpace = DefaultColorSpace;
+                    GraphicsDevice.ColorSpace = DefaultColorSpace;
 
                     deviceSettingsChanged = false;
                 }

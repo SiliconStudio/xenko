@@ -223,7 +223,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// Gets the default color space.
         /// </summary>
         /// <value>The default color space.</value>
-        public ColorSpace DefaultColorSpace { get; set; }
+        public ColorSpace ColorSpace { get; set; }
 
         /// <summary>
         ///     Gets the parameters attached to this particular device. This Parameters are used to override <see cref="Effect" /> parameters.
