@@ -84,6 +84,10 @@
       <Name>SiliconStudio.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\tools\SiliconStudio.TextureConverter\SiliconStudio.TextureConverter.csproj">
+      <Project>{7F7BFF79-C400-435F-B359-56A2EF8956E0}</Project>
+      <Name>SiliconStudio.TextureConverter</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.Assets\SiliconStudio.Paradox.Assets.csproj">
       <Project>{39ae9c77-e94b-404f-8768-b6261b3c1e0e}</Project>
       <Name>SiliconStudio.Paradox.Assets</Name>
@@ -138,6 +142,7 @@
     <Compile Include="TestDependencyResolver.cs" />
     <Compile Include="TestEntity.cs" />
     <Compile Include="TestModelAsset.cs" />
+    <Compile Include="TestTexturePacker.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\data\tests\factory\factory.fbx">

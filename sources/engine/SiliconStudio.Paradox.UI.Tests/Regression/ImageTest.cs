@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Class for rendering tests on the <see cref="ImageElement"/> 
     /// </summary>
-    public class ImageTest : UnitTestGameBase
+    public class ImageTest : UITestGameBase
     {
         public ImageTest()
         {

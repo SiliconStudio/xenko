@@ -4,17 +4,22 @@ SerializedVersion: 1
 Tags: []
 Type: Sprite2D
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Packing:
+    Enabled: false
+    AtlasMaximumSize: {X: 2048, Y: 2048}
 Sprites:
     -   Source: ../../../data/tests/ImageOrientation.png
         Name: NoRotation
         TextureRegion: {X: 0, Y: 0, Width: 128, Height: 64}
-        PixelsPerUnit: 1
-        Center: {X: 0, Y: 0}
-        Borders: {X: 0, Y: 0, Z: 0, W: 0}
+        PixelsPerUnit: 1.0
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
     -   Source: ../../../data/tests/ImageOrientation.png
         Name: Rotation90
         TextureRegion: {X: 128, Y: 0, Width: 64, Height: 128}
-        PixelsPerUnit: 1
+        PixelsPerUnit: 1.0
         Orientation: Rotated90
-        Center: {X: 0, Y: 0}
-        Borders: {X: 0, Y: 0, Z: 0, W: 0}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}

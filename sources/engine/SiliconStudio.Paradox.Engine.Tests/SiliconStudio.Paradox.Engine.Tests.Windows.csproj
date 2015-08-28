@@ -26,7 +26,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Paradox.Engine.Tests.SpriteTestGame</StartupObject>
+    <StartupObject>SiliconStudio.Paradox.Engine.Tests.SpriteRenderer3DTests</StartupObject>
   </PropertyGroup>
   <!--Import Local Pre Settings for the solution being loaded -->
   <Import Project="$(SolutionDir)$(SolutionName).PreSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PreSettings.Local.targets')" />
@@ -125,10 +125,6 @@
       <Name>SiliconStudio.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\shaders\SiliconStudio.Paradox.Effects.csproj">
-      <Project>{0342c3e7-4a38-46b4-a8ec-e728d50085d3}</Project>
-      <Name>SiliconStudio.Paradox.Effects</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.Games\SiliconStudio.Paradox.Games.csproj">
       <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
       <Name>SiliconStudio.Paradox.Games</Name>
@@ -149,7 +145,12 @@
   <ItemGroup>
     <Compile Include="Build\TestBuilder.cs" />
     <Compile Include="EngineTestBase.cs" />
+    <Compile Include="SpriteProviderTests.cs" />
+    <Compile Include="SpriteRenderer2DTests.cs" />
+    <Compile Include="SpriteRenderer3DTests.cs" />
+    <Compile Include="SpriteRotationTests.cs" />
     <Compile Include="SpriteTestGame.cs" />
+    <Compile Include="SpriteTests.cs" />
     <Compile Include="TestCamera.cs" />
     <Compile Include="SpriteAnimationTest.cs" />
     <Compile Include="TesselationTest.cs" />

@@ -70,7 +70,7 @@ namespace SiliconStudio.Core
                     cpu = IntPtr.Size == 8 ? "x64" : "x86";
 
                 // We are trying to load the dll from a shadow path if it is already registered, otherwise we use it directly from the folder
-                var dllFolder = NativeLibraryInternal.GetShadowPathForNativeDll(libraryName) ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, cpu);
+                var dllFolder = NativeLibraryInternal.GetShadowPathForNativeDll(libraryName) ?? Path.Combine(Path.GetDirectoryName(typeof(NativeLibrary).Assembly.Location), cpu);
                 var libraryFilename = Path.Combine(dllFolder, libraryName);
                 var result = LoadLibrary(libraryFilename);
 

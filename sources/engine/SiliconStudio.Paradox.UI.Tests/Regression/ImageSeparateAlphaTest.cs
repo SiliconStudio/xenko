@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// Class for rendering tests on the <see cref="Sprite"/> with separate alpha texture
     /// </summary>
     [TestFixture]
-    public class ImageSeparateAlphaTest : UnitTestGameBase
+    public class ImageSeparateAlphaTest : UITestGameBase
     {
         public ImageSeparateAlphaTest()
         {

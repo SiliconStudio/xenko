@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Class for rendering tests on the <see cref="ImageElement"/> 
     /// </summary>
-    public class EditTextTest : UnitTestGameBase
+    public class EditTextTest : UITestGameBase
     {
         private EditText edit1;
         private EditText edit2;

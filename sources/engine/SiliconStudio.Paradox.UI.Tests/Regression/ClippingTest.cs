@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Class for rendering tests on the <see cref="ImageElement"/> 
     /// </summary>
-    public class ClippingTest : UnitTestGameBase
+    public class ClippingTest : UITestGameBase
     {
         private ContentDecorator element1;
         private ContentDecorator element2;

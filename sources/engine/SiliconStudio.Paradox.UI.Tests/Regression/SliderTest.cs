@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Class for rendering tests on the <see cref="Slider"/> 
     /// </summary>
-    public class SliderTest : UnitTestGameBase
+    public class SliderTest : UITestGameBase
     {
         private Slider slider;
         private UniformGrid grid;
