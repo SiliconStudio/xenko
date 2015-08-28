@@ -4,71 +4,36 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
+using System.Windows.Input;
+using System.Windows.Media;
+
 using SiliconStudio.Presentation.Collections;
 using SiliconStudio.Presentation.Extensions;
 
 namespace System.Windows.Controls
 {
-    #region
-
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Collections.Specialized;
-    using System.ComponentModel;
-    using System.Linq;
-    using System.Windows.Automation.Peers;
-    using System.Windows.Input;
-    using System.Windows.Media;
-
-    #endregion
-
     public class TreeViewEx : ItemsControl
     {
         // the space where items will be realized if virtualization is enabled. This is set by virtualizingtreepanel.
-        internal VerticalArea realizationSpace = new VerticalArea();
-        internal SizesCache cachedSizes = new SizesCache();
+        internal VirtualizingTreePanel.VerticalArea RealizationSpace = new VirtualizingTreePanel.VerticalArea();
+        internal VirtualizingTreePanel.SizesCache CachedSizes = new VirtualizingTreePanel.SizesCache();
         private bool updatingSelection;
         TreeViewExItem editedItem;
 
-        public static DependencyProperty BackgroundSelectionRectangleProperty =
-           DependencyProperty.Register(
-              "BackgroundSelectionRectangle",
-              typeof(Brush),
-              typeof(TreeViewEx),
-              new FrameworkPropertyMetadata(Brushes.LightBlue, null));
+        public static DependencyProperty SelectedItemProperty = DependencyProperty.Register("SelectedItem", typeof(object), typeof(TreeViewEx), new FrameworkPropertyMetadata(null, OnSelectedItemPropertyChanged));
 
-        public static DependencyProperty BorderBrushSelectionRectangleProperty =
-           DependencyProperty.Register(
-              "BorderBrushSelectionRectangle",
-              typeof(Brush),
-              typeof(TreeViewEx),
-              new FrameworkPropertyMetadata(Brushes.Blue, null));
+        public static DependencyPropertyKey SelectedItemsProperty = DependencyProperty.RegisterReadOnly("SelectedItems", typeof(IList), typeof(TreeViewEx), new FrameworkPropertyMetadata(null, OnSelectedItemsPropertyChanged));
 
-        public static DependencyProperty SelectedItemProperty =
-           DependencyProperty.Register("SelectedItem", typeof(object), typeof(TreeViewEx), new FrameworkPropertyMetadata(null, OnSelectedItemPropertyChanged));
+        public static DependencyProperty SelectionModeProperty = DependencyProperty.Register("SelectionMode", typeof(SelectionMode), typeof(TreeViewEx), new FrameworkPropertyMetadata(SelectionMode.Extended, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSelectionModeChanged));
 
-        public static DependencyPropertyKey SelectedItemsProperty = DependencyProperty.RegisterReadOnly(
-           "SelectedItems",
-           typeof(IList),
-           typeof(TreeViewEx),
-           new FrameworkPropertyMetadata(
-              null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSelectedItemsPropertyChanged));
+        public static readonly DependencyProperty IsVirtualizingProperty = DependencyProperty.Register("IsVirtualizing", typeof(bool), typeof(TreeViewEx), new PropertyMetadata(false));
 
-        public static DependencyProperty SelectionModeProperty = DependencyProperty.Register(
-           "SelectionMode",
-           typeof(SelectionMode),
-           typeof(TreeViewEx),
-           new FrameworkPropertyMetadata(
-              SelectionMode.Extended, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSelectionModeChanged));
-
-        public static readonly DependencyProperty IsVirtualizingProperty =
-            DependencyProperty.Register("IsVirtualizing", typeof(bool), typeof(TreeViewEx), new PropertyMetadata(false));
-        
         private InputEventRouter inputEventRouter;
-
         private bool isInitialized;
-
         private ScrollViewer scroller;
 
         static TreeViewEx()
@@ -76,9 +41,8 @@ namespace System.Windows.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(TreeViewEx), new FrameworkPropertyMetadata(typeof(TreeViewEx)));
 
             FrameworkElementFactory vPanel = new FrameworkElementFactory(typeof(VirtualizingTreePanel));
-            vPanel.SetValue(VirtualizingTreePanel.IsItemsHostProperty, true);
-            ItemsPanelTemplate vPanelTemplate = new ItemsPanelTemplate();
-            vPanelTemplate.VisualTree = vPanel;
+            vPanel.SetValue(Panel.IsItemsHostProperty, true);
+            ItemsPanelTemplate vPanelTemplate = new ItemsPanelTemplate { VisualTree = vPanel };
             ItemsPanelProperty.OverrideMetadata(typeof(TreeViewEx), new FrameworkPropertyMetadata(vPanelTemplate));
 
             KeyboardNavigation.DirectionalNavigationProperty.OverrideMetadata(typeof(TreeViewEx), new FrameworkPropertyMetadata(KeyboardNavigationMode.Contained));
@@ -91,103 +55,24 @@ namespace System.Windows.Controls
             Selection = new Selection(this) { AllowMultipleSelection = SelectionMode != SelectionMode.Single };
         }
 
-        #region Properties
-
-        public bool IsVirtualizing
-        {
-            get { return (bool)GetValue(IsVirtualizingProperty); }
-            set { SetValue(IsVirtualizingProperty, value); }
-        }
-
-        public Brush BackgroundSelectionRectangle
-        {
-            get
-            {
-                return (Brush)GetValue(BackgroundSelectionRectangleProperty);
-            }
-
-            set
-            {
-                SetValue(BackgroundSelectionRectangleProperty, value);
-            }
-        }
-
-        public Brush BorderBrushSelectionRectangle
-        {
-            get
-            {
-                return (Brush)GetValue(BorderBrushSelectionRectangleProperty);
-            }
-
-            set
-            {
-                SetValue(BorderBrushSelectionRectangleProperty, value);
-            }
-        }
+        public bool IsVirtualizing { get { return (bool)GetValue(IsVirtualizingProperty); } set { SetValue(IsVirtualizingProperty, value); } }
 
         /// <summary>
-        ///   Gets the last selected item.
+        /// Gets the last selected item.
         /// </summary>
-        public object SelectedItem
-        {
-            get
-            {
-                return GetValue(SelectedItemProperty);
-            }
-
-            set
-            {
-                SetValue(SelectedItemProperty, value);
-            }
-        }
+        public object SelectedItem { get { return GetValue(SelectedItemProperty); } set { SetValue(SelectedItemProperty, value); } }
 
         /// <summary>
-        ///   Gets or sets a list of selected items and can be bound to another list. If the source list implements <see
-        ///    cref="INotifyPropertyChanged" /> the changes are automatically taken over.
+        /// Gets the list of selected items.
         /// </summary>
-        public IList SelectedItems
-        {
-            get
-            {
-                return (IList)GetValue(SelectedItemsProperty.DependencyProperty);
-            }
+        public IList SelectedItems { get { return (IList)GetValue(SelectedItemsProperty.DependencyProperty); } private set { SetValue(SelectedItemsProperty, value); } }
 
-            private set
-            {
-                SetValue(SelectedItemsProperty, value);
-            }
-        }
+        public SelectionMode SelectionMode { get { return (SelectionMode)GetValue(SelectionModeProperty); } set { SetValue(SelectionModeProperty, value); } }
 
-        public SelectionMode SelectionMode
-        {
-            get
-            {
-                return (SelectionMode)GetValue(SelectionModeProperty);
-            }
-            set
-            {
-                SetValue(SelectionModeProperty, value);
-            }
-        }
+        internal ScrollViewer ScrollViewer => scroller ?? (scroller = (ScrollViewer)Template.FindName("scroller", this));
 
-        internal ScrollViewer ScrollViewer
-        {
-            get
-            {
-                if (scroller == null)
-                {
-                    scroller = (ScrollViewer)Template.FindName("scroller", this);
-                }
+        internal Selection Selection { get; }
 
-                return scroller;
-            }
-        }
-
-        internal Selection Selection { get; private set; }
-
-        #endregion
-
-        #region Methods
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
@@ -205,8 +90,8 @@ namespace System.Windows.Controls
         public bool BringItemToView(object item, Func<object, object> getParent)
         {
             // Useful link: https://msdn.microsoft.com/en-us/library/ff407130%28v=vs.110%29.aspx
-            if (item == null) throw new ArgumentNullException("item");
-            if (getParent == null) throw new ArgumentNullException("getParent");
+            if (item == null) throw new ArgumentNullException(nameof(item));
+            if (getParent == null) throw new ArgumentNullException(nameof(getParent));
             if (IsVirtualizing)
                 throw new InvalidOperationException("BringItemToView cannot be used when the tree view is virtualizing.");
 
@@ -300,7 +185,7 @@ namespace System.Windows.Controls
                 return;
 
             Keyboard.Focus(editedItem);
-            FocusHelper.Focus(editedItem);
+            editedItem.ForceFocus();
             editedItem = null;
         }
 
@@ -308,10 +193,10 @@ namespace System.Windows.Controls
         {
             if (item == null) yield break;
             for (int i = 0; i < item.Items.Count; i++)
-			{
-                TreeViewExItem child = item.ItemContainerGenerator.ContainerFromIndex(i) as TreeViewExItem;
+            {
+                var child = item.ItemContainerGenerator.ContainerFromIndex(i) as TreeViewExItem;
                 if (child != null) yield return child;
-			}
+            }
         }
 
         internal TreeViewExItem GetNextItem(TreeViewExItem item, List<TreeViewExItem> items)
@@ -378,14 +263,10 @@ namespace System.Windows.Controls
             return nodesToSelect;
         }
 
-        /// <summary>
-        /// Send down the IsVirtualizing property if it's set on this element.
-        /// </summary>
-        /// <param name="element">
-        /// <param name="item">
         protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
         {
             base.PrepareContainerForItemOverride(element, item);
+            //Send down the IsVirtualizing property if it's set on this element.
             TreeViewExItem.IsVirtualizingPropagationHelper(this, element);
         }
 
@@ -442,7 +323,7 @@ namespace System.Windows.Controls
         {
             return item is TreeViewExItem;
         }
-        
+
         private static void OnSelectedItemPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var treeView = (TreeViewEx)d;
@@ -518,13 +399,11 @@ namespace System.Windows.Controls
                 }
                 treeView.updatingSelection = false;
             }
-            if (treeView.inputEventRouter != null)
-                treeView.inputEventRouter.Remove((InputSubscriberBase)treeView.Selection);
+            treeView.inputEventRouter?.Remove(treeView.Selection);
 
             treeView.Selection.AllowMultipleSelection = newValue != SelectionMode.Single;
 
-            if (treeView.inputEventRouter != null)
-                treeView.inputEventRouter.Add((InputSubscriberBase)treeView.Selection);
+            treeView.inputEventRouter?.Add(treeView.Selection);
         }
 
         private void OnSelectedItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -556,14 +435,7 @@ namespace System.Windows.Controls
                         item.IsSelected = false;
                         if (item.DataContext == SelectedItem)
                         {
-                            if (SelectedItems.Count > 0)
-                            {
-                                SelectedItem = SelectedItems[SelectedItems.Count - 1];
-                            }
-                            else
-                            {
-                                SelectedItem = null;
-                            }
+                            SelectedItem = SelectedItems.Count > 0 ? SelectedItems[SelectedItems.Count - 1] : null;
                         }
                     }
 
@@ -606,6 +478,5 @@ namespace System.Windows.Controls
                     throw new NotSupportedException();
             }
         }
-        #endregion
     }
 }

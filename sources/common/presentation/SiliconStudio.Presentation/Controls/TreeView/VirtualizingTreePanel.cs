@@ -16,6 +16,129 @@ namespace System.Windows.Controls
 {
     public class VirtualizingTreePanel : VirtualizingPanel, IScrollInfo
     {
+        internal class VerticalArea
+        {
+            public double Top { get; set; }
+
+            public double Bottom { get; set; }
+
+            public bool Overlaps(VerticalArea area)
+            {
+                return Top <= area.Bottom && area.Top <= Bottom;
+            }
+        }
+
+        internal class SizesCache
+        {
+            Dictionary<int, List<CachedSize>> cache;
+
+            public SizesCache()
+            {
+                cache = new Dictionary<int, List<CachedSize>>();
+            }
+
+            public void AddOrChange(int level, double size)
+            {
+                List<CachedSize> levelList;
+                if (cache.ContainsKey(level)) { levelList = cache[level]; }
+                else
+                {
+                    levelList = new List<CachedSize>(5);
+                    cache.Add(level, levelList);
+                }
+
+                CachedSize cachedSize = null;
+                foreach (var s in levelList)
+                {
+                    if (s.IsEqual(size))
+                    {
+                        cachedSize = s;
+                        break;
+                    }
+                }
+
+                if (cachedSize == null)
+                {
+                    // if list is full, replace item with lowest count, to give other items a chance
+                    if (levelList.Count > 4)
+                    {
+                        cachedSize = new CachedSize { OccuranceCounter = int.MaxValue, Size = size };
+                        int indexToReplace = 0;
+                        int smallestCounter = int.MaxValue;
+                        for (int i = 0; i < 5; i++)
+                        {
+                            if (levelList[i].OccuranceCounter < smallestCounter) indexToReplace = i;
+                        }
+                        levelList[indexToReplace].OccuranceCounter = 1;
+                        levelList[indexToReplace].Size = size;
+                        cachedSize = levelList[indexToReplace];
+                    }
+                    else
+                    {
+                        // add new size to list
+                        cachedSize = new CachedSize { OccuranceCounter = 1, Size = size };
+                        levelList.Add(cachedSize);
+                    }
+                }
+                else
+                {
+                    // prevent overflow
+                    if (cachedSize.OccuranceCounter == int.MaxValue)
+                    {
+                        foreach (var s in levelList)
+                        {
+                            s.OccuranceCounter = s.OccuranceCounter / 2;
+                        }
+                    }
+
+                    // count occurance up
+                    cachedSize.OccuranceCounter++;
+                }
+            }
+
+            public bool ContainsItems(int level)
+            {
+                if (cache.ContainsKey(level))
+                {
+                    return cache[level].Count > 0;
+                }
+
+                return false;
+            }
+
+            public void CleanUp(int level)
+            {
+                cache.Remove(level);
+            }
+
+            public double GetEstimate(int level)
+            {
+                if (cache.ContainsKey(level))
+                {
+                    CachedSize maxUsedSize = new CachedSize { OccuranceCounter = 0 };
+                    foreach (var s in cache[level])
+                    {
+                        if (maxUsedSize.OccuranceCounter < s.OccuranceCounter) maxUsedSize = s;
+                    }
+
+                    return maxUsedSize.Size;
+                }
+
+                return 0;
+            }
+
+            class CachedSize
+            {
+                public double Size { get; set; }
+                public int OccuranceCounter { get; set; }
+
+                public bool IsEqual(double size)
+                {
+                    return Math.Abs(Size - size) < 1;
+                }
+            }
+        }
+
         private SizesCache cachedSizes;
         private Size extent = new Size(0, 0);
         private Size viewport = new Size(0, 0);
@@ -71,8 +194,8 @@ namespace System.Windows.Controls
                     double predictionOffset = 50;
                     double top = VerticalOffset - predictionOffset;
                     if (top < 0) top = 0;
-                    treeView.realizationSpace.Top = top;
-                    treeView.realizationSpace.Bottom = VerticalOffset + availableSize.Height + predictionOffset;
+                    treeView.RealizationSpace.Top = top;
+                    treeView.RealizationSpace.Bottom = VerticalOffset + availableSize.Height + predictionOffset;
 
                     itemTop = GetHeightOfHeader(itemsControl);
                 }
@@ -94,7 +217,7 @@ namespace System.Windows.Controls
                         childSpace.Bottom = childSpace.Top + estimatedHeight;
 
                         // check if item is possibly visible or could become visible if someone changes expanding of siblings
-                        bool isVisibleItem = treeView.realizationSpace.IsWithin(childSpace);
+                        bool isVisibleItem = treeView.RealizationSpace.Overlaps(childSpace);
 
                         if (isVisibleItem)
                         {
@@ -381,13 +504,13 @@ namespace System.Windows.Controls
         {
             if (cachedSizes.ContainsItems(0)) return cachedSizes.GetEstimate(0);
 
-            return tree.cachedSizes.GetEstimate(level);
+            return tree.CachedSizes.GetEstimate(level);
         }
 
         private void RegisterHeight(TreeViewEx tree, int level, double size)
         {
             cachedSizes.AddOrChange(0, size);
-            tree.cachedSizes.AddOrChange(level, size);
+            tree.CachedSizes.AddOrChange(level, size);
         }
         #endregion
 

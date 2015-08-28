@@ -26,7 +26,7 @@ namespace System.Windows.Controls
         internal virtual void SelectFromUiAutomation(TreeViewExItem item)
         {
             SelectSingleItem(item);
-            FocusHelper.Focus(item);
+            item.ForceFocus();
         }
 
         internal virtual void SelectPreviousFromKey()
@@ -42,7 +42,7 @@ namespace System.Windows.Controls
                 SelectSingleItem(item);
             }
 
-            FocusHelper.Focus(item);
+            item.ForceFocus();
         }
 
         internal virtual void SelectNextFromKey()
@@ -57,14 +57,14 @@ namespace System.Windows.Controls
                 SelectSingleItem(item);
             }
 
-            FocusHelper.Focus(item);
+            item.ForceFocus();
         }
 
         internal virtual void SelectCurrentBySpace()
         {
             TreeViewExItem item = GetFocusedItem();
             SelectSingleItem(item);
-            FocusHelper.Focus(item);
+            item.ForceFocus();
         }
 
         internal virtual void SelectFromProperty(TreeViewExItem item, bool isSelected)
@@ -78,7 +78,7 @@ namespace System.Windows.Controls
                     lastShiftRoot = item.DataContext;
                 }
                 TreeViewEx.SelectedItems.Add(item.DataContext);
-                FocusHelper.Focus(item);
+                item.ForceFocus();
             }
             else
             {
@@ -94,7 +94,7 @@ namespace System.Windows.Controls
                 SelectSingleItem(item);
             }
 
-            FocusHelper.Focus(item);
+            item.ForceFocus();
         }
 
         internal virtual void SelectLast()
@@ -105,7 +105,7 @@ namespace System.Windows.Controls
                 SelectSingleItem(item);
             }
 
-            FocusHelper.Focus(item);
+            item.ForceFocus();
         }
 
         internal virtual void ClearObsoleteItems(IList items)
@@ -131,7 +131,7 @@ namespace System.Windows.Controls
 
             SelectSingleItem(item);
 
-            FocusHelper.Focus(item);
+            item.ForceFocus();
         }
 
         internal override void OnMouseUp(MouseButtonEventArgs e)
@@ -147,7 +147,7 @@ namespace System.Windows.Controls
 
                 SelectSingleItem(item);
 
-                FocusHelper.Focus(item);
+                item.ForceFocus();
             }
             mouseDown = false;
         }

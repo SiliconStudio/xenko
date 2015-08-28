@@ -4,6 +4,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Windows.Threading;
+
 namespace System.Windows.Controls
 {
     #region
@@ -320,6 +322,14 @@ namespace System.Windows.Controls
             if (ParentTreeView != null && ParentTreeView.SelectedItems != null && ParentTreeView.SelectedItems.Contains(DataContext))
             {
                 IsSelected = true;
+            }
+        }
+
+        internal void ForceFocus()
+        {
+            if (!Focus())
+            {
+                Dispatcher.BeginInvoke(DispatcherPriority.Input, new Action(() => Focus()));
             }
         }
 
