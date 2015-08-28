@@ -1173,12 +1173,39 @@ namespace SiliconStudio.Assets
                         }
 
                         // If this kind of file an asset file?
-                        if (!AssetRegistry.IsAssetFileExtension(fileUPath.GetFileExtension()))
+                        var ext = fileUPath.GetFileExtension();
+                        if (!AssetRegistry.IsAssetFileExtension(ext) || ext == ".cs")
                         {
                             continue;
                         }
 
                         listFiles.Add(new PackageLoadingAssetFile(fileUPath, sourceFolder));
+                    }
+                }
+            }
+
+            //iterate Compile tags of the csproj..
+            if (!package.IsSystem)
+            {
+                var sharedProfiles = package.Profiles.Where(x => x.Platform == PlatformType.Shared);
+                foreach (var profile in sharedProfiles)
+                {
+                    foreach (var libs in profile.ProjectReferences.Where(x => x.Type == ProjectType.Library))
+                    {
+                        var realFullPath = UPath.Combine(package.RootDirectory, libs.Location);
+                        var project = VSProjectHelper.LoadProject(realFullPath);
+                        var dir = new UDirectory(realFullPath.GetFullDirectory());
+                        var parentDir = dir.GetParent();
+
+                        foreach (var projectItem in project.Items.Where(x => x.ItemType == "Compile"))
+                        {
+                            var csFile = new UFile(projectItem.EvaluatedInclude);
+                            var csPath = UPath.Combine(dir, csFile);
+                            listFiles.Add(new PackageLoadingAssetFile(csPath, parentDir));
+                        }
+
+                        project.ProjectCollection.UnloadAllProjects();
+                        project.ProjectCollection.Dispose();
                     }
                 }
             }
