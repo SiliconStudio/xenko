@@ -661,12 +661,14 @@ namespace SiliconStudio.Core.Serialization.Assets
         // TODO: Replug this when an asset is not found?
         private static void HandleAssetNotFound(string url)
         {
+            var errorMessage = string.Format("The asset '{0}' does not exist. Path should be 'Subfolder/AssetName'", url);
+
             // If a debugger is attached, throw an exception (we do that instead of Debugger.Break so that user can easily ignore this specific type of exception)
             if (Debugger.IsAttached)
             {
                 try
                 {
-                    throw new AssetManagerException(string.Format("Asset [{0}] not found.", url));
+                    throw new AssetManagerException(errorMessage);
                 }
                 catch (Exception)
                 {
@@ -674,7 +676,7 @@ namespace SiliconStudio.Core.Serialization.Assets
             }
 
             // Log error
-            Log.Error("Asset [{0}] could not be found.", url);
+            Log.Error(errorMessage);
         }
     }
 }
