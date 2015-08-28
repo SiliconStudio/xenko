@@ -88,6 +88,7 @@ namespace System.Windows.Controls
         public TreeViewEx()
         {
             SelectedItems = new NonGenericObservableListWrapper<object>(new ObservableList<object>());
+            Selection = new Selection(this) { AllowMultipleSelection = SelectionMode != SelectionMode.Single };
         }
 
         #region Properties
@@ -182,7 +183,7 @@ namespace System.Windows.Controls
             }
         }
 
-        internal ISelectionStrategy Selection { get; private set; }
+        internal Selection Selection { get; private set; }
 
         #endregion
 
@@ -270,19 +271,8 @@ namespace System.Windows.Controls
             // Ensure everything is unloaded before reloading!
             OnUnLoaded(sender, e);
 
-            if (SelectionMode == SelectionMode.Single)
-            {
-                var selectionSingle = new SelectionSingle(this);
-                Selection = selectionSingle;
-            }
-            else
-            {
-                var selectionMultiple = new SelectionMultiple(this);
-                Selection = selectionMultiple;
-            }
-
             inputEventRouter = new InputEventRouter(this);
-            inputEventRouter.Add((InputSubscriberBase)Selection);
+            inputEventRouter.Add(Selection);
             isInitialized = true;
         }
 
@@ -294,7 +284,6 @@ namespace System.Windows.Controls
                 inputEventRouter = null;
             }
 
-            Selection = null;
             scroller = null;
         }
 
@@ -532,16 +521,8 @@ namespace System.Windows.Controls
             if (treeView.inputEventRouter != null)
                 treeView.inputEventRouter.Remove((InputSubscriberBase)treeView.Selection);
 
-            if (newValue == SelectionMode.Single)
-            {
-                var selectionSingle = new SelectionSingle(treeView);
-                treeView.Selection = selectionSingle;
-            }
-            else
-            {
-                var selectionMultiple = new SelectionMultiple(treeView);
-                treeView.Selection = selectionMultiple;
-            }
+            treeView.Selection.AllowMultipleSelection = newValue != SelectionMode.Single;
+
             if (treeView.inputEventRouter != null)
                 treeView.inputEventRouter.Add((InputSubscriberBase)treeView.Selection);
         }
