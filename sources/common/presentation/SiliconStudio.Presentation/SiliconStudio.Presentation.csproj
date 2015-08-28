@@ -53,10 +53,10 @@
     <Compile Include="Behaviors\TextBoxCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\ThumbTransactionalDragBehavior.cs" />
     <Compile Include="Controls\ExpandableItemsControl.cs" />
-    <Compile Include="Controls\TreeView\TreeViewElementFinder.cs" />
-    <Compile Include="Controls\TreeView\TreeViewEx.cs" />
-    <Compile Include="Controls\TreeView\TreeViewExItem.cs" />
-    <Compile Include="Controls\TreeView\VirtualizingTreePanel.cs" />
+    <Compile Include="Controls\TreeViewElementFinder.cs" />
+    <Compile Include="Controls\TreeViewEx.cs" />
+    <Compile Include="Controls\TreeViewExItem.cs" />
+    <Compile Include="Controls\VirtualizingTreePanel.cs" />
     <Compile Include="Controls\Trimming.cs" />
     <Compile Include="Collections\IObservableCollection.cs" />
     <Compile Include="Collections\IReadOnlyObservableCollection.cs" />

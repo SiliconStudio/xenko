@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Windows.Controls;
 
-namespace System.Windows.Controls
+namespace SiliconStudio.Presentation.Controls
 {
     public static class TreeViewElementFinder
     {

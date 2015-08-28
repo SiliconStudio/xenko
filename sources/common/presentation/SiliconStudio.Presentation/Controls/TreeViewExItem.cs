@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Threading;
 
-namespace System.Windows.Controls
+namespace SiliconStudio.Presentation.Controls
 {
     /// <summary>
     /// An item of the TreeViewEx.

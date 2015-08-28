@@ -16,7 +16,6 @@
                     xmlns:behaviors="clr-namespace:SiliconStudio.Presentation.Behaviors"
                     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                     xmlns:commands="clr-namespace:SiliconStudio.Presentation.Controls.Commands"
-                    xmlns:controls="clr-namespace:System.Windows.Controls"
                     mc:Ignorable="d"
                     >
 
@@ -4363,7 +4362,7 @@
         <Setter Property="SnapsToDevicePixels" Value="True"/>
     </Style>
 
-    <Style TargetType="{x:Type controls:TreeViewEx}">
+    <Style TargetType="{x:Type ctrl:TreeViewEx}">
         <Style.Resources>
             <ResourceDictionary />
         </Style.Resources>
@@ -4378,7 +4377,7 @@
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type controls:TreeViewEx}">
+                <ControlTemplate TargetType="{x:Type ctrl:TreeViewEx}">
                     <Border BorderThickness="{TemplateBinding Border.BorderThickness}"
                             BorderBrush="{TemplateBinding Border.BorderBrush}" Name="Bd" SnapsToDevicePixels="True">
                         <ScrollViewer CanContentScroll="True" x:Name="scroller"
@@ -4405,7 +4404,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type controls:TreeViewExItem}">
+    <Style TargetType="{x:Type ctrl:TreeViewExItem}">
         <Style.Resources>
             <ResourceDictionary />
         </Style.Resources>
@@ -4434,7 +4433,7 @@
         </Setter>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type controls:TreeViewExItem}">
+                <ControlTemplate TargetType="{x:Type ctrl:TreeViewExItem}">
                     <StackPanel Background="Transparent" x:Name="stacki">
                         <Grid Background="Transparent" SnapsToDevicePixels="True" VerticalAlignment="Center" x:Name="border">
                             <Rectangle x:Name="Background" IsHitTestVisible="False" Opacity="0.25" Fill="{TemplateBinding Background}"/>
@@ -4443,8 +4442,8 @@
                             <DockPanel x:Name="ct" Margin="{TemplateBinding Padding}">
                                 <FrameworkElement DockPanel.Dock="Left" Margin="{Binding Offset, RelativeSource={RelativeSource TemplatedParent}, Converter={cvt:NumericToThickness}, ConverterParameter={me:Thickness 1,0,0,0}}"/>
                                 <ToggleButton DockPanel.Dock="Left" 
-                                    IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type controls:TreeViewExItem}},Path=IsExpanded,FallbackValue=False}"
-                                    Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type controls:TreeViewExItem}},Path=HasItems, Converter={cvt:VisibleOrHidden},FallbackValue=Hidden}"
+                                    IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ctrl:TreeViewExItem}},Path=IsExpanded,FallbackValue=False}"
+                                    Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type ctrl:TreeViewExItem}},Path=HasItems, Converter={cvt:VisibleOrHidden},FallbackValue=Hidden}"
                                     ClickMode="Press" Name="Expander" HorizontalAlignment="Right">
                                     <ToggleButton.Style>
                                         <Style TargetType="{x:Type ToggleButton}">
@@ -4492,16 +4491,12 @@
                             <Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}" />
                         </Trigger>
 
-                        <Trigger Property="controls:TreeViewExItem.IsEditing" Value="True">
+                        <Trigger Property="ctrl:TreeViewExItem.IsEditing" Value="True">
                             <Setter TargetName="content" Property="ContentPresenter.ContentTemplate" 
-                                    Value="{Binding TemplateEdit, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:TreeViewExItem}, AncestorLevel=1}}"/>
+                                    Value="{Binding TemplateEdit, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ctrl:TreeViewExItem}, AncestorLevel=1}}"/>
                             <Setter TargetName="content" Property="ContentPresenter.ContentTemplateSelector" 
-                                    Value="{Binding TemplateSelectorEdit, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:TreeViewExItem}, AncestorLevel=1}}"/>
+                                    Value="{Binding TemplateSelectorEdit, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ctrl:TreeViewExItem}, AncestorLevel=1}}"/>
                             <Setter Property="Padding" Value="0" />
-                            <Setter Property="Control.Background"
-                                    Value="{Binding BackgroundSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:TreeViewExItem}, AncestorLevel=1}}" />
-                            <Setter Property="Border.BorderBrush"
-                                    Value="{Binding BorderBrushSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:TreeViewExItem}, AncestorLevel=1}}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

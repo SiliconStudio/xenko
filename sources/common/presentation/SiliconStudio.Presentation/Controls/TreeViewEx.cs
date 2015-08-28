@@ -4,17 +4,19 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-
 using SiliconStudio.Presentation.Collections;
 using SiliconStudio.Presentation.Extensions;
 
-namespace System.Windows.Controls
+namespace SiliconStudio.Presentation.Controls
 {
     public class TreeViewEx : ItemsControl
     {

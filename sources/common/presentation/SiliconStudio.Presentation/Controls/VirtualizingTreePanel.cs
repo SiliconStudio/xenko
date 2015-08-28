@@ -1,18 +1,15 @@
 ﻿#define DEBUGVIRTUALIZATIONno
 
-using System.Windows.Controls.Primitives;
-using System.Windows.Controls;
-using System.Windows;
-using System.Windows.Media;
 using System;
-using System.Linq;
-using System.Diagnostics;
-using System.Collections.Specialized;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Collections.Specialized;
+using System.Diagnostics;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Media;
 
-
-namespace System.Windows.Controls
+namespace SiliconStudio.Presentation.Controls
 {
     public class VirtualizingTreePanel : VirtualizingPanel, IScrollInfo
     {
