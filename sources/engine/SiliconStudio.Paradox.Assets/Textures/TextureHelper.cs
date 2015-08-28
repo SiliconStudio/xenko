@@ -59,7 +59,11 @@ namespace SiliconStudio.Paradox.Assets.Textures
             public ImportParameters(TextureConvertParameters textureParameters)
             {
                 var asset = textureParameters.Texture;
-                IsSRgb = asset.SRgb;
+
+                // Compute SRgb usage
+                // If Texture is in auto mode, use the global settings, else use the settings overridden by the texture asset. 
+                IsSRgb = textureParameters.Texture.ColorSpace == TextureColorSpace.Auto ? textureParameters.ColorSpace == ColorSpace.Linear : textureParameters.Texture.ColorSpace == TextureColorSpace.Linear;
+
                 DesiredSize = new Size2((int)asset.Width, (int)asset.Height);
                 IsSizeInPercentage = asset.IsSizeInPercentage;
                 DesiredFormat = asset.Format;
@@ -413,10 +417,6 @@ namespace SiliconStudio.Paradox.Assets.Textures
         public static ResultStatus ImportTextureImage(TextureTool textureTool, TexImage texImage, ImportParameters parameters, CancellationToken cancellationToken, Logger logger)
         {
             var assetManager = new AssetManager();
-
-            // Compute SRgb usage
-            // If Texture is in auto mode, use the global settings, else use the settings overridden by the texture asset. 
-            parameters.IsSRgb = textureAsset.ColorSpace == TextureColorSpace.Auto ? parameters.ColorSpace == ColorSpace.Linear : textureAsset.ColorSpace == TextureColorSpace.Linear;
 
             // Apply transformations
             textureTool.Decompress(texImage, parameters.IsSRgb);
