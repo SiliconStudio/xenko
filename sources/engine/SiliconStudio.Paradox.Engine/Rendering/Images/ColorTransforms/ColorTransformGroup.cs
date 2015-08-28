@@ -68,7 +68,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
             // we are adding parameter collections after as transform parameters should override previous parameters
             transformGroupEffect.ParameterCollections.Add(transformsParameters);
 
-            this.transformContext = new ColorTransformContext(this);
+            this.transformContext = new ColorTransformContext(this, Context);
         }
 
         /// <summary>

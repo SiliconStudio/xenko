@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
             private readonly Package package;
 
-            private readonly ColorSpace colorSpace;
+            private ColorSpace colorSpace;
 
             private UFile assetUrl;
 
@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             {
                 this.assetItem = assetItem;
                 package = context.Package;
-                colorSpace = context.GetGameSettingsAsset().ColorSpace;
+                colorSpace = context.GetColorSpace(assetItem);
                 assetUrl = new UFile(url);
             }
 
@@ -56,6 +56,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 base.ComputeParameterHash(writer);
                 writer.Serialize(ref assetUrl, ArchiveMode.Serialize);
 
+                // Write the 
+                writer.Write(colorSpace);
+                
                 // We also want to serialize recursively the compile-time dependent assets
                 // (since they are not added as reference but actually embedded as part of the current asset)
                 // TODO: Ideally we would want to put that automatically in AssetCommand<>, but we would need access to package
@@ -91,6 +94,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 //    }
                 //}
 
+                // Check with Ben why DoCommandOverride is called without going through the constructor?
                 var assetManager = new AssetManager();
                 var materialContext = new MaterialGeneratorContext
                 {

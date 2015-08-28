@@ -54,7 +54,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
             var key = context.GetParameterKey(Key ?? baseKeys.ValueBaseKey ?? MaterialKeys.GenericValueColor4);
 
             // Store the color in Linear space
-            var color =  context.ColorSpace == ColorSpace.Linear ? Value.ToLinear() : Value;
+            var color = Value.ToColorSpace(context.ColorSpace);
             if (PremultiplyAlpha)
                 color = Color4.PremultiplyAlpha(color);
             

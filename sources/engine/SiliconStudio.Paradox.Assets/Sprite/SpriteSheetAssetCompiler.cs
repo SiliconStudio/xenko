@@ -43,6 +43,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
             // create and add import texture commands
             if (asset.Sprites != null && !asset.Packing.Enabled)
             {
+                var colorSpace = context.GetColorSpace(AssetItem);
                 // sort sprites by referenced texture.
                 var spriteByTextures = asset.Sprites.GroupBy(x => x.Source).ToArray();
                 for (int i = 0; i < spriteByTextures.Length; i++)
@@ -76,7 +77,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                     result.BuildSteps.Add(
                         new TextureAssetCompiler.TextureConvertCommand(
                             SpriteSheetAsset.BuildTextureUrl(urlInStorage, i),
-                            new TextureConvertParameters(assetSource, textureAsset, context.Platform, context.GetGraphicsPlatform(), gameSettingsAsset.DefaultGraphicsProfile, gameSettingsAsset.TextureQuality, gameSettingsAsset.ColorSpace)));
+                            new TextureConvertParameters(assetSource, textureAsset, context.Platform, context.GetGraphicsPlatform(), gameSettingsAsset.DefaultGraphicsProfile, gameSettingsAsset.TextureQuality, colorSpace)));
                 }
 
                 result.BuildSteps.Add(new WaitBuildStep()); // wait the textures to be imported

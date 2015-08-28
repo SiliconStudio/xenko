@@ -75,6 +75,9 @@ namespace SiliconStudio.Paradox.Rendering
         {
             var graphicsDevice = context.GraphicsDevice;
 
+            // TODO: No need to convert to the proper ColorSpace but need to check how this is going to work with SRGB render target
+            var color = Color; 
+
             // clear the targets
             if (output.DepthStencil != null && (ClearFlags == ClearRenderFrameFlags.ColorAndDepth || ClearFlags == ClearRenderFrameFlags.DepthOnly))
             {
@@ -88,7 +91,7 @@ namespace SiliconStudio.Paradox.Rendering
                 {
                     if (renderTarget != null)
                     {
-                        graphicsDevice.Clear(renderTarget, Color);
+                        graphicsDevice.Clear(renderTarget, color);
                     }
                 }
             }

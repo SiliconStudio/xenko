@@ -4,6 +4,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Rendering.Images
 {
@@ -59,8 +60,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
 
             Parameters.Set(VignettingShaderKeys.Amount, Amount);
             Parameters.Set(VignettingShaderKeys.RadiusBegin, Radius);
-            Parameters.Set(VignettingShaderKeys.Color, Color);
+            Parameters.Set(VignettingShaderKeys.Color, Color.ToColorSpace(context.RenderContext.GraphicsDevice.ColorSpace));
         }
-
     }
 }

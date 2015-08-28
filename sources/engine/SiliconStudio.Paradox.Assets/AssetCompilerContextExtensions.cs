@@ -2,6 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+
+using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Assets.Textures;
@@ -16,6 +18,43 @@ namespace SiliconStudio.Paradox.Assets
         public static GameSettingsAsset GetGameSettingsAsset(this AssetCompilerContext context)
         {
             return context.Properties.Get(GameSettingsAssetKey);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="GameSettingsAsset"/> from either a global GameSettingsAssets or overriden by the executable Package being compiled.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="assetItem">The asset item.</param>
+        /// <returns>ColorSpace.</returns>
+        public static GameSettingsAsset GetGameSettingsAsset(this AssetCompilerContext context, AssetItem assetItem)
+        {
+            var gameSettingsAssets = assetItem.Package.GetGameSettingsAsset();
+            if (gameSettingsAssets == null)
+            {
+                var currentPackage = assetItem.Package.Session.CurrentPackage;
+                if (currentPackage != null)
+                {
+                    gameSettingsAssets = currentPackage.GetGameSettingsAsset();
+                }
+            }
+
+            if (gameSettingsAssets == null)
+            {
+                gameSettingsAssets = context.GetGameSettingsAsset();
+            }
+
+            return gameSettingsAssets;
+        }
+
+        /// <summary>
+        /// Gets the color space from the current context (the color space could come from either a global GameSettingsAssets or overriden by the executable Package being compiled)
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="assetItem">The asset item.</param>
+        /// <returns>ColorSpace.</returns>
+        public static ColorSpace GetColorSpace(this AssetCompilerContext context, AssetItem assetItem)
+        {
+            return GetGameSettingsAsset(context, assetItem).ColorSpace;
         }
 
         public static void SetGameSettingsAsset(this AssetCompilerContext context, GameSettingsAsset gameSettingsAsset)

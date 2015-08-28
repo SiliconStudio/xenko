@@ -35,13 +35,9 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         /// <returns>Gets the color of this light in linear space.</returns>
         public Color3 ComputeColor(ColorSpace colorSpace, float intensity)
         {
-            var gammaColor = (Color != null ? Color.ComputeColor() : new Color3(1.0f));
-            if (colorSpace == ColorSpace.Linear)
-            {
-                gammaColor = gammaColor.ToLinear();
-            }
-            gammaColor *= intensity;
-            return gammaColor;
+            var color = (Color != null ? Color.ComputeColor() : new Color3(1.0f));
+            color = color.ToColorSpace(colorSpace) * intensity;
+            return color;
         }
 
         public abstract bool Update(LightComponent lightComponent);
