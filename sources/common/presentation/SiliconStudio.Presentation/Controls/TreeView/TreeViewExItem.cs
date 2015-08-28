@@ -257,8 +257,8 @@ namespace System.Windows.Controls
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Remove:
-                    if (ParentTreeView != null && ParentTreeView.Selection != null) // happens during unload or when removing if never realized
-                        ParentTreeView.Selection.ClearObsoleteItems(e.OldItems);
+                    if (ParentTreeView != null) // happens during unload or when removing if never realized
+                        ParentTreeView.ClearObsoleteItems(e.OldItems);
                     break;
 
                 case NotifyCollectionChangedAction.Reset:
@@ -354,11 +354,11 @@ namespace System.Windows.Controls
                         e.Handled = true;
                         break;
                     case Key.Up:
-                        ParentTreeView.Selection.SelectPreviousFromKey();
+                        ParentTreeView.SelectPreviousFromKey();
                         e.Handled = true;
                         break;
                     case Key.Down:
-                        ParentTreeView.Selection.SelectNextFromKey();
+                        ParentTreeView.SelectNextFromKey();
                         e.Handled = true;
                         break;
                     case Key.Add:
@@ -386,15 +386,15 @@ namespace System.Windows.Controls
                         e.Handled = true;
                         break;
                     case Key.Space:
-                        ParentTreeView.Selection.SelectCurrentBySpace();
+                        ParentTreeView.SelectCurrentBySpace();
                         e.Handled = true;
                         break;
                     case Key.Home:
-                        ParentTreeView.Selection.SelectFirst();
+                        ParentTreeView.SelectFirst();
                         e.Handled = true;
                         break;
                     case Key.End:
-                        ParentTreeView.Selection.SelectLast();
+                        ParentTreeView.SelectLast();
                         e.Handled = true;
                         break;
                 }
@@ -463,11 +463,11 @@ namespace System.Windows.Controls
             //    }
             //}
 
-            if (ParentTreeView != null && ParentTreeView.Selection != null && e.Property.Name == "IsSelected")
+            if (ParentTreeView != null && e.Property.Name == "IsSelected")
             {
                 if (ParentTreeView.SelectedItems.Contains(DataContext) != IsSelected)
                 {
-                    ParentTreeView.Selection.SelectFromProperty(this, IsSelected);
+                    ParentTreeView.SelectFromProperty(this, IsSelected);
                 }
             }
 

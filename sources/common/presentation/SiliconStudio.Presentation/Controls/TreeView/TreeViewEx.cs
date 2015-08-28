@@ -22,6 +22,8 @@ namespace System.Windows.Controls
         internal VirtualizingTreePanel.VerticalArea RealizationSpace = new VirtualizingTreePanel.VerticalArea();
         internal VirtualizingTreePanel.SizesCache CachedSizes = new VirtualizingTreePanel.SizesCache();
         private bool updatingSelection;
+        private bool mouseDown;
+        private object lastShiftRoot;
         TreeViewExItem editedItem;
 
         public static DependencyProperty SelectedItemProperty = DependencyProperty.Register("SelectedItem", typeof(object), typeof(TreeViewEx), new FrameworkPropertyMetadata(null, OnSelectedItemPropertyChanged));
@@ -32,7 +34,10 @@ namespace System.Windows.Controls
 
         public static readonly DependencyProperty IsVirtualizingProperty = DependencyProperty.Register("IsVirtualizing", typeof(bool), typeof(TreeViewEx), new PropertyMetadata(false));
 
-        private InputEventRouter inputEventRouter;
+        internal static bool IsControlKeyDown => (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
+
+        internal static bool IsShiftKeyDown => (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
+
         private bool isInitialized;
         private ScrollViewer scroller;
 
@@ -52,7 +57,7 @@ namespace System.Windows.Controls
         public TreeViewEx()
         {
             SelectedItems = new NonGenericObservableListWrapper<object>(new ObservableList<object>());
-            Selection = new Selection(this) { AllowMultipleSelection = SelectionMode != SelectionMode.Single };
+            AllowMultipleSelection = SelectionMode != SelectionMode.Single;
         }
 
         public bool IsVirtualizing { get { return (bool)GetValue(IsVirtualizingProperty); } set { SetValue(IsVirtualizingProperty, value); } }
@@ -71,7 +76,7 @@ namespace System.Windows.Controls
 
         internal ScrollViewer ScrollViewer => scroller ?? (scroller = (ScrollViewer)Template.FindName("scroller", this));
 
-        internal Selection Selection { get; }
+        internal bool AllowMultipleSelection { get; set; }
 
         public override void OnApplyTemplate()
         {
@@ -145,30 +150,145 @@ namespace System.Windows.Controls
             return true;
         }
 
+        internal virtual void SelectFromUiAutomation(TreeViewExItem item)
+        {
+            SelectSingleItem(item);
+            item.ForceFocus();
+        }
+
+        internal virtual void SelectPreviousFromKey()
+        {
+            List<TreeViewExItem> items = TreeViewElementFinder.FindAll(this, true).ToList();
+            TreeViewExItem item = GetFocusedItem();
+            item = GetPreviousItem(item, items);
+            if (item == null) return;
+
+            // if ctrl is pressed just focus it, so it can be selected by space. Otherwise select it.
+            if (!IsControlKeyDown)
+            {
+                SelectSingleItem(item);
+            }
+
+            item.ForceFocus();
+        }
+
+        internal virtual void SelectNextFromKey()
+        {
+            TreeViewExItem item = GetFocusedItem();
+            item = TreeViewElementFinder.FindNext(item, true);
+            if (item == null) return;
+
+            // if ctrl is pressed just focus it, so it can be selected by space. Otherwise select it.
+            if (!IsControlKeyDown)
+            {
+                SelectSingleItem(item);
+            }
+
+            item.ForceFocus();
+        }
+
+        internal virtual void SelectCurrentBySpace()
+        {
+            TreeViewExItem item = GetFocusedItem();
+            SelectSingleItem(item);
+            item.ForceFocus();
+        }
+
+        internal virtual void SelectFromProperty(TreeViewExItem item, bool isSelected)
+        {
+            // we do not check if selection is allowed, because selecting on that way is no user action.
+            // Hopefully the programmer knows what he does...
+            if (isSelected)
+            {
+                if (AllowMultipleSelection)
+                {
+                    lastShiftRoot = item.DataContext;
+                }
+                SelectedItems.Add(item.DataContext);
+                item.ForceFocus();
+            }
+            else
+            {
+                SelectedItems.Remove(item.DataContext);
+            }
+        }
+
+        internal virtual void SelectFirst()
+        {
+            var item = TreeViewElementFinder.FindFirst(this, true);
+            if (item != null)
+            {
+                SelectSingleItem(item);
+                item.ForceFocus();
+            }
+        }
+
+        internal virtual void SelectLast()
+        {
+            var item = TreeViewElementFinder.FindLast(this, true);
+            if (item != null)
+            {
+                SelectSingleItem(item);
+                item.ForceFocus();
+            }
+        }
+
+        internal virtual void ClearObsoleteItems(IList items)
+        {
+            foreach (var itemToUnSelect in items)
+            {
+                SelectedItems.Remove(itemToUnSelect);
+            }
+            if (AllowMultipleSelection && items.Contains(lastShiftRoot))
+                lastShiftRoot = null;
+        }
+
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
             base.OnMouseDown(e);
             StopEditing();
+
+            mouseDown = e.ChangedButton == MouseButton.Left;
+
+            TreeViewExItem item = GetTreeViewItemUnderMouse(e.GetPosition(this));
+            if (item == null)
+                return;
+            if (e.ChangedButton != MouseButton.Right || item.ContextMenu == null)
+                return;
+            if (item.IsEditing)
+                return;
+
+            SelectSingleItem(item);
+
+            item.ForceFocus();
+        }
+
+        protected override void OnMouseUp(MouseButtonEventArgs e)
+        {
+            base.OnMouseUp(e);
+            if (mouseDown)
+            {
+                TreeViewExItem item = GetTreeViewItemUnderMouse(e.GetPosition(this));
+                if (item == null) return;
+                if (e.ChangedButton != MouseButton.Left) return;
+                if (item.IsEditing) return;
+
+                SelectSingleItem(item);
+
+                item.ForceFocus();
+            }
+            mouseDown = false;
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             // Ensure everything is unloaded before reloading!
             OnUnLoaded(sender, e);
-
-            inputEventRouter = new InputEventRouter(this);
-            inputEventRouter.Add(Selection);
             isInitialized = true;
         }
 
         private void OnUnLoaded(object sender, RoutedEventArgs e)
         {
-            if (inputEventRouter != null)
-            {
-                inputEventRouter.Dispose();
-                inputEventRouter = null;
-            }
-
             scroller = null;
         }
 
@@ -399,11 +519,7 @@ namespace System.Windows.Controls
                 }
                 treeView.updatingSelection = false;
             }
-            treeView.inputEventRouter?.Remove(treeView.Selection);
-
-            treeView.Selection.AllowMultipleSelection = newValue != SelectionMode.Single;
-
-            treeView.inputEventRouter?.Add(treeView.Selection);
+            treeView.AllowMultipleSelection = newValue != SelectionMode.Single;
         }
 
         private void OnSelectedItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -465,7 +581,7 @@ namespace System.Windows.Controls
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Remove:
-                    Selection?.ClearObsoleteItems(e.OldItems);
+                    ClearObsoleteItems(e.OldItems);
                     break;
 
                 case NotifyCollectionChangedAction.Reset:
@@ -477,6 +593,160 @@ namespace System.Windows.Controls
                 default:
                     throw new NotSupportedException();
             }
+        }
+
+        protected void SelectSingleItem(TreeViewExItem item)
+        {
+            if (AllowMultipleSelection)
+            {
+                // selection with SHIFT is not working in virtualized mode. Thats because the Items are not visible.
+                // Therefor the children cannot be found/selected.
+                if (IsShiftKeyDown && SelectedItems.Count > 0 && !IsVirtualizing)
+                {
+                    SelectWithShift(item);
+                }
+                else if (IsControlKeyDown)
+                {
+                    ToggleItem(item);
+                }
+                else
+                {
+                    SelectedItems.Clear();
+                    ModifySelection(new List<object>(1) { item.DataContext }, new List<object>());
+                }
+            }
+            else
+            {
+                if (IsControlKeyDown)
+                {
+                    ToggleItem(item);
+                }
+                else
+                {
+                    ModifySelection(item.DataContext);
+                }
+            }
+        }
+
+        protected TreeViewExItem GetFocusedItem()
+        {
+            return TreeViewElementFinder.FindAll(this, false).FirstOrDefault(x => x.IsFocused);
+        }
+
+        protected TreeViewExItem GetTreeViewItemUnderMouse(Point positionRelativeToTree)
+        {
+            HitTestResult hitTestResult = VisualTreeHelper.HitTest(this, positionRelativeToTree);
+            if (hitTestResult?.VisualHit == null)
+                return null;
+
+            var child = hitTestResult.VisualHit as FrameworkElement;
+
+            do
+            {
+                if (child == null)
+                    return null;
+
+                var treeViewExItem = child as TreeViewExItem;
+                if (treeViewExItem != null)
+                {
+                    return treeViewExItem.IsVisible ? treeViewExItem : null;
+                }
+
+                if (child is TreeViewEx)
+                    return null;
+
+                child = VisualTreeHelper.GetParent(child) as FrameworkElement;
+            } while (child != null);
+
+            return null;
+        }
+
+        private void ToggleItem(TreeViewExItem item)
+        {
+            if (item.DataContext == null)
+                return;
+
+            if (AllowMultipleSelection)
+            {
+                if (SelectedItems.Contains(item.DataContext))
+                {
+                    ModifySelection(new List<object>(), new List<object>(1) { item.DataContext });
+                }
+                else
+                {
+                    ModifySelection(new List<object>(1) { item.DataContext }, new List<object>());
+                }
+            }
+            else
+            {
+                ModifySelection(SelectedItem == item.DataContext ? null : item.DataContext);
+            }
+        }
+
+        private void ModifySelection(object itemToSelect)
+        {
+            SelectedItem = itemToSelect;
+        }
+
+        private void ModifySelection(List<object> itemsToSelect, List<object> itemsToUnselect)
+        {
+            //clean up any duplicate or unnecessery input
+            // check for itemsToUnselect also in itemsToSelect
+            foreach (var item in itemsToSelect)
+            {
+                itemsToUnselect.Remove(item);
+            }
+
+            // check for itemsToSelect already in SelectedItems
+            foreach (var item in SelectedItems)
+            {
+                itemsToSelect.Remove(item);
+            }
+
+            // check for itemsToUnSelect not in SelectedItems
+            foreach (var item in itemsToUnselect.Where(x => !SelectedItems.Contains(x)).ToList())
+            {
+                itemsToUnselect.Remove(item);
+            }
+
+            //check if there's anything to do.
+            if (itemsToSelect.Count == 0 && itemsToUnselect.Count == 0)
+                return;
+
+            // Unselect and then select items
+            foreach (var itemToUnSelect in itemsToUnselect)
+            {
+                SelectedItems.Remove(itemToUnSelect);
+            }
+
+            ((NonGenericObservableListWrapper<object>)SelectedItems).AddRange(itemsToSelect);
+
+            if (itemsToUnselect.Contains(lastShiftRoot))
+                lastShiftRoot = null;
+
+            if (!(SelectedItems.Contains(lastShiftRoot) && IsShiftKeyDown))
+                lastShiftRoot = itemsToSelect.LastOrDefault();
+        }
+
+
+        private void SelectWithShift(TreeViewExItem item)
+        {
+            object firstSelectedItem;
+            if (lastShiftRoot != null)
+            {
+                firstSelectedItem = lastShiftRoot;
+            }
+            else
+            {
+                firstSelectedItem = SelectedItems.Count > 0 ? SelectedItems[0] : null;
+            }
+
+            var shiftRootItem = GetTreeViewItemsFor(new List<object> { firstSelectedItem }).First();
+
+            var itemsToSelect = GetNodesToSelectBetween(shiftRootItem, item).Select(x => x.DataContext).ToList();
+            var itemsToUnSelect = ((IEnumerable<object>)SelectedItems).ToList();
+
+            ModifySelection(itemsToSelect, itemsToUnSelect);
         }
     }
 }

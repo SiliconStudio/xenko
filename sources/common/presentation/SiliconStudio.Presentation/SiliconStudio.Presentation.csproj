@@ -53,9 +53,6 @@
     <Compile Include="Behaviors\TextBoxCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\ThumbTransactionalDragBehavior.cs" />
     <Compile Include="Controls\ExpandableItemsControl.cs" />
-    <Compile Include="Controls\TreeView\InputEventRouter.cs" />
-    <Compile Include="Controls\TreeView\InputSubscriberBase.cs" />
-    <Compile Include="Controls\TreeView\Selection.cs" />
     <Compile Include="Controls\TreeView\TreeViewElementFinder.cs" />
     <Compile Include="Controls\TreeView\TreeViewEx.cs" />
     <Compile Include="Controls\TreeView\TreeViewExItem.cs" />
