@@ -3,8 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
+using System.Linq;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Core.Settings
 {
@@ -12,6 +13,7 @@ namespace SiliconStudio.Core.Settings
     /// This class represents a collection of values for all registered <see cref="SettingsKey"/>. It may also contains values for settings keys that
     /// are not currently registered, if they exist in the file from which the profile was loaded.
     /// </summary>
+    [DataSerializer(typeof(Serializer))]
     public class SettingsProfile : IDisposable
     {
         internal ActionStack.ActionStack ActionStack = new ActionStack.ActionStack(-1);
@@ -26,18 +28,18 @@ namespace SiliconStudio.Core.Settings
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsProfile"/> class.
         /// </summary>
-        /// <param name="group">The <see cref="SettingsGroup"/> containing this profile.</param>
+        /// <param name="container">The <see cref="SettingsContainer"/> containing this profile.</param>
         /// <param name="parentProfile">The parent profile.</param>
-        internal SettingsProfile(SettingsGroup group, SettingsProfile parentProfile)
+        internal SettingsProfile(SettingsContainer container, SettingsProfile parentProfile)
         {
-            Group = group;
+            Container = container;
             this.parentProfile = parentProfile;
         }
 
         /// <summary>
-        /// Gets the <see cref="SettingsGroup"/> containing this profile.
+        /// Gets the <see cref="SettingsContainer"/> containing this profile.
         /// </summary>
-        public SettingsGroup Group { get; private set; }
+        public SettingsContainer Container { get; internal set; }
         
         /// <summary>
         /// Gets the path of the file in which this profile has been saved.
@@ -57,7 +59,7 @@ namespace SiliconStudio.Core.Settings
         /// <summary>
         /// Gets the collection of <see cref="SettingsEntry"/> currently existing in this <see cref="SettingsProfile"/>.
         /// </summary>
-        internal IDictionary<UFile, SettingsEntry> Settings { get { return settings; } }
+        internal IDictionary<UFile, SettingsEntry> Settings => settings;
 
         internal bool IsDiscarding { get; private set; }
 
@@ -71,27 +73,106 @@ namespace SiliconStudio.Core.Settings
             }
         }
 
+        /// <summary>
+        /// Indicates whether this settings profile directly contains the given settings key, without
+        /// looking into its parent profile.
+        /// </summary>
+        /// <param name="key">The settings key to look for.</param>
+        /// <returns><c>True</c> if the profile contains the given settings key, <c>False</c> otherwise.</returns>
+        public bool ContainsKey(SettingsKey key)
+        {
+            if (key == null) throw new ArgumentNullException(nameof(key));
+            return ContainsKey(key.Name);
+        }
+
+        /// <summary>
+        /// Indicates whether this settings profile directly contains the a settings key with the given name, without
+        /// looking into its parent profile.
+        /// </summary>
+        /// <param name="name">The name of the settings key to look for.</param>
+        /// <returns><c>True</c> if the profile contains the given settings key, <c>False</c> otherwise.</returns>
+        public bool ContainsKey(UFile name)
+        {
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            lock (SettingsContainer.SettingsLock)
+            {
+                return Settings.ContainsKey(name);
+            }
+        }
+
+        /// <summary>
+        /// Removes the given settings key.
+        /// </summary>
+        /// <param name="key">The settings key to remove.</param>
+        /// <returns><c>True</c> if the settings key was removed, <c>false</c> otherwise.</returns>
+        public bool Remove(SettingsKey key)
+        {
+            return Remove(key.Name);
+        }
+
+        /// <summary>
+        /// Removes the settings key that match the given name.
+        /// </summary>
+        /// <param name="name">The name of the settings key to remove.</param>
+        /// <returns><c>True</c> if the settings key was removed, <c>false</c> otherwise.</returns>
+        public bool Remove(UFile name)
+        {
+            lock (SettingsContainer.SettingsLock)
+            {
+                return Settings.Remove(name);
+            }
+        }
+
+        /// <summary>
+        /// Copies the values of this profile into another profile.
+        /// </summary>
+        /// <param name="profile">The profile in which to copy the values.</param>
+        /// <param name="overrideValues">If <c>false</c>, the values already present in the targt profile won't be overriden.</param>
+        public void CopyTo(SettingsProfile profile, bool overrideValues)
+        {
+            lock (SettingsContainer.SettingsLock)
+            {
+                foreach (var setting in Settings)
+                {
+                    if (!overrideValues && profile.Settings.ContainsKey(setting.Key))
+                        continue;
+
+                    profile.SetValue(setting.Key, setting.Value.Value);
+                }
+            }
+        }
+
         public void ValidateSettingsChanges()
         {
-            var keys = Group.GetAllSettingsKeys();
-            foreach (var key in keys)
+            var keys = Container.GetAllSettingsKeys();
+            List<SettingsKey> modified;
+            lock (SettingsContainer.SettingsLock)
             {
-                if (modifiedSettings.Contains(key.Name))
-                    key.NotifyChangesValidated(this);
+                modified = keys.Where(x => modifiedSettings.Contains(x.Name)).ToList();
             }
-            ActionStack.Clear();
-            modifiedSettings.Clear();
+            foreach (var key in modified)
+            {
+                key.NotifyChangesValidated(this);
+            }
+            lock (SettingsContainer.SettingsLock)
+            {
+                ActionStack.Clear();
+                modifiedSettings.Clear();
+            }
         }
 
         public void DiscardSettingsChanges()
         {
             IsDiscarding = true;
-            while (ActionStack.CanUndo)
+            lock (SettingsContainer.SettingsLock)
             {
-                ActionStack.Undo();
+                while (ActionStack.CanUndo)
+                {
+                    ActionStack.Undo();
+                }
+                ActionStack.Clear();
+                modifiedSettings.Clear();
             }
-            ActionStack.Clear();
-            modifiedSettings.Clear();
             IsDiscarding = false;
         }
         
@@ -101,8 +182,11 @@ namespace SiliconStudio.Core.Settings
         /// <param name="entry">The entry to register.</param>
         internal void RegisterEntry(SettingsEntry entry)
         {
-            if (entry == null) throw new ArgumentNullException("entry");
-            Settings.Add(entry.Name, entry);
+            if (entry == null) throw new ArgumentNullException(nameof(entry));
+            lock (SettingsContainer.SettingsLock)
+            {
+                Settings.Add(entry.Name, entry);
+            }
         }
 
         /// <summary>
@@ -115,7 +199,7 @@ namespace SiliconStudio.Core.Settings
         /// <returns><c>true</c> if an entry matching the name is found, <c>false</c> otherwise.</returns>
         internal bool GetValue(UFile name, out object value, bool searchInParent, bool createInCurrentProfile)
         {
-            if (name == null) throw new ArgumentNullException("name");
+            if (name == null) throw new ArgumentNullException(nameof(name));
             SettingsEntry entry = GetEntry(name, searchInParent, createInCurrentProfile);
             if (entry != null)
             {
@@ -133,28 +217,21 @@ namespace SiliconStudio.Core.Settings
         /// <param name="value">The value to set.</param>
         internal void SetValue(UFile name, object value)
         {
-            if (name == null) throw new ArgumentNullException("name");
+            if (name == null) throw new ArgumentNullException(nameof(name));
 
-            SettingsEntry entry;
-            if (!Settings.TryGetValue(name, out entry))
+            lock (SettingsContainer.SettingsLock)
             {
-                entry = SettingsEntry.CreateFromValue(this, name, value);
-                Settings[name] = entry;
+                SettingsEntry entry;
+                if (!Settings.TryGetValue(name, out entry))
+                {
+                    entry = SettingsEntry.CreateFromValue(this, name, value);
+                    Settings[name] = entry;
+                }
+                else
+                {
+                    Settings[name].Value = value;
+                }
             }
-            else
-            {
-                Settings[name].Value = value;
-            }
-        }
-
-        /// <summary>
-        /// Removes the entry that match the given name.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns>True if value was removed, false otherwise.</returns>
-        internal bool Remove(UFile name)
-        {
-            return Settings.Remove(name);
         }
 
         /// <summary>
@@ -163,7 +240,10 @@ namespace SiliconStudio.Core.Settings
         /// <param name="name">The name of the entry that has changed.</param>
         internal void NotifyEntryChanged(UFile name)
         {
-            modifiedSettings.Add(name);
+            lock (SettingsContainer.SettingsLock)
+            {
+                modifiedSettings.Add(name);
+            }
         }
 
         /// <summary>
@@ -175,18 +255,21 @@ namespace SiliconStudio.Core.Settings
         /// <returns>An instance of <see cref="SettingsEntry"/> that matches the name, or <c>null</c>.</returns>
         private SettingsEntry GetEntry(UFile name, bool searchInParent, bool createInCurrentProfile)
         {
-            if (name == null) throw new ArgumentNullException("name");
+            if (name == null) throw new ArgumentNullException(nameof(name));
 
-            SettingsEntry entry;
-            if (Settings.TryGetValue(name, out entry))
-                return entry;
-
-            if (createInCurrentProfile)
+            lock (SettingsContainer.SettingsLock)
             {
-                entry = parentProfile.GetEntry(name, true, false);
-                entry = SettingsEntry.CreateFromValue(this, name, entry.Value);
-                RegisterEntry(entry);
-                return entry;
+                SettingsEntry entry;
+                if (Settings.TryGetValue(name, out entry))
+                    return entry;
+
+                if (createInCurrentProfile)
+                {
+                    entry = parentProfile.GetEntry(name, true, false);
+                    entry = SettingsEntry.CreateFromValue(this, name, entry.Value);
+                    RegisterEntry(entry);
+                    return entry;
+                }
             }
 
             return parentProfile != null && searchInParent ? parentProfile.GetEntry(name, true, false) : null;
@@ -219,8 +302,16 @@ namespace SiliconStudio.Core.Settings
                 handler(null, args);
                 if (args.ReloadFile)
                 {
-                    Group.ReloadSettingsProfile(this);
+                    Container.ReloadSettingsProfile(this);
                 }
+            }
+        }
+
+        internal class Serializer : DataSerializer<SettingsProfile>
+        {
+            public override void Serialize(ref SettingsProfile obj, ArchiveMode mode, SerializationStream stream)
+            {
+                throw new NotImplementedException();
             }
         }
     }

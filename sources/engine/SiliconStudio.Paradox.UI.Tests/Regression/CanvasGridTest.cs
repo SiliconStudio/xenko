@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Class for rendering tests on the <see cref="Canvas"/> and on the <see cref="UniformGrid"/>
     /// </summary>
-    public class CanvasGridTest : UnitTestGameBase
+    public class CanvasGridTest : UITestGameBase
     {
         public CanvasGridTest()
         {

@@ -49,6 +49,7 @@ namespace SiliconStudio.Paradox.Rendering.Sprites
             {
                 texture = value;
                 isSpriteDirty = true;
+                UpdateSprite();
             }
         }
 
@@ -67,6 +68,7 @@ namespace SiliconStudio.Paradox.Rendering.Sprites
             {
                 pixelsPerUnit = value;
                 isSpriteDirty = true;
+                UpdateSprite();
             }
         }
 
@@ -85,6 +87,7 @@ namespace SiliconStudio.Paradox.Rendering.Sprites
             {
                 center = value;
                 isSpriteDirty = true;
+                UpdateSprite();
             }
         }
 
@@ -103,6 +106,7 @@ namespace SiliconStudio.Paradox.Rendering.Sprites
             {
                 centerFromMiddle = value;
                 isSpriteDirty = true;
+                UpdateSprite();
             }
         }
 
@@ -121,13 +125,19 @@ namespace SiliconStudio.Paradox.Rendering.Sprites
             {
                 isTransparent = value;
                 isSpriteDirty = true;
+                UpdateSprite();
             }
         }
 
         public Sprite GetSprite(int index)
         {
-            if(isSpriteDirty)
+            if (isSpriteDirty)
+            {
                 UpdateSprite();
+                isSpriteDirty = false;
+            }
+            // Note: This "isDirty" system is needed because the texture size is not valid 
+            // when the texture is set for the first time by the serializer (texture are loaded in two times)
 
             return sprite;
         }
@@ -144,8 +154,6 @@ namespace SiliconStudio.Paradox.Rendering.Sprites
                 sprite.Center = center + (centerFromMiddle ? new Vector2(texture.Width, texture.Height) / 2 : Vector2.Zero);
                 sprite.Region = new RectangleF(0, 0, texture.Width, texture.Height);
             }
-
-            isSpriteDirty = false;
         }
     }
 }

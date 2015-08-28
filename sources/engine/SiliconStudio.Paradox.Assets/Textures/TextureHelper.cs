@@ -7,9 +7,9 @@ using System.Threading;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Paradox.Assets.Sprite;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.Data;
 using SiliconStudio.TextureConverter;
@@ -19,16 +19,80 @@ namespace SiliconStudio.Paradox.Assets.Textures
     /// <summary>
     /// An helper for the compile commands that needs to process textures.
     /// </summary>
-    public static class TextureCommandHelper
+    public static class TextureHelper
     {
         /// <summary>
-        /// Returns true if the provided int is a power of 2.
+        /// Parameters used to import/convert a texture.
         /// </summary>
-        /// <param name="x">the int value to test</param>
-        /// <returns>true if power of two</returns>
-        public static  bool IsPowerOfTwo(int x)
+        public class ImportParameters
         {
-            return (x & (x - 1)) == 0;
+            public string OutputUrl;
+
+            public bool IsSRgb;
+
+            public Size2 DesiredSize;
+
+            public bool IsSizeInPercentage;
+
+            public TextureFormat DesiredFormat;
+
+            public AlphaFormat DesiredAlpha;
+
+            public TextureHint TextureHint;
+
+            public bool GenerateMipmaps;
+
+            public bool PremultiplyAlpha;
+
+            public Color ColorKeyColor;
+
+            public bool ColorKeyEnabled;
+
+            public TextureQuality TextureQuality;
+
+            public GraphicsPlatform GraphicsPlatform;
+
+            public GraphicsProfile GraphicsProfile;
+
+            public PlatformType Platform;
+
+            public ImportParameters(TextureConvertParameters textureParameters)
+            {
+                var asset = textureParameters.Texture;
+                IsSRgb = asset.SRgb;
+                DesiredSize = new Size2((int)asset.Width, (int)asset.Height);
+                IsSizeInPercentage = asset.IsSizeInPercentage;
+                DesiredFormat = asset.Format;
+                DesiredAlpha = asset.Alpha;
+                TextureHint = asset.Hint;
+                GenerateMipmaps = asset.GenerateMipmaps;
+                PremultiplyAlpha = asset.PremultiplyAlpha;
+                ColorKeyColor  = asset.ColorKeyColor;
+                ColorKeyEnabled = asset.ColorKeyEnabled;
+                TextureQuality = textureParameters.TextureQuality;
+                GraphicsPlatform = textureParameters.GraphicsPlatform;
+                GraphicsProfile = textureParameters.GraphicsProfile;
+                Platform = textureParameters.Platform;
+            }
+
+            public ImportParameters(SpriteSheetAssetCompiler.SpriteSheetParameters spriteSheetParameters)
+            {
+                var asset = spriteSheetParameters.SheetAsset;
+                IsSRgb = asset.SRgb;
+                DesiredSize = new Size2(100, 100);
+                IsSizeInPercentage = true;
+                DesiredFormat = asset.Format;
+                DesiredAlpha = asset.Alpha;
+                TextureHint = TextureHint.Color;
+                GenerateMipmaps = asset.GenerateMipmaps;
+                PremultiplyAlpha = asset.PremultiplyAlpha;
+                ColorKeyColor = asset.ColorKeyColor;
+                ColorKeyEnabled = asset.ColorKeyEnabled;
+                TextureQuality = spriteSheetParameters.TextureQuality;
+                GraphicsPlatform = spriteSheetParameters.GraphicsPlatform;
+                GraphicsProfile = spriteSheetParameters.GraphicsProfile;
+                Platform = spriteSheetParameters.Platform;
+            }
         }
 
         /// <summary>
@@ -38,27 +102,24 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// <returns>true if PVRTC is supported</returns>
         public static bool SupportPVRTC(Int2 textureSize)
         {
-            return textureSize.X == textureSize.Y && IsPowerOfTwo(textureSize.X);
+            return textureSize.X == textureSize.Y && MathUtil.IsPow2(textureSize.X);
         }
 
         /// <summary>
         /// Utility function to check that the texture size is supported on the graphics platform for the provided graphics profile.
         /// </summary>
-        /// <param name="textureFormat">The desired type of format for the output texture</param>
-        /// <param name="platform">The graphics platform</param>
-        /// <param name="graphicsProfile">The graphics profile</param>
+        /// <param name="parameters">The import parameters</param>
         /// <param name="textureSizeInput">The texture size input.</param>
         /// <param name="textureSizeRequested">The texture size requested.</param>
-        /// <param name="generateMipmaps">Indicate if mipmaps should be generated for the output texture</param>
         /// <param name="logger">The logger.</param>
         /// <returns>true if the texture size is supported</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">graphicsProfile</exception>
-        public static Size2 FindBestTextureSize(TextureFormat textureFormat, GraphicsPlatform platform, GraphicsProfile graphicsProfile, Size2 textureSizeInput, Size2 textureSizeRequested, bool generateMipmaps, ILogger logger)
+        public static Size2 FindBestTextureSize(ImportParameters parameters, Size2 textureSizeInput, Size2 textureSizeRequested, ILogger logger)
         {
             var textureSize = textureSizeRequested;
 
             // compressed DDS files has to have a size multiple of 4.
-            if (platform == GraphicsPlatform.Direct3D11 && textureFormat == TextureFormat.Compressed
+            if (parameters.GraphicsPlatform == GraphicsPlatform.Direct3D11 && parameters.DesiredFormat == TextureFormat.Compressed
                 && ((textureSizeRequested.Width % 4) != 0 || (textureSizeRequested.Height % 4) != 0))
             {
                 textureSize.Width = unchecked((int)(((uint)(textureSizeRequested.Width + 3)) & ~(uint)3));
@@ -68,19 +129,19 @@ namespace SiliconStudio.Paradox.Assets.Textures
             var maxTextureSize = 0;
 
             // determine if the desired size if valid depending on the graphics profile
-            switch (graphicsProfile)
+            switch (parameters.GraphicsProfile)
             {
                 case GraphicsProfile.Level_9_1:
                 case GraphicsProfile.Level_9_2:
                 case GraphicsProfile.Level_9_3:
-                    if (generateMipmaps && (!IsPowerOfTwo(textureSize.Width) || !IsPowerOfTwo(textureSize.Height)))
+                    if (parameters.GenerateMipmaps && (!MathUtil.IsPow2(textureSize.Width) || !MathUtil.IsPow2(textureSize.Height)))
                     {
                         // TODO: TEMPORARY SETUP A MAX TEXTURE OF 1024. THIS SHOULD BE SPECIFIED DONE IN THE ASSET INSTEAD
                         textureSize.Width = Math.Min(MathUtil.NextPowerOfTwo(textureSize.Width), 1024);
                         textureSize.Height = Math.Min(MathUtil.NextPowerOfTwo(textureSize.Height), 1024);
                         logger.Warning("Graphic profiles 9.1/9.2/9.3 do not support mipmaps with textures that are not power of 2. Asset is automatically resized to " + textureSize);
                     }
-                    maxTextureSize = graphicsProfile >= GraphicsProfile.Level_9_3 ? 4096 : 2048;
+                    maxTextureSize = parameters.GraphicsProfile >= GraphicsProfile.Level_9_3 ? 4096 : 2048;
                     break;
                 case GraphicsProfile.Level_10_0:
                 case GraphicsProfile.Level_10_1:
@@ -98,45 +159,11 @@ namespace SiliconStudio.Paradox.Assets.Textures
             if (textureSize.Width > maxTextureSize || textureSize.Height > maxTextureSize)
             {
                 logger.Error("Graphic profile {0} do not support texture with resolution {2} x {3} because it is larger than {1}. " +
-                             "Please reduce texture size or upgrade your graphic profile.", graphicsProfile, maxTextureSize, textureSize.Width, textureSize.Height);
+                             "Please reduce texture size or upgrade your graphic profile.", parameters.GraphicsProfile, maxTextureSize, textureSize.Width, textureSize.Height);
                 return new Size2(Math.Min(textureSize.Width, maxTextureSize), Math.Min(textureSize.Height, maxTextureSize));
             }
 
             return textureSize;
-        }
-
-        /// <summary>
-        /// Determines if alpha channel should be separated from a given texture's attribute and graphics profile
-        /// </summary>
-        /// <param name="alphaFormat">Alpha format for a texture</param>
-        /// <param name="textureFormat">Texture format</param>
-        /// <param name="platform">Platform</param>
-        /// <param name="graphicsProfile">Level of graphics</param>
-        /// <returns></returns>
-        public static bool ShouldSeparateAlpha(AlphaFormat alphaFormat, TextureFormat textureFormat, PlatformType platform, GraphicsProfile graphicsProfile)
-        {
-            if (alphaFormat != AlphaFormat.None && textureFormat == TextureFormat.Compressed && platform == PlatformType.Android)
-            {
-                switch (graphicsProfile)
-                {
-                    case GraphicsProfile.Level_9_1:
-                    case GraphicsProfile.Level_9_2:
-                    case GraphicsProfile.Level_9_3:
-                        // Android with OpenGLES < 3.0 require alpha splitting if the image is compressed since ETC1 compresses only RGB
-                        return true;
-                    case GraphicsProfile.Level_10_0:
-                    case GraphicsProfile.Level_10_1:
-                    case GraphicsProfile.Level_11_0:
-                    case GraphicsProfile.Level_11_1:
-                    case GraphicsProfile.Level_11_2:
-                        // Since OpenGLES 3.0, ETC2 RGBA is used instead of ETC1 RGB so alpha is compressed along with RGB; therefore, no need to split alpha
-                        return false;
-                    default:
-                        throw new ArgumentOutOfRangeException("graphicsProfile");
-                }
-            }
-
-            return false;
         }
 
         /// <summary>
@@ -145,17 +172,16 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// <param name="parameters">The conversion request parameters</param>
         /// <param name="imageSize">The texture output size</param>
         /// <param name="inputImageFormat">The pixel format of the input image</param>
-        /// <param name="textureAsset">The texture asset</param>
         /// <param name="alphaDepth">The depth of the alpha channel</param>
         /// <returns>The pixel format to use as output</returns>
-        public static PixelFormat DetermineOutputFormat(TextureAsset textureAsset, TextureConvertParameters parameters, Int2 imageSize, PixelFormat inputImageFormat, int alphaDepth)
+        public static PixelFormat DetermineOutputFormat(ImportParameters parameters, Int2 imageSize, PixelFormat inputImageFormat, int alphaDepth)
         {
-            if (textureAsset.SRgb && ((int)parameters.GraphicsProfile < (int)GraphicsProfile.Level_9_2 && parameters.GraphicsPlatform != GraphicsPlatform.Direct3D11))
+            if (parameters.IsSRgb && ((int)parameters.GraphicsProfile < (int)GraphicsProfile.Level_9_2 && parameters.GraphicsPlatform != GraphicsPlatform.Direct3D11))
                 throw new NotSupportedException("sRGB is not supported on OpenGl profile level {0}".ToFormat(parameters.GraphicsProfile));
 
-            var hint = textureAsset.Hint;
+            var hint = parameters.TextureHint;
 
-            var alphaMode = textureAsset.Alpha;
+            var alphaMode = parameters.DesiredAlpha;
             if (alphaMode == AlphaFormat.Auto)
             {
                 switch (alphaDepth)
@@ -174,7 +200,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
 
             // Default output format
             var outputFormat = PixelFormat.R8G8B8A8_UNorm;
-            switch (textureAsset.Format)
+            switch (parameters.DesiredFormat)
             {
                 case TextureFormat.Compressed:
                     switch (parameters.Platform)
@@ -184,7 +210,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                             {
                                 outputFormat = inputImageFormat;
                             }
-                            else if (textureAsset.SRgb)
+                            else if (parameters.IsSRgb)
                             {
                                 outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
                             }
@@ -216,7 +242,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                             {
                                 outputFormat = inputImageFormat;
                             }
-                            else if (textureAsset.SRgb)
+                            else if (parameters.IsSRgb)
                             {
                                 outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
                             }
@@ -275,15 +301,15 @@ namespace SiliconStudio.Paradox.Assets.Textures
                                         case AlphaFormat.None:
                                         case AlphaFormat.Mask:
                                             // DXT1 handles 1-bit alpha channel
-                                            outputFormat = textureAsset.SRgb ? PixelFormat.BC1_UNorm_SRgb : PixelFormat.BC1_UNorm;
+                                            outputFormat = parameters.IsSRgb ? PixelFormat.BC1_UNorm_SRgb : PixelFormat.BC1_UNorm;
                                             break;
                                         case AlphaFormat.Explicit:
                                             // DXT3 is good at sharp alpha transitions
-                                            outputFormat = textureAsset.SRgb ? PixelFormat.BC2_UNorm_SRgb : PixelFormat.BC2_UNorm;
+                                            outputFormat = parameters.IsSRgb ? PixelFormat.BC2_UNorm_SRgb : PixelFormat.BC2_UNorm;
                                             break;
                                         case AlphaFormat.Interpolated:
                                             // DXT5 is good at alpha gradients
-                                            outputFormat = textureAsset.SRgb ? PixelFormat.BC3_UNorm_SRgb : PixelFormat.BC3_UNorm;
+                                            outputFormat = parameters.IsSRgb ? PixelFormat.BC3_UNorm_SRgb : PixelFormat.BC3_UNorm;
                                             break;
                                         default:
                                             throw new ArgumentOutOfRangeException();
@@ -315,7 +341,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                                     {
                                         outputFormat = inputImageFormat;
                                     }
-                                    else if (textureAsset.SRgb)
+                                    else if (parameters.IsSRgb)
                                     {
                                         outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
                                     }
@@ -344,7 +370,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                                 default:
                                     // OpenGL on Windows
                                     // TODO: Need to handle OpenGL Desktop compression
-                                    outputFormat = textureAsset.SRgb ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm;
+                                    outputFormat = parameters.IsSRgb ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm;
                                     break;
                             }
                             break;
@@ -353,7 +379,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                     }
                     break;
                 case TextureFormat.Color16Bits:
-                    if (textureAsset.SRgb)
+                    if (parameters.IsSRgb)
                     {
                         outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
                     }
@@ -370,7 +396,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                     }
                     break;
                 case TextureFormat.Color32Bits:
-                    if (textureAsset.SRgb)
+                    if (parameters.IsSRgb)
                     {
                         outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
                     }
@@ -384,88 +410,84 @@ namespace SiliconStudio.Paradox.Assets.Textures
             return outputFormat;
         }
 
-        public static ResultStatus ImportAndSaveTextureImage(UFile sourcePath, string outputUrl, TextureAsset textureAsset, TextureConvertParameters parameters, CancellationToken cancellationToken, Logger logger)
+        public static ResultStatus ImportTextureImage(TextureTool textureTool, TexImage texImage, ImportParameters parameters, CancellationToken cancellationToken, Logger logger)
         {
             var assetManager = new AssetManager();
 
-            using (var texTool = new TextureTool())
-            using (var texImage = texTool.Load(sourcePath, textureAsset.SRgb))
+            // Apply transformations
+            textureTool.Decompress(texImage, parameters.IsSRgb);
+
+            if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                return ResultStatus.Cancelled;
+
+            var fromSize =  new Size2(texImage.Width, texImage.Height);
+            var targetSize = parameters.DesiredSize;
+
+            // Resize the image
+            if (parameters.IsSizeInPercentage)
             {
-                // Apply transformations
-                texTool.Decompress(texImage, textureAsset.SRgb);
+                targetSize = new Size2((int)(fromSize.Width * targetSize.Width / 100.0f), (int)(fromSize.Height * targetSize.Height / 100.0f));
+            }
 
-                if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
-                    return ResultStatus.Cancelled;
+            // Find the target size
+            targetSize = FindBestTextureSize(parameters, fromSize, targetSize, logger);
 
-                var fromSize =  new Size2(texImage.Width, texImage.Height);
-                var targetSize = new Size2((int)textureAsset.Width, (int)textureAsset.Height);
+            // Resize the image only if needed
+            if (targetSize != fromSize)
+            {
+                textureTool.Resize(texImage, targetSize.Width, targetSize.Height, Filter.Rescaling.Lanczos3);
+            }
 
-                // Resize the image
-                if (textureAsset.IsSizeInPercentage)
-                {
-                    targetSize = new Size2((int)(fromSize.Width * textureAsset.Width / 100.0f), (int)(fromSize.Height * textureAsset.Height / 100.0f));
-                }
+            if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                return ResultStatus.Cancelled;
 
-                // Find the target size
-                targetSize = FindBestTextureSize(textureAsset.Format, parameters.GraphicsPlatform, parameters.GraphicsProfile, fromSize, targetSize, textureAsset.GenerateMipmaps, logger);
+            // texture size is now determined, we can cache it
+            var textureSize = new Int2(texImage.Width, texImage.Height);
 
-                // Resize the image only if needed
-                if (targetSize != fromSize)
-                {
-                    texTool.Resize(texImage, targetSize.Width, targetSize.Height, Filter.Rescaling.Lanczos3);
-                }
+            // Apply the color key
+            if (parameters.ColorKeyEnabled)
+                textureTool.ColorKey(texImage, parameters.ColorKeyColor);
 
-                if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
-                    return ResultStatus.Cancelled;
-
-                // texture size is now determined, we can cache it
-                var textureSize = new Int2(texImage.Width, texImage.Height);
-
-                // Apply the color key
-                if (textureAsset.ColorKeyEnabled)
-                    texTool.ColorKey(texImage, textureAsset.ColorKeyColor);
-
-                if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
-                    return ResultStatus.Cancelled;
+            if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                return ResultStatus.Cancelled;
 
 
-                // Pre-multiply alpha
-                if (textureAsset.PremultiplyAlpha)
-                    texTool.PreMultiplyAlpha(texImage);
+            // Pre-multiply alpha
+            if (parameters.PremultiplyAlpha)
+                textureTool.PreMultiplyAlpha(texImage);
 
-                if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
-                    return ResultStatus.Cancelled;
+            if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                return ResultStatus.Cancelled;
 
 
-                // Generate mipmaps
-                if (textureAsset.GenerateMipmaps)
-                {
-                    var boxFilteringIsSupported = texImage.Format != PixelFormat.B8G8R8A8_UNorm_SRgb || (IsPowerOfTwo(textureSize.X) && IsPowerOfTwo(textureSize.Y));
-                    texTool.GenerateMipMaps(texImage, boxFilteringIsSupported? Filter.MipMapGeneration.Box: Filter.MipMapGeneration.Linear);
-                }
+            // Generate mipmaps
+            if (parameters.GenerateMipmaps)
+            {
+                var boxFilteringIsSupported = texImage.Format != PixelFormat.B8G8R8A8_UNorm_SRgb || (MathUtil.IsPow2(textureSize.X) && MathUtil.IsPow2(textureSize.Y));
+                textureTool.GenerateMipMaps(texImage, boxFilteringIsSupported? Filter.MipMapGeneration.Box: Filter.MipMapGeneration.Linear);
+            }
                 
+            if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                return ResultStatus.Cancelled;
+
+
+            // Convert/Compress to output format
+            // TODO: Change alphaFormat depending on actual image content (auto-detection)?
+            var outputFormat = DetermineOutputFormat(parameters, textureSize, texImage.Format, texImage.GetAlphaDepth());
+            textureTool.Compress(texImage, outputFormat, (TextureConverter.Requests.TextureQuality)parameters.TextureQuality);
+
+            if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
+                return ResultStatus.Cancelled;
+
+            // Save the texture
+            using (var outputImage = textureTool.ConvertToParadoxImage(texImage))
+            {
                 if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
                     return ResultStatus.Cancelled;
 
+                assetManager.Save(parameters.OutputUrl, outputImage.ToSerializableVersion());
 
-                // Convert/Compress to output format
-                // TODO: Change alphaFormat depending on actual image content (auto-detection)?
-                var outputFormat = DetermineOutputFormat(textureAsset, parameters, textureSize, texImage.Format, texImage.GetAlphaDepth());
-                texTool.Compress(texImage, outputFormat, (TextureConverter.Requests.TextureQuality)parameters.TextureQuality);
-
-                if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
-                    return ResultStatus.Cancelled;
-
-                // Save the texture
-                using (var outputImage = texTool.ConvertToParadoxImage(texImage))
-                {
-                    if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
-                        return ResultStatus.Cancelled;
-
-                    assetManager.Save(outputUrl, outputImage.ToSerializableVersion());
-
-                    logger.Info("Compression successful [{3}] to ({0}x{1},{2})", outputImage.Description.Width, outputImage.Description.Height, outputImage.Description.Format, outputUrl);
-                }
+                logger.Info("Compression successful [{3}] to ({0}x{1},{2})", outputImage.Description.Width, outputImage.Description.Height, outputImage.Description.Format, parameters.OutputUrl);
             }
 
             return ResultStatus.Successful;

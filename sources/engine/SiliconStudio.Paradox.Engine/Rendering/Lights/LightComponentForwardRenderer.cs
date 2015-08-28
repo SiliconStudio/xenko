@@ -309,8 +309,8 @@ namespace SiliconStudio.Paradox.Rendering.Lights
             var parametersKeyIdBuilder = new ObjectIdSimpleBuilder();
             //var idBuilder = new ObjectIdBuilder();
 
-            var group = model.Group;
             var modelComponent = model.ModelComponent;
+            var group = modelComponent.Entity.Group;
             var modelBoundingBox = modelComponent.BoundingBox;
 
             directLightsPerModel.Clear();

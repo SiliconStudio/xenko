@@ -482,5 +482,23 @@ namespace SiliconStudio.Core.Mathematics
         {
             return (float)Math.Pow(2, Math.Ceiling(Math.Log(size, 2)));
         }
+
+        /// <summary>
+        /// Get the previous power of two of the provided integer.
+        /// </summary>
+        /// <param name="size">The value</param>
+        public static int PreviousPowerOfTwo(int size)
+        {
+            return 1 << (int)Math.Floor(Math.Log(size, 2));
+        }
+
+        /// <summary>
+        /// Get the previous power of two of the provided float.
+        /// </summary>
+        /// <param name="size">The value</param>
+        public static float PreviousPowerOfTwo(float size)
+        {
+            return (float)Math.Pow(2, Math.Floor(Math.Log(size, 2)));
+        }
     }
 }

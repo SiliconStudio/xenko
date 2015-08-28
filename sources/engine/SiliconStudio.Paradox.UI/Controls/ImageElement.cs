@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Diagnostics;
-
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 
@@ -80,11 +80,11 @@ namespace SiliconStudio.Paradox.UI.Controls
             if (source == null || !source.HasBorders)
                 return desiredSize;
 
-            var maxBaseAndFixedBorders = new Vector3(   Math.Max(desiredSize.X, source.BordersInternal.X + source.BordersInternal.Y),
-                                                        Math.Max(desiredSize.Y, source.BordersInternal.Z + source.BordersInternal.W),
-                                                        desiredSize.Z);
+            var borderSum = new Vector2(source.BordersInternal.X + source.BordersInternal.Y, source.BordersInternal.Z + source.BordersInternal.W);
+            if(source.Orientation == ImageOrientation.Rotated90)
+                Utilities.Swap(ref borderSum.X, ref borderSum.Y);
 
-            return maxBaseAndFixedBorders;
+            return new Vector3(Math.Max(desiredSize.X, borderSum.X), Math.Max(desiredSize.Y, borderSum.Y), desiredSize.Z);
         }
 
         protected override Vector3 ArrangeOverride(Vector3 finalSizeWithoutMargins)

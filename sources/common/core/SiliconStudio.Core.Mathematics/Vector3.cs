@@ -799,6 +799,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">The first source vector.</param>
         /// <param name="right">The second source vector.</param>
         /// <param name="result">When the method completes, contains an new vector composed of the largest components of the source vectors.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Max(ref Vector3 left, ref Vector3 right, out Vector3 result)
         {
             result.X = (left.X > right.X) ? left.X : right.X;
@@ -812,6 +813,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">The first source vector.</param>
         /// <param name="right">The second source vector.</param>
         /// <returns>A vector containing the largest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 Max(Vector3 left, Vector3 right)
         {
             Vector3 result;
@@ -825,6 +827,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">The first source vector.</param>
         /// <param name="right">The second source vector.</param>
         /// <param name="result">When the method completes, contains an new vector composed of the smallest components of the source vectors.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Min(ref Vector3 left, ref Vector3 right, out Vector3 result)
         {
             result.X = (left.X < right.X) ? left.X : right.X;
@@ -838,6 +841,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">The first source vector.</param>
         /// <param name="right">The second source vector.</param>
         /// <returns>A vector containing the smallest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 Min(Vector3 left, Vector3 right)
         {
             Vector3 result;

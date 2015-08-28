@@ -15,6 +15,6 @@ namespace SiliconStudio.ExecServer
         void Check();
 
         [OperationContract(IsTerminating = true)]
-        int Run(string[] args);
+        int Run(string currentDirectory, string[] args);
     }
 }

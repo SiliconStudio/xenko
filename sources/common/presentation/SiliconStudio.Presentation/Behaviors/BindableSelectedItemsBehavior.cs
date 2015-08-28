@@ -101,6 +101,9 @@ namespace SiliconStudio.Presentation.Behaviors
             if (BindableSelectedItemsControl.DisableBindings)
                 return;
 
+            if (updatingCollection)
+                return;
+
             if (SelectedItems != null)
             {
                 updatingCollection = true;
@@ -133,6 +136,9 @@ namespace SiliconStudio.Presentation.Behaviors
         protected void ControlSelectionCleared()
         {
             if (BindableSelectedItemsControl.DisableBindings)
+                return;
+
+            if (updatingCollection)
                 return;
 
             if (SelectedItems != null)
@@ -207,6 +213,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
             if (AssociatedObject != null)
             {
+                updatingCollection = true;
                 if (e.Action == NotifyCollectionChangedAction.Reset)
                 {
                     SelectedItemsInAssociatedObject.Clear();
@@ -231,6 +238,7 @@ namespace SiliconStudio.Presentation.Behaviors
                     foreach (var removedItem in e.OldItems.Cast<object>().Where(x => SelectedItemsInAssociatedObject.Contains(x)))
                         SelectedItemsInAssociatedObject.Remove(removedItem);
                 }
+                updatingCollection = false;
 
                 if (SelectedItemsInAssociatedObject.Count > 0 && GiveFocusOnSelectionChange)
                 {

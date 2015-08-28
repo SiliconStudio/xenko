@@ -12,16 +12,27 @@ namespace SiliconStudio.Paradox.Rendering
     /// </summary>
     public abstract class EntityComponentRendererBase : EntityComponentRendererCoreBase, IEntityComponentRenderer
     {
-        public virtual bool SupportPicking { get { return false; } }
-
         /// <summary>
         /// Gets the current culling mask.
         /// </summary>
         /// <value>The current culling mask.</value>
-        public EntityGroupMask CurrentCullingMask { get; set; }
+        protected EntityGroupMask CurrentCullingMask { get; private set; }
+
+        public virtual bool SupportPicking
+        {
+            get
+            {
+                return false;
+            }
+        }
 
         public void Prepare(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
+            if (!Enabled)
+            {
+                return;
+            }
+
             if (Context == null)
             {
                 Initialize(context);
@@ -41,9 +52,12 @@ namespace SiliconStudio.Paradox.Rendering
 
         public void Draw(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
         {
-            PreDrawCoreInternal(context);
-            DrawCore(context, renderItems, fromIndex, toIndex);
-            PostDrawCoreInternal(context);
+            if (Enabled)
+            {
+                PreDrawCoreInternal(context);
+                DrawCore(context, renderItems, fromIndex, toIndex);
+                PostDrawCoreInternal(context);
+            }
         }
 
         protected abstract void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList);

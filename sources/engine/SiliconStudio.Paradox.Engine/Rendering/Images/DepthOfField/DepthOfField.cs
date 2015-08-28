@@ -366,9 +366,8 @@ namespace SiliconStudio.Paradox.Rendering.Images
             {
                 // TODO replace this by physical camera parameters (aperture, focus distance...)
                 var diffToTarget = (autoFocusDistanceTarget - autoFocusDistanceCurrent);
-                var absDiff = Math.Abs(diffToTarget);
                 var maxAmplitude = farPlane * 0.2f;
-                if (absDiff > maxAmplitude) diffToTarget = diffToTarget / absDiff * maxAmplitude;
+                diffToTarget = MathUtil.Clamp(diffToTarget, -maxAmplitude, maxAmplitude);
                 autoFocusDistanceCurrent = autoFocusDistanceCurrent + 0.1f * diffToTarget;
                 if (autoFocusDistanceCurrent < 1f) autoFocusDistanceCurrent = 1f;
                 depthAreas = new Vector4(0.5f, autoFocusDistanceCurrent, autoFocusDistanceCurrent, autoFocusDistanceCurrent + farPlane * 0.5f);

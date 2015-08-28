@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Class for rendering tests to test batching ordering for transparency.
     /// </summary>
-    public class ClickTests : UnitTestGameBase
+    public class ClickTests : UITestGameBase
     {
         private List<Button> elements;
 

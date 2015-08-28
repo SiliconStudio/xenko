@@ -40,8 +40,8 @@ namespace SiliconStudio.Paradox.Assets
 
                 // Hash used parameters from package
                 writer.Write(package.Id);
-                writer.Write(package.Settings.GetValue(GameUserSettings.Effect.EffectCompilation));
-                writer.Write(package.Settings.GetValue(GameUserSettings.Effect.RecordUsedEffects));
+                writer.Write(package.UserSettings.GetValue(GameUserSettings.Effect.EffectCompilation));
+                writer.Write(package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects));
 
                 // Hash platform
                 writer.Write(platform);
@@ -71,8 +71,8 @@ namespace SiliconStudio.Paradox.Assets
                 result.PackageId = package.Id;
 
                 // Save some package user settings
-                result.EffectCompilation = package.Settings.GetValue(GameUserSettings.Effect.EffectCompilation);
-                result.RecordUsedEffects = package.Settings.GetValue(GameUserSettings.Effect.RecordUsedEffects);
+                result.EffectCompilation = package.UserSettings.GetValue(GameUserSettings.Effect.EffectCompilation);
+                result.RecordUsedEffects = package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects);
 
                 var assetManager = new AssetManager();
                 assetManager.Save(Url, result);

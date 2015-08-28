@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Class for rendering tests on the <see cref="ImageElement"/> 
     /// </summary>
-    public class BorderImageTest : UnitTestGameBase
+    public class BorderImageTest : UITestGameBase
     {
         private StackPanel stackPanel;
 

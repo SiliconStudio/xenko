@@ -75,7 +75,7 @@ internal:
 	}
 
 	template <class T>
-	int GetGroupIndexForLayerElementTemplate(FbxLayerElementTemplate<T>* layerElement, int controlPointIndex, int vertexIndex, int polygonIndex, bool polygonSupport, String^ meshName)
+	int GetGroupIndexForLayerElementTemplate(FbxLayerElementTemplate<T>* layerElement, int controlPointIndex, int vertexIndex, int polygonIndex, String^ meshName, bool& firstTimeError)
 	{
 		int groupIndex = 0;
 		if (layerElement->GetMappingMode() == FbxLayerElement::eByControlPoint)
@@ -90,15 +90,22 @@ internal:
 				? layerElement->GetIndexArray().GetAt(vertexIndex)
 				: vertexIndex;
 		}
-		else if (layerElement->GetMappingMode() == FbxLayerElement::eByPolygon && polygonSupport)
+		else if (layerElement->GetMappingMode() == FbxLayerElement::eByPolygon)
 		{
 			groupIndex = (layerElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
 				? layerElement->GetIndexArray().GetAt(polygonIndex)
 				: polygonIndex;
 		}
-		else
+		else if (layerElement->GetMappingMode() == FbxLayerElement::eAllSame)
 		{
-			logger->Error("The mapping mode '{0}' for '{1}' is not supported yet by the FBX importer "
+			groupIndex = (layerElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
+				? layerElement->GetIndexArray().GetAt(0)
+				: 0;
+		}
+		else if (firstTimeError)
+		{
+			firstTimeError = false;
+			logger->Warning("The mapping mode '{0}' for '{1}' is not supported yet by the FBX importer "
 				+ "(currently only mapping by control point and by polygon vertex are supported). "
 				+ "'{1}' will not be correct for mesh '{2}'.", 
 				gcnew Int32(layerElement->GetMappingMode()),
@@ -417,6 +424,8 @@ public:
 			buildMesh->buffer = gcnew array<Byte>(vertexStride * buildMesh->polygonCount * 3);
 		}
 
+		bool layerIndexFirstTimeError = true;
+
 		// Build polygons
 		int polygonVertexStartIndex = 0;
 		for (int i = 0; i < polygonCount; i++)
@@ -459,7 +468,7 @@ public:
 					// NORMAL
 					if (normalElement != NULL)
 					{
-						int normalIndex = GetGroupIndexForLayerElementTemplate(normalElement, controlPointIndex, vertexIndex, i, false, meshName);
+						int normalIndex = GetGroupIndexForLayerElementTemplate(normalElement, controlPointIndex, vertexIndex, i, meshName, layerIndexFirstTimeError);
 						auto src_normal = normalElement->GetDirectArray().GetAt(normalIndex);
 						Vector3 normal = sceneMapping->ConvertNormalFromFbx(src_normal);
 						*(Vector3*)(vbPointer + normalOffset) = normal;
@@ -469,7 +478,7 @@ public:
 					for (int uvGroupIndex = 0; uvGroupIndex < (int)uvElements.size(); ++uvGroupIndex)
 					{
 						auto uvElement = uvElements[uvGroupIndex];
-						int uvIndex = GetGroupIndexForLayerElementTemplate(uvElement, controlPointIndex, vertexIndex, i, false, meshName);
+						int uvIndex = GetGroupIndexForLayerElementTemplate(uvElement, controlPointIndex, vertexIndex, i, meshName, layerIndexFirstTimeError);
 						auto uv = uvElement->GetDirectArray().GetAt(uvIndex);
 
 						((float*)(vbPointer + uvOffsets[uvGroupIndex]))[0] = (float)uv[0];
@@ -504,7 +513,7 @@ public:
 					for (int elementColorIndex = 0; elementColorIndex < elementVertexColorCount; elementColorIndex++)
 					{
 						auto vertexColorElement = pMesh->GetElementVertexColor(elementColorIndex);
-						auto groupIndex = GetGroupIndexForLayerElementTemplate(vertexColorElement, controlPointIndex, vertexIndex, i, true, meshName);
+						auto groupIndex = GetGroupIndexForLayerElementTemplate(vertexColorElement, controlPointIndex, vertexIndex, i, meshName, layerIndexFirstTimeError);
 						auto color = vertexColorElement->GetDirectArray().GetAt(groupIndex);
 						((Color*)(vbPointer + colorOffset))[elementColorIndex] = Color((float)color.mRed, (float)color.mGreen, (float)color.mBlue, (float)color.mAlpha);
 					}
@@ -515,7 +524,7 @@ public:
 					// SMOOTHINGGROUP
 					if (smoothingElement != NULL)
 					{
-						auto groupIndex = GetGroupIndexForLayerElementTemplate(smoothingElement, controlPointIndex, vertexIndex, i, true, meshName);
+						auto groupIndex = GetGroupIndexForLayerElementTemplate(smoothingElement, controlPointIndex, vertexIndex, i, meshName, layerIndexFirstTimeError);
 						auto group = smoothingElement->GetDirectArray().GetAt(groupIndex);
 						((int*)(vbPointer + smoothingOffset))[0] = (int)group;
 					}

@@ -3,7 +3,6 @@
 using System.Threading.Tasks;
 
 using NUnit.Framework;
-
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.UI.Controls;
 using SiliconStudio.Paradox.UI.Panels;
@@ -13,11 +12,16 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Class for rendering tests on the <see cref="ScrollViewer"/> 
     /// </summary>
-    public class ImageRotatedTest : UnitTestGameBase
+    public class ImageRotatedTest : UITestGameBase
     {
+        private const int WindowWidth = 1024;
+        private const int WindowHeight = 512;
+
         public ImageRotatedTest()
         {
-            CurrentVersion = 5;
+            CurrentVersion = 6;
+            GraphicsDeviceManager.PreferredBackBufferWidth = WindowWidth;
+            GraphicsDeviceManager.PreferredBackBufferHeight = WindowHeight;
         }
 
         protected override void RegisterTests()
@@ -31,15 +35,26 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            var Sprites = Asset.Load<SpriteSheet>("RotatedImages");
-            var img1 = new ImageElement { Source = Sprites["NotRotated"], StretchType = StretchType.Fill };
-            var img2 = new ImageElement { Source = Sprites["Rotated90"], StretchType = StretchType.Fill };
+            var sprites = Asset.Load<SpriteSheet>("RotatedImages");
+            var img1 = new ImageElement { Source = sprites["NRNR"], StretchType = StretchType.Fill };
+            var img2 = new ImageElement { Source = sprites["RNR"], StretchType = StretchType.Fill };
+            var img3 = new ImageElement { Source = sprites["NRR"], StretchType = StretchType.Fill };
+            var img4 = new ImageElement { Source = sprites["RR"], StretchType = StretchType.Fill };
 
-            img2.DependencyProperties.Set(GridBase.RowPropertyKey, 1);
+            img1.SetGridColumnSpan(2);
+            img2.SetGridColumnSpan(2);
+            img2.SetGridRow(1);
+            img3.SetGridRowSpan(2);
+            img3.SetGridColumn(2);
+            img4.SetGridRowSpan(2);
+            img4.SetGridColumn(3);
 
-            var grid = new UniformGrid { Rows = 2 };
-            grid.Children.Add(img1);
-            grid.Children.Add(img2);
+            var grid = new UniformGrid
+            {
+                Rows = 2, 
+                Columns = 4,
+                Children = { img1, img2, img3, img4 }
+            };
 
             UIComponent.RootElement = grid;
         }

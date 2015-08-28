@@ -90,8 +90,9 @@
     <Compile Include="Settings\ChangesValidatedEventArgs.cs" />
     <Compile Include="Settings\FileModifiedEventArgs.cs" />
     <Compile Include="Settings\NamespaceDoc.cs" />
-    <Compile Include="Settings\SettingsCollection.cs" />
+    <Compile Include="Settings\SettingsDictionary.cs" />
     <Compile Include="Settings\SettingsDictionarySerializer.cs" />
+    <Compile Include="Settings\SettingsProfileSerializer.cs" />
     <Compile Include="Windows\FileLock.cs" />
     <Compile Include="Windows\GlobalMutex.cs" />
     <Compile Include="Yaml\DynamicYamlExtensions.cs" />
@@ -102,8 +103,7 @@
     <Compile Include="Settings\SettingsFileLoadedEventArgs.cs" />
     <Compile Include="Settings\SettingsKey.cs" />
     <Compile Include="Settings\SettingsProfile.cs" />
-    <Compile Include="Settings\SettingsGroup.cs" />
-    <Compile Include="Settings\SettingsValueKey.cs" />
+    <Compile Include="Settings\SettingsContainer.cs" />
     <Compile Include="Settings\Utils.cs" />
     <Compile Include="StringSpan.cs" />
     <Compile Include="StringSpanExtensions.cs" />

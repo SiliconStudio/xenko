@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.Engine
         private Model model;
         private ModelViewHierarchyUpdater modelViewHierarchy;
         private bool modelViewHierarchyDirty = true;
-        private List<Material> materials = new List<Material>();
+        private readonly List<Material> materials = new List<Material>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelComponent"/> class.

@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Class for rendering tests on the <see cref="ModalElement"/> 
     /// </summary>
-    public class ModalElementTest : UnitTestGameBase
+    public class ModalElementTest : UITestGameBase
     {
         private UniformGrid uniformGrid;
 

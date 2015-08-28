@@ -1,6 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.ComponentModel;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Paradox.Graphics;
@@ -18,6 +20,7 @@ namespace SiliconStudio.Paradox.Rendering
         {
             Output = new CurrentRenderFrameProvider();
             Parameters = new ParameterCollection();
+            ResetGraphicsStates = true;
         }
 
         /// <summary>
@@ -27,6 +30,16 @@ namespace SiliconStudio.Paradox.Rendering
         [DataMember(100)]
         [NotNull]
         public ISceneRendererOutput Output { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to reset the graphics states after this scene renderer is executed.
+        /// </summary>
+        /// <value><c>true</c> to reset the graphics states after this scene renderer is executed.; otherwise, <c>false</c>.</value>
+        /// <userdoc>If this option is selected, the graphics states (blend, depth...etc.) are reseted after this scene renderer is executed.</userdoc>
+        [Display("Reset Graphics States?")]
+        [DataMember(110)]
+        [DefaultValue(true)]
+        public bool ResetGraphicsStates { get; set; }
 
         /// <summary>
         /// Gets the parameters used to in place of the default <see cref="RenderContext.Parameters"/>.
@@ -88,8 +101,11 @@ namespace SiliconStudio.Paradox.Rendering
                 {
                     context.PopParameters();
 
-                    // Make sure that states are clean after this rendering
-                    context.GraphicsDevice.ResetStates();
+                    if (ResetGraphicsStates)
+                    {
+                        // Make sure that states are clean after this rendering
+                        context.GraphicsDevice.ResetStates();
+                    }
                 }
             }
         }

@@ -22,10 +22,13 @@ namespace SiliconStudio.Assets.CompilerClient
             const string CompilerAppExeName = "SiliconStudio.Assets.CompilerApp.exe";
 
             var serverApp = new ExecServerApp();
+            // The first two parameters are the executable path and the current directory
             var newArgs = new List<string>()
             {
-                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, CompilerAppExeName)
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, CompilerAppExeName),
+                Environment.CurrentDirectory
             };
+
             newArgs.AddRange(args);
             var result = serverApp.Run(newArgs.ToArray());
             return result;

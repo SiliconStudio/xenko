@@ -114,9 +114,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 };
                 newMaterial.Attributes.Diffuse = new MaterialDiffuseMapFeature
                 {
-                    DiffuseMap = new ComputeColor
+                    DiffuseMap = new ComputeTextureColor
                     {
-                        Value = new Color4(0.98f, 0.9f, 0.7f, 1.0f)
+                        FallbackValue = new ComputeColor(new Color4(0.98f, 0.9f, 0.7f, 1.0f))
                     }
                 };
                 newMaterial.Attributes.DiffuseModel = new MaterialDiffuseLambertModelFeature();
