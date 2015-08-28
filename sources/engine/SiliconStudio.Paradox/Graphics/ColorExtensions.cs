@@ -20,5 +20,27 @@ namespace SiliconStudio.Paradox.Graphics
         {
             return new Color(color.R, color.G, color.B, alpha);
         }
+
+        /// <summary>
+        /// Converts the color to the specified <see cref="ColorSpace"/>.
+        /// </summary>
+        /// <param name="color">The color.</param>
+        /// <param name="colorSpace">The color space.</param>
+        /// <returns>The color converted to the specified color space.</returns>
+        public static Color4 ToColorSpace(this Color4 color, ColorSpace colorSpace)
+        {
+            return colorSpace == ColorSpace.Linear ? color.ToLinear() : color;
+        }
+
+        /// <summary>
+        /// Converts the color to the specified <see cref="ColorSpace"/>.
+        /// </summary>
+        /// <param name="color">The color.</param>
+        /// <param name="colorSpace">The color space.</param>
+        /// <returns>The color converted to the specified color space.</returns>
+        public static Color3 ToColorSpace(this Color3 color, ColorSpace colorSpace)
+        {
+            return colorSpace == ColorSpace.Linear ? color.ToLinear() : color;
+        }
     }
 }
