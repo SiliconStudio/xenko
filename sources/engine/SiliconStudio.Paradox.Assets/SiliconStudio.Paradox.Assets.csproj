@@ -169,6 +169,7 @@
     <Compile Include="ParadoxPackageUpgrader.cs" />
     <Compile Include="ProceduralModels\ProceduralModelAsset.cs" />
     <Compile Include="ProceduralModels\ProceduralModelAssetCompiler.cs" />
+    <Compile Include="RenderingMode.cs" />
     <Compile Include="Sprite\SpriteSheetAsset.cs" />
     <Compile Include="Sprite\SpriteSheetAssetCompiler.cs" />
     <Compile Include="Sprite\SpriteInfo.cs" />
