@@ -185,7 +185,7 @@ namespace System.Windows.Controls
                 double itemTop;
                 if (treeViewItem != null)
                 {
-                    itemTop = treeViewItem.itemTopInTreeSystem + GetHeightOfHeader(itemsControl);
+                    itemTop = treeViewItem.ItemTopInTreeSystem + GetHeightOfHeader(itemsControl);
                 }
                 else
                 {
@@ -205,7 +205,7 @@ namespace System.Windows.Controls
                 IDisposable generatorRun = null;
                 currentYinItemSystem = 0;
                 int childHierarchyLevel = 0;
-                if(treeViewItem != null) childHierarchyLevel = treeViewItem.hierachyLevel + 1;
+                if(treeViewItem != null) childHierarchyLevel = treeViewItem.HierachyLevel + 1;
                 try
                 {
                     // iterate child items
@@ -256,13 +256,13 @@ namespace System.Windows.Controls
 
                             if (treeViewItem != null)
                             {
-                                child.itemTopInTreeSystem = currentYinItemSystem + itemTop;
-                                child.hierachyLevel = treeViewItem.hierachyLevel + 1;
+                                child.ItemTopInTreeSystem = currentYinItemSystem + itemTop;
+                                child.HierachyLevel = treeViewItem.HierachyLevel + 1;
                             }
                             else
                             {
-                                child.itemTopInTreeSystem = currentYinItemSystem;
-                                child.hierachyLevel = 1;
+                                child.ItemTopInTreeSystem = currentYinItemSystem;
+                                child.HierachyLevel = 1;
                             }
 
                             InvalidateMeasure(child);
@@ -390,7 +390,7 @@ namespace System.Windows.Controls
                 {
                     TreeViewExItem child = itemsControl.ItemContainerGenerator.ContainerFromIndex(i) as TreeViewExItem;
                     int childHierarchyLevel = 0;
-                    if (child != null) childHierarchyLevel = child.hierachyLevel;
+                    if (child != null) childHierarchyLevel = child.HierachyLevel;
 
                     if (foundVisibleItem)
                     {
@@ -578,7 +578,7 @@ namespace System.Windows.Controls
         {
             TreeViewExItem treeViewItem = ItemsControl.GetItemsOwner(this) as TreeViewExItem;
             if (treeViewItem == null) return 0;
-            return treeViewItem.hierachyLevel;
+            return treeViewItem.HierachyLevel;
         }
         #region IScrollInfo implementation
 

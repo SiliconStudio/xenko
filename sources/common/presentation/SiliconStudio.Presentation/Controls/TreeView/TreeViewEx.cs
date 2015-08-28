@@ -22,6 +22,7 @@ namespace System.Windows.Controls
         internal VirtualizingTreePanel.VerticalArea RealizationSpace = new VirtualizingTreePanel.VerticalArea();
         internal VirtualizingTreePanel.SizesCache CachedSizes = new VirtualizingTreePanel.SizesCache();
         private bool updatingSelection;
+        private bool allowedSelectionChanges;
         private bool mouseDown;
         private object lastShiftRoot;
         TreeViewExItem editedItem;
@@ -57,7 +58,6 @@ namespace System.Windows.Controls
         public TreeViewEx()
         {
             SelectedItems = new NonGenericObservableListWrapper<object>(new ObservableList<object>());
-            AllowMultipleSelection = SelectionMode != SelectionMode.Single;
         }
 
         public bool IsVirtualizing { get { return (bool)GetValue(IsVirtualizingProperty); } set { SetValue(IsVirtualizingProperty, value); } }
@@ -76,7 +76,7 @@ namespace System.Windows.Controls
 
         internal ScrollViewer ScrollViewer => scroller ?? (scroller = (ScrollViewer)Template.FindName("scroller", this));
 
-        internal bool AllowMultipleSelection { get; set; }
+        internal bool AllowMultipleSelection => SelectionMode != SelectionMode.Single;
 
         public override void OnApplyTemplate()
         {
@@ -200,16 +200,12 @@ namespace System.Windows.Controls
             // Hopefully the programmer knows what he does...
             if (isSelected)
             {
-                if (AllowMultipleSelection)
-                {
-                    lastShiftRoot = item.DataContext;
-                }
-                SelectedItems.Add(item.DataContext);
+                ModifySelection(new List<object>(1) { item.DataContext }, new List<object>());
                 item.ForceFocus();
             }
             else
             {
-                SelectedItems.Remove(item.DataContext);
+                ModifySelection(new List<object>(), new List<object>(1) { item.DataContext });
             }
         }
 
@@ -235,11 +231,16 @@ namespace System.Windows.Controls
 
         internal virtual void ClearObsoleteItems(IList items)
         {
+            updatingSelection = true;
             foreach (var itemToUnSelect in items)
             {
                 SelectedItems.Remove(itemToUnSelect);
+                if (SelectedItem == itemToUnSelect)
+                    SelectedItem = null;
             }
-            if (AllowMultipleSelection && items.Contains(lastShiftRoot))
+            updatingSelection = false;
+
+            if (SelectionMode != SelectionMode.Single && items.Contains(lastShiftRoot))
                 lastShiftRoot = null;
         }
 
@@ -519,7 +520,6 @@ namespace System.Windows.Controls
                 }
                 treeView.updatingSelection = false;
             }
-            treeView.AllowMultipleSelection = newValue != SelectionMode.Single;
         }
 
         private void OnSelectedItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -527,7 +527,7 @@ namespace System.Windows.Controls
             if (updatingSelection)
                 return;
 
-            if (SelectionMode == SelectionMode.Single)
+            if (SelectionMode == SelectionMode.Single && !allowedSelectionChanges)
                 throw new InvalidOperationException("Can only change SelectedItems collection in multiple selection modes. Use SelectedItem in single select modes.");
 
             updatingSelection = true;
@@ -597,34 +597,21 @@ namespace System.Windows.Controls
 
         protected void SelectSingleItem(TreeViewExItem item)
         {
-            if (AllowMultipleSelection)
+            // selection with SHIFT is not working in virtualized mode. Thats because the Items are not visible.
+            // Therefore the children cannot be found/selected.
+            if (SelectionMode != SelectionMode.Single && IsShiftKeyDown && SelectedItems.Count > 0 && !IsVirtualizing)
             {
-                // selection with SHIFT is not working in virtualized mode. Thats because the Items are not visible.
-                // Therefor the children cannot be found/selected.
-                if (IsShiftKeyDown && SelectedItems.Count > 0 && !IsVirtualizing)
-                {
-                    SelectWithShift(item);
-                }
-                else if (IsControlKeyDown)
-                {
-                    ToggleItem(item);
-                }
-                else
-                {
-                    SelectedItems.Clear();
-                    ModifySelection(new List<object>(1) { item.DataContext }, new List<object>());
-                }
+                SelectWithShift(item);
+                return;
+            }
+
+            if (IsControlKeyDown)
+            {
+                ToggleItem(item);
             }
             else
             {
-                if (IsControlKeyDown)
-                {
-                    ToggleItem(item);
-                }
-                else
-                {
-                    ModifySelection(item.DataContext);
-                }
+                ModifySelection(new List<object>(1) { item.DataContext }, new List<object>((IEnumerable<object>)SelectedItems));
             }
         }
 
@@ -666,26 +653,16 @@ namespace System.Windows.Controls
             if (item.DataContext == null)
                 return;
 
-            if (AllowMultipleSelection)
+            var itemsToUnselect = SelectionMode == SelectionMode.Single ? new List<object>(SelectedItems.Cast<object>()) : new List<object>();
+            if (SelectedItems.Contains(item.DataContext))
             {
-                if (SelectedItems.Contains(item.DataContext))
-                {
-                    ModifySelection(new List<object>(), new List<object>(1) { item.DataContext });
-                }
-                else
-                {
-                    ModifySelection(new List<object>(1) { item.DataContext }, new List<object>());
-                }
+                itemsToUnselect.Add(item.DataContext);
+                ModifySelection(new List<object>(), itemsToUnselect);
             }
             else
             {
-                ModifySelection(SelectedItem == item.DataContext ? null : item.DataContext);
+                ModifySelection(new List<object>(1) { item.DataContext }, itemsToUnselect);
             }
-        }
-
-        private void ModifySelection(object itemToSelect)
-        {
-            SelectedItem = itemToSelect;
         }
 
         private void ModifySelection(List<object> itemsToSelect, List<object> itemsToUnselect)
@@ -713,6 +690,7 @@ namespace System.Windows.Controls
             if (itemsToSelect.Count == 0 && itemsToUnselect.Count == 0)
                 return;
 
+            allowedSelectionChanges = true;
             // Unselect and then select items
             foreach (var itemToUnSelect in itemsToUnselect)
             {
@@ -720,6 +698,7 @@ namespace System.Windows.Controls
             }
 
             ((NonGenericObservableListWrapper<object>)SelectedItems).AddRange(itemsToSelect);
+            allowedSelectionChanges = false;
 
             if (itemsToUnselect.Contains(lastShiftRoot))
                 lastShiftRoot = null;
