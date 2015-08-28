@@ -33,9 +33,9 @@ namespace SiliconStudio.Paradox.Assets.Entities
                 var entityHierarchy = (EntityHierarchyData)context.Instance;
 
                 var entitiesById = new EntityDictionary(entityHierarchy);
-                foreach (var entity in entityHierarchy.Entities)
+                foreach (var designEntity in entityHierarchy.Entities)
                 {
-                    entitiesById.Add(entity.Id, entity);
+                    entitiesById.Add(designEntity.Entity.Id, designEntity.Entity);
                 }
 
                 // Add this object as member, so that it gets processed instead
@@ -77,11 +77,11 @@ namespace SiliconStudio.Paradox.Assets.Entities
                 if (!entityHashes.Add(rootEntity))
                     return;
 
-                Entity entity;
-                if (!source.Entities.TryGetValue(rootEntity, out entity))
+                EntityDesign designEntity;
+                if (!source.Entities.TryGetValue(rootEntity, out designEntity))
                     return;
 
-                var transformationComponent = entity.Get(TransformComponent.Key);
+                var transformationComponent = designEntity.Entity.Get(TransformComponent.Key);
 
                 foreach (var child in transformationComponent.Children)
                 {

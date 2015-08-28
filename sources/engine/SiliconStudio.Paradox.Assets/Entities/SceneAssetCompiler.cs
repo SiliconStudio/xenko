@@ -22,16 +22,16 @@ namespace SiliconStudio.Paradox.Assets.Entities
             foreach (var entityData in asset.Hierarchy.Entities)
             {
                 // TODO: How to make this code pluggable?
-                var modelComponent = entityData.Components.Get(ModelComponent.Key);
-                var spriteComponent = entityData.Components.Get(SpriteComponent.Key);
-                var scriptComponent = entityData.Components.Get(ScriptComponent.Key);
+                var modelComponent = entityData.Entity.Components.Get(ModelComponent.Key);
+                var spriteComponent = entityData.Entity.Components.Get(SpriteComponent.Key);
+                var scriptComponent = entityData.Entity.Components.Get(ScriptComponent.Key);
 
                 // determine the underlying source asset exists
                 if (modelComponent != null)
                 {
                     if (modelComponent.Model == null)
                     {
-                        result.Warning(string.Format("The entity [{0}:{1}] has a model component that does not reference any model.", urlInStorage, entityData.Name));
+                        result.Warning(string.Format("The entity [{0}:{1}] has a model component that does not reference any model.", urlInStorage, entityData.Entity.Name));
                         continue;
                     }
 
@@ -42,13 +42,13 @@ namespace SiliconStudio.Paradox.Assets.Entities
                     var assetItem = AssetItem.Package.Session.FindAsset(modelId);
                     if (assetItem == null)
                     {
-                        result.Error(string.Format("The entity [{0}:{1}] is referencing an unreachable model.", urlInStorage, entityData.Name));
+                        result.Error(string.Format("The entity [{0}:{1}] is referencing an unreachable model.", urlInStorage, entityData.Entity.Name));
                         continue;
                     }
                 }
                 if (spriteComponent != null && spriteComponent.SpriteProvider == null)
                 {
-                    result.Warning(string.Format("The entity [{0}:{1}] has a sprite component that does not reference any sprite group.", urlInStorage, entityData.Name));
+                    result.Warning(string.Format("The entity [{0}:{1}] has a sprite component that does not reference any sprite group.", urlInStorage, entityData.Entity.Name));
                 }
                 if (scriptComponent != null)
                 {
@@ -56,7 +56,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
                     {
                         if (script is UnloadableScript)
                         {
-                            result.Error(string.Format("The entity [{0}:{1}] reference an invalid script '{2}'.", urlInStorage, entityData.Name, script.GetType().Name));
+                            result.Error(string.Format("The entity [{0}:{1}] reference an invalid script '{2}'.", urlInStorage, entityData.Entity.Name, script.GetType().Name));
                         }
                     }
                 }
@@ -84,7 +84,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
                 var scene = new Scene(AssetParameters.Hierarchy.SceneSettings);
                 foreach (var rootEntity in AssetParameters.Hierarchy.RootEntities)
                 {
-                    scene.Entities.Add(AssetParameters.Hierarchy.Entities[rootEntity]);
+                    scene.Entities.Add(AssetParameters.Hierarchy.Entities[rootEntity].Entity);
                 }
                 assetManager.Save(Url, scene);
 

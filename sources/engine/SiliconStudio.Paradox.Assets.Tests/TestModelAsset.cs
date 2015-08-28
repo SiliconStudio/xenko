@@ -75,7 +75,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 var databaseFileProvider = new DatabaseFileProvider(objDatabase);
                 AssetManager.GetFileProvider = () => databaseFileProvider;
 
-                ((EntityAsset)assetItem.Asset).Hierarchy.Entities[0].Components.RemoveWhere(x => x.Key != TransformComponent.Key);
+                ((EntityAsset)assetItem.Asset).Hierarchy.Entities[0].Entity.Components.RemoveWhere(x => x.Key != TransformComponent.Key);
                 //((EntityAsset)assetItem.Asset).Data.Entities[1].Components.RemoveWhere(x => x.Key != SiliconStudio.Paradox.Engine.TransformComponent.Key);
 
                 var assetManager = new AssetManager();
@@ -87,10 +87,10 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 var entity2 = entity.Clone();
 
                 var entityAsset = (EntityAsset)assetItem.Asset;
-                entityAsset.Hierarchy.Entities[0].Components.Add(TransformComponent.Key, new TransformComponent());
+                entityAsset.Hierarchy.Entities[0].Entity.Components.Add(TransformComponent.Key, new TransformComponent());
 
                 var entityAsset2 = (EntityAsset)AssetCloner.Clone(entityAsset);
-                entityAsset2.Hierarchy.Entities[0].Components.Get(TransformComponent.Key).Position = new Vector3(10.0f, 0.0f, 0.0f);
+                entityAsset2.Hierarchy.Entities[0].Entity.Components.Get(TransformComponent.Key).Position = new Vector3(10.0f, 0.0f, 0.0f);
 
                 AssetMerge.Merge(entityAsset, entityAsset2, null, AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1);
             }
