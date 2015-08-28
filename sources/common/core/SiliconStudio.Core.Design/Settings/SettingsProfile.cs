@@ -59,7 +59,7 @@ namespace SiliconStudio.Core.Settings
         /// <summary>
         /// Gets the collection of <see cref="SettingsEntry"/> currently existing in this <see cref="SettingsProfile"/>.
         /// </summary>
-        internal IDictionary<UFile, SettingsEntry> Settings { get { return settings; } }
+        internal IDictionary<UFile, SettingsEntry> Settings => settings;
 
         internal bool IsDiscarding { get; private set; }
 
@@ -81,7 +81,7 @@ namespace SiliconStudio.Core.Settings
         /// <returns><c>True</c> if the profile contains the given settings key, <c>False</c> otherwise.</returns>
         public bool ContainsKey(SettingsKey key)
         {
-            if (key == null) throw new ArgumentNullException("key");
+            if (key == null) throw new ArgumentNullException(nameof(key));
             return ContainsKey(key.Name);
         }
 
@@ -93,8 +93,8 @@ namespace SiliconStudio.Core.Settings
         /// <returns><c>True</c> if the profile contains the given settings key, <c>False</c> otherwise.</returns>
         public bool ContainsKey(UFile name)
         {
-            if (name == null) throw new ArgumentNullException("name");
-            lock (Settings)
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            lock (SettingsContainer.SettingsLock)
             {
                 return Settings.ContainsKey(name);
             }
@@ -117,7 +117,7 @@ namespace SiliconStudio.Core.Settings
         /// <returns><c>True</c> if the settings key was removed, <c>false</c> otherwise.</returns>
         public bool Remove(UFile name)
         {
-            lock (Settings)
+            lock (SettingsContainer.SettingsLock)
             {
                 return Settings.Remove(name);
             }
@@ -130,26 +130,23 @@ namespace SiliconStudio.Core.Settings
         /// <param name="overrideValues">If <c>false</c>, the values already present in the targt profile won't be overriden.</param>
         public void CopyTo(SettingsProfile profile, bool overrideValues)
         {
-            lock (Settings)
+            lock (SettingsContainer.SettingsLock)
             {
-                lock (profile.Settings)
+                foreach (var setting in Settings)
                 {
-                    foreach (var setting in Settings)
-                    {
-                        if (!overrideValues && profile.Settings.ContainsKey(setting.Key))
-                            continue;
+                    if (!overrideValues && profile.Settings.ContainsKey(setting.Key))
+                        continue;
 
-                        profile.SetValue(setting.Key, setting.Value.Value);
-                    }
+                    profile.SetValue(setting.Key, setting.Value.Value);
                 }
             }
         }
-        
+
         public void ValidateSettingsChanges()
         {
             var keys = Container.GetAllSettingsKeys();
             List<SettingsKey> modified;
-            lock (modifiedSettings)
+            lock (SettingsContainer.SettingsLock)
             {
                 modified = keys.Where(x => modifiedSettings.Contains(x.Name)).ToList();
             }
@@ -157,14 +154,17 @@ namespace SiliconStudio.Core.Settings
             {
                 key.NotifyChangesValidated(this);
             }
-            ActionStack.Clear();
-            modifiedSettings.Clear();
+            lock (SettingsContainer.SettingsLock)
+            {
+                ActionStack.Clear();
+                modifiedSettings.Clear();
+            }
         }
 
         public void DiscardSettingsChanges()
         {
             IsDiscarding = true;
-            lock (modifiedSettings)
+            lock (SettingsContainer.SettingsLock)
             {
                 while (ActionStack.CanUndo)
                 {
@@ -182,8 +182,8 @@ namespace SiliconStudio.Core.Settings
         /// <param name="entry">The entry to register.</param>
         internal void RegisterEntry(SettingsEntry entry)
         {
-            if (entry == null) throw new ArgumentNullException("entry");
-            lock (Settings)
+            if (entry == null) throw new ArgumentNullException(nameof(entry));
+            lock (SettingsContainer.SettingsLock)
             {
                 Settings.Add(entry.Name, entry);
             }
@@ -199,7 +199,7 @@ namespace SiliconStudio.Core.Settings
         /// <returns><c>true</c> if an entry matching the name is found, <c>false</c> otherwise.</returns>
         internal bool GetValue(UFile name, out object value, bool searchInParent, bool createInCurrentProfile)
         {
-            if (name == null) throw new ArgumentNullException("name");
+            if (name == null) throw new ArgumentNullException(nameof(name));
             SettingsEntry entry = GetEntry(name, searchInParent, createInCurrentProfile);
             if (entry != null)
             {
@@ -217,9 +217,9 @@ namespace SiliconStudio.Core.Settings
         /// <param name="value">The value to set.</param>
         internal void SetValue(UFile name, object value)
         {
-            if (name == null) throw new ArgumentNullException("name");
+            if (name == null) throw new ArgumentNullException(nameof(name));
 
-            lock (Settings)
+            lock (SettingsContainer.SettingsLock)
             {
                 SettingsEntry entry;
                 if (!Settings.TryGetValue(name, out entry))
@@ -240,7 +240,7 @@ namespace SiliconStudio.Core.Settings
         /// <param name="name">The name of the entry that has changed.</param>
         internal void NotifyEntryChanged(UFile name)
         {
-            lock (modifiedSettings)
+            lock (SettingsContainer.SettingsLock)
             {
                 modifiedSettings.Add(name);
             }
@@ -255,9 +255,9 @@ namespace SiliconStudio.Core.Settings
         /// <returns>An instance of <see cref="SettingsEntry"/> that matches the name, or <c>null</c>.</returns>
         private SettingsEntry GetEntry(UFile name, bool searchInParent, bool createInCurrentProfile)
         {
-            if (name == null) throw new ArgumentNullException("name");
+            if (name == null) throw new ArgumentNullException(nameof(name));
 
-            lock (Settings)
+            lock (SettingsContainer.SettingsLock)
             {
                 SettingsEntry entry;
                 if (Settings.TryGetValue(name, out entry))

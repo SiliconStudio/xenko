@@ -79,9 +79,13 @@ namespace SiliconStudio.Presentation.Collections
 
         public void Clear()
         {
+            bool raiseEvent = list.Count > 0;
             list.Clear();
-            var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
-            OnCollectionChanged(arg);
+            if (raiseEvent)
+            {
+                var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
+                OnCollectionChanged(arg);
+            }
         }
 
         public bool Contains(T item)

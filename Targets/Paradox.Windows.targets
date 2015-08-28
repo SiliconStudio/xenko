@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <SiliconStudioNETFrameworkVersion>v4.5</SiliconStudioNETFrameworkVersion>
-    <UserLibrariesPath Condition="'$(SiliconStudioCurrentPackagePath)' != ''">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\Libs</UserLibrariesPath>
+    <UserLibrariesPath Condition="'$(SiliconStudioCurrentPackagePath)' != ''">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\NativeLibs</UserLibrariesPath>
   </PropertyGroup>
   
   <!-- Embed native libraries -->

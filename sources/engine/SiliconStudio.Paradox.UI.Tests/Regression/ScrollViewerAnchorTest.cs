@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Class for rendering tests on the <see cref="ScrollViewer"/> 
     /// </summary>
-    public class ScrollViewerAnchorTest : UnitTestGameBase
+    public class ScrollViewerAnchorTest : UITestGameBase
     {
         private class TestScrollViewer : ScrollViewer
         {

@@ -20,6 +20,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
+using System;
+
 namespace SiliconStudio.Paradox.Graphics
 {
     /// <summary>
@@ -71,5 +74,24 @@ namespace SiliconStudio.Paradox.Graphics
         /// A TGA File.
         /// </summary>
         Tga,
+    }
+
+    public static class ImageFileTypeExtensions
+    {
+        /// <summary>
+        /// Return the file extension corresponding to the image file type.
+        /// </summary>
+        /// <param name="fileType">The file type</param>
+        /// <returns>The file extension (for example ".png").</returns>
+        public static string ToFileExtension(this ImageFileType fileType)
+        {
+            switch (fileType)
+            {
+                case ImageFileType.Paradox:
+                    return ".pdximage";
+                default:
+                    return "." + fileType.ToString().ToLowerInvariant();
+            }
+        }
     }
 }

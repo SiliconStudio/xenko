@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;
@@ -133,6 +134,11 @@ namespace SiliconStudio.Paradox.Animations
         public int ChannelIndex;
         public CompressedTimeSpan RequiredTime;
         public KeyFrameData<T> Value;
+        
+        public override string ToString()
+        {
+            return string.Format(CultureInfo.CurrentCulture, "Channel: {0} Required: {1} Value:{2}", ChannelIndex, RequiredTime.Ticks, Value);
+        }
     }
 
     [DataContract]

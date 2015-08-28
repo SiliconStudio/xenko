@@ -4,6 +4,7 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Paradox.Rendering.Composers
 {
@@ -44,6 +45,7 @@ namespace SiliconStudio.Paradox.Rendering.Composers
         /// <userdoc>The sequence of graphic layers to incorporate into the pipeline</userdoc>
         [DataMember(20)]
         [Category]
+        [MemberCollection(CanReorderItems = true)]
         public SceneGraphicsLayerCollection Layers { get; private set; }
 
         /// <summary>

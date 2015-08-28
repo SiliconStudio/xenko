@@ -95,12 +95,41 @@ namespace SiliconStudio.Paradox.Assets.Sprite
         public Vector4 Borders { get; set; }
 
         /// <summary>
+        /// Gets or sets atlas border mode in X axis for images inside atlas texture
+        /// </summary>
+        /// <usderdoc>The method used to color the sprite outside its texture region along the X axis. 
+        /// This information is essentially used during texture packing to avoid artifacts at sprite borders.</usderdoc>
+        [DataMember(100)]
+        [DefaultValue(TextureAddressMode.Clamp)]
+        public TextureAddressMode BorderModeU { get; set; }
+
+        /// <summary>
+        /// Gets or sets atlas border mode in Y axis for images inside atlas texture
+        /// </summary>
+        /// <usderdoc>The method used to color the sprite outside its texture region along the Y axis. 
+        /// This information is essentially used during texture packing to avoid artifacts at sprite borders.</usderdoc>
+        [DataMember(110)]
+        [DefaultValue(TextureAddressMode.Clamp)]
+        public TextureAddressMode BorderModeV { get; set; }
+
+        /// <summary>
+        /// Gets or sets atlas border color for images inside atlas texture where Border mode is used in BorderModeU/V
+        /// </summary>
+        /// <usderdoc>The color used for this sprite outside of its texture region. 
+        /// This parameter is used only when either 'BorderModeU' or 'BorderModeV' is set to 'Border'.</usderdoc>
+        [DataMember(120)]
+        public Color BorderColor { get; set; }
+
+        /// <summary>
         /// Creates an empty instance of SpriteInfo
         /// </summary>
         public SpriteInfo()
         {
             PixelsPerUnit = 100;
             CenterFromMiddle = true;
+            BorderModeU = TextureAddressMode.Clamp;
+            BorderModeV = TextureAddressMode.Clamp;
+            BorderColor = Color.Transparent;
         }
     }
 }

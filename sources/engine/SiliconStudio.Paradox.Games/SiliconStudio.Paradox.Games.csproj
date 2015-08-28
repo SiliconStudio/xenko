@@ -130,14 +130,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\GameResources.resx">
+    <EmbeddedResource Include="Resources\GameResources.resx" Condition=" '$(SiliconStudioPlatform)' == 'Windows'">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>GameResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Desktop\Win32Native.DirectX.cs" />
-    <Content Include="Resources\Logo.ico" />
+    <Content Include="Resources\Logo.ico" Condition=" '$(SiliconStudioPlatform)' == 'Windows'"/>
   </ItemGroup>
   <Choose>
     <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' And '$(ParadoxGraphicsApi)' == 'OpenGLES' ">

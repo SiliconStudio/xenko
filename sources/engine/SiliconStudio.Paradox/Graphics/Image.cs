@@ -127,7 +127,7 @@ namespace SiliconStudio.Paradox.Graphics
         private bool bufferIsDisposable;
 
         /// <summary>
-        /// Handke != null if the buffer is a pinned managed object on the LOH (Large Object Heap).
+        /// Handle != null if the buffer is a pinned managed object on the LOH (Large Object Heap).
         /// </summary>
         private GCHandle? handle;
 

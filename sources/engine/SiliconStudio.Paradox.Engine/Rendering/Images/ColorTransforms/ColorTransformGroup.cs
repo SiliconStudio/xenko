@@ -91,6 +91,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         [DataMember(10)]
         [Display("Transforms", Expand = ExpandRule.Always)]
         [NotNullItems]
+        [MemberCollection(CanReorderItems = true)]
         public ColorTransformCollection Transforms
         {
             get

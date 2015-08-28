@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 
@@ -59,6 +60,11 @@ namespace SiliconStudio.Assets.Templates
         /// </summary>
         /// <value>The package.</value>
         public Package Package { get; set; }
+
+        /// <summary>
+        /// Contains extra properties that can be consumed by template generators.
+        /// </summary>
+        public PropertyContainer Tags;
 
         /// <summary>
         /// Validates this instance (all fields must be setup)

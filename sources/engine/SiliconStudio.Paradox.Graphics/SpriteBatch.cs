@@ -300,14 +300,14 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
-        /// Returns the size of the given text in virtual pixels.
+        /// Measure the size of the given text in virtual pixels depending on the target size.
         /// </summary>
         /// <param name="spriteFont">The font used to draw the text.</param>
         /// <param name="text">The text to measure.</param>
-        /// <param name="targetSize">The size of the target to render in</param>
+        /// <param name="targetSize">The size of the target to render in. If null, the size of the window back buffer is used.</param>
         /// <returns>The size of the text in virtual pixels.</returns>
         /// <exception cref="ArgumentNullException">The provided sprite font is null.</exception>
-        public Vector2 MeasureString(SpriteFont spriteFont, string text, Vector2 targetSize)
+        public Vector2 MeasureString(SpriteFont spriteFont, string text, Vector2? targetSize = null)
         {
             if (spriteFont == null) throw new ArgumentNullException("spriteFont");
 
@@ -315,24 +315,26 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
-        /// Returns the size of the given text in virtual pixels.
+        /// Measure the size of the given text in virtual pixels depending on the target size.
         /// </summary>
         /// <param name="spriteFont">The font used to draw the text.</param>
         /// <param name="text">The text to measure.</param>
-        /// <param name="targetSize">The size of the target to render in</param>
+        /// <param name="targetSize">The size of the target to render in. If null, the size of the window back buffer is used.</param>
         /// <param name="fontSize">The font size (in pixels) used to draw the text.</param>
         /// <returns>The size of the text in virtual pixels.</returns>
         /// <exception cref="ArgumentNullException">The provided sprite font is null.</exception>
-        public Vector2 MeasureString(SpriteFont spriteFont, string text, float fontSize, Vector2 targetSize)
+        public Vector2 MeasureString(SpriteFont spriteFont, string text, float fontSize, Vector2? targetSize = null)
         {
             if (spriteFont == null) throw new ArgumentNullException("spriteFont");
 
             if (string.IsNullOrEmpty(text))
                 return Vector2.Zero;
 
+            var targetSizeValue = targetSize ?? new Vector2(GraphicsDevice.Presenter.BackBuffer.Width, GraphicsDevice.Presenter.BackBuffer.Height);
+
             // calculate the size of the text that will be used to draw
-            var virtualResolution = VirtualResolution.HasValue? VirtualResolution.Value: new Vector3(targetSize, DefaultDepth);
-            var ratio = new Vector2(targetSize.X / virtualResolution.X, targetSize.Y / virtualResolution.Y);
+            var virtualResolution = VirtualResolution ?? new Vector3(targetSizeValue, DefaultDepth);
+            var ratio = new Vector2(targetSizeValue.X / virtualResolution.X, targetSizeValue.Y / virtualResolution.Y);
 
             var realSize = spriteFont.MeasureString(text, fontSize * ratio);
 

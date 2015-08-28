@@ -10,6 +10,7 @@ using SiliconStudio.Paradox.Games;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -94,6 +95,9 @@ namespace SiliconStudio.Paradox.Physics
             {
                 if (!data.BoneMatricesUpdated)
                 {
+                    var isScalingNegative = entity.Transform.WorldMatrix.ScaleVector.X * entity.Transform.WorldMatrix.ScaleVector.Y * entity.Transform.WorldMatrix.ScaleVector.Z < 0.0f;
+                    data.ModelComponent.ModelViewHierarchy.NodeTransformations[0].LocalMatrix = entity.Transform.WorldMatrix;
+                    data.ModelComponent.ModelViewHierarchy.NodeTransformations[0].IsScalingNegative = isScalingNegative;
                     data.ModelComponent.ModelViewHierarchy.UpdateMatrices();
                     data.BoneMatricesUpdated = true;
                 }
@@ -502,6 +506,20 @@ namespace SiliconStudio.Paradox.Physics
             }
         }
 
+        public override void Draw(RenderContext context)
+        {
+            foreach (var element in boneElements.Where(x => x.Collider.Enabled))
+            {
+                var model = element.Data.ModelComponent;
+
+                //write to ModelViewHierarchy
+                if ((element.Collider as RigidBody) != null && element.RigidBody.Type == RigidBodyTypes.Dynamic)
+                {
+                    model.ModelViewHierarchy.NodeTransformations[element.BoneIndex].WorldMatrix = element.BoneWorldMatrixOut;
+                }
+            }
+        }
+
         internal void UpdateBones()
         {
             foreach (var element in boneElements.Where(x => x.Collider.Enabled))
@@ -510,12 +528,6 @@ namespace SiliconStudio.Paradox.Physics
 
                 //read from ModelViewHierarchy
                 element.BoneWorldMatrix = model.ModelViewHierarchy.NodeTransformations[element.BoneIndex].WorldMatrix;
-
-                //write to ModelViewHierarchy
-                if ((element.Collider as RigidBody) != null && element.RigidBody.Type == RigidBodyTypes.Dynamic)
-                {
-                    model.ModelViewHierarchy.NodeTransformations[element.BoneIndex].WorldMatrix = element.BoneWorldMatrixOut;
-                }
             }
         }
     }

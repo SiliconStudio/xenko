@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Class for rendering tests on the <see cref="TextBlock"/> 
     /// </summary>
-    public class TextBlockTest : UnitTestGameBase
+    public class TextBlockTest : UITestGameBase
     {
         private TextBlock textBlock;
 

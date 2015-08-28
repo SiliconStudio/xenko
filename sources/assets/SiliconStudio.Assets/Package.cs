@@ -692,16 +692,50 @@ namespace SiliconStudio.Assets
         /// <returns></returns>
         internal bool LoadAssembliesAndAssets(ILogger log, PackageLoadParameters loadParametersArg)
         {
+            return LoadAssemblies(log, loadParametersArg) && LoadAssets(log, loadParametersArg);
+        }
+
+        /// <summary>
+        /// Load only assembly references
+        /// </summary>
+        /// <param name="package">The package.</param>
+        /// <param name="log">The log.</param>
+        /// <param name="loadParametersArg">The load parameters argument.</param>
+        /// <returns></returns>
+        internal bool LoadAssemblies(ILogger log, PackageLoadParameters loadParametersArg)
+        {
             var loadParameters = loadParametersArg ?? PackageLoadParameters.Default();
 
             try
             {
-
                 // Load assembly references
                 if (loadParameters.LoadAssemblyReferences)
                 {
                     LoadAssemblyReferencesForPackage(log, loadParameters);
                 }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error while pre-loading package [{0}]", ex, FullPath);
+
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Load assets and perform package analysis.
+        /// </summary>
+        /// <param name="package">The package.</param>
+        /// <param name="log">The log.</param>
+        /// <param name="loadParametersArg">The load parameters argument.</param>
+        /// <returns></returns>
+        internal bool LoadAssets(ILogger log, PackageLoadParameters loadParametersArg)
+        {
+            var loadParameters = loadParametersArg ?? PackageLoadParameters.Default();
+
+            try
+            {
                 // Load assets
                 if (loadParameters.AutoLoadTemporaryAssets)
                 {

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <SiliconStudioIsExecutable Condition=" '$(AndroidApplication)' == 'true'">true</SiliconStudioIsExecutable>
     <SiliconStudioNETFrameworkVersion>v2.3</SiliconStudioNETFrameworkVersion>
-    <UserLibrariesPath Condition="'$(SiliconStudioCurrentPackagePath)' != ''">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\Libs</UserLibrariesPath>
+    <UserLibrariesPath Condition="'$(SiliconStudioCurrentPackagePath)' != ''">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\NativeLibs</UserLibrariesPath>
   </PropertyGroup>
   
   <!-- Embed native libraries -->

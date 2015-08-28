@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Class for tests on the <see cref="UIElement.TouchLeave"/> and <see cref="UIElement.TouchEnter"/> events.
     /// </summary>
-    public class LeaveEnterTest : UnitTestGameBase
+    public class LeaveEnterTest : UITestGameBase
     {
         private Button buttonLeftTop2;
 

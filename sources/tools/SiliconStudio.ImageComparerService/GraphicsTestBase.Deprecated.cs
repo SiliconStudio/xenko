@@ -413,7 +413,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
         {
             var devices = new List<ConnectedDevice>();
 
-            var devicesOutputs = ShellHelper.RunProcessAndGetOutput(@"adb", @"devices");
+            var devicesOutputs = ShellHelper.RunProcessAndGetOutput(AndroidDeviceEnumerator.GetAdbPath(), @"devices");
             var whitespace = new[] { ' ', '\t' };
             for (var i = 1; i < devicesOutputs.OutputLines.Count; ++i) // from the second line
             {
@@ -437,7 +437,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             {
                 var device = devices[i];
                 //TODO: doing a grep instead will be better
-                var deviceNameOutputs = ShellHelper.RunProcessAndGetOutput(@"adb", @"-s " + device.Serial + @" shell cat /system/build.prop");
+                var deviceNameOutputs = ShellHelper.RunProcessAndGetOutput(AndroidDeviceEnumerator.GetAdbPath(), @"-s " + device.Serial + @" shell cat /system/build.prop");
                 foreach (var line in deviceNameOutputs.OutputLines)
                 {
                     if (line != null && line.StartsWith(@"ro.product.model")) // correct line
@@ -671,10 +671,10 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             try
             {
                 // force stop - only works for Android 3.0 and above.
-                var o0 = ShellHelper.RunProcessAndGetOutput(@"adb", @"-s " + serial + @" am shell force-stop " + assemblyNameForAndroid);
+                var o0 = ShellHelper.RunProcessAndGetOutput(AndroidDeviceEnumerator.GetAdbPath(), @"-s " + serial + @" am shell force-stop " + assemblyNameForAndroid);
 
                 // install
-                var o1 = ShellHelper.RunProcessAndGetOutput(@"adb", @"-s " + serial + @" -d install -r ..\..\Bin\Android-AnyCPU-OpenGLES\" + assemblyNameForAndroid + "-Signed.apk");
+                var o1 = ShellHelper.RunProcessAndGetOutput(AndroidDeviceEnumerator.GetAdbPath(), @"-s " + serial + @" -d install -r ..\..\Bin\Android-OpenGLES\" + assemblyNameForAndroid + "-Signed.apk");
 
                 // run
                 var parameters = new StringBuilder();
@@ -688,7 +688,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
 
                 Console.WriteLine(parameters.ToString());
 
-                ShellHelper.RunProcess(@"adb", parameters.ToString());
+                ShellHelper.RunProcess(AndroidDeviceEnumerator.GetAdbPath(), parameters.ToString());
             }
             catch
             {

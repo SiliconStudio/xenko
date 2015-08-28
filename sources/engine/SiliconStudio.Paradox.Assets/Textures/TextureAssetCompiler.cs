@@ -11,6 +11,7 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.TextureConverter;
 
 namespace SiliconStudio.Paradox.Assets.Textures
 {
@@ -56,10 +57,15 @@ namespace SiliconStudio.Paradox.Assets.Textures
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var texture = AssetParameters.Texture;
+                
+                using (var texTool = new TextureTool())
+                using (var texImage = texTool.Load(AssetParameters.SourcePathFromDisk, texture.SRgb))
+                {
+                    var convertParameters = new TextureHelper.ImportParameters(AssetParameters) { OutputUrl = Url };
+                    var importResult = TextureHelper.ImportTextureImage(texTool, texImage, convertParameters, CancellationToken, commandContext.Logger);
 
-                var importResult = TextureCommandHelper.ImportAndSaveTextureImage(AssetParameters.SourcePathFromDisk, Url, texture, AssetParameters, CancellationToken, commandContext.Logger);
-
-                return Task.FromResult(importResult);
+                    return Task.FromResult(importResult);
+                }
             }
 
             protected override void ComputeAssemblyHash(BinarySerializationWriter writer)

@@ -13,7 +13,7 @@ using SiliconStudio.Paradox.UI.Panels;
 
 namespace SiliconStudio.Paradox.UI.Tests.Regression
 {
-    public class StackPanelTest : UnitTestGameBase
+    public class StackPanelTest : UITestGameBase
     {
         private StackPanel stackPanel1;
         private StackPanel stackPanel2;
