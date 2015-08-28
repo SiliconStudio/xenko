@@ -20,7 +20,6 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Attributes\SealedCollectionAttribute.cs" />
     <Compile Include="Commands\AddNewItemCommand.cs" />
     <Compile Include="Commands\AddPrimitiveKeyCommand.cs" />
     <Compile Include="CombineMode.cs" />
@@ -72,6 +71,7 @@
     <ProjectReference Include="..\..\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
       <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
       <Name>SiliconStudio.Core.Serialization</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
@@ -81,6 +81,7 @@
     <ProjectReference Include="..\SiliconStudio.ActionStack\SiliconStudio.ActionStack.csproj">
       <Project>{E9C3ADC8-3F13-4673-AAA8-A0E97419DB5B}</Project>
       <Name>SiliconStudio.ActionStack</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />

@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Test for UI on scene entities
     /// </summary>
-    public class BillboardModeTests : UnitTestGameBase
+    public class BillboardModeTests : UITestGameBase
     {
         public BillboardModeTests()
         {
@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             cube.Transform.Position = new Vector3(0, 0, 10);
             Scene.AddChild(cube);
 
-            var imageElement = new ImageElement { Source = new UIImage(Asset.Load<Texture>("uv")) };
+            var imageElement = new ImageElement { Source = new Sprite(Asset.Load<Texture>("uv")) };
             var imageEntity = new Entity { new UIComponent { RootElement = imageElement, IsFullScreen = false, VirtualResolution = new Vector3(150) } };
             imageEntity.Transform.Position = new Vector3(-500, 0, 0);
             Scene.AddChild(imageEntity);

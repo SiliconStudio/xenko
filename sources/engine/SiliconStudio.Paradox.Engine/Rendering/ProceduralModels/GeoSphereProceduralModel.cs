@@ -4,7 +4,6 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
 
@@ -22,29 +21,31 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// </summary>
         public GeoSphereProceduralModel()
         {
-            Diameter = 1.0f;
+            Radius = 0.5f;
             Tessellation = 3;
         }
 
         /// <summary>
-        /// Gets or sets the diameter of this sphere.
+        /// Gets or sets the radius of this sphere.
         /// </summary>
-        /// <value>The diameter.</value>
+        /// <value>The radius.</value>
+        /// <userdoc>The radius of the geosphere.</userdoc>
         [DataMember(10)]
-        [DefaultValue(1.0f)]
-        public float Diameter { get; set; }
+        [DefaultValue(0.5f)]
+        public float Radius { get; set; }
 
         /// <summary>
         /// Gets or sets the tessellation factor (default: 3.0)
         /// </summary>
         /// <value>The tessellation.</value>
+        /// <userdoc>The tessellation of the geophere. That is the number of polygons composing it.</userdoc>
         [DataMember(20)]
         [DefaultValue(3)]
         public int Tessellation { get; set; }
 
         protected override GeometricMeshData<VertexPositionNormalTexture> CreatePrimitiveMeshData()
         {
-            return GeometricPrimitive.GeoSphere.New(Diameter, Tessellation);
+            return GeometricPrimitive.GeoSphere.New(Radius, Tessellation);
         }
     }
 }

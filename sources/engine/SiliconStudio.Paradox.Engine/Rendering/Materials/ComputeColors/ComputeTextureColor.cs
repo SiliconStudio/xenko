@@ -2,8 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
 {
@@ -18,7 +20,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         /// Constructor
         /// </summary>
         public ComputeTextureColor()
-            : base(null, TextureCoordinate.Texcoord0, Vector2.One, Vector2.Zero)
+            : this(null, TextureCoordinate.Texcoord0, Vector2.One, Vector2.Zero)
         {
         }
 
@@ -27,7 +29,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         /// </summary>
         /// <param name="texture">The texture.</param>
         public ComputeTextureColor(Texture texture)
-            : base(texture, TextureCoordinate.Texcoord0, Vector2.One, Vector2.Zero)
+            : this(texture, TextureCoordinate.Texcoord0, Vector2.One, Vector2.Zero)
         {
         }
 
@@ -41,12 +43,26 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         public ComputeTextureColor(Texture texture, TextureCoordinate texcoordIndex, Vector2 scale, Vector2 offset)
             : base(texture, texcoordIndex, scale, offset)
         {
+            FallbackValue = new ComputeColor(Color4.White);
         }
+
+        /// <summary>
+        /// Gets or sets the default value used when no texture is set.
+        /// </summary>
+        /// <userdoc>The fallback value used when no texture is set.</userdoc>
+        [NotNull]
+        [DataMember(15)]
+        public ComputeColor FallbackValue { get; set; }
 
         protected override string GetTextureChannelAsString()
         {
             // Use all channels
             return "rgba";
+        }
+
+        public override ShaderSource GenerateShaderFromFallbackValue(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys)
+        {
+            return FallbackValue.GenerateShaderSource(context, baseKeys);
         }
     }
 }

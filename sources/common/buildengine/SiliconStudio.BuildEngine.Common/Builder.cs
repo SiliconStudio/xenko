@@ -58,7 +58,7 @@ namespace SiliconStudio.BuildEngine
         }
     }
 
-    public class Builder
+    public class Builder : IDisposable
     {
         public const int ExpectedVersion = 3;
         public static readonly string DoNotPackTag = "DoNotPack";
@@ -229,7 +229,9 @@ namespace SiliconStudio.BuildEngine
             this.buildProfile = buildProfile;
             this.indexFilename = indexFilename;
             var entryAssembly = Assembly.GetEntryAssembly();
-            SlaveBuilderPath = entryAssembly != null ? entryAssembly.Location : "";
+            SlaveBuilderPath = Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                entryAssembly != null ? Path.GetFileName(entryAssembly.Location) : "SiliconStudio.Assets.CompilerApp.exe"); // TODO: Hardcoded value of CompilerApp
             Logger = logger;
             this.inputHashesFilename = inputHashesFilename;
             this.buildPath = buildPath;
@@ -303,6 +305,21 @@ namespace SiliconStudio.BuildEngine
             ((FileSystemProvider)VirtualFileSystem.ApplicationData).ChangeBasePath(buildPath);
             if (IndexFileCommand.ObjectDatabase == null)
                 IndexFileCommand.ObjectDatabase = new ObjectDatabase(DatabasePath, loadDefaultBundle: false); // note: this has to be done after VFS.ChangeBasePath
+        }
+
+        public static void ReleaseBuildPath()
+        {
+            if (IndexFileCommand.ObjectDatabase != null)
+            {
+                var db = IndexFileCommand.ObjectDatabase;
+                IndexFileCommand.ObjectDatabase = null;
+                db.Dispose();
+            }
+        }
+
+        public void Dispose()
+        {
+            ReleaseBuildPath();
         }
 
         private class ExecuteContext : IExecuteContext

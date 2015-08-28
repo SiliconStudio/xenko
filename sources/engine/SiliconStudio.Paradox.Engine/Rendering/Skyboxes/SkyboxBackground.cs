@@ -14,11 +14,13 @@ namespace SiliconStudio.Paradox.Rendering.Skyboxes
         /// <summary>
         /// Display the color of the skybox.
         /// </summary>
+        /// <userdoc>Display to color of the skybox</userdoc>
         Color,
 
         /// <summary>
-        /// Display the irrandiance of the skybox
+        /// Display the irradiance of the skybox
         /// </summary>
+        /// <userdoc>Display the irradiance generated from the skybox</userdoc>
         Irradiance
     }
 }

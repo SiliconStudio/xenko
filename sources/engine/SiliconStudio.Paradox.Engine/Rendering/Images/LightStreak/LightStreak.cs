@@ -59,6 +59,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// <summary>
         /// Amount of light streak (intensity).
         /// </summary>
+        /// <userdoc>The strength of the bleeding.</userdoc>
         [DataMember(10)]
         [DefaultValue(0.25f)]
         public float Amount { get; set; }
@@ -66,6 +67,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// <summary>
         /// Number of light streaks.
         /// </summary>
+        /// <userdoc>The number of beams emitted by each bright points</userdoc>
         [DataMember(20)]
         [DefaultValue(4)]
         [DataMemberRange(1, STREAK_MAX_COUNT, 1, 1, 0)]
@@ -114,6 +116,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// <summary>
         /// How fast the attenuation is along a streak. (Affects the streak length.)
         /// </summary>
+        /// <userdoc>Specifies how fast the light attenuates along a streak. (0 for immediate attenuation, 1 for no attenuation)</userdoc>
         [DataMember(30)]
         [DefaultValue(0.95f)]
         [DataMemberRange(0f, 1f, 0.01f, 0.1f, 2)]
@@ -122,6 +125,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// <summary>
         /// Phase angle for the streaks, in degrees.
         /// </summary>
+        /// <userdoc>Specifies the angle (rotation) of the star-like pattern.</userdoc>
         [DataMember(40)]
         [DefaultValue(30f)]
         [DataMemberRange(0.0, 180.0, 1.0, 10.0, 1)]
@@ -136,6 +140,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// <summary>
         /// Strength of the color aberration.
         /// </summary>
+        /// <userdoc>The strength of the color aberrations visible along the streak.</userdoc>
         [DataMember(50)]
         [DefaultValue(0.2f)]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
@@ -144,6 +149,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// <summary>
         /// Applies an anamorphic effect to the streak.
         /// </summary>
+        /// <userdoc>When enabled, it simulates the behavior of anamorphic camera lenses</userdoc>
         [DataMember(60)]
         [DefaultValue(false)]
         public bool IsAnamorphic

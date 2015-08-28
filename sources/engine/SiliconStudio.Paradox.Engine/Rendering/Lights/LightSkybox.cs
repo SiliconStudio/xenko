@@ -4,7 +4,6 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Rendering.Skyboxes;
 
 namespace SiliconStudio.Paradox.Rendering.Lights
 {

@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         private Texture round;
         private Texture colorTexture;
-        private SpriteGroup spheres;
+        private SpriteSheet spheres;
 
         public TestSpriteBatchResolution()
         {
@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             var virtualResolution = new Vector3(GraphicsDevice.BackBuffer.ViewWidth, GraphicsDevice.BackBuffer.ViewHeight, 200);
             spriteBatch = new SpriteBatch(GraphicsDevice) { VirtualResolution = virtualResolution };
-            spheres = Asset.Load<SpriteGroup>("SpriteSphere");
+            spheres = Asset.Load<SpriteSheet>("SpriteSphere");
             round = Asset.Load<Texture>("round");
             staticFont = Asset.Load<SpriteFont>("StaticFonts/CourierNew10");
             dynamicFont = Asset.Load<SpriteFont>("DynamicFonts/CourierNew10");

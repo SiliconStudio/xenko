@@ -13,7 +13,7 @@ using SiliconStudio.Paradox.UI.Panels;
 
 namespace SiliconStudio.Paradox.UI.Tests.Regression
 {
-    public class StackPanelTest : UnitTestGameBase
+    public class StackPanelTest : UITestGameBase
     {
         private StackPanel stackPanel1;
         private StackPanel stackPanel2;
@@ -104,10 +104,10 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
             var random = new Random(0);
 
-            var uiImages = Asset.Load<UIImageGroup>("UIImages");
-            var img1 = new ImageElement { Source = new UIImage(Asset.Load<Texture>("uv")) };
-            var img2 = new ImageElement { Source = uiImages["GameScreenLeft"] };
-            var img3 = new ImageElement { Source = uiImages["GameScreenRight"] };
+            var Sprites = Asset.Load<SpriteSheet>("UIImages");
+            var img1 = new ImageElement { Source = new Sprite(Asset.Load<Texture>("uv")) };
+            var img2 = new ImageElement { Source = Sprites["GameScreenLeft"] };
+            var img3 = new ImageElement { Source = Sprites["GameScreenRight"] };
 
             stackPanel1 = new StackPanel { Orientation = Orientation.Vertical, ItemVirtualizationEnabled = true };
             stackPanel1.Children.Add(img1);

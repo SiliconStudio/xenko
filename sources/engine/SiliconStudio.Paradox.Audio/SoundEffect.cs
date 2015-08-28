@@ -8,6 +8,7 @@ using System.Threading;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Audio.Wave;
 
 namespace SiliconStudio.Paradox.Audio
@@ -42,7 +43,9 @@ namespace SiliconStudio.Paradox.Audio
     /// </remarks>
     /// <seealso cref="SoundEffectInstance"/>
     /// <seealso cref="SoundMusic"/>
-    /// <seealso cref="IPositionableSound"/>
+    /// <seealso cref="IPositionableSound"/>    
+    [DataSerializerGlobal(typeof(ReferenceSerializer<SoundEffect>), Profile = "Asset")]
+    [DataSerializer(typeof(NullSerializer<SoundEffect>))]
     public sealed partial class SoundEffect : SoundBase, IPositionableSound
     {
         internal WaveFormat WaveFormat { get; private set; }
@@ -70,7 +73,8 @@ namespace SiliconStudio.Paradox.Audio
             if(engine == null)
                 throw new ArgumentNullException("engine");
 
-            var newSdEff = new SoundEffect(engine);
+            var newSdEff = new SoundEffect();
+            newSdEff.AttachEngine(engine);
             newSdEff.Load(stream);
 
             return newSdEff;
@@ -197,8 +201,7 @@ namespace SiliconStudio.Paradox.Audio
         private SoundEffectInstance defaultInstance;
 
         // for serialization
-        internal SoundEffect(AudioEngine engine)
-            :base(engine)
+        internal SoundEffect()
         {
         }
 

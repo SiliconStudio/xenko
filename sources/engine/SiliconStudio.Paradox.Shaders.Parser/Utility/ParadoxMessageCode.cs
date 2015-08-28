@@ -89,6 +89,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Utility
         public static readonly MessageCode ErrorCallToAbstractMethod                = new MessageCode("E2212", "The method invocation [{0}] calls the abstract method [{1}]");
         public static readonly MessageCode ErrorCallNotFound                        = new MessageCode("E2213", "The method invocation [{0}] target could not be found");
         public static readonly MessageCode ErrorTopMixinNotFound                    = new MessageCode("E2214", "The top mixin of [{0}] could not be found");
+        public static readonly MessageCode ErrorSemanticTypeConflict                = new MessageCode("E2215", "Variables [{0}] from [{1}] and [{2}] from [{3}] share the same semantic [{4}] but have distinct types ([{5}] and [{6}])");
 
         // linker errors: E3###
         public static readonly MessageCode SamplerFilterNotSupported                = new MessageCode("E3000", "The sampler filter [{0}] is not supported");

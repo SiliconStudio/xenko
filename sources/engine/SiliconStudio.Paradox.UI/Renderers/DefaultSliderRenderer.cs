@@ -1,3 +1,5 @@
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 
 using SiliconStudio.Core;
@@ -32,7 +34,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
             var sliderRatio = slider.Value / (slider.Maximum - slider.Minimum);
             var trackOffsets = new Vector2(slider.TrackStartingOffsets[axis], slider.TrackStartingOffsets[axisPrime]);
             var fullGaugeSize = slider.RenderSizeInternal[axis] - trackOffsets.X - trackOffsets.Y;
-            var trackIdealSize = slider.TrackBackgroundImage != null ? new Vector2?(slider.TrackBackgroundImage.ImageIdealSize) : null;
+            var trackIdealSize = slider.TrackBackgroundImage != null ? new Vector2?(slider.TrackBackgroundImage.SizeInPixels) : null;
             
             // draws the track background
             var image = slider.TrackBackgroundImage;
@@ -42,7 +44,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
                 var imageOrientation = (ImageOrientation)(axis ^ imageAxis);
                 var worldMatrix = GetAdjustedWorldMatrix(ref slider.WorldMatrixInternal, (axis & imageAxis) == 1);
 
-                Batch.DrawImage(image.Texture, image.TextureAlpha, ref worldMatrix, ref image.RegionInternal, ref slider.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, imageOrientation);
+                Batch.DrawImage(image.Texture, null, ref worldMatrix, ref image.RegionInternal, ref slider.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, imageOrientation);
                 context.DepthBias += 1;
             }
             
@@ -56,7 +58,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
 
                 var size = new Vector3();
                 size[axis] = sliderRatio * fullGaugeSize;
-                size[axisPrime] = image.ImageIdealSize.Y;
+                size[axisPrime] = image.SizeInPixels.Y;
                 if (trackIdealSize.HasValue)
                     size[axisPrime] *= slider.RenderSizeInternal[axisPrime] / trackIdealSize.Value.Y;
 
@@ -85,7 +87,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
                 }
                 var region = new RectangleF(position.X, position.Y, newRegionSize.X, newRegionSize.Y);
 
-                Batch.DrawImage(image.Texture, image.TextureAlpha, ref worldMatrix, ref region, ref size, ref borders, ref color, context.DepthBias, imageOrientation);
+                Batch.DrawImage(image.Texture, null, ref worldMatrix, ref region, ref size, ref borders, ref color, context.DepthBias, imageOrientation);
                 context.DepthBias += 1;
             }
 
@@ -98,8 +100,8 @@ namespace SiliconStudio.Paradox.UI.Renderers
                 var shouldRotate180Degrees = (axis & imageAxis) == 1;
 
                 var size = new Vector3();
-                size[axis] = image.ImageIdealSize.X;
-                size[axisPrime] = image.ImageIdealSize.Y;
+                size[axis] = image.SizeInPixels.X;
+                size[axisPrime] = image.SizeInPixels.Y;
                 if (trackIdealSize.HasValue)
                     size[axisPrime] *= slider.RenderSizeInternal[axisPrime] / trackIdealSize.Value.Y;
 
@@ -117,7 +119,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
                 
                 for (int i = 0; i < slider.TickFrequency + 1; i++)
                 {
-                    Batch.DrawImage(image.Texture, image.TextureAlpha, ref worldMatrix, ref image.RegionInternal, ref size, ref image.BordersInternal, ref color, context.DepthBias, imageOrientation, SwizzleMode.None, true);
+                    Batch.DrawImage(image.Texture, null, ref worldMatrix, ref image.RegionInternal, ref size, ref image.BordersInternal, ref color, context.DepthBias, imageOrientation, SwizzleMode.None, true);
 
                     worldMatrix.M41 += stepOffset * worldMatrix[(axis << 2) + 0];
                     worldMatrix.M42 += stepOffset * worldMatrix[(axis << 2) + 1];
@@ -135,8 +137,8 @@ namespace SiliconStudio.Paradox.UI.Renderers
                 var shouldRotate180Degrees = (axis & imageAxis) == 1;
                 
                 var size = new Vector3();
-                size[axis] = image.ImageIdealSize.X;
-                size[axisPrime] = image.ImageIdealSize.Y;
+                size[axis] = image.SizeInPixels.X;
+                size[axisPrime] = image.SizeInPixels.Y;
                 if (trackIdealSize.HasValue)
                     size[axisPrime] *= slider.RenderSizeInternal[axisPrime] / trackIdealSize.Value.Y;
 
@@ -146,8 +148,8 @@ namespace SiliconStudio.Paradox.UI.Renderers
                 worldMatrix.M41 += offset * worldMatrix[(axis << 2) + 0];
                 worldMatrix.M42 += offset * worldMatrix[(axis << 2) + 1];
                 worldMatrix.M43 += offset * worldMatrix[(axis << 2) + 2];
-                
-                Batch.DrawImage(image.Texture, image.TextureAlpha, ref worldMatrix, ref image.RegionInternal, ref size, ref image.BordersInternal, ref color, context.DepthBias, imageOrientation);
+
+                Batch.DrawImage(image.Texture, null, ref worldMatrix, ref image.RegionInternal, ref size, ref image.BordersInternal, ref color, context.DepthBias, imageOrientation);
 
                 context.DepthBias += 1;
             }

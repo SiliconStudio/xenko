@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Test for UI on scene entities
     /// </summary>
-    public class InSceneUITest : UnitTestGameBase
+    public class InSceneUITest : UITestGameBase
     {
         private List<Entity> elements = new List<Entity>();
 
@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             Script.Add(camera);
 
             UIRoot.Transform.Rotation = Quaternion.RotationX(MathUtil.Pi / 3f);
-            UIComponent.RootElement = new ImageElement { Source = new UIImage(Asset.Load<Texture>("uv"))};
+            UIComponent.RootElement = new ImageElement { Source = new Sprite(Asset.Load<Texture>("uv"))};
             UIComponent.IsFullScreen = false;
             UIComponent.IsBillboard = false;
             UIComponent.VirtualResolution = new Vector3(200, 200, 100);

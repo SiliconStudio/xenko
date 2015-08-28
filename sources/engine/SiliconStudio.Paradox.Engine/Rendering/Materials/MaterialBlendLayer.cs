@@ -6,9 +6,6 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Materials;
 using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
 using SiliconStudio.Paradox.Shaders;
 
@@ -37,6 +34,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets a value indicating whether this <see cref="MaterialBlendLayer"/> is enabled.
         /// </summary>
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
+        /// <userdoc>If checked, the layer in taken into account. Otherwise it is ignored.</userdoc>
         [DefaultValue(true)]
         [DataMember(10)]
         public bool Enabled { get; set; }
@@ -45,6 +43,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the name of this blend layer.
         /// </summary>
         /// <value>The name.</value>
+        /// <userdoc>The name of the material layer.</userdoc>
         [DefaultValue(null)]
         [DataMember(20)]
         public string Name { get; set; }
@@ -53,6 +52,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the material.
         /// </summary>
         /// <value>The material.</value>
+        /// <userdoc>The reference to the material asset to layer.</userdoc>
         [DefaultValue(null)]
         [DataMember(30)]
         public Material Material { get; set; }
@@ -61,6 +61,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the blend map.
         /// </summary>
         /// <value>The blend map.</value>
+        /// <userdoc>The blend map specifying how to blend the material with the previous layer.</userdoc>
         [Display("Blend Map")]
         [DefaultValue(null)]
         [DataMember(40)]
@@ -71,9 +72,9 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the material overrides.
         /// </summary>
         /// <value>The overrides.</value>
+        /// <userdoc>Can be used to override properties of the referenced material.</userdoc>
         [DataMember(50)]
-        [Category]
-        [Display("Layer Overrides")]
+        [Display("Overrides")]
         public MaterialOverrides Overrides { get; private set; }
 
         public virtual void Visit(MaterialGeneratorContext context)
@@ -85,30 +86,42 @@ namespace SiliconStudio.Paradox.Rendering.Materials
             }
 
             // Find the material from the reference
-            var material = context.FindAsset(Material);
+            var material = context.FindAsset(Material) as IMaterialDescriptor;
             if (material == null)
             {
                 context.Log.Error("Unable to find material [{0}]", Material);
                 return;
             }
 
-            // TODO: Because we are not fully supporting Streams declaration in shaders, we have to workaround this limitation by using a dynamic shader (inline)
-            // TODO: Handle MaterialOverrides
+            // Check that material is valid
+            var materialName = context.GetAssetFriendlyName(Material);
+            if (!context.PushMaterial(material, materialName))
+            {
+                return;
+            }
 
-            // Push a layer for the sub-material
-            context.PushOverrides(Overrides);
-            context.PushLayer();
+            try
+            {
+                // TODO: Because we are not fully supporting Streams declaration in shaders, we have to workaround this limitation by using a dynamic shader (inline)
+                // TODO: Handle MaterialOverrides
+                // Push a layer for the sub-material
+                context.PushOverrides(Overrides);
+                context.PushLayer();
 
-            // Generate the material shaders into the current context
-            material.Visit(context);
+                // Generate the material shaders into the current context
+                material.Visit(context);
 
-            // Generate Vertex and Pixel surface shaders
-            foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
-                Generate(stage, context);
-
-            // Pop the stack
-            context.PopLayer();
-            context.PopOverrides();
+                // Generate Vertex and Pixel surface shaders
+                foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
+                    Generate(stage, context);
+            }
+            finally
+            {
+                // Pop the stack
+                context.PopLayer();
+                context.PopOverrides();
+                context.PopMaterial();
+            }
         }
 
         private void Generate(MaterialShaderStage stage, MaterialGeneratorContext context)

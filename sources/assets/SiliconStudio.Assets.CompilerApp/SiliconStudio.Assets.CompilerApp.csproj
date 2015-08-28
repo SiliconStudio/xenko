@@ -33,6 +33,9 @@
   <ItemGroup>
     <Compile Include="AssetSerializableLogMessage.cs" />
     <Compile Include="BundlePacker.cs" />
+    <Compile Include="IPackageBuilderApp.cs" />
+    <Compile Include="LogListenerRedirectToAction.cs" />
+    <Compile Include="PackageBuilderApp.cs" />
     <Compile Include="ResolvedBundle.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="PackageBuilder.cs" />
@@ -81,6 +84,7 @@
     <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Engine\SiliconStudio.Paradox.Engine.csproj">
       <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
       <Name>SiliconStudio.Paradox.Engine</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj">
       <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
@@ -95,6 +99,7 @@
     <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Physics\SiliconStudio.Paradox.Physics.csproj">
       <Project>{dd592516-b341-40fe-9100-1b0fa784a060}</Project>
       <Name>SiliconStudio.Paradox.Physics</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Shaders\SiliconStudio.Paradox.Shaders.csproj">
       <Project>{273BDD15-7392-4078-91F0-AF23594A3D7B}</Project>

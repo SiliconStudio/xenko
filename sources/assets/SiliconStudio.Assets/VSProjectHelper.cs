@@ -59,22 +59,29 @@ namespace SiliconStudio.Assets
             return (T)Enum.Parse(typeof(T), value);
         }
 
-        public static string GetOrCompileProjectAssembly(string fullProjectLocation, ILogger logger, bool autoCompileProject, string configuration = "Debug", string platform = "AnyCPU", Dictionary<string, string> extraProperties = null, bool onlyErrors = false, BuildRequestDataFlags flags = BuildRequestDataFlags.None)
+        public static string GetOrCompileProjectAssembly(string fullProjectLocation, ILogger logger, bool autoCompileProject, string configuration, string platform = "AnyCPU", Dictionary<string, string> extraProperties = null, bool onlyErrors = false, BuildRequestDataFlags flags = BuildRequestDataFlags.None)
         {
             if (fullProjectLocation == null) throw new ArgumentNullException("fullProjectLocation");
             if (logger == null) throw new ArgumentNullException("logger");
 
             var project = LoadProject(fullProjectLocation, configuration, platform, extraProperties);
             var assemblyPath = project.GetPropertyValue("TargetPath");
-
-            if (!string.IsNullOrWhiteSpace(assemblyPath))
+            try
             {
-                if (autoCompileProject)
+                if (!string.IsNullOrWhiteSpace(assemblyPath))
                 {
-                    var asyncBuild = new CancellableAsyncBuild(project, assemblyPath);
-                    asyncBuild.Build(project, "Build", flags, new LoggerRedirect(logger, onlyErrors));
-                    var buildResult = asyncBuild.BuildTask.Result;
+                    if (autoCompileProject)
+                    {
+                        var asyncBuild = new CancellableAsyncBuild(project, assemblyPath);
+                        asyncBuild.Build(project, "Build", flags, new LoggerRedirect(logger, onlyErrors));
+                        var buildResult = asyncBuild.BuildTask.Result;
+                    }
                 }
+            }
+            finally
+            {
+                project.ProjectCollection.UnloadAllProjects();
+                project.ProjectCollection.Dispose();
             }
 
             return assemblyPath;
@@ -87,12 +94,20 @@ namespace SiliconStudio.Assets
 
             var project = LoadProject(fullProjectLocation, configuration, platform, extraProperties);
             var assemblyPath = project.GetPropertyValue("TargetPath");
-
-            if (!string.IsNullOrWhiteSpace(assemblyPath))
+            try
             {
-                var asyncBuild = new CancellableAsyncBuild(project, assemblyPath);
-                asyncBuild.Build(project, targets, flags, new LoggerRedirect(logger));
-                return asyncBuild;
+                if (!string.IsNullOrWhiteSpace(assemblyPath))
+                {
+                    var asyncBuild = new CancellableAsyncBuild(project, assemblyPath);
+                    asyncBuild.Build(project, targets, flags, new LoggerRedirect(logger));
+                    return asyncBuild;
+                }
+            }
+            finally
+            {
+                
+                project.ProjectCollection.UnloadAllProjects();
+                project.ProjectCollection.Dispose();
             }
 
             return null;
@@ -184,6 +199,11 @@ namespace SiliconStudio.Assets
                 }
                 logger.Error(e.Message);
             }
+        }
+
+        public static void Reset()
+        {
+            mainBuildManager.ResetCaches();
         }
 
         private class CancellableAsyncBuild : ICancellableAsyncBuild

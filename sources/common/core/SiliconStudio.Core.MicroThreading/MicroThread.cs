@@ -15,7 +15,9 @@ namespace SiliconStudio.Core.MicroThreading
     /// </summary>
     public class MicroThread : IComparable<MicroThread>
     {
-        internal ProfilingKey ProfilingKey;
+        internal static readonly ProfilingKey ProfilingKey = new ProfilingKey("MicroThread-Running");
+
+        internal string ScriptId;
 
         /// <summary>
         /// Gets the attached properties to this component.
@@ -24,40 +26,6 @@ namespace SiliconStudio.Core.MicroThreading
 
         private static long globalCounterId;
 
-        private class CallbackFromActionBuilder
-        {
-            public Action MicroThreadAction { private get; set; }
-
-            public Action MicroThreadCallback { get; private set; }
-
-            public CallbackFromActionBuilder(MicroThread microThread)
-            {
-                MicroThreadCallback = () =>
-                    {
-                        microThread.ThrowIfExceptionRequest();
-                        MicroThreadAction();
-                        microThread.ThrowIfExceptionRequest();
-                    };
-            }
-        }
-        private class CallbackSendPostCallbackBuilder
-        {
-            public SendOrPostCallback SendOrPostCallback { private get; set; }
-            public object CallbackState { private get; set; }
-
-            public Action MicroThreadCallback { get; private set; }
-
-            public CallbackSendPostCallbackBuilder(MicroThread microThread)
-            {
-                MicroThreadCallback = () =>
-                {
-                    microThread.ThrowIfExceptionRequest();
-                    SendOrPostCallback(CallbackState);
-                    microThread.ThrowIfExceptionRequest();
-                };
-            }
-        }
-
         // Counter that will be used to have a "stable" microthread scheduling (first added is first scheduled)
         private int priority;
         private long schedulerCounter;
@@ -65,11 +33,8 @@ namespace SiliconStudio.Core.MicroThreading
         private int state;
         internal PriorityQueueNode<MicroThread> ScheduledLinkedListNode;
         internal LinkedListNode<MicroThread> AllLinkedListNode; // Also used as lock for "CompletionTask"
-        internal Action Callback;
+        internal MicroThreadCallbackList Callbacks;
         internal SynchronizationContext SynchronizationContext;
-
-        private readonly CallbackFromActionBuilder callbackFromActionBuilder;
-        private readonly CallbackSendPostCallbackBuilder callbackSendPostCallbackBuilder;
 
         public MicroThread(Scheduler scheduler, MicroThreadFlags flags = MicroThreadFlags.None)
         {
@@ -80,9 +45,6 @@ namespace SiliconStudio.Core.MicroThreading
             ScheduleMode = ScheduleMode.Last;
             Flags = flags;
             Tags = new PropertyContainer(this);
-
-            callbackFromActionBuilder = new CallbackFromActionBuilder(this);
-            callbackSendPostCallbackBuilder = new CallbackSendPostCallbackBuilder(this);
         }
 
         /// <summary>
@@ -210,7 +172,7 @@ namespace SiliconStudio.Core.MicroThreading
         /// <exception cref="System.InvalidOperationException">MicroThread was already started before.</exception>
         public void Start(Func<Task> microThreadFunction, ScheduleMode scheduleMode = ScheduleMode.Last)
         {
-            ProfilingKey = new ProfilingKey("MicroThread " + microThreadFunction.Target);
+            ScriptId = microThreadFunction.Target.ToString();
 
             // TODO: Interlocked compare exchange?
             if (Interlocked.CompareExchange(ref state, (int)MicroThreadState.Starting, (int)MicroThreadState.None) != (int)MicroThreadState.None)
@@ -309,14 +271,12 @@ namespace SiliconStudio.Core.MicroThreading
             Debug.Assert(callback != null);
             lock (Scheduler.scheduledMicroThreads)
             {
-                callbackSendPostCallbackBuilder.SendOrPostCallback = callback;
-                callbackSendPostCallbackBuilder.CallbackState = callbackState;
-                Callback += callbackSendPostCallbackBuilder.MicroThreadCallback;
+                var node = NewCallback();
+                node.SendOrPostCallback = callback;
+                node.CallbackState = callbackState;
 
-                if (ScheduledLinkedListNode.Index != -1)
-                    throw new InvalidOperationException("MicroThread was already scheduled, something is probably wrong.");
-
-                Schedule(scheduleMode);
+                if (ScheduledLinkedListNode.Index == -1)
+                    Schedule(scheduleMode);
             }
         }
 
@@ -325,13 +285,11 @@ namespace SiliconStudio.Core.MicroThreading
             Debug.Assert(callback != null);
             lock (Scheduler.scheduledMicroThreads)
             {
-                callbackFromActionBuilder.MicroThreadAction = callback;
-                Callback += callbackFromActionBuilder.MicroThreadCallback;
+                var node = NewCallback();
+                node.MicroThreadAction = callback;
 
-                if (ScheduledLinkedListNode.Index != -1)
-                    throw new InvalidOperationException("MicroThread was already scheduled, something is probably wrong.");
-
-                Schedule(scheduleMode);
+                if (ScheduledLinkedListNode.Index == -1)
+                    Schedule(scheduleMode);
             }
         }
 
@@ -350,6 +308,87 @@ namespace SiliconStudio.Core.MicroThreading
         {
             if (ExceptionToRaise != null)
                 throw ExceptionToRaise;
+        }
+
+        private MicroThreadCallbackNode NewCallback()
+        {
+            MicroThreadCallbackNode node;
+            var pool = Scheduler.callbackNodePool;
+
+            if (Scheduler.callbackNodePool.Count > 0)
+            {
+                var index = pool.Count - 1;
+                node = pool[index];
+                pool.RemoveAt(index);
+            }
+            else
+            {
+                node = new MicroThreadCallbackNode();
+            }
+
+            Callbacks.Add(node);
+
+            return node;
+        }
+    }
+
+    internal class MicroThreadCallbackNode
+    {
+        public Action MicroThreadAction;
+
+        public SendOrPostCallback SendOrPostCallback;
+
+        public object CallbackState;
+
+        public MicroThreadCallbackNode Next;
+
+        public void Invoke()
+        {
+            if (MicroThreadAction != null)
+            {
+                MicroThreadAction();
+            }
+            else
+            {
+                SendOrPostCallback(CallbackState);
+            }
+        }
+
+        public void Clear()
+        {
+            MicroThreadAction = null;
+            SendOrPostCallback = null;
+            CallbackState = null;
+        }
+    }
+
+    internal struct MicroThreadCallbackList
+    {
+        public MicroThreadCallbackNode First { get; private set; }
+
+        public MicroThreadCallbackNode Last { get; private set; }
+
+        public void Add(MicroThreadCallbackNode node)
+        {
+            if (First == null)
+                First = node;
+            else
+                Last.Next = node;
+
+            Last = node;
+        }
+
+        public bool TakeFirst(out MicroThreadCallbackNode callback)
+        {
+            callback = First;
+
+            if (First == null)
+                return false;
+
+            First = callback.Next;
+            callback.Next = null;
+
+            return true;
         }
     }
 }

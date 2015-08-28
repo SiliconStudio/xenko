@@ -1,4 +1,9 @@
-﻿using System;
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace SiliconStudio.Core.Serialization
@@ -8,6 +13,8 @@ namespace SiliconStudio.Core.Serialization
     /// </summary>
     public static class AttachedReferenceManager
     {
+        private static readonly object[] EmptyObjectArray = new object[0];
+        private static Dictionary<Type, ConstructorInfo> emptyCtorCache = new Dictionary<Type,ConstructorInfo>();
         private static ConditionalWeakTable<object, AttachedReference> attachedReferences = new ConditionalWeakTable<object, AttachedReference>();
 
         /// <summary>
@@ -93,7 +100,28 @@ namespace SiliconStudio.Core.Serialization
         /// <returns></returns>
         public static object CreateSerializableVersion(Type type, Guid id, string location)
         {
-            var result = Activator.CreateInstance(type);
+            ConstructorInfo emptyCtor;
+            lock (emptyCtorCache)
+            {
+                if (!emptyCtorCache.TryGetValue(type, out emptyCtor))
+                {
+                    emptyCtor = null;
+                    foreach (var ctor in type.GetTypeInfo().DeclaredConstructors)
+                    {
+                        if (!ctor.IsStatic && ctor.GetParameters().Length == 0)
+                        {
+                            emptyCtor = ctor;
+                            break;
+                        }
+                    }
+                    if (emptyCtor == null)
+                    {
+                        throw new InvalidOperationException(string.Format("Type {0} has no empty ctor", type));
+                    }
+                    emptyCtorCache.Add(type, emptyCtor);
+                }
+            }
+            var result = emptyCtor.Invoke(EmptyObjectArray);
             var attachedReference = GetOrCreateAttachedReference(result);
             attachedReference.Id = id;
             attachedReference.Url = location;

@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Presentation.Quantum
 {
@@ -10,6 +11,11 @@ namespace SiliconStudio.Presentation.Quantum
     {
         private readonly int? order;
         private readonly bool isPrimitive;
+
+        static VirtualObservableNode()
+        {
+            typeof(VirtualObservableNode).GetProperties().Select(x => x.Name).ForEach(x => ReservedNames.Add(x));
+        }
 
         protected VirtualObservableNode(ObservableViewModel ownerViewModel, string name, int? order, bool isPrimitive, object index, NodeCommandWrapperBase valueChangedCommand)
             : base(ownerViewModel, name, index)

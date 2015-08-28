@@ -36,6 +36,8 @@ namespace SiliconStudio.Paradox.Graphics
         private readonly bool isDeferred;
         private readonly ParameterCollection parameters = new ParameterCollection();
 
+        private bool needViewportUpdate = true;
+
         private readonly Dictionary<object, IDisposable> sharedDataPerDevice;
         private readonly Dictionary<object, IDisposable> sharedDataPerDeviceContext = new Dictionary<object, IDisposable>();
         private VertexArrayObject newVertexArrayObject;
@@ -113,6 +115,7 @@ namespace SiliconStudio.Paradox.Graphics
             SamplerStates.Dispose();
             BlendStates.Dispose();
             RasterizerStates.Dispose();
+            DepthStencilStates.Dispose();
             if (DepthStencilBuffer != null)
                 DepthStencilBuffer.Dispose();
             primitiveQuad.Dispose();
@@ -363,6 +366,7 @@ namespace SiliconStudio.Paradox.Graphics
                 depthStencilBuffer = Presenter.DepthStencilBuffer;
                 backBuffer = Presenter.BackBuffer;
             }
+            needViewportUpdate = true;
             SetDepthAndRenderTarget(depthStencilBuffer, backBuffer);
         }
 
@@ -543,7 +547,7 @@ namespace SiliconStudio.Paradox.Graphics
         public void SetViewport(int index, Viewport value)
         {
             currentState.Viewports[index] = value;
-            SetViewportImpl(index, value);
+            needViewportUpdate = true;
         }
 
         /// <summary>
@@ -736,6 +740,8 @@ namespace SiliconStudio.Paradox.Graphics
                         RenderTargets[i] = parentState.RenderTargets[i];
                     }
                 }
+
+                device.needViewportUpdate = true;
             }
 
             public void Restore(GraphicsDevice graphicsDevice)
@@ -746,15 +752,7 @@ namespace SiliconStudio.Paradox.Graphics
                 graphicsDevice.SetDepthStencilState(DepthStencilState, StencilReference);
                 graphicsDevice.SetRasterizerState(RasterizerState);
 
-                // TODO: This is not optimized
-                for (int i = 0; i < Viewports.Length; i++)
-                {
-                    var viewport = Viewports[i];
-                    if (viewport != Graphics.Viewport.Empty)
-                    {
-                        graphicsDevice.SetViewport(i, viewport);
-                    }
-                }
+                graphicsDevice.needViewportUpdate = true;
             }
         }
     }

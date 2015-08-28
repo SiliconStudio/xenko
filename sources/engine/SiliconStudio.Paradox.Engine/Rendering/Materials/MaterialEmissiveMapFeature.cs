@@ -7,7 +7,6 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Paradox.Rendering.Materials;
 using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
 using SiliconStudio.Paradox.Shaders;
 
@@ -15,7 +14,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
 {
     [DataContract("MaterialEmissiveMapFeature")]
     [Display("Emissive Map")]
-    public class MaterialEmissiveMapFeature : IMaterialEmissiveFeature, IMaterialStreamProvider
+    public class MaterialEmissiveMapFeature : MaterialFeature, IMaterialEmissiveFeature, IMaterialStreamProvider
     {
         private static readonly MaterialStreamDescriptor EmissiveStream = new MaterialStreamDescriptor("Emissive", "matEmissive", MaterialKeys.EmissiveValue.PropertyType);
 
@@ -43,6 +42,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the diffuse map.
         /// </summary>
         /// <value>The diffuse map.</value>
+        /// <userdoc>The map specifying the color emitted by the material.</userdoc>
         [Display("Emissive Map")]
         [NotNull]
         [DataMember(10)]
@@ -52,6 +52,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the intensity.
         /// </summary>
         /// <value>The intensity.</value>
+        /// <userdoc>The map specifying the intensity of the light emitted by the material. This scales the color value specified by emissive map.</userdoc>
         [Display("Intensity")]
         [NotNull]
         [DataMember(20)]
@@ -61,6 +62,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets a value indicating whether [use alpha].
         /// </summary>
         /// <value><c>true</c> if [use alpha]; otherwise, <c>false</c>.</value>
+        /// <userdoc>If checked, use the alpha component of the emissive map as main alpha color for the material. Otherwise, ignore it and use the diffuse alpha color.</userdoc>
         [DataMember(30)]
         [DefaultValue(false)]
         public bool UseAlpha { get; set; }
@@ -73,7 +75,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
             }
         }
 
-        public void Visit(MaterialGeneratorContext context)
+        public override void VisitFeature(MaterialGeneratorContext context)
         {
             context.SetStream(EmissiveStream.Stream, EmissiveMap, MaterialKeys.EmissiveMap, MaterialKeys.EmissiveValue);
             context.SetStream("matEmissiveIntensity", Intensity, MaterialKeys.EmissiveIntensityMap, MaterialKeys.EmissiveIntensity);

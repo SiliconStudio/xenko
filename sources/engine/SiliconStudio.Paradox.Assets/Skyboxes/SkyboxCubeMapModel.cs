@@ -24,6 +24,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
         /// Gets or sets the cubemap texture.
         /// </summary>
         /// <value>The cubemap texture.</value>
+        /// <userdoc>The cube map texture to use has skybox.</userdoc>
         [DataMember(10)]
         public Texture CubeMap { get; set; }
 

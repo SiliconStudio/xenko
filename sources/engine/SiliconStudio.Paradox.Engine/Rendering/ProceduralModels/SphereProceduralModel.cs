@@ -22,23 +22,25 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// </summary>
         public SphereProceduralModel()
         {
-            Diameter = 1.0f;
+            Radius = 0.5f;
             Tessellation = 16;
             UVScales = new Vector2(1);
         }
 
         /// <summary>
-        /// Gets or sets the diameter of this sphere.
+        /// Gets or sets the radius of this sphere.
         /// </summary>
-        /// <value>The diameter.</value>
+        /// <value>The radius.</value>
+        /// <userdoc>The radius of the sphere.</userdoc>
         [DataMember(10)]
-        [DefaultValue(1.0f)]
-        public float Diameter { get; set; }
+        [DefaultValue(0.5f)]
+        public float Radius { get; set; }
 
         /// <summary>
         /// Gets or sets the tessellation factor (default: 3.0)
         /// </summary>
         /// <value>The tessellation.</value>
+        /// <userdoc>The tessellation of the sphere. That is the number of polygons composing it.</userdoc>
         [DataMember(20)]
         [DefaultValue(16)]
         public int Tessellation { get; set; }
@@ -47,7 +49,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// Gets or sets the UV scales.
         /// </summary>
         /// <value>The UV scales</value>
-        /// <userdoc>The scales to apply to the UV coordinates of the plane.</userdoc>
+        /// <userdoc>The scales to apply onto the UV coordinates of the sphere. This can be used to tile a texture on it.</userdoc>
         [DataMember(30)]
         [DefaultValue(1.0f)]
         [Display("UV Scales")]
@@ -55,7 +57,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
 
         protected override GeometricMeshData<VertexPositionNormalTexture> CreatePrimitiveMeshData()
         {
-            return GeometricPrimitive.Sphere.New(Diameter, Tessellation, UVScales.X, UVScales.Y);
+            return GeometricPrimitive.Sphere.New(Radius, Tessellation, UVScales.X, UVScales.Y);
         }
     }
 }

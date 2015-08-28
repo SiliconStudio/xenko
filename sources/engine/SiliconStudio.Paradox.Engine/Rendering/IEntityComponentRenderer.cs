@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Paradox.Engine.Design;
-using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Rendering
 {

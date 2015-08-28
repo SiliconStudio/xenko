@@ -38,6 +38,6 @@ namespace SiliconStudio.Paradox.Rendering
         /// Fills the parameter collections used by this instance.
         /// </summary>
         /// <param name="parameterCollections">The parameter collections.</param>
-        public abstract void FillParameterCollections(FastList<ParameterCollection> parameterCollections);
+        public abstract void FillParameterCollections(ref FastListStruct<ParameterCollection> parameterCollections);
     }
 }

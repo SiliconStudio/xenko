@@ -7,7 +7,7 @@ using SiliconStudio.Core.IO;
 namespace SiliconStudio.Core.Settings
 {
     /// <summary>
-    /// Arguments of the <see cref="SettingsGroup.SettingsFileLoaded"/> event.
+    /// Arguments of the <see cref="SettingsContainer.SettingsFileLoaded"/> event.
     /// </summary>
     public class SettingsFileLoadedEventArgs : EventArgs
     {

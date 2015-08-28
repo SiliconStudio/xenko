@@ -22,7 +22,7 @@ namespace SiliconStudio.Assets.Tests
         [Test]
         public void CheckImporter()
         {
-            var importer = AssetRegistry.FindImporterByExtension(".tmp").FirstOrDefault();
+            var importer = AssetRegistry.FindImporterForFile("test.tmp").FirstOrDefault();
             Assert.NotNull(importer);
         }
 
@@ -57,7 +57,7 @@ namespace SiliconStudio.Assets.Tests
                 // Step 3: Import asset directly (we don't try to merge)
                 // ------------------------------------------------------------------
                 importSession.Import();
-                Assert.AreEqual(2, project.Assets.Count);
+                Assert.AreEqual(3, project.Assets.Count);
                 var assetItem = project.Assets.FirstOrDefault(item => item.Asset is AssetImport);
                 Assert.NotNull(assetItem);
                 var importedAsset = (AssetImport)assetItem.Asset;
@@ -109,13 +109,13 @@ namespace SiliconStudio.Assets.Tests
                 importSession.Merge();
 
                 Assert.IsTrue(stageResult);
-                Assert.AreEqual(2, project.Assets.Count);
+                Assert.AreEqual(3, project.Assets.Count);
 
                 // ------------------------------------------------------------------
                 // Step 4: Import merged asset
                 // ------------------------------------------------------------------
                 importSession.Import();
-                Assert.AreEqual(2, project.Assets.Count);
+                Assert.AreEqual(3, project.Assets.Count);
 
                 // Get the list of asset already in the project
                 var newIds = project.Assets.Select(item => item.Id).ToList();
@@ -158,7 +158,7 @@ namespace SiliconStudio.Assets.Tests
                 importSession.AddFile(file, project, UDirectory.Empty);
                 // Simulate using another importer to duplicate the assets
                 importSession.AddFile(file, new CustomImporter(), project, UDirectory.Empty);
-                Assert.AreEqual(2, importSession.Imports[0].ByImporters.Count);
+                Assert.AreEqual(3, importSession.Imports[0].ByImporters.Count);
 
                 // ------------------------------------------------------------------
                 // Step 2: Stage assets
@@ -180,7 +180,7 @@ namespace SiliconStudio.Assets.Tests
                 // Step 3: Import merged asset
                 // ------------------------------------------------------------------
                 var result = importSession.Import();
-                Assert.AreEqual(3, project.Assets.Count);
+                Assert.AreEqual(4, project.Assets.Count);
 
                 // TODO Add more tests
             }

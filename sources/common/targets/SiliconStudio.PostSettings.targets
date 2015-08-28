@@ -50,48 +50,32 @@
   <!-- Import the specific compiler targets for the selected platform/language -->
   <Import Condition="'$(SiliconStudioCompilerTargetsEnable)' != 'false'" Project="$(SiliconStudioCompilerTargets)" />
   
-  <Target Name="RunSiliconStudioAssemblyProcessor" Condition=" '$(SiliconStudioAssemblyProcessor)' == 'true' and '$(SiliconStudioAssemblyProcessorGlobal)' == 'true' and '$(SiliconStudioAssemblyProcessorOptions)' != '' ">
-    <!-- Get target path of SiliconStudio.AssemblyProcessor -->
-    <MSBuild Condition="'$(ParadoxUserBuild)' != 'true'" Projects="$(MSBuildThisFileDirectory)..\core\SiliconStudio.AssemblyProcessor\SiliconStudio.AssemblyProcessor.csproj" Targets="GetTargetPath" Properties="Configuration=$(Configuration);BuildingInsideVisualStudio=false">
-      <Output TaskParameter="TargetOutputs" ItemName="_SiliconStudioAssemblyProcessorPath" />
-    </MSBuild>
-
-    <!-- SiliconStudio.AssemblyProcessor must be compiled if it doesn't exist -->
-    <MSBuild Condition="'$(ParadoxUserBuild)' != 'true' and !Exists('@(_SiliconStudioAssemblyProcessorPath)')" Projects="$(MSBuildThisFileDirectory)..\core\SiliconStudio.AssemblyProcessor\SiliconStudio.AssemblyProcessor.csproj" Targets="Build" Properties="Configuration=$(Configuration);BuildingInsideVisualStudio=false">
-      <Output TaskParameter="TargetOutputs" ItemName="_SiliconStudioAssemblyProcessorPath" />
-    </MSBuild>
-
-    <!-- Get target path of SiliconStudio.Core -->
-    <MSBuild Condition="'$(ParadoxUserBuild)' != 'true' and '$(ProjectName)' != 'SiliconStudio.Core'" Projects="$(MSBuildThisFileDirectory)..\core\SiliconStudio.Core\SiliconStudio.Core.csproj" Targets="GetTargetPath" Properties="Configuration=$(Configuration)">
-      <Output TaskParameter="TargetOutputs" ItemName="_SiliconStudioCoreAssemblyPath" />
-    </MSBuild>
-
-    <!-- SiliconStudio.Core must be compiled if it doesn't exist -->
-    <MSBuild Condition="'$(ParadoxUserBuild)' != 'true' and '$(ProjectName)' != 'SiliconStudio.Core' and !Exists('@(_SiliconStudioCoreAssemblyPath)')" Projects="$(MSBuildThisFileDirectory)..\core\SiliconStudio.Core\SiliconStudio.Core.csproj" Targets="Build" Properties="Configuration=$(Configuration)">
-      <Output TaskParameter="TargetOutputs" ItemName="_SiliconStudioCoreAssemblyPath" />
-    </MSBuild>
-
+  <Target Name="RunSiliconStudioAssemblyProcessor" AfterTargets="CoreCompile" Condition=" '$(SiliconStudioAssemblyProcessor)' == 'true' and '$(SiliconStudioAssemblyProcessorPath)' != '' and '$(SiliconStudioAssemblyProcessorGlobal)' == 'true' and '$(SiliconStudioAssemblyProcessorOptions)' != '' ">
     <PropertyGroup Condition="'$(ParadoxUserBuild)' != 'true'">
-      <SiliconStudioAssemblyProcessorPath>@(_SiliconStudioAssemblyProcessorPath)</SiliconStudioAssemblyProcessorPath>
-      <SiliconStudioCoreAssemblyPath>@(_SiliconStudioCoreAssemblyPath)</SiliconStudioCoreAssemblyPath>
       <!-- Add SiliconStudio.Core path to assembly search directory -->
       <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioCoreAssemblyPath)' != ''">$(SiliconStudioAssemblyProcessorOptions) --assembly="$(SiliconStudioCoreAssemblyPath)"</SiliconStudioAssemblyProcessorOptions>
     </PropertyGroup>
 
+    <WriteLinesToFile File="$(IntermediateOutputPath)ParadoxReferences.cache" Lines="@(ReferencePath)" Overwrite="true" />
+
     <!--Add platform and target framework to assembly processor options-->
     <PropertyGroup>
       <SiliconStudioAssemblyProcessorOptions>--platform=$(SiliconStudioPlatform) --targetFramework=$(TargetFrameworkVersion) $(SiliconStudioAssemblyProcessorOptions)</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --references-file="$(IntermediateOutputPath)ParadoxReferences.cache"</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorOptions Condition="'$(AssemblyOriginatorKeyFile)' != ''">$(SiliconStudioAssemblyProcessorOptions) --signkeyfile="$(AssemblyOriginatorKeyFile)"</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --Werror</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorCommand>"$(SiliconStudioAssemblyProcessorPath)" $(SiliconStudioAssemblyProcessorOptions) "$(IntermediateOutputPath)$(TargetName)$(TargetExt)" --delete-output-on-error</SiliconStudioAssemblyProcessorCommand>
     </PropertyGroup>
 
     <!-- Run assembly processor -->
-    <Message Importance="High" Text='AssemblyProcessor: Running with "$(SiliconStudioAssemblyProcessorPath)" $(SiliconStudioAssemblyProcessorOptions) "$(TargetPath)"'/>
-    <Exec Command='"$(SiliconStudioAssemblyProcessorPath)" $(SiliconStudioAssemblyProcessorOptions) "$(TargetPath)"' ContinueOnError='false'/>
+    <Message Importance="High" Text="SiliconStudio AssemblyProcessor: $(SiliconStudioAssemblyProcessorCommand)"/>
+    <Exec Command="$(SiliconStudioAssemblyProcessorCommand)">
+      <Output TaskParameter="ExitCode" PropertyName="SiliconStudioAssemblyProcessorErrorCode"/>
+    </Exec>
 
-    <!-- Copy back *.dll from bin/Debug|Release to obj/Debug/Release directory -->
-    <Copy SourceFiles="@(MainAssembly)" DestinationFolder="$(IntermediateOutputPath)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="$(OverwriteReadOnlyFiles)"/>
-    <!-- Copy back *.pdb from bin/Debug|Release to obj/Debug/Release directory -->
-    <Copy SourceFiles="@(_DebugSymbolsOutputPath)" DestinationFiles="@(_DebugSymbolsIntermediatePath)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="$(OverwriteReadOnlyFiles)" Condition="'$(_DebugSymbolsProduced)'=='true' and '$(SkipCopyingSymbolsToOutputDirectory)' != 'true'"/>
+    <!-- If assembly processor failed, delete file (to make sure non-processed assemblies are never used) and emit error -->
+    <Delete Condition="$(SiliconStudioAssemblyProcessorErrorCode) != 0" Files="$(IntermediateOutputPath)$(TargetName)$(TargetExt)"/>
+    <Error Condition="$(SiliconStudioAssemblyProcessorErrorCode) != 0" Text='AssemblyProcessor command "$(SiliconStudioAssemblyProcessorCommand)" exited with error $(SiliconStudioAssemblyProcessorErrorCode)'/>
   </Target>
 
   <Target Name="SetPrivateOnProjectReferences" BeforeTargets="BeforeCompile">
@@ -105,26 +89,6 @@
     </ItemGroup>
   </Target>
 
-  <!-- Register ourself in PrepareForRunDependsOn -->
-  <PropertyGroup>
-    <PrepareForRunDependsOn>
-      CopyFilesToOutputDirectory;
-      RunSiliconStudioAssemblyProcessor;
-      $(PrepareForRunDependsOn);
-    </PrepareForRunDependsOn>
-  </PropertyGroup>
-
-  <!-- For MonoDroid, we need to convert debugging files after assembly processor, but since Xamarin build includes MS build and inserts ConvertDebuggingFiles right after,
-      we need to totally rewrite this rule (note that it will ignore everything else... not sure how to avoid that except by doing some string splitting...) -->
-  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Android' ">
-    <PrepareForRunDependsOn>
-      CopyFilesToOutputDirectory;
-      RunSiliconStudioAssemblyProcessor;
-      ConvertDebuggingFiles;
-      _CollectMonoAndroidOutputs;
-    </PrepareForRunDependsOn>
-  </PropertyGroup>
-  
   <!-- For MonoTouch executable projects, we add a target that set the variable MtouchExtraArgs -->
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' and '$(OutputType)' == 'Exe'">
     <ResolveReferencesDependsOn>

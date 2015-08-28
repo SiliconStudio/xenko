@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -14,7 +15,10 @@ namespace SiliconStudio.Paradox.Physics
             Type = ColliderShapeTypes.Compound;
             Is2D = false;
 
-            InternalShape = InternalCompoundShape = new BulletSharp.CompoundShape();
+            InternalShape = InternalCompoundShape = new BulletSharp.CompoundShape()
+            {
+                LocalScaling = Vector3.One
+            };
         }
 
         /// <summary>
@@ -25,7 +29,7 @@ namespace SiliconStudio.Paradox.Physics
             foreach (var shape in colliderShapes)
             {
                 InternalCompoundShape.RemoveChildShape(shape.InternalShape);
-                shape.Dispose();
+                if(!shape.IsPartOfAsset) shape.Dispose();
             }
             colliderShapes.Clear();
 

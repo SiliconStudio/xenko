@@ -206,13 +206,13 @@ namespace SiliconStudio.ProjectTemplating
                     catch (Exception ex)
                     {
 
-                        log.Error("Unexpected exception while processing [{0}]", fileItem, ex);
+                        log.Error("Unexpected exception while processing [{0}]", ex, fileItem);
                     }
                 }
             }
             catch (Exception ex)
             {
-                log.Error("Unexpected exception while processing project template [{0}] to directory [{1}]", projectName, outputDirectory, ex);
+                log.Error("Unexpected exception while processing project template [{0}] to directory [{1}]", ex, projectName, outputDirectory);
             }
         }
 

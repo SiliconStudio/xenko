@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Class for rendering tests on the <see cref="ImageButton"/> 
     /// </summary>
-    public class ImageButtonTest : UnitTestGameBase
+    public class ImageButtonTest : UITestGameBase
     {
         private ImageButton imageButton;
 
@@ -27,8 +27,8 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
             imageButton = new ImageButton
             {
-                PressedImage = new UIImage(Asset.Load<Texture>("ImageButtonPressed")),
-                NotPressedImage = new UIImage(Asset.Load<Texture>("ImageButtonNotPressed")),
+                PressedImage = new Sprite(Asset.Load<Texture>("ImageButtonPressed")),
+                NotPressedImage = new Sprite(Asset.Load<Texture>("ImageButtonNotPressed")),
             };
 
             UIComponent.RootElement = imageButton;

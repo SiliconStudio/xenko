@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using SiliconStudio.Core.IO;
@@ -10,7 +12,7 @@ namespace SiliconStudio.Core.Storage
     /// <summary>
     /// Base class for custom object database backends (ODB).
     /// </summary>
-    public interface IOdbBackend
+    public interface IOdbBackend : IDisposable
     {
         /// <summary>
         /// Gets the asset index map.

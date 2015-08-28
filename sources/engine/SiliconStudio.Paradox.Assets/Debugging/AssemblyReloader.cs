@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using SharpYaml;
 using SharpYaml.Events;
+using SharpYaml.Serialization;
+using SiliconStudio.Assets.Serializers;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Assets.Serializers;
 using SiliconStudio.Paradox.Engine;
@@ -17,6 +20,7 @@ namespace SiliconStudio.Paradox.Assets.Debugging
     /// </summary>
     public abstract class AssemblyReloader
     {
+        protected ILogger log;
         protected readonly List<Entity> entities = new List<Entity>();
 
         protected virtual void RestoreReloadedScriptEntries(List<ReloadedScriptEntry> reloadedScripts)
@@ -68,7 +72,7 @@ namespace SiliconStudio.Paradox.Assets.Debugging
         protected virtual Script DeserializeScript(ReloadedScriptEntry reloadedScript)
         {
             var eventReader = new EventReader(new MemoryParser(reloadedScript.YamlEvents));
-            var scriptCollection = (ScriptCollection)YamlSerializer.Deserialize(eventReader, typeof(ScriptCollection));
+            var scriptCollection = (ScriptCollection)YamlSerializer.Deserialize(eventReader, null, typeof(ScriptCollection), log != null ? new SerializerContextSettings { Logger = new YamlForwardLogger(log) } : null);
             var script = scriptCollection.Count == 1 ? scriptCollection[0] : null;
             return script;
         }

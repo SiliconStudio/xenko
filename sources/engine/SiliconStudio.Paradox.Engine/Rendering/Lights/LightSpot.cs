@@ -26,13 +26,17 @@ namespace SiliconStudio.Paradox.Rendering.Lights
             Range = 3.0f;
             AngleInner = 30.0f;
             AngleOuter = 35.0f;
-            Shadow = new LightStandardShadowMap() { Importance = LightShadowImportance.Medium };
+            Shadow = new LightStandardShadowMap()
+            {
+                Size = LightShadowMapSize.Medium
+            };
         }
 
         /// <summary>
         /// Gets or sets the range distance the light is affecting.
         /// </summary>
         /// <value>The range.</value>
+        /// <userdoc>The range of the spot light in scene units</userdoc>
         [DataMember(10)]
         [DefaultValue(3.0f)]
         public float Range { get; set; }
@@ -41,6 +45,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         /// Gets or sets the spot angle in degrees.
         /// </summary>
         /// <value>The spot angle in degrees.</value>
+        /// <userdoc>The angle of the main beam of the light spot.</userdoc>
         [DataMember(20)]
         [DataMemberRange(0.01, 90, 1, 10, 1)]
         [DefaultValue(30.0f)]
@@ -50,6 +55,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         /// Gets or sets the spot angle in degrees.
         /// </summary>
         /// <value>The spot angle in degrees.</value>
+        /// <userdoc>The angle of secondary beam of the light spot</userdoc>
         [DataMember(30)]
         [DataMemberRange(0.01, 90, 1, 10, 1)]
         [DefaultValue(35.0f)]

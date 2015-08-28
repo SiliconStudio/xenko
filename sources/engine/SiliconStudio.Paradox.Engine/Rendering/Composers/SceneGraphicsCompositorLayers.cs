@@ -4,7 +4,7 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Paradox.Rendering.Composers
 {
@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Rendering.Composers
         public SceneGraphicsCompositorLayers()
         {
             Layers = new SceneGraphicsLayerCollection();
-            Master = new SceneGraphicsLayer()
+            Master = new SceneGraphicsLayer
             {
                 Output = new MasterRenderFrameProvider(),
                 IsMaster = true
@@ -33,6 +33,7 @@ namespace SiliconStudio.Paradox.Rendering.Composers
         /// Gets the cameras used by this composition.
         /// </summary>
         /// <value>The cameras.</value>
+        /// <userdoc>The list of cameras used in the graphic pipeline</userdoc>
         [DataMember(10)]
         [Category]
         public SceneCameraSlotCollection Cameras { get; private set; }
@@ -41,14 +42,17 @@ namespace SiliconStudio.Paradox.Rendering.Composers
         /// Gets the layers used for composing a scene.
         /// </summary>
         /// <value>The layers.</value>
+        /// <userdoc>The sequence of graphic layers to incorporate into the pipeline</userdoc>
         [DataMember(20)]
         [Category]
+        [MemberCollection(CanReorderItems = true)]
         public SceneGraphicsLayerCollection Layers { get; private set; }
 
         /// <summary>
         /// Gets the master layer.
         /// </summary>
         /// <value>The master layer.</value>
+        /// <userdoc>The main layer of the pipeline. Its output is the window back buffer.</userdoc>
         [DataMember(30)]
         [Category]
         public SceneGraphicsLayer Master { get; private set; }
@@ -63,7 +67,7 @@ namespace SiliconStudio.Paradox.Rendering.Composers
 
         protected override void DrawCore(RenderContext context)
         {
-            using (var t1 = context.PushTagAndRestore(SceneCameraSlotCollection.Current, Cameras))
+            using (context.PushTagAndRestore(SceneCameraSlotCollection.Current, Cameras))
             {
                 // Draw the layers
                 Layers.Draw(context);

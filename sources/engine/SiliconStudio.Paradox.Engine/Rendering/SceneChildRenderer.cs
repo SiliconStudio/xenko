@@ -38,6 +38,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets the scene.
         /// </summary>
         /// <value>The scene.</value>
+        /// <userdoc>The entity of the scene containing the child scene to render.</userdoc>
         [DataMember(10)]
         public ChildSceneComponent ChildScene { get; set; }
 

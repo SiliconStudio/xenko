@@ -14,21 +14,25 @@ namespace SiliconStudio.Paradox.Rendering
         /// <summary>
         /// Use the depth stencil buffer from the current frame without creating a new one (only if the size are the same)
         /// </summary>
+        /// <userdoc>Use the depth stencil buffer from the current frame without creating a new one (only if the size are the same).</userdoc>
         Shared,
 
         /// <summary>
         /// No depth stencil is used.
         /// </summary>
+        /// <userdoc>No depth stencil is used.</userdoc>
         None,
 
         /// <summary>
         /// A depth only buffer.
         /// </summary>
+        /// <userdoc>A depth only buffer.</userdoc>
         Depth,
 
         /// <summary>
         /// The depth and stencil buffer.
         /// </summary>
+        /// <userdoc>The depth and stencil buffer.</userdoc>
         DepthAndStencil,
     }
 }

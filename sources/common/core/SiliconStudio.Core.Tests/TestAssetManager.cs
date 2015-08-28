@@ -162,10 +162,8 @@ namespace SiliconStudio.Core.Tests
 
             Assert.That(b3, Is.Not.EqualTo(b1));
 
-            // b3.A should be default initialized
-            Assert.That(b3.A.I, Is.EqualTo(0));
-
-            Assert.That(AttachedReferenceManager.GetUrl(b3.A), Is.Not.Null);
+            // b3.A should be null
+            Assert.That(b3.A, Is.Null);
         }
 
         [Test]

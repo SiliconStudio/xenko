@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Runtime.Versioning;
 using SiliconStudio.AssemblyProcessor.Serializers;
+using SiliconStudio.Core.Diagnostics;
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
 using System.CodeDom.Compiler;
@@ -37,7 +38,7 @@ namespace SiliconStudio.AssemblyProcessor
             get { return serializerFactories; }
         }
 
-        public ComplexSerializerCodeGenerator(IAssemblyResolver assemblyResolver, AssemblyDefinition assembly)
+        public ComplexSerializerCodeGenerator(IAssemblyResolver assemblyResolver, AssemblyDefinition assembly, ILogger log)
         {
             this.assembly = assembly;
             this.assemblySerializerFactoryClassName = assembly.Name.Name.Replace(" ", string.Empty).Replace(".", string.Empty) + "SerializerFactory";
@@ -45,11 +46,18 @@ namespace SiliconStudio.AssemblyProcessor
             // Register referenced assemblies serializer factory, so that we can call them recursively
             foreach (var referencedAssemblyName in assembly.MainModule.AssemblyReferences)
             {
-                var referencedAssembly = assembly.MainModule.AssemblyResolver.Resolve(referencedAssemblyName);
+                try
+                {
+                    var referencedAssembly = assembly.MainModule.AssemblyResolver.Resolve(referencedAssemblyName);
 
-                var assemblySerializerFactoryType = GetSerializerFactoryType(referencedAssembly);
-                if (assemblySerializerFactoryType != null)
-                    referencedAssemblySerializerFactoryTypes.Add(assemblySerializerFactoryType);
+                    var assemblySerializerFactoryType = GetSerializerFactoryType(referencedAssembly);
+                    if (assemblySerializerFactoryType != null)
+                        referencedAssemblySerializerFactoryTypes.Add(assemblySerializerFactoryType);
+                }
+                catch (AssemblyResolutionException)
+                {
+                    continue;
+                }
             }
 
             // Find target framework and replicate it for serializer assembly.
@@ -66,7 +74,7 @@ namespace SiliconStudio.AssemblyProcessor
             }
 
             // Prepare serializer processors
-            cecilSerializerContext = new CecilSerializerContext(assembly);
+            cecilSerializerContext = new CecilSerializerContext(assembly, log);
             var processors = new List<ICecilSerializerProcessor>();
 
             // Import list of serializer registered by referenced assemblies

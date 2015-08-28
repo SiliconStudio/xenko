@@ -68,6 +68,7 @@
     <ProjectReference Include="..\SiliconStudio.Paradox.Physics\SiliconStudio.Paradox.Physics.csproj">
       <Project>{dd592516-b341-40fe-9100-1b0fa784a060}</Project>
       <Name>SiliconStudio.Paradox.Physics</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Paradox.Shaders.Parser\SiliconStudio.Paradox.Shaders.Parser.csproj">
       <Project>{14A47447-2A24-4ECD-B24D-6571499DCD4C}</Project>
@@ -143,7 +144,7 @@
     <Compile Include="Entities\ConvertedDescriptor.cs" />
     <Compile Include="Entities\EntityAnalysis.cs" />
     <Compile Include="Entities\EntityAsset.cs" />
-    <Compile Include="Entities\EntityAssetCompiler.cs" />
+    <Compile Include="Entities\SceneAssetCompiler.cs" />
     <Compile Include="Entities\EntityAssetOperations.cs" />
     <Compile Include="Entities\EntityComponentReference.cs" />
     <Compile Include="Entities\EntityDiffNode.cs" />
@@ -157,6 +158,8 @@
     <Compile Include="Entities\IEntityScriptReference.cs" />
     <Compile Include="GameSettingsAsset.cs" />
     <Compile Include="Entities\SceneAsset.cs" />
+    <Compile Include="GameSettingsAssetCompiler.cs" />
+    <Compile Include="GameSettingsAssetExtensions.cs" />
     <Compile Include="GameUserSettings.cs" />
     <Compile Include="Materials\ComputeShaderBaseExtensions.cs" />
     <Compile Include="Materials\MaterialNodeClassLoader.cs" />
@@ -166,9 +169,9 @@
     <Compile Include="ParadoxPackageUpgrader.cs" />
     <Compile Include="ProceduralModels\ProceduralModelAsset.cs" />
     <Compile Include="ProceduralModels\ProceduralModelAssetCompiler.cs" />
-    <Compile Include="ImageGroupAsset.cs" />
-    <Compile Include="ImageGroupCompiler.cs" />
-    <Compile Include="ImageInfo.cs" />
+    <Compile Include="Sprite\SpriteSheetAsset.cs" />
+    <Compile Include="Sprite\SpriteSheetAssetCompiler.cs" />
+    <Compile Include="Sprite\SpriteInfo.cs" />
     <Compile Include="Materials\MaterialAsset.cs" />
     <Compile Include="Materials\MaterialAssetCompiler.cs" />
     <Compile Include="Audio\SoundMusicAsset.cs" />
@@ -188,11 +191,17 @@
     <Compile Include="Skyboxes\SkyboxCubeMapModel.cs" />
     <Compile Include="Skyboxes\SkyboxGenerator.cs" />
     <Compile Include="Skyboxes\SkyboxPreFilteringDiffuseOrder.cs" />
-    <Compile Include="Sprite\SpriteInfo.cs" />
-    <Compile Include="Sprite\SpriteGroupAsset.cs" />
-    <Compile Include="Sprite\SpriteGroupCompiler.cs" />
-    <Compile Include="Textures\TextureCommandHelper.cs" />
+    <Compile Include="Sprite\SpriteSheetType.cs" />
+    <Compile Include="Sprite\PackingAttributes.cs" />
+    <Compile Include="Textures\Packing\AtlasTextureElement.cs" />
+    <Compile Include="Textures\Packing\AtlasTextureLayout.cs" />
+    <Compile Include="Textures\Packing\MaxRectanglesBinPack.cs" />
+    <Compile Include="Textures\Packing\RotableRectangle.cs" />
+    <Compile Include="Textures\TextureHelper.cs" />
     <Compile Include="Textures\TextureHint.cs" />
+    <Compile Include="Textures\Packing\TexturePacker.cs" />
+    <Compile Include="Textures\Packing\AtlasTextureFactory.cs" />
+    <Compile Include="Textures\Packing\TexturePackingMethod.cs" />
     <Compile Include="Textures\TextureQuality.cs" />
     <Compile Include="Serializers\GenericDictionarySerializer.cs" />
     <Compile Include="Serializers\ParameterKeySerializer.cs" />
@@ -219,11 +228,7 @@
     <Compile Include="Textures\TextureFormat.cs" />
     <Compile Include="Textures\TextureImporter.cs" />
     <Compile Include="PreviewerCompilerNames.cs" />
-    <Compile Include="UIImage\UIImageGroupCompiler.cs" />
-    <Compile Include="UIImage\UIImageGroupAsset.cs" />
-    <Compile Include="UIImage\UIImageInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

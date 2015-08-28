@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 
 namespace SiliconStudio.Core.Mathematics
@@ -13,6 +14,8 @@ namespace SiliconStudio.Core.Mathematics
     {
         private readonly List<Rectangle> freeRectangles = new List<Rectangle>();
         private readonly List<Rectangle> tempFreeRectangles = new List<Rectangle>();
+
+        public delegate void InsertRectangleCallback(int cascadeIndex, ref Rectangle rectangle);
 
         public int Width { get; private set; }
         public int Height { get; private set; }
@@ -53,7 +56,7 @@ namespace SiliconStudio.Core.Mathematics
             return Insert(width, height, freeRectangles, ref bestRectangle);
         }
 
-        public bool TryInsert(int width, int height, int count)
+        public bool TryInsert(int width, int height, int count, InsertRectangleCallback inserted)
         {
             var bestRectangle = new Rectangle();
             tempFreeRectangles.Clear();
@@ -66,6 +69,8 @@ namespace SiliconStudio.Core.Mathematics
                     tempFreeRectangles.Clear();
                     return false;
                 }
+
+                inserted(i, ref bestRectangle);
             }
 
             // if the insertion went well, use the new configuration
@@ -76,7 +81,7 @@ namespace SiliconStudio.Core.Mathematics
             return true;
         }
 
-        private static bool Insert(int width, int height, List<Rectangle> freeRectanglesList , ref Rectangle bestRectangle)
+        private static bool Insert(int width, int height, List<Rectangle> freeRectanglesList, ref Rectangle bestRectangle)
         {
             // Info on algorithm: http://clb.demon.fi/files/RectangleBinPack.pdf
             int bestScore = int.MaxValue;

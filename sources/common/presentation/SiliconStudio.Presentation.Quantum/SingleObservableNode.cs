@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Presentation.ViewModel.ActionStack;
@@ -14,9 +15,13 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public abstract class SingleObservableNode : ObservableNode
     {
-        public static readonly string[] ReservedNames = { "Owner", "Name", "DisplayName", "Path", "Parent", "Root", "Type", "IsPrimitive", "IsVisible", "IsReadOnly", "Value", "TypedValue", "Index", "Guid", "Children", "Commands", "AssociatedData", "HasList", "HasDictionary", "CombinedNodes", "HasMultipleValues", "HasMultipleInitialValues", "ResetInitialValues", "DistinctInitialValues" };
         protected string[] DisplayNameDependentProperties;
         protected Func<string> DisplayNameProvider;
+
+        static SingleObservableNode()
+        {
+            typeof(SingleObservableNode).GetProperties().Select(x => x.Name).ForEach(x => ReservedNames.Add(x));
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SingleObservableNode"/> class.
@@ -48,7 +53,7 @@ namespace SiliconStudio.Presentation.Quantum
         public void SetDisplayNameProvider(Func<string> provider, params string[] dependentProperties)
         {
             DisplayNameProvider = provider;
-            DisplayNameDependentProperties = dependentProperties;
+            DisplayNameDependentProperties = dependentProperties != null ? dependentProperties.Select(EscapeName).ToArray() : null;
             if (provider != null)
                 DisplayName = provider();
         }
@@ -121,10 +126,7 @@ namespace SiliconStudio.Presentation.Quantum
                 }
             }
 
-            if (ReservedNames.Contains(Name))
-            {
-                Name += "_";
-            }
+            Name = EscapeName(Name);
         }
     }
 }

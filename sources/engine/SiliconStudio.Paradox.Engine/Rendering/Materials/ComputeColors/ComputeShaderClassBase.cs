@@ -55,6 +55,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         /// The generics of the shader. There is no need to edit the list, it is automatically filled when the shader is loaded.
         /// </userdoc>
         [DataMember(30)]
+        [MemberCollection(ReadOnly = true)]
         public ComputeColorParameters Generics { get; set; }
         
         /// <summary>
@@ -64,6 +65,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         /// The compositions of the shader where material nodes can be attached. There is no need to edit the list, it is automatically filled when the shader is loaded.
         /// </userdoc>
         [DataMember(40)]
+        [MemberCollection(ReadOnly = true)]
         public Dictionary<string, T> CompositionNodes { get; set; }
 
         /// <summary>
@@ -72,7 +74,8 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         /// <userdoc>
         /// The editables values of this shader. There is no need to edit the list, it is automatically filled when the shader is loaded.
         /// </userdoc>
-        [DataMember(50)]
+        [DataMemberIgnore]
+        [MemberCollection(ReadOnly = true)]
         public Dictionary<ParameterKey, object> Members { get; set; }
 
         #endregion

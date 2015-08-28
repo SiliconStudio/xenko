@@ -17,7 +17,7 @@
     <PlatformToolset>v110</PlatformToolset>
     <FbxLibVersionDir>vs2012/</FbxLibVersionDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(VisualStudioVersion)' == '12.0'">
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '12.0' Or '$(VisualStudioVersion)' == '14.0'">
     <PlatformToolset>v120</PlatformToolset>
     <FbxLibVersionDir>vs2013/</FbxLibVersionDir>
   </PropertyGroup>
@@ -100,10 +100,8 @@
       <AdditionalOptions>/ignore:4049 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <CustomBuildStep>
-      <Command>copy "$(FbxSdkDir)\lib\$(FbxLibVersionDir)x86\debug\libfbxsdk.dll" "$(TargetDir)"</Command>
-    </CustomBuildStep>
-    <CustomBuildStep>
-      <Outputs>$(TargetDir)libfbxsdk.dll;%(Outputs)</Outputs>
+      <Command>xcopy /D /Y "$(FbxSdkDir)\lib\$(FbxLibVersionDir)x86\debug\libfbxsdk.dll" "$(TargetDir)x86"</Command>
+      <Outputs>$(TargetDir)x86\libfbxsdk.dll;%(Outputs)</Outputs>
       <Inputs>$(FbxSdkDir)\lib\$(FbxLibVersionDir)x86\release\libfbxsdk.dll</Inputs>
       <TreatOutputAsContent>true</TreatOutputAsContent>
     </CustomBuildStep>
@@ -123,10 +121,8 @@
       <AdditionalOptions>/ignore:4049 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <CustomBuildStep>
-      <Command>copy "$(FbxSdkDir)\lib\$(FbxLibVersionDir)x86\release\libfbxsdk.dll" "$(TargetDir)"</Command>
-    </CustomBuildStep>
-    <CustomBuildStep>
-      <Outputs>$(TargetDir)libfbxsdk.dll;%(Outputs)</Outputs>
+	  <Command>xcopy /D /Y "$(FbxSdkDir)\lib\$(FbxLibVersionDir)x86\release\libfbxsdk.dll" "$(TargetDir)x86"</Command>
+      <Outputs>$(TargetDir)x86\libfbxsdk.dll;%(Outputs)</Outputs>
       <Inputs>$(FbxSdkDir)\lib\$(FbxLibVersionDir)x86\release\libfbxsdk.dll</Inputs>
       <TreatOutputAsContent>true</TreatOutputAsContent>
     </CustomBuildStep>
@@ -152,10 +148,8 @@
       <AdditionalOptions>/ignore:4049 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <CustomBuildStep>
-      <Command>copy "$(FbxSdkDir)\lib\$(FbxLibVersionDir)x64\debug\libfbxsdk.dll" "$(TargetDir)"</Command>
-    </CustomBuildStep>
-    <CustomBuildStep>
-      <Outputs>$(TargetDir)libfbxsdk.dll;%(Outputs)</Outputs>
+	  <Command>xcopy /D /Y "$(FbxSdkDir)\lib\$(FbxLibVersionDir)x64\debug\libfbxsdk.dll" "$(TargetDir)x64"</Command>
+      <Outputs>$(TargetDir)x64\libfbxsdk.dll;%(Outputs)</Outputs>
       <Inputs>$(FbxSdkDir)\lib\$(FbxLibVersionDir)x64\release\libfbxsdk.dll</Inputs>
       <TreatOutputAsContent>true</TreatOutputAsContent>
     </CustomBuildStep>
@@ -175,10 +169,8 @@
       <AdditionalOptions>/ignore:4049 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <CustomBuildStep>
-      <Command>copy "$(FbxSdkDir)\lib\$(FbxLibVersionDir)x64\release\libfbxsdk.dll" "$(TargetDir)"</Command>
-    </CustomBuildStep>
-    <CustomBuildStep>
-      <Outputs>$(TargetDir)libfbxsdk.dll;%(Outputs)</Outputs>
+	  <Command>xcopy /D /Y "$(FbxSdkDir)\lib\$(FbxLibVersionDir)x64\release\libfbxsdk.dll" "$(TargetDir)x64"</Command>
+      <Outputs>$(TargetDir)x64\libfbxsdk.dll;%(Outputs)</Outputs>
       <Inputs>$(FbxSdkDir)\lib\$(FbxLibVersionDir)x64\release\libfbxsdk.dll</Inputs>
       <TreatOutputAsContent>true</TreatOutputAsContent>
     </CustomBuildStep>

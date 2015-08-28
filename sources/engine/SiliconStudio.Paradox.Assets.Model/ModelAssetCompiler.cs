@@ -26,7 +26,8 @@ namespace SiliconStudio.Paradox.Assets.Model
             var assetDirectory = assetAbsolutePath.GetParent();
             var assetSource = UPath.Combine(assetDirectory, asset.Source);
 
-            var allow32BitIndex = context.GetGraphicsProfile() >= GraphicsProfile.Level_9_2;
+            var gameSettingsAsset = context.GetGameSettingsAsset();
+            var allow32BitIndex = gameSettingsAsset.DefaultGraphicsProfile >= GraphicsProfile.Level_9_2;
             var allowUnsignedBlendIndices = context.GetGraphicsPlatform() != GraphicsPlatform.OpenGLES;
             var extension = asset.Source.GetFileExtension();
 
@@ -43,8 +44,8 @@ namespace SiliconStudio.Paradox.Assets.Model
                                 Compact = asset.Compact,
                                 PreservedNodes = asset.PreservedNodes,
                                 Materials = asset.Materials,
-                                ScaleImport = asset.ScaleImport,
-                            },
+                                ScaleImport = asset.ScaleImport
+                            }
                     };
             }
             else if (ImportAssimpCommand.IsSupportingExtensions(extension))
@@ -60,8 +61,8 @@ namespace SiliconStudio.Paradox.Assets.Model
                                 Compact = asset.Compact,
                                 PreservedNodes = asset.PreservedNodes,
                                 Materials = asset.Materials,
-                                ScaleImport = asset.ScaleImport,
-                            },
+                                ScaleImport = asset.ScaleImport
+                            }
                     };
             }
             else

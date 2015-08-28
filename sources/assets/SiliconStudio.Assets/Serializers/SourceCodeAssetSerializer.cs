@@ -4,7 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using SiliconStudio.Core.Yaml;
+
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Assets.Serializers
 {
@@ -23,43 +24,22 @@ namespace SiliconStudio.Assets.Serializers
             RegisteredExtensions.Add(assetFileExtension, assetType);
         }
 
-        public object Load(Stream stream, string assetFileExtension)
+        public object Load(Stream stream, string assetFileExtension, ILogger log, out bool aliasOccurred)
         {
+            aliasOccurred = false;
             var type = RegisteredExtensions[assetFileExtension];
             var asset = (SourceCodeAsset)Activator.CreateInstance(type);
-            asset.Text = new StreamReader(stream).ReadToEnd();
             return asset;
         }
 
-        public void Save(Stream stream, object asset)
+        public void Save(Stream stream, object asset, ILogger log)
         {
-            using (var writer = new StreamWriter(stream, Encoding.UTF8, 16384, true))
-            {
-                writer.Write(((SourceCodeAsset)asset).Text);
-            }
+            ((SourceCodeAsset)asset).Save(stream);
         }
 
         public IAssetSerializer TryCreate(string assetFileExtension)
         {
             return RegisteredExtensions.ContainsKey(assetFileExtension) ? this : null;
-        }
-    }
-
-    internal class AssetYamlSerializer : IAssetSerializer, IAssetSerializerFactory
-    {
-        public object Load(Stream stream, string assetFileExtension)
-        {
-            return YamlSerializer.Deserialize(stream);
-        }
-
-        public void Save(Stream stream, object asset)
-        {
-            YamlSerializer.Serialize(stream, asset);
-        }
-
-        public IAssetSerializer TryCreate(string assetFileExtension)
-        {
-            return this;
         }
     }
 }

@@ -20,14 +20,9 @@ namespace SiliconStudio.Paradox.Engine
     [Display(100, "Sprite", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(SpriteComponentRenderer))]
     [DefaultEntityComponentProcessor(typeof(SpriteProcessor))]
-    public sealed class SpriteComponent : EntityComponent
+    public sealed class SpriteComponent : ActivableEntityComponent
     {
         public static PropertyKey<SpriteComponent> Key = new PropertyKey<SpriteComponent>("Key", typeof(SpriteComponent));
-        
-        /// <summary>
-        /// The sprites to play.
-        /// </summary>
-        internal ISpriteProvider SpriteProviderInternal;
 
         /// <summary>
         /// The group of sprites associated to the component.
@@ -36,18 +31,7 @@ namespace SiliconStudio.Paradox.Engine
         [DataMember(5)]
         [Display("Source")]
         [NotNull]
-        public ISpriteProvider SpriteProvider
-        {
-            get { return SpriteProviderInternal; }
-            set
-            {
-                if(SpriteProviderInternal == value)
-                    return;
-
-                SpriteProviderInternal = value;
-                CurrentFrame = 0;
-            }
-        }
+        public ISpriteProvider SpriteProvider { get; set; }
 
         /// <summary>
         /// The type of the sprite.
@@ -57,14 +41,6 @@ namespace SiliconStudio.Paradox.Engine
         [DefaultValue(SpriteType.Sprite)]
         [Display("Type")]
         public SpriteType SpriteType;
-
-        /// <summary>
-        /// Gets or set the sprite extrusion method.
-        /// </summary>
-        [DataMember(30)]
-        [DefaultValue(SpriteExtrusionMethod.UnitHeightSpriteRatio)]
-        [Display("Extrusion")]
-        public SpriteExtrusionMethod ExtrusionMethod { get; set; }
 
         /// <summary>
         /// The color to apply on the sprite.
@@ -99,15 +75,17 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         public SpriteComponent()
         {
-            SpriteProviderInternal = new SpriteFromSpriteGroup();
-            ExtrusionMethod = SpriteExtrusionMethod.UnitHeightSpriteRatio;
+            SpriteProvider = new SpriteFromSheet();
             PremultipliedAlpha = true;
         }
 
         /// <summary>
         /// Gets or sets the current frame of the animation.
         /// </summary>
-        [DataMemberIgnore]
+        /// <userdoc>The index of the default frame of the sprite sheet to use.</userdoc>
+        [DataMember(8)]
+        [DefaultValue(0)]
+        [Display("Default Frame")]
         public int CurrentFrame { get; set; }
 
         /// <summary>
@@ -118,10 +96,10 @@ namespace SiliconStudio.Paradox.Engine
         {
             get
             {
-                if (SpriteProviderInternal == null)
+                if (SpriteProvider == null)
                     return null;
 
-                return SpriteProviderInternal.GetSprite(CurrentFrame);
+                return SpriteProvider.GetSprite(CurrentFrame);
             }
         }
 

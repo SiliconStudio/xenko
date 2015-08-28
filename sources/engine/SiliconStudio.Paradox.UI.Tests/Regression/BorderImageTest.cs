@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Class for rendering tests on the <see cref="ImageElement"/> 
     /// </summary>
-    public class BorderImageTest : UnitTestGameBase
+    public class BorderImageTest : UITestGameBase
     {
         private StackPanel stackPanel;
 
@@ -27,11 +27,11 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            var uiImage = new UIImage(Asset.Load<Texture>("BorderButton")) { Borders = new Vector4(64, 64, 64, 64) };
+            var sprite = new Sprite(Asset.Load<Texture>("BorderButton")) { Borders = new Vector4(64, 64, 64, 64) };
 
-            var bi1 = new ImageElement { Source = uiImage, Height = 150 };
-            var bi2 = new ImageElement { Source = uiImage, Height = 300 };
-            var bi3 = new ImageElement { Source = uiImage, Height = 500 };
+            var bi1 = new ImageElement { Source = sprite, Height = 150 };
+            var bi2 = new ImageElement { Source = sprite, Height = 300 };
+            var bi3 = new ImageElement { Source = sprite, Height = 500 };
 
             stackPanel = new StackPanel { Orientation = Orientation.Vertical };
             stackPanel.Children.Add(bi1);

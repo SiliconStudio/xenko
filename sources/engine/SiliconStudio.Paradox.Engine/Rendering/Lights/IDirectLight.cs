@@ -2,34 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Rendering.Lights
 {
-    /// <summary>
-    /// Importance of a shadow.
-    /// </summary>
-    public enum LightShadowImportance
-    {
-        /// <summary>
-        /// A low importance means that the shadow has a low visual impact. 
-        /// (e.g shadows from point lights)
-        /// </summary>
-        Low,
-
-        /// <summary>
-        /// A medium importance shadow means the shadow has a medium visual impact. 
-        /// (e.g shadows from spot lights)
-        /// </summary>
-        Medium,
-
-        /// <summary>
-        /// A high importance means the shadow has a high visual impact.
-        /// (e.g shadows from directional lights)
-        /// </summary>
-        High
-    }
-
     /// <summary>
     /// Base interface for all direct lights.
     /// </summary>

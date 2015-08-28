@@ -11,11 +11,13 @@ namespace SiliconStudio.Paradox.Rendering
         /// <summary>
         /// No culling is applied to meshes.
         /// </summary>
+        /// <userdoc>No specific culling</userdoc>
         None,
 
         /// <summary>
         /// Meshes outside of the camera's view frustum will be culled.
         /// </summary>
+        /// <userdoc>Skip all entities out of the camera frustum.</userdoc>
         Frustum
     }
 }

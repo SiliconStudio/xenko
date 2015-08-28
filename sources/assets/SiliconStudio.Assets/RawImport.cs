@@ -1,5 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Core;
@@ -11,6 +13,7 @@ namespace SiliconStudio.Assets
     /// Describes a raw import, as used in project file.
     /// </summary>
     [DataContract("RawImport")]
+    [Obsolete]
     public sealed class RawImport
     {
         public RawImport()

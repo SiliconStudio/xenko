@@ -6,7 +6,6 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Rendering

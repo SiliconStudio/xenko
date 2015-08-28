@@ -48,10 +48,10 @@
     <IntermediateOutputPath>obj\Windows\Release\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Paradox.Graphics.Tests.TestMultipleRenderTargets</StartupObject>
+    <StartupObject>SiliconStudio.Paradox.Graphics.Tests.TestSpriteBatch3D</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
@@ -256,7 +256,6 @@
     <Compile Include="TestDynamicSpriteFontVarious.cs" />
     <Compile Include="TestExternSpriteFont.cs" />
     <Compile Include="TestFontManager.cs" />
-    <Compile Include="TestGraphicsResourceAllocator.cs" />
     <Compile Include="TestHammersley.cs" />
     <Compile Include="TestImageEffect.cs" />
     <Compile Include="TestImageLoad.cs" />
@@ -267,6 +266,7 @@
     <Compile Include="TestRadiancePrefilteringGGX.cs" />
     <Compile Include="TestScene.cs" />
     <Compile Include="TestSprite.cs" />
+    <Compile Include="TestSpriteBatch3D.cs" />
     <Compile Include="TestSpriteBatchResolution.cs" />
     <Compile Include="TestSpriteBatchToTexture.cs" />
     <Compile Include="TestSpriteFont.cs" />

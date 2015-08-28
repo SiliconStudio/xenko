@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Engine
     [Display(120, "Light", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(LightComponentRenderer), -10)]
     [DefaultEntityComponentProcessor(typeof(LightProcessor))]
-    public sealed class LightComponent : EntityComponent
+    public sealed class LightComponent : ActivableEntityComponent
     {
         public static PropertyKey<LightComponent> Key = new PropertyKey<LightComponent>("Key", typeof(LightComponent));
 
@@ -40,6 +40,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets the type of the light.
         /// </summary>
         /// <value>The type of the light.</value>
+        /// <userdoc>The type of the light</userdoc>
         [DataMember(10)]
         [NotNull]
         [Display("Light", Expand = ExpandRule.Always)]
@@ -49,6 +50,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets or sets the light intensity.
         /// </summary>
         /// <value>The light intensity.</value>
+        /// <userdoc>The intensity of the light.</userdoc>
         [DataMember(30)]
         [DefaultValue(1.0f)]
         public float Intensity { get; set; }
@@ -59,6 +61,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The layer mask.
         /// </value>
+        /// <userdoc>The group of entities that this light belongs to.</userdoc>
         [DataMember(40)]
         [DefaultValue(EntityGroupMask.All)]
         public EntityGroupMask CullingMask { get; set; }

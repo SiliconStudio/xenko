@@ -1,5 +1,8 @@
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Specialized;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Paradox.Engine.Design;
 
@@ -41,7 +44,9 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>
         /// The scripts.
         /// </value>
+        /// <userdoc>The list of scripts attached to the entity</userdoc>
         [Display("Script", Expand = ExpandRule.Always)]
+        [MemberCollection(CanReorderItems = true)]
         public TrackingCollection<Script> Scripts { get; private set; }
 
         /// <inheritdoc/>

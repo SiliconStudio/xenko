@@ -29,8 +29,16 @@ namespace SiliconStudio.Paradox.Assets.Entities
         }
 
         public EntityDiffNode(EntityHierarchyData entityHierarchy)
-            : this(entityHierarchy, entityHierarchy.RootEntity)
         {
+            if (entityHierarchy.RootEntities.Count > 0)
+            {
+                Children = new List<EntityDiffNode>();
+
+                foreach (var entity in entityHierarchy.RootEntities)
+                {
+                    Children.Add(new EntityDiffNode(entityHierarchy, entity));
+                }
+            }
         }
 
         public EntityDiffNode(EntityHierarchyData entityHierarchy, Guid entityGuid)

@@ -1,9 +1,10 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.ComponentModel;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Rendering.Composers;
 
@@ -12,18 +13,33 @@ namespace SiliconStudio.Paradox.Rendering
     /// <summary>
     /// Base implementation for a <see cref="ISceneRenderer"/>.
     /// </summary>
-    [DataContract]
+    [DataContract(Inherited = true)]
     public abstract class SceneRendererBase : RendererBase, ISceneRenderer
     {
         protected SceneRendererBase()
         {
             Output = new CurrentRenderFrameProvider();
             Parameters = new ParameterCollection();
+            ResetGraphicsStates = true;
         }
 
+        /// <summary>
+        /// Gets or sets the output of the scene renderer
+        /// </summary>
+        /// <userdoc>Specify the render frame to use as output of the scene renderer</userdoc>
         [DataMember(100)]
         [NotNull]
         public ISceneRendererOutput Output { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to reset the graphics states after this scene renderer is executed.
+        /// </summary>
+        /// <value><c>true</c> to reset the graphics states after this scene renderer is executed.; otherwise, <c>false</c>.</value>
+        /// <userdoc>If this option is selected, the graphics states (blend, depth...etc.) are reseted after this scene renderer is executed.</userdoc>
+        [Display("Reset Graphics States?")]
+        [DataMember(110)]
+        [DefaultValue(true)]
+        public bool ResetGraphicsStates { get; set; }
 
         /// <summary>
         /// Gets the parameters used to in place of the default <see cref="RenderContext.Parameters"/>.
@@ -85,8 +101,11 @@ namespace SiliconStudio.Paradox.Rendering
                 {
                     context.PopParameters();
 
-                    // Make sure that states are clean after this rendering
-                    context.GraphicsDevice.ResetStates();
+                    if (ResetGraphicsStates)
+                    {
+                        // Make sure that states are clean after this rendering
+                        context.GraphicsDevice.ResetStates();
+                    }
                 }
             }
         }

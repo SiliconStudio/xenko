@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
     /// </summary>
     [DataContract("MaterialSpecularMicrofacetModelFeature")]
     [Display("Microfacet")]
-    public class MaterialSpecularMicrofacetModelFeature : IMaterialSpecularModelFeature, IEquatable<MaterialSpecularMicrofacetModelFeature>
+    public class MaterialSpecularMicrofacetModelFeature : MaterialFeature, IMaterialSpecularModelFeature, IEquatable<MaterialSpecularMicrofacetModelFeature>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialSpecularMicrofacetModelFeature"/> class.
@@ -35,22 +35,27 @@ namespace SiliconStudio.Paradox.Rendering.Materials
             }
         }
 
+        /// <userdoc>Specify the function to use to calculate the Fresnel component of the micro-facet lighting equation. 
+        /// This defines the amount of the incoming light that is reflected.</userdoc>
         [DataMember(10)]
         [Display("Fresnel")]
         [NotNull]
         public IMaterialSpecularMicrofacetFresnelFunction Fresnel { get; set; }
 
+        /// <userdoc>Specify the function to use to calculate the visibility component of the micro-facet lighting equation.</userdoc>
         [DataMember(20)]
         [Display("Visibility")]
         [NotNull]
         public IMaterialSpecularMicrofacetVisibilityFunction Visibility { get; set; }
 
+        /// <userdoc>Specify the function to use to calculate the normal distribution in the micro-facet lighting equation. 
+        /// This defines how the normal is distributed.</userdoc>
         [DataMember(30)]
         [Display("Normal Distribution")]
         [NotNull]
         public IMaterialSpecularMicrofacetNormalDistributionFunction NormalDistribution { get; set; }
 
-        public virtual void Visit(MaterialGeneratorContext context)
+        public override void VisitFeature(MaterialGeneratorContext context)
         {
             var shaderSource = new ShaderMixinSource();
             shaderSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceShadingSpecularMicrofacet"));

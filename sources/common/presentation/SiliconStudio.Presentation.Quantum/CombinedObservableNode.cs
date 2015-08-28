@@ -21,6 +21,11 @@ namespace SiliconStudio.Presentation.Quantum
         protected static readonly HashSet<CombinedObservableNode> ChangedNodes = new HashSet<CombinedObservableNode>();
         protected static bool ChangeInProgress;
 
+        static CombinedObservableNode()
+        {
+            typeof(CombinedObservableNode).GetProperties().Select(x => x.Name).ForEach(x => ReservedNames.Add(x));
+        }
+
         protected CombinedObservableNode(ObservableViewModel ownerViewModel, string name, IEnumerable<SingleObservableNode> combinedNodes, object index)
             : base(ownerViewModel, index)
         {

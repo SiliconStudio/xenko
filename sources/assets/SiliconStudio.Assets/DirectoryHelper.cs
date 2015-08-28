@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System;
 using System.IO;
 
 using SiliconStudio.Core;
@@ -26,16 +28,17 @@ namespace SiliconStudio.Assets
             if (packageDirectoryOverride != null)
                 return packageDirectoryOverride;
 
-            var thisAssemblyLocation = typeof(DirectoryHelper).Assembly.Location;
-            var binDirectory = !String.IsNullOrWhiteSpace(thisAssemblyLocation) ? new FileInfo(thisAssemblyLocation).Directory : null;
-            if (binDirectory != null && binDirectory.Parent != null && binDirectory.Parent.Parent != null)
+
+            var appDomain = AppDomain.CurrentDomain;
+            var binDirectory = new DirectoryInfo(appDomain.BaseDirectory);
+            if (binDirectory.Parent != null && binDirectory.Parent.Parent != null)
             {
                 var defaultPackageDirectoryTemp = binDirectory.Parent.Parent;
 
                 // If we have a root directory, then store it as the default package directory
                 if (!IsPackageDirectory(defaultPackageDirectoryTemp.FullName, packageName))
                 {
-                    throw new InvalidOperationException("The current assembly [{0}] is not part of the package [{1}]".ToFormat(thisAssemblyLocation, packageName));
+                    throw new InvalidOperationException("The current AppDomain.BaseDirectory [{0}] is not part of the package [{1}]".ToFormat(binDirectory, packageName));
                 }
                 return defaultPackageDirectoryTemp.FullName;
             }

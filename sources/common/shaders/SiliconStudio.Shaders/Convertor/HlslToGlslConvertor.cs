@@ -1892,6 +1892,16 @@ namespace SiliconStudio.Shaders.Convertor
                 }
             }
 
+            // Scalars can only be swizzled in OpenGL 4.2. Wrap in vector type.
+            var scalarType = expression.Target.TypeInference.TargetType as ScalarType;
+            if (scalarType != null && expression.Member.Text.All(x => x == 'x'))
+            {
+                var targetAsVector = new MethodInvocationExpression(new TypeReferenceExpression(new VectorType(scalarType, expression.Member.Text.Length)));
+                targetAsVector.Arguments.Add(expression.Target);
+
+                return targetAsVector;
+            }
+
             return expression;
         }
 

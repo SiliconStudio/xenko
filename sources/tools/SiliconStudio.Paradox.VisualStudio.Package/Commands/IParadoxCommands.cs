@@ -10,6 +10,10 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
     /// <summary>
     /// Describes paradox commands accessed by VS Package to current paradox package (so that VSPackage doesn't depend on Paradox assemblies).
     /// </summary>
+    /// <remarks>
+    /// WARNING: Modifying this contract or any of it's dependencies will break backwards compatibility!
+    /// Introduce a new contract instead (e.g. IParadoxCommands2).
+    /// </remarks>
     public interface IParadoxCommands
     {
         /// <summary>

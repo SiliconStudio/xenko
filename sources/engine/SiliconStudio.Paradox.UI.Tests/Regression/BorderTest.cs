@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Regression tests for <see cref="Border"/>
     /// </summary>
-    public class BorderTest : UnitTestGameBase
+    public class BorderTest : UITestGameBase
     {
         private Border border;
 
@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            border = new Border { Width = 200, Height = 150, Content = new Button { NotPressedImage = new UIImage(Asset.Load<Texture>("uv")), DepthAlignment = DepthAlignment.Back}};
+            border = new Border { Width = 200, Height = 150, Content = new Button { NotPressedImage = new Sprite(Asset.Load<Texture>("uv")), DepthAlignment = DepthAlignment.Back}};
             border.SetCanvasPinOrigin(new Vector3(0.5f));
             
             border.BackgroundColor = Color.Red;

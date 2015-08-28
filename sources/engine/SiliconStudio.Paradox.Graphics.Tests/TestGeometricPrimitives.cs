@@ -37,7 +37,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         public TestGeometricPrimitives()
         {
-            CurrentVersion = 6;
+            CurrentVersion = 7;
         }
 
         protected override void RegisterTests()
@@ -72,7 +72,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                                  GeometricPrimitive.Cylinder.New(GraphicsDevice),
                                  GeometricPrimitive.Torus.New(GraphicsDevice),
                                  GeometricPrimitive.Teapot.New(GraphicsDevice),
-                                 GeometricPrimitive.Capsule.New(GraphicsDevice, 0.25f, 0.3f),
+                                 GeometricPrimitive.Capsule.New(GraphicsDevice, 0.5f, 0.3f),
                                  GeometricPrimitive.Cone.New(GraphicsDevice)
                              };
 

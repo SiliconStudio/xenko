@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using NuGet;
@@ -595,6 +596,18 @@ namespace SiliconStudio.Assets
             }
         }
 
+        /// <summary>
+        /// Loads the assembly references that were not loaded before.
+        /// </summary>
+        /// <param name="log">The log.</param>
+        public void UpdateAssemblyReferences(LoggerResult log)
+        {
+            foreach (var package in LocalPackages)
+            {
+                package.UpdateAssemblyReferences(log);
+            }
+        }
+
         private bool CheckModifiedPackages()
         {
             if (IsDirty)
@@ -668,6 +681,10 @@ namespace SiliconStudio.Assets
             if (package.IsSystem)
                 return;
 
+            // Freeze only when assets are loaded
+            if (package.State < PackageState.AssetsReady)
+                return;
+
             packagesCopy.Add(package.Clone(false));
         }
 
@@ -718,16 +735,24 @@ namespace SiliconStudio.Assets
                 package.IsSystem = isSystemPackage;
 
                 // Convert UPath to absolute (Package only)
-                if (loadParameters.ConvertUPathToAbsolute)
+                // Removed for now because it is called again in PackageSession.LoadAssembliesAndAssets (and running it twice result in dirty package)
+                // If we remove it from here (and call it only in the other method), templates are not loaded (Because they are loaded via the package store that do not use PreLoadPackage)
+                //if (loadParameters.ConvertUPathToAbsolute)
+                //{
+                //    var analysis = new PackageAnalysis(package, new PackageAnalysisParameters()
+                //    {
+                //        ConvertUPathTo = UPathType.Absolute,
+                //        SetDirtyFlagOnAssetWhenFixingAbsoluteUFile = true,
+                //        IsProcessingUPaths = true,
+                //    });
+                //    analysis.Run(log);
+                //}
+                // If the package doesn't have a meta name, fix it here (This is supposed to be done in the above disabled analysis - but we still need to do it!)
+                if (string.IsNullOrWhiteSpace(package.Meta.Name) && package.FullPath != null)
                 {
-                    var analysis = new PackageAnalysis(package, new PackageAnalysisParameters()
-                    {
-                        ConvertUPathTo = UPathType.Absolute,
-                        IsProcessingUPaths = true,
-                    });
-                    analysis.Run(log);
+                    package.Meta.Name = package.FullPath.GetFileName();
+                    package.IsDirty = true;
                 }
-
 
                 // Add the package has loaded before loading dependencies
                 loadedPackages.Add(package);
@@ -805,8 +830,28 @@ namespace SiliconStudio.Assets
                     }
                 }
 
+                // Prepare asset loading
+                var newLoadParameters = loadParameters.Clone();
+                newLoadParameters.AssemblyContainer = session.assemblyContainer;
+
+                // Default package version override
+                newLoadParameters.ExtraCompileProperties = new Dictionary<string, string>();
+                var defaultPackageOverride = NugetStore.GetPackageVersionVariable(PackageStore.Instance.DefaultPackageName) + "Override";
+                var defaultPackageVersion = PackageStore.Instance.DefaultPackageVersion.Version;
+                newLoadParameters.ExtraCompileProperties.Add(defaultPackageOverride, new Version(defaultPackageVersion.Major, defaultPackageVersion.Minor).ToString());
+                if (loadParameters.ExtraCompileProperties != null)
+                {
+                    foreach (var property in loadParameters.ExtraCompileProperties)
+                    {
+                        newLoadParameters.ExtraCompileProperties[property.Key] = property.Value;
+                    }
+                }
+
+                // Load assemblies
+                package.LoadAssemblies(log, newLoadParameters);
+
                 // Load list of assets
-                var assetFiles = Package.ListAssetFiles(log, package, loadParameters.CancelToken);
+                newLoadParameters.AssetFiles = Package.ListAssetFiles(log, package, loadParameters.CancelToken);
 
                 if (pendingPackageUpgrades.Count > 0)
                 {
@@ -828,7 +873,7 @@ namespace SiliconStudio.Assets
                     {
                         var packageUpgrader = pendingPackageUpgrade.PackageUpgrader;
                         var dependencyPackage = pendingPackageUpgrade.DependencyPackage;
-                        if (!packageUpgrader.Upgrade(session, log, package, pendingPackageUpgrade.Dependency, dependencyPackage, assetFiles))
+                        if (!packageUpgrader.Upgrade(session, log, package, pendingPackageUpgrade.Dependency, dependencyPackage, newLoadParameters.AssetFiles))
                         {
                             log.Error("Error while upgrading package [{0}] for [{1}] from version [{2}] to [{3}]", package.Meta.Name, dependencyPackage.Meta.Name, pendingPackageUpgrade.Dependency.Version, dependencyPackage.Meta.Version);
                             return false;
@@ -842,22 +887,17 @@ namespace SiliconStudio.Assets
                     package.IsDirty = true;
                 }
 
-                // Process the package for assets
-                var newLoadParameters = loadParameters.Clone();
-                newLoadParameters.AssetFiles = assetFiles;
-                newLoadParameters.AssemblyContainer = session.assemblyContainer;
-
-                // Load assemblies and assets
-                package.LoadAssembliesAndAssets(log, newLoadParameters);
+                // Load assets
+                package.LoadAssets(log, newLoadParameters);
 
                 // Validate assets from package
                 package.ValidateAssets(newLoadParameters.GenerateNewAssetIds);
 
-                // Freeze the package after loading the assets
-                session.FreezePackage(package);
-
                 // Mark package as ready
                 package.State = PackageState.AssetsReady;
+
+                // Freeze the package after loading the assets
+                session.FreezePackage(package);
 
                 return true;
             }

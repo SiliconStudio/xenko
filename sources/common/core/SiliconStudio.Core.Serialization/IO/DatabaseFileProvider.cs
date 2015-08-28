@@ -47,7 +47,7 @@ namespace SiliconStudio.Core.IO
                 if (url.StartsWith("obj/"))
                     ObjectId.TryParse(url.Substring(4), out objectId);
                 else if (!assetIndexMap.TryGetValue(url, out objectId))
-                    throw new FileNotFoundException();
+                    throw new FileNotFoundException(string.Format("Unable to find the file [{0}]", url));
 
                 var result = objectDatabase.OpenStream(objectId, mode, access, share);
 

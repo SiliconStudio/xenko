@@ -315,6 +315,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// Gets or sets the scale of the matrix; that is M11, M22, and M33.
         /// </summary>
+        /// <remarks>This property does not do any computation and will return a correct scale vector only if the matrix is a scale matrix.</remarks>
         [DataMemberIgnore]
         public Vector3 ScaleVector
         {

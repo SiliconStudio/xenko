@@ -174,7 +174,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
 
             GameTester.RunGameTest(game);
 
-            if (game.ScreenShotAutomationEnabled)
+            if (game.ScreenShotAutomationEnabled && !game.FrameGameSystem.IsUnityTestFeeding)
                 Assert.IsTrue(ImageTester.RequestImageComparisonStatus(game.CurrentTestContext.Test.FullName), "The image comparison returned false.");
         }
 

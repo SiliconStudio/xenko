@@ -1,3 +1,5 @@
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Specialized;
 using System.Diagnostics;
@@ -10,11 +12,6 @@ namespace SiliconStudio.Paradox.ConnectionRouter
 {
     public static class RouterHelper
     {
-        /// <summary>
-        /// The mutex to check if a process containing <see cref="Router"/> has been launched.
-        /// </summary>
-        public static Mutex RouterMutex = new Mutex(false, "SiliconStudioParadoxRouter");
-
         /// <summary>
         /// Gets the paradox SDK dir.
         /// </summary>

@@ -701,9 +701,8 @@ namespace SiliconStudio.Assets.Analysis
                 // No need to clone assets from readonly package 
                 var assetItemCloned = assetItem.Package.IsSystem
                     ? assetItem
-                    : new AssetItem(assetItem.Location, (Asset)AssetCloner.Clone(assetItem.Asset))
+                    : new AssetItem(assetItem.Location, (Asset)AssetCloner.Clone(assetItem.Asset), assetItem.Package)
                         {
-                            Package = assetItem.Package,
                             SourceFolder = assetItem.SourceFolder
                         };
                 

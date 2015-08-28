@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -9,9 +10,15 @@ namespace SiliconStudio.Core
 {
     public static class NativeLibrary
     {
+        private static readonly Dictionary<string, IntPtr> LoadedLibraries = new Dictionary<string, IntPtr>();
+
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         [DllImport("kernel32", EntryPoint = "LoadLibrary", SetLastError = true, CharSet = CharSet.Unicode)]
-        static extern IntPtr LoadLibrary(string lpFileName);
+        internal static extern IntPtr LoadLibrary(string lpFileName);
+
+        [DllImport("kernel32", EntryPoint = "FreeLibrary", SetLastError = true, CharSet = CharSet.Unicode)]
+        internal static extern int FreeLibrary(IntPtr libraryHandle);
+
 #elif SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
         [DllImport("PhoneAppModelHost", CharSet = CharSet.Unicode, SetLastError = true)]
         private static extern IntPtr LoadPackagedLibrary(string libraryName, uint reserved);
@@ -44,19 +51,76 @@ namespace SiliconStudio.Core
         public static void PreloadLibrary(string libraryName)
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-            var systemInfo = new SYSTEM_INFO();
-            GetNativeSystemInfo(out systemInfo);
+            lock (LoadedLibraries)
+            {
+                // If already loaded, just exit as we want to load it just once
+                var libraryNameNormalized = libraryName.ToLowerInvariant();
+                if (LoadedLibraries.ContainsKey(libraryNameNormalized))
+                {
+                    return;
+                }
 
-            string cpu;
-            if (systemInfo.processorArchitecture == PROCESSOR_ARCHITECTURE.PROCESSOR_ARCHITECTURE_ARM)
-                cpu = "ARM";
-            else
-                cpu = IntPtr.Size == 8 ? "x64" : "x86";
-            var libraryFilename = Path.Combine(Path.GetDirectoryName(typeof(NativeLibrary).Assembly.Location), cpu, libraryName);
-            var result = LoadLibrary(libraryFilename);
+                var systemInfo = new SYSTEM_INFO();
+                GetNativeSystemInfo(out systemInfo);
 
-            if (result == IntPtr.Zero)
-                throw new InvalidOperationException(string.Format("Could not load native library {0} using CPU architecture {1}.", libraryName, cpu));
+                string cpu;
+                if (systemInfo.processorArchitecture == PROCESSOR_ARCHITECTURE.PROCESSOR_ARCHITECTURE_ARM)
+                    cpu = "ARM";
+                else
+                    cpu = IntPtr.Size == 8 ? "x64" : "x86";
+
+                // We are trying to load the dll from a shadow path if it is already registered, otherwise we use it directly from the folder
+                var dllFolder = NativeLibraryInternal.GetShadowPathForNativeDll(libraryName) ?? Path.Combine(Path.GetDirectoryName(typeof(NativeLibrary).Assembly.Location), cpu);
+                var libraryFilename = Path.Combine(dllFolder, libraryName);
+                var result = LoadLibrary(libraryFilename);
+
+                if (result == IntPtr.Zero)
+                {
+                    throw new InvalidOperationException(string.Format("Could not load native library {0} from path [{1}] using CPU architecture {2}.", libraryName, libraryFilename, cpu));
+                }
+                else
+                {
+                    LoadedLibraries.Add(libraryName.ToLowerInvariant(), result);
+                }
+            }
+#endif
+        }
+
+        /// <summary>
+        /// UnLoad a specific native dynamic library loaded previously by <see cref="LoadLibrary" />.
+        /// </summary>
+        /// <param name="libraryName">Name of the library to unload.</param>
+        public static void UnLoad(string libraryName)
+        {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+            lock (LoadedLibraries)
+            {
+                var libName = libraryName.ToLowerInvariant();
+
+                IntPtr libHandle;
+                if (LoadedLibraries.TryGetValue(libName, out libHandle))
+                {
+                    FreeLibrary(libHandle);
+                    LoadedLibraries.Remove(libName);
+                }
+            }
+#endif
+        }
+
+        /// <summary>
+        /// UnLoad all native dynamic library loaded previously by <see cref="LoadLibrary"/>.
+        /// </summary>
+        public static void UnLoadAll()
+        {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+            lock (LoadedLibraries)
+            {
+                foreach (var libraryItem in LoadedLibraries)
+                {
+                    FreeLibrary(libraryItem.Value);
+                }
+                LoadedLibraries.Clear();
+            }
 #endif
         }
 

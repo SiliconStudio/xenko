@@ -144,13 +144,13 @@ namespace SiliconStudio.Paradox.Graphics
         private void Initialize(ParameterCollection usedParameters)
         {
             program = EffectProgram.New(graphicsDeviceDefault, bytecode);
-            reflection = bytecode.Reflection;
+            reflection = program.Reflection;
 
             // prepare resource bindings used internally
-            resourceBindings = new EffectParameterResourceBinding[bytecode.Reflection.ResourceBindings.Count];
+            resourceBindings = new EffectParameterResourceBinding[reflection.ResourceBindings.Count];
             for (int i = 0; i < resourceBindings.Length; i++)
             {
-                resourceBindings[i].Description = bytecode.Reflection.ResourceBindings[i];
+                resourceBindings[i].Description = reflection.ResourceBindings[i];
             }
             defaultParameters = new ParameterCollection();
             inputSignature = program.InputSignature;

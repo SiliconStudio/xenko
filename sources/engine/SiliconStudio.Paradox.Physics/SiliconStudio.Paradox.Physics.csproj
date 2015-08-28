@@ -44,18 +44,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bullet2PhysicsSystem.cs" />
-    <Compile Include="Data\Box2DColliderShapeDesc.cs" />
+    <Compile Include="Collision.cs" />
     <Compile Include="Data\BoxColliderShapeDesc.cs" />
     <Compile Include="Data\CapsuleColliderShapeDesc.cs" />
     <Compile Include="Data\ConvexHullColliderShapeDesc.cs" />
     <Compile Include="Data\CylinderColliderShapeDesc.cs" />
     <Compile Include="Data\IColliderShapeDesc.cs" />
+    <Compile Include="Elements\CharacterElement.cs" />
+    <Compile Include="Elements\DynamicRigidbodyElement.cs" />
+    <Compile Include="Elements\IPhysicsElement.cs" />
     <Compile Include="Data\SphereColliderShapeDesc.cs" />
     <Compile Include="Data\StaticPlaneColliderShapeDesc.cs" />
+    <Compile Include="Data\ColliderShapeAssetDesc.cs" />
+    <Compile Include="Elements\KinematicRigidbodyElement.cs" />
+    <Compile Include="Elements\PhysicsElementBase.cs" />
+    <Compile Include="Elements\StaticColliderElement.cs" />
+    <Compile Include="Elements\StaticRigidbodyElement.cs" />
     <Compile Include="Engine\PhysicsColliderShape.cs" />
     <Compile Include="Engine\PhysicsComponent.cs" />
-    <Compile Include="Engine\PhysicsElement.cs" />
     <Compile Include="Engine\PhysicsProcessor.cs" />
+    <Compile Include="Elements\TriggerElement.cs" />
     <Compile Include="IPhysicsSystem.cs" />
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
@@ -73,6 +81,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>PhysicsDebugEffect.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="ShapeOrientation.cs" />
     <Compile Include="Shapes\Box2DColliderShape.cs" />
     <Compile Include="Shapes\BoxColliderShape.cs" />
     <Compile Include="Shapes\CapsuleColliderShape.cs" />
@@ -97,9 +106,9 @@
     <Compile Include="Shapes\StaticPlaneColliderShape.cs" />
     <Compile Include="Constraints\TranslationalLimitMotor.cs" />
     <Compile Include="ColliderShapeTypes.cs" />
-    <Compile Include="CollisionFilterGroups.cs" />
+    <Compile Include="Elements\CollisionFilterGroups.cs" />
     <Compile Include="ConstraintTypes.cs" />
-    <Compile Include="Contact.cs" />
+    <Compile Include="ContactPoint.cs" />
     <Compile Include="HitResult.cs" />
     <Compile Include="PhysicsEngineFlags.cs" />
     <Compile Include="RigidBodyTypes.cs" />
@@ -115,6 +124,10 @@
       <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
+      <Project>{1320f627-ee43-4115-8e89-19d1753e51f2}</Project>
+      <Name>SiliconStudio.Core.MicroThreading</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
       <Project>{5210fb81-b807-49bb-af0d-31fb6a83a572}</Project>

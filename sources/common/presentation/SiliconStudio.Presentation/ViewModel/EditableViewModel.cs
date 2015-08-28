@@ -270,19 +270,16 @@ namespace SiliconStudio.Presentation.ViewModel
                 string concatPropertyName = string.Join(", ", propertyNames.Where(x => !uncancellableChanges.Contains(x)).Select(s => string.Format("'{0}'", s)));
                 if (concatPropertyName.Length > 0)
                 {
-                    if (concatPropertyName.Length > 0)
-                    {
-                        ActionStack.BeginTransaction();
-                    }
-
-                    var result = base.SetValue(hasChangedFunction, updateAction, propertyNames);
-
-                    if (concatPropertyName.Length > 0)
-                    {
-                        ActionStack.EndTransaction("Updated " + concatPropertyName);
-                    }
-                    return result;
+                    ActionStack.BeginTransaction();
                 }
+
+                var result = base.SetValue(hasChangedFunction, updateAction, propertyNames);
+
+                if (concatPropertyName.Length > 0)
+                {
+                    ActionStack.EndTransaction("Updated " + concatPropertyName);
+                }
+                return result;
             }
             return false;
         }
@@ -290,7 +287,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <inheritdoc/>
         protected override void OnPropertyChanging(params string[] propertyNames)
         {
-            foreach (string propertyName in propertyNames.Where(x => x != "IsDirty"))
+            foreach (string propertyName in propertyNames.Where(x => x != "IsDirty" && !uncancellableChanges.Contains(x)))
             {
                 PropertyInfo propertyInfo = GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
                 if (propertyInfo != null && propertyInfo.GetSetMethod() != null && propertyInfo.GetSetMethod().IsPublic)
@@ -307,7 +304,7 @@ namespace SiliconStudio.Presentation.ViewModel
         {
             base.OnPropertyChanged(propertyNames);
 
-            foreach (string propertyName in propertyNames.Where(x => x != "IsDirty"))
+            foreach (string propertyName in propertyNames.Where(x => x != "IsDirty" && !uncancellableChanges.Contains(x)))
             {
                 string displayName = string.Format("Updated '{0}'", propertyName);
                 object preEditValue;

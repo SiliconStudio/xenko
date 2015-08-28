@@ -31,6 +31,7 @@ namespace SiliconStudio.Paradox.Engine.Design
         /// Gets or sets the projection.
         /// </summary>
         /// <value>The projection.</value>
+        /// <userdoc>The type of projection used by the camera.</userdoc>
         [DataMember(20)]
         [DefaultValue(CameraProjectionMode.Perspective)]
         public CameraProjectionMode Projection { get; set; }
@@ -41,6 +42,7 @@ namespace SiliconStudio.Paradox.Engine.Design
         /// <value>
         /// The vertical field of view.
         /// </value>
+        /// <userdoc>The vertical field-of-view used by the camera (in degrees).</userdoc>
         [DataMember(30)]
         [DefaultValue(CameraComponent.DefaultVerticalFieldOfView)]
         [Display("Field Of View")]
@@ -48,11 +50,12 @@ namespace SiliconStudio.Paradox.Engine.Design
         public float VerticalFieldOfView { get; set; }
 
         /// <summary>
-        /// Gets or sets the vertical field of view in degrees.
+        /// Gets or sets the height of the orthographic projection.
         /// </summary>
         /// <value>
-        /// The vertical field of view.
+        /// The height of the orthographic projection.
         /// </value>
+        /// <userdoc>The height of the orthographic projection (the width is automatically calculated based on the target ratio).</userdoc>
         [DataMember(40)]
         [DefaultValue(CameraComponent.DefaultOrthographicSize)]
         [Display("Orthographic Size")]
@@ -64,6 +67,7 @@ namespace SiliconStudio.Paradox.Engine.Design
         /// <value>
         /// The near plane distance.
         /// </value>
+        /// <userdoc>The value of the near clip plane.</userdoc>
         [DataMember(50)]
         [DefaultValue(CameraComponent.DefaultNearClipPlane)]
         public float NearPlane { get; set; }
@@ -74,6 +78,7 @@ namespace SiliconStudio.Paradox.Engine.Design
         /// <value>
         /// The far plane distance.
         /// </value>
+        /// <userdoc>The value of the far clip plane.</userdoc>
         [DataMember(60)]
         [DefaultValue(CameraComponent.DefaultFarClipPlane)]
         public float FarPlane { get; set; }

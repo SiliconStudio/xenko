@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Class for rendering tests on the <see cref="ImageElement"/> 
     /// </summary>
-    public class ImageTest : UnitTestGameBase
+    public class ImageTest : UITestGameBase
     {
         public ImageTest()
         {
@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            UIComponent.RootElement = new ImageElement { Source = new UIImage(Asset.Load<Texture>("uv"))};
+            UIComponent.RootElement = new ImageElement { Source = new Sprite(Asset.Load<Texture>("uv"))};
         }
 
         protected override void RegisterTests()

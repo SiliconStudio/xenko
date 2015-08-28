@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 
 namespace SiliconStudio.Presentation.Collections
 {
@@ -93,6 +94,16 @@ namespace SiliconStudio.Presentation.Collections
         public void Add(T item)
         {
             list.Add(item);
+        }
+
+        public void AddRange(IEnumerable values)
+        {
+            list.AddRange(values.Cast<T>());
+        }
+        
+        public void AddRange(IEnumerable<T> values)
+        {
+            list.AddRange(values);
         }
         
         /// <inheritdoc/>

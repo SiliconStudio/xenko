@@ -13,6 +13,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <summary>
         /// The name of the node.
         /// </summary>
+        /// <userdoc>The name of the node (as it is written in the imported file).</userdoc>
         [DataMember(10), DiffUseAsset2]
         public string Name;
 
@@ -23,8 +24,11 @@ namespace SiliconStudio.Paradox.Assets.Model
         public int Depth;
 
         /// <summary>
-        /// A flag stating if the node is collapsable.
+        /// A flag stating if the node is collapsible.
         /// </summary>
+        /// <userdoc>If checked, the node is kept in the runtime version of the model. 
+        /// Otherwise, all the meshes of model are merged the node information is lost.
+        /// Nodes should be preserved in order to be animated or linked to an entity.</userdoc>
         [DataMember(30)]
         [DefaultValue(true)]
         public bool Preserve;

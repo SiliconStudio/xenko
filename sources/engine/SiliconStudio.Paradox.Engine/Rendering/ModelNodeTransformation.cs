@@ -14,6 +14,8 @@ namespace SiliconStudio.Paradox.Rendering
 
         public Matrix WorldMatrix;
 
+        public bool IsScalingNegative;
+
         /// <summary>
         /// The flags of this node.
         /// </summary>

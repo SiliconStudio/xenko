@@ -14,6 +14,7 @@ using SiliconStudio.Core.Yaml;
 using SiliconStudio.Paradox.Assets.Debugging;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Design;
+using SiliconStudio.Paradox.Engine.Processors;
 
 namespace SiliconStudio.Paradox.Debugger.Target
 {
@@ -22,11 +23,13 @@ namespace SiliconStudio.Paradox.Debugger.Target
         private readonly AssemblyContainer assemblyContainer;
         private readonly List<Assembly> assembliesToUnregister;
         private readonly List<Assembly> assembliesToRegister;
+        private readonly Game game;
 
         public LiveAssemblyReloader(Game game, AssemblyContainer assemblyContainer, List<Assembly> assembliesToUnregister, List<Assembly> assembliesToRegister)
         {
             if (game != null)
                 this.entities.AddRange(game.SceneSystem.SceneInstance);
+            this.game = game;
             this.assemblyContainer = assemblyContainer;
             this.assembliesToUnregister = assembliesToUnregister;
             this.assembliesToRegister = assembliesToRegister;
@@ -70,7 +73,8 @@ namespace SiliconStudio.Paradox.Debugger.Target
                 {
                     // Get type info
                     var objectStartTag = objectStart.Tag;
-                    var scriptType = YamlSerializer.GetSerializerSettings().TagTypeRegistry.TypeFromTag(objectStartTag);
+                    bool alias;
+                    var scriptType = YamlSerializer.GetSerializerSettings().TagTypeRegistry.TypeFromTag(objectStartTag, out alias);
                     if (scriptType != null)
                     {
                         reloadedScript.NewScript = (Script)Activator.CreateInstance(scriptType);
@@ -127,6 +131,17 @@ namespace SiliconStudio.Paradox.Debugger.Target
 
             // Dispose and unregister old script (and their MicroThread, if any)
             var oldScript = scriptComponent.Scripts[reloadedScript.ScriptIndex];
+
+            // Flag scripts as being live reloaded
+            if (game != null)
+            {
+                game.Script.LiveReload(oldScript, newScript);
+            }
+
+            // Replace with new script
+            // TODO: Remove script before serializing it, so cancellation code can run
+            scriptComponent.Scripts[reloadedScript.ScriptIndex] = newScript;
+
             oldScript.Dispose();
 
             if (oldScript.MicroThread != null && !oldScript.MicroThread.IsOver)
@@ -134,9 +149,6 @@ namespace SiliconStudio.Paradox.Debugger.Target
                 // Force the script to be cancelled
                 oldScript.MicroThread.RaiseException(new MicroThreadCancelledException());
             }
-
-            // Replace with new script
-            scriptComponent.Scripts[reloadedScript.ScriptIndex] = newScript;
         }
 
         protected class ReloadedScriptEntryLive : ReloadedScriptEntry

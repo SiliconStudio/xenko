@@ -4,9 +4,11 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Rendering.Materials.Processor.Visitors;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
 {
@@ -35,8 +37,18 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         public ComputeTextureScalar(Texture texture, TextureCoordinate texcoordIndex, Vector2 scale, Vector2 offset)
             : base(texture, texcoordIndex, scale, offset)
         {
-            Channel = TextureChannel.R;
+            Channel = ColorChannel.R;
+            FallbackValue = new ComputeFloat(1);
         }
+
+        /// <summary>
+        /// Gets or sets the default value used when no texture is set.
+        /// </summary>
+        /// <userdoc>The fallback value used when no texture is set.</userdoc>
+        [NotNull]
+        [DataMember(15)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
+        public ComputeFloat FallbackValue { get; set; }
 
         /// <summary>
         /// Gets or sets the channel.
@@ -44,12 +56,17 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         /// <value>The channel.</value>
         /// <userdoc>Selects the RGBA channel to sample from the texture.</userdoc>
         [DataMember(20)]
-        [DefaultValue(TextureChannel.R)]
-        public TextureChannel Channel { get; set; }
+        [DefaultValue(ColorChannel.R)]
+        public ColorChannel Channel { get; set; }
 
         protected override string GetTextureChannelAsString()
         {
             return MaterialUtility.GetAsShaderString(Channel);
+        }
+
+        public override ShaderSource GenerateShaderFromFallbackValue(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys)
+        {
+            return FallbackValue.GenerateShaderSource(context, baseKeys);
         }
     }
 }

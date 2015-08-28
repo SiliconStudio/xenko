@@ -16,6 +16,7 @@ namespace SiliconStudio.Assets.CompilerApp
         public bool Verbose = false;
         public bool Debug = false;
         // This should not be a list
+        public bool DisableAutoCompileProjects { get; set; }
         public string BuildProfile;
         public string ProjectConfiguration { get; set; }
         public string OutputDirectory { get; set; }
@@ -24,6 +25,7 @@ namespace SiliconStudio.Assets.CompilerApp
         public Guid PackageId { get; set; }
         public PlatformType Platform { get; set; }
         public Paradox.Graphics.GraphicsPlatform? GraphicsPlatform { get; set; }
+        public bool GetGraphicsPlatform { get; set; }
         public string PackageFile { get; set; }
         public List<string> LogPipeNames = new List<string>();
         public List<string> MonitorPipeNames = new List<string>();
@@ -69,16 +71,20 @@ namespace SiliconStudio.Assets.CompilerApp
         /// The given working directory \ + workingDir + \ does not exist.;workingdir</exception>
         public void ValidateOptions()
         {
-            if (string.IsNullOrWhiteSpace(BuildDirectory))
-                throw new ArgumentException("This tool requires a build path.", "build-path");
+            // --get-graphics-profile doesn't require a build path
+            if (!GetGraphicsPlatform)
+            {
+                if (string.IsNullOrWhiteSpace(BuildDirectory))
+                    throw new ArgumentException("This tool requires a build path.", "build-path");
 
-            try
-            {
-                BuildDirectory = Path.GetFullPath(BuildDirectory);
-            }
-            catch (Exception)
-            {
-                throw new ArgumentException("The provided path is not a valid path name.", "build-path");
+                try
+                {
+                    BuildDirectory = Path.GetFullPath(BuildDirectory);
+                }
+                catch (Exception)
+                {
+                    throw new ArgumentException("The provided path is not a valid path name.", "build-path");
+                }
             }
 
             if (SlavePipe == null)
@@ -97,23 +103,6 @@ namespace SiliconStudio.Assets.CompilerApp
                 {
                     throw new ArgumentException("Package file [{0}] doesn't exist".ToFormat(PackageFile), "inputPackageFile");
                 }
-            }
-        }
-
-        public Paradox.Graphics.GraphicsPlatform GetDefaultGraphicsPlatform()
-        {
-            switch (Platform)
-            {
-                case PlatformType.Windows:
-                case PlatformType.WindowsPhone:
-                case PlatformType.WindowsStore:
-                case PlatformType.Windows10:
-                    return Paradox.Graphics.GraphicsPlatform.Direct3D11;
-                case PlatformType.Android:
-                case PlatformType.iOS:
-                    return Paradox.Graphics.GraphicsPlatform.OpenGLES;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
         }
     }

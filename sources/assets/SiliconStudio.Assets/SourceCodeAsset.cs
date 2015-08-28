@@ -3,10 +3,10 @@
 
 using System;
 using System.ComponentModel;
+using System.IO;
 using System.Text;
 
 using SiliconStudio.Core;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Assets
@@ -24,7 +24,20 @@ namespace SiliconStudio.Assets
         [Browsable(false)]
         public string AbsoluteSourceLocation { get; set; }
 
-        public string Text { get; set; }
+        /// <summary>
+        /// Loads the underlying content located at <see cref="AbsoluteSourceLocation"/> if necessary.
+        /// </summary>
+        public virtual void Load()
+        {
+        }
+
+        /// <summary>
+        /// Saves the underlying content located at <see cref="AbsoluteSourceLocation"/> if necessary.
+        /// </summary>
+        /// <param name="stream"></param>
+        public virtual void Save(Stream stream)
+        {
+        }
 
         /// <summary>
         /// Generates a unique identifier from location.

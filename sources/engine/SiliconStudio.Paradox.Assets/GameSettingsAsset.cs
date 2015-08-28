@@ -1,14 +1,18 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-using System.Linq;
-
+using System.Collections.Generic;
+using System.IO;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Settings;
 using SiliconStudio.Paradox.Assets.Entities;
+using SiliconStudio.Paradox.Assets.Textures;
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Design;
 using SiliconStudio.Paradox.Graphics;
 
@@ -18,127 +22,143 @@ namespace SiliconStudio.Paradox.Assets
     /// Settings for a game with the default scene, resolution, graphics profile...
     /// </summary>
     [DataContract("GameSettingsAsset")]
+    [AssetDescription(FileExtension, false)]
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
-    public class GameSettingsAsset
+    [AssetCompiler(typeof(GameSettingsAssetCompiler))]
+    [ThumbnailCompiler(PreviewerCompilerNames.GameSettingsThumbnailCompilerQualifiedName)]
+    [Display(80, "Game Settings", "A game settings asset")]
+    public class GameSettingsAsset : Asset
     {
+        /// <summary>
+        /// The default file extension used by the <see cref="GameSettingsAsset"/>.
+        /// </summary>
+        public const string FileExtension = ".pdxgamesettings";
 
-        public static readonly SettingsValueKey<AssetReference<SceneAsset>> DefaultScene = new SettingsValueKey<AssetReference<SceneAsset>>("GameSettingsAsset.DefaultScene", PackageProfile.SettingsGroup);
+        public const string GameSettingsLocation = GameSettings.AssetUrl;
+        public const string DefaultSceneLocation = "MainScene";
 
-        public static readonly SettingsValueKey<int> BackBufferWidth = new SettingsValueKey<int>("GameSettingsAsset.BackBufferWidth", PackageProfile.SettingsGroup, 1280);
-
-        public static readonly SettingsValueKey<int> BackBufferHeight = new SettingsValueKey<int>("GameSettingsAsset.BackBufferHeight", PackageProfile.SettingsGroup, 720);
-
-        public static readonly SettingsValueKey<GraphicsProfile> DefaultGraphicsProfile = new SettingsValueKey<GraphicsProfile>("GameSettingsAsset.DefaultGraphicsProfile", PackageProfile.SettingsGroup, GraphicsProfile.Level_10_0);
-
-
-        // Gets the default scene from a package properties
-        public static AssetReference<SceneAsset> GetDefaultScene(Package package)
+        public GameSettingsAsset()
         {
-            var packageSharedProfile = package.Profiles.FindSharedProfile();
-            if (packageSharedProfile == null) return null;
-            return packageSharedProfile.Properties.Get(DefaultScene);
+            BackBufferWidth = 1280;
+            BackBufferHeight = 720;
+            DefaultGraphicsProfile = GraphicsProfile.Level_10_0;
         }
 
-        // Sets the default scene within a package properties
-        public static void SetDefaultScene(Package package, AssetReference<SceneAsset> defaultScene)
-        {
-            package.Profiles.FindSharedProfile().Properties.Set(DefaultScene, defaultScene);
-            MarkPackageDirty(package);
-        }
+        /// <summary>
+        /// Gets or sets the default scene.
+        /// </summary>
+        /// <userdoc>The default scene that will be loaded at game startup.</userdoc>
+        public Scene DefaultScene { get; set; }
 
-        public static int GetBackBufferWidth(Package package)
-        {
-            var packageSharedProfile = package.Profiles.FindSharedProfile();
-            if (packageSharedProfile == null) return 0;
-            return packageSharedProfile.Properties.Get(BackBufferWidth);
-        }
+        /// <summary>
+        /// Gets or sets the width of the back buffer.
+        /// </summary>
+        /// <userdoc>
+        /// The desired back buffer width.
+        /// Might be overriden depending on actual device resolution and/or ratio.
+        /// On Windows, it will be the window size. On Android/iOS, it will be the off-screen target resolution.
+        /// </userdoc>
+        public int BackBufferWidth { get; set; }
 
-        public static void SetBackBufferWidth(Package package, int value)
-        {
-            package.Profiles.FindSharedProfile().Properties.Set(BackBufferWidth, value);
-            MarkPackageDirty(package);
-        }
+        /// <summary>
+        /// Gets or sets the height of the back buffer.
+        /// </summary>
+        /// <userdoc>
+        /// The desired back buffer height.
+        /// Might be overriden depending on actual device resolution and/or ratio.
+        /// On Windows, it will be the window size. On Android/iOS, it will be the off-screen target resolution.
+        /// </userdoc>
+        public int BackBufferHeight { get; set; }
 
-        public static int GetBackBufferHeight(Package package)
-        {
-            var packageSharedProfile = package.Profiles.FindSharedProfile();
-            if (packageSharedProfile == null) return 0;
-            return packageSharedProfile.Properties.Get(BackBufferHeight);
-        }
+        /// <summary>
+        /// Gets or sets the default graphics profile.
+        /// </summary>
+        /// <userdoc>The graphics feature level this game require.</userdoc>
+        public GraphicsProfile DefaultGraphicsProfile { get; set; }
 
-        public static void SetBackBufferHeight(Package package, int value)
-        {
-            package.Profiles.FindSharedProfile().Properties.Set(BackBufferHeight, value);
-            MarkPackageDirty(package);
-        }
+        /// <summary>
+        /// Gets or sets the display orientation.
+        /// </summary>
+        /// <userdoc>The display orientations this game support.</userdoc>
+        public DisplayOrientation DisplayOrientation { get; set; }
 
-        public static void SetGraphicsProfile(Package package, GraphicsProfile value)
-        {
-            package.Profiles.FindSharedProfile().Properties.Set(DefaultGraphicsProfile, value);
-            MarkPackageDirty(package);
-        }
+        /// <summary>
+        /// Gets or sets the texture quality.
+        /// </summary>
+        /// <userdoc>The texture quality when encoding textures. Higher settings might result in much slower build depending on the target platform.</userdoc>
+        public TextureQuality TextureQuality { get; set; }
 
-        public static GraphicsProfile GetGraphicsProfile(Package package)
+        internal class UpgraderVersion130
         {
-            var packageSharedProfile = package.Profiles.FindSharedProfile();
-            if (packageSharedProfile == null) return 0;
-            return packageSharedProfile.Properties.Get(DefaultGraphicsProfile);
-        }
+            public static SettingsKey<DisplayOrientation> DisplayOrientation = new SettingsKey<DisplayOrientation>("Paradox.DisplayOrientation", PackageProfile.SettingsContainer);
 
-        public static void MarkPackageDirty(Package package)
-        {
-            package.IsDirty = true;
-        }
+            public static SettingsKey<GraphicsPlatform> GraphicsPlatform = new SettingsKey<GraphicsPlatform>("Paradox.GraphicsPlatform", PackageProfile.SettingsContainer);
 
-        // Build a full GameSettings from a package
-        public static GameSettings CreateFromPackage(Package package, PlatformType platform)
-        {
-            var result = new GameSettings();
+            public static SettingsKey<TextureQuality> TextureQuality = new SettingsKey<TextureQuality>("Paradox.TextureQuality", PackageProfile.SettingsContainer);
 
-            // Default settings
-            var sharedProfile = package.Profiles.FindSharedProfile();
-            if (sharedProfile != null)
+            public static readonly SettingsKey<AssetReference<SceneAsset>> DefaultScene = new SettingsKey<AssetReference<SceneAsset>>("GameSettingsAsset.DefaultScene", PackageProfile.SettingsContainer);
+
+            public static readonly SettingsKey<int> BackBufferWidth = new SettingsKey<int>("GameSettingsAsset.BackBufferWidth", PackageProfile.SettingsContainer, 1280);
+
+            public static readonly SettingsKey<int> BackBufferHeight = new SettingsKey<int>("GameSettingsAsset.BackBufferHeight", PackageProfile.SettingsContainer, 720);
+
+            public static readonly SettingsKey<GraphicsProfile> DefaultGraphicsProfile = new SettingsKey<GraphicsProfile>("GameSettingsAsset.DefaultGraphicsProfile", PackageProfile.SettingsContainer, GraphicsProfile.Level_10_0);
+
+            public static T Get<T>(SettingsProfile profile, SettingsKey<T> key)
             {
-                var sceneAsset = sharedProfile.Properties.Get(DefaultScene);
-                if (sceneAsset != null) result.DefaultSceneUrl = sceneAsset.Location;
-                result.DefaultBackBufferWidth = sharedProfile.Properties.Get(BackBufferWidth);
-                result.DefaultBackBufferHeight = sharedProfile.Properties.Get(BackBufferHeight);
-                result.DefaultGraphicsProfileUsed = sharedProfile.Properties.Get(DefaultGraphicsProfile);
+                return key.GetValue(profile, true);
             }
-            
-            // Platform-specific settings have priority
-            if (platform != PlatformType.Shared)
+
+            public static bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
             {
-                var platformProfile = package.Profiles.FirstOrDefault(o => o.Platform == platform);
-                if (platformProfile != null)
+                var packageSharedProfile = dependentPackage.Profiles.FindSharedProfile();
+
+                // Only do something if there is a default scene defined
+                if (packageSharedProfile != null && packageSharedProfile.Properties.ContainsKey(DefaultScene))
                 {
-                    var customProfile = platformProfile.Properties.Get(DefaultGraphicsProfile);
-                    if (customProfile > 0) result.DefaultGraphicsProfileUsed = customProfile;
+                    var defaultScene = Get(packageSharedProfile.Properties, DefaultScene);
+
+                    var defaultGraphicsProfile = Get(packageSharedProfile.Properties, DefaultGraphicsProfile);
+
+                    // If available, use graphics profile from Windows platform
+                    foreach (var profile in dependentPackage.Profiles)
+                    {
+                        if (profile.Platform == PlatformType.Windows && profile.Properties.ContainsKey(DefaultGraphicsProfile))
+                        {
+                            defaultGraphicsProfile = Get(profile.Properties, DefaultGraphicsProfile);
+                        }
+                    }
+
+                    // Create asset
+                    var gameSettingsAsset = new GameSettingsAsset
+                    {
+                        DefaultScene = AttachedReferenceManager.CreateSerializableVersion<Scene>(defaultScene.Id, defaultScene.Location),
+                        BackBufferWidth = Get(packageSharedProfile.Properties, BackBufferWidth),
+                        BackBufferHeight = Get(packageSharedProfile.Properties, BackBufferHeight),
+                        DefaultGraphicsProfile = defaultGraphicsProfile,
+                        DisplayOrientation = Get(packageSharedProfile.Properties, DisplayOrientation),
+                    };
+
+                    // Add asset
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        AssetSerializer.Save(memoryStream, gameSettingsAsset, log);
+                        assetFiles.Add(new PackageLoadingAssetFile(dependentPackage, GameSettingsLocation + FileExtension, null) { AssetContent = memoryStream.ToArray() });
+                    }
+
+                    // Clean properties
+                    foreach (var profile in dependentPackage.Profiles)
+                    {
+                        profile.Properties.Remove(DefaultScene.Name);
+                        profile.Properties.Remove(BackBufferWidth.Name);
+                        profile.Properties.Remove(BackBufferHeight.Name);
+                        profile.Properties.Remove(DefaultGraphicsProfile.Name);
+                        profile.Properties.Remove(DisplayOrientation.Name);
+                    }
                 }
+
+                return true;
             }
-
-            // Save package id
-            result.PackageId = package.Id;
-
-            // Save some package user settings
-            result.EffectCompilation = package.Settings.GetValue(GameUserSettings.Effect.EffectCompilation);
-            result.RecordUsedEffects = package.Settings.GetValue(GameUserSettings.Effect.RecordUsedEffects);
-
-            return result;
         }
-
-        public static void CreateAndSetDefaultScene(Package package, String location = "MainScene")
-        {
-            var defaultSceneAsset = SceneAsset.Create();
-
-            var sceneAssetItem = new AssetItem(location, defaultSceneAsset);
-            package.Assets.Add(sceneAssetItem);
-            sceneAssetItem.IsDirty = true;
-            var sceneAsset = new AssetReference<SceneAsset>(sceneAssetItem.Id, sceneAssetItem.Location);
-
-            // Sets the scene created as default in the shared profile
-            SetDefaultScene(package, sceneAsset);
-        }
-        
     }
 }

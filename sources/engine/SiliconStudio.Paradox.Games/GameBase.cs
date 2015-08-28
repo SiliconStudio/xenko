@@ -74,6 +74,8 @@ namespace SiliconStudio.Paradox.Games
 
         internal bool SlowDownDrawCalls;
 
+        internal object TickLock = new object();
+
         #endregion
 
         #region Constructors and Destructors
@@ -490,6 +492,14 @@ namespace SiliconStudio.Paradox.Games
         /// </summary>
         public void Tick()
         {
+            lock (TickLock)
+            {
+                TickInternal();
+            }
+        }
+
+        private void TickInternal()
+        {
             try
             {
 
@@ -687,6 +697,8 @@ namespace SiliconStudio.Paradox.Games
 
         protected override void Destroy()
         {
+            base.Destroy();
+
             lock (this)
             {
                 if (Window != null && Window.IsActivated) // force the window to be in an correct state during destroy (Deactivated events are sometimes dropped on windows)
@@ -716,8 +728,6 @@ namespace SiliconStudio.Paradox.Games
                     gamePlatform.Release();
                 }
             }
-
-            base.Destroy();
         }
 
         /// <summary>

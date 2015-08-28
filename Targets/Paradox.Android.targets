@@ -1,20 +1,38 @@
 <!-- Build file post-included by all Paradox projects -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
+  <PropertyGroup>
+    <SiliconStudioIsExecutable Condition=" '$(AndroidApplication)' == 'true'">true</SiliconStudioIsExecutable>
+    <SiliconStudioNETFrameworkVersion>v2.3</SiliconStudioNETFrameworkVersion>
+    <UserLibrariesPath Condition="'$(SiliconStudioCurrentPackagePath)' != ''">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\NativeLibs</UserLibrariesPath>
+  </PropertyGroup>
+  
   <!-- Embed native libraries -->
   <ItemGroup>
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\armeabi\libfreetype.so"/>
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\armeabi-v7a\libfreetype.so"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\arm64-v8a\libfreetype.so"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\x86\libfreetype.so"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\x86_64\libfreetype.so"/>
+    
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\armeabi\libcore.so" />
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\armeabi-v7a\libcore.so" />
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\arm64-v8a\libcore.so"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\x86\libcore.so"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\x86_64\libcore.so"/>
+    
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\armeabi\libbulletc.so" />
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\armeabi-v7a\libbulletc.so" />
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\arm64-v8a\libbulletc.so"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\x86\libbulletc.so"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\x86_64\libbulletc.so"/>
+    
+    <!-- Users custom native libraries -->
+    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(UserLibrariesPath)\$(SiliconStudioPlatform)\armeabi\*.so" />
+    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(UserLibrariesPath)\$(SiliconStudioPlatform)\armeabi-v7a\*.so" />
+    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(UserLibrariesPath)\$(SiliconStudioPlatform)\arm64-v8a\*.so" />
+    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(UserLibrariesPath)\$(SiliconStudioPlatform)\x86\*.so" />
+    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(UserLibrariesPath)\$(SiliconStudioPlatform)\x86_64\*.so" />
   </ItemGroup>
-
-  <PropertyGroup>
-    <SiliconStudioIsExecutable Condition=" '$(AndroidApplication)' == 'true'">true</SiliconStudioIsExecutable>
-    <SiliconStudioNETFrameworkVersion>v2.3</SiliconStudioNETFrameworkVersion>
-  </PropertyGroup>
 
   <ItemGroup Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
     <AndroidNativeLibrary Include="@(SiliconStudioEmbeddedNativeLibrary)"/>

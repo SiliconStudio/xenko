@@ -3,7 +3,7 @@
 
 using System;
 
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Rendering
 {
@@ -12,10 +12,27 @@ namespace SiliconStudio.Paradox.Rendering
     /// </summary>
     public abstract class EntityComponentRendererBase : EntityComponentRendererCoreBase, IEntityComponentRenderer
     {
-        public virtual bool SupportPicking { get { return false; } }
+        /// <summary>
+        /// Gets the current culling mask.
+        /// </summary>
+        /// <value>The current culling mask.</value>
+        protected EntityGroupMask CurrentCullingMask { get; private set; }
+
+        public virtual bool SupportPicking
+        {
+            get
+            {
+                return false;
+            }
+        }
 
         public void Prepare(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
+            if (!Enabled)
+            {
+                return;
+            }
+
             if (Context == null)
             {
                 Initialize(context);
@@ -25,14 +42,22 @@ namespace SiliconStudio.Paradox.Rendering
                 throw new InvalidOperationException("Cannot use a different context between Load and Draw");
             }
 
+            if (SceneCameraRenderer != null)
+            {
+                CurrentCullingMask = SceneCameraRenderer.CullingMask;
+            }
+
             PrepareCore(context, opaqueList, transparentList);
         }
 
         public void Draw(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
         {
-            PreDrawCoreInternal(context);
-            DrawCore(context, renderItems, fromIndex, toIndex);
-            PostDrawCoreInternal(context);
+            if (Enabled)
+            {
+                PreDrawCoreInternal(context);
+                DrawCore(context, renderItems, fromIndex, toIndex);
+                PostDrawCoreInternal(context);
+            }
         }
 
         protected abstract void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList);

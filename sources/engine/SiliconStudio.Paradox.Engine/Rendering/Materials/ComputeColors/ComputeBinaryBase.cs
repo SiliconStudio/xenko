@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         /// The operation to blend the nodes.
         /// </summary>
         /// <userdoc>
-        /// The operation between the background (Left) and the foreground (Right).
+        /// The operation between the left (background) and the right (foreground) sub-nodes.
         /// </userdoc>
         [DataMember(10)]
         [InlineProperty]
@@ -52,7 +52,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         /// The left (background) child node.
         /// </summary>
         /// <userdoc>
-        /// The background color mapping.
+        /// The map used for the left (background) node.
         /// </userdoc>
         [DataMember(20)]
         [Display("Left")]
@@ -62,7 +62,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         /// The right (foreground) child node.
         /// </summary>
         /// <userdoc>
-        /// The foreground color mapping.
+        /// The map used for the right (foreground) node.
         /// </userdoc>
         [DataMember(30)]
         [Display("Right")]

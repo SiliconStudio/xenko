@@ -4,6 +4,7 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Text;
 
 using SharpYaml;
 using SharpYaml.Events;
@@ -53,7 +54,8 @@ namespace SiliconStudio.Assets
 
                 var yamlSerializerSettings = YamlSerializer.GetSerializerSettings();
                 var tagTypeRegistry = yamlSerializerSettings.TagTypeRegistry;
-                assetType = tagTypeRegistry.TypeFromTag(mappingStart.Tag);
+                bool typeAliased;
+                assetType = tagTypeRegistry.TypeFromTag(mappingStart.Tag, out typeAliased);
 
                 expectedVersion = AssetRegistry.GetCurrentFormatVersion(assetType);
 
@@ -85,8 +87,16 @@ namespace SiliconStudio.Assets
                 // Perform asset upgrade
                 log.Verbose("{0} needs update, from version {1} to version {2}", Path.GetFullPath(assetFullPath), serializedVersion, expectedVersion);
 
+                // transform the stream into string.
+                string assetAsString;
+                using (var assetStream = loadAsset.OpenStream())
+                using (var assetStreamReader = new StreamReader(assetStream, Encoding.UTF8))
+                {
+                    assetAsString = assetStreamReader.ReadToEnd();
+                }
+
                 // Load the asset as a YamlNode object
-                var input = new StringReader(File.ReadAllText(assetFullPath));
+                var input = new StringReader(assetAsString);
                 var yamlStream = new YamlStream();
                 yamlStream.Load(input);
                 var yamlRootNode = (YamlMappingNode)yamlStream.Documents[0].RootNode;

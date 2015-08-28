@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using Mono.Options;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Windows;
 using SiliconStudio.Paradox.Engine.Network;
 
 namespace SiliconStudio.Paradox.ConnectionRouter
@@ -73,33 +74,29 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                     GlobalLogger.GlobalMessageLogged += fileLogListener;
                 }
 
-                try
+                // TODO: Lock will be only for this folder but it should be shared across OS (should we resolve SiliconStudioParadoxDir?)
+                using (var mutex = FileLock.TryLock("connectionrouter.lock"))
                 {
-                    if (!RouterHelper.RouterMutex.WaitOne(TimeSpan.Zero, true))
+                    if (mutex == null)
                     {
                         Console.WriteLine("Another instance of Paradox Router is already running");
                         return -1;
                     }
+
+                    var router = new Router();
+
+                    // Start router (in listen server mode)
+                    router.Listen(RouterClient.DefaultPort);
+
+                    // Start Android management thread
+                    new Thread(() => AndroidTracker.TrackDevices(router)) { IsBackground = true }.Start();
+
+                    // Start Windows Phone management thread
+                    new Thread(() => WindowsPhoneTracker.TrackDevices(router)) { IsBackground = true }.Start();
+
+                    // Start WinForms loop
+                    System.Windows.Forms.Application.Run();
                 }
-                catch (AbandonedMutexException)
-                {
-                    // Previous instance of this application was not closed properly.
-                    // However, receiving this exception means we could capture the mutex.
-                }
-
-                var router = new Router();
-
-                // Start router (in listen server mode)
-                router.Listen(RouterClient.DefaultPort);
-
-                // Start Android management thread
-                new Thread(() => AndroidTracker.TrackDevices(router)) { IsBackground = true }.Start();
-
-                // Start Windows Phone management thread
-                new Thread(() => WindowsPhoneTracker.TrackDevices(router)) { IsBackground = true }.Start();
-
-                // Start WinForms loop
-                System.Windows.Forms.Application.Run();
             }
             catch (Exception e)
             {
@@ -153,26 +150,13 @@ namespace SiliconStudio.Paradox.ConnectionRouter
 
             GlobalLogger.GlobalMessageLogged += (logMessage) =>
             {
-                System.Windows.Forms.ToolTipIcon toolTipIcon;
-                switch (logMessage.Type)
-                {
-                    case LogMessageType.Debug:
-                    case LogMessageType.Verbose:
-                    case LogMessageType.Info:
-                        toolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
-                        break;
-                    case LogMessageType.Warning:
-                        toolTipIcon = System.Windows.Forms.ToolTipIcon.Warning;
-                        break;
-                    case LogMessageType.Error:
-                    case LogMessageType.Fatal:
-                        toolTipIcon = System.Windows.Forms.ToolTipIcon.Error;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                // Log only warning, errors and more
+                if (logMessage.Type < LogMessageType.Warning)
+                    return;
 
-                // Display notification (for one second)
+                var toolTipIcon = logMessage.Type < LogMessageType.Error ? System.Windows.Forms.ToolTipIcon.Warning : System.Windows.Forms.ToolTipIcon.Error;
+
+                // Display notification (for two second)
                 notifyIcon.ShowBalloonTip(2000, "Paradox Connection Router", logMessage.ToString(), toolTipIcon);
             };
 

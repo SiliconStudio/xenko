@@ -7,7 +7,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Collections;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Presentation.ViewModel;
@@ -20,6 +20,7 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public abstract class ObservableNode : DispatcherViewModel, IObservableNode, IDynamicMetaObjectProvider
     {
+        protected static readonly HashSet<string> ReservedNames = new HashSet<string>();
         private readonly AutoUpdatingSortedObservableCollection<IObservableNode> children = new AutoUpdatingSortedObservableCollection<IObservableNode>(new AnonymousComparer<IObservableNode>(CompareChildren));
         private readonly ObservableCollection<INodeCommandWrapper> commands = new ObservableCollection<INodeCommandWrapper>();
         private readonly Dictionary<string, object> associatedData = new Dictionary<string, object>();
@@ -29,6 +30,13 @@ namespace SiliconStudio.Presentation.Quantum
         private int visibleChildrenCount;
         
         private List<IObservableNode> initializingChildren = new List<IObservableNode>();
+
+        static ObservableNode()
+        {
+            typeof(ObservableNode).GetProperties().Select(x => x.Name).ForEach(x => ReservedNames.Add(x));
+            ReservedNames.Add("TypedValue");
+            ReservedNames.Add("Type");
+        }
 
         protected ObservableNode(ObservableViewModel ownerViewModel, object index = null)
             : base(ownerViewModel.ServiceProvider)
@@ -159,6 +167,28 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         public ViewModelContentState LoadState { get; set; }
 
+        /// <summary>
+        /// Indicates whether the given name is reserved for the name of a property in an <see cref="ObservableNode"/>. Any children node with a colliding name will
+        /// be escaped with the <see cref="EscapeName"/> method.
+        /// </summary>
+        /// <param name="name">The name to check.</param>
+        /// <returns><c>True</c> if the name is reserved, <c>false</c> otherwise.</returns>
+        public static bool IsReserved(string name)
+        {
+            return ReservedNames.Contains(name);
+        }
+
+        /// <summary>
+        /// Escapes the name of a child to avoid name collision with a property.
+        /// </summary>
+        /// <param name="name">The name to escape.</param>
+        /// <returns>The escaped name.</returns>
+        /// <remarks>Names are escaped using a trailing underscore character.</remarks>
+        public static string EscapeName(string name)
+        {
+            return !IsReserved(name) ? name : name + "_";
+        }
+
         /// <inheritdoc/>
         public override string ToString()
         {
@@ -269,6 +299,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <returns>The corresponding child node, or <c>null</c> if no child with the given name exists.</returns>
         public ObservableNode GetChild(string name)
         {
+            name = EscapeName(name);
             return (ObservableNode)Children.FirstOrDefault(x => x.Name == name);
         }
 
@@ -279,6 +310,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <returns>The corresponding command, or <c>null</c> if no command with the given name exists.</returns>
         public ICommand GetCommand(string name)
         {
+            name = EscapeName(name);
             return Commands.FirstOrDefault(x => x.Name == name);
         }
 
@@ -289,6 +321,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <returns>The corresponding additionnal data, or <c>null</c> if no data with the given name exists.</returns>
         public object GetAssociatedData(string name)
         {
+            name = EscapeName(name);
             return AssociatedData.FirstOrDefault(x => x.Key == name).Value;
         }
 
@@ -299,6 +332,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <returns>The corresponding object, or <c>null</c> if no object with the given name exists.</returns>
         public object GetDynamicObject(string name)
         {
+            name = EscapeName(name);
             return GetChild(name) ?? GetCommand(name) ?? GetAssociatedData(name) ?? DependencyProperty.UnsetValue;
         }
 

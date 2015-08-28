@@ -169,7 +169,12 @@ namespace SiliconStudio.Assets.Diff
 
             var diff3 = new Diff3Node(baseNode, asset1Node, asset2Node) { InstanceType = type };
 
-            if (IsComparableType(node.HasMembers, type))
+            if (type == null)
+            {
+                // All nodes are null. This should only happen as part of a temporary diff in DiffNode()
+                diff3.ChangeType = Diff3ChangeType.None;
+            }
+            else if (IsComparableType(node.HasMembers, type))
             {
                 DiffValue(diff3, ref baseNodeDesc, ref asset1NodeDesc, ref asset2NodeDesc);
             }
@@ -402,7 +407,7 @@ namespace SiliconStudio.Assets.Diff
             }
             var value = nodes[index];
             index++;
-            if (index >= nodes.Count) index = -1;
+            if (index >= nodes.Count || (span.IsValid && index > span.To)) index = -1;
             return value;
         }
 

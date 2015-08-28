@@ -51,6 +51,10 @@ namespace SiliconStudio.Paradox.Engine
             }
         }
 
+        /// <summary>
+        /// Gets the animations associated to the component.
+        /// </summary>
+        /// <userdoc>The list of the animation associated to the entity.</userdoc>
         public Dictionary<string, AnimationClip> Animations
         {
             get { return animations; }

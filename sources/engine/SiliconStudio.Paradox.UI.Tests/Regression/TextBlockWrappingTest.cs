@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Class for rendering tests on the <see cref="TextBlock"/> 
     /// </summary>
-    public class TextBlockWrappingTest : UnitTestGameBase
+    public class TextBlockWrappingTest : UITestGameBase
     {
         private TextBlock textBlock;
 
@@ -48,7 +48,7 @@ Does it work with kanjis too? let's see that in the following line. Here we goes
                 Content = textBlock, 
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                BackgroundImage = new UIImage(Asset.Load<Texture>("DumbWhite"))
+                BackgroundImage = new Sprite(Asset.Load<Texture>("DumbWhite"))
             };
 
             UIComponent.RootElement = decorator;

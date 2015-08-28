@@ -9,7 +9,7 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Engine.Processors;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Rendering.Lights;
 using SiliconStudio.Paradox.Shaders;
@@ -27,11 +27,11 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
 
         private PoolListStruct<LightShadowMapTexture> shadowMapTextures;
 
-        private readonly int MaximumTextureSize = (int)(MaximumShadowSize * ComputeSizeFactor(LightShadowImportance.High, LightShadowMapSize.Large) * 2.0f);
+        private readonly int MaximumTextureSize = (int)(ReferenceShadowSize * ComputeSizeFactor(LightShadowMapSize.XLarge) * 2.0f);
 
         private readonly static PropertyKey<ShadowMapRenderer> Current = new PropertyKey<ShadowMapRenderer>("ShadowMapRenderer.Current", typeof(ShadowMapRenderer));
 
-        private const float MaximumShadowSize = 1024;
+        private const float ReferenceShadowSize = 1024;
 
         internal static readonly ParameterKey<ShadowMapReceiverInfo[]> Receivers = ParameterKeys.New(new ShadowMapReceiverInfo[1]);
         internal static readonly ParameterKey<ShadowMapReceiverVsmInfo[]> ReceiversVsm = ParameterKeys.New(new ShadowMapReceiverVsmInfo[1]);
@@ -68,7 +68,7 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
 
         private List<LightComponent> visibleLights;
 
-        private RasterizerState shadowRasterizerState;
+        private readonly List<RenderModelCollection> shadowRenderModels = new List<RenderModelCollection>(); 
 
         public ShadowMapRenderer(string effectName)
         {
@@ -88,7 +88,8 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
             // Creates a model renderer for the shadows casters
             shadowModelComponentRenderer = new ModelComponentRenderer(effectName + ".ShadowMapCaster")
             {
-                Callbacks = 
+                CullingMode =  CullingMode.None,
+                Callbacks =
                 {
                     UpdateMeshes = FilterCasters,
                 }
@@ -144,13 +145,16 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
                 return;
             }
 
-            this.visibleLights = visibleLights;
-
-            using (var t1 = context.PushTagAndRestore(Current, this))
+            if (Enabled)
             {
-                PreDrawCoreInternal(context);
-                DrawCore(context);
-                PostDrawCoreInternal(context);
+                this.visibleLights = visibleLights;
+
+                using (context.PushTagAndRestore(Current, this))
+                {
+                    PreDrawCoreInternal(context);
+                    DrawCore(context);
+                    PostDrawCoreInternal(context);
+                }
             }
         }
 
@@ -165,16 +169,30 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
                 opaqueRenderItems.Clear();
                 transparentRenderItems.Clear();
 
-                // When rendering shadow maps, objects should not be culled by the rasterizer (in case the object is out of the frustum but cast
-                // a shadow into the frustum)
-                shadowModelComponentRenderer.RasterizerState = shadowRasterizerState;
+                // Query all models for the specified culling mask and collect render models
+                var modelProcessor = SceneInstance.GetProcessor<ModelProcessor>();
+                shadowRenderModels.Clear();
+                modelProcessor.QueryModelGroupsByMask(cullingMask, shadowRenderModels);
 
-                shadowModelComponentRenderer.CurrentCullingMask = cullingMask;
-                shadowModelComponentRenderer.Prepare(context, opaqueRenderItems, transparentRenderItems);
+                // Copy the ViewProjectionMatrix to the model renderer
+                shadowModelComponentRenderer.ViewProjectionMatrix = ShadowCamera.ViewProjectionMatrix;
+
+                foreach (var renderModelList in shadowRenderModels)
+                {
+                    shadowModelComponentRenderer.RenderModels = renderModelList;
+                    shadowModelComponentRenderer.Prepare(context, opaqueRenderItems, transparentRenderItems);
+                }
+
+                // Render only Opaque items for now
+                // TODO: Add semi-transparent items with light
                 shadowModelComponentRenderer.Draw(context, opaqueRenderItems, 0, opaqueRenderItems.Count - 1);
             }
             finally
             {
+                // Make sure we clear any references left so that we don't hold them in memory
+                shadowRenderModels.Clear();
+                shadowModelComponentRenderer.RenderModels = null;
+
                 context.PopParameters();
                 context.GraphicsDevice.PopState();
             }
@@ -185,7 +203,11 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
             base.InitializeCore();
 
             var shadowRenderState = new RasterizerStateDescription(CullMode.None) { DepthClipEnable = false };
-            shadowRasterizerState = RasterizerState.New(Context.GraphicsDevice, shadowRenderState);
+
+            // When rendering shadow maps, objects should not be culled by the rasterizer (in case the object is out of the frustum but cast
+            // a shadow into the frustum)
+            shadowModelComponentRenderer.RasterizerState = RasterizerState.New(Context.GraphicsDevice, shadowRenderState);
+
         }
 
         protected void DrawCore(RenderContext context)
@@ -196,7 +218,7 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
             {
                 throw new InvalidOperationException("ShadowMapRenderer expects to be used inside the context of a SceneInstance.Draw()");
             }
-            
+
             // Gets the current camera
             Camera = context.GetCurrentCamera();
             if (Camera == null)
@@ -255,40 +277,38 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
             var size = lightShadowMapTexture.Size;
 
             // Try to fit the shadow map into an existing atlas
+            ShadowMapAtlasTexture currentAtlas = null;
             foreach (var atlas in atlases)
             {
-                if (atlas.TryInsert(size, size, lightShadowMapTexture.CascadeCount))
+                if (atlas.TryInsert(size, size, lightShadowMapTexture.CascadeCount, (int index, ref Rectangle rectangle) => lightShadowMapTexture.SetRectangle(index, rectangle)))
                 {
-                    AssignRectangles(ref lightShadowMapTexture, atlas);
-                    return;
+                    currentAtlas = atlas;
+                    break;
                 }
             }
 
-            // TODO: handle FilterType texture creation here
-            // TODO: This does not work for Omni lights
-            
             // Allocate a new atlas texture
-            var texture = Texture.New2D(Context.GraphicsDevice, MaximumTextureSize, MaximumTextureSize, 1, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
-            var newAtlas = new ShadowMapAtlasTexture(texture, atlases.Count) { FilterType = lightShadowMapTexture.FilterType };
-            AssignRectangles(ref lightShadowMapTexture, newAtlas);
-            atlases.Add(newAtlas);
-        }
-
-        private void AssignRectangles(ref LightShadowMapTexture lightShadowMapTexture, ShadowMapAtlasTexture atlas)
-        {
-            // Make sure the atlas cleared (will be clear just once)
-            atlas.ClearRenderTarget(Context);
-
-            lightShadowMapTexture.TextureId = (byte)atlas.Id;
-            lightShadowMapTexture.Atlas = atlas;
-
-            var size = lightShadowMapTexture.Size;
-            for (int i = 0; i < lightShadowMapTexture.CascadeCount; i++)
+            if (currentAtlas == null)
             {
-                var rect = Rectangle.Empty;
-                atlas.Insert(size, size, ref rect);
-                lightShadowMapTexture.SetRectangle(i, rect);
+                // TODO: handle FilterType texture creation here
+                // TODO: This does not work for Omni lights
+
+                var texture = Texture.New2D(Context.GraphicsDevice, MaximumTextureSize, MaximumTextureSize, 1, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
+                currentAtlas = new ShadowMapAtlasTexture(texture, atlases.Count) { FilterType = lightShadowMapTexture.FilterType };
+                atlases.Add(currentAtlas);
+
+                for (int i = 0; i < lightShadowMapTexture.CascadeCount; i++)
+                {
+                    var rect = Rectangle.Empty;
+                    currentAtlas.Insert(size, size, ref rect);
+                    lightShadowMapTexture.SetRectangle(i, rect);
+                }
             }
+
+            // Make sure the atlas cleared (will be clear just once)
+            currentAtlas.ClearRenderTarget(Context);
+            lightShadowMapTexture.TextureId = (byte)currentAtlas.Id;
+            lightShadowMapTexture.Atlas = currentAtlas;
         }
 
         private void CollectShadowMaps()
@@ -322,11 +342,11 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
                 var size = light.ComputeScreenCoverage(Context, position, direction);
 
                 // Converts the importance into a shadow size factor
-                var sizeFactor = ComputeSizeFactor(shadowMap.Importance, shadowMap.Size);
-                    
+                var sizeFactor = ComputeSizeFactor(shadowMap.Size);
+
                 // Compute the size of the final shadow map
                 // TODO: Handle GraphicsProfile
-                var shadowMapSize = (int)Math.Min(MaximumShadowSize * sizeFactor, MathUtil.NextPowerOfTwo(size * sizeFactor));
+                var shadowMapSize = (int)Math.Min(ReferenceShadowSize * sizeFactor, MathUtil.NextPowerOfTwo(size * sizeFactor));
 
                 if (shadowMapSize <= 0) // TODO: Validate < 0 earlier in the setters
                 {
@@ -340,23 +360,19 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
             }
         }
 
-        private static float ComputeSizeFactor(LightShadowImportance importance, LightShadowMapSize shadowMapSize)
+        private static float ComputeSizeFactor(LightShadowMapSize shadowMapSize)
         {
-            // Calculate a basic factor from the importance of this shadow map
-            var factor = importance == LightShadowImportance.High ? 2.0f : importance == LightShadowImportance.Medium ? 1.0f : 0.5f;
-
             // Then reduce the size based on the shadow map size
-            factor *= (float)Math.Pow(2.0f, (int)shadowMapSize - 2.0f);
+            var factor = (float)Math.Pow(2.0f, (int)shadowMapSize - 3.0f);
             return factor;
         }
 
-        private static void FilterCasters(RenderContext context, FastList<RenderMesh> meshes)
+        private static void FilterCasters(RenderContext context, ref FastListStruct<RenderMesh> meshes)
         {
             for (int i = 0; i < meshes.Count; i++)
             {
-                var mesh = meshes[i];
                 // If there is no caster
-                if (!mesh.IsShadowCaster)
+                if (!meshes[i].IsShadowCaster)
                 {
                     meshes.SwapRemoveAt(i--);
                 }

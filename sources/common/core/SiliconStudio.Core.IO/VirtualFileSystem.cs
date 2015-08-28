@@ -135,13 +135,6 @@ namespace SiliconStudio.Core.IO
             var mountPoints = providers.Where(x => x.Value == provider).ToArray();
             foreach (var mountPoint in mountPoints)
                 providers.Remove(mountPoint.Key);
-
-            if (dispose)
-            {
-                var disposable = provider as IDisposable;
-                if (disposable != null)
-                    disposable.Dispose();
-            }
         }
 
         /// <summary>

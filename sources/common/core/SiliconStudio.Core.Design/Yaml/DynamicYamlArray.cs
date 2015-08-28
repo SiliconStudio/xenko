@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -62,6 +64,11 @@ namespace SiliconStudio.Core.Yaml
         public void Add(object value)
         {
             node.Children.Add(ConvertFromDynamic(value));
+        }
+
+        public void RemoveAt(int index)
+        {
+            node.Children.RemoveAt(index);
         }
     }
 }

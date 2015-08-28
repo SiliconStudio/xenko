@@ -6,7 +6,6 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Rendering.Composers
 {
@@ -37,6 +36,10 @@ namespace SiliconStudio.Paradox.Rendering.Composers
             Renderers = new SceneRendererCollection();
         }
 
+        /// <summary>
+        /// Gets or set the name of the graphic layer.
+        /// </summary>
+        /// <userdoc>The name used to identify the graphic layer</userdoc>
         [DataMember(10)]
         public override string Name
         {
@@ -78,11 +81,12 @@ namespace SiliconStudio.Paradox.Rendering.Composers
         /// </summary>
         /// <value>The renderers.</value>
         /// <userdoc>
-        /// The renderers that will be used to render this layer.
+        /// The sequence of renderers that will be used to render this layer.
         /// </userdoc>
         [DataMember(50)]
         [Category]
         [NotNullItems]
+        [MemberCollection(CanReorderItems = true)]
         public SceneRendererCollection Renderers { get; private set; }
 
         internal bool IsMaster { get; set; }

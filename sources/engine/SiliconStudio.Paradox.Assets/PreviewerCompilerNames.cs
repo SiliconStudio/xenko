@@ -9,15 +9,15 @@ namespace SiliconStudio.Paradox.Assets
     {
         // TODO: This will removed
         [Obsolete]
-        public const string SharedAssemblyQualifiedName = "Version=0.1.0.0, Culture=neutral, PublicKeyToken=null";
+        private const string SharedAssemblyQualifiedName = "Version=0.1.0.0, Culture=neutral, PublicKeyToken=null";
         [Obsolete]
-        public const string PreviewAssemblyName = "SiliconStudio.Paradox.GameStudio.Plugin";
+        private const string PreviewAssemblyName = "SiliconStudio.Paradox.GameStudio.Plugin";
 
         [Obsolete]
-        public const string PreviewAssemblyQualifiedName = ", " + PreviewAssemblyName + ", " + SharedAssemblyQualifiedName;
+        private const string PreviewAssemblyQualifiedName = ", " + PreviewAssemblyName + ", " + SharedAssemblyQualifiedName;
 
         [Obsolete]
-        public const string ThumbnailCompilersNamespace = "SiliconStudio.Paradox.GameStudio.Plugin.ThumbnailCompilers.";
+        private const string ThumbnailCompilersNamespace = "SiliconStudio.Paradox.GameStudio.Plugin.ThumbnailCompilers.";
 
         [Obsolete]
         public const string AnimationThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "AnimationThumbnailCompiler" + PreviewAssemblyQualifiedName;
@@ -36,10 +36,10 @@ namespace SiliconStudio.Paradox.Assets
         [Obsolete]
         public const string FontThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "FontThumbnailCompiler" + PreviewAssemblyQualifiedName;
         [Obsolete]
-        public const string UIImageGroupThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "UIImageGroupThumbnailCompiler" + PreviewAssemblyQualifiedName;
-        [Obsolete]
-        public const string SpriteGroupThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "SpriteGroupThumbnailCompiler" + PreviewAssemblyQualifiedName;
+        public const string SpriteSheetThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "SpriteSheetThumbnailCompiler" + PreviewAssemblyQualifiedName;
         [Obsolete]
         public const string ProceduralModelThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "ProceduralModelThumbnailCompiler" + PreviewAssemblyQualifiedName;
+        [Obsolete]
+        public const string GameSettingsThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "GameSettingsThumbnailCompiler" + PreviewAssemblyQualifiedName;
     }
 }

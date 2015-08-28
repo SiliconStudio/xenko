@@ -13,3 +13,4 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Assets.Serializers")]
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Assets.Model")]
+[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Assets.Tests")]

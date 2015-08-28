@@ -51,7 +51,7 @@ namespace SiliconStudio.Paradox.Rendering
             foreach (var spriteState in spriteProcessor.Sprites)
             {
                 var sprite = spriteState.SpriteComponent.CurrentSprite;
-                if(sprite == null)
+                if(sprite == null || sprite.Texture == null || sprite.Region.Width <= 0 || sprite.Region.Height <= 0f)
                     continue;
 
                 // Perform culling on group and accept
@@ -124,18 +124,7 @@ namespace SiliconStudio.Paradox.Rendering
                 // skip the sprite if no texture is set.
                 if (texture == null)
                     continue;
-
-                // determine the size of the element depending on the extrusion method.
-                var elementSize = Vector2.One;
-                if (spriteComp.ExtrusionMethod == SpriteExtrusionMethod.UnitHeightSpriteRatio)
-                {
-                    elementSize.X = sourceRegion.Width / sourceRegion.Height;
-                }
-                else if (spriteComp.ExtrusionMethod == SpriteExtrusionMethod.UnitWidthSpriteRatio)
-                {
-                    elementSize.Y = sourceRegion.Height / sourceRegion.Width;
-                }
-
+                
                 // determine the element world matrix depending on the type of sprite
                 var worldMatrix = transfoComp.WorldMatrix;
                 if (spriteComp.SpriteType == SpriteType.Billboard)
@@ -154,14 +143,22 @@ namespace SiliconStudio.Paradox.Rendering
                     worldMatrix.TranslationVector = transfoComp.WorldMatrix.TranslationVector;
                 }
 
+                // calculate normalized position of the center of the sprite (takes into account the possible rotation of the image)
+                var normalizedCenter = new Vector2(sprite.Center.X / sourceRegion.Width - 0.5f, 0.5f - sprite.Center.Y / sourceRegion.Height);
+                if (sprite.Orientation == ImageOrientation.Rotated90)
+                {
+                    var oldCenterX = normalizedCenter.X;
+                    normalizedCenter.X = -normalizedCenter.Y;
+                    normalizedCenter.Y = oldCenterX;
+                }
                 // apply the offset due to the center of the sprite
-                var normalizedCenter = new Vector2(elementSize.X * (sprite.Center.X / sourceRegion.Width - 0.5f), elementSize.Y * (sprite.Center.Y / sourceRegion.Height - 0.5f));
-                worldMatrix.M41 -= normalizedCenter.X * worldMatrix.M11 + normalizedCenter.Y * worldMatrix.M21;
-                worldMatrix.M42 -= normalizedCenter.X * worldMatrix.M12 + normalizedCenter.Y * worldMatrix.M22;
-                worldMatrix.M43 -= normalizedCenter.X * worldMatrix.M13 + normalizedCenter.Y * worldMatrix.M23; 
+                var centerOffset = Vector2.Modulate(normalizedCenter, sprite.SizeInternal);
+                worldMatrix.M41 -= centerOffset.X * worldMatrix.M11 + centerOffset.Y * worldMatrix.M21;
+                worldMatrix.M42 -= centerOffset.X * worldMatrix.M12 + centerOffset.Y * worldMatrix.M22;
+                worldMatrix.M43 -= centerOffset.X * worldMatrix.M13 + centerOffset.Y * worldMatrix.M23; 
 
                 // draw the sprite
-                sprite3DBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref elementSize, ref color, sprite.Orientation, SwizzleMode.None, renderItem.Depth);
+                sprite3DBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref sprite.SizeInternal, ref color, sprite.Orientation, SwizzleMode.None, renderItem.Depth);
             }
 
             sprite3DBatch.End();

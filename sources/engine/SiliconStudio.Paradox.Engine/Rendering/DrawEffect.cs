@@ -4,8 +4,6 @@
 using System;
 
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Rendering.Images;
 
 namespace SiliconStudio.Paradox.Rendering
@@ -48,36 +46,11 @@ namespace SiliconStudio.Paradox.Rendering
         }
 
         /// <summary>
-        /// Initializes the <see cref="DrawEffect"/> with the given <see cref="RenderContext"/>.
-        /// </summary>
-        /// /// <exception cref="System.ArgumentNullException">context</exception>
-        protected override void InitializeCore()
-        {
-            base.InitializeCore();
-            GraphicsDevice = Context.GraphicsDevice;
-            Assets = Context.Services.GetSafeServiceAs<AssetManager>();
-        }
-
-        /// <summary>
         /// Gets the parameters.
         /// </summary>
         /// <value>The parameters.</value>
         [DataMemberIgnore]
         public ParameterCollection Parameters { get; private set; }
-
-        /// <summary>
-        /// Gets the <see cref="AssetManager"/>.
-        /// </summary>
-        /// <value>The content.</value>
-        [DataMemberIgnore]
-        protected AssetManager Assets { get; private set; }
-
-        /// <summary>
-        /// Gets the graphics device.
-        /// </summary>
-        /// <value>The graphics device.</value>
-        [DataMemberIgnore]
-        protected GraphicsDevice GraphicsDevice { get; private set; }
 
         /// <summary>
         /// Gets a shared <see cref="ImageScaler"/>.

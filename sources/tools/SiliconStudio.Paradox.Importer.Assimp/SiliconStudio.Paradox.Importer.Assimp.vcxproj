@@ -71,14 +71,14 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>assimp.lib</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc120-mt.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutputDir);..\..\..\deps\assimp\lib\assimp_release-dll_$(Platform)</AdditionalLibraryDirectories>
       <AdditionalOptions>/ignore:4049 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <CustomBuildStep>
-      <Command>copy "..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp.dll" "$(TargetDir)"</Command>
-      <Outputs>$(TargetDir)assimp.dll;%(Outputs)</Outputs>
-      <Inputs>..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp.dll</Inputs>
+      <Command>xcopy /D /Y "..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp-vc120-mt.dll" "$(TargetDir)$(Platform)\"</Command>
+      <Outputs>$(TargetDir)$(Platform)\assimp-vc120-mt.dll;%(Outputs)</Outputs>
+      <Inputs>..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp-vc120-mt.dll</Inputs>
       <TreatOutputAsContent>true</TreatOutputAsContent>
     </CustomBuildStep>
   </ItemDefinitionGroup>
@@ -92,13 +92,13 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>assimp.lib</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc120-mt.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\deps\assimp\lib\assimp_release-dll_$(Platform)</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
-      <Command>copy "..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp.dll" "$(TargetDir)"</Command>
-      <Outputs>$(TargetDir)assimp.dll;%(Outputs)</Outputs>
-      <Inputs>..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp.dll</Inputs>
+      <Command>xcopy /D /Y "..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp-vc120-mt.dll" "$(TargetDir)$(Platform)\"</Command>
+      <Outputs>$(TargetDir)$(Platform)\assimp-vc120-mt.dll;%(Outputs)</Outputs>
+      <Inputs>..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp-vc120-mt.dll</Inputs>
       <TreatOutputAsContent>true</TreatOutputAsContent>
     </CustomBuildStep>
   </ItemDefinitionGroup>
@@ -113,14 +113,14 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>assimp.lib</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc120-mt.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutputDir);..\..\..\deps\assimp\lib\assimp_release-dll_$(Platform)</AdditionalLibraryDirectories>
       <AdditionalOptions>/ignore:4049 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <CustomBuildStep>
-      <Command>copy "..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp.dll" "$(TargetDir)"</Command>
-      <Outputs>$(TargetDir)assimp.dll;%(Outputs)</Outputs>
-      <Inputs>..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp.dll</Inputs>
+      <Command>xcopy /D /Y "..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp-vc120-mt.dll" "$(TargetDir)$(Platform)\"</Command>
+      <Outputs>$(TargetDir)$(Platform)\assimp-vc120-mt.dll;%(Outputs)</Outputs>
+      <Inputs>..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp-vc120-mt.dll</Inputs>
       <TreatOutputAsContent>true</TreatOutputAsContent>
     </CustomBuildStep>
   </ItemDefinitionGroup>
@@ -134,13 +134,13 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>assimp.lib</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc120-mt.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\deps\assimp\lib\assimp_release-dll_$(Platform)</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
-      <Command>copy "..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp.dll" "$(TargetDir)"</Command>
-      <Outputs>$(TargetDir)assimp.dll;%(Outputs)</Outputs>
-      <Inputs>..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp.dll</Inputs>
+      <Command>xcopy /D /Y "..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp-vc120-mt.dll" "$(TargetDir)$(Platform)\"</Command>
+      <Outputs>$(TargetDir)$(Platform)\assimp-vc120-mt.dll;%(Outputs)</Outputs>
+      <Inputs>..\..\..\deps\assimp\bin\assimp_release-dll_$(Platform)\assimp-vc120-mt.dll</Inputs>
       <TreatOutputAsContent>true</TreatOutputAsContent>
     </CustomBuildStep>
   </ItemDefinitionGroup>

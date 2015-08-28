@@ -185,92 +185,10 @@ namespace SiliconStudio.Assets.Compiler
                 var assets = package.Assets.ToList();
                 assets.Sort((item1, item2) => item1.Asset != null && item2.Asset != null ? item1.Asset.InternalBuildOrder.CompareTo(item2.Asset.InternalBuildOrder) : 0);
 
-                // Import all assets provided by this psckage
-                GenerateRawImportBuildSteps(context, result);
-
                 // generate the build steps required to build the assets via base class
                 Compile(context, assets, result);
 
                 return result;
-            }
-
-            /// <summary>
-            /// Generate the build step corresponding to raw imports of the current package file.
-            /// </summary>
-            /// <param name="context">The compilation context</param>
-            /// <param name="result">The compilation current result</param>
-            private void GenerateRawImportBuildSteps(AssetCompilerContext context, AssetCompilerResult result)
-            {
-                if (context.Package.RootDirectory == null)
-                    return;
-
-                foreach (var profile in context.Package.Profiles)
-                {
-                    foreach (var sourceFolder in profile.AssetFolders)
-                    {
-                        var baseDirectory = Path.GetFullPath(context.Package.RootDirectory);
-                        // Use sub directory
-                        baseDirectory = Path.Combine(baseDirectory, sourceFolder.Path);
-
-                        if (!Directory.Exists(baseDirectory))
-                        {
-                            continue;
-                        }
-
-                        var baseUDirectory = new UDirectory(baseDirectory);
-                        var hashSet = new HashSet<string>();
-
-                        // Imports explicit
-                        foreach (var rawImport in sourceFolder.RawImports)
-                        {
-                            var sourceDirectory = baseUDirectory;
-                            if (!string.IsNullOrEmpty(rawImport.SourceDirectory))
-                                sourceDirectory = UPath.Combine(sourceDirectory, rawImport.SourceDirectory);
-
-                            if (!Directory.Exists(sourceDirectory))
-                            {
-                                result.Error("Unable to find raw import directory [{0}]", sourceDirectory);
-                                continue;
-                            }
-
-                            var files = Directory.EnumerateFiles(sourceDirectory, "*.*", SearchOption.AllDirectories).ToList();
-                            var importRegexes = rawImport.Patterns.Select(x => new Regex(Selectors.PathSelector.TransformToRegex(x))).ToArray();
-                            foreach (var file in files)
-                            {
-                                var pathToFileRelativeToProject = new UFile(file).MakeRelative(sourceDirectory);
-                                var outputPath = pathToFileRelativeToProject;
-                                if (!string.IsNullOrEmpty(rawImport.TargetLocation))
-                                    outputPath = UPath.Combine(rawImport.TargetLocation, outputPath);
-
-                                foreach (var importRegex in importRegexes)
-                                {
-                                    if (importRegex.Match(pathToFileRelativeToProject).Success && hashSet.Add(outputPath))
-                                    {
-                                        result.BuildSteps.Add(new ImportStreamCommand
-                                        {
-                                            SourcePath = file,
-                                            Location = outputPath,
-                                        });
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            private static readonly Regex ChangeWildcardToRegex = new Regex(@"(?<!\*)\*");
-
-            private static Regex CompileRawImport(string rawImport)
-            {
-                // Replace / by \
-                rawImport = rawImport.Replace("\\", "/");
-                // escape . by \.
-                rawImport = rawImport.Replace(".", "\\.");
-                // Transform * by .*?
-                rawImport = ChangeWildcardToRegex.Replace(rawImport, ".*?");
-                return new Regex(rawImport, RegexOptions.IgnoreCase);
             }
         }
     }

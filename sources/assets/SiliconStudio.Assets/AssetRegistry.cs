@@ -31,11 +31,10 @@ namespace SiliconStudio.Assets
         private static readonly Dictionary<Type, bool> RegisteredDynamicThumbnails = new Dictionary<Type, bool>();
         private static readonly HashSet<Type> AssetTypes = new HashSet<Type>();
         private static readonly HashSet<Type> RegisteredPackageSessionAnalysisTypes = new HashSet<Type>();
-        private static readonly Dictionary<Guid, IAssetImporter> RegisteredImportersInternal = new Dictionary<Guid, IAssetImporter>();
+        private static readonly List<IAssetImporter> RegisteredImportersInternal = new List<IAssetImporter>();
         private static readonly Dictionary<Type, Tuple<int, int>> RegisteredFormatVersions = new Dictionary<Type, Tuple<int, int>>();
         private static readonly HashSet<Type> RegisteredInternalAssetTypes = new HashSet<Type>();
         private static readonly Dictionary<Type, AssetUpgraderCollection> RegisteredAssetUpgraders = new Dictionary<Type, AssetUpgraderCollection>();
-        private static readonly Dictionary<string, List<IAssetImporter>> RegisterImportExtensions = new Dictionary<string, List<IAssetImporter>>(StringComparer.InvariantCultureIgnoreCase);
         private static readonly HashSet<string> RegisteredAssetFileExtensions = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
         private static readonly Dictionary<string, PackageUpgrader> RegisteredPackageUpgraders = new Dictionary<string, PackageUpgrader>();
         private static readonly HashSet<Assembly> RegisteredAssemblies = new HashSet<Assembly>();
@@ -43,6 +42,20 @@ namespace SiliconStudio.Assets
         private static readonly List<IDataCustomVisitor> RegisteredDataVisitNodes = new List<IDataCustomVisitor>();
         private static readonly List<IDataCustomVisitor> RegisteredDataVisitNodeBuilders = new List<IDataCustomVisitor>();
         private static Func<object, string, string> stringExpander;
+
+        /// <summary>
+        /// Gets the list of assemblies currently registered.
+        /// </summary>
+        public static IEnumerable<Assembly> Assemblies
+        {
+            get
+            {
+                lock (RegisteredAssemblies)
+                {
+                    return RegisteredAssemblies.ToList();
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the supported platforms.
@@ -60,7 +73,7 @@ namespace SiliconStudio.Assets
             {
                 lock (RegisteredImportersInternal)
                 {
-                    return RegisteredImportersInternal.Values;
+                    return RegisteredImportersInternal;
                 }
             }
         }
@@ -114,10 +127,10 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Determines whether the extension is an asset file type.
+        /// Determines whether the file is an asset file type.
         /// </summary>
-        /// <param name="extension">The extension.</param>
-        /// <returns><c>true</c> if [is asset file extension] [the specified extension]; otherwise, <c>false</c>.</returns>
+        /// <param name="extension">The file.</param>
+        /// <returns><c>true</c> if [is asset file file] [the specified file]; otherwise, <c>false</c>.</returns>
         public static bool IsAssetFileExtension(string extension)
         {
             if (extension == null) return false;
@@ -128,7 +141,7 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Gets the default extension associated with an asset.
+        /// Gets the default file associated with an asset.
         /// </summary>
         /// <param name="assetType">The type.</param>
         /// <returns>System.String.</returns>
@@ -202,7 +215,7 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Gets the default extension associated with an asset.
+        /// Gets the default file associated with an asset.
         /// </summary>
         /// <typeparam name="T">Type of the asset.</typeparam>
         /// <returns>System.String.</returns>
@@ -259,40 +272,24 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Determines whether [is importer supporting extension] [the specified extension].
+        /// Finds the importer associated with an asset by the file of the file to import.
         /// </summary>
-        /// <param name="extension">The extension.</param>
-        /// <returns><c>true</c> if [is importer supporting extension] [the specified extension]; otherwise, <c>false</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">extension</exception>
-        public static bool IsImporterSupportingExtension(string extension)
-        {
-            if (extension == null) throw new ArgumentNullException("extension");
-
-            lock (RegisterImportExtensions)
-            {
-                return RegisterImportExtensions.ContainsKey(extension);
-            }
-        }
-
-        /// <summary>
-        /// Finds the importer associated with an asset by the extension of the file to import.
-        /// </summary>
-        /// <param name="extension">The extension of the file to import.</param>
+        /// <param name="file">The file to import.</param>
         /// <returns>An instance of the importer of null if not found.</returns>
-        public static IEnumerable<IAssetImporter> FindImporterByExtension(string extension)
+        public static IEnumerable<IAssetImporter> FindImporterForFile(string file)
         {
-            if (extension == null) throw new ArgumentNullException("extension");
+            if (file == null) throw new ArgumentNullException("file");
 
-            lock (RegisterImportExtensions)
+            lock (RegisteredImportersInternal)
             {
-                List<IAssetImporter> importers;
-                if (RegisterImportExtensions.TryGetValue(extension, out importers))
+                foreach (var importer in RegisteredImportersInternal)
                 {
-                    var newImporters = new List<IAssetImporter>(importers);
-                    return newImporters;
+                    if (importer.IsSupportingFile(file))
+                    {
+                        yield return importer;
+                    }
                 }
             }
-            return Enumerable.Empty<IAssetImporter>();
         }
 
         /// <summary>
@@ -304,13 +301,8 @@ namespace SiliconStudio.Assets
         {
             lock (RegisteredImportersInternal)
             {
-                IAssetImporter importer;
-                if (RegisteredImportersInternal.TryGetValue(importerId, out importer))
-                {
-                    return importer;
-                }
+                return RegisteredImportersInternal.FirstOrDefault(t => t.Id == importerId);
             }
-            return null;
         }
 
         /// <summary>
@@ -325,30 +317,14 @@ namespace SiliconStudio.Assets
             // Register this importer
             lock (RegisteredImportersInternal)
             {
-                if (RegisteredImportersInternal.ContainsKey(importer.Id))
-                    return;
-                RegisteredImportersInternal[importer.Id] = importer;
-            }
-
-            // Register file extensions to type
-            var extensions = FileUtility.GetFileExtensions(importer.SupportedFileExtensions);
-            lock (RegisterImportExtensions)
-            {
-                foreach (var extension in extensions)
+                var existingImporter = FindImporterById(importer.Id);
+                if (existingImporter != null)
                 {
-                    List<IAssetImporter> importers;
-                    if (!RegisterImportExtensions.TryGetValue(extension, out importers))
-                    {
-                        importers = new List<IAssetImporter>();
-                        RegisterImportExtensions.Add(extension, importers);
-                    }
-                    if (!importers.Contains(importer))
-                    {
-                        importers.Add(importer);
-                        // Always keep the list of importer sotred by their DisplayRank
-                        importers.Sort( (left, right) => -left.DisplayRank.CompareTo(right.DisplayRank));
-                    }
+                    RegisteredImportersInternal.Remove(existingImporter);
                 }
+
+                RegisteredImportersInternal.Add(importer);
+                RegisteredImportersInternal.Sort( (left, right) => left.Order.CompareTo(right.Order));
             }
         }
 

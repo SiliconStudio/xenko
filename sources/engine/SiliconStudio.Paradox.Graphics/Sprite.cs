@@ -1,7 +1,8 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
@@ -9,73 +10,208 @@ using SiliconStudio.Core.Serialization.Contents;
 namespace SiliconStudio.Paradox.Graphics
 {
     /// <summary>
-    /// A sprite represents a series frames in an atlas forming an animation. 
+    /// A sprite.
     /// </summary>
+    [DataContract]
     [ContentSerializer(typeof(DataContentSerializer<Sprite>))]
     [DataSerializerGlobal(typeof(ReferenceSerializer<Sprite>), Profile = "Asset")]
-    public class Sprite : ImageFragment
+    public class Sprite
     {
+        private ImageOrientation orientation;
+        private Vector2 sizeInPixels;
+        private Vector2 pixelsPerUnit;
+        
+        internal RectangleF RegionInternal;
+        internal Vector4 BordersInternal;
+        internal Vector2 SizeInternal;
+
+        internal event EventHandler<EventArgs> BorderChanged;
+        internal event EventHandler<EventArgs> SizeChanged;
+
         /// <summary>
-        /// Creates a new instance of sprite with unique random name.
+        /// Create an instance of <see cref="Sprite"/> with a unique random name.
         /// </summary>
         public Sprite()
-            : this(Guid.NewGuid().ToString())
+            : this(Guid.NewGuid().ToString(), null)
         {
         }
 
         /// <summary>
-        /// Create a new instance of sprite.
+        /// Creates an empty <see cref="Sprite"/> having the provided name.
         /// </summary>
-        /// <param name="fragmentName">the sprite name</param>
+        /// <param name="fragmentName">Name of the fragment</param>
         public Sprite(string fragmentName)
-            : base(fragmentName)
+            :this(fragmentName, null)
         {
         }
+
+        /// <summary>
+        /// Create an instance of <see cref="Sprite"/> from the provided <see cref="Texture"/>.
+        /// A unique Id is set as name and the <see cref="Region"/> is initialized to the size of the whole texture.
+        /// </summary>
+        /// <param name="texture">The texture to use as texture</param>
+        public Sprite(Texture texture)
+            : this(Guid.NewGuid().ToString(), texture)
+        {
+        }
+
+        /// <summary>
+        /// Creates a <see cref="Sprite"/> having the provided texture and name.
+        /// The region size is initialized with the whole size of the texture.
+        /// </summary>
+        /// <param name="fragmentName">The name of the sprite</param>
+        /// <param name="texture">The texture to use as texture</param>
+        public Sprite(string fragmentName, Texture texture)
+        {
+            Name = fragmentName;
+            PixelsPerUnit = new Vector2(100);
+            IsTransparent = true;
+            
+            Texture = texture;
+            if (texture != null)
+            {
+                Region = new Rectangle(0, 0, texture.ViewWidth, texture.ViewHeight);
+                Center = new Vector2(Region.Width/2, Region.Height/2);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the name of the image fragment.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// The texture in which the image is contained
+        /// </summary>
+        public Texture Texture { get; set; }
 
         /// <summary>
         /// The position of the center of the image in pixels.
         /// </summary>
-        public Vector2 Center;
+        public Vector2 Center { get; set; }
 
         /// <summary>
-        /// Draw a specific frame of the sprite with white color and scale of 1.
+        /// The rectangle specifying the region of the texture to use as fragment.
         /// </summary>
-        /// <param name="spriteBatch">The sprite batch used to draw the sprite.</param>
-        /// <param name="position">The position to which draw the sprite</param>
-        /// <param name="rotation">The rotation to apply on the sprite</param>
-        /// <param name="depthLayer">The depth layer to which draw the sprite</param>
-        /// <param name="spriteEffects">The sprite effect to apply on the sprite</param>
-        /// <remarks>This function must be called between the <see cref="SpriteBatch.Begin(SiliconStudio.Paradox.Graphics.SpriteSortMode,SiliconStudio.Paradox.Graphics.Effect)"/> 
-        /// and <see cref="SpriteBatch.End()"/> calls of the provided <paramref name="spriteBatch"/></remarks>
-        /// <exception cref="ArgumentException">The provided frame index is not valid.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">The provided spriteBatch is null</exception>
-        public void Draw(SpriteBatch spriteBatch, Vector2 position, float rotation = 0, float depthLayer = 0, SpriteEffects spriteEffects = SpriteEffects.None)
+        public RectangleF Region
         {
-            Draw(spriteBatch, position, Color.White, Vector2.One, rotation, depthLayer, spriteEffects);
+            get { return RegionInternal; }
+            set
+            {
+                RegionInternal = value;
+                UpdateSizes();
+            }
         }
 
         /// <summary>
-        /// Draw a specific frame of the sprite.
+        /// Gets or sets the value indicating if the fragment contains transparent regions.
         /// </summary>
-        /// <param name="spriteBatch">The sprite batch used to draw the sprite.</param>
-        /// <param name="position">The position to which draw the sprite</param>
-        /// <param name="color">The color to use to draw the sprite</param>
-        /// <param name="rotation">The rotation to apply on the sprite</param>
-        /// <param name="scales">The scale factors to apply on the sprite</param>
-        /// <param name="depthLayer">The depth layer to which draw the sprite</param>
-        /// <param name="spriteEffects">The sprite effect to apply on the sprite</param>
-        /// <remarks>This function must be called between the <see cref="SpriteBatch.Begin(SiliconStudio.Paradox.Graphics.SpriteSortMode,SiliconStudio.Paradox.Graphics.Effect)"/> 
-        /// and <see cref="SpriteBatch.End()"/> calls of the provided <paramref name="spriteBatch"/></remarks>
-        /// <exception cref="ArgumentException">The provided frame index is not valid.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">The provided spriteBatch is null</exception>
-        public void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, Vector2 scales, float rotation = 0f, float depthLayer = 0, SpriteEffects spriteEffects = SpriteEffects.None)
-        {
-            if (spriteBatch == null) throw new ArgumentNullException("spriteBatch");
-        
-            if(Texture == null)
-                return;
+        public bool IsTransparent { get; set; }
 
-            spriteBatch.Draw(Texture, position, Region, color, rotation, Center, scales, spriteEffects, Orientation, depthLayer);
+        /// <summary>
+        /// Gets or sets the rotation to apply to the texture region when rendering the <see cref="Sprite"/>
+        /// </summary>
+        public virtual ImageOrientation Orientation
+        {
+            get {  return orientation; }
+            set
+            {
+                orientation = value;
+                UpdateSizes();
+            }
+        }
+        
+        /// <summary>
+        /// Gets or sets size of the unstretchable borders of source sprite in pixels.
+        /// </summary>
+        /// <remarks>Borders size are ordered as follows X->Left, Y->Right, Z ->Top, W -> Bottom.</remarks>
+        public Vector4 Borders
+        {
+            get { return BordersInternal; }
+            set
+            {
+                if (value == BordersInternal)
+                    return;
+
+                BordersInternal = value;
+                HasBorders = BordersInternal.Length() > MathUtil.ZeroTolerance;
+
+                var handler = BorderChanged;
+                if (handler != null)
+                    handler(this, EventArgs.Empty);
+            }
+        }
+
+        /// <summary>
+        /// Gets the value indicating if the image has unstretchable borders.
+        /// </summary>
+        public bool HasBorders { get; private set; }
+
+        /// <summary>
+        /// Gets the size of the sprite in scene units.
+        /// Note that the orientation of the image is taken into account in this calculation.
+        /// </summary>
+        public Vector2 Size
+        {
+            get {  return SizeInternal; }
+        }
+
+        /// <summary>
+        /// Gets the size of the sprite in pixels. 
+        /// Note that the orientation of the image is taken into account in this calculation.
+        /// </summary>
+        public Vector2 SizeInPixels
+        {
+            get { return sizeInPixels; }
+            private set
+            {
+                if (value == sizeInPixels)
+                    return;
+
+                sizeInPixels = value;
+
+                var handler = SizeChanged;
+                if (handler != null)
+                    handler(this, EventArgs.Empty);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the pixels per scene unit of the sprite.
+        /// </summary>
+        /// <remarks>The value is trunked to a strictly positive value.</remarks>
+        public Vector2 PixelsPerUnit
+        {
+            get { return pixelsPerUnit; }
+            set
+            {
+                if (pixelsPerUnit == value)
+                    return;
+
+                pixelsPerUnit = value;
+                pixelsPerUnit.X = Math.Max(MathUtil.ZeroTolerance, pixelsPerUnit.X);
+                pixelsPerUnit.Y = Math.Max(MathUtil.ZeroTolerance, pixelsPerUnit.Y);
+                UpdateSizes();
+            }
+        }
+
+        private void UpdateSizes()
+        {
+            var pixelSize = new Vector2(RegionInternal.Width, RegionInternal.Height);
+            SizeInternal = new Vector2(pixelSize.X / pixelsPerUnit.X, pixelSize.Y / pixelsPerUnit.Y);
+            if (orientation == ImageOrientation.Rotated90)
+            {
+                Utilities.Swap(ref pixelSize.X, ref pixelSize.Y);
+                Utilities.Swap(ref SizeInternal.X, ref SizeInternal.Y);
+            }
+
+            SizeInPixels = pixelSize;
+        }
+
+        public override string ToString()
+        {
+            var textureName = Texture != null ? Texture.Name : "''";
+            return Name + ", Texture: " + textureName + ", Region: " + Region;
         }
 
         /// <summary>

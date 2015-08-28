@@ -3,22 +3,25 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Contexts;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.AssemblyProcessor.Serializers
 {
     internal class CecilSerializerContext
     {
-        public CecilSerializerContext(AssemblyDefinition assembly)
+        private readonly ILogger log;
+
+        public CecilSerializerContext(AssemblyDefinition assembly, ILogger log)
         {
             Assembly = assembly;
             SerializableTypesProfiles = new Dictionary<string, ProfileInfo>();
             SerializableTypes = new ProfileInfo();
             SerializableTypesProfiles.Add("Default", SerializableTypes);
             ComplexTypes = new Dictionary<TypeDefinition, SerializableTypeInfo>();
+            this.log = log;
 
             SiliconStudioCoreAssembly = assembly.Name.Name == "SiliconStudio.Core"
                 ? assembly
@@ -208,7 +211,8 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
 
                 if (GenerateSerializer(serializableItem.Type, profile: profile) == null)
                 {
-                    throw new InvalidOperationException(string.Format("Member {0} (type: {1}) doesn't seem to have a valid serializer.", serializableItem.MemberInfo, serializableItem.Type.ConvertCSharp()));
+                    ComplexClassSerializerGenerator.IgnoreMember(serializableItem.MemberInfo);
+                    log.Log(new LogMessage(log.Module, LogMessageType.Warning, string.Format("Member {0} does not have a valid serializer. Add [DataMemberIgnore], turn the member non-public, or add a [DataContract] to it's type.", serializableItem.MemberInfo)));
                 }
             }
         }

@@ -5,11 +5,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Threading;
-
 using Microsoft.Build.Evaluation;
 
 using NuGet;
+using SiliconStudio.Core.Windows;
 
 namespace SiliconStudio.Assets
 {
@@ -255,10 +254,10 @@ namespace SiliconStudio.Assets
             var newPackageId = packageId.Replace(".", String.Empty);
             return "SiliconStudioPackage" + newPackageId + "Version";
         }
-
-        private GlobalMutexLocker GetLocalRepositoryLocker()
+        
+        private IDisposable GetLocalRepositoryLocker()
         {
-            return new GlobalMutexLocker("LauncherApp-" + RootDirectory);
+            return FileLock.Wait("nuget.lock");
         }
 
         private List<IPackage> UpdateTargetsInternal()
@@ -291,6 +290,11 @@ namespace SiliconStudio.Assets
                 var packageVarSaved = packageVar + "Saved";
                 var packageVarInvalid = packageVar + "Invalid";
                 var packageVarRevision = packageVar + "Revision";
+                var packageVarOverride = packageVar + "Override";
+
+                // <SiliconStudioPackageParadoxVersion Condition="'$(SiliconStudioPackageParadoxVersionOverride)' != ''">$(SiliconStudioPackageParadoxVersionOverride)</SiliconStudioPackageParadoxVersion>
+                var versionFromOverrideProperty = commonPropertyGroup.AddProperty(packageVar, "$(" + packageVarOverride + ")");
+                versionFromOverrideProperty.Condition = "'$(" + packageVarOverride + ")' != ''";
 
                 // <SiliconStudioPackageParadoxVersionSaved>$(SiliconStudioPackageParadoxVersion)</SiliconStudioPackageParadoxVersionSaved>
                 commonPropertyGroup.AddProperty(packageVarSaved, "$(" + packageVar + ")");
@@ -392,33 +396,6 @@ namespace SiliconStudio.Assets
             return (((ex is WebException) ||
                 (ex.InnerException is WebException) ||
                 (ex.InnerException is InvalidOperationException)));
-        }
-
-        private class GlobalMutexLocker : IDisposable
-        {
-            private Mutex mutex;
-            private readonly bool owned;
-
-            public GlobalMutexLocker(string name)
-            {
-                name = name.Replace(":", "_");
-                name = name.Replace("/", "_");
-                name = name.Replace("\\", "_");
-                mutex = new Mutex(true, name, out owned);
-                if (!owned)
-                {
-                    owned = mutex.WaitOne();
-                }
-            }
-
-            public void Dispose()
-            {
-                if (owned)
-                {
-                    mutex.ReleaseMutex();
-                }
-                mutex = null;
-            }
         }
 
         public static bool IsStoreDirectory(string directory)

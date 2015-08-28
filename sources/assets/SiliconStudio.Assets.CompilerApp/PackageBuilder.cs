@@ -14,6 +14,7 @@ using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Serialization.Assets;
 
 using System.Threading;
+using SiliconStudio.Paradox.Assets;
 
 namespace SiliconStudio.Assets.CompilerApp
 {
@@ -57,93 +58,141 @@ namespace SiliconStudio.Assets.CompilerApp
 
         private BuildResultCode BuildMaster()
         {
+            // Only querying graphics platform, let's load package, print it and exit
+            if (builderOptions.GetGraphicsPlatform)
+            {
+                return BuildGetGraphicsPlatform();
+            }
+
             assetLogger = new RemoteLogForwarder(builderOptions.Logger, builderOptions.LogPipeNames);
             GlobalLogger.GlobalMessageLogged += assetLogger;
+            try
+            {
+                // TODO handle solution file + package-id ?
 
-            // TODO handle solution file + package-id ?
-
-            // When the current platform is not on windows, we need to make sure that all plugins are build, so we
-            // setup auto-compile when loading the session
-            var sessionLoadParameters = new PackageLoadParameters
+                // When the current platform is not on windows, we need to make sure that all plugins are build, so we
+                // setup auto-compile when loading the session
+                var sessionLoadParameters = new PackageLoadParameters
                 {
-                    AutoCompileProjects = builderOptions.Platform != PlatformType.Windows || builderOptions.ProjectConfiguration != "Debug", // Avoid compiling if Windows|Debug
+                    AutoCompileProjects = builderOptions.Platform != PlatformType.Windows || !builderOptions.DisableAutoCompileProjects,
                     ExtraCompileProperties = builderOptions.ExtraCompileProperties,
                 };
 
-            // Loads the root Package
-            var projectSessionResult = PackageSession.Load(builderOptions.PackageFile, sessionLoadParameters);
-            if (projectSessionResult.HasErrors)
+                // Loads the root Package
+                var projectSessionResult = PackageSession.Load(builderOptions.PackageFile, sessionLoadParameters);
+                if (projectSessionResult.HasErrors)
+                {
+                    projectSessionResult.CopyTo(builderOptions.Logger);
+                    return BuildResultCode.BuildError;
+                }
+
+                var projectSession = projectSessionResult.Session;
+
+                // Check build configuration
+                var package = projectSession.LocalPackages.Last();
+
+                // Check build profile
+                var sharedProfile = package.Profiles.FindSharedProfile();
+                var buildProfile = package.Profiles.FirstOrDefault(pair => pair.Name == builderOptions.BuildProfile);
+                if (buildProfile == null)
+                {
+                    builderOptions.Logger.Error("Unable to find profile [{0}] in package [{1}]", builderOptions.BuildProfile, package.FullPath);
+                    return BuildResultCode.BuildError;
+                }
+
+                // Setup variables
+                var buildDirectory = builderOptions.BuildDirectory;
+                var outputDirectory = builderOptions.OutputDirectory;
+
+                // Builds the project
+                var assetBuilder = new PackageCompiler();
+                assetBuilder.AssetCompiled += RegisterBuildStepProcessedHandler;
+
+                // Create context
+                var context = new AssetCompilerContext
+                {
+                    Package = package,
+                    Platform = builderOptions.Platform
+                };
+
+                // Copy properties from shared profiles to context properties
+                if (sharedProfile != null)
+                {
+                    sharedProfile.Properties.CopyTo(context.PackageProperties, true);
+                }
+
+                // Copy properties from build profile
+                buildProfile.Properties.CopyTo(context.PackageProperties, true);
+
+            var gameSettingsAsset = context.Package.GetGameSettingsAsset();
+            if (gameSettingsAsset == null)
             {
-                projectSessionResult.CopyTo(builderOptions.Logger);
+                builderOptions.Logger.Error("Could not find game settings asset at location [{0}]", GameSettingsAsset.GameSettingsLocation);
                 return BuildResultCode.BuildError;
             }
 
-            var projectSession = projectSessionResult.Session;
+            context.SetGameSettingsAsset(gameSettingsAsset);
 
-            // Check build configuration
-            var package = projectSession.LocalPackages.First();
+                var assetBuildResult = assetBuilder.Compile(context);
+                assetBuildResult.CopyTo(builderOptions.Logger);
+                if (assetBuildResult.HasErrors)
+                    return BuildResultCode.BuildError;
 
-            // Check build profile
-            var sharedProfile = package.Profiles.FindSharedProfile();
-            var buildProfile = package.Profiles.FirstOrDefault(pair => pair.Name == builderOptions.BuildProfile);
+                // Create the builder
+                var indexName = "index." + builderOptions.BuildProfile;
+                builder = new Builder(buildDirectory, builderOptions.BuildProfile, indexName, "InputHashes", builderOptions.Logger) { ThreadCount = builderOptions.ThreadCount };
+                builder.MonitorPipeNames.AddRange(builderOptions.MonitorPipeNames);
+
+                // Add build steps generated by AssetBuilder
+                builder.Root.Add(assetBuildResult.BuildSteps);
+
+                // Run builder
+                var result = builder.Run(Builder.Mode.Build);
+                builder.WriteIndexFile(false);
+
+                // Fill list of bundles
+                var bundlePacker = new BundlePacker();
+                bundlePacker.Build(builderOptions.Logger, projectSession, buildProfile, indexName, outputDirectory, builder.DisableCompressionIds);
+
+                return result;
+            }
+            finally
+            {
+                if (builder != null)
+                {
+                    builder.Dispose();
+                }
+
+                // Flush and close logger
+                GlobalLogger.GlobalMessageLogged -= assetLogger;
+                assetLogger.Dispose();
+            }
+        }
+
+        private BuildResultCode BuildGetGraphicsPlatform()
+        {
+            var localLogger = new LoggerResult();
+            var simplePackage = Package.Load(localLogger, builderOptions.PackageFile, new PackageLoadParameters { AutoLoadTemporaryAssets = false, LoadAssemblyReferences = false, AutoCompileProjects = false });
+            if (simplePackage == null
+                || localLogger.HasErrors)
+            {
+                localLogger.CopyTo(builderOptions.Logger);
+                return BuildResultCode.BuildError;
+            }
+
+            var buildProfile = simplePackage.Profiles.FirstOrDefault(pair => pair.Name == builderOptions.BuildProfile);
             if (buildProfile == null)
             {
-                builderOptions.Logger.Error("Unable to find profile [{0}] in package [{1}]", builderOptions.BuildProfile, package.FullPath);
+                builderOptions.Logger.Error("Package {0} did not contain platform {1}", builderOptions.PackageFile, builderOptions.BuildProfile);
                 return BuildResultCode.BuildError;
             }
 
-            // Setup variables
-            var buildDirectory = builderOptions.BuildDirectory;
-            var outputDirectory = builderOptions.OutputDirectory;
+            // For now, graphics platform is implicit.
+            // It will need to be readded to GameSettingsAsset at some point.
+            var graphicsPlatform = builderOptions.Platform.GetDefaultGraphicsPlatform();
 
-            // Builds the project
-            var assetBuilder = new PackageCompiler();
-            assetBuilder.AssetCompiled += RegisterBuildStepProcessedHandler;
-
-            // Create context
-            var context = new AssetCompilerContext
-            {
-                Package = package,
-                Platform = builderOptions.Platform
-            };
-
-            // Copy properties from shared profiles to context properties
-            if (sharedProfile != null)
-            {
-                sharedProfile.Properties.CopyTo(context.PackageProperties, true);
-            }
-
-            context.PackageProperties.Set(Paradox.Assets.ParadoxConfig.GraphicsPlatform, builderOptions.GraphicsPlatform ?? builderOptions.GetDefaultGraphicsPlatform());
-
-            // Copy properties from build profile
-            buildProfile.Properties.CopyTo(context.PackageProperties, true);
-
-            var assetBuildResult = assetBuilder.Compile(context);
-            assetBuildResult.CopyTo(builderOptions.Logger);
-            if (assetBuildResult.HasErrors)
-                return BuildResultCode.BuildError;
-
-            // Create the builder
-            var indexName = "index." + builderOptions.BuildProfile;
-            builder = new Builder(buildDirectory, builderOptions.BuildProfile, indexName, "InputHashes", builderOptions.Logger) { ThreadCount = builderOptions.ThreadCount };
-            builder.MonitorPipeNames.AddRange(builderOptions.MonitorPipeNames);
-
-            // Add build steps generated by AssetBuilder
-            builder.Root.Add(assetBuildResult.BuildSteps);
-
-            // Run builder
-            var result = builder.Run(Builder.Mode.Build);
-            builder.WriteIndexFile(false);
-
-            // Fill list of bundles
-            var bundlePacker = new BundlePacker();
-            bundlePacker.Build(builderOptions.Logger, projectSession, buildProfile, indexName, outputDirectory, builder.DisableCompressionIds);
-
-            // Flush and close logger
-            GlobalLogger.GlobalMessageLogged -= assetLogger;
-            assetLogger.Dispose();
-            
-            return result;
+            Console.WriteLine(graphicsPlatform);
+            return BuildResultCode.Successful;
         }
 
         private void RegisterBuildStepProcessedHandler(object sender, AssetCompiledArgs e)

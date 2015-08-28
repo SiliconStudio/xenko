@@ -28,6 +28,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         /// Gets or sets a value indicating whether this <see cref="LightShadowMap"/> is enabled.
         /// </summary>
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
+        /// <userdoc>If checked, display the shadow of the engendered by the light.</userdoc>
         [DataMember(10)]
         [DefaultValue(false)]
         public bool Enabled { get; set; }
@@ -36,32 +37,25 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         /// Gets or sets the shadow map filtering.
         /// </summary>
         /// <value>The filter type.</value>
+        /// <userdoc>The type of filter to apply onto the shadow.</userdoc>
         [DataMember(20)]
         [DefaultValue(null)]
         public ILightShadowMapFilterType Filter { get; set; }
 
         /// <summary>
-        /// Gets or sets the size of the shadowmap.
+        /// Gets or sets the size of the shadow-map.
         /// </summary>
         /// <value>The size.</value>
+        /// <userdoc>The size of texture to use for shadow mapping. Large textures produces better shadows edges but are much more costly.</userdoc>
         [DataMember(30)]
         [DefaultValue(LightShadowMapSize.Medium)]
         public LightShadowMapSize Size { get; set; }
 
         /// <summary>
-        /// Gets the importance of the shadow. See remarks.
-        /// </summary>
-        /// <value>The shadow importance.</value>
-        /// <returns>System.Single.</returns>
-        /// <remarks>The higher the importance is, the higher the cost of shadow computation is costly</remarks>
-        [DataMember(40)]
-        public LightShadowImportance Importance { get; set; }
-
-
-        /// <summary>
         /// Gets the bias parameters.
         /// </summary>
         /// <value>The bias parameters.</value>
+        /// <userdoc>Offset values to add during to the depth calculation process of the shadow map.</userdoc>
         [DataMember(100)]
         [Display("Bias Parameters", Expand = ExpandRule.Always)]
         public ShadowMapBiasParameters BiasParameters { get; private set; }
@@ -70,6 +64,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         /// Gets or sets a value indicating whether this <see cref="LightShadowMap"/> is debug.
         /// </summary>
         /// <value><c>true</c> if debug; otherwise, <c>false</c>.</value>
+        /// <userdoc>If checked, render the shadow map in debug mode.</userdoc>
         [DataMember(200)]
         [DefaultValue(false)]
         public bool Debug { get; set; }
@@ -97,6 +92,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
             /// Gets or sets the depth bias used for shadow map comparison.
             /// </summary>
             /// <value>The bias.</value>
+            /// <userdoc>An absolute value to add to the calculated depth.</userdoc>
             [DataMember(10)]
             [DefaultValue(0.01f)]
             public float DepthBias { get; set; }
@@ -105,6 +101,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
             /// Gets or sets the offset scale in world space unit along the surface normal.
             /// </summary>
             /// <value>The offset scale.</value>
+            /// <userdoc>A factor specifying the offset to add to the calculated depth with respect to the surface normal.</userdoc>
             [DataMember(20)]
             [DefaultValue(0.0f)]
             public float NormalOffsetScale { get; set; }

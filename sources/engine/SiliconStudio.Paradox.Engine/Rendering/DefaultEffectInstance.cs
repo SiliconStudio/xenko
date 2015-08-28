@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Rendering
             this.localParameterCollections = parameterCollections;
         }
 
-        public override void FillParameterCollections(FastList<ParameterCollection> parameterCollections)
+        public override void FillParameterCollections(ref FastListStruct<ParameterCollection> parameterCollections)
         {
             // Test common types to avoid struct enumerator boxing
             var localParameterCollectionsList = localParameterCollections as List<ParameterCollection>;

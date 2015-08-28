@@ -101,5 +101,31 @@ namespace SiliconStudio.Core.IO
         {
             NativeFile.FileDelete(ConvertUrlToFullPath(url));
         }
+
+        /// <inheritdoc/>
+        public override void FileMove(string sourceUrl, string destinationUrl)
+        {
+            NativeFile.FileMove(ConvertUrlToFullPath(sourceUrl), ConvertUrlToFullPath(destinationUrl));
+        }
+
+        /// <inheritdoc/>
+        public override void FileMove(string sourceUrl, IVirtualFileProvider destinationProvider, string destinationUrl)
+        {
+            var fsProvider = destinationProvider as FileSystemProvider;
+            if (fsProvider != null)
+            {
+                destinationProvider.CreateDirectory(destinationUrl.Substring(0, destinationUrl.LastIndexOf(VirtualFileSystem.DirectorySeparatorChar)));
+                NativeFile.FileMove(ConvertUrlToFullPath(sourceUrl), fsProvider.ConvertUrlToFullPath(destinationUrl));
+            }
+            else
+            {
+                using (Stream sourceStream = OpenStream(sourceUrl, VirtualFileMode.Open, VirtualFileAccess.Read),
+                    destinationStream = destinationProvider.OpenStream(destinationUrl, VirtualFileMode.CreateNew, VirtualFileAccess.Write))
+                {
+                    sourceStream.CopyTo(destinationStream);
+                }
+                NativeFile.FileDelete(sourceUrl);
+            }
+        }
     }
 }

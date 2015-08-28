@@ -4,9 +4,9 @@ using System;
 using System.Linq;
 
 using SiliconStudio.ActionStack;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Quantum.Attributes;
 
 namespace SiliconStudio.Quantum.Commands
 {
@@ -23,8 +23,8 @@ namespace SiliconStudio.Quantum.Commands
         {
             if (memberDescriptor != null)
             {
-                var attrib = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<SealedCollectionAttribute>(memberDescriptor.MemberInfo);
-                if (attrib != null && attrib.CollectionSealed)
+                var attrib = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<MemberCollectionAttribute>(memberDescriptor.MemberInfo);
+                if (attrib != null && attrib.ReadOnly)
                     return false;
             }
             

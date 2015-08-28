@@ -3,6 +3,7 @@
 using System.Diagnostics;
 
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.UI.Controls
 {
@@ -15,17 +16,17 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// <summary>
         /// The key to the NotPressedImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<UIImage> NotPressedImagePropertyKey = new PropertyKey<UIImage>("NotPressedImageKey", typeof(Button), DefaultValueMetadata.Static<UIImage>(null), ObjectInvalidationMetadata.New<UIImage>(OnAspectImageInvalidated));
+        public static readonly PropertyKey<Sprite> NotPressedImagePropertyKey = new PropertyKey<Sprite>("NotPressedImageKey", typeof(Button), DefaultValueMetadata.Static<Sprite>(null), ObjectInvalidationMetadata.New<Sprite>(OnAspectImageInvalidated));
 
         /// <summary>
         /// The key to the PressedImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<UIImage> PressedImagePropertyKey = new PropertyKey<UIImage>("PressedImageKey", typeof(Button), DefaultValueMetadata.Static<UIImage>(null), ObjectInvalidationMetadata.New<UIImage>(OnAspectImageInvalidated));
+        public static readonly PropertyKey<Sprite> PressedImagePropertyKey = new PropertyKey<Sprite>("PressedImageKey", typeof(Button), DefaultValueMetadata.Static<Sprite>(null), ObjectInvalidationMetadata.New<Sprite>(OnAspectImageInvalidated));
 
         /// <summary>
         /// The key to the MouseOverImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<UIImage> MouseOverImagePropertyKey = new PropertyKey<UIImage>("MouseOverImageKey", typeof(Button), DefaultValueMetadata.Static<UIImage>(null), ObjectInvalidationMetadata.New<UIImage>(OnAspectImageInvalidated));
+        public static readonly PropertyKey<Sprite> MouseOverImagePropertyKey = new PropertyKey<Sprite>("MouseOverImageKey", typeof(Button), DefaultValueMetadata.Static<Sprite>(null), ObjectInvalidationMetadata.New<Sprite>(OnAspectImageInvalidated));
 
         public Button()
         {
@@ -33,7 +34,7 @@ namespace SiliconStudio.Paradox.UI.Controls
             Padding = new Thickness(10, 5, 10, 7);
         }
 
-        private static void OnAspectImageInvalidated(object propertyOwner, PropertyKey<UIImage> propertyKey, UIImage propertyOldValue)
+        private static void OnAspectImageInvalidated(object propertyOwner, PropertyKey<Sprite> propertyKey, Sprite propertyOldValue)
         {
             var button = (Button)propertyOwner;
             button.OnAspectImageInvalidated();
@@ -50,7 +51,7 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// <summary>
         /// Gets or sets the image that the button displays when pressed
         /// </summary>
-        public UIImage PressedImage
+        public Sprite PressedImage
         {
             get { return DependencyProperties.Get(PressedImagePropertyKey); }
             set { DependencyProperties.Set(PressedImagePropertyKey, value); }
@@ -59,7 +60,7 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// <summary>
         /// Gets or sets the image that the button displays when not pressed
         /// </summary>
-        public UIImage NotPressedImage
+        public Sprite NotPressedImage
         {
             get { return DependencyProperties.Get(NotPressedImagePropertyKey); }
             set { DependencyProperties.Set(NotPressedImagePropertyKey, value); }
@@ -68,7 +69,7 @@ namespace SiliconStudio.Paradox.UI.Controls
         /// <summary>
         /// Gets or sets the image that the button displays when the mouse is over it
         /// </summary>
-        public UIImage MouseOverImage
+        public Sprite MouseOverImage
         {
             get { return DependencyProperties.Get(MouseOverImagePropertyKey); }
             set { DependencyProperties.Set(MouseOverImagePropertyKey, value); }

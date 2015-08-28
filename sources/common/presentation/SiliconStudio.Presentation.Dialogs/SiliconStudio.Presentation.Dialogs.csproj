@@ -44,6 +44,7 @@
     <ProjectReference Include="..\SiliconStudio.Presentation\SiliconStudio.Presentation.csproj">
       <Project>{47AFCC2E-E9F0-47D6-9D75-9E646546A92B}</Project>
       <Name>SiliconStudio.Presentation</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />

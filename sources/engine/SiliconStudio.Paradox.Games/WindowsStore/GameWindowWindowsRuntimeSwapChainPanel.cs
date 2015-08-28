@@ -26,6 +26,7 @@ using System;
 using Windows.Graphics.Display;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Core.Mathematics;
+using Windows.Foundation;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -155,6 +156,12 @@ namespace SiliconStudio.Paradox.Games
                 }
                 windowHandle = new WindowHandle(AppContextType.WindowsRuntime, swapChainPanel);
 
+#if SILICONSTUDIO_PLATFORM_WINDOWS_10
+                var appView = ApplicationView.GetForCurrentView();
+                if (appView != null && windowContext.RequestedWidth != 0 && windowContext.RequestedHeight != 0)
+                    appView.TryResizeView(new Size(windowContext.RequestedWidth, windowContext.RequestedHeight));
+#endif
+
                 //clientBounds = new DrawingRectangle(0, 0, (int)swapChainPanel.ActualWidth, (int)swapChainPanel.ActualHeight);
                 swapChainPanel.SizeChanged += swapChainPanel_SizeChanged;
                 swapChainPanel.CompositionScaleChanged += swapChainPanel_CompositionScaleChanged;
@@ -177,8 +184,7 @@ namespace SiliconStudio.Paradox.Games
 
             // If user clicked only portraits or only landscapes mode (or nothing at all?), let's check against current orientation if it is matching
             bool isOrientationMatchingPreferences =
-                rotationPreferences == DisplayOrientations.None
-                || (currentOrientation == ApplicationViewOrientation.Portrait && (rotationPreferences & PortraitOrientations) != 0)
+                (currentOrientation == ApplicationViewOrientation.Portrait && (rotationPreferences & PortraitOrientations) != 0)
                 || (currentOrientation == ApplicationViewOrientation.Landscape && (rotationPreferences & LandscapeOrientations) != 0);
 
             if (!isOrientationMatchingPreferences && bounds.Width > 0 && bounds.Height > 0 && currentWidth > 0 && currentHeight > 0)

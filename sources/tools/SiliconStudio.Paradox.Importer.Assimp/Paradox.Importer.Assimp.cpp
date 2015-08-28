@@ -83,6 +83,7 @@ public ref class MeshConverter
 public:
 	property Logger^ Logger;
 	property bool AllowUnsignedBlendIndices;
+	property float ScaleImport;
 
 private:
 	Stopwatch^ internalStopwatch;
@@ -128,6 +129,7 @@ private:
 		this->vfsOutputFilename = outputFilename;
 		this->vfsInputPath = VirtualFileSystem::GetParentFolder(inputFilename);
 
+		/*
 		auto stream = VirtualFileSystem::Drive->OpenStream(unixStyleInputFilename, VirtualFileMode::Open, VirtualFileAccess::Read, VirtualFileShare::Read, StreamFlags::None);
 
 		// check and possibly adjust the input parameters
@@ -146,10 +148,17 @@ private:
 		auto buffer = memoryStream->ToArray();
 		Logger->Verbose("File Stream copied - Time taken: {0} ms.", nullptr, internalStopwatch->ElapsedMilliseconds);
 
+		//importer->SetIOHandler(new IOSystemCustom());
+
 		// load the mesh from its original format to Assimp data structures
 		internalStopwatch->StartNew();
+		
 		cli::pin_ptr<System::Byte> bufferStart = &buffer[0];
 		return importer->ReadFileFromMemory(bufferStart, buffer->Length, flags);
+		*/
+		
+		std::string unmanaged = msclr::interop::marshal_as<std::string>(inputFilename);
+		return importer->ReadFile(unmanaged, flags);
 	}
 
 	// Reset all data related to one specific file conversion
@@ -214,6 +223,10 @@ private:
 		bool hasSkinningNormal = false;
 		int totalClusterCount = 0;
 
+		auto scaling = Matrix::Scaling(ScaleImport);
+		auto scalingInvert = scaling;
+		scalingInvert.Invert();
+
 		// Build the bone's indices/weights and attach bones to NodeData 
 		//(bones info are present in the mesh so that is why we have to perform that here)
 		std::vector<std::vector<std::pair<short, float> > > vertexIndexToBoneIdWeight;
@@ -259,8 +272,7 @@ private:
 				MeshBoneDefinition boneDef;
 				boneDef.NodeIndex = nodeIndex;
 				auto bindPoseMatrix = aiMatrixToMatrix(bone->mOffsetMatrix);
-
-				boneDef.LinkToMeshMatrix = bindPoseMatrix;
+				boneDef.LinkToMeshMatrix = scalingInvert * bindPoseMatrix * scaling;
 				bones->Add(boneDef);
 			}
 			NormalizeVertexWeights(vertexIndexToBoneIdWeight, nbBonesByVertex);
@@ -359,7 +371,11 @@ private:
 		pin_ptr<Byte> vbPointer = &vertexBuffer[0];
 		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 		{
-			*((Vector3*)(vbPointer + positionOffset)) = aiVector3ToVector3(mesh->mVertices[i]);
+			auto position = aiVector3ToVector3(mesh->mVertices[i]);
+			auto position4 = Vector4(position, 1.0f);
+			auto newPosition = (Vector3)Vector4::Transform(position4, scaling);
+
+			*((Vector3*)(vbPointer + positionOffset)) = newPosition;
 
 			if (mesh->HasNormals())
 				*((Vector3*)(vbPointer + normalOffset)) = aiVector3ToVector3(mesh->mNormals[i]);
@@ -484,7 +500,7 @@ private:
 		// Create node
 		ModelNodeDefinition modelNodeDefinition;
 		modelNodeDefinition.ParentIndex = parentIndex;
-		modelNodeDefinition.Transform.Translation = Vector3(aiTranslation.x, aiTranslation.y, aiTranslation.z);
+		modelNodeDefinition.Transform.Translation = Vector3(aiTranslation.x, aiTranslation.y, aiTranslation.z) * ScaleImport;
 		modelNodeDefinition.Transform.Rotation = aiQuaternionToQuaternion(aiOrientation);
 		
 		if (parentIndex == -1)
@@ -531,8 +547,10 @@ private:
 		}
 	}
 
-	void ProcessAnimationCurveVector(AnimationClip^ animationClip, const aiVectorKey* keys, unsigned int nbKeys, String^ partialTargetName, double ticksPerSec)
+	void ProcessAnimationCurveVector(AnimationClip^ animationClip, const aiVectorKey* keys, unsigned int nbKeys, String^ partialTargetName, double ticksPerSec, bool scaled)
 	{
+		auto scaling = Matrix::Scaling(ScaleImport);
+
 		auto animationCurve = gcnew AnimationCurve<Vector3>();
 
 		// Switch to cubic implicit interpolation mode for Vector3
@@ -554,6 +572,8 @@ private:
 			key.Value.X = value.X;
 			key.Value.Y = value.Y;
 			key.Value.Z = value.Z;
+
+			if(scaled) key.Value = (Vector3)Vector3::Transform(key.Value, scaling);
 
 			animationCurve->KeyFrames->Add(key);
 			if(keyId == 0 || keyId == nbKeys-1) // discontinuity at animation first and last frame
@@ -609,11 +629,11 @@ private:
 		auto nodeName = aiStringToString(nodeAnim->mNodeName);
 		
 		// The scales
-		ProcessAnimationCurveVector(animationClip, nodeAnim->mScalingKeys, nodeAnim->mNumScalingKeys, String::Format("Transform.Scale[{0}]", nodeName), ticksPerSec);
+		ProcessAnimationCurveVector(animationClip, nodeAnim->mScalingKeys, nodeAnim->mNumScalingKeys, String::Format("Transform.Scale[{0}]", nodeName), ticksPerSec, false);
 		// The rotation
 		ProcessAnimationCurveQuaternion(animationClip, nodeAnim->mRotationKeys, nodeAnim->mNumRotationKeys, String::Format("Transform.Rotation[{0}]", nodeName), ticksPerSec);
 		// The translation
-		ProcessAnimationCurveVector(animationClip, nodeAnim->mPositionKeys, nodeAnim->mNumPositionKeys, String::Format("Transform.Position[{0}]", nodeName), ticksPerSec);
+		ProcessAnimationCurveVector(animationClip, nodeAnim->mPositionKeys, nodeAnim->mNumPositionKeys, String::Format("Transform.Position[{0}]", nodeName), ticksPerSec, true);
 	}
 
 	AnimationClip^ ProcessAnimation(const aiScene* scene)
@@ -668,7 +688,7 @@ private:
 		// TODO: compare with FBX importer - see if there could be some conflict between texture names
 		auto textureValue = TextureLayerGenerator::GenerateMaterialTextureNode(vfsOutputPath, sourceTextureFile, textureUVSetIndex, textureUVscaling, wrapTextureU, wrapTextureV, Logger);
 
-		auto attachedReference = AttachedReferenceManager::GetAttachedReference(textureValue);
+		auto attachedReference = AttachedReferenceManager::GetAttachedReference(textureValue->Texture);
 		auto referenceName = attachedReference->Url;
 
 		// find a new and correctName

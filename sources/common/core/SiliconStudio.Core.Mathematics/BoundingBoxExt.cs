@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace SiliconStudio.Core.Mathematics
@@ -12,6 +13,11 @@ namespace SiliconStudio.Core.Mathematics
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct BoundingBoxExt : IEquatable<BoundingBoxExt>
     {
+        /// <summary>
+        /// A <see cref="BoundingBoxExt"/> which represents an empty space.
+        /// </summary>
+        public static readonly BoundingBoxExt Empty = new BoundingBoxExt(BoundingBox.Empty);
+
         /// <summary>
         /// The center of this bounding box.
         /// </summary>
@@ -73,15 +79,6 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="world"></param>
         public void Transform(Matrix world)
         {
-            Transform(ref world);
-        }
-
-        /// <summary>
-        /// Transform this Bounding box (the world matrix will be modified).
-        /// </summary>
-        /// <param name="world"></param>
-        public void Transform(ref Matrix world)
-        {
             // http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
             // Compute transformed AABB (by world)
             var center = Center;
@@ -92,20 +89,33 @@ namespace SiliconStudio.Core.Mathematics
             // Update world matrix into absolute form
             unsafe
             {
-                fixed (void* pMatrix = &world)
+                // Perform an abs on the matrix
+                var matrixData = (float*)&world;
+                for (int j = 0; j < 16; ++j)
                 {
-                    // Perform an abs on the matrix
-                    var matrixData = (float*)pMatrix;
-                    for (int j = 0; j < 16; ++j)
-                    {
-                        //*matrixData &= 0x7FFFFFFF;
-                        *matrixData = Math.Abs(*matrixData);
-                        ++matrixData;
-                    }
+                    //*matrixData &= 0x7FFFFFFF;
+                    *matrixData = Math.Abs(*matrixData);
+                    ++matrixData;
                 }
             }
 
             Vector3.TransformNormal(ref extent, ref world, out Extent);
+        }
+
+        /// <summary>
+        /// Constructs a <see cref="SiliconStudio.Core.Mathematics.BoundingBoxExt"/> that is as large as the total combined area of the two specified boxes.
+        /// </summary>
+        /// <param name="value1">The first box to merge.</param>
+        /// <param name="value2">The second box to merge.</param>
+        /// <param name="result">When the method completes, contains the newly constructed bounding box.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Merge(ref BoundingBoxExt value1, ref BoundingBoxExt value2, out BoundingBoxExt result)
+        {
+            var maximum = Vector3.Max(value1.Maximum, value2.Maximum);
+            var minimum = Vector3.Min(value1.Minimum, value2.Minimum);
+
+            result.Center = (minimum + maximum) / 2;
+            result.Extent = (maximum - minimum) / 2;
         }
 
         public bool Equals(BoundingBoxExt other)

@@ -25,8 +25,10 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
     [ThumbnailCompiler(PreviewerCompilerNames.ProceduralModelThumbnailCompilerQualifiedName, true)]
     [AssetCompiler(typeof(ProceduralModelAssetCompiler))]
     [Display(185, "Procedural Model", "A procedural model")]
-    [AssetFormatVersion(2)]
+    [AssetFormatVersion(4)]
     [AssetUpgrader(0, 1, 2, typeof(Upgrader))]
+    [AssetUpgrader(2, 3, typeof(RenameCapsuleHeight))]
+    [AssetUpgrader(3, 4, typeof(RenameDiameters))]
     public sealed class ProceduralModelAsset : Asset, IModelAsset
     {
         /// <summary>
@@ -46,6 +48,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
         /// Gets or sets the type.
         /// </summary>
         /// <value>The type.</value>
+        /// <userdoc>The type of procedural model to generate</userdoc>
         [DataMember(10)]
         [NotNull]
         [Display("Type", Expand = ExpandRule.Always)]
@@ -55,7 +58,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
         [DataMemberIgnore]
         public IEnumerable<KeyValuePair<string, MaterialInstance>> MaterialInstances { get { return Type != null ? Type.MaterialInstances : Enumerable.Empty<KeyValuePair<string, MaterialInstance>>(); } }
 
-        class Upgrader : AssetUpgraderBase
+        private class Upgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
             {
@@ -83,6 +86,36 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
                         vecSize.Style = YamlStyle.Flow;
                         asset.Type.Size = vecSize;
                     }
+                }
+            }
+        }
+
+        class RenameCapsuleHeight : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                var proceduralType = asset.Type;
+                if (proceduralType.Node.Tag == "!CapsuleProceduralModel" && proceduralType.Height != null)
+                {
+                    proceduralType.Length = 2f * (float)proceduralType.Height;
+                    proceduralType.Height = DynamicYamlEmpty.Default;
+                }
+            }
+        }
+
+        class RenameDiameters : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                var proceduralType = asset.Type;
+                if (proceduralType.Diameter != null)
+                {
+                    proceduralType.Radius = 0.5f * (float)proceduralType.Diameter;
+                    proceduralType.Diameter = DynamicYamlEmpty.Default;
+                }
+                if (proceduralType.Node.Tag == "!TorusProceduralModel" && proceduralType.Thickness != null)
+                {
+                    proceduralType.Thickness = 0.5f * (float)proceduralType.Thickness;
                 }
             }
         }

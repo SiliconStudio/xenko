@@ -1,12 +1,9 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.ComponentModel;
-
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering.Materials;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
 using SiliconStudio.Paradox.Shaders;
@@ -18,7 +15,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
     /// </summary>
     [DataContract("MaterialTransparencyAdditiveFeature")]
     [Display("Additive")]
-    public class MaterialTransparencyAdditiveFeature : IMaterialTransparencyFeature
+    public class MaterialTransparencyAdditiveFeature : MaterialFeature, IMaterialTransparencyFeature
     {
         private static readonly MaterialStreamDescriptor AlphaBlendStream = new MaterialStreamDescriptor("DiffuseSpecularAlphaBlend", "matDiffuseSpecularAlphaBlend", MaterialKeys.DiffuseSpecularAlphaBlendValue.PropertyType);
 
@@ -39,6 +36,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the alpha.
         /// </summary>
         /// <value>The alpha.</value>
+        /// <userdoc>The factor used to modulate alpha of the material. See documentation for more details.</userdoc>
         [NotNull]
         [DataMember(10)]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
@@ -48,12 +46,12 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the tint color.
         /// </summary>
         /// <value>The tint.</value>
-        /// <userdoc>A color to tint the transparency color</userdoc>
+        /// <userdoc>The tint color to apply on the material during the blend.</userdoc>
         [NotNull]
         [DataMember(20)]
         public IComputeColor Tint { get; set; }
 
-        public void Visit(MaterialGeneratorContext context)
+        public override void VisitFeature(MaterialGeneratorContext context)
         {
             var alpha = Alpha ?? new ComputeFloat(0.5f);
             var tint = Tint ?? new ComputeColor(Color.White);

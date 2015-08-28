@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Presentation.ViewModel.ActionStack;
 using SiliconStudio.Quantum;
@@ -20,6 +21,11 @@ namespace SiliconStudio.Presentation.Quantum
         private IModelNode targetNode;
         private bool isInitialized;
         private int? customOrder;
+
+        static ObservableModelNode()
+        {
+            typeof(ObservableModelNode).GetProperties().Select(x => x.Name).ForEach(x => ReservedNames.Add(x));
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObservableModelNode"/> class.
@@ -125,17 +131,17 @@ namespace SiliconStudio.Presentation.Quantum
         public int? CustomOrder { get { return customOrder; } set { SetValue(ref customOrder, value, "CustomOrder", "Order"); } }
 
         /// <inheritdoc/>
-        public sealed override bool IsPrimitive { get { AssertInit(); return isPrimitive; } }
+        public sealed override bool IsPrimitive { get { return isPrimitive; } }
         
         // To distinguish between lists and items of a list (which have the same TargetNode if the items are primitive types), we check whether the TargetNode is
         // the same of the one of its parent. If so, we're likely in an item of a list of primitive objects. 
         /// <inheritdoc/>
-        public sealed override bool HasList { get { AssertInit(); return (targetNode.Content.Descriptor is CollectionDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable); } }
+        public sealed override bool HasList { get { return (targetNode.Content.Descriptor is CollectionDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable); } }
 
         // To distinguish between dictionaries and items of a dictionary (which have the same TargetNode if the value type is a primitive type), we check whether the TargetNode is
         // the same of the one of its parent. If so, we're likely in an item of a dictionary of primitive objects. 
         /// <inheritdoc/>
-        public sealed override bool HasDictionary { get { AssertInit(); return (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary); } }
+        public sealed override bool HasDictionary { get { return (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary); } }
 
         internal Guid ModelGuid { get { return targetNode.Guid; } }
 

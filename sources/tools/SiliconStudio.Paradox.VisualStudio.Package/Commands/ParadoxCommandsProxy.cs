@@ -6,12 +6,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Windows.Forms;
-
-using EnvDTE;
-
 using NShader;
-
+using NuGet;
 using SiliconStudio.Assets;
 
 namespace SiliconStudio.Paradox.VisualStudio.Commands
@@ -21,8 +17,21 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
     /// </summary>
     public class ParadoxCommandsProxy : MarshalByRefObject, IParadoxCommands
     {
-        private static object computedParadoxSdkDirLock = new object();
-        private static string computedParadoxSdkDir = null;
+        public static readonly Version MinimumVersion = new Version(1, 1);
+
+        public struct PackageInfo
+        {
+            public string SdkPath;
+
+            public Version ExpectedVersion;
+
+            public Version LoadedVersion;
+        }
+
+        private static object computedParadoxPackageInfoLock = new object();
+        private static PackageInfo computedParadoxPackageInfo;
+        private static string solution;
+        private static bool solutionChanged;
         private IParadoxCommands remote;
         private List<Tuple<string, DateTime>> assembliesLoaded = new List<Tuple<string, DateTime>>();
 
@@ -44,17 +53,53 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
             remote = (IParadoxCommands)assembly.CreateInstance("SiliconStudio.Paradox.VisualStudio.Commands.ParadoxCommands");
         }
 
-        public static string ParadoxSdkDir
+        public static PackageInfo ParadoxPackageInfo
         {
             get
             {
-                lock (computedParadoxSdkDirLock)
+                lock (computedParadoxPackageInfoLock)
                 {
-                    if (computedParadoxSdkDir == null)
-                        computedParadoxSdkDir = FindParadoxSdkDir();
+                    if (computedParadoxPackageInfo.SdkPath == null)
+                        computedParadoxPackageInfo = FindParadoxSdkDir();
 
-                    return computedParadoxSdkDir;
+                    return computedParadoxPackageInfo;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Set the solution to use, when resolving the package containing the remote commands.
+        /// </summary>
+        /// <param name="solutionPath">The full path to the solution file.</param>
+        /// <param name="domain">The AppDomain to set the solution on, or null the current AppDomain.</param>
+        public static void InitialzeFromSolution(string solutionPath, AppDomain domain = null)
+        {
+            if (domain == null)
+            {
+                lock (computedParadoxPackageInfoLock)
+                {
+                    // Set the new solution and clear the package info, so it will be recomputed
+                    solution = solutionPath;
+                    computedParadoxPackageInfo = new PackageInfo();
+                }
+
+                lock (paradoxCommandProxyLock)
+                {
+                    solutionChanged = true;
+                }
+            }
+            else
+            {
+                var initializationHelper = (InitializationHelper)domain.CreateInstanceFromAndUnwrap(typeof(InitializationHelper).Assembly.Location, typeof(InitializationHelper).FullName);
+                initializationHelper.Initialze(solutionPath);
+            }
+        }
+
+        private class InitializationHelper : MarshalByRefObject
+        {
+            public void Initialze(string solutionPath)
+            {
+                InitialzeFromSolution(solutionPath);
             }
         }
 
@@ -75,7 +120,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
             lock (paradoxCommandProxyLock)
             {
                 // New instance?
-                bool shouldReload = currentInstance == null;
+                bool shouldReload = currentInstance == null || solutionChanged;
                 if (!shouldReload)
                 {
                     // Assemblies changed?
@@ -99,7 +144,10 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
                     }
 
                     currentAppDomain = CreateParadoxDomain();
+                    InitialzeFromSolution(solution, currentAppDomain);
                     currentInstance = CreateProxy(currentAppDomain);
+                    currentInstance.Initialize();
+                    solutionChanged = false;
                 }
 
                 return currentInstance;
@@ -125,9 +173,14 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
             return (ParadoxCommandsProxy)domain.CreateInstanceFromAndUnwrap(typeof(ParadoxCommandsProxy).Assembly.Location, typeof(ParadoxCommandsProxy).FullName);
         }
 
-        public void Initialize(string dumb)
+        public void Initialize(string paradoxSdkDir)
         {
-            remote.Initialize(ParadoxSdkDir);
+            Initialize();
+        }
+
+        public void Initialize()
+        {
+            remote.Initialize(ParadoxPackageInfo.SdkPath);
         }
 
         public bool ShouldReload()
@@ -174,7 +227,10 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
             // This assembly resolve is only used to resolve the GetExecutingAssembly on the Default Domain
             // when casting to ParadoxCommandsProxy in the ParadoxCommandsProxy.GetProxy method
             var executingAssembly = Assembly.GetExecutingAssembly();
-            if (args.Name == executingAssembly.FullName)
+
+            // Redirect requests for earlier package versions to the current one
+            var assemblyName = new AssemblyName(args.Name);
+            if (assemblyName.Name == executingAssembly.GetName().Name)
                 return executingAssembly;
 
             return null;
@@ -182,7 +238,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
 
         private Assembly ParadoxDomainAssemblyResolve(object sender, ResolveEventArgs args)
         {
-            var paradoxSdkDir = ParadoxSdkDir;
+            var paradoxSdkDir = ParadoxPackageInfo.SdkPath;
             if (paradoxSdkDir == null)
                 return null;
 
@@ -200,7 +256,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
 
             // PCL System assemblies are using version 2.0.5.0 while we have a 4.0
             // Redirect the PCL to use the 4.0 from the current app domain.
-            if (assemblyName.Name.StartsWith("System"))
+            if (assemblyName.Name.StartsWith("System") && (assemblyName.Flags & AssemblyNameFlags.Retargetable) != 0)
             {
                 var systemCoreAssembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(assembly => assembly.GetName().Name == assemblyName.Name);
                 return systemCoreAssembly;
@@ -229,36 +285,57 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
         /// Gets the paradox SDK dir.
         /// </summary>
         /// <returns></returns>
-        private static string FindParadoxSdkDir()
+        private static PackageInfo FindParadoxSdkDir()
         {
-            // TODO: Get the Paradox SDK from the current selected package
+            // Resolve the sdk version to load from the solution's package
+            var packageInfo = new PackageInfo { ExpectedVersion = PackageSessionHelper.GetPackageVersion(solution) };
 
             // TODO: Maybe move it in some common class somewhere? (in this case it would be included with "Add as link" in VSPackage)
             var paradoxSdkDir = Environment.GetEnvironmentVariable("SiliconStudioParadoxDir");
 
+            // Failed to locate paradox
             if (paradoxSdkDir == null)
-            {
-                return null;
-            }
+                return packageInfo;
 
-            // Check if it is a dev directory
+            // If we are in a dev directory, assume we have the right version
             if (File.Exists(Path.Combine(paradoxSdkDir, "build\\Paradox.sln")))
-                return paradoxSdkDir;
+            {
+                packageInfo.SdkPath = paradoxSdkDir;
+                packageInfo.LoadedVersion = packageInfo.ExpectedVersion;
+                return packageInfo;
+            }
 
             // Check if we are in a root directory with store/packages facilities
             if (NugetStore.IsStoreDirectory(paradoxSdkDir))
             {
                 var store = new NugetStore(paradoxSdkDir);
+                IPackage paradoxPackage = null;
 
-                var paradoxPackage = store.GetLatestPackageInstalled(store.MainPackageId);
+                // Try to find the package with the expected version
+                if (packageInfo.ExpectedVersion != null && packageInfo.ExpectedVersion >= MinimumVersion)
+                    paradoxPackage = store.GetPackagesInstalled(store.MainPackageId).FirstOrDefault(package => GetVersion(package) == packageInfo.ExpectedVersion);
+
+                // If the expected version is not found, get the latest package
                 if (paradoxPackage == null)
-                    return null;
+                    paradoxPackage = store.GetLatestPackageInstalled(store.MainPackageId);
 
+                // If no package was found, return no sdk path
+                if (paradoxPackage == null)
+                    return packageInfo;
+
+                // Return the loaded version and the sdk path
                 var packageDirectory = store.PathResolver.GetPackageDirectory(paradoxPackage);
-                return Path.Combine(paradoxSdkDir, store.RepositoryPath, packageDirectory);
+                packageInfo.LoadedVersion = GetVersion(paradoxPackage);
+                packageInfo.SdkPath = Path.Combine(paradoxSdkDir, store.RepositoryPath, packageDirectory);
             }
 
-            return null;
+            return packageInfo;
+        }
+
+        private static Version GetVersion(IPackage package)
+        {
+            var originalVersion = package.Version.Version;
+            return new Version(originalVersion.Major, originalVersion.Minor);
         }
     }
 }

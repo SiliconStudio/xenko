@@ -4,8 +4,6 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Materials;
 using SiliconStudio.Paradox.Rendering.Tessellation;
 using SiliconStudio.Paradox.Shaders;
 
@@ -15,7 +13,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
     /// The displacement map for a surface material feature.
     /// </summary>
     [DataContract("MaterialTesselationFeature")]
-    public abstract class MaterialTessellationBaseFeature : IMaterialTessellationFeature
+    public abstract class MaterialTessellationBaseFeature : MaterialFeature, IMaterialTessellationFeature
     {
         private static readonly PropertyKey<bool> HasFinalCallback = new PropertyKey<bool>("MaterialTessellationBaseFeature.HasFinalCallback", typeof(MaterialTessellationBaseFeature));
 
@@ -28,7 +26,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// Gets or sets the desired triangle size.
         /// </summary>
         /// <userdoc>
-        /// The desired triangles' size. This drives the tessellation factor.
+        /// The desired triangles' size in pixels. This drives the tessellation factor.
         /// </userdoc>
         [DataMember(10)]
         [DataMemberRange(1, 100, 1, 5)]
@@ -47,7 +45,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
 
         protected bool HasAlreadyTessellationFeature;
 
-        public virtual void Visit(MaterialGeneratorContext context)
+        public override void VisitFeature(MaterialGeneratorContext context)
         {
             // determine if an tessellation material have already been added in another layer
             HasAlreadyTessellationFeature = context.GetStreamFinalModifier<MaterialTessellationBaseFeature>(MaterialShaderStage.Domain) != null;

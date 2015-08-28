@@ -21,6 +21,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         private float previousLuminance;
 
         private readonly Stopwatch timer;
+        private ToneMapOperator @operator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ToneMap"/> class.
@@ -47,9 +48,31 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// Gets or sets the operator used for tonemap.
         /// </summary>
         /// <value>The operator.</value>
+        /// <userdoc>The method used to perform the HDR to LDR tone mapping</userdoc>
         [DataMember(10)]
         [NotNull]
-        public ToneMapOperator Operator { get; set; }
+        public ToneMapOperator Operator
+        {
+            get { return @operator; }
+            set
+            {
+                // Hack: If operator actually changed, we need to make sure counter are increasing
+                // TODO: Make this gone with graphics refactor :)
+                if (value != null && @operator != null && @operator != value)
+                {
+                    foreach (var parameter in @operator.Parameters.InternalValues)
+                    {
+                        var internalValue = value.Parameters.GetInternalValue(parameter.Key);
+                        if (internalValue != null)
+                        {
+                            internalValue.Counter = parameter.Value.Counter + 1;
+                        }
+                    }
+                }
+
+                @operator = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the key value.

@@ -6,8 +6,6 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Materials;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Rendering.Materials.Processor.Visitors;
 using SiliconStudio.Paradox.Shaders;
@@ -30,6 +28,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         /// <param name="offset">The offset.</param>
         protected ComputeTextureBase(Texture texture, TextureCoordinate texcoordIndex, Vector2 scale, Vector2 offset)
         {
+            Enabled = true;
             Texture = texture;
             TexcoordIndex = texcoordIndex;
             Sampler = new ComputeColorParameterSampler();
@@ -39,10 +38,17 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         }
 
         /// <summary>
+        /// Gets or sets the enable state of the texture.
+        /// </summary>
+        /// <userdoc>If unchecked, the texture value is ignored and the fallback value is used instead.</userdoc>
+        [DefaultValue(true)]
+        public bool Enabled { get; set; }
+
+        /// <summary>
         /// The texture Reference.
         /// </summary>
         /// <userdoc>
-        /// The texture.
+        /// The reference to the texture asset to use.
         /// </userdoc>
         [DataMember(10)] 
         [DefaultValue(null)]
@@ -73,7 +79,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         /// The texture filtering mode.
         /// </summary>
         /// <userdoc>
-        /// The filtering of the texture.
+        /// The filtering method to use.
         /// </userdoc>
         [DataMember(41)]
         [DefaultValue(TextureFilter.Linear)]
@@ -93,7 +99,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         /// The texture address mode.
         /// </summary>
         /// <userdoc>
-        /// The wrapping of the texture along U.
+        /// Specify how to wrap the texture along the U axis (horizontal axis).
         /// </userdoc>
         [DataMember(42)]
         [DefaultValue(TextureAddressMode.Wrap)]
@@ -113,7 +119,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         /// The texture address mode.
         /// </summary>
         /// <userdoc>
-        /// The wrapping of the texture along V.
+        /// Specify how to wrap the texture along the V axis (vertical axis).
         /// </userdoc>
         [DataMember(43)]
         [DefaultValue(TextureAddressMode.Wrap)]
@@ -133,7 +139,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         /// The scale of the texture coordinates.
         /// </summary>
         /// <userdoc>
-        /// The scale on texture coordinates. Lower than 1 means that the texture will be zoomed in.
+        /// The scale to apply onto the texture coordinates. This can be used to zoom into texture or tile it (lower than 1 -> zooming, greater than 1 -> tiling).
         /// </userdoc>
         [DataMember(50)]
         public Vector2 Scale { get; set; }
@@ -142,7 +148,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         /// The offset in the texture coordinates.
         /// </summary>
         /// <userdoc>
-        /// The offset on texture coordinates.
+        /// The offsets to apply onto the model's texture coordinates.
         /// </userdoc>
         [DataMember(60)]
         public Vector2 Offset { get; set; }
@@ -155,8 +161,14 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
 
         protected abstract string GetTextureChannelAsString();
 
+        public abstract ShaderSource GenerateShaderFromFallbackValue(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys);
+
         public override ShaderSource GenerateShaderSource(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys)
         {
+            if (!Enabled || Texture == null) // generate shader from default value when the texture is null or disabled
+                return GenerateShaderFromFallbackValue(context, baseKeys);
+
+            // generate shader from the texture
             // TODO: Use a generated UsedTexcoordIndex when backing textures
             var usedTexcoord = "TEXCOORD" + MaterialUtility.GetTextureIndex(TexcoordIndex);
 

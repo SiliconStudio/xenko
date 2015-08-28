@@ -282,7 +282,6 @@ namespace SiliconStudio.Presentation.Controls
         public ScaleBar()
         {
             Loaded += OnLoaded;
-            ClipToBounds = true;
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
@@ -740,12 +739,12 @@ namespace SiliconStudio.Presentation.Controls
 
             double smallIntevalLength = (1.0 / adjustedSmallIntervalPerTick);
 
-            if (StartUnit >= 0.0)
-            {
-                currentPixel += adjustedPixelsPerTick;
-                currentUnit += adjustedUnitsPerTick;
-                currentUnit = Math.Round(currentUnit, decimalCountRounding);
-            }
+            //if (StartUnit >= 0.0)
+            //{
+            //    currentPixel += adjustedPixelsPerTick;
+            //    currentUnit += adjustedUnitsPerTick;
+            //    currentUnit = Math.Round(currentUnit, decimalCountRounding);
+            //}
 
             RaiseBeforeRenderEvent();
 

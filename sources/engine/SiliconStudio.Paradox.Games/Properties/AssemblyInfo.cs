@@ -13,3 +13,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Input" + SiliconStudio.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine" + SiliconStudio.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.UI" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Debugger" + SiliconStudio.PublicKeys.Default)]

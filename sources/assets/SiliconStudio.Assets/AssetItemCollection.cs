@@ -70,7 +70,16 @@ namespace SiliconStudio.Assets
             writer.Flush();
             stream.Position = 0;
 
-            return (AssetItemCollection)AssetSerializer.Default.Load(stream, null);
+            bool aliasOccurred;
+            var assetItems = (AssetItemCollection)AssetSerializer.Default.Load(stream, null, null, out aliasOccurred);
+            if (aliasOccurred)
+            {
+                foreach (var assetItem in assetItems)
+                {
+                    assetItem.IsDirty = true;
+                }
+            }
+            return assetItems;
         }
     }
 }

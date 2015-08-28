@@ -91,20 +91,20 @@ namespace SiliconStudio.Core.Diagnostics
             switch (logMessage.Type)
             {
                 case LogMessageType.Debug:
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.ForegroundColor = (ConsoleColor.DarkGray);
                     break;
                 case LogMessageType.Verbose:
-                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.ForegroundColor = (ConsoleColor.Gray);
                     break;
                 case LogMessageType.Info:
-                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.ForegroundColor = (ConsoleColor.Green);
                     break;
                 case LogMessageType.Warning:
-                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.ForegroundColor = (ConsoleColor.Yellow);
                     break;
                 case LogMessageType.Error:
                 case LogMessageType.Fatal:
-                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.ForegroundColor = (ConsoleColor.Red);
                     break;
             }
 #endif
@@ -136,7 +136,7 @@ namespace SiliconStudio.Core.Diagnostics
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 
             // revert console initial color
-            Console.ForegroundColor = initialColor;
+            Console.ForegroundColor = (initialColor);
 #endif
 #endif // !SILICONSTUDIO_PLATFORM_ANDROID
         }

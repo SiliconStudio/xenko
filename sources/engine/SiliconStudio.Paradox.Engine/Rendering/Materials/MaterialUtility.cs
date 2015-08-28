@@ -50,7 +50,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials.Processor.Visitors
             }
         }
 
-        public static string GetAsShaderString(TextureChannel channel)
+        public static string GetAsShaderString(ColorChannel channel)
         {
             return channel.ToString().ToLowerInvariant();
         }

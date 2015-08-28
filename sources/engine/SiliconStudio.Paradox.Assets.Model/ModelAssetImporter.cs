@@ -124,26 +124,6 @@ namespace SiliconStudio.Paradox.Assets.Model
             return childEntity;
         }
 
-        private static AssetItem ImportEntity(List<AssetItem> assetReferences, UFile localPath, AssetItem modelItem)
-        {
-            var entityUrl = new UFile(localPath.GetFileName(), null);
-
-            // TODO: Entities do not have source anymore, if this is needed again we should make scene assets that do not inherits from entity assets.
-            var asset = new EntityAsset(); // { Source = localPath };
-            var rootEntityData = new Entity();
-            asset.Hierarchy.Entities.Add(rootEntityData);
-            asset.Hierarchy.RootEntity = rootEntityData.Id;
-
-            rootEntityData.Name = entityUrl;
-            // Use modelUrl.Path to get the url without the extension
-            rootEntityData.Add(ModelComponent.Key, new ModelComponent { Model = AttachedReferenceManager.CreateSerializableVersion<Rendering.Model>(modelItem.Id, modelItem.Location) });
-
-            var assetReference = new AssetItem(entityUrl, asset);
-            assetReferences.Add(assetReference);
-
-            return assetReference;
-        }
-
         private static void ImportAnimation(List<AssetItem> assetReferences, UFile localPath, List<string> animationNodes, bool shouldPostFixName)
         {
             if (animationNodes != null && animationNodes.Count > 0)
@@ -169,6 +149,12 @@ namespace SiliconStudio.Paradox.Assets.Model
                     var foundMaterial = loadedMaterials.FirstOrDefault(x => x.Location == new UFile(material.Key, null));
                     if (foundMaterial != null)
                         asset.Materials.Add(new ModelMaterial { Name = material.Key, MaterialInstance = new MaterialInstance() { Material = AttachedReferenceManager.CreateSerializableVersion<Material>(foundMaterial.Id, foundMaterial.Location) } });
+                }
+                //handle the case where during import we imported no materials at all
+                //todo Instead of null material add a default paradox material
+                if (entityInfo.Materials.Count == 0)
+                {
+                    asset.Materials.Add(new ModelMaterial { Name = "Material" , MaterialInstance = new MaterialInstance() });
                 }
             }
 

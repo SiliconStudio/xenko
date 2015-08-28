@@ -1,3 +1,5 @@
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -37,7 +39,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
                 {
                     if (drawActions.Count > 0)
                     {
-                        FrameGameSystem.Draw(drawActions[0].Run);
+                        FrameGameSystem.Draw(FrameGameSystem.CurrentFrame+1, drawActions[0].Run);
                         drawActions.RemoveAt(0);
                     }
                 }
@@ -52,8 +54,15 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             Task.Run(
                 () =>
                 {
-                    RunGameTest(this);
-                    onGameExit.Set();
+                    try
+                    {
+                        RunGameTest(this);
+                    }
+                    finally
+                    {
+                        onLoadContentDone.Set();
+                        onGameExit.Set();
+                    }
                 });
             onLoadContentDone.WaitOne();
         }

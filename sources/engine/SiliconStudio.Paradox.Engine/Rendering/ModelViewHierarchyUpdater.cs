@@ -17,6 +17,8 @@ namespace SiliconStudio.Paradox.Rendering
         private ModelNodeDefinition[] nodes;
         private ModelNodeTransformation[] nodeTransformations;
 
+        private int matrixCounter;
+
         public ModelNodeDefinition[] Nodes
         {
             get { return nodes; }
@@ -27,7 +29,7 @@ namespace SiliconStudio.Paradox.Rendering
             get { return nodeTransformations; }
         }
 
-        private static ModelNodeDefinition[] GetDefaultNodeDefinisions()
+        private static ModelNodeDefinition[] GetDefaultNodeDefinitions()
         {
             return new[] { new ModelNodeDefinition { Name = "Root", ParentIndex = -1, Transform = { Scaling = Vector3.One }, Flags = ModelNodeFlags.Default } };
         }
@@ -64,7 +66,7 @@ namespace SiliconStudio.Paradox.Rendering
                 return;
             }
 
-            this.nodes = newNodes ?? GetDefaultNodeDefinisions();
+            this.nodes = newNodes ?? GetDefaultNodeDefinitions();
 
             if (nodeTransformations == null || nodeTransformations.Length < this.nodes.Length)
                 nodeTransformations = new ModelNodeTransformation[this.nodes.Length];
@@ -101,33 +103,23 @@ namespace SiliconStudio.Paradox.Rendering
             {
                 UpdateNode(ref nodeTransformations[index]);
             }
+            matrixCounter++;
         }
 
         /// <summary>
-        /// Updates previously computed world matrices to TransformationKeys.World for each <see cref="Mesh"/>.
+        /// Updates previously computed world matrices to TransformationKeys.World for each <see cref="RenderMesh" />.
         /// </summary>
-        /// <param name="renderModel">The render model.</param>
-        /// <param name="slot">The slot.</param>
-        internal void UpdateToRenderModel(RenderModel renderModel, int slot)
+        /// <param name="renderMesh">The render mesh.</param>
+        internal void UpdateRenderMesh(RenderMesh renderMesh)
         {
-            var nodeTransformationsLocal = this.nodeTransformations;
-
-            // Set World matrices in mesh parameters
-            var meshes = renderModel.RenderMeshesList[slot];
-            if (meshes == null)
+            var nodeIndex = renderMesh.Mesh.NodeIndex;
+            var enabled = nodeTransformations[nodeIndex].RenderingEnabledRecursive;
+            renderMesh.Enabled = enabled;
+            if (enabled && renderMesh.MatrixCounter != matrixCounter)
             {
-                return;
-            }
-
-            foreach (var renderMesh in meshes)
-            {
-                var nodeIndex = renderMesh.Mesh.NodeIndex;
-                var enabled = nodeTransformationsLocal[nodeIndex].RenderingEnabledRecursive;
-                renderMesh.Enabled = enabled;
-                if (enabled)
-                {
-                    renderMesh.WorldMatrix = nodeTransformationsLocal[nodeIndex].WorldMatrix;
-                }
+                renderMesh.WorldMatrix = nodeTransformations[nodeIndex].WorldMatrix;
+                renderMesh.IsGeometryInverted = nodeTransformations[nodeIndex].IsScalingNegative;
+                renderMesh.MatrixCounter = matrixCounter;
             }
         }
 
@@ -146,7 +138,9 @@ namespace SiliconStudio.Paradox.Rendering
             // Compute LocalMatrix
             if ((node.Flags & ModelNodeFlags.EnableTransform) == ModelNodeFlags.EnableTransform)
             {
-                TransformComponent.CreateMatrixTRS(ref node.Transform.Translation, ref node.Transform.Rotation, ref node.Transform.Scaling, out node.LocalMatrix);
+                var scaling = node.Transform.Scaling;
+                TransformComponent.CreateMatrixTRS(ref node.Transform.Translation, ref node.Transform.Rotation, ref scaling, out node.LocalMatrix);
+                node.IsScalingNegative = scaling.X * scaling.Y * scaling.Z < 0.0f;
             }
 
             var nodeTransformationsLocal = this.nodeTransformations;
@@ -164,7 +158,11 @@ namespace SiliconStudio.Paradox.Rendering
             {
                 // Compute WorldMatrix
                 if (parentIndex != -1)
+                {
                     Matrix.Multiply(ref node.LocalMatrix, ref nodeTransformationsLocal[parentIndex].WorldMatrix, out node.WorldMatrix);
+                    if (nodeTransformationsLocal[parentIndex].IsScalingNegative)
+                        node.IsScalingNegative = !node.IsScalingNegative;
+                }
                 else
                     node.WorldMatrix = node.LocalMatrix;
             }

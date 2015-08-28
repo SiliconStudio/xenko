@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Assets.Diff;
@@ -54,7 +56,10 @@ namespace SiliconStudio.Paradox.Assets.Entities
             {
                 // "Garbage collect" entities that are not referenced in hierarchy tree anymore
                 var entityHashes = new HashSet<Guid>();
-                CollectEntities(entityHashes, source.RootEntity);
+                foreach (var rootEntity in source.RootEntities)
+                {
+                    CollectEntities(entityHashes, rootEntity);
+                }
 
                 source.Entities.Clear();
                 foreach (var item in this)

@@ -18,24 +18,26 @@ namespace SiliconStudio.Paradox.Rendering.Materials
 
     public class MaterialGenerator
     {
-        public static MaterialShaderResult Generate(MaterialDescriptor materialDescriptor, MaterialGeneratorContext context = null)
+        public static MaterialShaderResult Generate(MaterialDescriptor materialDescriptor, MaterialGeneratorContext context, string rootMaterialFriendlyName)
         {
             if (materialDescriptor == null) throw new ArgumentNullException("materialDescriptor");
-            var result = new MaterialShaderResult();
+            if (context == null) throw new ArgumentNullException("context");
 
-            if (context == null)
-            {
-                context = new MaterialGeneratorContext(new Material());
-            }
+            var result = new MaterialShaderResult();
             context.Log = result;
 
             var material = context.Material;
             result.Material = context.Material;
 
             context.Parameters = material.Parameters;
+            context.PushMaterial(materialDescriptor, rootMaterialFriendlyName);
             context.PushLayer();
             materialDescriptor.Visit(context);
             context.PopLayer();
+            context.PopMaterial();
+
+            if (!material.Parameters.ContainsKey(MaterialKeys.TessellationShader))
+                material.Parameters.Set(MaterialKeys.TessellationShader, null);
 
             material.Parameters.Set(MaterialKeys.VertexStageSurfaceShaders, context.GenerateSurfaceShader(MaterialShaderStage.Vertex));
             material.Parameters.Set(MaterialKeys.DomainStageSurfaceShaders, context.GenerateSurfaceShader(MaterialShaderStage.Domain));
