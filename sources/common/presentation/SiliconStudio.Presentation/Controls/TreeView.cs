@@ -403,11 +403,11 @@ namespace SiliconStudio.Presentation.Controls
 
         public TreeViewItem GetTreeViewItemFor(object item)
         {
-            foreach (var treeViewExItem in TreeViewElementFinder.FindAll(this, false))
+            foreach (var treeViewItem in TreeViewElementFinder.FindAll(this, false))
             {
-                if (item == treeViewExItem.DataContext)
+                if (item == treeViewItem.DataContext)
                 {
-                    return treeViewExItem;
+                    return treeViewItem;
                 }
             }
 
@@ -421,11 +421,11 @@ namespace SiliconStudio.Presentation.Controls
                 yield break;
             }
             var items = objects.Cast<object>().ToList();
-            foreach (var treeViewExItem in TreeViewElementFinder.FindAll(this, false))
+            foreach (var treeViewItem in TreeViewElementFinder.FindAll(this, false))
             {
-                if (items.Contains(treeViewExItem.DataContext))
+                if (items.Contains(treeViewItem.DataContext))
                 {
-                    yield return treeViewExItem;
+                    yield return treeViewItem;
                 }
             }
 
@@ -629,10 +629,10 @@ namespace SiliconStudio.Presentation.Controls
                 if (child == null)
                     return null;
 
-                var treeViewExItem = child as TreeViewItem;
-                if (treeViewExItem != null)
+                var treeViewItem = child as TreeViewItem;
+                if (treeViewItem != null)
                 {
-                    return treeViewExItem.IsVisible ? treeViewExItem : null;
+                    return treeViewItem.IsVisible ? treeViewItem : null;
                 }
 
                 if (child is TreeView)
