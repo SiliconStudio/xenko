@@ -282,7 +282,12 @@ namespace SiliconStudio.Presentation.Controls
 
             if (e.Key == Key.Enter && ValidateWithEnter)
             {
+                //If a messagebox shows up we will loose focus and trigger Validate again, this will prevent it.
+                var prevState = ValidateOnLostFocus;
+                ValidateOnLostFocus = false;
                 Validate();
+                //restore ValidateOnLostFocus previous state
+                ValidateOnLostFocus = prevState;
             }
             if (e.Key == Key.Escape && CancelWithEscape)
             {
