@@ -18,13 +18,24 @@ namespace SiliconStudio.Paradox.Engine.Design
     }
 
     [DataContract]
-    public struct EntityDesign
+    public class EntityDesign
     {
+        public EntityDesign()
+        {
+            Design = new EntityDesignData();
+        }
+
+        public EntityDesign(Entity entity, EntityDesignData designData)
+        {
+            Entity = entity;
+            Design = designData;
+        }
+
         [DataMember(10)]
         public Entity Entity { get; set; }
 
         [DataMember(20)]
-        public EntityDesignData Design { get; set; }
+        public EntityDesignData Design { get; }
     }
 
     [DataContract]
@@ -58,9 +69,10 @@ namespace SiliconStudio.Paradox.Engine.Design
                 this.container = container;
             }
 
+            [Obsolete]
             public void Add(Entity entity)
             {
-                Add(new EntityDesign { Entity = entity });
+                Add(new EntityDesign(entity, new EntityDesignData()));
             }
 
             protected override Guid GetKeyForItem(EntityDesign item)
