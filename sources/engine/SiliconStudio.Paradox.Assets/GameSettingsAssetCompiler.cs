@@ -8,6 +8,7 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Engine.Design;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Assets
 {
@@ -56,7 +57,7 @@ namespace SiliconStudio.Paradox.Assets
                     DefaultBackBufferWidth = AssetParameters.BackBufferWidth,
                     DefaultBackBufferHeight = AssetParameters.BackBufferHeight,
                     DefaultGraphicsProfileUsed = AssetParameters.DefaultGraphicsProfile,
-                    ColorSpace = AssetParameters.ColorSpace,
+                    ColorSpace =  AssetParameters.DefaultGraphicsProfile < GraphicsProfile.Level_9_3 ? ColorSpace.Gamma : AssetParameters.ColorSpace,
                     EffectCompilation = package.UserSettings.GetValue(GameUserSettings.Effect.EffectCompilation),
                     RecordUsedEffects = package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects)
                 };

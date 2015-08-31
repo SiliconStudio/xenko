@@ -54,7 +54,13 @@ namespace SiliconStudio.Paradox.Assets
         /// <returns>ColorSpace.</returns>
         public static ColorSpace GetColorSpace(this AssetCompilerContext context, AssetItem assetItem)
         {
-            return GetGameSettingsAsset(context, assetItem).ColorSpace;
+            var settings = GetGameSettingsAsset(context, assetItem);
+            // For profile below 9.3, we cannot use a linear workflow, so we stick to Gamma
+            if (settings.DefaultGraphicsProfile < GraphicsProfile.Level_9_3)
+            {
+                return ColorSpace.Gamma;
+            }
+            return settings.ColorSpace;
         }
 
         public static void SetGameSettingsAsset(this AssetCompilerContext context, GameSettingsAsset gameSettingsAsset)
