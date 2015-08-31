@@ -43,7 +43,7 @@
     <SiliconStudioCompilerTargetsEnable Condition=" '$(SiliconStudioPlatform)' != 'Windows' and $(SiliconStudioWindowsOnly) == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(GenerateDoc)' == 'true' ">
+  <PropertyGroup Condition=" '$(SiliconStudioGenerateDoc)' == 'true' ">
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
 
