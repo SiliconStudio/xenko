@@ -109,7 +109,7 @@ namespace SiliconStudio.Paradox.Assets
         /// <userdoc>The default rendering mode (HDR or LDR) used to render the preview and thumbnail. This value doesn't affect the runtime but only the editor.</userdoc>
         [DataMember(70)]
         [DefaultValue(Assets.RenderingMode.HDR)]
-        [Display(null, null, "Graphics")]
+        [Display("Editor Rendering Mode", null, "Graphics")]
         public RenderingMode RenderingMode { get; set; }
 
         /// <summary>
