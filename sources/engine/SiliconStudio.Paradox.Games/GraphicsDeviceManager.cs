@@ -108,7 +108,7 @@ namespace SiliconStudio.Paradox.Games
             lockDeviceCreation = new object();
 
             // Defines all default values
-            SynchronizeWithVerticalRetrace = true;
+            SynchronizeWithVerticalRetrace = true;          
             PreferredBackBufferFormat = PixelFormat.R8G8B8A8_UNorm;;
             PreferredDepthStencilFormat = PixelFormat.D24_UNorm_S8_UInt;
             preferredBackBufferWidth = DefaultBackBufferWidth;
@@ -202,7 +202,7 @@ namespace SiliconStudio.Paradox.Games
         /// Gets or sets the default color space.
         /// </summary>
         /// <value>The default color space.</value>
-        public ColorSpace DefaultColorSpace { get; set; }
+        public ColorSpace PreferredColorSpace { get; set; }
 
         /// <summary>
         /// Sets the preferred graphics profile.
@@ -609,6 +609,20 @@ namespace SiliconStudio.Paradox.Games
                     PreferredGraphicsProfile = (GraphicsProfile[])PreferredGraphicsProfile.Clone(),
                 };
 
+            // Remap to Srgb backbuffer if necessary
+            if (PreferredColorSpace == ColorSpace.Linear)
+            {
+                // If the device support SRgb and ColorSpace is linear, we use automatically a SRgb backbuffer
+                if (preferredParameters.PreferredBackBufferFormat == PixelFormat.R8G8B8A8_UNorm)
+                {
+                    preferredParameters.PreferredBackBufferFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
+                }
+                else if (preferredParameters.PreferredBackBufferFormat == PixelFormat.B8G8R8A8_UNorm)
+                {
+                    preferredParameters.PreferredBackBufferFormat = PixelFormat.B8G8R8A8_UNorm_SRgb;
+                }
+            }
+
             // Setup resized value if there is a resize pending
             if (!IsFullScreen && isBackBufferToResize)
             {
@@ -1007,7 +1021,7 @@ namespace SiliconStudio.Paradox.Games
                     }
 
                     // Copy the color space
-                    GraphicsDevice.ColorSpace = DefaultColorSpace;
+                    GraphicsDevice.ColorSpace = PreferredColorSpace;
 
                     deviceSettingsChanged = false;
                 }

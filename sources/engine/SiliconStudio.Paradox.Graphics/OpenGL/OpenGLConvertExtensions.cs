@@ -295,6 +295,35 @@ namespace SiliconStudio.Paradox.Graphics
             }
 #endif
 
+            // If the Device doesn't support SRGB, we remap automatically the format to non-srgb
+            if (!graphicsDevice.Features.HasSRgb)
+            {
+                switch (inputFormat)
+                {
+                    case PixelFormat.PVRTC_2bpp_RGB_SRgb:
+                        inputFormat = PixelFormat.PVRTC_2bpp_RGB;
+                        break;
+                    case PixelFormat.PVRTC_2bpp_RGBA_SRgb:
+                        inputFormat = PixelFormat.PVRTC_2bpp_RGBA;
+                        break;
+                    case PixelFormat.PVRTC_4bpp_RGB_SRgb:
+                        inputFormat = PixelFormat.PVRTC_4bpp_RGB;
+                        break;
+                    case PixelFormat.PVRTC_4bpp_RGBA_SRgb:
+                        inputFormat = PixelFormat.PVRTC_4bpp_RGBA;
+                        break;
+                    case PixelFormat.ETC2_RGBA_SRgb:
+                        inputFormat = PixelFormat.ETC2_RGBA;
+                        break;
+                    case PixelFormat.R8G8B8A8_UNorm_SRgb:
+                        inputFormat = PixelFormat.R8G8B8A8_UNorm;
+                        break;
+                    case PixelFormat.B8G8R8A8_UNorm_SRgb:
+                        inputFormat = PixelFormat.B8G8R8A8_UNorm;
+                        break;
+                }
+            }
+
             switch (inputFormat)
             {
                 case PixelFormat.A8_UNorm:
@@ -456,8 +485,36 @@ namespace SiliconStudio.Paradox.Graphics
                     pixelSize = 2;
                     type = PixelType.UnsignedByte;
                     break;  
+                case PixelFormat.PVRTC_4bpp_RGB_SRgb:
+                    internalFormat = (PixelInternalFormat)ImgTextureCompressionPvrtc.CompressedSrgbPvrtc4Bppv1Ext;
+                    format = (PixelFormatGl)ImgTextureCompressionPvrtc.CompressedSrgbPvrtc4Bppv1Ext;
+                    compressed = true;
+                    pixelSize = 4;
+                    type = PixelType.UnsignedByte;
+                    break;		
+                case PixelFormat.PVRTC_2bpp_RGB_SRgb:
+                    internalFormat = (PixelInternalFormat)ImgTextureCompressionPvrtc.CompressedSrgbPvrtc2Bppv1Ext;
+                    format = (PixelFormatGl)ImgTextureCompressionPvrtc.CompressedSrgbPvrtc2Bppv1Ext;
+                    compressed = true;
+                    pixelSize = 2;
+                    type = PixelType.UnsignedByte;
+                    break;
+                case PixelFormat.PVRTC_4bpp_RGBA_SRgb:
+                    internalFormat = (PixelInternalFormat)ImgTextureCompressionPvrtc.CompressedSrgbAlphaPvrtc4Bppv1Ext;
+                    format = (PixelFormatGl)ImgTextureCompressionPvrtc.CompressedSrgbAlphaPvrtc4Bppv1Ext;
+                    compressed = true;
+                    pixelSize = 4;
+                    type = PixelType.UnsignedByte;
+                    break;
+                case PixelFormat.PVRTC_2bpp_RGBA_SRgb:
+                    internalFormat = (PixelInternalFormat)ImgTextureCompressionPvrtc.CompressedSrgbAlphaPvrtc2Bppv1Ext;
+                    format = (PixelFormatGl)ImgTextureCompressionPvrtc.CompressedSrgbAlphaPvrtc2Bppv1Ext;
+                    compressed = true;
+                    pixelSize = 2;
+                    type = PixelType.UnsignedByte;
+                    break;  
 #elif SILICONSTUDIO_PLATFORM_ANDROID || !SILICONSTUDIO_PLATFORM_MONO_MOBILE && SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-// Desktop OpenGLES
+                // Desktop OpenGLES
                 case PixelFormat.ETC1:
                     // TODO: Runtime check for extension?
                     internalFormat = (PixelInternalFormat)OesCompressedEtc1Rgb8Texture.Etc1Rgb8Oes;
@@ -472,7 +529,14 @@ namespace SiliconStudio.Paradox.Graphics
                     compressed = true;
                     pixelSize = 2;
                     type = PixelType.UnsignedByte;
-                    break;     
+                    break;
+                case PixelFormat.ETC2_RGBA_SRgb:
+                    internalFormat = (PixelInternalFormat)CompressedInternalFormat.CompressedSrgb8Alpha8Etc2Eac;
+                    format = (PixelFormatGl)CompressedInternalFormat.CompressedSrgb8Alpha8Etc2Eac;
+                    compressed = true;
+                    pixelSize = 2;
+                    type = PixelType.UnsignedByte;
+                    break;
 #endif
                 case PixelFormat.None: // TODO: remove this - this is only for buffers used in compute shaders
                     internalFormat = PixelInternalFormat.Rgba;

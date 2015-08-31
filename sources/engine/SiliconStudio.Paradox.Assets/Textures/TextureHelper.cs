@@ -220,10 +220,6 @@ namespace SiliconStudio.Paradox.Assets.Textures
                             {
                                 outputFormat = inputImageFormat;
                             }
-                            else if (parameters.IsSRgb)
-                            {
-                                outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
-                            }
                             else
                             {
                                 switch (parameters.GraphicsProfile)
@@ -231,7 +227,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                                     case GraphicsProfile.Level_9_1:
                                     case GraphicsProfile.Level_9_2:
                                     case GraphicsProfile.Level_9_3:
-                                        outputFormat = alphaMode == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.R8G8B8A8_UNorm;
+                                        outputFormat = alphaMode == AlphaFormat.None && !parameters.IsSRgb ? PixelFormat.ETC1 : parameters.IsSRgb ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm;
                                         break;
                                     case GraphicsProfile.Level_10_0:
                                     case GraphicsProfile.Level_10_1:
@@ -239,7 +235,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                                     case GraphicsProfile.Level_11_1:
                                     case GraphicsProfile.Level_11_2:
                                         // GLES3.0 starting from Level_10_0, this profile enables ETC2 compression on Android
-                                        outputFormat = alphaMode == AlphaFormat.None ? PixelFormat.ETC1 : PixelFormat.ETC2_RGBA;
+                                        outputFormat = alphaMode == AlphaFormat.None && !parameters.IsSRgb ? PixelFormat.ETC1 : parameters.IsSRgb ? PixelFormat.ETC2_RGBA_SRgb : PixelFormat.ETC2_RGBA;
                                         break;
                                     default:
                                         throw new ArgumentOutOfRangeException("GraphicsProfile");
@@ -252,28 +248,23 @@ namespace SiliconStudio.Paradox.Assets.Textures
                             {
                                 outputFormat = inputImageFormat;
                             }
-                            else if (parameters.IsSRgb)
-                            {
-                                outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
-                            }
                             else if (SupportPVRTC(imageSize))
                             {
                                 switch (alphaMode)
                                 {
                                     case AlphaFormat.None:
-                                        // DXT1 handles 1-bit alpha channel
-                                        outputFormat = PixelFormat.PVRTC_4bpp_RGB;
+                                        outputFormat = parameters.IsSRgb ? PixelFormat.PVRTC_4bpp_RGB_SRgb : PixelFormat.PVRTC_4bpp_RGB;
                                         break;
                                     case AlphaFormat.Mask:
                                         // DXT1 handles 1-bit alpha channel
                                         // TODO: Not sure about the equivalent here?
-                                        outputFormat = PixelFormat.PVRTC_4bpp_RGBA;
+                                        outputFormat = parameters.IsSRgb ? PixelFormat.PVRTC_4bpp_RGBA_SRgb : PixelFormat.PVRTC_4bpp_RGBA;
                                         break;
                                     case AlphaFormat.Explicit:
                                     case AlphaFormat.Interpolated:
                                         // DXT3 is good at sharp alpha transitions
                                         // TODO: Not sure about the equivalent here?
-                                        outputFormat = PixelFormat.PVRTC_4bpp_RGBA;
+                                        outputFormat = parameters.IsSRgb ? PixelFormat.PVRTC_4bpp_RGBA_SRgb : PixelFormat.PVRTC_4bpp_RGBA;
                                         break;
                                     default:
                                         throw new ArgumentOutOfRangeException();
@@ -281,7 +272,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                             }
                             else
                             {
-                                outputFormat = PixelFormat.R8G8B8A8_UNorm;
+                                outputFormat = parameters.IsSRgb ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm;
                             }
                             break;
                         case PlatformType.Windows:

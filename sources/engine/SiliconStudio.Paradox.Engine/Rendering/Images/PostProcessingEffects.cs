@@ -342,7 +342,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
                 luminanceToChannelTransform.Enabled = false;
             }
 
-            // Color transform group pass (tonemap, color grading, gamma correction)
+            // Color transform group pass (tonemap, color grading)
             var lastEffect = colorTransformsGroup.Enabled ? (ImageEffect)colorTransformsGroup: Scaler;
             lastEffect.SetInput(currentInput);
             lastEffect.SetOutput(outputForLastEffectBeforeAntiAliasing);

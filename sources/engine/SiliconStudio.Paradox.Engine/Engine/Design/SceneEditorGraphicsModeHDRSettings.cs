@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Engine.Design
         /// </summary>
         public SceneEditorGraphicsModeHDRSettings()
         {
-            BackgroundColor = (Color3)new Color(12, 12, 12);
+            BackgroundColor = (Color3)new Color(120, 120, 120);
             PostProcessingEffects = new PostProcessingEffects();
         }
 

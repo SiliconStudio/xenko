@@ -27,7 +27,6 @@ namespace SiliconStudio.Paradox.Rendering.Images
         private readonly ColorTransformCollection postTransforms;
         private readonly List<ColorTransform> collectTransforms;
         private readonly List<ColorTransform> enabledTransforms;
-        private readonly GammaTransform gammaTransform;
         private ColorTransformContext transformContext;
         private readonly string colorTransformGroupEffectName;
 
@@ -52,7 +51,6 @@ namespace SiliconStudio.Paradox.Rendering.Images
             enabledTransforms = new List<ColorTransform>();
             collectTransforms = new List<ColorTransform>();
             transformsParameters = new ParameterCollection();
-            gammaTransform = new GammaTransform();
             colorTransformGroupEffectName = colorTransformGroupEffect ?? "ColorTransformGroupEffect";
         }
 
@@ -113,20 +111,6 @@ namespace SiliconStudio.Paradox.Rendering.Images
             }
         }
 
-        /// <summary>
-        /// Gets the gamma transform that is applied after all <see cref="Transforms"/>
-        /// </summary>
-        /// <value>The gamma transform.</value>
-        /// <userdoc>Converts the colors from the linear-space to the gamma-space. This re-adjusts the levels white and black to properly display on monitors and TV screens.</userdoc>
-        [DataMember(20)]
-        public GammaTransform GammaTransform
-        {
-            get
-            {
-                return gammaTransform;
-            }
-        }
-
         protected override void DrawCore(RenderContext context1)
         {
             var output = GetOutput(0);
@@ -156,8 +140,6 @@ namespace SiliconStudio.Paradox.Rendering.Images
 
         protected virtual void CollectPostTransforms()
         {
-            AddTemporaryTransform(gammaTransform);
-
             foreach (var transform in postTransforms)
             {
                 AddTemporaryTransform(transform);

@@ -1235,13 +1235,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Images\ColorTransforms\GammaTransform.cs" />
-    <Compile Include="Rendering\Images\ColorTransforms\GammaTransformShader.cs">
-      <DependentUpon>GammaTransformShader.pdxsl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Rendering\Images\ColorTransforms\ToneMap\ToneMap.cs" />
     <Compile Include="Rendering\Images\ColorTransforms\ToneMap\ToneMapCommonOperator.cs" />
     <Compile Include="Rendering\Images\ColorTransforms\ToneMap\ToneMapCommonOperatorShader.cs">
@@ -2729,10 +2722,6 @@
     <None Include="Rendering\Images\ColorTransforms\ColorTransformShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ColorTransformShader.cs</LastGenOutput>
-    </None>
-    <None Include="Rendering\Images\ColorTransforms\GammaTransformShader.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>GammaTransformShader.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Images\ColorTransforms\Noise\FilmGrainShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

@@ -57,7 +57,7 @@ namespace SiliconStudio.Paradox.Assets
                     DefaultBackBufferWidth = AssetParameters.BackBufferWidth,
                     DefaultBackBufferHeight = AssetParameters.BackBufferHeight,
                     DefaultGraphicsProfileUsed = AssetParameters.DefaultGraphicsProfile,
-                    ColorSpace =  AssetParameters.DefaultGraphicsProfile < GraphicsProfile.Level_9_3 ? ColorSpace.Gamma : AssetParameters.ColorSpace,
+                    ColorSpace =  AssetParameters.ColorSpace,
                     EffectCompilation = package.UserSettings.GetValue(GameUserSettings.Effect.EffectCompilation),
                     RecordUsedEffects = package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects)
                 };

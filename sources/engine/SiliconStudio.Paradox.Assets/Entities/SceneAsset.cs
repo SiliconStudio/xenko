@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetDescription(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
     [ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName)]
-    [AssetFormatVersion(13)]
+    [AssetFormatVersion(CurrentVersion)]
     [AssetUpgrader(0, 1, typeof(RemoveSourceUpgrader))]
     [AssetUpgrader(1, 2, typeof(RemoveBaseUpgrader))]
     [AssetUpgrader(2, 3, typeof(RemoveModelDrawOrderUpgrader))]
@@ -42,9 +42,12 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetUpgrader(10, 11, typeof(RemoveShadowImportanceUpgrader))]
     [AssetUpgrader(11, 12, typeof(NewElementLayoutUpgrader))]
     [AssetUpgrader(12, 13, typeof(NewElementLayoutUpgrader2))]
+    [AssetUpgrader(13, 14, typeof(RemoveGammaTransformUpgrader))]
     [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
+        private const int CurrentVersion = 14;
+
         public const string FileSceneExtension = ".pdxscene";
 
         public static SceneAsset Create()
@@ -425,6 +428,56 @@ namespace SiliconStudio.Paradox.Assets.Entities
                                 element.RemoveChild("LinkedBoneName");
                             }
                         }
+                    }
+                }
+            }
+        }
+
+        private class RemoveGammaTransformUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                var hierarchy = asset.Hierarchy;
+
+                // Remove from all layers/renderers
+                var layers = (DynamicYamlArray)hierarchy?.SceneSettings?.GraphicsCompositor?.Layers;
+                if (layers != null)
+                {
+                    foreach (dynamic layer in layers)
+                    {
+                        ProcessRenderers((DynamicYamlArray)layer.Renderers);
+                    }
+                }
+
+                var masterRenderers = (DynamicYamlArray)hierarchy?.SceneSettings?.GraphicsCompositor?.Master?.Renderers;
+                ProcessRenderers(masterRenderers);
+
+                // Remove from editor settings
+                var colorTransforms = hierarchy?.SceneSettings?.EditorSettings?.Mode?.PostProcessingEffects?.ColorTransforms;
+                if (colorTransforms != null)
+                {
+                    colorTransforms.RemoveChild("GammaTransform");
+
+                    // Because the color was stored in linear, we need to store it back to gamma 
+                    // We also apply a x2 to the color to 
+                    var color = hierarchy.SceneSettings.EditorSettings.Mode.BackgroundColor;
+                    if (color != null)
+                    {
+                        color["R"] = MathUtil.Clamp(MathUtil.LinearToSRgb((float)color["R"]) * 2.0f, 0.0f, 1.0f);
+                        color["G"] = MathUtil.Clamp(MathUtil.LinearToSRgb((float)color["G"]) * 2.0f, 0.0f, 1.0f);
+                        color["B"] = MathUtil.Clamp(MathUtil.LinearToSRgb((float)color["B"]) * 2.0f, 0.0f, 1.0f);
+                    }
+                }
+            }
+
+            void ProcessRenderers(DynamicYamlArray renderers)
+            {
+                foreach (dynamic renderer in renderers)
+                {
+                    var colorTransforms = renderer.Effect?.ColorTransforms;
+                    if (colorTransforms != null)
+                    {
+                        colorTransforms.RemoveChild("GammaTransform");
                     }
                 }
             }

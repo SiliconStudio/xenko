@@ -62,7 +62,6 @@
       <Field Name="colorTransformGroupEffectName" Hidden="true" />
       <Field Name="compositeKeys" Hidden="true" />
       <Field Name="enabledTransforms" Hidden="true" />
-      <Field Name="gammaTransform" Hidden="true" />
       <Field Name="transformContext" Hidden="true" />
       <Field Name="transformGroupEffect" Hidden="true" />
       <Field Name="transforms" Hidden="true" />
@@ -263,13 +262,6 @@
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Rendering\Images\ColorTransforms\ColorTransform.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Images.GammaTransform" Collapsed="true">
-    <Position X="10.75" Y="20.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
-      <FileName>Rendering\Images\ColorTransforms\GammaTransform.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="SiliconStudio.Paradox.Rendering.Images.FilmGrain" Collapsed="true">

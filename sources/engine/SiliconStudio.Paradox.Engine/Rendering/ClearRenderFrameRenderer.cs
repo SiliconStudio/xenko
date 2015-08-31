@@ -91,7 +91,7 @@ namespace SiliconStudio.Paradox.Rendering
                     {
                         // If rendertarget is SRgb, use a linear value to clear the buffer
                         var color = Color;
-                        if (renderTarget.Format.IsSRgb())
+                        if (renderTarget.Format.IsSRgb() || renderTarget.Format.IsHDR())
                         {
                             color = color.ToLinear();
                         }
