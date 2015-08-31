@@ -47,7 +47,11 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             base.Update(gameTime);
         }
 
+#if SILICONSTUDIO_PLATFORM_ANDROID
         [SetUp]
+#else
+        [TestFixtureSetUp]
+#endif
         public void InitializeThisGame()
         {
             FrameGameSystem.IsUnityTestFeeding = true;
@@ -67,7 +71,11 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             onLoadContentDone.WaitOne();
         }
 
+#if SILICONSTUDIO_PLATFORM_ANDROID
         [TearDown]
+#else
+        [TestFixtureTearDown]
+#endif
         public void DisposeThisGame()
         {
             FrameGameSystem.AllTestsCompleted = true;
