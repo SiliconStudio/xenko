@@ -6,6 +6,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using EnvDTE;
 using EnvDTE80;
@@ -70,6 +71,10 @@ namespace SiliconStudio.Paradox.VisualStudio
     {
         public const string Version = "1.156";
 
+        private readonly Dictionary<EnvDTE.Project, string> previousProjectPlatforms = new Dictionary<EnvDTE.Project, string>();
+        private EnvDTE.Project currentStartupProject;
+        private bool configurationLock;
+
         private DTE2 dte2;
         private AppDomain buildMonitorDomain;
         private BuildLogPipeGenerator buildLogPipeGenerator;
@@ -128,6 +133,8 @@ namespace SiliconStudio.Paradox.VisualStudio
 
             solutionEventsListener = new SolutionEventsListener(this);
             solutionEventsListener.AfterSolutionBackgroundLoadComplete += solutionEventsListener_AfterSolutionBackgroundLoadComplete;
+            solutionEventsListener.AfterActiveConfigurationChange += SolutionEventsListener_AfterActiveConfigurationChange;
+            solutionEventsListener.StartupProjectChanged += SolutionEventsListener_OnStartupProjectChanged;
 
             dte2 = GetGlobalService(typeof(SDTE)) as DTE2;
 
@@ -166,6 +173,130 @@ namespace SiliconStudio.Paradox.VisualStudio
                                               (uint)_OLECADVF.olecadvfWarningsOff;
                 crinfo[0].uIdleTimeInterval = 1000;
                 int hr = mgr.FRegisterComponent(this, crinfo, out m_componentID);
+            }
+        }
+
+        public static bool IsProjectExecutable(EnvDTE.Project project)
+        {
+            var buildProjects = ProjectCollection.GlobalProjectCollection.GetLoadedProjects(project.FileName);
+            return buildProjects.Any(x => x.GetPropertyValue("SiliconStudioProjectType") == "Executable");
+        }
+
+        public static string GetProjectPlatform(EnvDTE.Project project)
+        {
+            var buildProjects = ProjectCollection.GlobalProjectCollection.GetLoadedProjects(project.FileName);
+            return buildProjects.Select(x => x.GetPropertyValue("SiliconStudioPlatform")).FirstOrDefault(x => !string.IsNullOrEmpty(x));
+        }
+
+        private void SolutionEventsListener_OnStartupProjectChanged(IVsHierarchy hierarchy)
+        {
+            if (configurationLock || hierarchy == null)
+                return;
+
+            currentStartupProject = VsHelper.ToDteProject(hierarchy);
+
+            UpdateConfigurationFromStartupProject();
+        }
+
+        private void SolutionEventsListener_AfterActiveConfigurationChange(IVsCfg oldConfiguration, IVsCfg newConfiguration)
+        {
+            if (configurationLock || newConfiguration == null)
+                return;
+
+            // TODO: Intercept Xamarin more gracefully. It tries to to set platform to "Any Cpu" for android and "iPhone"/"iPhoneSimulator" for iOS.
+            foreach (System.Diagnostics.StackFrame stackFrame in new StackTrace().GetFrames())
+            {
+                var method = stackFrame.GetMethod();
+                if (method.DeclaringType.FullName == "Xamarin.VisualStudio.TastyFlavoredProject" &&
+                    method.Name == "OnAfterSetStartupProjectCommandExecuted")
+                {
+                    UpdateConfigurationFromStartupProject();
+                    return;
+                }
+            }
+
+            UpdateStartupProjectFromConfiguration();
+        }
+
+        private void UpdateConfigurationFromStartupProject()
+        {
+            if (currentStartupProject == null)
+                return;
+
+            var projectPlatform = GetProjectPlatform(currentStartupProject);
+            var dte = (DTE)GetService(typeof(DTE));
+            var activeConfiguration = dte.Solution.SolutionBuild.ActiveConfiguration;
+
+            string startupPlatform;
+            var hasPreviousPlatform = previousProjectPlatforms.TryGetValue(currentStartupProject, out startupPlatform);
+
+            foreach (SolutionConfiguration2 configuration in dte.Solution.SolutionBuild.SolutionConfigurations)
+            {
+                if (configuration.Name != activeConfiguration.Name)
+                    continue;
+
+                if (!configuration.PlatformName.StartsWith(projectPlatform))
+                    continue;
+
+                foreach (SolutionContext context in configuration.SolutionContexts)
+                {
+                    if (!context.ShouldBuild || context.ProjectName != currentStartupProject.UniqueName)
+                        continue;
+
+                    if (hasPreviousPlatform && context.PlatformName != startupPlatform)
+                        continue;
+
+                    if (configuration != activeConfiguration)
+                    {
+                        try
+                        {
+                            configurationLock = true;
+                            configuration.Activate();
+                        }
+                        finally
+                        {
+                            configurationLock = false;
+                        }
+                    }
+
+                    return;
+                }
+            }
+        }
+
+        private void UpdateStartupProjectFromConfiguration()
+        { 
+            var solution = (IVsSolution)GetGlobalService(typeof(IVsSolution));
+            var buildManager = (IVsSolutionBuildManager)GetGlobalService(typeof(IVsSolutionBuildManager));
+            var dte = (DTE)GetService(typeof(DTE));
+
+            foreach (SolutionContext context in dte.Solution.SolutionBuild.ActiveConfiguration.SolutionContexts)
+            {
+                if (!context.ShouldBuild)
+                    continue;
+
+                foreach (var project in VsHelper.GetDteProjectsInSolution(solution))
+                {
+                    if (context.ProjectName != project.UniqueName || !IsProjectExecutable(project))
+                        continue;
+
+                    var startupProjects = (object[])dte.Solution.SolutionBuild.StartupProjects;
+                    if (!startupProjects.Cast<string>().Contains(project.UniqueName))
+                    {
+                        try
+                        {
+                            configurationLock = true;
+                            buildManager.set_StartupProject(VsHelper.ToHierarchy(project));
+                        }
+                        finally
+                        {
+                            configurationLock = false;
+                        }
+                    }
+
+                    previousProjectPlatforms[project] = context.PlatformName;
+                    return;
+                }
             }
         }
 
