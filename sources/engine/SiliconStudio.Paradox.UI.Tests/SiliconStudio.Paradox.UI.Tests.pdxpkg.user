@@ -1,5 +1,6 @@
 !SettingsFile
 Settings:
+    Package/Game/Effect/EffectCompilation: Local
     Package/Scene/ActiveStream: Color Base
     Package/Scene/CameraPreviewVisible: true
     Package/Scene/CamPitchYaw: {X: -0.5235988, Y: 0.7853982}
