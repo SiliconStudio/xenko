@@ -100,7 +100,7 @@ namespace SiliconStudio.Paradox.Graphics
                     else if (description.Format == PixelFormat.B8G8R8A8_UNorm)
                         Utilities.CopyMemory(bitmapData.Scan0, pixelBuffers[0].DataPointer, pixelBuffers[0].BufferStride);
                     else
-                        throw new NotSupportedException();
+                        throw new NotSupportedException(string.Format("Pixel format [{0}] is not supported", description.Format));
                 }
                 finally
                 {
