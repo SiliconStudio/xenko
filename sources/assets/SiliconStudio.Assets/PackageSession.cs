@@ -517,15 +517,37 @@ namespace SiliconStudio.Assets
                             case SourceFileOperationType.Move:
                                 try
                                 {
-                                    try
+                                    // Move target already exists: try to copy and then delete
+                                    if (File.Exists(sourceFileOperation.Destination))
                                     {
-                                        File.Move(sourceFileOperation.Source, sourceFileOperation.Destination);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        // Could not Move, revert back to a Copy instead
+                                        // Use upper try/catch
                                         File.Copy(sourceFileOperation.Source, sourceFileOperation.Destination, true);
-                                        log.Warning(sourceFileOperation.AssetItem.Package, sourceFileOperation.AssetItem.ToReference(), AssetMessageCode.AssetCannotDelete, ex, sourceFileOperation.Source);
+
+                                        // Try to delete source
+                                        try
+                                        {
+                                            File.Delete(sourceFileOperation.Source);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            // File locked?
+                                            log.Warning(sourceFileOperation.AssetItem.Package, sourceFileOperation.AssetItem.ToReference(), AssetMessageCode.AssetCannotDelete, ex, sourceFileOperation.Source);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        try
+                                        {
+                                            File.Move(sourceFileOperation.Source, sourceFileOperation.Destination);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            // Could not Move, revert back to a Copy instead
+                                            // Use upper try/catch
+                                            File.Copy(sourceFileOperation.Source, sourceFileOperation.Destination, true);
+                                            log.Warning(sourceFileOperation.AssetItem.Package, sourceFileOperation.AssetItem.ToReference(), AssetMessageCode.AssetCannotDelete, ex,
+                                                sourceFileOperation.Source);
+                                        }
                                     }
 
                                     // Update AssetItem
@@ -669,10 +691,12 @@ namespace SiliconStudio.Assets
         /// Builds list of operations on files referenced by <see cref="AssetImport.Source"/> that will happen on save.
         /// </summary>
         /// <param name="assetsOrPackagesToRemove">The lists of removed assets (it will be filtered for AssetItem).</param>
-        /// <param name="package">The package to scan <see cref="AssetImport"/> for.</param>
         /// <returns></returns>
-        private List<SourceFileOperation> BuildSourceFileOperations(Dictionary<UFile, object> assetsOrPackagesToRemove)
+        public List<SourceFileOperation> BuildSourceFileOperations(Dictionary<UFile, object> assetsOrPackagesToRemove = null)
         {
+            if (assetsOrPackagesToRemove == null)
+                assetsOrPackagesToRemove = BuildAssetsOrPackagesToRemove();
+
             // Copy source assets marked copy local (if not done yet)
             var deletedImportAssetsWithCopyLocal = assetsOrPackagesToRemove
                 .Where(x => x.Value is AssetItem)
