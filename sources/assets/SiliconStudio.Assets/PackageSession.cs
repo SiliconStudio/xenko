@@ -466,7 +466,7 @@ namespace SiliconStudio.Assets
         /// Saves all packages and assets.
         /// </summary>
         /// <param name="log">The <see cref="LoggerResult"/> in which to report result.</param>
-        public void Save(LoggerResult log)
+        public void Save(LoggerResult log, PackageSaveParameters saveParameters = null)
         {
             bool packagesSaved = false;
 
@@ -475,6 +475,7 @@ namespace SiliconStudio.Assets
             {
                 try
                 {
+                    saveParameters = saveParameters ?? PackageSaveParameters.Default();
                     var assetsOrPackagesToRemove = BuildAssetsOrPackagesToRemove();
 
                     // Compute packages that have been renamed
@@ -488,7 +489,22 @@ namespace SiliconStudio.Assets
                     //    }
                     //}
 
-                    var sourceFileOperations = BuildSourceFileOperations(assetsOrPackagesToRemove);
+                    // Depending on saveParameters, select the list of source file operations to do
+                    List<SourceFileOperation> sourceFileOperations;
+                    switch (saveParameters.SaveSourceFileOperations)
+                    {
+                        case PackageSaveSourceFileOperations.All:
+                            sourceFileOperations = BuildSourceFileOperations(assetsOrPackagesToRemove);
+                            break;
+                        case PackageSaveSourceFileOperations.ReversibleOnly:
+                            sourceFileOperations = BuildSourceFileOperations(assetsOrPackagesToRemove).Where(x => !x.Irreversible).ToList();
+                            break;
+                        case PackageSaveSourceFileOperations.None:
+                            sourceFileOperations = new List<SourceFileOperation>();
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
 
                     // If package are not modified, return immediately
                     if (!CheckModifiedPackages() && assetsOrPackagesToRemove.Count == 0 && sourceFileOperations.Count == 0)
@@ -724,15 +740,17 @@ namespace SiliconStudio.Assets
                     var assetImport = (AssetImport)assetItem.Asset;
                     var sourcePath = assetImport.Source;
 
+                    bool irreversible = File.Exists(sourceCopyPath.ToWindowsPath());
+
                     // We try to combine Copy + Delete into Move (some programs like that better)
                     if (assetItemGroup.Count() == 1 && deletedImportAssetsWithCopyLocal.ContainsKey(sourcePath))
                     {
-                        sourceFileOperations.Add(new SourceFileOperation(assetItem, SourceFileOperationType.Move, sourcePath.ToWindowsPath(), sourceCopyPath.ToWindowsPath()));
+                        sourceFileOperations.Add(new SourceFileOperation(assetItem, SourceFileOperationType.Move, sourcePath.ToWindowsPath(), sourceCopyPath.ToWindowsPath(), irreversible));
                         deletedImportAssetsWithCopyLocal.Remove(sourcePath); // No need to delete anymore
                     }
                     else
                     {
-                        sourceFileOperations.Add(new SourceFileOperation(assetItem, SourceFileOperationType.Copy, sourcePath.ToWindowsPath(), sourceCopyPath.ToWindowsPath()));
+                        sourceFileOperations.Add(new SourceFileOperation(assetItem, SourceFileOperationType.Copy, sourcePath.ToWindowsPath(), sourceCopyPath.ToWindowsPath(), irreversible));
                     }
                 }
             }
@@ -743,7 +761,7 @@ namespace SiliconStudio.Assets
                 var assetItem = assetItemWithName.Value.Value;
                 var sourcePath = assetItemWithName.Key;
 
-                sourceFileOperations.Add(new SourceFileOperation(assetItem, SourceFileOperationType.Delete, sourcePath.ToWindowsPath(), null));
+                sourceFileOperations.Add(new SourceFileOperation(assetItem, SourceFileOperationType.Delete, sourcePath.ToWindowsPath(), null, true));
             }
 
             return sourceFileOperations;
@@ -1206,13 +1224,15 @@ namespace SiliconStudio.Assets
             public readonly SourceFileOperationType Type;
             public readonly string Source;
             public readonly string Destination;
+            public readonly bool Irreversible;
 
-            public SourceFileOperation(AssetItem assetItem, SourceFileOperationType type, string source, string destination)
+            public SourceFileOperation(AssetItem assetItem, SourceFileOperationType type, string source, string destination, bool irreversible)
             {
                 AssetItem = assetItem;
                 Type = type;
                 Source = source;
                 Destination = destination;
+                Irreversible = irreversible;
             }
         }
     }
