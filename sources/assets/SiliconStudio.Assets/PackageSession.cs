@@ -708,6 +708,7 @@ namespace SiliconStudio.Assets
             var importAssetsWithCopyLocal = LocalPackages.SelectMany(x => x.Assets)
                 .Where(FilterAssetWithCopyLocal) // Has copy local
                 .Where(x => x.FullPath.GetFullPathWithoutExtension() != ((AssetImport)x.Asset).Source.GetFullPathWithoutExtension()) // Not copied yet
+                .Where(x => File.Exists(((AssetImport)x.Asset).Source.ToWindowsPath())) // Source must exists
                 .GroupBy(x => new UFile(x.FullPath.GetFullPathWithoutExtension() + ((AssetImport)x.Asset).Source.GetFileExtension())); // Group by expected source file name
 
             var sourceFileOperations = new List<SourceFileOperation>();
