@@ -47,7 +47,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             base.Update(gameTime);
         }
 
-        [TestFixtureSetUp]
+        [SetUp]
         public void InitializeThisGame()
         {
             FrameGameSystem.IsUnityTestFeeding = true;
@@ -67,7 +67,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             onLoadContentDone.WaitOne();
         }
 
-        [TestFixtureTearDown]
+        [TearDown]
         public void DisposeThisGame()
         {
             FrameGameSystem.AllTestsCompleted = true;
