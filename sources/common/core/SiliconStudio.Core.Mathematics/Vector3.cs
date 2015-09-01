@@ -1379,18 +1379,6 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Modulates a vector with another by performing component-wise multiplication.
-        /// </summary>
-        /// <param name="left">The first vector to multiply.</param>
-        /// <param name="right">The second vector to multiply.</param>
-        /// <returns>The multiplication of the two vectors.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 operator *(Vector3 left, Vector3 right)
-        {
-            return new Vector3(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
-        }
-
-        /// <summary>
         /// Reverses the direction of a given vector.
         /// </summary>
         /// <param name="value">The vector to negate.</param>
@@ -1423,6 +1411,18 @@ namespace SiliconStudio.Core.Mathematics
         public static Vector3 operator *(Vector3 value, float scale)
         {
             return new Vector3(value.X * scale, value.Y * scale, value.Z * scale);
+        }
+
+        /// <summary>
+        /// Modulates a vector with another by performing component-wise multiplication.
+        /// </summary>
+        /// <param name="left">The first vector to multiply.</param>
+        /// <param name="right">The second vector to multiply.</param>
+        /// <returns>The multiplication of the two vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 operator *(Vector3 left, Vector3 right)
+        {
+            return new Vector3(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
         }
 
         /// <summary>
