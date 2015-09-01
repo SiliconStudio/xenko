@@ -26,7 +26,6 @@ namespace SiliconStudio.Paradox.Engine
     public class Entity : ComponentBase, IEnumerable
     {
         protected TransformComponent transform;
-        internal List<Task> prepareTasks;
 
         /// <summary>
         /// The components stored in this entity.
