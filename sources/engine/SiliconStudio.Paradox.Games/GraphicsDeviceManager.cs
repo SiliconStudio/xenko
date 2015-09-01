@@ -88,6 +88,8 @@ namespace SiliconStudio.Paradox.Games
 
         private bool isReallyFullScreen;
 
+        private ColorSpace preferredColorSpace;
+
         #endregion
 
         #region Constructors and Destructors
@@ -108,7 +110,8 @@ namespace SiliconStudio.Paradox.Games
             lockDeviceCreation = new object();
 
             // Defines all default values
-            SynchronizeWithVerticalRetrace = true;          
+            SynchronizeWithVerticalRetrace = true;
+            PreferredColorSpace = ColorSpace.Linear;
             PreferredBackBufferFormat = PixelFormat.R8G8B8A8_UNorm;;
             PreferredDepthStencilFormat = PixelFormat.D24_UNorm_S8_UInt;
             preferredBackBufferWidth = DefaultBackBufferWidth;
@@ -202,7 +205,21 @@ namespace SiliconStudio.Paradox.Games
         /// Gets or sets the default color space.
         /// </summary>
         /// <value>The default color space.</value>
-        public ColorSpace PreferredColorSpace { get; set; }
+        public ColorSpace PreferredColorSpace
+        {
+            get
+            {
+                return preferredColorSpace;
+            }
+            set
+            {
+                if (preferredColorSpace != value)
+                {
+                    preferredColorSpace = value;
+                    deviceSettingsChanged = true;
+                }
+            }
+        }
 
         /// <summary>
         /// Sets the preferred graphics profile.
@@ -620,6 +637,18 @@ namespace SiliconStudio.Paradox.Games
                 else if (preferredParameters.PreferredBackBufferFormat == PixelFormat.B8G8R8A8_UNorm)
                 {
                     preferredParameters.PreferredBackBufferFormat = PixelFormat.B8G8R8A8_UNorm_SRgb;
+                }
+            }
+            else
+            {
+                // If we are looking for gamma and the backbuffer format is SRgb, switch back to non srgb
+                if (preferredParameters.PreferredBackBufferFormat == PixelFormat.R8G8B8A8_UNorm_SRgb)
+                {
+                    preferredParameters.PreferredBackBufferFormat = PixelFormat.R8G8B8A8_UNorm;
+                }
+                else if (preferredParameters.PreferredBackBufferFormat == PixelFormat.B8G8R8A8_UNorm_SRgb)
+                {
+                    preferredParameters.PreferredBackBufferFormat = PixelFormat.B8G8R8A8_UNorm;
                 }
             }
 
