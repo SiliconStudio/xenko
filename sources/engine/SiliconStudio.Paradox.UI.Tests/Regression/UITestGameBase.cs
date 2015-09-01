@@ -53,8 +53,6 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         {
             StopOnFrameCount = -1;
 
-            GraphicsDeviceManager.PreferredGraphicsProfile = new [] { GraphicsProfile.Level_11_0 };
-
             graphicsCompositor = new SceneGraphicsCompositorLayers
             {
                 Cameras = { Camera.Get<CameraComponent>() },
