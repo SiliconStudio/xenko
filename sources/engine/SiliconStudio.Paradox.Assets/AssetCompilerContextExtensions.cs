@@ -68,9 +68,23 @@ namespace SiliconStudio.Paradox.Assets
             context.Properties.Set(GameSettingsAssetKey, gameSettingsAsset);
         }
 
+        public static IGameSettingsProfile GetGameSettingsForCurrentProfile(this AssetCompilerContext context)
+        {
+            var gameSettings = context.GetGameSettingsAsset();
+            IGameSettingsProfile gameSettingsProfile = null;
+            if (gameSettings != null && gameSettings.Profiles != null)
+            {
+                gameSettings.Profiles.TryGetValue(context.Profile, out gameSettingsProfile);
+            }
+            // TODO: Return default game settings profile based on the platform
+            return gameSettingsProfile;
+        }
+
         public static GraphicsPlatform GetGraphicsPlatform(this AssetCompilerContext context)
         {
-            return context.Platform.GetDefaultGraphicsPlatform();
+            var  gameSettingsProfile = GetGameSettingsForCurrentProfile(context);
+            var graphicsPlatform =  gameSettingsProfile?.GraphicsPlatform ?? context.Platform.GetDefaultGraphicsPlatform();
+            return graphicsPlatform;
         }
 
         public static Paradox.Graphics.GraphicsPlatform GetDefaultGraphicsPlatform(this PlatformType platformType)

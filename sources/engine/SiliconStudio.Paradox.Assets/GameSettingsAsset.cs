@@ -122,6 +122,14 @@ namespace SiliconStudio.Paradox.Assets
         [Display(null, null, "Graphics")]
         public ColorSpace ColorSpace { get; set; }
 
+        /// <summary>
+        /// Gets or sets the game settings per profiles.
+        /// </summary>
+        [DataMember(90)]
+        [Browsable(false)]
+        [DefaultValue(null)]
+        public Dictionary<string, IGameSettingsProfile> Profiles { get; set; }
+
         internal class UpgraderVersion130
         {
             public static SettingsKey<DisplayOrientation> DisplayOrientation = new SettingsKey<DisplayOrientation>("Paradox.DisplayOrientation", PackageProfile.SettingsContainer);

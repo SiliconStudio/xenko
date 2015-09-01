@@ -111,6 +111,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 // Create context
                 var context = new AssetCompilerContext
                 {
+                    Profile = builderOptions.BuildProfile,
                     Package = package,
                     Platform = builderOptions.Platform
                 };
@@ -124,14 +125,13 @@ namespace SiliconStudio.Assets.CompilerApp
                 // Copy properties from build profile
                 buildProfile.Properties.CopyTo(context.PackageProperties, true);
 
-            var gameSettingsAsset = context.Package.GetGameSettingsAsset();
-            if (gameSettingsAsset == null)
-            {
-                builderOptions.Logger.Error("Could not find game settings asset at location [{0}]", GameSettingsAsset.GameSettingsLocation);
-                return BuildResultCode.BuildError;
-            }
-
-            context.SetGameSettingsAsset(gameSettingsAsset);
+                var gameSettingsAsset = context.Package.GetGameSettingsAsset();
+                if (gameSettingsAsset == null)
+                {
+                    builderOptions.Logger.Warning("Could not find game settings asset at location [{0}]. Use a Default One", GameSettingsAsset.GameSettingsLocation);
+                    gameSettingsAsset = new GameSettingsAsset();
+                }
+                context.SetGameSettingsAsset(gameSettingsAsset);
 
                 var assetBuildResult = assetBuilder.Compile(context);
                 assetBuildResult.CopyTo(builderOptions.Logger);

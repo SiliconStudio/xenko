@@ -160,7 +160,9 @@
     <Compile Include="Entities\SceneAsset.cs" />
     <Compile Include="GameSettingsAssetCompiler.cs" />
     <Compile Include="GameSettingsAssetExtensions.cs" />
+    <Compile Include="GameSettingsProfileBase.cs" />
     <Compile Include="GameUserSettings.cs" />
+    <Compile Include="IGameSettingsProfile.cs" />
     <Compile Include="Materials\ComputeShaderBaseExtensions.cs" />
     <Compile Include="Materials\MaterialNodeClassLoader.cs" />
     <Compile Include="Materials\MaterialStreamFactory.cs" />
@@ -231,6 +233,7 @@
     <Compile Include="Textures\TextureFormat.cs" />
     <Compile Include="Textures\TextureImporter.cs" />
     <Compile Include="PreviewerCompilerNames.cs" />
+    <Compile Include="WindowsGameSettingsProfile.cs" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
