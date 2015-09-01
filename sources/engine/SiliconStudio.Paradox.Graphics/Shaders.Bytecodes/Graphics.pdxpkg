@@ -10,5 +10,7 @@ Profiles:
         - Path: .
     -   Name: Windows
         Platform: Windows
-        Properties:
-            GameSettingsAsset.DefaultGraphicsProfile: Level_9_1
+    -   Name: Windows-OpenGL
+        Platform: Windows
+    -   Name: Windows-OpenGLES
+        Platform: Windows
