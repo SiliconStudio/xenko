@@ -32,32 +32,6 @@ namespace SiliconStudio.Paradox.Assets.Effect
         {
         }
 
-        /// <summary>
-        /// Gets the text.
-        /// </summary>
-        /// <value>The text.</value>
-        public string Text
-        {
-            get; set;
-        }
-
-        public override void Load()
-        {
-            if (!string.IsNullOrEmpty(AbsoluteSourceLocation))
-            {
-                Text = File.ReadAllText(AbsoluteSourceLocation);
-            }
-        }
-
-        public override void Save(Stream stream)
-        {
-            if (Text != null)
-            {
-                var buffer = Encoding.UTF8.GetBytes(Text);
-                stream.Write(buffer, 0, buffer.Length);
-            }
-        }
-
         protected override int InternalBuildOrder
         {
             get { return 100; }
