@@ -2,6 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Reflection;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Assets.Textures
 {
@@ -25,5 +27,25 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// The texture will be used in gamma space for cases where the texture doesn't need to be gamma correct.
         /// </summary>
         Gamma,
+    }
+
+    public static class TextureColorSpaceHelper
+    {
+        public static ColorSpace ToColorSpace(this TextureColorSpace textureColorSpace, ColorSpace colorSpaceReference, TextureHint textureHint)
+        {
+            var colorSpace = colorSpaceReference;
+            if (textureHint == TextureHint.Color)
+            {
+                if (textureColorSpace == TextureColorSpace.Linear)
+                {
+                    colorSpace = ColorSpace.Linear;
+                }
+                else if (textureColorSpace == TextureColorSpace.Gamma)
+                {
+                    colorSpace = ColorSpace.Gamma;
+                }
+            }
+            return colorSpace;
+        }
     }
 }

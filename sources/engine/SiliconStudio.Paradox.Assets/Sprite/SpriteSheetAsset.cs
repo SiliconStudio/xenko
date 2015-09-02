@@ -47,12 +47,6 @@ namespace SiliconStudio.Paradox.Assets.Sprite
         }
 
         /// <summary>
-        /// Gets or sets the value indicating whether the output texture is encoded into the standard RGB color space.
-        /// </summary>
-        [DataMemberIgnore] // hide it from editor for the moment.
-        public bool SRgb;
-
-        /// <summary>
         /// Gets or sets the type of the current sheet
         /// </summary>
         /// <userdoc>
@@ -96,6 +90,18 @@ namespace SiliconStudio.Paradox.Assets.Sprite
         [DefaultValue(TextureFormat.Compressed)]
         [Display(category: "Parameters")]
         public TextureFormat Format { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value indicating whether the output texture is encoded into the standard RGB color space.
+        /// </summary>
+        /// <userdoc>
+        /// If checked, the input image is considered as an sRGB image. This should be default for colored texture
+        /// with a HDR/gamma correct rendering.
+        /// </userdoc>
+        [DataMember(45)]
+        [DefaultValue(TextureColorSpace.Auto)]
+        [Display("ColorSpace", null, "Parameters")]
+        public TextureColorSpace ColorSpace { get; set; }
 
         /// <summary>
         /// Gets or sets the alpha format.
@@ -162,6 +168,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
         {
             Sprites = new List<SpriteInfo>();
             Format = TextureFormat.Compressed;
+            ColorSpace = TextureColorSpace.Auto;
             Alpha = AlphaFormat.Interpolated;
             ColorKeyColor = new Color(255, 0, 255);
             ColorKeyEnabled = false;

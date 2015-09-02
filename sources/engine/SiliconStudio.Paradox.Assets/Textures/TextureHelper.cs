@@ -62,8 +62,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
 
                 // Compute SRgb usage
                 // If Texture is in auto mode, use the global settings, else use the settings overridden by the texture asset. 
-                IsSRgb = (asset.Hint == TextureHint.Color && (textureParameters.Texture.ColorSpace == TextureColorSpace.Auto ? textureParameters.ColorSpace == ColorSpace.Linear : textureParameters.Texture.ColorSpace == TextureColorSpace.Linear))
-                    || textureParameters.ColorSpace == ColorSpace.Linear;
+                IsSRgb = textureParameters.Texture.ColorSpace.ToColorSpace(textureParameters.ColorSpace, asset.Hint) == ColorSpace.Linear;
 
                 DesiredSize = new Size2((int)asset.Width, (int)asset.Height);
                 IsSizeInPercentage = asset.IsSizeInPercentage;
@@ -83,7 +82,11 @@ namespace SiliconStudio.Paradox.Assets.Textures
             public ImportParameters(SpriteSheetAssetCompiler.SpriteSheetParameters spriteSheetParameters)
             {
                 var asset = spriteSheetParameters.SheetAsset;
-                IsSRgb = asset.SRgb;
+
+                // Compute SRgb usage
+                // If Texture is in auto mode, use the global settings, else use the settings overridden by the texture asset. 
+                IsSRgb = asset.ColorSpace.ToColorSpace(spriteSheetParameters.ColorSpace, TextureHint.Color) == ColorSpace.Linear;
+
                 DesiredSize = new Size2(100, 100);
                 IsSizeInPercentage = true;
                 DesiredFormat = asset.Format;
@@ -181,9 +184,6 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// <returns>The pixel format to use as output</returns>
         public static PixelFormat DetermineOutputFormat(ImportParameters parameters, Int2 imageSize, PixelFormat inputImageFormat, int alphaDepth)
         {
-            if (parameters.IsSRgb && ((int)parameters.GraphicsProfile < (int)GraphicsProfile.Level_9_2 && parameters.GraphicsPlatform != GraphicsPlatform.Direct3D11))
-                throw new NotSupportedException("sRGB is not supported on OpenGl profile level {0}".ToFormat(parameters.GraphicsProfile));
-
             var hint = parameters.TextureHint;
 
             var alphaMode = parameters.DesiredAlpha;
