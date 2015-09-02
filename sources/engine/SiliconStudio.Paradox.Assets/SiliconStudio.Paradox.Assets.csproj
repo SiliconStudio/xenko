@@ -161,7 +161,7 @@
     <Compile Include="GameSettingsAssetCompiler.cs" />
     <Compile Include="GameSettingsAssetExtensions.cs" />
     <Compile Include="GameUserSettings.cs" />
-    <Compile Include="Materials\ComputeShaderBaseExtensions.cs" />
+    <Compile Include="Materials\ComputeShaderClassBaseExtensions.cs" />
     <Compile Include="Materials\MaterialNodeClassLoader.cs" />
     <Compile Include="Materials\MaterialStreamFactory.cs" />
     <Compile Include="Materials\ShaderGeneratorContextExtensions.cs" />
