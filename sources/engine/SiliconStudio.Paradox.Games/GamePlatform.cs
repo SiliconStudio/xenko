@@ -300,6 +300,7 @@ namespace SiliconStudio.Paradox.Games
                                         PreferredFullScreenOutputIndex = preferredParameters.PreferredFullScreenOutputIndex,
                                         PresentationInterval = preferredParameters.SynchronizeWithVerticalRetrace ? PresentInterval.One : PresentInterval.Immediate,
                                         DeviceWindowHandle = MainWindow.NativeWindow,
+                                        ColorSpace = preferredParameters.ColorSpace
                                     }
                             };
 
@@ -335,6 +336,7 @@ namespace SiliconStudio.Paradox.Games
         public virtual GraphicsDevice CreateDevice(GraphicsDeviceInformation deviceInformation)
         {
             var graphicsDevice = GraphicsDevice.New(deviceInformation.Adapter, deviceInformation.DeviceCreationFlags, gameWindow.NativeWindow, deviceInformation.GraphicsProfile);
+            graphicsDevice.ColorSpace = deviceInformation.PresentationParameters.ColorSpace;
             graphicsDevice.Presenter = new SwapChainGraphicsPresenter(graphicsDevice, deviceInformation.PresentationParameters);
 
             return graphicsDevice;
@@ -342,6 +344,7 @@ namespace SiliconStudio.Paradox.Games
 
         public virtual void RecreateDevice(GraphicsDevice currentDevice, GraphicsDeviceInformation deviceInformation)
         {
+            currentDevice.ColorSpace = deviceInformation.PresentationParameters.ColorSpace;
             currentDevice.Recreate(deviceInformation.Adapter ?? GraphicsAdapterFactory.Default, new[] { deviceInformation.GraphicsProfile }, deviceInformation.DeviceCreationFlags, gameWindow.NativeWindow);
         }
 

@@ -624,7 +624,8 @@ namespace SiliconStudio.Paradox.Games
                     PreferMultiSampling = PreferMultiSampling,
                     SynchronizeWithVerticalRetrace = SynchronizeWithVerticalRetrace,
                     PreferredGraphicsProfile = (GraphicsProfile[])PreferredGraphicsProfile.Clone(),
-                };
+                    ColorSpace = PreferredColorSpace
+            };
 
             // Remap to Srgb backbuffer if necessary
             if (PreferredColorSpace == ColorSpace.Linear)
@@ -1048,10 +1049,6 @@ namespace SiliconStudio.Paradox.Games
                     {
                         height = presentationParameters.BackBufferHeight;
                     }
-
-                    // Copy the color space
-                    GraphicsDevice.ColorSpace = PreferredColorSpace;
-
                     deviceSettingsChanged = false;
                 }
                 finally

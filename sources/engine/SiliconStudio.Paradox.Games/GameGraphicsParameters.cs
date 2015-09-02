@@ -79,5 +79,10 @@ namespace SiliconStudio.Paradox.Games
         /// Gets or sets a value indicating whether to synochrnize present with vertical blanking.
         /// </summary>
         public bool SynchronizeWithVerticalRetrace;
+
+        /// <summary>
+        /// Gets or sets the colorspace.
+        /// </summary>
+        public ColorSpace ColorSpace;
     }
 }
