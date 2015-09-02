@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
             {
                 this.assetItem = assetItem;
                 package = context.Package;
-                colorSpace = context.GetColorSpace(assetItem);
+                colorSpace = context.GetColorSpace();
                 assetUrl = new UFile(url);
             }
 

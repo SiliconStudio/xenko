@@ -65,11 +65,6 @@ namespace SiliconStudio.Paradox.Assets.Textures
                 IsSRgb = (asset.Hint == TextureHint.Color && (textureParameters.Texture.ColorSpace == TextureColorSpace.Auto ? textureParameters.ColorSpace == ColorSpace.Linear : textureParameters.Texture.ColorSpace == TextureColorSpace.Linear))
                     || textureParameters.ColorSpace == ColorSpace.Linear;
 
-                if (textureParameters.GraphicsProfile < GraphicsProfile.Level_9_3)
-                {
-                    IsSRgb = false;
-                }
-
                 DesiredSize = new Size2((int)asset.Width, (int)asset.Height);
                 IsSizeInPercentage = asset.IsSizeInPercentage;
                 DesiredFormat = asset.Format;

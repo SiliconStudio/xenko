@@ -12,10 +12,14 @@ namespace SiliconStudio.Paradox.Assets
         public static GameSettingsAsset GetGameSettingsAsset(this Package package)
         {
             var gameSettingsAsset = package.Assets.Find(GameSettingsAsset.GameSettingsLocation);
-            if (gameSettingsAsset == null)
-                return null;
+            return gameSettingsAsset?.Asset as GameSettingsAsset;
+        }
 
-            return gameSettingsAsset.Asset as GameSettingsAsset;
+        public static GameSettingsAsset GetGameSettingsAsset(this AssetItem assetItem)
+        {
+            var currentPackage = assetItem.Package.Session.CurrentPackage;
+            var assetGameSettings = currentPackage?.GetGameSettingsAsset();
+            return assetGameSettings;
         }
     }
 }

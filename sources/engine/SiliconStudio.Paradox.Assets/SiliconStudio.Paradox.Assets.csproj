@@ -168,7 +168,6 @@
     <Compile Include="Materials\MaterialStreamFactory.cs" />
     <Compile Include="Materials\ShaderGeneratorContextExtensions.cs" />
     <Compile Include="IModelAsset.cs" />
-    <Compile Include="ParadoxAssetDependenciesCompiler.cs" />
     <Compile Include="ParadoxPackageUpgrader.cs" />
     <Compile Include="ProceduralModels\ProceduralModelAsset.cs" />
     <Compile Include="ProceduralModels\ProceduralModelAssetCompiler.cs" />

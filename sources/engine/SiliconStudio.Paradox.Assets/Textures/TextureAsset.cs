@@ -165,7 +165,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// with a HDR/gamma correct rendering.
         /// </userdoc>
         [DataMember(70)]
-        [DefaultValue(false)]
+        [DefaultValue(TextureColorSpace.Auto)]
         [Display("ColorSpace", null, "Format")]
         public TextureColorSpace ColorSpace { get; set; }
 
@@ -187,6 +187,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
             Height = 100.0f;
             Format = TextureFormat.Compressed;
             Hint = TextureHint.Color;
+            ColorSpace = TextureColorSpace.Auto;
             Alpha = AlphaFormat.Auto;
             ColorKeyColor = new Color(255, 0, 255);
             ColorKeyEnabled = false;

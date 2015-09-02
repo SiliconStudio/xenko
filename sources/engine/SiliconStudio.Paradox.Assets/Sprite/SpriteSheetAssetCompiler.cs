@@ -43,7 +43,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
             // create and add import texture commands
             if (asset.Sprites != null && !asset.Packing.Enabled)
             {
-                var colorSpace = context.GetColorSpace(AssetItem);
+                var colorSpace = context.GetColorSpace();
                 // sort sprites by referenced texture.
                 var spriteByTextures = asset.Sprites.GroupBy(x => x.Source).ToArray();
                 for (int i = 0; i < spriteByTextures.Length; i++)

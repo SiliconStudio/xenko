@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
             var assetSource = GetAbsolutePath(assetAbsolutePath, asset.Source);
 
             var gameSettingsAsset = context.GetGameSettingsAsset();
-            var colorSpace = context.GetColorSpace(AssetItem);
+            var colorSpace = context.GetColorSpace();
 
             var parameter = new TextureConvertParameters(assetSource, asset, context.Platform, context.GetGraphicsPlatform(), gameSettingsAsset.DefaultGraphicsProfile, gameSettingsAsset.TextureQuality, colorSpace);
             result.BuildSteps = new AssetBuildStep(AssetItem) { new TextureConvertCommand(urlInStorage, parameter) };
@@ -57,12 +57,10 @@ namespace SiliconStudio.Paradox.Assets.Textures
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                var texture = AssetParameters.Texture;
-                
+                var convertParameters = new TextureHelper.ImportParameters(AssetParameters) { OutputUrl = Url };
                 using (var texTool = new TextureTool())
-                using (var texImage = texTool.Load(AssetParameters.SourcePathFromDisk, texture.ColorSpace == TextureColorSpace.Linear))
+                using (var texImage = texTool.Load(AssetParameters.SourcePathFromDisk, convertParameters.IsSRgb))
                 {
-                    var convertParameters = new TextureHelper.ImportParameters(AssetParameters) { OutputUrl = Url };
                     var importResult = TextureHelper.ImportTextureImage(texTool, texImage, convertParameters, CancellationToken, commandContext.Logger);
 
                     return Task.FromResult(importResult);
