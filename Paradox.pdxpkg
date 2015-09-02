@@ -49,6 +49,7 @@ TemplateFolders:
         - samples\Graphics\SimpleSprite\SimpleSprite.pdxtpl
         - samples\Graphics\SpriteEntity\SpriteEntity.pdxtpl
         - samples\Graphics\SpriteFonts\SpriteFonts.pdxtpl
+        - samples\Graphics\SimpleTerrain\SimpleTerrain.pdxtpl
         - samples\Input\TouchInputs\TouchInputs.pdxtpl
         - samples\Input\GravitySensor\GravitySensor.pdxtpl
         - samples\Physics\CharacterControllerSample\CharacterControllerSample.pdxtpl
