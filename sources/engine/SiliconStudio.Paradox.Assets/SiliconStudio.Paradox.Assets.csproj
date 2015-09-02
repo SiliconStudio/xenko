@@ -11,7 +11,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
-    <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions) --generate-user-doc</SiliconStudioAssemblyProcessorOptions>
+    <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions)</SiliconStudioAssemblyProcessorOptions>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -161,7 +161,7 @@
     <Compile Include="GameSettingsAssetCompiler.cs" />
     <Compile Include="GameSettingsAssetExtensions.cs" />
     <Compile Include="GameUserSettings.cs" />
-    <Compile Include="Materials\ComputeShaderBaseExtensions.cs" />
+    <Compile Include="Materials\ComputeShaderClassBaseExtensions.cs" />
     <Compile Include="Materials\MaterialNodeClassLoader.cs" />
     <Compile Include="Materials\MaterialStreamFactory.cs" />
     <Compile Include="Materials\ShaderGeneratorContextExtensions.cs" />

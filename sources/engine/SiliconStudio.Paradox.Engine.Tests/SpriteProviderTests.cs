@@ -10,7 +10,7 @@ using SiliconStudio.Paradox.Rendering.Sprites;
 
 namespace SiliconStudio.Paradox.Engine.Tests
 {
-    public class SpriteProviderTests : GraphicsUnitTestBatch
+    public class SpriteProviderTests : GraphicsTestBase
     {
         [Test]
         public void SpriteFromSheetTests()
@@ -46,7 +46,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
         [Test]
         public void SpriteFromTextureTests()
         {
-            RunDrawTest(() =>
+            RunDrawTest(game =>
             {
                 var provider = new SpriteFromTexture();
                 Assert.AreEqual(1, provider.SpritesCount);
@@ -57,13 +57,13 @@ namespace SiliconStudio.Paradox.Engine.Tests
                 Assert.AreEqual(new RectangleF(), sprite.Region);
                 Assert.AreEqual(Vector2.Zero, sprite.Center);
 
-                var texture1 = Texture.New2D(GraphicsDevice, 123, 234, 1, PixelFormat.B8G8R8A8_UNorm);
+                var texture1 = Texture.New2D(game.GraphicsDevice, 123, 234, 1, PixelFormat.B8G8R8A8_UNorm);
                 provider.Texture = texture1;
                 Assert.AreEqual(texture1, sprite.Texture);
                 Assert.AreEqual(new RectangleF(0, 0, texture1.Width, texture1.Height), sprite.Region);
                 Assert.AreEqual(new Vector2(texture1.Width, texture1.Height) / 2, sprite.Center);
 
-                var texture2 = Texture.New2D(GraphicsDevice, 12, 23, 1, PixelFormat.B8G8R8A8_UNorm);
+                var texture2 = Texture.New2D(game.GraphicsDevice, 12, 23, 1, PixelFormat.B8G8R8A8_UNorm);
                 provider.Texture = texture2;
                 Assert.AreEqual(texture2, sprite.Texture);
                 Assert.AreEqual(new RectangleF(0, 0, texture2.Width, texture2.Height), sprite.Region);

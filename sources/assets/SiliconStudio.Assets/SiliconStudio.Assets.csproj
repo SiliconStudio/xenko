@@ -11,7 +11,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
-    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization --generate-user-doc</SiliconStudioAssemblyProcessorOptions>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -130,6 +130,7 @@
     <Compile Include="PackageDependency.cs" />
     <Compile Include="PackageExtensions.cs" />
     <Compile Include="PackageLoadingAssetFile.cs" />
+    <Compile Include="PackageSaveSourceFileOperations.cs" />
     <Compile Include="PackageSessionHelper.cs" />
     <Compile Include="PackageSessionHelper.Solution.cs" />
     <Compile Include="PackageLoadParameters.cs" />
@@ -160,6 +161,7 @@
     <Compile Include="PackageSessionProfilingKeys.cs" />
     <Compile Include="PackageSessionResult.cs" />
     <Compile Include="RawAsset.cs" />
+    <Compile Include="PackageSaveParameters.cs" />
     <Compile Include="Serializers\AssetItemSerializer.cs" />
     <Compile Include="Serializers\AssetYamlSerializer.cs" />
     <Compile Include="Serializers\InvariantObjectCloneSerializer.cs" />

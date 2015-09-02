@@ -3,6 +3,10 @@
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <DocumentationFile>
+    </DocumentationFile>
+  </PropertyGroup>
   <Import Project="..\..\targets\Paradox.PreSettings.targets" />
   <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
@@ -13,7 +17,7 @@
     <AssemblyName>SiliconStudio.Paradox.Physics</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
-    <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key --generate-user-doc</SiliconStudioAssemblyProcessorOptions>
+    <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key</SiliconStudioAssemblyProcessorOptions>
     <ParadoxBuildTags>*</ParadoxBuildTags>
     <ParadoxBulletPlatform>Windows</ParadoxBulletPlatform>
     <ParadoxBulletPlatform Condition="'$(SiliconStudioPlatform)' == 'iOS'">iOS</ParadoxBulletPlatform>

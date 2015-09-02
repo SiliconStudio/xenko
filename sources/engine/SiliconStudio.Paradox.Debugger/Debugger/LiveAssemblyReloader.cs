@@ -7,6 +7,8 @@ using System.Linq;
 using System.Reflection;
 using SharpYaml;
 using SharpYaml.Events;
+using SharpYaml.Serialization;
+using SiliconStudio.Core;
 using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
@@ -122,6 +124,19 @@ namespace SiliconStudio.Paradox.Debugger.Target
             YamlSerializer.Deserialize(eventReader, scriptCollection, typeof(ScriptCollection));
             var script = scriptCollection.Count == 1 ? scriptCollection[0] : null;
             return script;
+        }
+
+        protected override List<ParsingEvent> SerializeScript(Script script)
+        {
+            // Wrap script in a ScriptCollection to properly handle errors
+            var scriptCollection = new ScriptCollection { script };
+
+            // Serialize with Yaml layer
+            var parsingEvents = new List<ParsingEvent>();
+            // We also want to serialize live scripting variables
+            var serializerContextSettings = new SerializerContextSettings { MemberMask = DataMemberAttribute.DefaultMask | Script.LiveScriptingMask };
+            YamlSerializer.Serialize(new ParsingEventListEmitter(parsingEvents), scriptCollection, typeof(ScriptCollection), serializerContextSettings);
+            return parsingEvents;
         }
 
         protected override void ReplaceScript(ScriptComponent scriptComponent, ReloadedScriptEntry reloadedScript)

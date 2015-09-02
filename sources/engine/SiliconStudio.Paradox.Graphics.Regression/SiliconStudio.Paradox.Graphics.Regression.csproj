@@ -16,7 +16,8 @@
     <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject></StartupObject>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <Choose>
     <When Condition="'$(SiliconStudioPlatform)' == 'Windows'">
@@ -137,7 +138,6 @@
     <Compile Include="FrameGameSystem.cs" />
     <Compile Include="GameTester.cs" />
     <Compile Include="GraphicsTestBase.cs" />
-    <Compile Include="GraphicsUnitTestBatch.cs" />
     <Compile Include="ImageTester.NotRuntime.cs" />
     <Compile Include="ImageTester.cs" />
     <Compile Include="iOSDeviceType.cs" />

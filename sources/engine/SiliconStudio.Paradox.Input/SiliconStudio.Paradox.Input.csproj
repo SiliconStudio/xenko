@@ -45,6 +45,7 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AccelerometerSensor.cs" />
     <Compile Include="GestureConfigCollection.cs" />
     <Compile Include="GestureConfigDrag.cs" />
     <Compile Include="GestureConfigFlick.cs" />
@@ -63,6 +64,8 @@
     <Compile Include="GestureShape.cs" />
     <Compile Include="GestureState.cs" />
     <Compile Include="GestureType.cs" />
+    <Compile Include="GravitySensor.cs" />
+    <Compile Include="GyroscopeSensor.cs" />
     <Compile Include="InputManager.Android.cs" />
     <Compile Include="InputManager.cs" />
     <Compile Include="InputManager.iOS.cs" />
@@ -79,8 +82,10 @@
     <Compile Include="KeyEventType.cs" />
     <Compile Include="Keys.cs" />
     <Compile Include="GestureConfigLongPress.cs" />
+    <Compile Include="CompassSensor.cs" />
     <Compile Include="MouseButton.cs" />
     <Compile Include="NamespaceDoc.cs" />
+    <Compile Include="OrientationSensor.cs" />
     <Compile Include="PointerEvent.cs" />
     <Compile Include="PointerState.cs" />
     <Compile Include="PointerType.cs" />
@@ -92,6 +97,8 @@
     <Compile Include="GestureRecognizerLongPress.cs" />
     <Compile Include="GestureRecognizerComposite.cs" />
     <Compile Include="GestureRecognizerTap.cs" />
+    <Compile Include="SensorBase.cs" />
+    <Compile Include="UserAccelerationSensor.cs" />
     <Compile Include="VirtualButton.cs" />
     <Compile Include="VirtualButton.GamePad.cs" />
     <Compile Include="VirtualButton.Keyboard.cs" />

@@ -46,24 +46,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
         /// <summary>
         /// Flag stating that all the tests have been rendered.
         /// </summary>
-        public bool AllTestsCompleted
-        {
-            get
-            {
-                return IsUnityTestFeeding ?  allTestsCompleted : frameCount > lastFrame;
-            }
-            set
-            {
-                if (IsUnityTestFeeding)
-                {
-                    allTestsCompleted = value;
-                }
-                else
-                {
-                    throw new InvalidOperationException("You can't modify AllTestsCompleted on a non UnityTestFeeding FrameGameSystem");
-                }
-            }
-        }
+        public bool AllTestsCompleted => frameCount > lastFrame;
 
         /// <summary>
         /// Flag stating that a screenshot should be taken.

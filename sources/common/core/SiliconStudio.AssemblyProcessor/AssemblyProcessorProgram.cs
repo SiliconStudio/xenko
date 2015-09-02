@@ -95,7 +95,7 @@ namespace SiliconStudio.AssemblyProcessor
                 { "rename-assembly=", "Rename assembly", v => app.NewAssemblyName = v },
                 { "auto-module-initializer", "Execute function tagged with [ModuleInitializer] at module initialization (automatically enabled)", v => app.ModuleInitializer = true },
                 { "serialization", "Generate serialiation assembly", v => app.SerializationAssembly = true },
-                { "generate-user-doc", "Generate user documentation from XML file", v => app.GenerateUserDocumentation = true },
+                { "docfile=", "Generate user documentation from XML file", v => app.DocumentationFile = v },
                 { "d|directory=", "Additional search directory for assemblies", app.SearchDirectories.Add },
                 { "a|assembly=", "Additional assembly (for now, it will add the assembly directory to search path)", v => app.SearchDirectories.Add(Path.GetDirectoryName(v)) },
                 { "signkeyfile=", "Signing Key File", v => app.SignKeyFile = v },

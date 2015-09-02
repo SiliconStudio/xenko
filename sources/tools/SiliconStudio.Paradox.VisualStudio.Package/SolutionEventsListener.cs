@@ -6,10 +6,14 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace SiliconStudio.Paradox.VisualStudio
 {
-    public class SolutionEventsListener : IVsSolutionEvents, IVsSolutionLoadEvents, IDisposable
+    public class SolutionEventsListener : IVsSolutionEvents, IVsSolutionLoadEvents, IVsUpdateSolutionEvents3, IVsSelectionEvents, IDisposable
     {
         private IVsSolution solution;
+        private IVsSolutionBuildManager3 buildManager;
+        private IVsMonitorSelection monitorSelection;
         private uint solutionEventsCookie;
+        private uint updateSolutionEventsCookie;
+        private uint selectionEventsCoockie;
 
         public event Action AfterSolutionLoaded;
         public event Action AfterSolutionBackgroundLoadComplete;
@@ -18,13 +22,19 @@ namespace SiliconStudio.Paradox.VisualStudio
         public event Action<IVsHierarchy> AfterProjectOpened;
         public event Action<IVsHierarchy> BeforeProjectClosed;
 
+        public event Action<IVsCfg, IVsCfg> AfterActiveConfigurationChange;
+        public event Action<IVsHierarchy> StartupProjectChanged;
+
         public SolutionEventsListener(IServiceProvider serviceProvider)
         {
             solution = serviceProvider.GetService(typeof(SVsSolution)) as IVsSolution;
-            if (solution != null)
-            {
-                solution.AdviseSolutionEvents(this, out solutionEventsCookie);
-            }
+            solution?.AdviseSolutionEvents(this, out solutionEventsCookie);
+
+            buildManager = serviceProvider.GetService(typeof(SVsSolutionBuildManager)) as IVsSolutionBuildManager3;
+            buildManager?.AdviseUpdateSolutionEvents3(this, out updateSolutionEventsCookie);
+
+            monitorSelection = serviceProvider.GetService(typeof(IVsMonitorSelection)) as IVsMonitorSelection;
+            monitorSelection?.AdviseSelectionEvents(this, out selectionEventsCoockie);
         }
 
         public int OnBeforeOpenSolution(string pszSolutionFilename)
@@ -55,9 +65,7 @@ namespace SiliconStudio.Paradox.VisualStudio
 
         public int OnAfterBackgroundSolutionLoadComplete()
         {
-            var afterSolutionBackgroundLoadComplete = AfterSolutionBackgroundLoadComplete;
-            if (afterSolutionBackgroundLoadComplete != null)
-                afterSolutionBackgroundLoadComplete();
+            AfterSolutionBackgroundLoadComplete?.Invoke();
             return VSConstants.S_OK;
         }
 
@@ -75,33 +83,26 @@ namespace SiliconStudio.Paradox.VisualStudio
 
         int IVsSolutionEvents.OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
         {
-            var afterProjectOpened = AfterProjectOpened;
-            if (afterProjectOpened != null)
-                afterProjectOpened(pHierarchy);
+            AfterProjectOpened?.Invoke(pHierarchy);
             return VSConstants.S_OK;
         }
 
         int IVsSolutionEvents.OnAfterOpenSolution(object pUnkReserved, int fNewSolution)
         {
-            var afterSolutionLoaded = AfterSolutionLoaded;
-            if (afterSolutionLoaded != null)
-                afterSolutionLoaded();
+            AfterSolutionLoaded?.Invoke();
             return VSConstants.S_OK;
         }
 
         int IVsSolutionEvents.OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved)
         {
             var beforeProjectClosed = BeforeProjectClosed;
-            if (beforeProjectClosed != null)
-                beforeProjectClosed(pHierarchy);
+            beforeProjectClosed?.Invoke(pHierarchy);
             return VSConstants.S_OK;
         }
 
         int IVsSolutionEvents.OnBeforeCloseSolution(object pUnkReserved)
         {
-            var beforeSolutionClosed = BeforeSolutionClosed;
-            if (beforeSolutionClosed != null)
-                beforeSolutionClosed();
+            BeforeSolutionClosed?.Invoke();
             return VSConstants.S_OK;
         }
 
@@ -127,18 +128,62 @@ namespace SiliconStudio.Paradox.VisualStudio
 
         #endregion
 
+        #region IVsUpdateSolutionEvents Members
+
+        int IVsUpdateSolutionEvents3.OnBeforeActiveSolutionCfgChange(IVsCfg pOldActiveSlnCfg, IVsCfg pNewActiveSlnCfg)
+        {
+            return VSConstants.S_OK;
+        }
+
+        int IVsUpdateSolutionEvents3.OnAfterActiveSolutionCfgChange(IVsCfg pOldActiveSlnCfg, IVsCfg pNewActiveSlnCfg)
+        {
+            AfterActiveConfigurationChange?.Invoke(pOldActiveSlnCfg, pNewActiveSlnCfg);
+            return VSConstants.S_OK;
+        }
+
+        #endregion
+
+        #region IVsSelectionEvents Members
+
+        int IVsSelectionEvents.OnSelectionChanged(IVsHierarchy pHierOld, uint itemidOld, IVsMultiItemSelect pMISOld, ISelectionContainer pSCOld, IVsHierarchy pHierNew, uint itemidNew, IVsMultiItemSelect pMISNew, ISelectionContainer pSCNew)
+        {
+            return VSConstants.S_OK;
+        }
+
+        int IVsSelectionEvents.OnElementValueChanged(uint elementid, object varValueOld, object varValueNew)
+        {
+            if (elementid == (uint)VSConstants.VSSELELEMID.SEID_StartupProject)
+            {
+                StartupProjectChanged?.Invoke((IVsHierarchy)varValueNew);
+            }
+
+            return VSConstants.S_OK;
+        }
+
+        int IVsSelectionEvents.OnCmdUIContextChanged(uint dwCmdUICookie, int fActive)
+        {
+            return VSConstants.S_OK;
+        }
+
+        #endregion
+
         #region IDisposable Members
 
         public void Dispose()
         {
             if (solution != null && solutionEventsCookie != 0)
             {
-                GC.SuppressFinalize(this);
                 solution.UnadviseSolutionEvents(solutionEventsCookie);
-                AfterSolutionLoaded = null;
-                BeforeSolutionClosed = null;
-                solutionEventsCookie = 0;
-                solution = null;
+            }
+
+            if (buildManager != null && updateSolutionEventsCookie != 0)
+            {
+                buildManager.UnadviseUpdateSolutionEvents3(updateSolutionEventsCookie);
+            }
+
+            if (monitorSelection != null && selectionEventsCoockie != 0)
+            {
+                monitorSelection.UnadviseSelectionEvents(selectionEventsCoockie);
             }
         }
 

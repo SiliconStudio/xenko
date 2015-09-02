@@ -95,7 +95,10 @@ namespace SiliconStudio.Paradox.Physics
             {
                 if (!data.BoneMatricesUpdated)
                 {
-                    var isScalingNegative = entity.Transform.WorldMatrix.ScaleVector.X * entity.Transform.WorldMatrix.ScaleVector.Y * entity.Transform.WorldMatrix.ScaleVector.Z < 0.0f;
+                    Vector3 position, scaling;
+                    Quaternion rotation;
+                    entity.Transform.WorldMatrix.Decompose(out scaling, out rotation, out position);
+                    var isScalingNegative = scaling.X * scaling.Y * scaling.Z < 0.0f;
                     data.ModelComponent.ModelViewHierarchy.NodeTransformations[0].LocalMatrix = entity.Transform.WorldMatrix;
                     data.ModelComponent.ModelViewHierarchy.NodeTransformations[0].IsScalingNegative = isScalingNegative;
                     data.ModelComponent.ModelViewHierarchy.UpdateMatrices();

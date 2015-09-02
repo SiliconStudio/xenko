@@ -4,6 +4,6 @@ namespace SiliconStudio.Paradox.Input
 {
     public partial class InputManager : InputManagerBase
     {
-
+        private const float G = 9.81f;
     }
 }

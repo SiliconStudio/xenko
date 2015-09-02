@@ -29,14 +29,5 @@ namespace SiliconStudio.Paradox.Assets.Effect
         public EffectShaderAsset()
         {
         }
-
-        /// <summary>
-        /// Loads the shader as a string.
-        /// </summary>
-        /// <returns>Source code shader.</returns>
-        public string LoadShaderAsText()
-        {
-            return File.ReadAllText(AbsoluteSourceLocation);
-        }
     }
 }

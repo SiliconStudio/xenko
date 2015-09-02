@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
     /// <summary>
     /// Test class for <see cref="Sprite"/>
     /// </summary>
-    public class SpriteTests : GraphicsUnitTestBatch
+    public class SpriteTests : GraphicsTestBase
     {
         private const string DefaultName = "toto";
 
@@ -56,11 +56,11 @@ namespace SiliconStudio.Paradox.Engine.Tests
         [Test]
         public void Constructor2Tests()
         {
-            RunDrawTest(() =>
+            RunDrawTest(game =>
             {
                 // texture
                 var textureSize = new Vector2(50, 75);
-                var texture = Texture.New2D(GraphicsDevice, (int)textureSize.X, (int)textureSize.Y, 1, PixelFormat.R8G8B8A8_UNorm);
+                var texture = Texture.New2D(game.GraphicsDevice, (int)textureSize.X, (int)textureSize.Y, 1, PixelFormat.R8G8B8A8_UNorm);
                 var sprite = new Sprite(texture);
                 var sprite2 = new Sprite(texture);
                 Assert.IsNotNull(sprite.Name);
@@ -77,11 +77,11 @@ namespace SiliconStudio.Paradox.Engine.Tests
                 Assert.AreEqual(textureSize, sprite.SizeInPixels);
             });
 
-            RunDrawTest(() =>
+            RunDrawTest(game =>
             {
                 // texture + name
                 var textureSize = new Vector2(50, 75);
-                var texture = Texture.New2D(GraphicsDevice, (int)textureSize.X, (int)textureSize.Y, 1, PixelFormat.R8G8B8A8_UNorm);
+                var texture = Texture.New2D(game.GraphicsDevice, (int)textureSize.X, (int)textureSize.Y, 1, PixelFormat.R8G8B8A8_UNorm);
                 var sprite = new Sprite(DefaultName, texture);
                 Assert.AreEqual(DefaultName, sprite.Name);
                 Assert.AreEqual(ImageOrientation.AsIs, sprite.Orientation);
@@ -97,20 +97,20 @@ namespace SiliconStudio.Paradox.Engine.Tests
             });
         }
 
-        private Sprite CreateSprite()
+        private Sprite CreateSprite(Game game)
         {
             var textureSize = new Vector2(50, 75);
-            var texture = Texture.New2D(GraphicsDevice, (int)textureSize.X, (int)textureSize.Y, 1, PixelFormat.R8G8B8A8_UNorm);
+            var texture = Texture.New2D(game.GraphicsDevice, (int)textureSize.X, (int)textureSize.Y, 1, PixelFormat.R8G8B8A8_UNorm);
             return new Sprite(DefaultName, texture);
         }
 
         [Test]
         public void NamePropertyTests()
         {
-            RunDrawTest(() =>
+            RunDrawTest(game =>
             {
                 const string otherName = "tutu";
-                var sprite = CreateSprite();
+                var sprite = CreateSprite(game);
                 Assert.AreEqual(DefaultName, sprite.Name);
                 sprite.Name = otherName;
                 Assert.AreEqual(otherName, sprite.Name);
@@ -121,9 +121,9 @@ namespace SiliconStudio.Paradox.Engine.Tests
         public void TexturePropertyTests()
         {
             // no checks on texture affectation for the moment.
-            RunDrawTest(() =>
+            RunDrawTest(game =>
             {
-                var sprite = CreateSprite();
+                var sprite = CreateSprite(game);
                 var region = sprite.Region;
                 var center = sprite.Center;
 
@@ -132,7 +132,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
                 Assert.AreEqual(region, sprite.Region);
                 Assert.AreEqual(center, sprite.Center);
 
-                var otherText = Texture.New2D(GraphicsDevice, 10, 20, 1, PixelFormat.R8G8B8A8_UNorm);
+                var otherText = Texture.New2D(game.GraphicsDevice, 10, 20, 1, PixelFormat.R8G8B8A8_UNorm);
                 sprite.Texture = otherText;
                 Assert.AreEqual(otherText, sprite.Texture);
                 Assert.AreEqual(region, sprite.Region);
@@ -144,9 +144,9 @@ namespace SiliconStudio.Paradox.Engine.Tests
         public void CenterPropertyTests()
         {
             // no checks on center affectation for the moment.
-            RunDrawTest(() =>
+            RunDrawTest(game =>
             {
-                var sprite = CreateSprite();
+                var sprite = CreateSprite(game);
                 var textureSize = new Vector2(sprite.Texture.Width, sprite.Texture.Height);
 
                 Assert.AreEqual(textureSize/2, sprite.Center);
@@ -164,9 +164,9 @@ namespace SiliconStudio.Paradox.Engine.Tests
         [Test]
         public void RegionPropertyTests()
         {
-            RunDrawTest(() =>
+            RunDrawTest(game =>
             {
-                var sprite = CreateSprite();
+                var sprite = CreateSprite(game);
                 var textureSize = new Vector2(sprite.Texture.Width, sprite.Texture.Height);
 
                 Assert.AreEqual(new RectangleF(0, 0, textureSize.X, textureSize.Y), sprite.Region);
@@ -192,9 +192,9 @@ namespace SiliconStudio.Paradox.Engine.Tests
         [Test]
         public void OrientationPropertyTests()
         {
-            RunDrawTest(() =>
+            RunDrawTest(game =>
             {
-                var sprite = CreateSprite();
+                var sprite = CreateSprite(game);
                 var sizePixel = sprite.SizeInPixels;
                 var size = sprite.Size;
                 var region = sprite.Region;
@@ -221,9 +221,9 @@ namespace SiliconStudio.Paradox.Engine.Tests
         [Test]
         public void SizePropertyTests()
         {
-            RunDrawTest(() =>
+            RunDrawTest(game =>
             {
-                var sprite = CreateSprite();
+                var sprite = CreateSprite(game);
 
                 var newSize = new Vector2(66, 77);
                 sprite.Region = new RectangleF(1, 2, newSize.X, newSize.Y);
@@ -249,10 +249,10 @@ namespace SiliconStudio.Paradox.Engine.Tests
         [Test]
         public void SizeInPixelPropertyTests()
         {
-            RunDrawTest(() =>
+            RunDrawTest(game =>
             {
                 var sizeChanged = false;
-                var sprite = CreateSprite();
+                var sprite = CreateSprite(game);
                 sprite.SizeChanged += (e, _) => sizeChanged = true;
 
                 var newSize = new Vector2(66, 77);
@@ -277,9 +277,9 @@ namespace SiliconStudio.Paradox.Engine.Tests
         [Test]
         public void CloneMethodTests()
         {
-            RunDrawTest(() =>
+            RunDrawTest(game =>
             {
-                var sprite = CreateSprite();
+                var sprite = CreateSprite(game);
                 sprite.Region = new RectangleF(1,2,3,4);
                 sprite.Name = "toto124";
                 sprite.PixelsPerUnit = new Vector2(123, 1234);

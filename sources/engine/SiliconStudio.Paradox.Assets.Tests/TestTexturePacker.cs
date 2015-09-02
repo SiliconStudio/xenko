@@ -20,9 +20,10 @@ namespace SiliconStudio.Paradox.Assets.Tests
     [TestFixture]
     public class TestTexturePacker
     {
-        private const string ImageOutputPath = "TestTexturePackerOutput/";
-        private const string ImageInputPath = "../../sources/data/tests/TexturePacking/";
-        private const string GoldImagePath = ImageInputPath + "TestGoldImages/";
+        private const string TexturePackerFolder = "SiliconStudio.Paradox.Assets.Tests/" + "TexturePacking/";
+        private const string ImageOutputPath = TexturePackerFolder+"OutputImages/";
+        private const string ImageInputPath = TexturePackerFolder + "IntputImages/";
+        private const string GoldImagePath = TexturePackerFolder + "GoldImages/";
 
         public static void LoadParadoxAssemblies()
         {

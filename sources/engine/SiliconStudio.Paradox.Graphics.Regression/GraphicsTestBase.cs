@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Games;
 
 namespace SiliconStudio.Paradox.Graphics.Regression
@@ -137,7 +138,8 @@ namespace SiliconStudio.Paradox.Graphics.Regression
 
         private Task RegisterTestsInternal()
         {
-            RegisterTests();
+            if(!FrameGameSystem.IsUnityTestFeeding)
+                RegisterTests();
 
             return Task.FromResult(true);
         }
@@ -158,6 +160,20 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             else if (FrameGameSystem.TakeSnapshot)
                 SaveBackBuffer();
         }
+        protected void RunDrawTest(Action<Game> action, bool takeSnapshot = false)
+        {
+            // create the game instance
+            var typeGame = GetType();
+            var game = (GraphicsTestBase)Activator.CreateInstance(typeGame);
+
+            // register the tests.
+            game.FrameGameSystem.IsUnityTestFeeding = true;
+            game.FrameGameSystem.Draw(() => action(game));
+            if (takeSnapshot)
+                game.FrameGameSystem.TakeScreenshot();
+
+            RunGameTest(game);
+        }
 
         /// <summary>
         /// Method to register the tests.
@@ -174,7 +190,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
 
             GameTester.RunGameTest(game);
 
-            if (game.ScreenShotAutomationEnabled && !game.FrameGameSystem.IsUnityTestFeeding)
+            if (game.ScreenShotAutomationEnabled)
                 Assert.IsTrue(ImageTester.RequestImageComparisonStatus(game.CurrentTestContext.Test.FullName), "The image comparison returned false.");
         }
 

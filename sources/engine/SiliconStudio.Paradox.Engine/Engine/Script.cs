@@ -11,6 +11,8 @@ namespace SiliconStudio.Paradox.Engine
     [DataContract("Script", Inherited = true)]
     public abstract class Script : ScriptContext
     {
+        public const uint LiveScriptingMask = 128;
+
         [DataMemberIgnore]
         internal ScriptComponent ScriptComponent;
         [DataMemberIgnore]

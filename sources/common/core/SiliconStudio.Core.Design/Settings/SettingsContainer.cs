@@ -35,6 +35,7 @@ namespace SiliconStudio.Core.Settings
         /// </summary>
         private readonly List<SettingsProfile> profileList = new List<SettingsProfile>();
 
+        internal static readonly object SettingsLock = new object();
         /// <summary>
         /// The settings profile that is currently active.
         /// </summary>
@@ -51,12 +52,12 @@ namespace SiliconStudio.Core.Settings
         /// <summary>
         /// Gets the logger associated to the <see cref="SettingsContainer"/>.
         /// </summary>
-        public LoggerResult Logger { get; private set; }
+        public LoggerResult Logger { get; }
 
         /// <summary>
         /// Gets the root profile of this settings container.
         /// </summary>
-        public SettingsProfile RootProfile { get { return rootProfile; } }
+        public SettingsProfile RootProfile => rootProfile;
 
         /// <summary>
         /// Gets or sets the <see cref="SettingsProfile"/> that is currently active.
@@ -66,7 +67,7 @@ namespace SiliconStudio.Core.Settings
         /// <summary>
         /// Gets the list of registered profiles.
         /// </summary>
-        public IEnumerable<SettingsProfile> Profiles { get { return profileList; } }
+        public IEnumerable<SettingsProfile> Profiles => profileList;
 
         /// <summary>
         /// Raised when a settings file has been loaded.
@@ -91,10 +92,12 @@ namespace SiliconStudio.Core.Settings
         public SettingsProfile CreateSettingsProfile(bool setAsCurrent, SettingsProfile parent = null)
         {
             var profile = new SettingsProfile(this, parent ?? rootProfile);
-            profileList.Add(profile);
-            if (setAsCurrent)
-                CurrentProfile = profile;
-
+            lock (SettingsLock)
+            {
+                profileList.Add(profile);
+                if (setAsCurrent)
+                    CurrentProfile = profile;
+            }
             return profile;
         }
 
@@ -107,7 +110,7 @@ namespace SiliconStudio.Core.Settings
         /// <returns><c>true</c> if settings were correctly loaded, <c>false</c> otherwise.</returns>
         public SettingsProfile LoadSettingsProfile(UFile filePath, bool setAsCurrent, SettingsProfile parent = null)
         {
-            if (filePath == null) throw new ArgumentNullException("filePath");
+            if (filePath == null) throw new ArgumentNullException(nameof(filePath));
 
             if (!File.Exists(filePath))
             {
@@ -130,17 +133,17 @@ namespace SiliconStudio.Core.Settings
                 return null;
             }
 
-            profileList.Add(profile);
-            if (setAsCurrent)
+            lock (SettingsLock)
             {
-                CurrentProfile = profile;
+                profileList.Add(profile);
+                if (setAsCurrent)
+                {
+                    CurrentProfile = profile;
+                }
             }
             
             var handler = SettingsFileLoaded;
-            if (handler != null)
-            {
-                SettingsFileLoaded(null, new SettingsFileLoadedEventArgs(filePath));
-            }
+            handler?.Invoke(null, new SettingsFileLoadedEventArgs(filePath));
             return profile;
         }
 
@@ -172,10 +175,7 @@ namespace SiliconStudio.Core.Settings
             }
 
             var handler = SettingsFileLoaded;
-            if (handler != null)
-            {
-                SettingsFileLoaded(null, new SettingsFileLoadedEventArgs(filePath));
-            }
+            handler?.Invoke(null, new SettingsFileLoadedEventArgs(filePath));
         }
 
         /// <summary>
@@ -188,7 +188,10 @@ namespace SiliconStudio.Core.Settings
                 throw new ArgumentException("The default profile cannot be unloaded");
             if (profile == CurrentProfile)
                 throw new InvalidOperationException("Unable to unload the current profile.");
-            profileList.Remove(profile);
+            lock (SettingsLock)
+            {
+                profileList.Remove(profile);
+            }
         }
 
         /// <summary>
@@ -199,7 +202,7 @@ namespace SiliconStudio.Core.Settings
         /// <returns><c>true</c> if the file was correctly saved, <c>false</c> otherwise.</returns>
         public bool SaveSettingsProfile(SettingsProfile profile, UFile filePath)
         {
-            if (profile == null) throw new ArgumentNullException("profile");
+            if (profile == null) throw new ArgumentNullException(nameof(profile));
             try
             {
                 profile.Saving = true;
@@ -225,7 +228,7 @@ namespace SiliconStudio.Core.Settings
 
         internal void EncodeSettings(SettingsProfile profile, SettingsDictionary settingsDictionary)
         {
-            lock (profile.Settings)
+            lock (SettingsLock)
             {
                 foreach (var entry in profile.Settings.Values)
                 {
@@ -246,7 +249,7 @@ namespace SiliconStudio.Core.Settings
 
         internal void DecodeSettings(SettingsDictionary settingsDictionary, SettingsProfile profile)
         {
-            lock (profile.Settings)
+            lock (SettingsLock)
             {
                 foreach (var settings in settingsDictionary)
                 {
@@ -269,9 +272,12 @@ namespace SiliconStudio.Core.Settings
         /// <returns>The settings key that matches the given name, or <c>null</c>.</returns>
         public SettingsKey GetSettingsKey(UFile name)
         {
-            SettingsKey key;
-            settingsKeys.TryGetValue(name, out key);
-            return key;
+            lock (SettingsLock)
+            {
+                SettingsKey key;
+                settingsKeys.TryGetValue(name, out key);
+                return key;
+            }
         }
 
         /// <summary>
@@ -279,7 +285,7 @@ namespace SiliconStudio.Core.Settings
         /// </summary>
         public void ClearSettings()
         {
-            lock (rootProfile.Settings)
+            lock (SettingsLock)
             {
                 CurrentProfile = rootProfile;
                 CurrentProfile.ValidateSettingsChanges();
@@ -288,17 +294,17 @@ namespace SiliconStudio.Core.Settings
                 settingsKeys.Clear();
             }
         }
-        
+
         internal void RegisterSettingsKey(UFile name, object defaultValue, SettingsKey settingsKey)
         {
-            settingsKeys.Add(name, settingsKey);
-            var entry = SettingsEntry.CreateFromValue(rootProfile, name, defaultValue);
-            rootProfile.RegisterEntry(entry);
-       
-            // Ensure that the value is converted to the key type in each loaded profile.
-            foreach (var profile in Profiles.Where(x => x != rootProfile))
+            lock (SettingsLock)
             {
-                lock (profile.Settings)
+                settingsKeys.Add(name, settingsKey);
+                var entry = SettingsEntry.CreateFromValue(rootProfile, name, defaultValue);
+                rootProfile.RegisterEntry(entry);
+
+                // Ensure that the value is converted to the key type in each loaded profile.
+                foreach (var profile in Profiles.Where(x => x != rootProfile))
                 {
                     if (profile.Settings.TryGetValue(name, out entry))
                     {
@@ -317,32 +323,35 @@ namespace SiliconStudio.Core.Settings
             if (newProfile == null) throw new ArgumentNullException("newProfile");
             currentProfile = newProfile;
 
-            foreach (var key in settingsKeys)
+            lock (SettingsLock)
             {
-                object oldValue;
-                oldProfile.GetValue(key.Key, out oldValue, true, false);
-                object newValue;
-                newProfile.GetValue(key.Key, out newValue, true, false);
-                var oldList = oldValue as IList;
-                var newList = newValue as IList;
+                foreach (var key in settingsKeys)
+                {
+                    object oldValue;
+                    oldProfile.GetValue(key.Key, out oldValue, true, false);
+                    object newValue;
+                    newProfile.GetValue(key.Key, out newValue, true, false);
+                    var oldList = oldValue as IList;
+                    var newList = newValue as IList;
 
-                bool isDifferent;
-                if (oldList != null && newList != null)
-                {
-                    isDifferent = oldList.Count != newList.Count;
-                    for (int i = 0; i < oldList.Count && !isDifferent; ++i)
+                    bool isDifferent;
+                    if (oldList != null && newList != null)
                     {
-                        if (!Equals(oldList[i], newList[i]))
-                            isDifferent = true;
+                        isDifferent = oldList.Count != newList.Count;
+                        for (int i = 0; i < oldList.Count && !isDifferent; ++i)
+                        {
+                            if (!Equals(oldList[i], newList[i]))
+                                isDifferent = true;
+                        }
                     }
-                }
-                else
-                {
-                    isDifferent = !Equals(oldValue, newValue);
-                }
-                if (isDifferent)
-                {
-                    newProfile.NotifyEntryChanged(key.Key);
+                    else
+                    {
+                        isDifferent = !Equals(oldValue, newValue);
+                    }
+                    if (isDifferent)
+                    {
+                        newProfile.NotifyEntryChanged(key.Key);
+                    }
                 }
             }
 

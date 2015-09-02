@@ -17,6 +17,11 @@ namespace SiliconStudio.Assets
     [DataContract("SourceCodeAsset")]
     public abstract class SourceCodeAsset : Asset
     {
+        private string text;
+
+        protected SourceCodeAsset()
+        {
+        }
         /// <summary>
         /// Gets or sets the absolute source location of this asset on the disk.
         /// </summary>
@@ -25,18 +30,57 @@ namespace SiliconStudio.Assets
         public string AbsoluteSourceLocation { get; set; }
 
         /// <summary>
-        /// Loads the underlying content located at <see cref="AbsoluteSourceLocation"/> if necessary.
+        /// Gets the sourcecode text.
         /// </summary>
-        public virtual void Load()
+        /// <value>The sourcecode text.</value>
+        [DataMemberIgnore]
+        public string Text
         {
+            get
+            {
+                return text ?? (text = Load()); // Lazy loading
+            }
+            set
+            {
+                text = value;
+            }
         }
 
         /// <summary>
         /// Saves the underlying content located at <see cref="AbsoluteSourceLocation"/> if necessary.
         /// </summary>
         /// <param name="stream"></param>
-        public virtual void Save(Stream stream)
+        public void Save(Stream stream)
         {
+            // If the text was not loaded in memory, just copy the stream from input to output
+            if (text == null)
+            {
+                if (!string.IsNullOrEmpty(AbsoluteSourceLocation) && File.Exists(AbsoluteSourceLocation))
+                {
+                    using (var inputStream = new FileStream(AbsoluteSourceLocation, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    {
+                        inputStream.CopyTo(stream);
+                    }
+                }
+            }
+            else
+            { 
+                // Otherwise save the text direcly
+                var buffer = Encoding.UTF8.GetBytes(Text);
+                stream.Write(buffer, 0, buffer.Length);
+            }
+        }
+
+        /// <summary>
+        /// Loads the underlying content located at <see cref="AbsoluteSourceLocation"/> if necessary.
+        /// </summary>
+        private string Load()
+        {
+            if (!string.IsNullOrEmpty(AbsoluteSourceLocation) && File.Exists(AbsoluteSourceLocation))
+            {
+                return File.ReadAllText(AbsoluteSourceLocation);
+            }
+            return null;
         }
 
         /// <summary>
