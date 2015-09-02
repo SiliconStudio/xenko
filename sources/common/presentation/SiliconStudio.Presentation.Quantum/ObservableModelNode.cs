@@ -297,7 +297,9 @@ namespace SiliconStudio.Presentation.Quantum
                     // while holding an enumerable reference.
                     //if (modelNode.Content.ShouldProcessReference || ModelNodeParent.sourceNode != modelNode)
                     {
-                        foreach (var reference in referenceEnumerable)
+                        // Note: we are making a copy of the reference list because it can be updated from the Initialize method of the
+                        // observable node in the case of scene objects. Doing this is a hack, but parts of this framework will be redesigned later to improve this
+                        foreach (var reference in referenceEnumerable.ToList())
                         {
                             // The type might be a boxed primitive type, such as float, if the collection has object as generic argument.
                             // In this case, we must set the actual type to have type converter working, since they usually can't convert

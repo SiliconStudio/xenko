@@ -43,7 +43,7 @@
     <SiliconStudioCompilerTargetsEnable Condition=" '$(SiliconStudioPlatform)' != 'Windows' and $(SiliconStudioWindowsOnly) == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(GenerateDoc)' == 'true' ">
+  <PropertyGroup Condition=" '$(SiliconStudioGenerateDoc)' == 'true' ">
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
 
@@ -63,6 +63,7 @@
       <SiliconStudioAssemblyProcessorOptions>--platform=$(SiliconStudioPlatform) --targetFramework=$(TargetFrameworkVersion) $(SiliconStudioAssemblyProcessorOptions)</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --references-file="$(IntermediateOutputPath)ParadoxReferences.cache"</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorOptions Condition="'$(AssemblyOriginatorKeyFile)' != ''">$(SiliconStudioAssemblyProcessorOptions) --signkeyfile="$(AssemblyOriginatorKeyFile)"</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions Condition="'$(DocumentationFile)' != ''">$(SiliconStudioAssemblyProcessorOptions) --docfile="$(DocumentationFile)"</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --Werror</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorCommand>"$(SiliconStudioAssemblyProcessorPath)" $(SiliconStudioAssemblyProcessorOptions) "$(IntermediateOutputPath)$(TargetName)$(TargetExt)" --delete-output-on-error</SiliconStudioAssemblyProcessorCommand>
     </PropertyGroup>

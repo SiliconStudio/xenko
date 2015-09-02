@@ -40,7 +40,7 @@ namespace SiliconStudio.AssemblyProcessor
 
         public bool SerializationAssembly { get; set; }
 
-        public bool GenerateUserDocumentation { get; set; }
+        public string DocumentationFile { get; set; }
 
         public string NewAssemblyName { get; set; }
 
@@ -169,9 +169,9 @@ namespace SiliconStudio.AssemblyProcessor
                     processors.Add(new SerializationProcessor(SignKeyFile, References, MemoryReferences, log));
                 }
 
-                if (GenerateUserDocumentation)
+                if (DocumentationFile != null)
                 {
-                    processors.Add(new GenerateUserDocumentationProcessor(assemblyDefinition.MainModule.FullyQualifiedName));
+                    processors.Add(new GenerateUserDocumentationProcessor(DocumentationFile));
                 }
 
                 if (ModuleInitializer)

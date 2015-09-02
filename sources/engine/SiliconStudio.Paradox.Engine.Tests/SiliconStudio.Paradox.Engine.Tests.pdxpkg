@@ -1,5 +1,6 @@
 !Package
 Id: c6c57562-42df-42ad-be2d-8d5889211366
+SerializedVersion: 1
 Tags: []
 Meta:
     Name: SiliconStudio.Paradox.Engine.Tests
@@ -16,7 +17,6 @@ Profiles:
         InheritProfiles: []
         AssetFolders:
             -   Path: GameAssets
-                RawImports: []
         OutputGroupDirectories: {}
         Properties: {}
         ProjectReferences:
@@ -28,7 +28,6 @@ Profiles:
         InheritProfiles: []
         AssetFolders:
             -   Path: Assets/Windows
-                RawImports: []
         OutputGroupDirectories: {}
         Properties: {}
         ProjectReferences:
@@ -40,7 +39,6 @@ Profiles:
         InheritProfiles: []
         AssetFolders:
             -   Path: Assets/Android
-                RawImports: []
         OutputGroupDirectories: {}
         Properties: {}
         ProjectReferences:
@@ -52,7 +50,6 @@ Profiles:
         InheritProfiles: []
         AssetFolders:
             -   Path: Assets/iPhone
-                RawImports: []
         OutputGroupDirectories: {}
         Properties: {}
         ProjectReferences:

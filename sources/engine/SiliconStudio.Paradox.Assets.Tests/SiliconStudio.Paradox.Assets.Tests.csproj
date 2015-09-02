@@ -184,6 +184,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>false</Visible>
     </Content>
+    <Content Include="..\..\data\tests\TexturePacking\*.*">
+      <Link>$(AssemblyName)\TexturePacking\IntputImages\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\data\tests\TexturePacking\TestGoldImages\*.*">
+      <Link>$(AssemblyName)\TexturePacking\GoldImages\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="app_data\SiliconStudio.Paradox.Assets.Tests\Logo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

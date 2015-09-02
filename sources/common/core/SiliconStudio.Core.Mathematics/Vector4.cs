@@ -30,6 +30,7 @@ using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace SiliconStudio.Core.Mathematics
 {
@@ -224,6 +225,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <see cref="SiliconStudio.Core.Mathematics.Vector4.LengthSquared"/> may be preferred when only the relative length is needed
         /// and speed is of the essence.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float Length()
         {
             return (float)Math.Sqrt((X * X) + (Y * Y) + (Z * Z) + (W * W));
@@ -237,6 +239,7 @@ namespace SiliconStudio.Core.Mathematics
         /// This method may be preferred to <see cref="SiliconStudio.Core.Mathematics.Vector4.Length"/> when only a relative length is needed
         /// and speed is of the essence.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float LengthSquared()
         {
             return (X * X) + (Y * Y) + (Z * Z) + (W * W);
@@ -245,6 +248,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// Converts the vector into a unit vector.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Normalize()
         {
             float length = Length();
@@ -285,6 +289,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">The first vector to add.</param>
         /// <param name="right">The second vector to add.</param>
         /// <param name="result">When the method completes, contains the sum of the two vectors.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Add(ref Vector4 left, ref Vector4 right, out Vector4 result)
         {
             result = new Vector4(left.X + right.X, left.Y + right.Y, left.Z + right.Z, left.W + right.W);
@@ -296,6 +301,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">The first vector to add.</param>
         /// <param name="right">The second vector to add.</param>
         /// <returns>The sum of the two vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Add(Vector4 left, Vector4 right)
         {
             return new Vector4(left.X + right.X, left.Y + right.Y, left.Z + right.Z, left.W + right.W);
@@ -307,6 +313,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">The first vector to subtract.</param>
         /// <param name="right">The second vector to subtract.</param>
         /// <param name="result">When the method completes, contains the difference of the two vectors.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Subtract(ref Vector4 left, ref Vector4 right, out Vector4 result)
         {
             result = new Vector4(left.X - right.X, left.Y - right.Y, left.Z - right.Z, left.W - right.W);
@@ -318,6 +325,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">The first vector to subtract.</param>
         /// <param name="right">The second vector to subtract.</param>
         /// <returns>The difference of the two vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Subtract(Vector4 left, Vector4 right)
         {
             return new Vector4(left.X - right.X, left.Y - right.Y, left.Z - right.Z, left.W - right.W);
@@ -329,6 +337,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="value">The vector to scale.</param>
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <param name="result">When the method completes, contains the scaled vector.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Multiply(ref Vector4 value, float scale, out Vector4 result)
         {
             result = new Vector4(value.X * scale, value.Y * scale, value.Z * scale, value.W * scale);
@@ -340,6 +349,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="value">The vector to scale.</param>
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <returns>The scaled vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Multiply(Vector4 value, float scale)
         {
             return new Vector4(value.X * scale, value.Y * scale, value.Z * scale, value.W * scale);
@@ -351,6 +361,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">The first vector to modulate.</param>
         /// <param name="right">The second vector to modulate.</param>
         /// <param name="result">When the method completes, contains the modulated vector.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Modulate(ref Vector4 left, ref Vector4 right, out Vector4 result)
         {
             result = new Vector4(left.X * right.X, left.Y * right.Y, left.Z * right.Z, left.W * right.W);
@@ -362,6 +373,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">The first vector to modulate.</param>
         /// <param name="right">The second vector to modulate.</param>
         /// <returns>The modulated vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Modulate(Vector4 left, Vector4 right)
         {
             return new Vector4(left.X * right.X, left.Y * right.Y, left.Z * right.Z, left.W * right.W);
@@ -373,6 +385,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="value">The vector to scale.</param>
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <param name="result">When the method completes, contains the scaled vector.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Divide(ref Vector4 value, float scale, out Vector4 result)
         {
             result = new Vector4(value.X / scale, value.Y / scale, value.Z / scale, value.W / scale);
@@ -384,6 +397,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="value">The vector to scale.</param>
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <returns>The scaled vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Divide(Vector4 value, float scale)
         {
             return new Vector4(value.X / scale, value.Y / scale, value.Z / scale, value.W / scale);
@@ -395,6 +409,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">The first vector to demodulate.</param>
         /// <param name="right">The second vector to demodulate.</param>
         /// <param name="result">When the method completes, contains the demodulated vector.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Demodulate(ref Vector4 left, ref Vector4 right, out Vector4 result)
         {
             result = new Vector4(left.X / right.X, left.Y / right.Y, left.Z / right.Z, left.W / right.W);
@@ -406,6 +421,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">The first vector to demodulate.</param>
         /// <param name="right">The second vector to demodulate.</param>
         /// <returns>The demodulated vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Demodulate(Vector4 left, Vector4 right)
         {
             return new Vector4(left.X / right.X, left.Y / right.Y, left.Z / right.Z, left.W / right.W);
@@ -416,6 +432,7 @@ namespace SiliconStudio.Core.Mathematics
         /// </summary>
         /// <param name="value">The vector to negate.</param>
         /// <param name="result">When the method completes, contains a vector facing in the opposite direction.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Negate(ref Vector4 value, out Vector4 result)
         {
             result = new Vector4(-value.X, -value.Y, -value.Z, -value.W);
@@ -426,6 +443,7 @@ namespace SiliconStudio.Core.Mathematics
         /// </summary>
         /// <param name="value">The vector to negate.</param>
         /// <returns>A vector facing in the opposite direction.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Negate(Vector4 value)
         {
             return new Vector4(-value.X, -value.Y, -value.Z, -value.W);
@@ -598,6 +616,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">First source vector</param>
         /// <param name="right">Second source vector.</param>
         /// <param name="result">When the method completes, contains the dot product of the two vectors.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Dot(ref Vector4 left, ref Vector4 right, out float result)
         {
             result = (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W);
@@ -609,6 +628,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">First source vector.</param>
         /// <param name="right">Second source vector.</param>
         /// <returns>The dot product of the two vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Dot(Vector4 left, Vector4 right)
         {
             return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W);
@@ -619,6 +639,7 @@ namespace SiliconStudio.Core.Mathematics
         /// </summary>
         /// <param name="value">The vector to normalize.</param>
         /// <param name="result">When the method completes, contains the normalized vector.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Normalize(ref Vector4 value, out Vector4 result)
         {
             Vector4 temp = value;
@@ -631,6 +652,7 @@ namespace SiliconStudio.Core.Mathematics
         /// </summary>
         /// <param name="value">The vector to normalize.</param>
         /// <returns>The normalized vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Normalize(Vector4 value)
         {
             value.Normalize();
@@ -790,6 +812,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">The first source vector.</param>
         /// <param name="right">The second source vector.</param>
         /// <param name="result">When the method completes, contains an new vector composed of the largest components of the source vectors.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Max(ref Vector4 left, ref Vector4 right, out Vector4 result)
         {
             result.X = (left.X > right.X) ? left.X : right.X;
@@ -804,6 +827,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">The first source vector.</param>
         /// <param name="right">The second source vector.</param>
         /// <returns>A vector containing the largest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Max(Vector4 left, Vector4 right)
         {
             Vector4 result;
@@ -817,6 +841,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">The first source vector.</param>
         /// <param name="right">The second source vector.</param>
         /// <param name="result">When the method completes, contains an new vector composed of the smallest components of the source vectors.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Min(ref Vector4 left, ref Vector4 right, out Vector4 result)
         {
             result.X = (left.X < right.X) ? left.X : right.X;
@@ -831,6 +856,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">The first source vector.</param>
         /// <param name="right">The second source vector.</param>
         /// <returns>A vector containing the smallest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Min(Vector4 left, Vector4 right)
         {
             Vector4 result;
@@ -1081,6 +1107,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">The first vector to add.</param>
         /// <param name="right">The second vector to add.</param>
         /// <returns>The sum of the two vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 operator +(Vector4 left, Vector4 right)
         {
             return new Vector4(left.X + right.X, left.Y + right.Y, left.Z + right.Z, left.W + right.W);
@@ -1091,6 +1118,7 @@ namespace SiliconStudio.Core.Mathematics
         /// </summary>
         /// <param name="value">The vector to assert (unchange).</param>
         /// <returns>The asserted (unchanged) vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 operator +(Vector4 value)
         {
             return value;
@@ -1102,6 +1130,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">The first vector to subtract.</param>
         /// <param name="right">The second vector to subtract.</param>
         /// <returns>The difference of the two vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 operator -(Vector4 left, Vector4 right)
         {
             return new Vector4(left.X - right.X, left.Y - right.Y, left.Z - right.Z, left.W - right.W);
@@ -1112,6 +1141,7 @@ namespace SiliconStudio.Core.Mathematics
         /// </summary>
         /// <param name="value">The vector to negate.</param>
         /// <returns>A vector facing in the opposite direction.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 operator -(Vector4 value)
         {
             return new Vector4(-value.X, -value.Y, -value.Z, -value.W);
@@ -1123,6 +1153,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="value">The vector to scale.</param>
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <returns>The scaled vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 operator *(float scale, Vector4 value)
         {
             return new Vector4(value.X * scale, value.Y * scale, value.Z * scale, value.W * scale);
@@ -1134,9 +1165,22 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="value">The vector to scale.</param>
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <returns>The scaled vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 operator *(Vector4 value, float scale)
         {
             return new Vector4(value.X * scale, value.Y * scale, value.Z * scale, value.W * scale);
+        }
+
+        /// <summary>
+        /// Modulates a vector with another by performing component-wise multiplication.
+        /// </summary>
+        /// <param name="left">The first vector to multiply.</param>
+        /// <param name="right">The second vector to multiply.</param>
+        /// <returns>The multiplication of the two vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 operator *(Vector4 left, Vector4 right)
+        {
+            return new Vector4(left.X * right.X, left.Y * right.Y, left.Z * right.Z, left.W * right.W);
         }
 
         /// <summary>
@@ -1145,9 +1189,34 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="value">The vector to scale.</param>
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <returns>The scaled vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 operator /(Vector4 value, float scale)
         {
             return new Vector4(value.X / scale, value.Y / scale, value.Z / scale, value.W / scale);
+        }
+
+        /// <summary>
+        /// Divides a numerator by a vector.
+        /// </summary>
+        /// <param name="numerator">The numerator.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>The scaled vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 operator /(float numerator, Vector4 value)
+        {
+            return new Vector4(numerator / value.X, numerator / value.Y, numerator / value.Z, numerator / value.W);
+        }
+
+        /// <summary>
+        /// Divides a vector by the given vector, component-wise.
+        /// </summary>
+        /// <param name="value">The vector to scale.</param>
+        /// <param name="by">The by.</param>
+        /// <returns>The scaled vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 operator /(Vector4 value, Vector4 by)
+        {
+            return new Vector4(value.X / by.X, value.Y / by.Y, value.Z / by.Z, value.W / by.W);
         }
 
         /// <summary>

@@ -16,7 +16,7 @@ using SiliconStudio.Shaders.Utility;
 
 namespace SiliconStudio.Paradox.Assets.Materials
 {
-    public static class ComputeShaderBaseExtensions
+    public static class ComputeShaderClassBaseExtensions
     {
         /// <summary>
         /// Load the shader and extract the information.

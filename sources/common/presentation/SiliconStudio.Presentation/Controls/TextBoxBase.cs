@@ -317,7 +317,7 @@ namespace SiliconStudio.Presentation.Controls
 
         protected override void OnLostKeyboardFocus(KeyboardFocusChangedEventArgs e)
         {
-            if (ValidateOnLostFocus)
+            if (ValidateOnLostFocus && !validating)
             {
                 Validate();
             }
