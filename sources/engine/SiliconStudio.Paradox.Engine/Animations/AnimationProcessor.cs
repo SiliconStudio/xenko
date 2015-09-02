@@ -134,12 +134,6 @@ namespace SiliconStudio.Paradox.Animations
                     if (modelViewHierarchy != null)
                         meshAnimation.Update(modelViewHierarchy, associatedData.AnimationClipResult);
                 }
-                else
-                {
-                    // If nothing is playing, reset to bind pose
-                    if (modelViewHierarchy != null)
-                        modelViewHierarchy.ResetInitialValues();
-                }
 
                 // Update weight animation
                 for (int index = 0; index < animationComponent.PlayingAnimations.Count; index++)
