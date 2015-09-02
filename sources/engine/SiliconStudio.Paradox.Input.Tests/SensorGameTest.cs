@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core;
@@ -42,19 +43,30 @@ namespace SiliconStudio.Paradox.Input.Tests
             Gyroscope,
             Compass
         }
+        private Dictionary<DebugScenes, Color> sceneToColor = new Dictionary<DebugScenes, Color>
+        {
+            { DebugScenes.UserAccel, Color.Blue},
+            { DebugScenes.Gravity, Color.Green },
+            { DebugScenes.RawAccel, Color.Yellow },
+            { DebugScenes.Compass, Color.Red}
+        };
         private DebugScenes currentScene;
 
         private TextBlock currentText;
         private Entity entity;
+        private Entity entity2;
+        private Entity entity3;
         private SpriteComponent spriteComponent;
         private ModelComponent modelComponent;
+        private ModelComponent modelComponent2;
+        private ModelComponent modelComponent3;
         private Model teapot;
 
         public SensorGameTest()
         {
             CurrentVersion = 1;
             AutoLoadDefaultSettings = true;
-            GraphicsDeviceManager.PreferredGraphicsProfile = new [] { GraphicsProfile.Level_11_0, };
+            GraphicsDeviceManager.PreferredGraphicsProfile = new [] { GraphicsProfile.Level_9_1, };
         }
 
         protected override async Task LoadContent()
@@ -67,10 +79,16 @@ namespace SiliconStudio.Paradox.Input.Tests
 
             BuildUI();
 
-            spriteComponent = new SpriteComponent { SpriteProvider = new SpriteFromSheet { Sheet = Asset.Load<SpriteSheet>("SpriteSheet")} };
-            modelComponent = new ModelComponent();
+            spriteComponent = new SpriteComponent { SpriteProvider = new SpriteFromSheet { Sheet = Asset.Load<SpriteSheet>("SpriteSheet") } };
+            modelComponent = new ModelComponent { Model = teapot };
+            modelComponent2 = new ModelComponent { Model = teapot };
+            modelComponent3 = new ModelComponent { Model = teapot };
             entity = new Entity { spriteComponent, modelComponent };
+            entity2 = new Entity { modelComponent2 };
+            entity3 = new Entity { modelComponent3 };
             SceneSystem.SceneInstance.Scene.Entities.Add(entity);
+            SceneSystem.SceneInstance.Scene.Entities.Add(entity2);
+            SceneSystem.SceneInstance.Scene.Entities.Add(entity3);
 
             if (Input.Accelerometer.IsSupported)
                 Input.Accelerometer.IsEnabled = true;
@@ -95,14 +113,15 @@ namespace SiliconStudio.Paradox.Input.Tests
 
         private void BuildUI()
         {
-            var bufferSize = new Vector2(GraphicsDevice.Presenter.BackBuffer.Width, GraphicsDevice.Presenter.BackBuffer.Height);
-            var ui = new UIComponent { VirtualResolution = new Vector3(bufferSize, 500) };
+            var width = 400;
+            var bufferRatio = GraphicsDevice.Presenter.BackBuffer.Width / (float)GraphicsDevice.Presenter.BackBuffer.Height;
+            var ui = new UIComponent { VirtualResolution = new Vector3(width, width / bufferRatio, 500) };
             SceneSystem.SceneInstance.Scene.Entities.Add(new Entity { ui });
-            
-            currentText = new TextBlock { Font = font, TextColor = Color.White, VerticalAlignment = VerticalAlignment.Bottom, HorizontalAlignment = HorizontalAlignment.Center};
 
-            var buttonBack = new Button { Content = new TextBlock { Font = font, Text = "Previous" }, VerticalAlignment = VerticalAlignment.Bottom, HorizontalAlignment = HorizontalAlignment.Left};
-            var buttonNext = new Button { Content = new TextBlock { Font = font, Text = "Next" }, VerticalAlignment = VerticalAlignment.Bottom, HorizontalAlignment = HorizontalAlignment.Right};
+            currentText = new TextBlock { Font = font, TextColor = Color.White, VerticalAlignment = VerticalAlignment.Bottom, HorizontalAlignment = HorizontalAlignment.Center };
+
+            var buttonBack = new Button { Content = new TextBlock { Font = font, Text = "Previous" }, VerticalAlignment = VerticalAlignment.Bottom, HorizontalAlignment = HorizontalAlignment.Left };
+            var buttonNext = new Button { Content = new TextBlock { Font = font, Text = "Next" }, VerticalAlignment = VerticalAlignment.Bottom, HorizontalAlignment = HorizontalAlignment.Right };
 
             currentText.SetGridColumn(1);
             buttonNext.SetGridColumn(2);
@@ -122,20 +141,39 @@ namespace SiliconStudio.Paradox.Input.Tests
 
             spriteComponent.Enabled = false;
             modelComponent.Enabled = false;
+            modelComponent2.Enabled = false;
+            modelComponent3.Enabled = false;
+            entity.Transform.Scale = new Vector3(1);
+            entity.Transform.Position = new Vector3(0);
+            entity.Transform.Rotation = Quaternion.Identity;
+            entity.Transform.LocalMatrix = Matrix.Identity;
+            entity.Transform.UseTRS = true;
+            entity2.Transform.UseTRS = false;
 
             switch (currentScene)
             {
                 case DebugScenes.Orientation:
+                    entity.Transform.Position = new Vector3(0, 0, -0.6f);
+                    entity3.Transform.Position = new Vector3(0, 0, 0.6f);
+                    entity.Transform.Scale = new Vector3(0.5f);
+                    entity3.Transform.Scale = new Vector3(0.5f);
                     modelComponent.Enabled = true;
+                    modelComponent2.Enabled = true;
+                    modelComponent3.Enabled = true;
                     modelComponent.Model = teapot;
                     break;
                 case DebugScenes.UserAccel:
-                    break;
                 case DebugScenes.Gravity:
-                    break;
                 case DebugScenes.RawAccel:
+                    entity.Transform.UseTRS = false;
+                    spriteComponent.Enabled = true;
+                    spriteComponent.Color = sceneToColor[currentScene];
+                    spriteComponent.CurrentFrame = 0;
                     break;
                 case DebugScenes.Gyroscope:
+                    entity.Transform.Scale = new Vector3(0.5f);
+                    modelComponent.Enabled = true;
+                    modelComponent.Model = teapot;
                     break;
                 case DebugScenes.Compass:
                     spriteComponent.Enabled = true;
@@ -151,21 +189,58 @@ namespace SiliconStudio.Paradox.Input.Tests
         {
             base.Update(gameTime);
 
+            var vector = Vector3.Zero;
             switch (currentScene)
             {
                 case DebugScenes.Orientation:
-                    entity.Transform.Rotation = -Input.Orientation.Quaternion;
                     break;
                 case DebugScenes.UserAccel:
+                    vector = Input.UserAcceleration.Acceleration;
                     break;
                 case DebugScenes.Gravity:
+                    vector = Input.Gravity.Vector;
                     break;
                 case DebugScenes.RawAccel:
+                    vector = Input.Accelerometer.Acceleration;
                     break;
                 case DebugScenes.Gyroscope:
+                    vector = Input.Gyroscope.RotationRate;
                     break;
                 case DebugScenes.Compass:
-                    entity.Transform.RotationEulerXYZ = new Vector3(0, 0, Input.Compass.Heading);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            switch (currentScene)
+            {
+                case DebugScenes.Orientation:
+                    entity.Transform.Rotation = Quaternion.Invert(Input.Orientation.Quaternion);
+                    entity2.Transform.LocalMatrix = Matrix.Scaling(0.5f) * Matrix.Invert(Input.Orientation.RotationMatrix);
+                    entity3.Transform.Rotation = Quaternion.Invert(Quaternion.RotationYawPitchRoll(Input.Orientation.Yaw, Input.Orientation.Pitch, Input.Orientation.Roll));
+                    break;
+                case DebugScenes.UserAccel:
+                case DebugScenes.Gravity:
+                case DebugScenes.RawAccel:
+                    var vectorStrength = vector.Length();
+                    if (vectorStrength > MathUtil.ZeroTolerance)
+                    {
+                        var newY = -Vector3.Normalize(vector);
+                        var newX = Vector3.Normalize(Vector3.Cross(Vector3.UnitY, newY));
+                        var newZ = Vector3.Cross(newX, newY);
+                        var transformation = Matrix.Identity;
+                        transformation.Row1 = (Vector4)newX;
+                        transformation.Row2 = -vectorStrength / 15f * (Vector4)newY;
+                        transformation.Row3 = (Vector4)newZ;
+                        entity.Transform.LocalMatrix = transformation;
+                    }
+                    break;
+                case DebugScenes.Gyroscope:
+                    var rotation = Input.Gyroscope.RotationRate * (float)UpdateTime.Elapsed.TotalSeconds;
+                    entity.Transform.Rotation *= Quaternion.Invert(Quaternion.RotationYawPitchRoll(rotation.Y, rotation.X, rotation.Z));
+                    break;
+                case DebugScenes.Compass:
+                    entity.Transform.RotationEulerXYZ = new Vector3(-MathUtil.PiOverTwo, Input.Compass.Heading, 0);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -177,7 +252,7 @@ namespace SiliconStudio.Paradox.Input.Tests
             base.Draw(gameTime);
 
             // update the values only once every x frames in order to be able to read them.
-            if ((gameTime.FrameCount%20) == 0)
+            if ((gameTime.FrameCount % 20) == 0)
             {
                 currentAcceleration = Input.Accelerometer.Acceleration;
                 currentHeading = Input.Compass.Heading;
@@ -194,37 +269,37 @@ namespace SiliconStudio.Paradox.Input.Tests
             batch.Begin();
 
             var position = new Vector2(0.005f, 0.01f);
-            var text = "Acceleration [{0}] = ({1})".ToFormat(Input.Accelerometer.IsEnabled ? "Enabled" : "Disabled", currentAcceleration);
+            var text = "Acceleration[{0}]=({1:0.00})".ToFormat(Input.Accelerometer.IsEnabled ? "E" : "D", currentAcceleration);
             var size = batch.MeasureString(font, text, targetSize);
 
             batch.DrawString(font, text, position, Color.White);
 
             position.Y += size.Y;
-            text = "Compass [{0}] = ({1})".ToFormat(Input.Compass.IsEnabled ? "Enabled" : "Disabled", currentHeading);
+            text = "Compass[{0}]=({1:0.00})".ToFormat(Input.Compass.IsEnabled ? "E" : "D", currentHeading);
             size = batch.MeasureString(font, text, targetSize);
 
             batch.DrawString(font, text, position, Color.White);
 
             position.Y += size.Y;
-            text = "Gyroscope [{0}] = ({1})".ToFormat(Input.Gyroscope.IsEnabled ? "Enabled" : "Disabled", currentRotationRate);
+            text = "Gyro[{0}]=({1:0.00})".ToFormat(Input.Gyroscope.IsEnabled ? "E" : "D", currentRotationRate);
             size = batch.MeasureString(font, text, targetSize);
 
             batch.DrawString(font, text, position, Color.White);
 
             position.Y += size.Y;
-            text = "UserAcceleration [{0}] = ({1})".ToFormat(Input.UserAcceleration.IsEnabled ? "Enabled" : "Disabled", currentUserAcceleration);
+            text = "UserAccel[{0}]=({1:0.00})".ToFormat(Input.UserAcceleration.IsEnabled ? "E" : "D", currentUserAcceleration);
             size = batch.MeasureString(font, text, targetSize);
 
             batch.DrawString(font, text, position, Color.White);
 
             position.Y += size.Y;
-            text = "Gravity [{0}] = ({1})".ToFormat(Input.Gravity.IsEnabled ? "Enabled" : "Disabled", currentGravity);
+            text = "Gravity[{0}]=({1:0.00})".ToFormat(Input.Gravity.IsEnabled ? "E" : "D", currentGravity);
             size = batch.MeasureString(font, text, targetSize);
 
             batch.DrawString(font, text, position, Color.White);
 
             position.Y += size.Y;
-            text = "Orientation [{0}] = ({1})".ToFormat(Input.Orientation.IsEnabled ? "Enabled" : "Disabled", currentYawPitchRoww);
+            text = "Orientation[{0}]=({1:0.00})".ToFormat(Input.Orientation.IsEnabled ? "E" : "D", currentYawPitchRoww);
             size = batch.MeasureString(font, text, targetSize);
 
             batch.DrawString(font, text, position, Color.White);

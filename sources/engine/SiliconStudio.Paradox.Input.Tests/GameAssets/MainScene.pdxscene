@@ -12,8 +12,8 @@ Hierarchy:
                 CameraComponent.Key:
                     Projection: Perspective
                 TransformComponent.Key:
-                    Position: {X: 0.0, Y: 0.0, Z: 2.0}
-                    Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                    Position: {X: 0.0, Y: 3.0, Z: 0.0}
+                    Rotation: {W: 0.707106769, X: -0.707106769, Y: 0.0, Z: 0.0}
                     Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     Children: []
             Id: 6d2b02df-329f-4e05-b299-69f96d39c763
