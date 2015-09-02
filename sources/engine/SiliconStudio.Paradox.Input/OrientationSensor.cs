@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Input
@@ -42,6 +43,16 @@ namespace SiliconStudio.Paradox.Input
             Roll = 0;
             Quaternion = Quaternion.Identity;
             RotationMatrix = Matrix.Identity;
+        }
+
+        internal void FromQuaternion(Quaternion q)
+        {
+            Quaternion = q;
+            RotationMatrix = Matrix.RotationQuaternion(q);
+            
+            Yaw = (float)Math.Asin(2 * (q.W * q.Y - q.Z * q.X));
+            Pitch = (float)Math.Atan2(2 * (q.W * q.X + q.Y * q.Z), 1 - 2 * (q.X * q.X + q.Y * q.Y)); 
+            Roll = (float)Math.Atan2(2 * (q.W * q.Z + q.X * q.Y), 1 - 2 * (q.Y * q.Y + q.Z * q.Z));
         }
     }
 }

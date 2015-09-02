@@ -121,7 +121,7 @@ namespace SiliconStudio.Paradox.Input
                 Accelerometer.Acceleration = accelerometerListener.GetCurrentValuesAsVector();
 
             if (Gyroscope.IsEnabled)
-                Gyroscope.RotationRate = gyroscopeListener.GetCurrentValuesAsVector();
+                Gyroscope.RotationRate = -gyroscopeListener.GetCurrentValuesAsVector();
 
             if (UserAcceleration.IsEnabled)
                 UserAcceleration.Acceleration = userAccelerationListener.GetCurrentValuesAsVector();
@@ -138,33 +138,17 @@ namespace SiliconStudio.Paradox.Input
 
                 if (Orientation.IsEnabled)
                 {
-                    Orientation.Yaw = yawPitchRollArray[0];
-                    Orientation.Pitch = yawPitchRollArray[1];
-                    Orientation.Roll = yawPitchRollArray[2];
-
                     var quaternion = Quaternion.Identity;
-                    quaternion.W = quaternionArray[0];
-                    quaternion.X = quaternionArray[1];
-                    quaternion.Y = quaternionArray[2];
-                    quaternion.Z = quaternionArray[3];
-                    Orientation.Quaternion = quaternion;
-
-                    var rotationMatrix = Matrix.Identity;
-                    rotationMatrix.M11 = rotationMatrixArray[0];
-                    rotationMatrix.M21 = rotationMatrixArray[1];
-                    rotationMatrix.M31 = rotationMatrixArray[2];
-                    rotationMatrix.M12 = rotationMatrixArray[3];
-                    rotationMatrix.M22 = rotationMatrixArray[4];
-                    rotationMatrix.M32 = rotationMatrixArray[5];
-                    rotationMatrix.M13 = rotationMatrixArray[6];
-                    rotationMatrix.M23 = rotationMatrixArray[7];
-                    rotationMatrix.M33 = rotationMatrixArray[8];
-                    Orientation.RotationMatrix = rotationMatrix;
+                    quaternion.W = +quaternionArray[0];
+                    quaternion.X = +quaternionArray[1];
+                    quaternion.Y = +quaternionArray[3];
+                    quaternion.Z = -quaternionArray[2];
+                    Orientation.FromQuaternion(Quaternion.RotationY(MathUtil.Pi) * quaternion); // aligh the orientation with north.
                 }
 
                 if (Compass.IsEnabled)
                 {
-                    Compass.Heading = yawPitchRollArray[0];
+                    Compass.Heading = yawPitchRollArray[0] + MathUtil.Pi;
                 }
             }
         }
@@ -454,7 +438,7 @@ namespace SiliconStudio.Paradox.Input
             {
                 var values = GetCurrentValues();
 
-                return new Vector3(values[0], values[1], values[2]);
+                return new Vector3(-values[0], -values[2], values[1]);
             }
         }
     }

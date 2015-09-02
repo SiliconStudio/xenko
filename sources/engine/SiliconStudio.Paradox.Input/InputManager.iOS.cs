@@ -20,6 +20,8 @@ namespace SiliconStudio.Paradox.Input
         private iPhoneOSGameView view;
         private CMMotionManager motionManager;
         private CLLocationManager locationManager;
+        private bool locationManagerActivated;
+        private float firstNorthValue = float.NegativeInfinity;
 
         public InputManager(IServiceRegistry registry) : base(registry)
         {
@@ -72,8 +74,11 @@ namespace SiliconStudio.Paradox.Input
             if(Accelerometer.ShouldBeEnabled)
                 motionManager.StartAccelerometerUpdates();
 
-            if(Compass.ShouldBeEnabled)
+            if((Compass.ShouldBeEnabled || Orientation.ShouldBeEnabled) && !locationManagerActivated)
+            {
+                locationManagerActivated = true;
                 locationManager.StartUpdatingHeading();
+            }
 
             if(Gyroscope.ShouldBeEnabled)
                 motionManager.StartGyroUpdates();
@@ -89,8 +94,11 @@ namespace SiliconStudio.Paradox.Input
             if (Accelerometer.ShouldBeDisabled)
                 motionManager.StopAccelerometerUpdates();
 
-            if (Compass.ShouldBeDisabled)
+            if ((Compass.ShouldBeDisabled || Orientation.ShouldBeDisabled) && !Compass.IsEnabled && !Orientation.IsEnabled)
+            {
+                locationManagerActivated = false;
                 locationManager.StopUpdatingHeading();
+            }
 
             if (Gyroscope.ShouldBeDisabled)
                 motionManager.StopGyroUpdates();
@@ -101,7 +109,21 @@ namespace SiliconStudio.Paradox.Input
 
         private static Vector3 CmAccelerationToVector3(CMAcceleration acceleration)
         {
-            return new Vector3((float)acceleration.X, (float)acceleration.Y, (float)acceleration.Z);
+            return G * new Vector3((float)acceleration.X, (float)acceleration.Z, -(float)acceleration.Y);
+        }
+
+        private static Vector3 CmRotationRateToVector3(CMRotationRate rate)
+        {
+            return new Vector3((float)rate.x, (float)rate.z, -(float)rate.y);
+        }
+        private static float GetNorthInRadian(CLLocationManager location)
+        {
+            var heading = location.Heading;
+            if (heading == null)
+                return 0f;
+
+            var headingDegree = heading.TrueHeading < 0 ? heading.MagneticHeading : heading.TrueHeading; // TrueHeading is set to a negative value when invalid
+            return MathUtil.DegreesToRadians((float)headingDegree);
         }
 
         internal override void UpdateEnabledSensorsData()
@@ -109,46 +131,56 @@ namespace SiliconStudio.Paradox.Input
             base.UpdateEnabledSensorsData();
 
             if (Accelerometer.IsEnabled)
-                Accelerometer.Acceleration = CmAccelerationToVector3(motionManager.AccelerometerData.Acceleration);
+            {
+                var accelerometerData = motionManager.AccelerometerData;
+                Accelerometer.Acceleration = accelerometerData != null? CmAccelerationToVector3(accelerometerData.Acceleration): Vector3.Zero;
+            }
 
             if (Compass.IsEnabled)
-                Compass.Heading = (float)locationManager.Heading.MagneticHeading;
+            {
+                Compass.Heading = GetNorthInRadian(locationManager);
+            }
 
             if (Gyroscope.IsEnabled)
             {
-                var rate = motionManager.GyroData.RotationRate;
-                Gyroscope.RotationRate = new Vector3((float)rate.x, (float)rate.y, (float)rate.z);
+                var gyroData = motionManager.GyroData;
+                Gyroscope.RotationRate = gyroData != null? CmRotationRateToVector3(gyroData.RotationRate): Vector3.Zero;
             }
 
-            if(UserAcceleration.IsEnabled)
-                UserAcceleration.Acceleration = CmAccelerationToVector3(motionManager.DeviceMotion.UserAcceleration);
+            if (UserAcceleration.IsEnabled)
+            {
+                var motion = motionManager.DeviceMotion;
+                UserAcceleration.Acceleration = motion != null? CmAccelerationToVector3(motion.UserAcceleration): Vector3.Zero;
+            }
 
             if (Gravity.IsEnabled)
-                Gravity.Vector = CmAccelerationToVector3(motionManager.DeviceMotion.Gravity);
+            {
+                var motion = motionManager.DeviceMotion;
+                Gravity.Vector = motion != null? CmAccelerationToVector3(motion.Gravity) : Vector3.Zero;
+            }
 
             if (Orientation.IsEnabled)
             {
-                var attitude = motionManager.DeviceMotion.Attitude;
+                var motion = motionManager.DeviceMotion;
+                if (motion != null && motion.Attitude != null)
+                {
+                    var q = motionManager.DeviceMotion.Attitude.Quaternion;
+                    var quaternion = new Quaternion((float)q.x, (float)q.z, -(float)q.y, (float)q.w);
 
-                Orientation.Yaw = (float)attitude.Yaw;
-                Orientation.Pitch = (float)attitude.Pitch;
-                Orientation.Roll = (float)attitude.Roll;
+                    if (Compass.IsSupported) // re-adjust the orientation to align with the north (common behavior on other platforms) TODO current implementation only takes in account the first value.
+                    {
+                        if(firstNorthValue <= 0)
+                            firstNorthValue = GetNorthInRadian(locationManager);
 
-                var quaternion = attitude.Quaternion;
-                Orientation.Quaternion = new Quaternion((float)quaternion.x, (float)quaternion.y, (float)quaternion.z, (float)quaternion.w);
+                        quaternion = Quaternion.RotationY(-firstNorthValue) * quaternion;
+                    }
 
-                var matrix = attitude.RotationMatrix;
-                var rotationMatrix = Matrix.Identity;
-                rotationMatrix.M11 = (float)matrix.m11;
-                rotationMatrix.M21 = (float)matrix.m12;
-                rotationMatrix.M31 = (float)matrix.m13;
-                rotationMatrix.M12 = (float)matrix.m21;
-                rotationMatrix.M22 = (float)matrix.m22;
-                rotationMatrix.M32 = (float)matrix.m23;
-                rotationMatrix.M13 = (float)matrix.m31;
-                rotationMatrix.M23 = (float)matrix.m32;
-                rotationMatrix.M33 = (float)matrix.m33;
-                Orientation.RotationMatrix = rotationMatrix;
+                    Orientation.FromQuaternion(quaternion);
+                }
+                else
+                {
+                    Orientation.ResetData();
+                }
             }
         }
 

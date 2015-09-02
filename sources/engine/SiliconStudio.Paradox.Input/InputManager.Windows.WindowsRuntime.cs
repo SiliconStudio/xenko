@@ -283,62 +283,64 @@ namespace SiliconStudio.Paradox.Input
                 windowsOrientation.ReportInterval = Math.Max(DesiredSensorUpdateIntervalMs, windowsOrientation.MinimumReportInterval);
         }
 
+        private static Vector3 GetAcceleration(WindowsAccelerometer accelerometer)
+        {
+            var currentReading = accelerometer.GetCurrentReading();
+            if(currentReading == null)
+                return Vector3.Zero;
+
+            return G * new Vector3((float)currentReading.AccelerationX, (float)currentReading.AccelerationZ, -(float)currentReading.AccelerationY);
+        }
+
+        private static Quaternion GetOrientation(WindowsOrientation orientation)
+        {
+            var reading = orientation.GetCurrentReading();
+            if (reading == null)
+                return Quaternion.Identity;
+
+            var q = reading.Quaternion;
+            return new Quaternion(q.X, q.Z, -q.Y, q.W);
+        }
+
+        private static float GetNorth(WindowsCompass compass)
+        {
+            var currentReading = compass.GetCurrentReading();
+            if (currentReading == null)
+                return 0f;
+            
+            return MathUtil.DegreesToRadians((float)(currentReading.HeadingTrueNorth ?? currentReading.HeadingMagneticNorth));
+        }
+
         internal override void UpdateEnabledSensorsData()
         {
             base.UpdateEnabledSensorsData();
 
             if (Accelerometer.IsEnabled)
-            {
-                var currentReading = windowsAccelerometer.GetCurrentReading();
-                Accelerometer.Acceleration = new Vector3((float)currentReading.AccelerationX, (float)currentReading.AccelerationY, (float)currentReading.AccelerationZ);
-            }
+                Accelerometer.Acceleration = GetAcceleration(windowsAccelerometer);
 
             if (Compass.IsEnabled)
-            {
-                var currentReading = windowsCompass.GetCurrentReading();
-                Compass.Heading = (float)(currentReading.HeadingMagneticNorth * Math.PI / 180);
-            }
+                Compass.Heading = GetNorth(windowsCompass);
 
             if (Gyroscope.IsEnabled)
             {
-                var currentReading = windowsGyroscope.GetCurrentReading();
-                Gyroscope.RotationRate = new Vector3((float)currentReading.AngularVelocityX, (float)currentReading.AngularVelocityY, (float)currentReading.AngularVelocityZ);
+                var reading = windowsGyroscope.GetCurrentReading();
+                Gyroscope.RotationRate = reading != null? new Vector3((float)reading.AngularVelocityX, (float)reading.AngularVelocityZ, -(float)reading.AngularVelocityY): Vector3.Zero;
             }
 
             if (Orientation.IsEnabled || UserAcceleration.IsEnabled || Gravity.IsEnabled)
             {
-                var currentReading = windowsOrientation.GetCurrentReading();
-                var matrix = currentReading.RotationMatrix;
+                var quaternion = GetOrientation(windowsOrientation);
 
                 if (Orientation.IsEnabled)
                 {
-                    var q = currentReading.Quaternion;
-                    Orientation.Quaternion = new Quaternion(q.X, q.Y, q.Z, q.W);
-
-                    var rotationMatrix = Matrix.Identity;
-                    rotationMatrix.M11 = matrix.M11;
-                    rotationMatrix.M12 = matrix.M21;
-                    rotationMatrix.M13 = matrix.M31;
-                    rotationMatrix.M21 = matrix.M12;
-                    rotationMatrix.M22 = matrix.M22;
-                    rotationMatrix.M23 = matrix.M32;
-                    rotationMatrix.M31 = matrix.M13;
-                    rotationMatrix.M32 = matrix.M23;
-                    rotationMatrix.M33 = matrix.M33;
-
-                    Orientation.RotationMatrix = rotationMatrix;
-
-                    Orientation.Yaw = (float) Math.Atan2(2*(q.W*q.X + q.Y*q.Z), 1 - 2*(q.X * q.X + q.Y * q.Y));
-                    Orientation.Pitch = (float) Math.Asin(2*(q.W*q.Y - q.Z*q.X));
-                    Orientation.Roll = (float)Math.Atan2(2*(q.W*q.Z + q.X*q.Y), 1 - 2*(q.Y*q.Y + q.Z*q.Z));
+                    Orientation.FromQuaternion(quaternion);
                 }
                 if (UserAcceleration.IsEnabled || Gravity.IsEnabled)
                 {
                     // calculate the gravity direction
-                    var currentAcceleration = windowsAccelerometer.GetCurrentReading();
-                    var acceleration = new Vector3((float)currentAcceleration.AccelerationX, (float)currentAcceleration.AccelerationY, (float)currentAcceleration.AccelerationZ);
-                    var gravityDirection = new Vector3(-matrix.M13, -matrix.M23, -matrix.M33);
-                    var gravity = Vector3.Dot(acceleration, gravityDirection) * gravityDirection;
+                    var acceleration = GetAcceleration(windowsAccelerometer);
+                    var gravityDirection = Vector3.Transform(-Vector3.UnitY, Quaternion.Invert(quaternion));
+                    var gravity = G * gravityDirection;
                     
                     if (Gravity.IsEnabled)
                         Gravity.Vector = gravity;
