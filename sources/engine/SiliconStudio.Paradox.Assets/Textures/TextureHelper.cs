@@ -488,5 +488,24 @@ namespace SiliconStudio.Paradox.Assets.Textures
 
             return ResultStatus.Successful;
         }
+
+        /// <summary>
+        /// Find the region of the sprite specified by the provided pixel coordinate in a texture.
+        /// </summary>
+        /// <param name="filePath">The full path to the texture</param>
+        /// <param name="pixelCoordinates">A pixel of the sprite</param>
+        /// <param name="transparencyColor">The transparency color of the texture</param>
+        /// <returns></returns>
+        public static Rectangle FindSpriteRegion(string filePath, Int2 pixelCoordinates, Color? transparencyColor)
+        {
+            using (var tool = new TextureTool())
+            using (var image = tool.Load(filePath, false))
+            {
+                tool.Decompress(image, false);
+
+                var mask = transparencyColor.HasValue ? 0xffffffff: 0xff000000;
+                return tool.FindSpriteRegion(image, pixelCoordinates, transparencyColor, mask);
+            }
+        }
     }
 }

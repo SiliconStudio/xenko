@@ -11,6 +11,34 @@ using SiliconStudio.Core.Serialization.Serializers;
 namespace SiliconStudio.Paradox.Engine.Design
 {
     [DataContract]
+    public class EntityDesignData
+    {
+        [DataMember(10)]
+        public string Folder { get; set; }
+    }
+
+    [DataContract]
+    public class EntityDesign
+    {
+        public EntityDesign()
+        {
+            Design = new EntityDesignData();
+        }
+
+        public EntityDesign(Entity entity, EntityDesignData designData)
+        {
+            Entity = entity;
+            Design = designData;
+        }
+
+        [DataMember(10)]
+        public Entity Entity { get; set; }
+
+        [DataMember(20)]
+        public EntityDesignData Design { get; }
+    }
+
+    [DataContract]
     //[ContentSerializer(typeof(DataContentWithEntityReferenceSerializer))]
     public class EntityHierarchyData
     {
@@ -31,8 +59,8 @@ namespace SiliconStudio.Paradox.Engine.Design
             SceneSettings = new SceneSettings();
         }
 
-        [DataSerializer(typeof(KeyedSortedListSerializer<EntityCollection, Guid, Entity>))]
-        public sealed class EntityCollection : KeyedSortedList<Guid, Entity>
+        [DataSerializer(typeof(KeyedSortedListSerializer<EntityCollection, Guid, EntityDesign>))]
+        public sealed class EntityCollection : KeyedSortedList<Guid, EntityDesign>
         {
             private readonly EntityHierarchyData container;
 
@@ -40,13 +68,19 @@ namespace SiliconStudio.Paradox.Engine.Design
             {
                 this.container = container;
             }
-        
-            protected override Guid GetKeyForItem(Entity item)
+
+            [Obsolete]
+            public void Add(Entity entity)
             {
-                return item.Id;
+                Add(new EntityDesign(entity, new EntityDesignData()));
+            }
+
+            protected override Guid GetKeyForItem(EntityDesign item)
+            {
+                return item.Entity.Id;
             }
         
-            protected override void InsertItem(int index, Entity item)
+            protected override void InsertItem(int index, EntityDesign item)
             {
                 //item.Container = container;
                 base.InsertItem(index, item);

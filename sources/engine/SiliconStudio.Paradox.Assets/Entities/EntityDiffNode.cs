@@ -21,6 +21,9 @@ namespace SiliconStudio.Paradox.Assets.Entities
         public Guid Guid { get; set; }
 
         [DataMember(30)]
+        public EntityDesignData Design { get; set; }
+
+        [DataMember(40)]
         public List<EntityDiffNode> Children { get; private set; }
 
         public EntityDiffNode()
@@ -46,9 +49,10 @@ namespace SiliconStudio.Paradox.Assets.Entities
             var entityData = entityHierarchy.Entities[entityGuid];
 
             Guid = entityGuid;
-            Name = entityData.Name;
+            Name = entityData.Entity.Name;
+            Design = entityData.Design;
 
-            var transformationComponent = entityData.Get(TransformComponent.Key);
+            var transformationComponent = entityData.Entity.Get(TransformComponent.Key);
             if (transformationComponent != null)
             {
                 Children = new List<EntityDiffNode>(transformationComponent.Children.Count);

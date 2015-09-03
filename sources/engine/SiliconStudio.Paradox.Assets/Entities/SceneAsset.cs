@@ -43,10 +43,11 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetUpgrader(11, 12, typeof(NewElementLayoutUpgrader))]
     [AssetUpgrader(12, 13, typeof(NewElementLayoutUpgrader2))]
     [AssetUpgrader(13, 14, typeof(RemoveGammaTransformUpgrader))]
+    [AssetUpgrader(14, 15, typeof(EntityDesignUpgrader))]
     [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
-        private const int CurrentVersion = 14;
+        private const int CurrentVersion = 15;
 
         public const string FileSceneExtension = ".pdxscene";
 
@@ -479,6 +480,24 @@ namespace SiliconStudio.Paradox.Assets.Entities
                     {
                         colorTransforms.RemoveChild("GammaTransform");
                     }
+                }
+            }
+        }
+
+        class EntityDesignUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                var entities = asset.Hierarchy.Entities;
+                var designEntities = new YamlSequenceNode();
+                asset.Hierarchy.Entities = designEntities;
+
+                foreach (var entity in entities)
+                {
+                    var designEntity = new YamlMappingNode();
+                    dynamic dynamicDesignEntity = new DynamicYamlMapping(designEntity);
+                    dynamicDesignEntity.Entity = entity;
+                    designEntities.Add(designEntity);
                 }
             }
         }

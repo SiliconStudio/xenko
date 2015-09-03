@@ -342,6 +342,16 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Checks, if specified <see cref="Int2"/> is inside <see cref="Rectangle"/>.
+        /// </summary>
+        /// <param name="int2">Coordinate <see cref="Int2"/>.</param>
+        /// <returns><c>true</c> if <see cref="Int2"/> is inside <see cref="Rectangle"/>, otherwise <c>false</c>.</returns>
+        public bool Contains(Int2 int2)
+        {
+            return Contains(int2.X, int2.Y);
+        }
+
+        /// <summary>
         /// Checks, if specified <see cref="Point"/> is inside <see cref="RectangleF"/>.
         /// </summary>
         /// <param name="point">Coordinate <see cref="Point"/>.</param>

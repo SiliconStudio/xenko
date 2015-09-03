@@ -350,6 +350,16 @@ namespace SiliconStudio.Core.Mathematics
             return Contains(vector2D.X, vector2D.Y);
         }
 
+        /// <summary>
+        /// Checks, if specified <see cref="Int2"/> is inside <see cref="Rectangle"/>.
+        /// </summary>
+        /// <param name="int2">Coordinate <see cref="Int2"/>.</param>
+        /// <returns><c>true</c> if <see cref="Int2"/> is inside <see cref="Rectangle"/>, otherwise <c>false</c>.</returns>
+        public bool Contains(Int2 int2)
+        {
+            return Contains(int2.X, int2.Y);
+        }
+
         /// <summary>Determines whether a specified rectangle intersects with this rectangle.</summary>
         /// <param name="value">The rectangle to evaluate.</param>
         public bool Intersects(Rectangle value)
@@ -400,6 +410,20 @@ namespace SiliconStudio.Core.Mathematics
             {
                 result = Empty;
             }
+        }
+        
+        /// <summary>
+        /// Creates a new rectangle that incorporate the provided point to the given rectangle.
+        /// </summary>
+        /// <param name="rectangle">The original rectangle.</param>
+        /// <param name="point">The point to incorporate.</param>
+        /// <returns>The union rectangle.</returns>
+        public static Rectangle Union(Rectangle rectangle, Int2 point)
+        {
+            Rectangle result;
+            var rect = new Rectangle(point.X, point.Y, 1, 1);
+            Union(ref rectangle, ref rect, out result);
+            return result;
         }
 
         /// <summary>
