@@ -1204,7 +1204,7 @@ public:
 
 		// Use GlobalTransform instead of LocalTransform
 
-		auto fbxMatrix = pNode->EvaluateLocalTransform();
+		auto fbxMatrix = pNode->EvaluateLocalTransform(FBXSDK_TIME_ZERO);
 		auto matrix = sceneMapping->ConvertMatrixFromFbx(fbxMatrix);
 
 		// Extract the translation and scaling
