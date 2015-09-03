@@ -10,26 +10,29 @@
     <IntDir>obj\$(SiliconStudioPlatform)\$(SiliconStudioCPU)\</IntDir>
     <GenerateProjectSpecificOutputFolder>false</GenerateProjectSpecificOutputFolder>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(SiliconStudioPlatform)' == 'Windows'">
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(SiliconStudioPlatform)' == 'WindowsStore' Or '$(SiliconStudioPlatform)' == 'WindowsPhone' Or '$(SiliconStudioPlatform)' == 'Windows10'">
     <AppContainerApplication>true</AppContainerApplication>
     <ApplicationTypeRevision>8.1</ApplicationTypeRevision>
     <ConvergedProjectType>CodeSharingDll</ConvergedProjectType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(VisualStudioVersion)' == '11.0'">
-    <PlatformToolset>v110</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(VisualStudioVersion)' == '12.0' And '$(SiliconStudioPlatform)' == 'WindowsStore'">
+  <PropertyGroup Condition="'$(SiliconStudioPlatform)' == 'WindowsStore'">
     <ApplicationType>Windows Store</ApplicationType>
     <PlatformToolset>v120</PlatformToolset>
+    <WindowsSDKDesktopARMSupport>true</WindowsSDKDesktopARMSupport>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(VisualStudioVersion)' == '12.0' And '$(SiliconStudioPlatform)' == 'WindowsPhone'">
+  <PropertyGroup Condition="'$(SiliconStudioPlatform)' == 'WindowsPhone'">
     <ApplicationType>Windows Phone</ApplicationType>
     <PlatformToolset>v120_wp81</PlatformToolset>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(VisualStudioVersion)' == '14.0' And '$(SiliconStudioPlatform)' == 'Windows10'">
+  <PropertyGroup Condition="'$(SiliconStudioPlatform)' == 'Windows10'">
     <ApplicationType>Windows Store</ApplicationType>
-    <ApplicationTypeRevision>8.2</ApplicationTypeRevision>
     <Keyword>DynamicLibrary</Keyword>
     <PlatformToolset>v140</PlatformToolset>
+    <WindowsTargetPlatformVersion>10.0.10240.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.10240.0</WindowsTargetPlatformMinVersion>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
   </PropertyGroup>
 </Project>
