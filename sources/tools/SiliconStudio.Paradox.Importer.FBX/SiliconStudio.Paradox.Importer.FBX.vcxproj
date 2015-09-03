@@ -8,8 +8,8 @@
     <SiliconStudioAssemblyProcessorOptions>
     </SiliconStudioAssemblyProcessorOptions>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
-    <FbxSdkDir>$([MSBuild]::GetRegistryValueFromView('HKEY_LOCAL_MACHINE\SOFTWARE\Autodesk FBX SDK 2016.1', 'Install_Dir', null, RegistryView.Registry32))</FbxSdkDir>
-    <FbxSdkDir Condition="'$(FbxSdkDir)' == '' and exists('..\..\..\deps\FBX SDK\2016.1')">..\..\..\deps\FBX SDK\2016.1</FbxSdkDir>
+    <FbxSdkDir>$([MSBuild]::GetRegistryValueFromView('HKEY_LOCAL_MACHINE\SOFTWARE\Autodesk FBX SDK 2016.1.1', 'Install_Dir', null, RegistryView.Registry32))</FbxSdkDir>
+    <FbxSdkDir Condition="'$(FbxSdkDir)' == '' and exists('..\..\..\deps\FBX SDK\2016.1.1')">..\..\..\deps\FBX SDK\2016.1.1</FbxSdkDir>
     <PlatformToolset>v140</PlatformToolset>
     <FbxLibVersionDir>vs2015\</FbxLibVersionDir>
   </PropertyGroup>
@@ -237,7 +237,7 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <Target Name="EnsureFbxSdkInstalled" BeforeTargets="PrepareForBuild">
-    <Message Condition="'$(FbxSdkDir)' != ''" Importance="Normal" Text="Found FBX SDK 2016.1 at $(FbxSdkDir)" />
-    <Error Condition="'$(FbxSdkDir)' == ''" Text="FBX SDK 2016.1 was not found. Please download and install it from http://www.autodesk.com/fbx and reload this solution." />
+    <Message Condition="'$(FbxSdkDir)' != ''" Importance="Normal" Text="Found FBX SDK 2016.1.1 at $(FbxSdkDir)" />
+    <Error Condition="'$(FbxSdkDir)' == ''" Text="FBX SDK 2016.1.1 was not found. Please download and install it from http://www.autodesk.com/fbx and reload this solution." />
   </Target>
 </Project>
