@@ -58,16 +58,34 @@ namespace SiliconStudio.Paradox.Physics
 
         public enum Types
         {
+            /// <userdoc>
+            /// A static trigger zone
+            /// </userdoc>
             [Display("Trigger")]
             PhantomCollider,
+            /// <userdoc>
+            /// A static Collider
+            /// </userdoc>
             [Display("Static Collider")]
             StaticCollider,
+            /// <userdoc>
+            /// A static RigidBody
+            /// </userdoc>
             [Display("Static RigidBody")]
             StaticRigidBody,
+            /// <userdoc>
+            /// A dynamic RigidBody
+            /// </userdoc>
             [Display("Dynamic RigidBody")]
             DynamicRigidBody,
+            /// <userdoc>
+            /// A kinematic RigidBody
+            /// </userdoc>
             [Display("Kinematic RigidBody")]
             KinematicRigidBody,
+            /// <userdoc>
+            /// A Character Controller
+            /// </userdoc>
             [Display("Character")]
             CharacterController
         };
@@ -99,7 +117,7 @@ namespace SiliconStudio.Paradox.Physics
         /// The collision group.
         /// </value>
         /// <userdoc>
-        /// The collision group of this element, default is AllFilter.
+        /// The collision group of this element, default is DefaultFilter.
         /// </userdoc>
         [DataMember(30)]
         public CollisionFilterGroups CollisionGroup
@@ -128,7 +146,7 @@ namespace SiliconStudio.Paradox.Physics
         /// The can collide with.
         /// </value>
         /// <userdoc>
-        /// Which collider groups this element can collide with, when nothing is selected AllFilter is intended to be default.
+        /// Which collider groups this element can collide with, when nothing is selected it will collide with all groups.
         /// </userdoc>
         [DataMember(40)]
         public CollisionFilterGroupFlags CanCollideWith
