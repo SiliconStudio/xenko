@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetDescription(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
     [ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName)]
-    [AssetFormatVersion(13)]
+    [AssetFormatVersion(14)]
     [AssetUpgrader(0, 1, typeof(RemoveSourceUpgrader))]
     [AssetUpgrader(1, 2, typeof(RemoveBaseUpgrader))]
     [AssetUpgrader(2, 3, typeof(RemoveModelDrawOrderUpgrader))]
@@ -42,6 +42,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetUpgrader(10, 11, typeof(RemoveShadowImportanceUpgrader))]
     [AssetUpgrader(11, 12, typeof(NewElementLayoutUpgrader))]
     [AssetUpgrader(12, 13, typeof(NewElementLayoutUpgrader2))]
+    [AssetUpgrader(13, 14, typeof(EntityDesignUpgrader))]
     [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
@@ -426,6 +427,24 @@ namespace SiliconStudio.Paradox.Assets.Entities
                             }
                         }
                     }
+                }
+            }
+        }
+
+        class EntityDesignUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                var entities = asset.Hierarchy.Entities;
+                var designEntities = new YamlSequenceNode();
+                asset.Hierarchy.Entities = designEntities;
+
+                foreach (var entity in entities)
+                {
+                    var designEntity = new YamlMappingNode();
+                    dynamic dynamicDesignEntity = new DynamicYamlMapping(designEntity);
+                    dynamicDesignEntity.Entity = entity;
+                    designEntities.Add(designEntity);
                 }
             }
         }
