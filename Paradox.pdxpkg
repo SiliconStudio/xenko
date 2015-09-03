@@ -55,4 +55,6 @@ TemplateFolders:
         - samples\Physics\CharacterControllerSample\CharacterControllerSample.pdxtpl
         - samples\Physics\Constraints\Constraints.pdxtpl
         - samples\Physics\Raycasting\Raycasting.pdxtpl
+        - samples\Physics\VolumeTrigger\VolumeTrigger.pdxtpl
         - samples\UI\GameMenu\GameMenu.pdxtpl
+        - samples\Others\NativeLinking\NativeLinking.pdxtpl
