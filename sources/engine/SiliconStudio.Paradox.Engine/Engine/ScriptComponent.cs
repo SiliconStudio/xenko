@@ -38,8 +38,6 @@ namespace SiliconStudio.Paradox.Engine
             };
         }
 
-        public CodeFileReference CodeFile { get; set; }
-
         /// <summary>
         /// Gets the scripts.
         /// </summary>
