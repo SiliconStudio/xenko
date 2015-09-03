@@ -28,6 +28,11 @@ namespace SiliconStudio.Paradox.Engine
         [DataMemberIgnore]
         internal AnimationBlender Blender = new AnimationBlender();
 
+        //Please note that this will be gone most likely when we renew the animation system.
+        //But for now it's the only way to allow user code to read animation results
+        [DataMemberIgnore]
+        public AnimationClipResult CurrentFrameResult;
+
         public static PropertyKey<AnimationComponent> Key = new PropertyKey<AnimationComponent>("Key", typeof(AnimationComponent));
 
         public AnimationComponent()

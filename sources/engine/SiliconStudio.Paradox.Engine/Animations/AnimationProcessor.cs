@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Animations
 
 
         public AnimationProcessor()
-            : base(new PropertyKey[] { ModelComponent.Key, AnimationComponent.Key })
+            : base(new PropertyKey[] { AnimationComponent.Key })
         {
             Order = -500;
         }
@@ -123,16 +123,19 @@ namespace SiliconStudio.Paradox.Animations
                         animationOperations.Add(AnimationOperation.NewBlend(playingAnimation.BlendOperation, currentBlend));
                 }
 
-                var modelViewHierarchy = associatedData.ModelComponent.ModelViewHierarchy;
-
                 if (animationOperations.Count > 0)
                 {
                     // Animation blending
                     animationComponent.Blender.Compute(animationOperations, ref associatedData.AnimationClipResult);
+                    animationComponent.CurrentFrameResult = associatedData.AnimationClipResult;
 
-                    // Update animation data
-                    if (modelViewHierarchy != null)
-                        meshAnimation.Update(modelViewHierarchy, associatedData.AnimationClipResult);
+                    // Update animation data if we have a model component
+                    if (associatedData.ModelComponent != null)
+                    {
+                        var modelViewHierarchy = associatedData.ModelComponent.ModelViewHierarchy;
+                        if (modelViewHierarchy != null)
+                            meshAnimation.Update(modelViewHierarchy, associatedData.AnimationClipResult);
+                    }
                 }
 
                 // Update weight animation
