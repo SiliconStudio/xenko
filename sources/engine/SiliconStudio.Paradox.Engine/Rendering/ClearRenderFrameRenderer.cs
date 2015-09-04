@@ -99,12 +99,9 @@ namespace SiliconStudio.Paradox.Rendering
                 {
                     if (renderTarget != null)
                     {
-                        var color = Color;
                         // If color is in GammeSpace and rendertarget is either SRgb or HDR, use a linear value to clear the buffer.
-                        if (ColorSpace == ColorSpace.Gamma && (renderTarget.Format.IsSRgb() || renderTarget.Format.IsHDR()))
-                        {
-                            color = color.ToLinear();
-                        }
+                        // TODO: We will need to move this color transform code to a shareable component
+                        var color = Color.ToColorSpace(ColorSpace, (renderTarget.Format.IsSRgb() || renderTarget.Format.IsHDR()) ? ColorSpace.Linear : graphicsDevice.ColorSpace);
                         graphicsDevice.Clear(renderTarget, color);
                     }
                 }
