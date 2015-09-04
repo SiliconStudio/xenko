@@ -281,8 +281,8 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                         var atlasLayout = texturePacker.AtlasTextureLayouts[textureAtlasIndex];
 
                         ResultStatus resultStatus;
-                        using (var atlasImage = AtlasTextureFactory.CreateTextureAtlas(atlasLayout))
-                        using (var texImage = texTool.Load(atlasImage))
+                        using (var atlasImage = AtlasTextureFactory.CreateTextureAtlas(atlasLayout, isSRgb))
+                        using (var texImage = texTool.Load(atlasImage, isSRgb))
                         {
                             var outputUrl = SpriteSheetAsset.BuildTextureAtlasUrl(Url, textureAtlasIndex);
                             var convertParameters = new TextureHelper.ImportParameters(AssetParameters) { OutputUrl = outputUrl };

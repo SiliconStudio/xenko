@@ -173,7 +173,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.IsTrue(canPackAllTextures);
             Assert.AreEqual(1, texturePacker.AtlasTextureLayouts.Count);
 
-            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(texturePacker.AtlasTextureLayouts[0]);
+            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(texturePacker.AtlasTextureLayouts[0], false);
 
             SaveAndCompareTexture(atlasTexture, "TestRotationElement1");
         }
@@ -199,7 +199,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.IsTrue(canPackAllTextures);
             Assert.AreEqual(1, texturePacker.AtlasTextureLayouts.Count);
 
-            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(texturePacker.AtlasTextureLayouts[0]);
+            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(texturePacker.AtlasTextureLayouts[0], false);
 
             SaveAndCompareTexture(atlasTexture, "TestRotationElement2");
         }
@@ -351,7 +351,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.IsTrue(MathUtil.IsPow2(textureAtlases[0].Height));
 
             // Create atlas texture
-            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(textureAtlases[0]);
+            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(textureAtlases[0], false);
 
             Assert.AreEqual(textureAtlases[0].Width, atlasTexture.Description.Width);
             Assert.AreEqual(textureAtlases[0].Height, atlasTexture.Description.Height);
@@ -392,7 +392,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.AreEqual(texturePacker.MaxHeight, textureAtlases[0].Height);
 
             // Create atlas texture
-            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(textureAtlases[0]);
+            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(textureAtlases[0], false);
 
             Assert.AreEqual(textureAtlases[0].Width, atlasTexture.Description.Width);
             Assert.AreEqual(textureAtlases[0].Height, atlasTexture.Description.Height);
@@ -433,7 +433,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.AreEqual(texturePacker.MaxHeight, textureAtlases[0].Height);
 
             // Create atlas texture
-            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(textureAtlases[0]);
+            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(textureAtlases[0], false);
 
             Assert.AreEqual(textureAtlases[0].Width, atlasTexture.Description.Width);
             Assert.AreEqual(textureAtlases[0].Height, atlasTexture.Description.Height);
@@ -472,7 +472,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.AreEqual(1, textureAtlases.Count);
 
             // Create atlas texture
-            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(textureAtlases[0]);
+            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(textureAtlases[0], false);
 
             Assert.AreEqual(textureAtlases[0].Width, atlasTexture.Description.Width);
             Assert.AreEqual(textureAtlases[0].Height, atlasTexture.Description.Height);
@@ -517,7 +517,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
             Assert.AreEqual(texturePacker.MaxHeight/4, textureAtlases[0].Height);
 
             // Create atlas texture
-            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(textureAtlases[0]);
+            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(textureAtlases[0], false);
 
             Assert.AreEqual(textureAtlases[0].Width, atlasTexture.Description.Width);
             Assert.AreEqual(textureAtlases[0].Height, atlasTexture.Description.Height);
@@ -855,7 +855,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
             }
 
             // Create atlas texture
-            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(textureAtlases[0]);
+            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(textureAtlases[0], false);
             SaveAndCompareTexture(atlasTexture, "TestCreateTextureAtlasToOutput");
 
             Assert.AreEqual(textureAtlases[0].Width, atlasTexture.Description.Width);
@@ -896,7 +896,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
             var textureAtlases = texturePacker.AtlasTextureLayouts;
 
             // Create atlas texture
-            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(textureAtlases[0]);
+            var atlasTexture = AtlasTextureFactory.CreateTextureAtlas(textureAtlases[0], false);
 
             SaveAndCompareTexture(atlasTexture, "TestLoadImagesToCreateAtlas", ImageFileType.Dds);
             atlasTexture.Dispose();
