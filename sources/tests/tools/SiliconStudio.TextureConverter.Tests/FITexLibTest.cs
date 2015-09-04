@@ -89,7 +89,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
-        [Test]
+        [Test, Ignore]
         public void FixedRescale3DTest()
         {
             DxtTexLib lib = new DxtTexLib();
@@ -166,7 +166,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Test]
+        [Test, Ignore]
         public void CanHandleRequestTest()
         {
             TexImage image = TestTools.Load(library, "stones.png");

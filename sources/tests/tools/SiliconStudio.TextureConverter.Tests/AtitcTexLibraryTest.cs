@@ -64,7 +64,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
-        [Test]
+        [Test, Ignore]
         public void CanHandleRequestTest()
         {
             TexImage image = LoadInput("TextureArray_WMipMaps_ATC_RGBA_Explicit.pdx");

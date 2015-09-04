@@ -36,7 +36,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Test]
+        [Test, Ignore]
         public void CanHandleRequestTest()
         {
             TexAtlas atlas = new TexAtlas(TexAtlas.TexLayout.Import(Module.PathToInputImages + Path.GetFileNameWithoutExtension("atlas_WMipMaps.dds") + TexAtlas.TexLayout.Extension), TestTools.Load(dxtLib, "atlas_WMipMaps.dds"));

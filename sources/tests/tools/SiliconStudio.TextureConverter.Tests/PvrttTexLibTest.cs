@@ -43,7 +43,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Test]
+        [Test, Ignore]
         public void CanHandleRequestTest()
         {
             TexImage image = TestTools.Load(library, "TextureArray_WMipMaps_PVRTC2_4bpp.pvr");

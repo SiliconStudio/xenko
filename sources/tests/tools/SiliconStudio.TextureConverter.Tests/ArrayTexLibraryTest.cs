@@ -37,7 +37,7 @@ namespace SiliconStudio.TextureConverter.Tests
             dxtLib.Dispose();
         }
 
-        [Test]
+        [Test, Ignore]
         public void CanHandleRequestTest()
         {
             TexImage image = TestTools.Load(dxtLib, "array_WMipMaps.dds");

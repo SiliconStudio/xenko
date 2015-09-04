@@ -27,7 +27,7 @@ namespace SiliconStudio.TextureConverter.Tests
             texTool.Dispose();
         }
 
-        [Test]
+        [Test, Ignore]
         public void LoadTest()
         {
             TexImage img;
@@ -51,7 +51,7 @@ namespace SiliconStudio.TextureConverter.Tests
             }
         }
 
-        [Test]
+        [Test, Ignore]
         public void DecompressTest()
         {
             TexImage img;
@@ -330,7 +330,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Test]
+        [Test, Ignore]
         public void CreateAtlasTest()
         {
             string[] fileList = Directory.GetFiles(Module.PathToInputImages + "atlas/");
@@ -383,7 +383,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Test]
+        [Test, Ignore]
         public void ExtractAtlasFailTest()
         {
             var atlas = texTool.LoadAtlas(Module.PathToInputImages + "atlas_WMipMaps.dds");
@@ -450,7 +450,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Test]
+        [Test, Ignore]
         public void UpdateAtlasFailTest()
         {
             var atlas = texTool.LoadAtlas(TexAtlas.TexLayout.Import(Module.PathToInputImages + Path.GetFileNameWithoutExtension("atlas_WMipMaps.dds") + TexAtlas.TexLayout.Extension), Module.PathToInputImages + "atlas_WMipMaps.dds");
@@ -503,7 +503,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Test]
+        [Test, Ignore]
         public void CreateArrayFailTest()
         {
             var list = new List<TexImage>();
@@ -554,7 +554,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Test]
+        [Test, Ignore]
         public void CreateCubeFailTest()
         {
             var list = new List<TexImage>();
@@ -595,7 +595,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Test]
+        [Test, Ignore]
         public void ExtractFailTest()
         {
             TexImage array = texTool.Load(Module.PathToInputImages + "array_WMipMaps.dds");

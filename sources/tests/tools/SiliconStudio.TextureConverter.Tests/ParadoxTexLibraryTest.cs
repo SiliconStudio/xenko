@@ -39,7 +39,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Test]
+        [Test, Ignore]
         public void CanHandleRequestTest()
         {
             TexImage image = TestTools.Load(library, "Texture3D_WMipMaps_ATC_RGBA_Explicit.pdx");
