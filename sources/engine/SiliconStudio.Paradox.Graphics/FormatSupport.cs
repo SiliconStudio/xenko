@@ -145,6 +145,14 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>	
         ShaderGatherComparison = unchecked((int)67108864),
 
+        DecoderOutput = 134217728,
+
+        VideoProcessorOutput = 268435456,
+
+        VideoProcessorInput = 536870912,
+
+        VideoEncoder = 1073741824,
+
         /// <summary>	
         /// None.	
         /// </summary>	
