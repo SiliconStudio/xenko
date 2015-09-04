@@ -15,13 +15,13 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// </summary>
         /// <userdoc>The name of the node (as it is written in the imported file).</userdoc>
         [DataMember(10), DiffUseAsset2]
-        public string Name;
+        public string Name { get; set; }
 
         /// <summary>
         ///  The index of the parent.
         /// </summary>
         [DataMember(20), DiffUseAsset2]
-        public int Depth;
+        public int Depth { get; set; }
 
         /// <summary>
         /// A flag stating if the node is collapsible.
@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// Nodes should be preserved in order to be animated or linked to an entity.</userdoc>
         [DataMember(30)]
         [DefaultValue(true)]
-        public bool Preserve;
+        public bool Preserve { get; set; }
 
         public NodeInformation()
         {

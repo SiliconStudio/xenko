@@ -431,7 +431,11 @@
                                            WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}}"/>
                         <Popup IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" x:Name="Popup" Focusable="False" AllowsTransparency="True" PopupAnimation="Slide">
                             <Grid>
-                                <ListBox x:Name="PART_ListBox" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="380" SnapsToDevicePixels="True" ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}}" SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}}">
+                                <ListBox x:Name="PART_ListBox" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="380" SnapsToDevicePixels="True"
+                                         ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}}"
+                                         SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}}"
+                                         ItemTemplate="{TemplateBinding ItemTemplate}" ItemTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                         ItemStringFormat="{TemplateBinding ItemStringFormat}">
                             </ListBox>
                             </Grid>
                         </Popup>
