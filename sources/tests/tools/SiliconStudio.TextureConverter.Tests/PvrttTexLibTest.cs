@@ -33,7 +33,7 @@ namespace SiliconStudio.TextureConverter.Tests
             TexImage image = new TexImage();
 
             var dxtLib = new DxtTexLib();
-            dxtLib.Execute(image, new LoadingRequest(TestTools.InputTestFolder + file, false));
+            dxtLib.Execute(image, new LoadingRequest(Module.PathToInputImages + file, false));
             image.CurrentLibrary = dxtLib;
             dxtLib.EndLibrary(image);
 

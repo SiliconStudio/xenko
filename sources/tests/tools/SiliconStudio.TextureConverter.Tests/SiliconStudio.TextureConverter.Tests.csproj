@@ -28,8 +28,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\..\data\tests\TextureConverter\*.*">
-      <Link>$(AssemblyName)\TextureConverter\%(Filename)%(Extension)</Link>
+    <Content Include="..\..\..\data\tests\TextureConverter\**\*.*">
+      <Link>$(AssemblyName)\InputImages\%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -37,6 +37,7 @@
     <Compile Include="ArrayTexLibraryTest.cs" />
     <Compile Include="AtitcTexLibraryTest.cs" />
     <Compile Include="AtlasTexLibraryTest.cs" />
+    <Compile Include="Module.cs" />
     <Compile Include="TestFindSprites.cs" />
     <Compile Include="DxtTexLibTest.cs" />
     <Compile Include="FITexLibTest.cs" />

@@ -10,8 +10,6 @@ namespace SiliconStudio.TextureConverter.Tests
     {
         private readonly Color transparencyColorKey = new Color(222, 76, 255, 255);
 
-        private const string PathInputImages = "SiliconStudio.TextureConverter.Tests/TextureConverter/";
-
         private void CheckEmptyRegion(TextureTool tool, TexImage image, Int2 position)
         {
             var theoreticalRegion = new Rectangle(position.X, position.Y, 0, 0);
@@ -23,7 +21,7 @@ namespace SiliconStudio.TextureConverter.Tests
         public void EmptyRegionTest()
         {
             using (var texTool = new TextureTool())
-            using (var texImage = texTool.Load(PathInputImages + "TransparentSheet.dds"))
+            using (var texImage = texTool.Load(Module.PathToInputImages + "TransparentSheet.dds"))
             {
                 CheckEmptyRegion(texTool, texImage, new Int2(-1, 5));
                 CheckEmptyRegion(texTool, texImage, new Int2(1000, 5));
@@ -37,7 +35,7 @@ namespace SiliconStudio.TextureConverter.Tests
         public void SinglePixelTest()
         {
             using (var texTool = new TextureTool())
-            using (var texImage = texTool.Load(PathInputImages + "TransparentSheet.dds"))
+            using (var texImage = texTool.Load(Module.PathToInputImages + "TransparentSheet.dds"))
             {
                 var theoreticalRegion = new Rectangle(4, 5, 1, 1);
                 var foundRegion = texTool.FindSpriteRegion(texImage, new Int2(4,5));
@@ -49,7 +47,7 @@ namespace SiliconStudio.TextureConverter.Tests
         public void TransversalLineTest()
         {
             using (var texTool = new TextureTool())
-            using (var texImage = texTool.Load(PathInputImages + "TransparentSheet.dds"))
+            using (var texImage = texTool.Load(Module.PathToInputImages + "TransparentSheet.dds"))
             {
                 var theoreticalRegion = new Rectangle(1, 8, 13, 15);
 
@@ -65,7 +63,7 @@ namespace SiliconStudio.TextureConverter.Tests
         public void ConvexShapeTest()
         {
             using (var texTool = new TextureTool())
-            using (var texImage = texTool.Load(PathInputImages + "TransparentSheet.dds"))
+            using (var texImage = texTool.Load(Module.PathToInputImages + "TransparentSheet.dds"))
             {
                 var theoreticalRegion = new Rectangle(10, 4, 36, 38);
 
@@ -78,7 +76,7 @@ namespace SiliconStudio.TextureConverter.Tests
         public void ConcavShapeTest()
         {
             using (var texTool = new TextureTool())
-            using (var texImage = texTool.Load(PathInputImages + "TransparentSheet.dds"))
+            using (var texImage = texTool.Load(Module.PathToInputImages + "TransparentSheet.dds"))
             {
                 var theoreticalRegion = new Rectangle(65, 60, 55, 61);
 
@@ -91,7 +89,7 @@ namespace SiliconStudio.TextureConverter.Tests
         public void IncludedShapeTest()
         {
             using (var texTool = new TextureTool())
-            using (var texImage = texTool.Load(PathInputImages + "TransparentSheet.dds"))
+            using (var texImage = texTool.Load(Module.PathToInputImages + "TransparentSheet.dds"))
             {
                 var theoreticalRegion = new Rectangle(70, 83, 32, 14);
 
@@ -104,7 +102,7 @@ namespace SiliconStudio.TextureConverter.Tests
         public void ComplexShapeTest()
         {
             using (var texTool = new TextureTool())
-            using (var texImage = texTool.Load(PathInputImages + "TransparentSheet.dds"))
+            using (var texImage = texTool.Load(Module.PathToInputImages + "TransparentSheet.dds"))
             {
                 var theoreticalRegion = new Rectangle(0, 52, 59, 65);
 
@@ -117,7 +115,7 @@ namespace SiliconStudio.TextureConverter.Tests
         public void ShapeWithHoleTest()
         {
             using (var texTool = new TextureTool())
-            using (var texImage = texTool.Load(PathInputImages + "TransparentSheet.dds"))
+            using (var texImage = texTool.Load(Module.PathToInputImages + "TransparentSheet.dds"))
             {
                 var theoreticalRegion = new Rectangle(49, 1, 76, 53);
 
@@ -142,7 +140,7 @@ namespace SiliconStudio.TextureConverter.Tests
             foreach (var image in images)
             {
                 using (var texTool = new TextureTool())
-                using (var texImage = texTool.Load(PathInputImages + image))
+                using (var texImage = texTool.Load(Module.PathToInputImages + image))
                 {
                     var theoreticalRegion = new Rectangle(4, 4, 1, 1);
                     var foundRegion = texTool.FindSpriteRegion(texImage, new Int2(4, 4), transparencyColorKey, 0xffffffff);
@@ -163,7 +161,7 @@ namespace SiliconStudio.TextureConverter.Tests
         public void TransparencyKeyTest()
         {
             using (var texTool = new TextureTool())
-            using (var texImage = texTool.Load(PathInputImages + "BgraSheet.dds"))
+            using (var texImage = texTool.Load(Module.PathToInputImages + "BgraSheet.dds"))
             {
                 var theoreticalRegion = new Rectangle(25, 25, 0, 0);
                 var foundRegion = texTool.FindSpriteRegion(texImage, new Int2(25, 25), transparencyColorKey, 0xffffffff);

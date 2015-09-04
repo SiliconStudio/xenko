@@ -39,7 +39,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [Test]
         public void CanHandleRequestTest()
         {
-            TexAtlas atlas = new TexAtlas(TexAtlas.TexLayout.Import(TestTools.InputTestFolder + Path.GetFileNameWithoutExtension("atlas_WMipMaps.dds") + TexAtlas.TexLayout.Extension), TestTools.Load(dxtLib, "atlas_WMipMaps.dds"));
+            TexAtlas atlas = new TexAtlas(TexAtlas.TexLayout.Import(Module.PathToInputImages + Path.GetFileNameWithoutExtension("atlas_WMipMaps.dds") + TexAtlas.TexLayout.Extension), TestTools.Load(dxtLib, "atlas_WMipMaps.dds"));
             Assert.IsFalse(library.CanHandleRequest(atlas, new DecompressingRequest(false)));
             Assert.IsTrue(library.CanHandleRequest(atlas, new AtlasCreationRequest(new List<TexImage>())));
             Assert.IsTrue(library.CanHandleRequest(atlas, new AtlasExtractionRequest(0)));
@@ -53,7 +53,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("atlas/", true, false)]
         public void CreateAtlasTest(string directory, bool generateMipMaps, bool forceSquaredAtlas)
         {
-            string path = TestTools.InputTestFolder + directory;
+            string path = Module.PathToInputImages + directory;
             string[] fileList = Directory.GetFiles(path);
             var list = new List<TexImage>(fileList.Length);
 
@@ -91,7 +91,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("atlas_WMipMaps.dds", "square256.png")]
         public void ExtractTest(string atlasFile, string extractedName)
         {
-            TexAtlas atlas = new TexAtlas(TexAtlas.TexLayout.Import(TestTools.InputTestFolder+Path.GetFileNameWithoutExtension(atlasFile) + TexAtlas.TexLayout.Extension), TestTools.Load(dxtLib, atlasFile));
+            TexAtlas atlas = new TexAtlas(TexAtlas.TexLayout.Import(Module.PathToInputImages+Path.GetFileNameWithoutExtension(atlasFile) + TexAtlas.TexLayout.Extension), TestTools.Load(dxtLib, atlasFile));
 
             var request = new AtlasExtractionRequest(extractedName, 16);
             library.Execute(atlas, request);
@@ -113,7 +113,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("atlas/")]
         public void ExtractAllTest(string directory)
         {
-            string path = TestTools.InputTestFolder + directory;
+            string path = Module.PathToInputImages + directory;
             string[] fileList = Directory.GetFiles(path);
             var list = new List<TexImage>(fileList.Length);
 
@@ -152,7 +152,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("atlas_WOMipMaps.png", "square256_2.png", "atlas/stones256.png")]
         public void UpdateTest(string atlasFile, string textureNameToUpdate, string newTexture)
         {
-            TexAtlas atlas = new TexAtlas(TexAtlas.TexLayout.Import(TestTools.InputTestFolder + Path.GetFileNameWithoutExtension(atlasFile) + TexAtlas.TexLayout.Extension), TestTools.Load(fiLib, atlasFile));
+            TexAtlas atlas = new TexAtlas(TexAtlas.TexLayout.Import(Module.PathToInputImages + Path.GetFileNameWithoutExtension(atlasFile) + TexAtlas.TexLayout.Extension), TestTools.Load(fiLib, atlasFile));
 
             var updateTexture = TestTools.Load(fiLib, newTexture);
 

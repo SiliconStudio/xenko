@@ -32,7 +32,7 @@ namespace SiliconStudio.TextureConverter.Tests
         {
             TexImage img;
 
-            img = texTool.Load(TestTools.InputTestFolder + "stones.png");
+            img = texTool.Load(Module.PathToInputImages + "stones.png");
             Assert.IsTrue(img.ArraySize == 1);
             Assert.IsTrue(img.Width == 512);
             Assert.IsTrue(img.Height == 512);
@@ -42,7 +42,7 @@ namespace SiliconStudio.TextureConverter.Tests
 
             try
             {
-                img = texTool.Load(TestTools.InputTestFolder + "elina.pkm");
+                img = texTool.Load(Module.PathToInputImages + "elina.pkm");
                 Assert.IsTrue(false);
             }
             catch (TextureToolsException)
@@ -58,7 +58,7 @@ namespace SiliconStudio.TextureConverter.Tests
             int mipmapCount, arraySize, width, height, depth, subImageArrayLenght;
 
             // ------------------- Test with BC3 image -------------------
-            img = texTool.Load(TestTools.InputTestFolder + "TextureArray_WMipMaps_BC3.dds");
+            img = texTool.Load(Module.PathToInputImages + "TextureArray_WMipMaps_BC3.dds");
             Assert.IsTrue(img.Format == PixelFormat.BC3_UNorm);
             mipmapCount = img.MipmapCount;
             arraySize = img.ArraySize;
@@ -80,7 +80,7 @@ namespace SiliconStudio.TextureConverter.Tests
             img.Dispose();
 
             // ------------------- Test with uncompress image -------------------
-            img = texTool.Load(TestTools.InputTestFolder + "stones.png");
+            img = texTool.Load(Module.PathToInputImages + "stones.png");
             texTool.Decompress(img, false);
             Assert.IsTrue(img.Format == PixelFormat.B8G8R8A8_UNorm); //FITexLibrary loads image in BGRA order...
             img.Dispose();
@@ -92,7 +92,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("TextureCube_WMipMaps_PVRTC2_4bpp.pvr", Orientation.Vertical)]
         public void FlipTest(string file, Orientation orientation)
         {
-            TexImage image = texTool.Load(TestTools.InputTestFolder + file);
+            TexImage image = texTool.Load(Module.PathToInputImages + file);
 
             texTool.Flip(image, orientation);
             image.Update();
@@ -107,7 +107,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("Texture3D_WOMipMaps_BC3.dds")]
         public void PreMultiplyAlphaTest(string file)
         {
-            TexImage image = texTool.Load(TestTools.InputTestFolder + file);
+            TexImage image = texTool.Load(Module.PathToInputImages + file);
 
             texTool.PreMultiplyAlpha(image);
 
@@ -124,7 +124,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("TextureArray_WMipMaps_BC3.dds", PixelFormat.BC3_UNorm)]
         public void CompressTest(string filename, PixelFormat format)
         {
-            TexImage image = texTool.Load(TestTools.InputTestFolder + filename);
+            TexImage image = texTool.Load(Module.PathToInputImages + filename);
             texTool.Compress(image, format);
             Assert.IsTrue(image.Format == format);
 
@@ -138,7 +138,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("TextureArray_WMipMaps_BC3.dds", Filter.MipMapGeneration.Linear)]
         public void GenerateMipMapTest(string file, Filter.MipMapGeneration filter)
         {
-            TexImage image = texTool.Load(TestTools.InputTestFolder + file);
+            TexImage image = texTool.Load(Module.PathToInputImages + file);
             texTool.GenerateMipMaps(image, filter);
             Assert.IsTrue(image.MipmapCount > 1);
 
@@ -151,7 +151,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("TextureArray_WMipMaps_BC3.dds")]
         public void CorrectGammaTest(string file)
         {
-            TexImage image = texTool.Load(TestTools.InputTestFolder + file);
+            TexImage image = texTool.Load(Module.PathToInputImages + file);
             texTool.CorrectGamma(image, 1/2.2);
             image.Update();
 
@@ -164,7 +164,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("TextureArray_WMipMaps_BC3.dds")]
         public void ConvertToParadoxImageTest(string file)
         {
-            TexImage image = texTool.Load(TestTools.InputTestFolder + file);
+            TexImage image = texTool.Load(Module.PathToInputImages + file);
             var pdx = texTool.ConvertToParadoxImage(image);
             Assert.IsTrue(pdx.TotalSizeInBytes == image.DataSize);
             Assert.IsTrue(pdx.Description.MipLevels == image.MipmapCount);
@@ -175,7 +175,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("TextureArray_WMipMaps_BC3.dds")]
         public void LoadParadoxImageTest(string file)
         {
-            TexImage image = texTool.Load(TestTools.InputTestFolder + file);
+            TexImage image = texTool.Load(Module.PathToInputImages + file);
 
             var pdx = texTool.ConvertToParadoxImage(image);
 
@@ -191,7 +191,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("TextureArray_WMipMaps_BC3.dds")]
         public void GenerateNormalMapTest(string file)
         {
-            TexImage image = texTool.Load(TestTools.InputTestFolder + file);
+            TexImage image = texTool.Load(Module.PathToInputImages + file);
             var normal = texTool.GenerateNormalMap(image, 0.5f);
 
             Assert.IsTrue(TestTools.ComputeSHA1(normal.Data, normal.DataSize).Equals(TestTools.GetInstance().Checksum["TextureTool_GenerateNormalMap_" + image.Name]));
@@ -204,7 +204,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("TextureArray_WMipMaps_BC3.dds")]
         public void RescaleTest(string file)
         {
-            TexImage image = texTool.Load(TestTools.InputTestFolder + file);
+            TexImage image = texTool.Load(Module.PathToInputImages + file);
             int width = image.Width;
             int height = image.Height;
             Assert.IsTrue(image.MipmapCount > 1);
@@ -223,7 +223,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("TextureArray_WMipMaps_BC3.dds")]
         public void ResizeTest(string file)
         {
-            TexImage image = texTool.Load(TestTools.InputTestFolder + file);
+            TexImage image = texTool.Load(Module.PathToInputImages + file);
             int width = image.Width;
             int height = image.Height;
             Assert.IsTrue(image.MipmapCount > 1);
@@ -242,7 +242,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("TextureArray_WMipMaps_BC3.dds")]
         public void SwitchChannelTest(string file)
         {
-            var image = texTool.Load(TestTools.InputTestFolder + file);
+            var image = texTool.Load(Module.PathToInputImages + file);
             var isInBgraOrder = image.Format.IsBGRAOrder();
 
             texTool.SwitchChannel(image);
@@ -262,26 +262,26 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("TextureArray_WMipMaps_BC3.dds", ".pvr", PixelFormat.None, 0)]
         public void SaveTest(string input, string extension, PixelFormat compressionFormat, int minimumMipmapSize)
         {
-            TexImage image = texTool.Load(TestTools.InputTestFolder + input);
+            TexImage image = texTool.Load(Module.PathToInputImages + input);
 
             string output = Path.GetFileNameWithoutExtension(input) + extension;
 
             if (compressionFormat == PixelFormat.None)
             {
-                texTool.Save(image, TestTools.TempFolder + output, minimumMipmapSize);
+                texTool.Save(image, Module.PathToOutputImages + output, minimumMipmapSize);
             }
             else
             {
-                texTool.Save(image, TestTools.TempFolder + output, compressionFormat, minimumMipmapSize);
+                texTool.Save(image, Module.PathToOutputImages + output, compressionFormat, minimumMipmapSize);
             }
 
-            Assert.IsTrue(File.Exists(TestTools.TempFolder + output));
-            var loaded = texTool.Load(TestTools.TempFolder + output);
+            Assert.IsTrue(File.Exists(Module.PathToOutputImages + output));
+            var loaded = texTool.Load(Module.PathToOutputImages + output);
 
             Assert.IsTrue(TestTools.ComputeSHA1(loaded.Data, loaded.DataSize).Equals(TestTools.GetInstance().Checksum["TextureTool_Save_" + compressionFormat + "_" + minimumMipmapSize + "_" + loaded.Name]));
             //Console.WriteLine("TextureTool_Save_" + compressionFormat + "_" + minimumMipmapSize + "_" + loaded.Name + "." + TestTools.ComputeSHA1(loaded.Data, loaded.DataSize));
 
-            File.Delete(TestTools.TempFolder + output);
+            File.Delete(Module.PathToOutputImages + output);
 
             loaded.Dispose();
             image.Dispose();
@@ -294,7 +294,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("duck.jpg", ".pvr", Filter.Rescaling.BSpline, PixelFormat.PVRTC_II_4bpp)]
         public void ProcessingTest(string source, string extension, Filter.Rescaling rescaleFiler, PixelFormat format)
         {
-            var image = texTool.Load(TestTools.InputTestFolder + source);
+            var image = texTool.Load(Module.PathToInputImages + source);
 
             texTool.CorrectGamma(image, 2.2);
 
@@ -307,24 +307,24 @@ namespace SiliconStudio.TextureConverter.Tests
             texTool.CorrectGamma(normalMap, 1/2.2);
 
             string output = "TextureTool_ProcessingTest_NormalMap" + rescaleFiler + "_" + format + "_" + source + extension;
-            texTool.Save(normalMap, TestTools.TempFolder + output, format, normalMap.Width / 2);
+            texTool.Save(normalMap, Module.PathToOutputImages + output, format, normalMap.Width / 2);
             normalMap.Dispose();
 
-            Assert.IsTrue(TestTools.ComputeSHA1(TestTools.TempFolder + output).Equals(TestTools.GetInstance().Checksum[output]));
-            //Console.WriteLine(output + "." + TestTools.ComputeSHA1(TestTools.TempFolder + output));
-            File.Delete(TestTools.TempFolder + output);
+            Assert.IsTrue(TestTools.ComputeSHA1(Module.PathToOutputImages + output).Equals(TestTools.GetInstance().Checksum[output]));
+            //Console.WriteLine(output + "." + TestTools.ComputeSHA1(Module.PathToOutputImages + output));
+            File.Delete(Module.PathToOutputImages + output);
 
             texTool.Flip(image, Orientation.Horizontal);
 
             texTool.CorrectGamma(image, 1/2.2);
 
             output = "TextureTool_ProcessingTest_" + rescaleFiler + "_" + format + "_" + source + extension;
-            texTool.Save(image, TestTools.TempFolder + output, format, 4);
+            texTool.Save(image, Module.PathToOutputImages + output, format, 4);
             image.Dispose();
 
-            Assert.IsTrue(TestTools.ComputeSHA1(TestTools.TempFolder + output).Equals(TestTools.GetInstance().Checksum[output]));
-            //Console.WriteLine(output + "." + TestTools.ComputeSHA1(TestTools.TempFolder + output));
-            File.Delete(TestTools.TempFolder + output);
+            Assert.IsTrue(TestTools.ComputeSHA1(Module.PathToOutputImages + output).Equals(TestTools.GetInstance().Checksum[output]));
+            //Console.WriteLine(output + "." + TestTools.ComputeSHA1(Module.PathToOutputImages + output));
+            File.Delete(Module.PathToOutputImages + output);
 
             image.Dispose();
         }
@@ -333,7 +333,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [Test]
         public void CreateAtlasTest()
         {
-            string[] fileList = Directory.GetFiles(TestTools.InputTestFolder + "atlas/");
+            string[] fileList = Directory.GetFiles(Module.PathToInputImages + "atlas/");
             var list = new List<TexImage>(fileList.Length);
 
             foreach (string filePath in fileList)
@@ -372,7 +372,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("atlas_WMipMaps.dds", "stones.png")]
         public void ExtractAtlasTest(string atlasFile, string textureName)
         {
-            var atlas = texTool.LoadAtlas(TestTools.InputTestFolder + atlasFile);
+            var atlas = texTool.LoadAtlas(Module.PathToInputImages + atlasFile);
             var extracted = texTool.Extract(atlas, textureName, 16);
 
             Assert.IsTrue(TestTools.ComputeSHA1(extracted.Data, extracted.DataSize).Equals(TestTools.GetInstance().Checksum["TextureTool_ExtractAtlas_" + atlasFile + "_" + textureName]));
@@ -386,7 +386,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [Test]
         public void ExtractAtlasFailTest()
         {
-            var atlas = texTool.LoadAtlas(TestTools.InputTestFolder + "atlas_WMipMaps.dds");
+            var atlas = texTool.LoadAtlas(Module.PathToInputImages + "atlas_WMipMaps.dds");
 
             try
             {
@@ -405,7 +405,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("atlas_WMipMaps.dds")]
         public void ExtractAllAtlasTest(string atlasFile)
         {
-            string[] fileList = Directory.GetFiles(TestTools.InputTestFolder + "atlas/");
+            string[] fileList = Directory.GetFiles(Module.PathToInputImages + "atlas/");
             var list = new List<TexImage>(fileList.Length);
 
             foreach (string filePath in fileList)
@@ -437,8 +437,8 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("atlas_WMipMaps.dds", "atlas/square256_2.png")]
         public void UpdateAtlasTest(string atlasFile, string textureName)
         {
-            var atlas = texTool.LoadAtlas(TexAtlas.TexLayout.Import(TestTools.InputTestFolder + Path.GetFileNameWithoutExtension(atlasFile) + TexAtlas.TexLayout.Extension), TestTools.InputTestFolder + atlasFile);
-            var updateTexture = texTool.Load(TestTools.InputTestFolder + textureName);
+            var atlas = texTool.LoadAtlas(TexAtlas.TexLayout.Import(Module.PathToInputImages + Path.GetFileNameWithoutExtension(atlasFile) + TexAtlas.TexLayout.Extension), Module.PathToInputImages + atlasFile);
+            var updateTexture = texTool.Load(Module.PathToInputImages + textureName);
 
             texTool.Update(atlas, updateTexture);
 
@@ -453,8 +453,8 @@ namespace SiliconStudio.TextureConverter.Tests
         [Test]
         public void UpdateAtlasFailTest()
         {
-            var atlas = texTool.LoadAtlas(TexAtlas.TexLayout.Import(TestTools.InputTestFolder + Path.GetFileNameWithoutExtension("atlas_WMipMaps.dds") + TexAtlas.TexLayout.Extension), TestTools.InputTestFolder + "atlas_WMipMaps.dds");
-            var updateTexture = texTool.Load(TestTools.InputTestFolder + "atlas/square256_2.png");
+            var atlas = texTool.LoadAtlas(TexAtlas.TexLayout.Import(Module.PathToInputImages + Path.GetFileNameWithoutExtension("atlas_WMipMaps.dds") + TexAtlas.TexLayout.Extension), Module.PathToInputImages + "atlas_WMipMaps.dds");
+            var updateTexture = texTool.Load(Module.PathToInputImages + "atlas/square256_2.png");
 
             try
             {
@@ -485,8 +485,8 @@ namespace SiliconStudio.TextureConverter.Tests
             var list = new List<TexImage>();
             for (int i = 0; i < 5; ++i)
             {
-                list.Add(texTool.Load(TestTools.InputTestFolder + file1));
-                list.Add(texTool.Load(TestTools.InputTestFolder + file2));
+                list.Add(texTool.Load(Module.PathToInputImages + file1));
+                list.Add(texTool.Load(Module.PathToInputImages + file2));
             }
 
             var array = texTool.CreateTextureArray(list);
@@ -507,9 +507,9 @@ namespace SiliconStudio.TextureConverter.Tests
         public void CreateArrayFailTest()
         {
             var list = new List<TexImage>();
-            list.Add(texTool.Load(TestTools.InputTestFolder + "atlas/stones256.png"));
+            list.Add(texTool.Load(Module.PathToInputImages + "atlas/stones256.png"));
 
-            var other = texTool.Load(TestTools.InputTestFolder + "atlas/stones256.png");
+            var other = texTool.Load(Module.PathToInputImages + "atlas/stones256.png");
             texTool.Rescale(other, 0.5f, 0.5f, Filter.Rescaling.Bilinear);
             list.Add(other);
 
@@ -536,8 +536,8 @@ namespace SiliconStudio.TextureConverter.Tests
             var list = new List<TexImage>();
             for (int i = 0; i < 3; ++i)
             {
-                list.Add(texTool.Load(TestTools.InputTestFolder + file1));
-                list.Add(texTool.Load(TestTools.InputTestFolder + file2));
+                list.Add(texTool.Load(Module.PathToInputImages + file1));
+                list.Add(texTool.Load(Module.PathToInputImages + file2));
             }
 
             var array = texTool.CreateTextureCube(list);
@@ -560,7 +560,7 @@ namespace SiliconStudio.TextureConverter.Tests
             var list = new List<TexImage>();
             for (int i = 0; i < 7; ++i)
             {
-                list.Add(texTool.Load(TestTools.InputTestFolder + "atlas/stones256.png"));
+                list.Add(texTool.Load(Module.PathToInputImages + "atlas/stones256.png"));
             }
 
             try
@@ -583,7 +583,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("array_WMipMaps.dds", 4)]
         public void ExtractTest(string arrayFile, int indice)
         {
-            TexImage array = texTool.Load(TestTools.InputTestFolder + arrayFile);
+            TexImage array = texTool.Load(Module.PathToInputImages + arrayFile);
 
             var extracted = texTool.Extract(array, indice);
 
@@ -598,7 +598,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [Test]
         public void ExtractFailTest()
         {
-            TexImage array = texTool.Load(TestTools.InputTestFolder + "array_WMipMaps.dds");
+            TexImage array = texTool.Load(Module.PathToInputImages + "array_WMipMaps.dds");
 
             try
             {
@@ -620,10 +620,10 @@ namespace SiliconStudio.TextureConverter.Tests
             var list = new List<TexImage>();
             for (int i = 0; i < 5; ++i)
             {
-                list.Add(texTool.Load(TestTools.InputTestFolder + file1));
+                list.Add(texTool.Load(Module.PathToInputImages + file1));
                 //Console.WriteLine("ArrayTexLibrary_ExtractAll_" + Path.GetFileName(file1) + "." + TestTools.ComputeSHA1(temp.Data, temp.DataSize));
 
-                list.Add(texTool.Load(TestTools.InputTestFolder + file2));
+                list.Add(texTool.Load(Module.PathToInputImages + file2));
                 //Console.WriteLine("ArrayTexLibrary_ExtractAll_" + Path.GetFileName(file2) + "." + TestTools.ComputeSHA1(temp.Data, temp.DataSize));
             }
 
@@ -650,8 +650,8 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("array_WMipMaps.dds", "atlas/square256.png", 3)]
         public void InsertTest(string arrayFile, string newTexture, int indice)
         {
-            var array = texTool.Load(TestTools.InputTestFolder + arrayFile);
-            var texture = texTool.Load(TestTools.InputTestFolder + newTexture);
+            var array = texTool.Load(Module.PathToInputImages + arrayFile);
+            var texture = texTool.Load(Module.PathToInputImages + newTexture);
             texTool.Compress(texture, PixelFormat.BC3_UNorm);
 
             texTool.Insert(array, texture, indice);
@@ -676,7 +676,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("array_WMipMaps.dds", 3)]
         public void RemoveTest(string arrayFile, int indice)
         {
-            var array = texTool.Load(TestTools.InputTestFolder + arrayFile);
+            var array = texTool.Load(Module.PathToInputImages + arrayFile);
 
             texTool.Remove(array, indice);
 
@@ -700,8 +700,8 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("array_WMipMaps.dds", "atlas/square256_2.png", 0)]
         public void UpdateArrayTest(string arrayFile, string textureName, int indice)
         {
-            var array = texTool.Load(TestTools.InputTestFolder + arrayFile);
-            var updateTexture = texTool.Load(TestTools.InputTestFolder + textureName);
+            var array = texTool.Load(Module.PathToInputImages + arrayFile);
+            var updateTexture = texTool.Load(Module.PathToInputImages + textureName);
 
             texTool.Update(array, updateTexture, indice);
 

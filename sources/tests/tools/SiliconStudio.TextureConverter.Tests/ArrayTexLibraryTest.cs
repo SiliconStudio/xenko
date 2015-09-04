@@ -21,6 +21,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestFixtureSetUp]
         public void TestSetUp()
         {
+            Module.LoadLibraries();
             library = new ArrayTexLib();
             fiLib = new FITexLib();
             dxtLib = new DxtTexLib();
@@ -50,7 +51,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
-        [TestCase(@"..\..\sources\data\tests\tools\texturetools\input\atlas\stones256.png", @"..\..\sources\data\tests\tools\texturetools\input\atlas\square256.png")]
+        [TestCase(Module.PathToAtlasImages+@"stones256.png", Module.PathToAtlasImages+@"square256.png")]
         public void CreateArrayTest(string file1, string file2)
         {
             var list = new List<TexImage>();
@@ -108,13 +109,13 @@ namespace SiliconStudio.TextureConverter.Tests
             for (int i = 0; i < 5; ++i)
             {
                 var temp = new TexImage();
-                fiLib.Execute(temp, new LoadingRequest(TestTools.InputTestFolder + file1, false));
+                fiLib.Execute(temp, new LoadingRequest(Module.PathToInputImages + file1, false));
                 temp.Name = Path.GetFileName(file1);
                 list.Add(temp);
                 //Console.WriteLine("ExtractAll_" + Path.GetFileName(file1) + "." + TestTools.ComputeSHA1(temp.Data, temp.DataSize));
 
                 temp = new TexImage();
-                fiLib.Execute(temp, new LoadingRequest(TestTools.InputTestFolder + file2, false));
+                fiLib.Execute(temp, new LoadingRequest(Module.PathToInputImages + file2, false));
                 temp.Name = Path.GetFileName(file2);
                 list.Add(temp);
                 //Console.WriteLine("ExtractAll_" + Path.GetFileName(file2) + "." + TestTools.ComputeSHA1(temp.Data, temp.DataSize));
@@ -209,7 +210,7 @@ namespace SiliconStudio.TextureConverter.Tests
             array.Dispose();
         }
 
-        [TestCase(@"..\..\sources\data\tests\tools\texturetools\input\atlas\stones256.png", @"..\..\sources\data\tests\tools\texturetools\input\atlas\square256.png")]
+        [TestCase(Module.PathToAtlasImages+"stones256.png", Module.PathToAtlasImages + @"square256.png")]
         public void CreateCubeTest(string file1, string file2)
         {
             var list = new List<TexImage>();

@@ -94,7 +94,7 @@ namespace SiliconStudio.TextureConverter.Tests
         {
             DxtTexLib lib = new DxtTexLib();
             TexImage image = new TexImage();
-            lib.Execute(image, new LoadingRequest(TestTools.InputTestFolder+"Texture3D_WMipMaps_BGRA8888.dds", false));
+            lib.Execute(image, new LoadingRequest(Module.PathToInputImages+"Texture3D_WMipMaps_BGRA8888.dds", false));
             image.Name = "Texture3D_WMipMaps_BGRA8888.dds";
             lib.EndLibrary(image);
             library.StartLibrary(image);
@@ -139,11 +139,11 @@ namespace SiliconStudio.TextureConverter.Tests
         {
             DxtTexLib lib = new DxtTexLib();
             TexImage image = new TexImage();
-            lib.Execute(image, new LoadingRequest(TestTools.InputTestFolder + fileName + extension, false));
+            lib.Execute(image, new LoadingRequest(Module.PathToInputImages + fileName + extension, false));
             lib.EndLibrary(image);
             library.StartLibrary(image);
 
-            library.Execute(image, new ExportRequest(TestTools.TempFolder + "FITexLibTest_ExportArrayTest_" + fileName + ".png", minMipMapSize));
+            library.Execute(image, new ExportRequest(Module.PathToOutputImages + "FITexLibTest_ExportArrayTest_" + fileName + ".png", minMipMapSize));
 
             int ct = 0;
             for (int i = 0; i < image.ArraySize; ++i)
@@ -152,7 +152,7 @@ namespace SiliconStudio.TextureConverter.Tests
                 {
                     if (image.SubImageArray[ct].Height < minMipMapSize || image.SubImageArray[ct].Width < minMipMapSize)
                         break;
-                    string file = TestTools.TempFolder + "FITexLibTest_ExportArrayTest_" + fileName + "-ind_" + i + "-mip_" + j + ".png";
+                    string file = Module.PathToOutputImages + "FITexLibTest_ExportArrayTest_" + fileName + "-ind_" + i + "-mip_" + j + ".png";
                     Assert.IsTrue(File.Exists(file));
 
                     //Console.WriteLine("FITexLibTest_ExportArrayTest_" + minMipMapSize + "_" + fileName + "-ind_" + i + "-mip_" + j + ".png" + "." + TestTools.ComputeSHA1(file));
