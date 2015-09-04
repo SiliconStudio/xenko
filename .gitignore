@@ -77,3 +77,4 @@ libbulletc.a
 *.CachedImage
 sources/engine/SiliconStudio.Paradox.Graphics/Shaders.Bytecodes/log/
 log
+sources/tools/SiliconStudio.Paradox.Assimp.Translation/x64Debug/.NETFramework,Version=v4.5.1.AssemblyAttributes.asm
