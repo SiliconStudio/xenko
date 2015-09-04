@@ -187,8 +187,6 @@
     <ProjectReference Include="..\SiliconStudio.Paradox.UI\SiliconStudio.Paradox.UI.csproj">
       <Project>{bb9deeef-f18c-40d8-b016-6434cc71b8c3}</Project>
       <Name>SiliconStudio.Paradox.UI</Name>
-      <IsAppExtension>false</IsAppExtension>
-      <IsWatchApp>false</IsWatchApp>
     </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
