@@ -106,7 +106,6 @@ namespace SiliconStudio.Paradox.Assets.Model
             childEntity.Add(ModelNodeLinkComponent.Key, new ModelNodeLinkComponent
             {
                 NodeName = nodeName,
-                Target = rootEntityAsset.Get(ModelComponent.Key),
             });
 
             // Add this asset to the list

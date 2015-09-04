@@ -86,6 +86,18 @@ namespace SiliconStudio.Core.Collections
             Items[Count] = default(T);
         }
 
+        public bool Remove(T item)
+        {
+            int index = IndexOf(item);
+            if (index >= 0)
+            {
+                RemoveAt(index);
+                return true;
+            }
+
+            return false;
+        }
+
         public void Clear()
         {
             this.Count = 0;
