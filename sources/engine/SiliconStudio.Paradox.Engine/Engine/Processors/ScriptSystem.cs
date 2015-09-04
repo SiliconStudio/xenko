@@ -23,11 +23,11 @@ namespace SiliconStudio.Paradox.Engine.Processors
         /// <summary>
         /// Contains all currently executed scripts
         /// </summary>
-        private HashSet<Script> registeredScripts = new HashSet<Script>();
-        private HashSet<Script> scriptsToStart = new HashSet<Script>();
-        private HashSet<SyncScript> syncScripts = new HashSet<SyncScript>();
-        private List<Script> scriptsToStartCopy = new List<Script>();
-        private List<SyncScript> syncScriptsCopy = new List<SyncScript>();
+        private readonly HashSet<Script> registeredScripts = new HashSet<Script>();
+        private readonly HashSet<Script> scriptsToStart = new HashSet<Script>();
+        private readonly HashSet<SyncScript> syncScripts = new HashSet<SyncScript>();
+        private readonly List<Script> scriptsToStartCopy = new List<Script>();
+        private readonly List<SyncScript> syncScriptsCopy = new List<SyncScript>();
 
         /// <summary>
         /// Gets the scheduler.
@@ -52,6 +52,7 @@ namespace SiliconStudio.Paradox.Engine.Processors
         {
             scriptsToStartCopy.Clear();
             scriptsToStartCopy.AddRange(scriptsToStart);
+            scriptsToStart.Clear();
 
             // Start new scripts
             foreach (var script in scriptsToStartCopy)
@@ -77,7 +78,6 @@ namespace SiliconStudio.Paradox.Engine.Processors
                     script.MicroThread = AddTask(asyncScript.Execute);
                 }
             }
-            scriptsToStart.Clear();
 
             // Run current micro threads
             Scheduler.Run();
