@@ -122,7 +122,7 @@ namespace SiliconStudio.Paradox.Rendering
             if (context.IsPicking()) // TODO move this code corresponding to picking outside of the runtime code!
             {
                 parameters.Set(ModelComponentPickingShaderKeys.ModelComponentId, new Color4(RenderModel.ModelComponent.Id));
-                parameters.Set(ModelComponentPickingShaderKeys.MeshId, new Color4(Mesh.NodeIndex));
+                parameters.Set(ModelComponentPickingShaderKeys.MeshId, new Color4(RenderModel.ModelComponent.Model.Meshes.IndexOf(Mesh)));
                 parameters.Set(ModelComponentPickingShaderKeys.MaterialId, new Color4(Mesh.MaterialIndex));
 
                 // Don't use the materials blend state on picking targets
