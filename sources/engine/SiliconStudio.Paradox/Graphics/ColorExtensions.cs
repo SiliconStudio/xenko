@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
-        /// Converts the color to the specified <see cref="ColorSpace"/>.
+        /// Converts the color in gamma space to the specified <see cref="ColorSpace"/>.
         /// </summary>
         /// <param name="color">The color.</param>
         /// <param name="colorSpace">The color space.</param>
@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
-        /// Converts the color to the specified <see cref="ColorSpace"/>.
+        /// Converts the color in gamma space to the specified <see cref="ColorSpace"/>.
         /// </summary>
         /// <param name="color">The color.</param>
         /// <param name="colorSpace">The color space.</param>
@@ -41,6 +41,42 @@ namespace SiliconStudio.Paradox.Graphics
         public static Color3 ToColorSpace(this Color3 color, ColorSpace colorSpace)
         {
             return colorSpace == ColorSpace.Linear ? color.ToLinear() : color;
+        }
+
+        /// <summary>
+        /// Converts the color from a particualr color space to the specified <see cref="ColorSpace"/>.
+        /// </summary>
+        /// <param name="color">The color.</param>
+        /// <param name="sourceColorSpace">The color space of this instance.</param>
+        /// <param name="colorSpace">The color space.</param>
+        /// <returns>The color converted to the specified color space.</returns>
+        public static Color4 ToColorSpace(this Color4 color, ColorSpace sourceColorSpace, ColorSpace colorSpace)
+        {
+            // Nothing to do?
+            if (sourceColorSpace == colorSpace)
+            {
+                return color;
+            }
+
+            return sourceColorSpace == ColorSpace.Gamma ? color.ToLinear() : color.ToSRgb();
+        }
+
+        /// <summary>
+        /// Converts the color from a particualr color space to the specified <see cref="ColorSpace"/>.
+        /// </summary>
+        /// <param name="color">The color.</param>
+        /// <param name="sourceColorSpace">The color space of this instance.</param>
+        /// <param name="colorSpace">The color space.</param>
+        /// <returns>The color converted to the specified color space.</returns>
+        public static Color3 ToColorSpace(this Color3 color, ColorSpace sourceColorSpace, ColorSpace colorSpace)
+        {
+            // Nothing to do?
+            if (sourceColorSpace == colorSpace)
+            {
+                return color;
+            }
+
+            return sourceColorSpace == ColorSpace.Gamma ? color.ToLinear() : color.ToSRgb();
         }
     }
 }
