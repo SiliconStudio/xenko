@@ -418,8 +418,8 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// Batch the draws required to display the provided text to the draw list.
         /// </summary>
-        /// <param name="fontSize">The size to use when rendering the font</param>
-        /// <param name="fontInternalScale">The size of the font glyphs to use in pixels</param>
+        /// <param name="fontSize">The size to use when rendering the font in virtual pixels</param>
+        /// <param name="internalScales">The internal scales to apply on the font glyphs</param>
         /// <param name="text">The text to draw on the screen</param>
         /// <param name="worldMatrix">The world matrix of the element</param>
         /// <param name="elementSize">The 2D size of the element to draw in virtual pixels</param>
@@ -428,7 +428,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="depthBias">The depth bias of the ui element</param>
         /// <param name="font">The fond to use to draw the text</param>
         /// <param name="snapText">Indicate if the rendered string should be snapped to the closed pixel.</param>
-        public void DrawString(SpriteFont font, string text, float fontSize, ref Vector2 fontInternalScale, ref Matrix worldMatrix, ref Vector2  elementSize, 
+        public void DrawString(SpriteFont font, string text, float fontSize, ref Vector2 internalScales, ref Matrix worldMatrix, ref Vector2  elementSize, 
                                 ref Color color, TextAlignment alignment, int depthBias, bool snapText)
         {
             var drawCommand = new SpriteFont.InternalUIDrawCommand
@@ -437,7 +437,7 @@ namespace SiliconStudio.Paradox.Graphics
                     Batch = this, 
                     Color = color, 
                     DepthBias = depthBias, 
-                    FontScale = fontInternalScale,
+                    FontScale = internalScales,
                     SnapText = snapText,
                     Alignment = alignment,
                     Size = elementSize,

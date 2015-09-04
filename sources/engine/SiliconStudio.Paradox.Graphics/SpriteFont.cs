@@ -490,7 +490,7 @@ namespace SiliconStudio.Paradox.Graphics
             else // scan the text line by line incrementing y start position
             {
                 // measure the whole string in order to be able to determine xStart
-                var wholeSize = elementsize.HasValue ? elementsize.Value : MeasureString(ref text, ref fontSize);
+                var wholeSize = elementsize ?? MeasureString(ref text, ref fontSize);
 
                 // scan the text line by line
                 var yStart = 0f;
