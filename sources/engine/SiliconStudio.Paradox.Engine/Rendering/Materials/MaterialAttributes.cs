@@ -5,6 +5,7 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Rendering.Materials
 {
@@ -23,6 +24,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         /// </summary>
         public MaterialAttributes()
         {
+            CullMode = CullMode.Back;
             Overrides = new MaterialOverrides();
         }
 
@@ -148,6 +150,15 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         [Display("Overrides", null, "Misc")]
         [DataMember(120)]
         public MaterialOverrides Overrides { get; private set; }
+        
+        /// <summary>
+        /// Gets or sets the cull mode used for the material.
+        /// </summary>
+        /// <userdoc>Specifies if some faces of the model should be culled depending on their orientation.</userdoc>
+        [Display("Cull Mode", null, "Misc")]
+        [DataMember(130)]
+        [DefaultValue(CullMode.Back)]
+        public CullMode CullMode{ get; set; }
 
         public override void VisitFeature(MaterialGeneratorContext context)
         {
@@ -190,6 +201,10 @@ namespace SiliconStudio.Paradox.Rendering.Materials
 
             // Pop overrides
             context.PopOverrides();
+
+            // Set the culling mode for the material
+            var cullModeDesc = new RasterizerStateDescription(CullMode);
+            context.Parameters.Set(Effect.RasterizerStateKey, RasterizerState.NewFake(cullModeDesc));
         }
     }
 }
