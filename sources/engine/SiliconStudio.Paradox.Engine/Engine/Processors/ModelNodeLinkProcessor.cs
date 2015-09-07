@@ -27,13 +27,20 @@ namespace SiliconStudio.Paradox.Engine.Processors
             {
                 var modelNodeLink = item.Value;
                 var transformComponent = item.Key.Transform;
-                var transformLink = transformComponent.ParentLink as ModelNodeTransformLink;
+                var transformLink = transformComponent.TransformLink as ModelNodeTransformLink;
 
-                var parentEntity = transformComponent.Parent.Entity;
-                if (transformLink == null || transformLink.NeedsRecreate(parentEntity, modelNodeLink.NodeName))
+                // Try to use Target, otherwise Parent
+                var modelComponent = modelNodeLink.Target;
+                var modelEntity = modelComponent?.Entity ?? transformComponent.Parent?.Entity;
+
+                // Check against Entity instead of ModelComponent to avoid having to get ModelComponent when nothing changed)
+                if (transformLink == null || transformLink.NeedsRecreate(modelEntity, modelNodeLink.NodeName))
                 {
-                    var modelComponent = parentEntity.Get(ModelComponent.Key);
-                    transformComponent.ParentLink = modelComponent != null ? new ModelNodeTransformLink(modelComponent, modelNodeLink.NodeName) : null;
+                    // In case we use parent, modelComponent still needs to be resolved
+                    if (modelComponent == null)
+                        modelComponent = modelEntity?.Get(ModelComponent.Key);
+
+                    transformComponent.TransformLink = modelComponent != null ? new ModelNodeTransformLink(modelComponent, modelNodeLink.NodeName) : null;
                 }
             }
         }

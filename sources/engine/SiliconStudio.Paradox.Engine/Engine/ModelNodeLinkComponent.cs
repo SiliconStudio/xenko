@@ -15,6 +15,15 @@ namespace SiliconStudio.Paradox.Engine
         public static PropertyKey<ModelNodeLinkComponent> Key = new PropertyKey<ModelNodeLinkComponent>("Key", typeof(ModelNodeLinkComponent));
 
         /// <summary>
+        /// Gets or sets the model which contains the hierarchy to use.
+        /// </summary>
+        /// <value>
+        /// The model which contains the hierarchy to use.
+        /// </value>
+        /// <userdoc>The reference to the target entity to which attach the current entity. If null, parent will be used.</userdoc>
+        public ModelComponent Target { get; set; }
+
+        /// <summary>
         /// Gets or sets the name of the node.
         /// </summary>
         /// <value>

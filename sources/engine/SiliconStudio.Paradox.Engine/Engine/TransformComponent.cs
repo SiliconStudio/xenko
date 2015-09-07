@@ -73,7 +73,7 @@ namespace SiliconStudio.Paradox.Engine
         public Vector3 Scale;
 
         [DataMemberIgnore]
-        public TransformLink ParentLink;
+        public TransformLink TransformLink;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TransformComponent" /> class.
@@ -233,10 +233,10 @@ namespace SiliconStudio.Paradox.Engine
 
         internal void UpdateWorldMatrixNonRecursive()
         {
-            if (ParentLink != null)
+            if (TransformLink != null)
             {
                 Matrix linkMatrix;
-                ParentLink.ComputeMatrix(out linkMatrix);
+                TransformLink.ComputeMatrix(out linkMatrix);
                 Matrix.Multiply(ref LocalMatrix, ref linkMatrix, out WorldMatrix);
             }
             else if (Parent != null)
