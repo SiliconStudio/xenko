@@ -5,7 +5,7 @@ using System.IO;
 using System.Collections.Generic;
 
 using NUnit.Framework;
-
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.TextureConverter.Tests
@@ -722,5 +722,28 @@ namespace SiliconStudio.TextureConverter.Tests
             }
         }
 
+        [TestCase]
+        public void PickColorTest()
+        {
+            var pixelCoordinate1 = new Int2(4, 4);
+            var theoreticalColor1 = new Color(0, 255, 46, 255);
+            var pixelCoordinate2 = new Int2(3, 4);
+            var theoreticalColor2 = new Color(222, 76, 255, 255);
+
+            var images = new[] { "BgraSheet.dds", "RgbaSheet.dds" };
+
+            foreach (var image in images)
+            {
+                using (var texTool = new TextureTool())
+                using (var texImage = texTool.Load(Module.PathToInputImages + image))
+                {
+                    var foundColor = texTool.PickColor(texImage, pixelCoordinate1);
+                    Assert.AreEqual(theoreticalColor1, foundColor);
+
+                    foundColor = texTool.PickColor(texImage, pixelCoordinate2);
+                    Assert.AreEqual(theoreticalColor2, foundColor);
+                }
+            }
+        }
     }
 }

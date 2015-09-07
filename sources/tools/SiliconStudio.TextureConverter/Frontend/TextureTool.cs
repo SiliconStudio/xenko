@@ -727,6 +727,33 @@ namespace SiliconStudio.TextureConverter
         }
 
         /// <summary>
+        /// Pick the color under the specified pixel.
+        /// </summary>
+        /// <param name="texture">The texture</param>
+        /// <param name="pixel">The coordinate of the pixel</param>
+        public unsafe Color PickColor(TexImage texture, Int2 pixel)
+        {
+            if (texture == null) throw new ArgumentNullException(nameof(texture));
+
+            var format = texture.Format;
+            if (texture.Dimension != TexImage.TextureDimension.Texture2D || !(format.IsRGBAOrder() || format.IsBGRAOrder() || format.SizeInBytes() != 4))
+                throw new NotImplementedException();
+
+            // check that the pixel is inside the texture
+            var textureRegion = new Rectangle(0, 0, texture.Width, texture.Height);
+            if (!textureRegion.Contains(pixel))
+                throw new ArgumentException("The provided pixel coordinate is outside of the texture");
+
+            var ptr = (uint*)texture.Data;
+            var stride = texture.RowPitch / 4;
+
+            var pixelColorInt = ptr[stride*pixel.Y + pixel.X];
+            var pixelColor = format.IsRGBAOrder() ? Color.FromRgba(pixelColorInt) : Color.FromBgra(pixelColorInt);
+
+            return pixelColor;
+        }
+
+        /// <summary>
         /// Find the region of the texture containing the sprite under the specified pixel.
         /// </summary>
         /// <param name="texture">The texture containing the sprite</param>
