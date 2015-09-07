@@ -37,6 +37,7 @@ namespace SiliconStudio.Paradox.Graphics
         private static readonly bool[] compressedFormats = new bool[256];
         private static readonly bool[] srgbFormats = new bool[256];
         private static readonly bool[] hdrFormats = new bool[256];
+        private static readonly bool[] alpha32Formats = new bool[256];
         private static readonly bool[] typelessFormats = new bool[256];
         private static readonly Dictionary<PixelFormat, PixelFormat> sRgbConvertion;
         
@@ -182,6 +183,16 @@ namespace SiliconStudio.Paradox.Graphics
         public static bool IsCompressed(this PixelFormat fmt)
         {
             return compressedFormats[GetIndex(fmt)];
+        }
+
+        /// <summary>
+        /// Returns true if the <see cref="PixelFormat"/> is an uncompressed 32 bit color with an Alpha channel.
+        /// </summary>
+        /// <param name="fmt">The format to check for an uncompressed 32 bit color with an Alpha channel.</param>
+        /// <returns>True if the <see cref="PixelFormat"/> is an uncompressed 32 bit color with an Alpha channel</returns>
+        public static bool HasAlpha32Bits(this PixelFormat fmt)
+        {
+            return alpha32Formats[GetIndex(fmt)];
         }
 
         /// <summary>
@@ -631,6 +642,15 @@ namespace SiliconStudio.Paradox.Graphics
                     PixelFormat.B8G8R8X8_UNorm_SRgb,
                     PixelFormat.BC7_UNorm_SRgb,
                 }, srgbFormats);
+
+            // Init srgb formats
+            InitDefaults(new[]
+                {
+                    PixelFormat.R8G8B8A8_UNorm,
+                    PixelFormat.R8G8B8A8_UNorm_SRgb,
+                    PixelFormat.B8G8R8A8_UNorm,
+                    PixelFormat.B8G8R8A8_UNorm_SRgb,
+                }, alpha32Formats);
 
             InitDefaults(new []
             {

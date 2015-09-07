@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 using SiliconStudio.Core;
@@ -42,6 +43,19 @@ namespace SiliconStudio.TextureConverter.TexLibraries
     internal class DxtTexLib : ITexLibrary
     {
         private static Logger Log = GlobalLogger.GetLogger("DxtTexLib");
+
+        private static HashSet<string> SupportedExtensions = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase)
+        {
+            ".dds",
+            ".bmp",
+            ".tga",
+            ".jpg",
+            ".jpeg",
+            ".jpe",
+            ".png",
+            ".tiff",
+            ".tif",
+        };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DxtTexLib"/> class.
@@ -116,7 +130,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             {
                 case RequestType.Loading:
                     LoadingRequest loader = (LoadingRequest)request;
-                    return loader.Mode==LoadingRequest.LoadingMode.FilePath && Path.GetExtension(loader.FilePath).Equals(".dds");
+                    return loader.Mode==LoadingRequest.LoadingMode.FilePath && SupportedExtensions.Contains(Path.GetExtension(loader.FilePath));
 
                 case RequestType.Compressing:
                     CompressingRequest compress = (CompressingRequest)request;
@@ -194,7 +208,21 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
             libraryData.Image = new ScratchImage();
             libraryData.Metadata = new TexMetadata();
-            HRESULT hr = Utilities.LoadDDSFile(loader.FilePath, DDS_FLAGS.DDS_FLAGS_NONE, out libraryData.Metadata, libraryData.Image);
+
+            var extension = Path.GetExtension(loader.FilePath);
+            HRESULT hr = 0;
+            if (extension.EndsWith(".dds", StringComparison.InvariantCultureIgnoreCase))
+            {
+                hr = Utilities.LoadDDSFile(loader.FilePath, DDS_FLAGS.DDS_FLAGS_NONE, out libraryData.Metadata, libraryData.Image);
+            }
+            else if (extension.EndsWith(".tga", StringComparison.InvariantCultureIgnoreCase))
+            {
+                hr = Utilities.LoadTGAFile(loader.FilePath, out libraryData.Metadata, libraryData.Image);
+            }
+            else
+            {
+                hr = Utilities.LoadWICFile(loader.FilePath, WIC_FLAGS.WIC_FLAGS_NONE, out libraryData.Metadata, libraryData.Image);
+            }
 
             if (hr != HRESULT.S_OK)
             {
