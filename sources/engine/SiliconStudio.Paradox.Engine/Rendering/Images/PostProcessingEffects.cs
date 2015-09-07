@@ -187,13 +187,20 @@ namespace SiliconStudio.Paradox.Rendering.Images
         public void DisableAll()
         {
             depthOfField.Enabled = false;
-            luminanceEffect.Enabled = false;
-            brightFilter.Enabled = false;
             bloom.Enabled = false;
             lightStreak.Enabled = false;
             lensFlare.Enabled = false;
             ssaa.Enabled = false;
             colorTransformsGroup.Enabled = false;
+        }
+
+        public override void Reset()
+        {
+            // TODO: Check how to reset other effects too
+            // Reset the luminance effect
+            luminanceEffect.Reset();
+
+            base.Reset();
         }
 
         protected override void InitializeCore()
@@ -262,7 +269,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
             // Luminance pass (only if tone mapping is enabled)
             // TODO: This is not super pluggable to have this kind of dependencies. Check how to improve this
             var toneMap = colorTransformsGroup.Transforms.Get<ToneMap>();
-            if (colorTransformsGroup.Enabled && toneMap != null && toneMap.LuminanceLocalFactor > 0.0f)
+            if (colorTransformsGroup.Enabled && toneMap != null && toneMap.Enabled)
             {
                 const int LocalLuminanceDownScale = 3;
 

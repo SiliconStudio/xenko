@@ -104,6 +104,17 @@ namespace SiliconStudio.Paradox.Rendering.Images
             }
         }
 
+        public override void Reset()
+        {
+            // Make sure that StagingUsed is reseted
+            for (int i = 0; i < stagingUsed.Count; i++)
+            {
+                stagingUsed[i] = false;
+            }
+
+            base.Reset();
+        }
+
         protected override void DrawCore(RenderContext context)
         {
             var input = GetSafeInput(0);

@@ -134,6 +134,13 @@ namespace SiliconStudio.Paradox.Rendering.Images
             }
         }
 
+        public override void Reset()
+        {
+            readback.Reset();
+
+            base.Reset();
+        }
+
         protected override void DrawCore(RenderContext context)
         {
             var input = GetSafeInput(0);
