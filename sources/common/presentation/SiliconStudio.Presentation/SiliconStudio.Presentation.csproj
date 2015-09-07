@@ -49,6 +49,7 @@
     <Compile Include="Behaviors\NumericTextBoxTransactionalRepeatButtonsBehavior.cs" />
     <Compile Include="Behaviors\OnEventBehavior.cs" />
     <Compile Include="Behaviors\OnEventSetPropertyBehavior.cs" />
+    <Compile Include="Behaviors\OnMouseEventBehavior.cs" />
     <Compile Include="Behaviors\SliderDragFromTrackBehavior.cs" />
     <Compile Include="Behaviors\TextBoxCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\ThumbTransactionalDragBehavior.cs" />
