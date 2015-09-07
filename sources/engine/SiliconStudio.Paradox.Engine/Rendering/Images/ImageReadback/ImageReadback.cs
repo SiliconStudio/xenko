@@ -131,7 +131,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
             }
             else
             {
-                for (int i = stagingTargets.Count - 1; !IsResultAvailable && i >= 1; i--)
+                for (int i = stagingTargets.Count - 1; !IsResultAvailable && i >= 0; i--)
                 {
                     var oldStagingIndex = (currentStagingIndex + i) % stagingTargets.Count;
                     var stagingTarget = stagingTargets[oldStagingIndex];
@@ -140,7 +140,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
                     if (stagingUsed[oldStagingIndex])
                     {
                         // If oldest staging target?
-                        if (i == 1)
+                        if (i == 0)
                         {
                             // Get data blocking (otherwise we would loop without getting any readback if StagingCount is not enough high)
                             stagingTarget.GetData(result);
