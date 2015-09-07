@@ -32,8 +32,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageReadback{T}"/> class.
         /// </summary>
-        /// <param name="context">The context.</param>
-        public ImageReadback(RenderContext context) : base(context)
+        public ImageReadback()
         {
             stagingUsed = new List<bool>();
             stagingTargets = new List<Texture>();
