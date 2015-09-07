@@ -88,7 +88,7 @@ namespace SiliconStudio.TextureConverter
             OriginalAlphaDepth = -1;
 
             SubImageArray = new SubImage[1];
-            Format = PixelFormat.B8G8R8A8_UNorm;
+            Format = PixelFormat.R8G8B8A8_UNorm;
 
             LibraryData = new Dictionary<ITexLibrary, ITextureLibraryData>();
 

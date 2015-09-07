@@ -32,8 +32,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageReadback{T}"/> class.
         /// </summary>
-        /// <param name="context">The context.</param>
-        public ImageReadback(RenderContext context) : base(context)
+        public ImageReadback()
         {
             stagingUsed = new List<bool>();
             stagingTargets = new List<Texture>();
@@ -105,6 +104,17 @@ namespace SiliconStudio.Paradox.Rendering.Images
             }
         }
 
+        public override void Reset()
+        {
+            // Make sure that StagingUsed is reseted
+            for (int i = 0; i < stagingUsed.Count; i++)
+            {
+                stagingUsed[i] = false;
+            }
+
+            base.Reset();
+        }
+
         protected override void DrawCore(RenderContext context)
         {
             var input = GetSafeInput(0);
@@ -131,7 +141,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
             }
             else
             {
-                for (int i = stagingTargets.Count - 1; !IsResultAvailable && i >= 1; i--)
+                for (int i = stagingTargets.Count - 1; !IsResultAvailable && i >= 0; i--)
                 {
                     var oldStagingIndex = (currentStagingIndex + i) % stagingTargets.Count;
                     var stagingTarget = stagingTargets[oldStagingIndex];
@@ -140,7 +150,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
                     if (stagingUsed[oldStagingIndex])
                     {
                         // If oldest staging target?
-                        if (i == 1)
+                        if (i == 0)
                         {
                             // Get data blocking (otherwise we would loop without getting any readback if StagingCount is not enough high)
                             stagingTarget.GetData(result);

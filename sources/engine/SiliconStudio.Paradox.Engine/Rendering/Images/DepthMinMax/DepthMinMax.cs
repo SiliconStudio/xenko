@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
 
             effectFirstPass = ToLoadAndUnload(new ImageEffectShader("DepthMinMaxEffect"));
             effectNotFirstPass = ToLoadAndUnload(new ImageEffectShader("DepthMinMaxEffect"));
-            readback = ToLoadAndUnload(new ImageReadback<Vector2>(Context));
+            readback = ToLoadAndUnload(new ImageReadback<Vector2>());
         }
 
         public bool IsResultAvailable { get; private set; }

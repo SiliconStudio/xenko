@@ -33,9 +33,10 @@ namespace SiliconStudio.Paradox.Assets.Textures
     {
         public static ColorSpace ToColorSpace(this TextureColorSpace textureColorSpace, ColorSpace colorSpaceReference, TextureHint textureHint)
         {
-            var colorSpace = colorSpaceReference;
+            var colorSpace = ColorSpace.Gamma;
             if (textureHint == TextureHint.Color)
             {
+                colorSpace = colorSpaceReference;
                 if (textureColorSpace == TextureColorSpace.Linear)
                 {
                     colorSpace = ColorSpace.Linear;

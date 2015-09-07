@@ -21,6 +21,8 @@ namespace SiliconStudio.Paradox.Rendering.Materials
     {
         private static readonly MaterialStreamDescriptor NormalStream = new MaterialStreamDescriptor("Normal", "matNormal", MaterialKeys.NormalValue.PropertyType);
 
+        private static readonly Color DefaultNormalColor = new Color(0x80, 0x80, 0xFF, 0xFF);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialNormalMapFeature"/> class.
         /// </summary>
@@ -82,7 +84,29 @@ namespace SiliconStudio.Paradox.Rendering.Materials
                 context.UseStreamWithCustomBlend(MaterialShaderStage.Pixel, NormalStream.Stream, new ShaderClassSource("MaterialStreamNormalBlend"));
                 context.Parameters.Set(MaterialKeys.HasNormalMap, true);
 
-                var computeColorSource = NormalMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.NormalMap, MaterialKeys.NormalValue, new Color(0x80, 0x80, 0xFF, 0xFF)));
+                var normalMap = NormalMap;
+                // Workaround to make sure that normal map are setup 
+                var computeTextureColor = normalMap as ComputeTextureColor;
+                if (computeTextureColor != null)
+                {
+                    if (computeTextureColor.FallbackValue.Value == Color.White)
+                    {
+                        computeTextureColor.FallbackValue.Value = DefaultNormalColor;
+                    }
+                }
+                else
+                {
+                    var computeColor = normalMap as ComputeColor;
+                    if (computeColor != null)
+                    {
+                        if (computeColor.Value == Color.Black || computeColor.Value == Color.White)
+                        {
+                            computeColor.Value = DefaultNormalColor;
+                        }
+                    }
+                }
+
+                var computeColorSource = NormalMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.NormalMap, MaterialKeys.NormalValue, DefaultNormalColor, false));
                 var mixin = new ShaderMixinSource();
                 mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceNormalMap", IsXYNormal, ScaleAndBias));
                 mixin.AddComposition("normalMap", computeColorSource);
