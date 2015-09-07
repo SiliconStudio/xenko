@@ -423,6 +423,11 @@
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="Background" Value="{DynamicResource LightBrush}"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="Sort">
+            <Setter.Value>
+                <ctrl:FilteringComboBoxSort/>
+            </Setter.Value>
+        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ctrl:FilteringComboBox}">
@@ -433,10 +438,10 @@
                             <Grid>
                                 <ListBox x:Name="PART_ListBox" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="380" SnapsToDevicePixels="True"
                                          ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}}"
-                                         SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}}"
+                                         SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}, Mode=TwoWay}"
                                          ItemTemplate="{TemplateBinding ItemTemplate}" ItemTemplateSelector="{TemplateBinding ItemTemplateSelector}"
                                          ItemStringFormat="{TemplateBinding ItemStringFormat}">
-                            </ListBox>
+                                </ListBox>
                             </Grid>
                         </Popup>
                     </Grid>
