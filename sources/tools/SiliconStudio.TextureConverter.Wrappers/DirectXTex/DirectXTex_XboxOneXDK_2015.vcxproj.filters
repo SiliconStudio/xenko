@@ -1,45 +1,48 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns:atg="http://atg.xbox.com" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{8e114980-c1a3-4ada-ad7c-83caadf5daeb}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{1b82e2dc-aea9-4897-8c7e-7ff2aa1ea8c8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{d342dfd3-2538-4c06-98aa-9f8f79a9abee}</UniqueIdentifier>
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <CLInclude Include="DirectXTex.h">
+    <ClInclude Include="DirectXTex.h">
       <Filter>Header Files</Filter>
-    </CLInclude>
-    <CLInclude Include="DirectXTex.inl">
-      <Filter>Header Files</Filter>
-    </CLInclude>
-    <ClCompile Include="BC4BC5.cpp">
+    </ClInclude>
+    <ClInclude Include="BC.h">
       <Filter>Source Files</Filter>
-    </ClCompile>
+    </ClInclude>
     <ClInclude Include="BCDirectCompute.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <CLInclude Include="DDS.h">
-      <Filter>Source Files</Filter>
-    </CLInclude>
-    <CLInclude Include="DirectXTexp.h">
-      <Filter>Source Files</Filter>
-    </CLInclude>
-    <ClInclude Include="filters.h">
+    <ClInclude Include="DDS.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <CLInclude Include="scoped.h">
+    <ClInclude Include="DirectXTexP.h">
       <Filter>Source Files</Filter>
-    </CLInclude>
+    </ClInclude>
+    <ClInclude Include="Filters.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scoped.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DirectXTex.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BC4BC5.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BC6HBC7.cpp">
@@ -69,7 +72,7 @@
     <ClCompile Include="DirectXTexImage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DirectXTexMipMaps.cpp">
+    <ClCompile Include="DirectXTexMipmaps.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DirectXTexMisc.cpp">
@@ -93,10 +96,5 @@
     <ClCompile Include="DirectXTexWIC.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <CLInclude Include="BC.h">
-      <Filter>Source Files</Filter>
-    </CLInclude>
   </ItemGroup>
 </Project>
