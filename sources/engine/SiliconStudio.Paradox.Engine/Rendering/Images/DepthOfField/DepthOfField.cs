@@ -254,9 +254,8 @@ namespace SiliconStudio.Paradox.Rendering.Images
             thresholdAlphaCoC = ToLoadAndUnload(new ImageEffectShader("ThresholdAlphaCoC"));
             thresholdAlphaCoCFront = ToLoadAndUnload(new ImageEffectShader("ThresholdAlphaCoCFront"));
             pointDepthShader = ToLoadAndUnload(new ImageEffectShader("PointDepth"));
-            depthReadBack = ToLoadAndUnload(new ImageReadback<Half>(Context));
+            depthReadBack = ToLoadAndUnload(new ImageReadback<Half>());
             depthCenter1x1 = Texture.New2D(GraphicsDevice, 1, 1, 1, PixelFormat.R16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this);
-            depthReadBack.SetInput(depthCenter1x1);
         }
 
         /// <summary>
@@ -387,6 +386,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
                 pointDepthShader.SetOutput(depthCenter1x1);
                 pointDepthShader.Draw("Center Depth");
 
+                depthReadBack.SetInput(depthCenter1x1);
                 depthReadBack.Draw("Center_Depth_Readback");
                 var centerDepth = depthReadBack.Result[0];
                 autoFocusDistanceTarget = centerDepth;
