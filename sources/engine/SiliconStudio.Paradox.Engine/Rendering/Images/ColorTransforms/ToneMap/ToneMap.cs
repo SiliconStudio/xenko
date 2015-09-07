@@ -42,6 +42,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
             AutoKeyValue = true;
             Operator = new ToneMapHejl2Operator();
             AdaptationRate = 1.0f;
+            TemporalAdaptation = true;
         }
 
         /// <summary>
@@ -93,7 +94,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [automatic key value].
+        /// Gets or sets a value indicating whether the tonemap key is automatically calculated based on common perceptive behavior.
         /// </summary>
         /// <value><c>true</c> if [automatic key value]; otherwise, <c>false</c>.</value>
         [DataMember(30)]
@@ -109,6 +110,15 @@ namespace SiliconStudio.Paradox.Rendering.Images
                 Parameters.Set(ToneMapShaderKeys.AutoKeyValue, value);
             }
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to update the luminance progressively based on the current time.
+        /// </summary>
+        /// <value><c>true</c> the luminance is updated progressively based on the current time; otherwise, <c>false</c>.</value>
+        [DataMember(35)]
+        [DefaultValue(true)]
+        [Display("Temporal adaptation?")]
+        public bool TemporalAdaptation { get; set; }
 
         /// <summary>
         /// Gets or sets the adaptation rate.
@@ -188,25 +198,25 @@ namespace SiliconStudio.Paradox.Rendering.Images
 
             var luminanceResult = context.SharedParameters.Get(LuminanceEffect.LuminanceResult);
 
-            var avgLuminanceLog = 0.18f; // TODO: Add a parmetrized average luminance
-            if (luminanceResult.LocalTexture != null)
+            // Get the average luminance
+            float adaptedLum = luminanceResult.AverageLuminance;
+            if (TemporalAdaptation)
             {
                 // Get adapted luminance
                 // From "Perceptual effects in real-time tone mapping" by Grzegorz Krawczyk, Karol Myszkowski, Hans-Peter Seidel, p. 3, Equation 5
-                var adaptedLum = (float)(previousLuminance + (luminanceResult.AverageLuminance - previousLuminance) * (1.0 - Math.Exp(-elapsedTime.TotalSeconds * AdaptationRate)));
-                avgLuminanceLog = (float)Math.Log(adaptedLum, 2);
+                adaptedLum = (float)(previousLuminance + (luminanceResult.AverageLuminance - previousLuminance) * (1.0 - Math.Exp(-elapsedTime.TotalSeconds * AdaptationRate)));
                 previousLuminance = adaptedLum;
+            }
 
-                if (AutoKeyValue)
-                {
-                    // From "Perceptual effects in real-time tone mapping" by Grzegorz Krawczyk, Karol Myszkowski, Hans-Peter Seidel, p. 4, Equation 11
-                    KeyValue = 1.03f - (2.0f / (2.0f + (float)Math.Log10(adaptedLum + 1)));
-                }
+            if (AutoKeyValue)
+            {
+                // From "Perceptual effects in real-time tone mapping" by Grzegorz Krawczyk, Karol Myszkowski, Hans-Peter Seidel, p. 4, Equation 11
+                KeyValue = 1.03f - (2.0f / (2.0f + (float)Math.Log10(adaptedLum + 1)));
             }
 
             // Setup parameters
             Parameters.Set(ToneMapShaderKeys.LuminanceTexture, luminanceResult.LocalTexture);
-            Parameters.Set(ToneMapShaderKeys.LuminanceAverageGlobal, avgLuminanceLog);
+            Parameters.Set(ToneMapShaderKeys.LuminanceAverageGlobal, (float)Math.Log(adaptedLum, 2));
 
             // Update operator parameters
             Operator.UpdateParameters(context);
