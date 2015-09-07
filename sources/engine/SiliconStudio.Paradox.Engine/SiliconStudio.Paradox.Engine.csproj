@@ -94,7 +94,7 @@
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketListener.cs" />
     <Compile Include="Engine\StartupScript.cs" />
     <Compile Include="Rendering\Composers\DirectRenderFrameProvider.cs" />
-    <Compile Include="Rendering\CullingMode.cs" />
+    <Compile Include="Rendering\CameraCullingMode.cs" />
     <Compile Include="Rendering\Images\AntiAliasing\FXAAShaderEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

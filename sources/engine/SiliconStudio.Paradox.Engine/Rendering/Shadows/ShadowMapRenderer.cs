@@ -88,7 +88,7 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
             // Creates a model renderer for the shadows casters
             shadowModelComponentRenderer = new ModelComponentRenderer(effectName + ".ShadowMapCaster")
             {
-                CullingMode =  CullingMode.None,
+                CullingMode =  CameraCullingMode.None,
                 Callbacks =
                 {
                     UpdateMeshes = FilterCasters,
@@ -207,6 +207,7 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
             // When rendering shadow maps, objects should not be culled by the rasterizer (in case the object is out of the frustum but cast
             // a shadow into the frustum)
             shadowModelComponentRenderer.RasterizerState = RasterizerState.New(Context.GraphicsDevice, shadowRenderState);
+            shadowModelComponentRenderer.ForceRasterizer = true;
 
         }
 

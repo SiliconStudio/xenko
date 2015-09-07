@@ -6,7 +6,7 @@ namespace SiliconStudio.Paradox.Rendering
     /// <summary>
     /// Culling mode of a <see cref="SceneCameraRenderer"/>.
     /// </summary>
-    public enum CullingMode
+    public enum CameraCullingMode
     {
         /// <summary>
         /// No culling is applied to meshes.
