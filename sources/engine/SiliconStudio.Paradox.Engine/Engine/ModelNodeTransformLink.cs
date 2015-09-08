@@ -8,20 +8,28 @@ namespace SiliconStudio.Paradox.Engine
     {
         private readonly ModelComponent parentModelComponent;
         private ModelViewHierarchyUpdater modelViewHierarchy;
+        private readonly bool forceRecursive;
         private string nodeName;
         private int nodeIndex = int.MaxValue;
 
-        public ModelNodeTransformLink(ModelComponent parentModelComponent, string nodeName)
+        public ModelNodeTransformLink(ModelComponent parentModelComponent, string nodeName, bool forceRecursive)
         {
             this.parentModelComponent = parentModelComponent;
             this.nodeName = nodeName;
+            this.forceRecursive = forceRecursive;
         }
 
         public TransformTRS Transform;
 
         /// <inheritdoc/>
-        public override void ComputeMatrix(out Matrix matrix)
+        public override void ComputeMatrix(bool recursive, out Matrix matrix)
         {
+            // If model is not in the parent, we might want to force recursive update (since parentModelComponent might not be updated yet)
+            if (forceRecursive || recursive)
+            {
+                parentModelComponent.Entity.Transform.UpdateWorldMatrix();
+            }
+
             // Updated? (rare slow path)
             if (parentModelComponent.ModelViewHierarchy != modelViewHierarchy)
             {

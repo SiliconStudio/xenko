@@ -47,7 +47,8 @@ namespace SiliconStudio.Paradox.Engine.Processors
                     if (modelComponent == null)
                         modelComponent = modelEntity?.Get(ModelComponent.Key);
 
-                    transformComponent.TransformLink = modelComponent != null ? new ModelNodeTransformLink(modelComponent, modelNodeLink.NodeName) : null;
+                    // If model component is not parent, we want to use forceRecursive because we might want to update this link before the modelComponent.Entity is updated (depending on order of transformation update)
+                    transformComponent.TransformLink = modelComponent != null ? new ModelNodeTransformLink(modelComponent, modelNodeLink.NodeName, modelEntity != transformComponent.Parent?.Entity) : null;
                 }
             }
         }

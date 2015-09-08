@@ -10,7 +10,8 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// Compute a world matrix this link represents.
         /// </summary>
+        /// <param name="recursive"></param>
         /// <param name="matrix">The computed world matrix.</param>
-        public abstract void ComputeMatrix(out Matrix matrix);
+        public abstract void ComputeMatrix(bool recursive, out Matrix matrix);
     }
 }

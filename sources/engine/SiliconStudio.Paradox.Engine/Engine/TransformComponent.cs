@@ -228,20 +228,21 @@ namespace SiliconStudio.Paradox.Engine
         public void UpdateWorldMatrix()
         {
             UpdateLocalMatrix();
-            UpdateWorldMatrixNonRecursive();
+            UpdateWorldMatrixInternal(true);
         }
 
-        internal void UpdateWorldMatrixNonRecursive()
+        internal void UpdateWorldMatrixInternal(bool recursive)
         {
             if (TransformLink != null)
             {
                 Matrix linkMatrix;
-                TransformLink.ComputeMatrix(out linkMatrix);
+                TransformLink.ComputeMatrix(recursive, out linkMatrix);
                 Matrix.Multiply(ref LocalMatrix, ref linkMatrix, out WorldMatrix);
             }
             else if (Parent != null)
             {
-                Parent.UpdateWorldMatrix();
+                if (recursive)
+                    Parent.UpdateWorldMatrix();
                 Matrix.Multiply(ref LocalMatrix, ref Parent.WorldMatrix, out WorldMatrix);
             }
             else

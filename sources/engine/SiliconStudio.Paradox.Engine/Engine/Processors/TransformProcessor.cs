@@ -98,7 +98,7 @@ namespace SiliconStudio.Paradox.Engine.Processors
         {
             // Update transform
             transform.UpdateLocalMatrix();
-            transform.UpdateWorldMatrixNonRecursive();
+            transform.UpdateWorldMatrixInternal(false);
         }
 
         /// <summary>
