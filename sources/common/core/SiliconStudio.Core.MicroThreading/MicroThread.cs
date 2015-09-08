@@ -56,7 +56,11 @@ namespace SiliconStudio.Core.MicroThreading
         public int Priority
         {
             get { return priority; }
-            set { priority = value; }
+            set
+            {
+                if (priority != value)
+                    Reschedule(ScheduleMode.First, value);
+            }
         }
 
         /// <summary>
@@ -226,7 +230,7 @@ namespace SiliconStudio.Core.MicroThreading
         /// <returns>Task.</returns>
         public async Task Run()
         {
-            Reschedule(ScheduleMode.First);
+            Reschedule(ScheduleMode.First, Priority);
             var currentScheduler = Scheduler.Current;
             if (currentScheduler == Scheduler)
                 await Scheduler.Yield();
@@ -253,15 +257,19 @@ namespace SiliconStudio.Core.MicroThreading
             State = (exception == ExceptionToRaise) ? MicroThreadState.Cancelled : MicroThreadState.Failed;
         }
 
-        internal void Reschedule(ScheduleMode scheduleMode)
+        internal void Reschedule(ScheduleMode scheduleMode, int newPriority)
         {
             lock (Scheduler.scheduledMicroThreads)
             {
                 if (ScheduledLinkedListNode.Index != -1)
                 {
                     Scheduler.scheduledMicroThreads.Remove(ScheduledLinkedListNode);
-
+                    priority = newPriority;
                     Schedule(scheduleMode);
+                }
+                else
+                {
+                    priority = newPriority;
                 }
             }
         }
