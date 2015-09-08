@@ -29,6 +29,7 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         /// <userdoc>The execution priority for this script. It applies to async, sync and startup scripts.</userdoc>
         [DefaultValue(0)]
+        [DataMember(10000)]
         public int Priority
         {
             get { return priority; }
