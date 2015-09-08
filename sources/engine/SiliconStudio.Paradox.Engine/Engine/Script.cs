@@ -46,10 +46,6 @@ namespace SiliconStudio.Paradox.Engine
         /// The entity this script is attached to.
         /// </value>
         [DataMemberIgnore]
-        public Entity Entity
-        {
-            // Note: we might want to make this property public?
-            get { return ScriptComponent != null ? ScriptComponent.Entity : null; }
-        }
+        public Entity Entity => ScriptComponent?.Entity;
     }
 }
