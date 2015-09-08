@@ -37,7 +37,10 @@ namespace SiliconStudio.Paradox.Rendering
                 for(int i = 0; i < RenderMeshesPerEffectSlot.Count; i++)
                 {
                     // TODO: We should dispose render mehses here, but need to check exactly how
-                    RenderMeshesPerEffectSlot[i].Clear();
+                    // Changing a struct so make a copy first (TODO: Replace with ref locals when released)
+                    var renderMeshes = RenderMeshesPerEffectSlot[i];
+                    renderMeshes.Clear();
+                    RenderMeshesPerEffectSlot[i] = renderMeshes;
                 }
 
                 previousModel = newModel;
