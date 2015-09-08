@@ -243,20 +243,22 @@ namespace SiliconStudio.Core.MicroThreading
         /// </summary>
         public void Cancel()
         {
+            // TODO: If we unschedule the microthread after cancellation, we never give user code the chance to throw OperationCanceledException.
+            // If we don't, we can't be sure that the MicroThread ends. 
+            // Should we run continuations manually? For now, set it to Canceled, so it gets removed after the next scheduling step in all cases.
+            State = MicroThreadState.Canceled;
+
             // Notify awaitables
             cancellationTokenSource.Cancel();
 
             // Unschedule microthread
-            lock (Scheduler.scheduledMicroThreads)
-            {
-                if (ScheduledLinkedListNode.Index != -1)
-                {
-                    Scheduler.scheduledMicroThreads.Remove(ScheduledLinkedListNode);
-                }
-            }
-
-            // TODO: We never give user code the chance to throw OperationCanceledException, if we unschedule here. Run continuations manually?
-            State = MicroThreadState.Canceled;
+            //lock (Scheduler.scheduledMicroThreads)
+            //{
+            //    if (ScheduledLinkedListNode.Index != -1)
+            //    {
+            //        Scheduler.scheduledMicroThreads.Remove(ScheduledLinkedListNode);
+            //    }
+            //}
         }
 
         internal void SetException(Exception exception)
