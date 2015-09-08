@@ -66,7 +66,7 @@ namespace SiliconStudio.Paradox.Graphics.Data
         public static Image GetSerializationData(this Texture texture)
         {
             var attachedReference = AttachedReferenceManager.GetAttachedReference(texture);
-            return attachedReference != null ? (Image)attachedReference.Data : null;
+            return (Image)attachedReference?.Data;
         }
 
         /// <summary>
