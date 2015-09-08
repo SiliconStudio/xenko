@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|ARM">
-      <Configuration>Debug</Configuration>
-      <Platform>ARM</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
@@ -13,10 +9,6 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Profile|ARM">
-      <Configuration>Profile</Configuration>
-      <Platform>ARM</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Profile|Win32">
       <Configuration>Profile</Configuration>
       <Platform>Win32</Platform>
@@ -24,10 +16,6 @@
     <ProjectConfiguration Include="Profile|x64">
       <Configuration>Profile</Configuration>
       <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|ARM">
-      <Configuration>Release</Configuration>
-      <Platform>ARM</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
@@ -43,77 +31,48 @@
     <ProjectGuid>{371B9FA9-4C90-4AC6-A123-ACED756D6C77}</ProjectGuid>
     <RootNamespace>DirectXTex</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath11)</VCTargetsPath>
-    <DefaultLanguage>en-US</DefaultLanguage>
-    <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
-    <AppContainerApplication>true</AppContainerApplication>
-    <ApplicationType>Windows Store</ApplicationType>
-    <ApplicationTypeRevision>8.1</ApplicationTypeRevision>
+    <WindowsTargetPlatformVersion>10.0.10240.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|X64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|X64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|ARM'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|X64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings" />
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|ARM'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="PropertySheets">
@@ -127,64 +86,43 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>Bin\Windows81\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Windows81\$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>DirectXTex</TargetName>
-    <LinkIncremental>true</LinkIncremental>
-    <GenerateManifest>true</GenerateManifest>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <OutDir>Bin\Windows81\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Windows81\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>Bin\Desktop_2015_Win10\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Desktop_2015_Win10\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTex</TargetName>
     <LinkIncremental>true</LinkIncremental>
     <GenerateManifest>true</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|X64'">
-    <OutDir>Bin\Windows81\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Windows81\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>Bin\Desktop_2015_Win10\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Desktop_2015_Win10\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTex</TargetName>
     <LinkIncremental>true</LinkIncremental>
     <GenerateManifest>true</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>Bin\Windows81\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Windows81\$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>DirectXTex</TargetName>
-    <LinkIncremental>false</LinkIncremental>
-    <GenerateManifest>true</GenerateManifest>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <OutDir>Bin\Windows81\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Windows81\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>Bin\Desktop_2015_Win10\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Desktop_2015_Win10\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTex</TargetName>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>true</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|X64'">
-    <OutDir>Bin\Windows81\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Windows81\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>Bin\Desktop_2015_Win10\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Desktop_2015_Win10\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTex</TargetName>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>true</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
-    <OutDir>Bin\Windows81\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Windows81\$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>DirectXTex</TargetName>
-    <LinkIncremental>false</LinkIncremental>
-    <GenerateManifest>true</GenerateManifest>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|ARM'">
-    <OutDir>Bin\Windows81\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Windows81\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>Bin\Desktop_2015_Win10\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Desktop_2015_Win10\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTex</TargetName>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>true</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|X64'">
-    <OutDir>Bin\Windows81\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Windows81\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>Bin\Desktop_2015_Win10\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Desktop_2015_Win10\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTex</TargetName>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>true</GenerateManifest>
@@ -200,7 +138,8 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <ExceptionHandling>Sync</ExceptionHandling>
       <AdditionalOptions> %(AdditionalOptions)</AdditionalOptions>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;WIN32;_DEBUG;_LIB;_WIN32_WINNT=0x0A00;_CRT_STDIO_ARBITRARY_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>DirectXTexP.h</PrecompiledHeaderFile>
@@ -229,51 +168,6 @@
       <Command>
       </Command>
     </PostBuildEvent>
-    <Lib>
-      <AdditionalOptions>/IGNORE:4264 %(AdditionalOptions)</AdditionalOptions>
-    </Lib>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
-      <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <OpenMPSupport>true</OpenMPSupport>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <AdditionalOptions> %(AdditionalOptions)</AdditionalOptions>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>DirectXTexP.h</PrecompiledHeaderFile>
-      <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
-    </ClCompile>
-    <Link>
-      <AdditionalOptions> %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <LargeAddressAware>true</LargeAddressAware>
-      <RandomizedBaseAddress>true</RandomizedBaseAddress>
-      <DataExecutionPrevention>true</DataExecutionPrevention>
-      <UACExecutionLevel>AsInvoker</UACExecutionLevel>
-      <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
-    </Link>
-    <Manifest>
-      <EnableDPIAwareness>false</EnableDPIAwareness>
-    </Manifest>
-    <PreBuildEvent>
-      <Command>
-      </Command>
-    </PreBuildEvent>
-    <PostBuildEvent>
-      <Command>
-      </Command>
-    </PostBuildEvent>
-    <Lib>
-      <AdditionalOptions>/IGNORE:4264 %(AdditionalOptions)</AdditionalOptions>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|X64'">
     <ClCompile>
@@ -285,7 +179,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <ExceptionHandling>Sync</ExceptionHandling>
       <AdditionalOptions> %(AdditionalOptions)</AdditionalOptions>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;WIN32;_DEBUG;_LIB;_WIN32_WINNT=0x0A00;_CRT_STDIO_ARBITRARY_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>DirectXTexP.h</PrecompiledHeaderFile>
@@ -314,9 +208,6 @@
       <Command>
       </Command>
     </PostBuildEvent>
-    <Lib>
-      <AdditionalOptions>/IGNORE:4264 %(AdditionalOptions)</AdditionalOptions>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -330,7 +221,7 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <ExceptionHandling>Sync</ExceptionHandling>
       <AdditionalOptions> %(AdditionalOptions)</AdditionalOptions>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;WIN32;NDEBUG;_LIB;_WIN32_WINNT=0x0A00;_CRT_STDIO_ARBITRARY_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>DirectXTexP.h</PrecompiledHeaderFile>
       <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
@@ -360,53 +251,6 @@
       <Command>
       </Command>
     </PostBuildEvent>
-    <Lib>
-      <AdditionalOptions>/IGNORE:4264 %(AdditionalOptions)</AdditionalOptions>
-    </Lib>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <OpenMPSupport>true</OpenMPSupport>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <AdditionalOptions> %(AdditionalOptions)</AdditionalOptions>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>DirectXTexP.h</PrecompiledHeaderFile>
-      <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
-    </ClCompile>
-    <Link>
-      <AdditionalOptions> %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <LargeAddressAware>true</LargeAddressAware>
-      <RandomizedBaseAddress>true</RandomizedBaseAddress>
-      <DataExecutionPrevention>true</DataExecutionPrevention>
-      <UACExecutionLevel>AsInvoker</UACExecutionLevel>
-      <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
-    </Link>
-    <Manifest>
-      <EnableDPIAwareness>false</EnableDPIAwareness>
-    </Manifest>
-    <PreBuildEvent>
-      <Command>
-      </Command>
-    </PreBuildEvent>
-    <PostBuildEvent>
-      <Command>
-      </Command>
-    </PostBuildEvent>
-    <Lib>
-      <AdditionalOptions>/IGNORE:4264 %(AdditionalOptions)</AdditionalOptions>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|X64'">
     <ClCompile>
@@ -419,7 +263,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <ExceptionHandling>Sync</ExceptionHandling>
       <AdditionalOptions> %(AdditionalOptions)</AdditionalOptions>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;WIN32;NDEBUG;_LIB;_WIN32_WINNT=0x0A00;_CRT_STDIO_ARBITRARY_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>DirectXTexP.h</PrecompiledHeaderFile>
       <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
@@ -449,9 +293,6 @@
       <Command>
       </Command>
     </PostBuildEvent>
-    <Lib>
-      <AdditionalOptions>/IGNORE:4264 %(AdditionalOptions)</AdditionalOptions>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
     <ClCompile>
@@ -465,7 +306,7 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <ExceptionHandling>Sync</ExceptionHandling>
       <AdditionalOptions> %(AdditionalOptions)</AdditionalOptions>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;NDEBUG;PROFILE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;WIN32;NDEBUG;PROFILE;_LIB;_WIN32_WINNT=0x0A00;_CRT_STDIO_ARBITRARY_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>DirectXTexP.h</PrecompiledHeaderFile>
       <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
@@ -495,53 +336,6 @@
       <Command>
       </Command>
     </PostBuildEvent>
-    <Lib>
-      <AdditionalOptions>/IGNORE:4264 %(AdditionalOptions)</AdditionalOptions>
-    </Lib>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|ARM'">
-    <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <OpenMPSupport>true</OpenMPSupport>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <AdditionalOptions> %(AdditionalOptions)</AdditionalOptions>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;NDEBUG;PROFILE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>DirectXTexP.h</PrecompiledHeaderFile>
-      <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
-    </ClCompile>
-    <Link>
-      <AdditionalOptions> %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <LargeAddressAware>true</LargeAddressAware>
-      <RandomizedBaseAddress>true</RandomizedBaseAddress>
-      <DataExecutionPrevention>true</DataExecutionPrevention>
-      <UACExecutionLevel>AsInvoker</UACExecutionLevel>
-      <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
-    </Link>
-    <Manifest>
-      <EnableDPIAwareness>false</EnableDPIAwareness>
-    </Manifest>
-    <PreBuildEvent>
-      <Command>
-      </Command>
-    </PreBuildEvent>
-    <PostBuildEvent>
-      <Command>
-      </Command>
-    </PostBuildEvent>
-    <Lib>
-      <AdditionalOptions>/IGNORE:4264 %(AdditionalOptions)</AdditionalOptions>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|X64'">
     <ClCompile>
@@ -554,7 +348,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <ExceptionHandling>Sync</ExceptionHandling>
       <AdditionalOptions> %(AdditionalOptions)</AdditionalOptions>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;NDEBUG;PROFILE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;WIN32;NDEBUG;PROFILE;_LIB;_WIN32_WINNT=0x0A00;_CRT_STDIO_ARBITRARY_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>DirectXTexP.h</PrecompiledHeaderFile>
       <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
@@ -584,9 +378,6 @@
       <Command>
       </Command>
     </PostBuildEvent>
-    <Lib>
-      <AdditionalOptions>/IGNORE:4264 %(AdditionalOptions)</AdditionalOptions>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup />
   <ItemGroup>
@@ -596,7 +387,7 @@
     <ClCompile Include="BC6HBC7.cpp" />
     <ClInclude Include="BCDirectCompute.h" />
     <CLInclude Include="DDS.h" />
-    <CLInclude Include="filters.h" />
+    <ClInclude Include="filters.h" />
     <CLInclude Include="scoped.h" />
     <CLInclude Include="DirectXTex.h" />
     <CLInclude Include="DirectXTexp.h" />
@@ -617,11 +408,8 @@
     <ClCompile Include="DirectXTexTGA.cpp" />
     <ClCompile Include="DirectXTexUtil.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|ARM'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>

@@ -83,6 +83,16 @@ HRESULT dxtLoadDDSFile(LPCWSTR szFile, int flags, DirectX::TexMetadata* metadata
 	return DirectX::LoadFromDDSFile(szFile, flags, metadata, image);
 }
 
+HRESULT dxtLoadTGAFile(LPCWSTR szFile, DirectX::TexMetadata* metadata, DirectX::ScratchImage& image)
+{
+	return DirectX::LoadFromTGAFile(szFile, metadata, image);
+}
+
+HRESULT dxtLoadWICFile(LPCWSTR szFile, int flags, DirectX::TexMetadata* metadata, DirectX::ScratchImage& image)
+{
+	return DirectX::LoadFromWICFile(szFile, flags, metadata, image);
+}
+
 HRESULT dxtSaveToDDSFile( const DirectX::Image& image, int flags, LPCWSTR szFile )
 {
 	return DirectX::SaveToDDSFile(image, flags, szFile);

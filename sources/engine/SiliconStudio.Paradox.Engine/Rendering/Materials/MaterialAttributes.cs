@@ -202,9 +202,14 @@ namespace SiliconStudio.Paradox.Rendering.Materials
             // Pop overrides
             context.PopOverrides();
 
-            // Set the culling mode for the material
-            var cullModeDesc = new RasterizerStateDescription(CullMode);
-            context.Parameters.Set(Effect.RasterizerStateKey, RasterizerState.NewFake(cullModeDesc));
+            // Only set the cullmode to something 
+            if (CullMode != CullMode.Back)
+            {
+                if (context.Material.CullMode == null)
+                {
+                    context.Material.CullMode = CullMode;
+                }
+            }
         }
     }
 }

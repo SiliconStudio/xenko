@@ -3,12 +3,12 @@
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Rendering.Lights
+namespace SiliconStudio.Paradox.Rendering.Colors
 {
     /// <summary>
     /// Defines the interface for describing the color of a light.
     /// </summary>
-    public interface ILightColor
+    public interface IColorProvider
     {
         /// <summary>
         /// Computes the color of the light (sRgb space).

@@ -184,6 +184,8 @@ namespace SiliconStudio.Paradox.Rendering
                 graphicsDevice.SetRasterizerState(EnableBackColor || ShowBackface ? graphicsDevice.RasterizerStates.WireFrame : graphicsDevice.RasterizerStates.WireFrameCullBack);
                 graphicsDevice.SetDepthStencilState(graphicsDevice.DepthStencilStates.Default);
 
+                modelComponentAndPickingRenderer.ModelRenderer.ForceRasterizer = true;
+
                 base.DrawCore(context);
             }
             finally 

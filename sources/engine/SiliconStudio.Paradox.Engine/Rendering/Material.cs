@@ -45,6 +45,11 @@ namespace SiliconStudio.Paradox.Rendering
         public ParameterCollection Parameters { get; set; }
 
         /// <summary>
+        /// Overrides the cullmode for this material.
+        /// </summary>
+        public CullMode? CullMode;
+
+        /// <summary>
         /// The tessellation method used by the material.
         /// </summary>
         public ParadoxTessellationMethod TessellationMethod;

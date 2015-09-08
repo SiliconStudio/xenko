@@ -59,6 +59,7 @@ enum BC_FLAGS
     BC_FLAGS_DITHER_RGB = 0x10000,  // Enables dithering for RGB colors for BC1-3
     BC_FLAGS_DITHER_A   = 0x20000,  // Enables dithering for Alpha channel for BC1-3
     BC_FLAGS_UNIFORM    = 0x40000,  // By default, uses perceptual weighting for BC1-3; this flag makes it a uniform weighting
+    BC_FLAGS_USE_3SUBSETS = 0x80000,// By default, BC7 skips mode 0 & 2; this flag adds those modes back
 };
 
 //-------------------------------------------------------------------------------------
@@ -71,7 +72,7 @@ class LDRColorA
 public:
     uint8_t r, g, b, a;
 
-    LDRColorA() {}
+    LDRColorA() DIRECTX_CTOR_DEFAULT
     LDRColorA(uint8_t _r, uint8_t _g, uint8_t _b, uint8_t _a) : r(_r), g(_g), b(_b), a(_a) {}
 
     const uint8_t& operator [] (_In_range_(0,3) size_t uElement) const
@@ -143,7 +144,7 @@ public:
     float r, g, b, a;
 
 public:
-    HDRColorA() {}
+    HDRColorA() DIRECTX_CTOR_DEFAULT
     HDRColorA(float _r, float _g, float _b, float _a) : r(_r), g(_g), b(_b), a(_a) {}
     HDRColorA(const HDRColorA& c) : r(c.r), g(c.g), b(c.b), a(c.a) {}
     HDRColorA(const LDRColorA& c)
@@ -307,7 +308,7 @@ public:
     int pad;
 
 public:
-    INTColor() {}
+    INTColor() DIRECTX_CTOR_DEFAULT
     INTColor(int nr, int ng, int nb) {r = nr; g = ng; b = nb;}
     INTColor(const INTColor& c) {r = c.r; g = c.g; b = c.b;}
 
@@ -597,7 +598,7 @@ private:
                      _In_ const INTEndPntPair &aOrgEndPts, _Out_ INTEndPntPair &aOptEndPts) const;
     void OptimizeEndPoints(_In_ const EncodeParams* pEP, _In_reads_(BC6H_MAX_REGIONS) const float aOrgErr[],
                            _In_reads_(BC6H_MAX_REGIONS) const INTEndPntPair aOrgEndPts[],
-                           _Inout_updates_all_(BC6H_MAX_REGIONS) INTEndPntPair aOptEndPts[]) const;
+                           _Out_writes_all_(BC6H_MAX_REGIONS) INTEndPntPair aOptEndPts[]) const;
     static void SwapIndices(_In_ const EncodeParams* pEP, _Inout_updates_all_(BC6H_MAX_REGIONS) INTEndPntPair aEndPts[],
                             _In_reads_(NUM_PIXELS_PER_BLOCK) size_t aIndices[]);
     void AssignIndices(_In_ const EncodeParams* pEP, _In_reads_(BC6H_MAX_REGIONS) const INTEndPntPair aEndPts[],
@@ -623,7 +624,7 @@ class D3DX_BC7 : private CBits< 16 >
 {
 public:
     void Decode(_Out_writes_(NUM_PIXELS_PER_BLOCK) HDRColorA* pOut) const;
-    void Encode(_In_reads_(NUM_PIXELS_PER_BLOCK) const HDRColorA* const pIn);
+    void Encode(bool skip3subsets, _In_reads_(NUM_PIXELS_PER_BLOCK) const HDRColorA* const pIn);
 
 private:
     struct ModeInfo

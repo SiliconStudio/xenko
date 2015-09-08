@@ -66,6 +66,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
             assetLogger = new RemoteLogForwarder(builderOptions.Logger, builderOptions.LogPipeNames);
             GlobalLogger.GlobalMessageLogged += assetLogger;
+            PackageSession projectSession = null;
             try
             {
                 // TODO handle solution file + package-id ?
@@ -86,7 +87,7 @@ namespace SiliconStudio.Assets.CompilerApp
                     return BuildResultCode.BuildError;
                 }
 
-                var projectSession = projectSessionResult.Session;
+                projectSession = projectSessionResult.Session;
 
                 // Check build configuration
                 var package = projectSession.LocalPackages.Last();
@@ -161,6 +162,12 @@ namespace SiliconStudio.Assets.CompilerApp
                 if (builder != null)
                 {
                     builder.Dispose();
+                }
+
+                // Dispose the session (in order to unload assemblies)
+                if (projectSession != null)
+                {
+                    projectSession.Dispose();
                 }
 
                 // Flush and close logger

@@ -447,9 +447,8 @@ namespace SiliconStudio.Paradox.Assets.Textures
             if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
                 return ResultStatus.Cancelled;
 
-
-            // Pre-multiply alpha
-            if (parameters.PremultiplyAlpha)
+            // Pre-multiply alpha only for relevant formats 
+            if (parameters.PremultiplyAlpha && texImage.Format.HasAlpha32Bits())
                 textureTool.PreMultiplyAlpha(texImage);
 
             if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded

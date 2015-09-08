@@ -123,6 +123,11 @@ namespace SiliconStudio.Paradox.Rendering
         public RasterizerState RasterizerState { get; set; }
 
         /// <summary>
+        /// Gets or sets a boolean indicating whether the rasterizer state set on this instance is overriding any rasterizer states defines at the material level.
+        /// </summary>
+        public bool ForceRasterizer { get; set; }
+
+        /// <summary>
         /// Gets or sets the rasterizer state used for meshes with an inverted geometry. If not set, use the <see cref="RasterizerState"/>
         /// </summary>
         /// <value>The rasterizer state for inverted geometry.</value>
@@ -132,7 +137,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// Allows to override the culling mode. If null, takes the culling mode from the current <see cref="SceneCameraRenderer"/>
         /// </summary>
         /// <value>The culling mode override.</value>
-        public CullingMode CullingMode { get; set; }
+        public CameraCullingMode CullingMode { get; set; }
 
         /// <summary>
         /// Gets the dynamic effect compiler created by this instance. This value may be null if <see cref="EffectName"/> is null and the renderer hasn't been called.
@@ -335,9 +340,9 @@ namespace SiliconStudio.Paradox.Rendering
 
                 // Fast AABB transform: http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
                 // Compute transformed AABB (by world)
-                // TODO: CullingMode should be pluggable
+                // TODO: CameraCullingMode should be pluggable
                 // TODO: This should not be necessary. Add proper bounding boxes to gizmos etc.
-                if (CullingMode == CullingMode.Frustum && boundingBox.Extent != Vector3.Zero && !frustum.Contains(ref boundingBox))
+                if (CullingMode == CameraCullingMode.Frustum && boundingBox.Extent != Vector3.Zero && !frustum.Contains(ref boundingBox))
                 {
                     continue;
                 }
@@ -350,6 +355,7 @@ namespace SiliconStudio.Paradox.Rendering
                 var projectedZ = projectedPosition.Z / projectedPosition.W;
 
                 renderMesh.RasterizerState = renderMesh.IsGeometryInverted ? RasterizerStateForInvertedGeometry : RasterizerState;
+                renderMesh.ForceRasterizer = ForceRasterizer;
 
                 renderMesh.UpdateMaterial();
 
