@@ -172,7 +172,8 @@ namespace SiliconStudio.Assets
             var item = new AssetItem(newLocation ?? location, newAsset ?? (Asset)AssetCloner.Clone(Asset), copyPackage ? Package : null)
                 {
                     isDirty = isDirty,
-                    SourceFolder = SourceFolder
+                    SourceFolder = SourceFolder,
+                    ProjectFile = ProjectFile
                 };
             return item;
         }

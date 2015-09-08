@@ -31,11 +31,11 @@ namespace SiliconStudio.Assets
         public string AbsoluteSourceLocation { get; set; }
 
         /// <summary>
-        /// Gets or sets the absolute csproj file location of this asset on the disk.
+        /// Gets or sets if this asset is linked to a csproj file (not null) and what kind of representation
         /// </summary>
         /// <value>The absolute source location.</value>
         [Browsable(false)]
-        public string AbsoluteProjectLocation { get; set; }
+        public string ProjectRepresentation { get; set; }
 
         /// <summary>
         /// Gets the sourcecode text.

@@ -13,6 +13,7 @@ using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.Assets.Templates;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Storage;
@@ -391,7 +392,11 @@ namespace SiliconStudio.Assets
             foreach (var asset in Assets)
             {
                 var newAsset = deepCloneAsset ? (Asset)AssetCloner.Clone(asset.Asset) : asset.Asset;
-                var assetItem = new AssetItem(asset.Location, newAsset);
+                var assetItem = new AssetItem(asset.Location, newAsset)
+                {
+                    SourceFolder = asset.SourceFolder,
+                    ProjectFile = asset.ProjectFile
+                };
                 package.Assets.Add(assetItem);
             }
             return package;
@@ -534,8 +539,48 @@ namespace SiliconStudio.Assets
                     if (asset.IsDirty)
                     {
                         var assetPath = asset.FullPath;
+
                         try
                         {
+                            var sourceCodeAsset = asset.Asset as SourceCodeAsset;
+                            if (sourceCodeAsset != null && !sourceCodeAsset.ProjectRepresentation.IsNullOrEmpty() && sourceCodeAsset.ProjectRepresentation == ".cs") //todo add support for pdxsl
+                            {
+                                var done = false;
+                                var sharedProfiles = Profiles.Where(x => x.Platform == PlatformType.Shared);
+
+                                foreach (var profile in sharedProfiles)
+                                {
+                                    var lib = profile.ProjectReferences.FirstOrDefault(x => x.Type == ProjectType.Library && asset.Location.FullPath.StartsWith(x.Location.GetFileName()));
+                                    if (lib != null)
+                                    {                                       
+                                        var projectFullPath = UPath.Combine(RootDirectory, lib.Location);
+                                        var fileFullPath = UPath.Combine(RootDirectory, asset.Location);
+                                        var filePath = fileFullPath.MakeRelative(projectFullPath.GetFullDirectory());
+                                        var includeName = filePath + sourceCodeAsset.ProjectRepresentation;
+
+                                        var project = VSProjectHelper.LoadProject(projectFullPath);
+                                        project.AddItem("Compile", includeName);
+                                        project.Save();
+                                        project.ProjectCollection.UnloadAllProjects();
+                                        project.ProjectCollection.Dispose();
+
+                                        asset.ProjectFile = projectFullPath;
+                                        asset.SourceFolder = RootDirectory.GetFullDirectory();
+
+                                        var csFile = new UFile(includeName);
+                                        assetPath = UPath.Combine(projectFullPath.GetFullDirectory(), csFile);
+                                        done = true;
+                                        break;
+                                    }
+                                }
+
+                                if (!done)
+                                {
+                                    //todo this is not properly handled
+                                    throw new Exception();
+                                }
+                            }
+
                             // Notifies the dependency manager that an asset with the specified path is being saved
                             if (session != null && session.HasDependencyManager)
                             {
@@ -906,6 +951,12 @@ namespace SiliconStudio.Assets
                 bool aliasOccurred;
                 var asset = LoadAsset(log, assetFullPath, assetPath, fileUPath, assetContent, out aliasOccurred);
 
+                var sourceAsset = asset as SourceCodeAsset;
+                if (sourceAsset != null)
+                {
+                    sourceAsset.ProjectRepresentation = assetFile.FilePath.GetFileExtension();
+                }
+
                 // Create asset item
                 var assetItem = new AssetItem(assetPath, asset, this)
                 {
@@ -1071,6 +1122,8 @@ namespace SiliconStudio.Assets
             var assetFolders = new HashSet<UDirectory>(GetDistinctAssetFolderPaths());
             foreach (var asset in Assets)
             {
+                if(asset.ProjectFile != null) continue; //We don't add assets that depend on a project to the asset folders
+
                 if (asset.SourceFolder == null)
                 {
                     asset.SourceFolder = defaultFolder.IsAbsolute ? defaultFolder.MakeRelative(RootDirectory) : defaultFolder;
