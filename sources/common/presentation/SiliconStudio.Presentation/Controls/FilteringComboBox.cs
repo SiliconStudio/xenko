@@ -9,7 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
-
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Presentation.Extensions;
 
@@ -20,10 +20,13 @@ namespace SiliconStudio.Presentation.Controls
     public class FilteringComboBox : Selector
     {
         /// <summary>
+        /// A dependency property used to safely evaluate the value of an item given a path.
+        /// </summary>
+        private static readonly DependencyProperty InternalValuePathProperty = DependencyProperty.Register("InternalValuePath", typeof(object), typeof(FilteringComboBox));
+        /// <summary>
         /// The input text box.
         /// </summary>
         private TextBox editableTextBox;
-
         /// <summary>
         /// The filtered list box.
         /// </summary>
@@ -31,19 +34,15 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Indicates that the selection is being internally cleared and that the drop down should not be opened nor refreshed.
         /// </summary>
-        /// 
         private bool clearing;
         /// <summary>
         /// Indicates that the selection is being internally updated and that the text should not be cleared.
         /// </summary>
         private bool updatingSelection;
-
         /// <summary>
         /// Indicates that the text box is being validated and that the update of the text should not impact the selected item.
         /// </summary>
         private bool validating;
-
-        public delegate string StringConverterDelegate(FilteringComboBox sender, object obj);
 
         public static readonly DependencyProperty NeedsMatchingItemProperty = DependencyProperty.Register("NeedsMatchingItem", typeof(bool), typeof(FilteringComboBox), new FrameworkPropertyMetadata(true));
 
@@ -59,8 +58,6 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyProperty ItemsToExcludeProperty = DependencyProperty.Register("ItemsToExclude", typeof(IEnumerable), typeof(FilteringComboBox));
 
         public static readonly DependencyProperty SortProperty = DependencyProperty.Register("Sort", typeof(FilteringComboBoxSort), typeof(FilteringComboBox), new FrameworkPropertyMetadata(OnItemsSourceRefresh));
-
-        public static readonly DependencyProperty StringConverterProperty = DependencyProperty.Register("StringConverter", typeof(StringConverterDelegate), typeof(FilteringComboBox), new FrameworkPropertyMetadata(OnItemsSourceRefresh));
 
         /// <summary>
         /// Raised just before the TextBox changes are validated. This event is cancellable
@@ -94,11 +91,6 @@ namespace SiliconStudio.Presentation.Controls
         /// Defines how choices are sorted.
         /// </summary>
         public FilteringComboBoxSort Sort { get { return (FilteringComboBoxSort)GetValue(SortProperty); } set { SetValue(SortProperty, value); } }
-
-        /// <summary>
-        /// Defines how choices are filtered.
-        /// </summary>
-        public StringConverterDelegate StringConverter { get { return (StringConverterDelegate)GetValue(StringConverterProperty); } set { SetValue(StringConverterProperty, value); } }
 
         /// <summary>
         /// Raised just before the TextBox changes are validated. This event is cancellable
@@ -168,13 +160,7 @@ namespace SiliconStudio.Presentation.Controls
 
         private void UpdateText()
         {
-            var selectedItem = listBox.SelectedItem;
-            if (selectedItem != null)
-            {
-                editableTextBox.Text = StringConverter != null ? StringConverter(this, selectedItem) : selectedItem.ToString();
-                IsDropDownOpen = false;
-            }
-            else if (SelectedValue != null)
+            if (SelectedValue != null)
             {
                 editableTextBox.Text = SelectedValue.ToString();
                 IsDropDownOpen = false;
@@ -352,10 +338,7 @@ namespace SiliconStudio.Presentation.Controls
 
         private bool InternalFilter(object obj)
         {
-            if (editableTextBox == null)
-                return true;
-
-            var filter = editableTextBox.Text;
+            var filter = editableTextBox?.Text;
             if (string.IsNullOrWhiteSpace(filter))
                 return true;
 
@@ -365,7 +348,22 @@ namespace SiliconStudio.Presentation.Controls
             if (ItemsToExclude != null && ItemsToExclude.Cast<object>().Contains(obj))
                 return false;
 
-            var text = StringConverter != null ? StringConverter(this, obj) : obj.ToString();
+            var value = obj;
+            try
+            {
+                SetBinding(InternalValuePathProperty, new Binding(SelectedValuePath) { Source = obj });
+                value = GetValue(InternalValuePathProperty);
+            }
+            catch (Exception e)
+            {
+                e.Ignore();
+            }
+            finally
+            {
+                BindingOperations.ClearBinding(this, InternalValuePathProperty);
+
+            }
+            var text = value?.ToString();
             return MatchText(filter, text);
         }
 
