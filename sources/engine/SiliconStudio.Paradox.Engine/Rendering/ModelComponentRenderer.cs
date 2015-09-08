@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Engine;
@@ -35,6 +36,7 @@ namespace SiliconStudio.Paradox.Rendering
     /// </summary>
     public class ModelComponentRenderer : EntityComponentRendererBase
     {
+        private readonly static Logger Log = GlobalLogger.GetLogger("ModelComponentRenderer");
         private static readonly PropertyKey<RenderModelEffectSlotManager> RenderModelManagerKey = new PropertyKey<RenderModelEffectSlotManager>("ModelProcessor.RenderModelManagerKey", typeof(ModelComponentRenderer));
         private static readonly PropertyKey<ModelComponentRenderer> Current = new PropertyKey<ModelComponentRenderer>("ModelComponentRenderer.Current", typeof(ModelComponentRenderer));
 
@@ -371,7 +373,19 @@ namespace SiliconStudio.Paradox.Rendering
         {
             if (dynamicEffectCompiler.Update(renderMesh, passParameters))
             {
-                renderMesh.Initialize(context.GraphicsDevice);
+                try
+                {
+                    renderMesh.Initialize(context.GraphicsDevice);
+                }
+                catch (Exception e)
+                {
+                    Log.Error("Could not initialize RenderMesh, trying again with error fallback effect", e);
+
+                    // Try again with error effect to show user something failed with this model
+                    // TODO: What if an exception happens in this case too? Mark renderMesh as ignored or null?
+                    dynamicEffectCompiler.SwitchFallbackEffect(FallbackEffectType.Error, renderMesh, passParameters);
+                    renderMesh.Initialize(context.GraphicsDevice);
+                }
             }
         }
     }

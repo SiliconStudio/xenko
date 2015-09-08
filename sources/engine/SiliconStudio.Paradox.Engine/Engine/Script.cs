@@ -27,7 +27,9 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// The priority this script will be scheduled with (compared to other scripts).
         /// </summary>
+        /// <userdoc>The execution priority for this script. It applies to async, sync and startup scripts.</userdoc>
         [DefaultValue(0)]
+        [DataMember(10000)]
         public int Priority
         {
             get { return priority; }

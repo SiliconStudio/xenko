@@ -21,6 +21,7 @@ namespace SiliconStudio.Paradox.Engine
         /// The model which contains the hierarchy to use.
         /// </value>
         /// <userdoc>The reference to the target entity to which attach the current entity. If null, parent will be used.</userdoc>
+        [Display("Target (Parent if not set)")]
         public ModelComponent Target { get; set; }
 
         /// <summary>
