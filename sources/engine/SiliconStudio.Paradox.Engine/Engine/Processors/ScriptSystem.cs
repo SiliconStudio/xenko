@@ -171,23 +171,17 @@ namespace SiliconStudio.Paradox.Engine.Processors
             if (!startWasPending && wasRegistered)
             {
                 // Cancel scripts that were already started
-                var startupScript = script as StartupScript;
-                if (startupScript != null)
+                try
                 {
-                    try
-                    {
-                        startupScript.Cancel();
-                    }
-                    catch (Exception e)
-                    {
-                        HandleSynchronousException(script, e);
-                    }
+                    script.Cancel();
                 }
-                else
+                catch (Exception e)
                 {
-                    var asyncScript = script as AsyncScript;
-                    asyncScript?.MicroThread.Cancel();
+                    HandleSynchronousException(script, e);
                 }
+
+                var asyncScript = script as AsyncScript;
+                asyncScript?.MicroThread.Cancel();
             }
 
             var syncScript = script as SyncScript;

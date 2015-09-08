@@ -44,10 +44,13 @@ namespace SiliconStudio.Paradox.Engine
         /// The entity this script is attached to.
         /// </value>
         [DataMemberIgnore]
-        public Entity Entity
+        public Entity Entity => ScriptComponent?.Entity;
+
+        /// <summary>
+        /// Called when the script's update loop is canceled.
+        /// </summary>
+        public virtual void Cancel()
         {
-            // Note: we might want to make this property public?
-            get { return ScriptComponent != null ? ScriptComponent.Entity : null; }
         }
     }
 }

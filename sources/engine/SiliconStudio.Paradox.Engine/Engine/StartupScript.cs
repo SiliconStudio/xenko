@@ -11,12 +11,5 @@ namespace SiliconStudio.Paradox.Engine
         public virtual void Start()
         {
         }
-
-        /// <summary>
-        /// Called when the script's update loop is canceled.
-        /// </summary>
-        public virtual void Cancel()
-        {
-        }
     }
 }
