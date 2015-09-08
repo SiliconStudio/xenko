@@ -15,14 +15,24 @@ namespace SiliconStudio.Paradox.Engine
 
         [DataMemberIgnore]
         internal ScriptComponent ScriptComponent;
-        [DataMemberIgnore]
-        internal MicroThread MicroThread;
 
         /// <summary>
         /// The script identifier.
         /// </summary>
         [Browsable(false)]
         public new Guid Id;
+
+        private int priority;
+
+        /// <summary>
+        /// The priority this script will be scheduled with (compared to other scripts).
+        /// </summary>
+        [DefaultValue(0)]
+        public int Priority
+        {
+            get { return priority; }
+            set { priority = value; PriorityUpdated(); }
+        }
 
         /// <summary>
         /// Determines whether the script is currently undergoing live reloading.
@@ -40,16 +50,19 @@ namespace SiliconStudio.Paradox.Engine
         }
 
         /// <summary>
+        /// Internal helper function called when <see cref="Priority"/> is changed.
+        /// </summary>
+        protected internal virtual void PriorityUpdated()
+        {
+        }
+
+        /// <summary>
         /// Gets the entity this script is attached to.
         /// </summary>
         /// <value>
         /// The entity this script is attached to.
         /// </value>
         [DataMemberIgnore]
-        public Entity Entity
-        {
-            // Note: we might want to make this property public?
-            get { return ScriptComponent != null ? ScriptComponent.Entity : null; }
-        }
+        public Entity Entity => ScriptComponent?.Entity;
     }
 }

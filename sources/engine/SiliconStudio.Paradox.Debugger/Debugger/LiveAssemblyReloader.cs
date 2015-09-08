@@ -159,10 +159,11 @@ namespace SiliconStudio.Paradox.Debugger.Target
 
             oldScript.Dispose();
 
-            if (oldScript.MicroThread != null && !oldScript.MicroThread.IsOver)
+            var oldAsyncScript = oldScript as AsyncScript;
+            if (oldAsyncScript?.MicroThread != null && !oldAsyncScript.MicroThread.IsOver)
             {
                 // Force the script to be cancelled
-                oldScript.MicroThread.RaiseException(new MicroThreadCancelledException());
+                oldAsyncScript.MicroThread.RaiseException(new MicroThreadCancelledException());
             }
         }
 
