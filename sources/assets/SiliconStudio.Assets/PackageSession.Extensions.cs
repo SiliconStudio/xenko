@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Assets
 {
@@ -34,6 +35,12 @@ namespace SiliconStudio.Assets
         {
             var packages = session.CurrentPackage != null ? session.GetPackagesFromCurrent() : session.Packages;
             return packages.Select(packageItem => packageItem.Assets.Find(assetId)).FirstOrDefault(asset => asset != null);
+        }
+
+        public static AssetItem FindAssetFromAttachedReference(this PackageSession session, object obj)
+        {
+            var reference = AttachedReferenceManager.GetAttachedReference(obj);
+            return reference != null ? FindAsset(session, reference.Id) : null;
         }
 
         /// <summary>

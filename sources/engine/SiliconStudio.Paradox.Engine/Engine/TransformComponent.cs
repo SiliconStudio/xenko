@@ -19,6 +19,8 @@ namespace SiliconStudio.Paradox.Engine
     [Display(0, "Transform", Expand = ExpandRule.Once)]
     public sealed class TransformComponent : EntityComponent //, IEnumerable<TransformComponent> Check why this is not working
     {
+        private static readonly TransformOperation[] emptyTransformOperations = new TransformOperation[0];
+
         public readonly static PropertyKey<TransformComponent> Key = new PropertyKey<TransformComponent>("Key", typeof(TransformComponent),
             new AccessorMetadata((ref PropertyContainer props) => ((Entity)props.Owner).Transform, (ref PropertyContainer props, object value) => ((Entity)props.Owner).Transform = (TransformComponent)value));
 
@@ -26,9 +28,14 @@ namespace SiliconStudio.Paradox.Engine
         // When true, transformation is computed later by another system.
         // This is useful for scenario such as binding a node to a bone, where it first need to run TransformProcessor for the hierarchy,
         // run MeshProcessor to update ModelViewHierarchy, copy Node/Bone transformation to another Entity with special root and then update its children transformations.
-        internal bool isSpecialRoot = false;
         private bool useTRS = true;
         private TransformComponent parent;
+
+        /// <summary>
+        /// This is where we can register some custom work to be done after world matrix has been computed, such as updating model node hierarchy or physics for local node.
+        /// </summary>
+        [DataMemberIgnore]
+        public FastListStruct<TransformOperation> PostOperations = new FastListStruct<TransformOperation>(emptyTransformOperations);
 
         /// <summary>
         /// The world matrix.
@@ -64,6 +71,9 @@ namespace SiliconStudio.Paradox.Engine
         /// <userdoc>The scale of the entity with regard to its parent</userdoc>
         [DataMember(30)]
         public Vector3 Scale;
+
+        [DataMemberIgnore]
+        public TransformLink TransformLink;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TransformComponent" /> class.
@@ -218,8 +228,18 @@ namespace SiliconStudio.Paradox.Engine
         public void UpdateWorldMatrix()
         {
             UpdateLocalMatrix();
+            UpdateWorldMatrixNonRecursive();
+        }
 
-            if (Parent != null && !isSpecialRoot)
+        internal void UpdateWorldMatrixNonRecursive()
+        {
+            if (TransformLink != null)
+            {
+                Matrix linkMatrix;
+                TransformLink.ComputeMatrix(out linkMatrix);
+                Matrix.Multiply(ref LocalMatrix, ref linkMatrix, out WorldMatrix);
+            }
+            else if (Parent != null)
             {
                 Parent.UpdateWorldMatrix();
                 Matrix.Multiply(ref LocalMatrix, ref Parent.WorldMatrix, out WorldMatrix);
@@ -228,17 +248,10 @@ namespace SiliconStudio.Paradox.Engine
             {
                 WorldMatrix = LocalMatrix;
             }
-        }
 
-        internal void UpdateWorldMatrixNonRecursive()
-        {
-            if (Parent != null && !isSpecialRoot)
+            foreach (var transformOperation in PostOperations)
             {
-                Matrix.Multiply(ref LocalMatrix, ref Parent.WorldMatrix, out WorldMatrix);
-            }
-            else
-            {
-                WorldMatrix = LocalMatrix;
+                transformOperation.Process(this);
             }
         }
 

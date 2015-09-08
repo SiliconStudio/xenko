@@ -55,6 +55,7 @@
     <Compile Include="Behaviors\TextBoxCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\ThumbTransactionalDragBehavior.cs" />
     <Compile Include="Controls\ExpandableItemsControl.cs" />
+    <Compile Include="Controls\FilteringComboBoxSort.cs" />
     <Compile Include="Controls\TreeViewElementFinder.cs" />
     <Compile Include="Controls\TreeView.cs" />
     <Compile Include="Controls\TreeViewItem.cs" />

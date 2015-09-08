@@ -19,38 +19,6 @@ namespace SiliconStudio.Presentation.Controls
     [TemplatePart(Name = "PART_ListBox", Type = typeof(ListBox))]
     public class FilteringComboBox : Selector
     {
-        public class FilteringComboBoxSort : IComparer
-        {
-            private string token;
-            private string tokenLowercase;
-
-            public string Token { get { return token; } set { token = value; tokenLowercase = (value ?? "").ToLowerInvariant(); } }
-
-            public int Compare(object x, object y)
-            {
-                var a = x.ToString();
-                var b = y.ToString();
-
-                if (string.IsNullOrWhiteSpace(token))
-                    return string.Compare(a, b, StringComparison.InvariantCultureIgnoreCase);
-
-                var indexA = a.IndexOf(tokenLowercase, StringComparison.InvariantCultureIgnoreCase);
-                var indexB = b.IndexOf(tokenLowercase, StringComparison.InvariantCultureIgnoreCase);
-
-                if (indexA == 0 && indexB > 0)
-                    return -1;
-                if (indexB == 0 && indexA > 0)
-                    return 1;
-
-                return string.Compare(a, b, StringComparison.InvariantCultureIgnoreCase);
-            }
-        }
-
-        /// <summary>
-        /// The instance of <see cref="FilteringComboBoxSort"/> used for filtering and sorting items.
-        /// </summary>
-        private readonly FilteringComboBoxSort sort;
-
         /// <summary>
         /// The input text box.
         /// </summary>
@@ -75,6 +43,10 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         private bool validating;
 
+        public delegate string StringConverterDelegate(FilteringComboBox sender, object obj);
+
+        public static readonly DependencyProperty NeedsMatchingItemProperty = DependencyProperty.Register("NeedsMatchingItem", typeof(bool), typeof(FilteringComboBox), new FrameworkPropertyMetadata(true));
+
         public static readonly DependencyProperty IsDropDownOpenProperty = DependencyProperty.Register("IsDropDownOpen", typeof(bool), typeof(FilteringComboBox));
 
         public static readonly DependencyProperty ClearTextAfterValidationProperty = DependencyProperty.Register("ClearTextAfterValidation", typeof(bool), typeof(FilteringComboBox));
@@ -85,6 +57,10 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyProperty WatermarkContentProperty = DependencyProperty.Register("WatermarkContent", typeof(object), typeof(FilteringComboBox), new PropertyMetadata(null));
 
         public static readonly DependencyProperty ItemsToExcludeProperty = DependencyProperty.Register("ItemsToExclude", typeof(IEnumerable), typeof(FilteringComboBox));
+
+        public static readonly DependencyProperty SortProperty = DependencyProperty.Register("Sort", typeof(FilteringComboBoxSort), typeof(FilteringComboBox), new FrameworkPropertyMetadata(OnItemsSourceRefresh));
+
+        public static readonly DependencyProperty StringConverterProperty = DependencyProperty.Register("StringConverter", typeof(StringConverterDelegate), typeof(FilteringComboBox), new FrameworkPropertyMetadata(OnItemsSourceRefresh));
 
         /// <summary>
         /// Raised just before the TextBox changes are validated. This event is cancellable
@@ -98,11 +74,12 @@ namespace SiliconStudio.Presentation.Controls
 
         public FilteringComboBox()
         {
-            sort = new FilteringComboBoxSort();
             IsTextSearchEnabled = false;
         }
 
         public bool IsDropDownOpen { get { return (bool)GetValue(IsDropDownOpenProperty); } set { SetValue(IsDropDownOpenProperty, value); } }
+
+        public bool NeedsMatchingItem { get { return (bool)GetValue(NeedsMatchingItemProperty); } set { SetValue(NeedsMatchingItemProperty, value); } }
 
         public bool ClearTextAfterValidation { get { return (bool)GetValue(ClearTextAfterValidationProperty); } set { SetValue(ClearTextAfterValidationProperty, value); } }
 
@@ -112,6 +89,16 @@ namespace SiliconStudio.Presentation.Controls
         public object WatermarkContent { get { return GetValue(WatermarkContentProperty); } set { SetValue(WatermarkContentProperty, value); } }
 
         public IEnumerable ItemsToExclude { get { return (IEnumerable)GetValue(ItemsToExcludeProperty); } set { SetValue(ItemsToExcludeProperty, value); } }
+
+        /// <summary>
+        /// Defines how choices are sorted.
+        /// </summary>
+        public FilteringComboBoxSort Sort { get { return (FilteringComboBoxSort)GetValue(SortProperty); } set { SetValue(SortProperty, value); } }
+
+        /// <summary>
+        /// Defines how choices are filtered.
+        /// </summary>
+        public StringConverterDelegate StringConverter { get { return (StringConverterDelegate)GetValue(StringConverterProperty); } set { SetValue(StringConverterProperty, value); } }
 
         /// <summary>
         /// Raised just before the TextBox changes are validated. This event is cancellable
@@ -129,11 +116,11 @@ namespace SiliconStudio.Presentation.Controls
             if (newValue != null)
             {
                 var cvs = (CollectionView)CollectionViewSource.GetDefaultView(newValue);
-                cvs.Filter = Filter;
+                cvs.Filter = InternalFilter;
                 var listCollectionView = cvs as ListCollectionView;
                 if (listCollectionView != null)
                 {
-                    listCollectionView.CustomSort = sort;
+                    listCollectionView.CustomSort = Sort;
                 }
             }
         }
@@ -157,6 +144,9 @@ namespace SiliconStudio.Presentation.Controls
             editableTextBox.Cancelled += EditableTextBoxCancelled;
             editableTextBox.LostFocus += EditableTextBoxLostFocus;
             listBox.PreviewMouseUp += ListBoxMouseUp;
+
+            // Update initial text
+            UpdateText();
         }
 
         protected override void OnSelectionChanged(SelectionChangedEventArgs e)
@@ -170,11 +160,23 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
+        private static void OnItemsSourceRefresh(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var filteringComboBox = (FilteringComboBox)d;
+            filteringComboBox.OnItemsSourceChanged(filteringComboBox.ItemsSource, filteringComboBox.ItemsSource);
+        }
+
         private void UpdateText()
         {
-            if (listBox.SelectedItem != null)
+            var selectedItem = listBox.SelectedItem;
+            if (selectedItem != null)
             {
-                editableTextBox.Text = listBox.SelectedItem.ToString();
+                editableTextBox.Text = StringConverter != null ? StringConverter(this, selectedItem) : selectedItem.ToString();
+                IsDropDownOpen = false;
+            }
+            else if (SelectedValue != null)
+            {
+                editableTextBox.Text = SelectedValue.ToString();
                 IsDropDownOpen = false;
             }
         }
@@ -186,6 +188,9 @@ namespace SiliconStudio.Presentation.Controls
                 return;
 
             validating = true;
+            // In case we don't need real validation, let's use current textbox value
+            if (!NeedsMatchingItem && listBox.SelectedItem == null)
+                SelectedValue = editableTextBox.Text;
             UpdateText();
             validating = false;
 
@@ -219,7 +224,8 @@ namespace SiliconStudio.Presentation.Controls
                 return;
             
             clearing = true;
-            editableTextBox.Text = string.Empty;
+            if (NeedsMatchingItem)
+                editableTextBox.Text = string.Empty;
             // Defer closing the popup in case we lost the focus because of a click in the list box - so it can still raise the correct event
             // This is a very hackish, we should find a better way to do it!
             await Task.Delay(100);
@@ -234,6 +240,8 @@ namespace SiliconStudio.Presentation.Controls
                 return;
             
             clearing = true;
+            if (!NeedsMatchingItem)
+               editableTextBox.Validate();
             // Defer closing the popup in case we lost the focus because of a click in the list box - so it can still raise the correct event
             // This is a very hackish, we should find a better way to do it!
             await Task.Delay(100);
@@ -263,7 +271,8 @@ namespace SiliconStudio.Presentation.Controls
                 IsDropDownOpen = true;
                 editableTextBox.CaretIndex = index;
             }
-            sort.Token = editableTextBox.Text;
+            if (Sort != null)
+                Sort.Token = editableTextBox.Text;
             var cvs = CollectionViewSource.GetDefaultView(ItemsSource);
             cvs.Refresh();
             if (listBox.Items.Count > 0 && !validating)
@@ -285,14 +294,12 @@ namespace SiliconStudio.Presentation.Controls
                 if (e.Key == Key.Up)
                 {
                     listBox.SelectedIndex = Math.Max(listBox.SelectedIndex - 1, 0);
-                    if (listBox.SelectedItem != null)
-                        listBox.ScrollIntoView(listBox.SelectedItem);
+                    BringSelectedItemIntoView();
                 }
                 if (e.Key == Key.Down)
                 {
                     listBox.SelectedIndex = Math.Min(listBox.SelectedIndex + 1, listBox.Items.Count - 1);
-                    if (listBox.SelectedItem != null)
-                        listBox.ScrollIntoView(listBox.SelectedItem);
+                    BringSelectedItemIntoView();
                 }
                 if (e.Key == Key.PageUp)
                 {
@@ -306,8 +313,7 @@ namespace SiliconStudio.Presentation.Controls
                     {
                         listBox.SelectedIndex = 0;
                     }
-                    if (listBox.SelectedItem != null)
-                        listBox.ScrollIntoView(listBox.SelectedItem);
+                    BringSelectedItemIntoView();
                 }
                 if (e.Key == Key.PageDown)
                 {
@@ -321,22 +327,30 @@ namespace SiliconStudio.Presentation.Controls
                     {
                         listBox.SelectedIndex = listBox.Items.Count - 1;
                     }
-                    if (listBox.SelectedItem != null)
-                        listBox.ScrollIntoView(listBox.SelectedItem);
+                    BringSelectedItemIntoView();
                 }
                 if (e.Key == Key.Home)
                 {
                     listBox.SelectedIndex = 0;
+                    BringSelectedItemIntoView();
                 }
                 if (e.Key == Key.End)
                 {
                     listBox.SelectedIndex = listBox.Items.Count - 1;
+                    BringSelectedItemIntoView();
                 }
                 updatingSelection = false;
             }
         }
 
-        private bool Filter(object obj)
+        private void BringSelectedItemIntoView()
+        {
+            var selectedItem = listBox.SelectedItem;
+            if (selectedItem != null)
+                listBox.ScrollIntoView(selectedItem);
+        }
+
+        private bool InternalFilter(object obj)
         {
             if (editableTextBox == null)
                 return true;
@@ -351,14 +365,19 @@ namespace SiliconStudio.Presentation.Controls
             if (ItemsToExclude != null && ItemsToExclude.Cast<object>().Contains(obj))
                 return false;
 
-            var text = obj.ToString();
-            return text.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase) > -1 || MatchCamelCase(text);
+            var text = StringConverter != null ? StringConverter(this, obj) : obj.ToString();
+            return MatchText(filter, text);
         }
 
-        private bool MatchCamelCase(string text)
+        private static bool MatchText(string inputText, string text)
+        {
+            return text.IndexOf(inputText, StringComparison.InvariantCultureIgnoreCase) > -1 || MatchCamelCase(inputText, text);
+        }
+
+        private static bool MatchCamelCase(string inputText, string text)
         {
             var camelCaseSplit = text.CamelCaseSplit();
-            var filter = editableTextBox.Text.ToLowerInvariant();
+            var filter = inputText.ToLowerInvariant();
             int currentFilterChar = 0;
 
             foreach (var word in camelCaseSplit)
