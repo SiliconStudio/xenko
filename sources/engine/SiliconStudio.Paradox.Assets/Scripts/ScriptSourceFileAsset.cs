@@ -20,32 +20,21 @@ namespace SiliconStudio.Paradox.Assets.Scripts
     [Display(95, "Script Source Code", "A C# source code file")]
     public sealed class ScriptSourceFileAsset : SourceCodeAsset
     {
-        public ScriptSourceFileAsset()
-        {
-        }
-
         public IReadOnlyCollection<Type> GetContainedScriptTypes()
         {
-            lock(providerLocker)
+            lock(ProviderLocker)
             {
-                if(provider != null)
-                {
-                    return provider.GetSourcePathTypes(AbsoluteSourceLocation);
-                }
-                else
-                {
-                    return null;
-                }
+                return provider?.GetSourcePathTypes(AbsoluteSourceLocation);
             }
         }
 
-        private static object providerLocker = new object();
+        private static readonly object ProviderLocker = new object();
 
         private static IScriptTypesProvider provider;
 
         public static void SetProvider(IScriptTypesProvider p)
         {
-            lock(providerLocker)
+            lock(ProviderLocker)
             {
                 provider = p;
             }
