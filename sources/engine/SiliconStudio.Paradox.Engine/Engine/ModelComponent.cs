@@ -154,8 +154,20 @@ namespace SiliconStudio.Paradox.Engine
             }
         }
 
-        internal void Update(ref Matrix worldMatrix, bool isScalingNegative)
+        internal void Update(TransformComponent transformComponent, ref Matrix worldMatrix)
         {
+            if (!Enabled || modelViewHierarchy == null)
+                return;
+
+            // Check if scaling is negative
+            bool isScalingNegative = false;
+            {
+                Vector3 scale, translation;
+                Matrix rotation;
+                if (worldMatrix.Decompose(out scale, out rotation, out translation))
+                    isScalingNegative = scale.X*scale.Y*scale.Z < 0.0f;
+            }
+
             // Update model view hierarchy node matrices
             modelViewHierarchy.NodeTransformations[0].LocalMatrix = worldMatrix;
             modelViewHierarchy.NodeTransformations[0].IsScalingNegative = isScalingNegative;
