@@ -75,6 +75,7 @@
     <Compile Include="Animations\AnimationCurveEvaluatorOptimizedQuaternionGroup.cs" />
     <Compile Include="Animations\Interpolator.cs" />
     <Compile Include="Engine\Design\EffectCompilationMode.cs" />
+    <Compile Include="Engine\LightComponentExtensions.cs" />
     <Compile Include="Engine\Network\ClientRouterMessage.cs" />
     <Compile Include="Engine\Network\SocketExtensions.cs" />
     <Compile Include="Engine\Network\SocketMessageLayer.cs" />
@@ -1510,10 +1511,10 @@
     <Compile Include="Rendering\Lights\IDirectLight.cs" />
     <Compile Include="Rendering\Lights\IEnvironmentLight.cs" />
     <Compile Include="Rendering\Lights\ILight.cs" />
-    <Compile Include="Rendering\Lights\ILightColor.cs" />
+    <Compile Include="Rendering\Colors\IColorProvider.cs" />
     <Compile Include="Rendering\Lights\ILightShadow.cs" />
     <Compile Include="Rendering\Lights\LightAmbient.cs" />
-    <Compile Include="Rendering\Lights\LightColorRgb.cs" />
+    <Compile Include="Rendering\Colors\ColorRgbProvider.cs" />
     <Compile Include="Engine\LightComponent.cs" />
     <Compile Include="Rendering\Lights\LightComponentCollection.cs" />
     <Compile Include="Rendering\Lights\LightDirectional.cs" />

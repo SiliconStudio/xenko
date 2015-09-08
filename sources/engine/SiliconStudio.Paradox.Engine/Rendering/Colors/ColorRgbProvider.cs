@@ -5,39 +5,40 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Rendering.Lights
+namespace SiliconStudio.Paradox.Rendering.Colors
 {
     /// <summary>
     /// A light color described by a rgb color
     /// </summary>
-    [DataContract("LightColorRgb")]
+    [DataContract("ColorRgbProvider")]
+    [DataAlias("LightColorRgb")]
     [Display("RGB")]
-    public class LightColorRgb : ILightColor
+    public class ColorRgbProvider : IColorProvider
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LightColorRgb"/> class.
+        /// Initializes a new instance of the <see cref="ColorRgbProvider"/> class.
         /// </summary>
-        public LightColorRgb()
+        public ColorRgbProvider()
         {
-            Color = new Color3(1.0f);
+            Value = new Color3(1.0f);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LightColorRgb"/> class.
+        /// Initializes a new instance of the <see cref="ColorRgbProvider"/> class.
         /// </summary>
         /// <param name="color">The color.</param>
-        public LightColorRgb(Color3 color)
+        public ColorRgbProvider(Color3 color)
         {
-            Color = color;
+            Value = color;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LightColorRgb"/> class.
+        /// Initializes a new instance of the <see cref="ColorRgbProvider"/> class.
         /// </summary>
         /// <param name="color">The color.</param>
-        public LightColorRgb(Color color)
+        public ColorRgbProvider(Color color)
         {
-            Color = (Color3)color;
+            Value = (Color3)color;
         }
 
         /// <summary>
@@ -45,12 +46,13 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         /// </summary>
         /// <value>The color.</value>
         [DataMember(10)]
+        [DataAlias("Color")]
         [InlineProperty]
-        public Color3 Color { get; set; }
+        public Color3 Value { get; set; }
 
         public Color3 ComputeColor()
         {
-            return Color;
+            return Value;
         }
     }
 }
