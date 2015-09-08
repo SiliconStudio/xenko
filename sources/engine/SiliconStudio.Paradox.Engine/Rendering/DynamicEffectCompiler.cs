@@ -117,11 +117,7 @@ namespace SiliconStudio.Paradox.Rendering
                         var compilerParameters = new CompilerParameters();
                         effectInstance.CurrentlyCompilingUsedParameters.CopyTo(compilerParameters);
 
-                        effectInstance.HasErrors = true;
-
-                        // Fallback for errors
-                        var fallbackEffect = ComputeFallbackEffect(this, FallbackEffectType.Error, EffectName, compilerParameters);
-                        UpdateEffect(effectInstance, fallbackEffect.Effect, fallbackEffect.UsedParameters, passParameters);
+                        SwitchFallbackEffect(FallbackEffectType.Error, effectInstance, passParameters, compilerParameters);
                     }
                     else
                     {
@@ -167,6 +163,20 @@ namespace SiliconStudio.Paradox.Rendering
             return effectChanged;
         }
 
+        public void SwitchFallbackEffect(FallbackEffectType fallbackEffectType, DynamicEffectInstance effectInstance, ParameterCollection passParameters)
+        {
+            var compilerParameters = BuildCompilerParameters(effectInstance, passParameters);
+            SwitchFallbackEffect(fallbackEffectType, effectInstance, passParameters, compilerParameters);
+        }
+
+        private void SwitchFallbackEffect(FallbackEffectType fallbackEffectType, DynamicEffectInstance effectInstance, ParameterCollection passParameters, CompilerParameters compilerParameters)
+        {
+            // Fallback for errors
+            effectInstance.HasErrors = true;
+            var fallbackEffect = ComputeFallbackEffect(this, fallbackEffectType, EffectName, compilerParameters);
+            UpdateEffect(effectInstance, fallbackEffect.Effect, fallbackEffect.UsedParameters, passParameters);
+        }
+
         private bool HasCollectionChanged(DynamicEffectInstance effectInstance, ParameterCollection passParameters)
         {
             PrepareUpdater(effectInstance, passParameters);
@@ -174,6 +184,48 @@ namespace SiliconStudio.Paradox.Rendering
         }
 
         private void CreateEffect(DynamicEffectInstance effectInstance, ParameterCollection passParameters)
+        {
+            var compilerParameters = BuildCompilerParameters(effectInstance, passParameters);
+
+            // Compile shader
+            // possible exception in LoadEffect
+            TaskOrResult<Effect> effect;
+            ParameterCollection usedParameters;
+            try
+            {
+                effect = EffectSystem.LoadEffect(EffectName, compilerParameters, out usedParameters);
+            }
+            catch (Exception)
+            {
+                SwitchFallbackEffect(FallbackEffectType.Error, effectInstance, passParameters, compilerParameters);
+                return;
+            }
+
+            // Do we have an async compilation?
+            if (asyncEffectCompiler && effect.Task != null)
+            {
+                effectInstance.CurrentlyCompilingEffect = effect.Task;
+                effectInstance.CurrentlyCompilingUsedParameters = usedParameters;
+
+                if (!effectInstance.HasErrors) // If there was an error, stay in that state (we don't want to switch between reloading and error states)
+                {
+                    // Fallback to default effect
+                    var fallbackEffect = ComputeFallbackEffect(this, FallbackEffectType.Compiling, EffectName, compilerParameters);
+                    UpdateEffect(effectInstance, fallbackEffect.Effect, fallbackEffect.UsedParameters, passParameters);
+                }
+                return;
+            }
+
+            var compiledEffect = effect.WaitForResult();
+
+            UpdateEffect(effectInstance, compiledEffect, usedParameters, passParameters);
+
+            // Effect has been updated
+            effectInstance.CurrentlyCompilingEffect = null;
+            effectInstance.CurrentlyCompilingUsedParameters = null;
+        }
+
+        private CompilerParameters BuildCompilerParameters(DynamicEffectInstance effectInstance, ParameterCollection passParameters)
         {
             var compilerParameters = new CompilerParameters();
             parameterCollections.Clear();
@@ -200,48 +252,7 @@ namespace SiliconStudio.Paradox.Rendering
             {
                 compilerParameters.SetObject(parameter.Key, parameter.Value.Object);
             }
-
-            // Compile shader
-            // possible exception in LoadEffect
-            TaskOrResult<Effect> effect;
-            ParameterCollection usedParameters;
-            try
-            {
-                effect = EffectSystem.LoadEffect(EffectName, compilerParameters, out usedParameters);
-            }
-            catch (Exception)
-            {
-                effectInstance.HasErrors = true;
-
-                // Fallback to error effect
-                var fallbackEffect = ComputeFallbackEffect(this, FallbackEffectType.Error, EffectName, compilerParameters);
-                UpdateEffect(effectInstance, fallbackEffect.Effect, fallbackEffect.UsedParameters, passParameters);
-
-                return;
-            }
-
-            // Do we have an async compilation?
-            if (asyncEffectCompiler && effect.Task != null)
-            {
-                effectInstance.CurrentlyCompilingEffect = effect.Task;
-                effectInstance.CurrentlyCompilingUsedParameters = usedParameters;
-
-                if (!effectInstance.HasErrors) // If there was an error, stay in that state (we don't want to switch between reloading and error states)
-                {
-                    // Fallback to default effect
-                    var fallbackEffect = ComputeFallbackEffect(this, FallbackEffectType.Compiling, EffectName, compilerParameters);
-                    UpdateEffect(effectInstance, fallbackEffect.Effect, fallbackEffect.UsedParameters, passParameters);
-                }
-                return;
-            }
-
-            var compiledEffect = effect.WaitForResult();
-
-            UpdateEffect(effectInstance, compiledEffect, usedParameters, passParameters);
-
-            // Effect has been updated
-            effectInstance.CurrentlyCompilingEffect = null;
-            effectInstance.CurrentlyCompilingUsedParameters = null;
+            return compilerParameters;
         }
 
         private void UpdateEffect(DynamicEffectInstance effectInstance, Effect compiledEffect, ParameterCollection usedParameters, ParameterCollection passParameters)
