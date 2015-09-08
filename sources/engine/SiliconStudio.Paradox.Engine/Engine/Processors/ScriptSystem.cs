@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
+using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
@@ -70,12 +71,15 @@ namespace SiliconStudio.Paradox.Engine.Processors
                         HandleSynchronousException(script, e);
                     }
                 }
-
-                // Start a microthread with execute method if it's an async script
-                var asyncScript = script as AsyncScript;
-                if (asyncScript != null)
+                else
                 {
-                    script.MicroThread = AddTask(asyncScript.Execute);
+                    // Start a microthread with execute method if it's an async script
+                    var asyncScript = script as AsyncScript;
+                    if (asyncScript != null)
+                    {
+                        asyncScript.CancellationTokenSource = new CancellationTokenSource();
+                        script.MicroThread = AddTask(asyncScript.Execute);
+                    }
                 }
             }
 
@@ -180,8 +184,17 @@ namespace SiliconStudio.Paradox.Engine.Processors
                         HandleSynchronousException(script, e);
                     }
                 }
+                else
+                {
+                    var asyncScript = script as AsyncScript;
+                    if (asyncScript != null)
+                    {
+                        asyncScript.CancellationTokenSource.Cancel();
 
-                // TODO: Cancel async script execution
+                        // TODO: Since special awaitables are unaware of cancellation tokens right now, raise exception manually
+                        script.MicroThread.RaiseException(new MicroThreadCanceledException(asyncScript.CancellationToken));
+                    }
+                }
             }
 
             var syncScript = script as SyncScript;

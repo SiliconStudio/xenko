@@ -158,12 +158,6 @@ namespace SiliconStudio.Paradox.Debugger.Target
             scriptComponent.Scripts[reloadedScript.ScriptIndex] = newScript;
 
             oldScript.Dispose();
-
-            if (oldScript.MicroThread != null && !oldScript.MicroThread.IsOver)
-            {
-                // Force the script to be cancelled
-                oldScript.MicroThread.RaiseException(new MicroThreadCancelledException());
-            }
         }
 
         protected class ReloadedScriptEntryLive : ReloadedScriptEntry
