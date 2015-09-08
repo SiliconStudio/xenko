@@ -4,6 +4,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
+using SiliconStudio.Core.MicroThreading;
 
 namespace SiliconStudio.Paradox.Engine
 {
@@ -13,12 +14,15 @@ namespace SiliconStudio.Paradox.Engine
     public abstract class AsyncScript : Script
     {
         [DataMemberIgnore]
+        internal MicroThread MicroThread;
+
+        [DataMemberIgnore]
         internal CancellationTokenSource CancellationTokenSource;
 
         /// <summary>
         /// Gets a token indicating if the script execution was canceled.
         /// </summary>
-        public CancellationToken CancellationToken => CancellationTokenSource.Token;
+        public CancellationToken CancellationToken => MicroThread.CancellationToken;
 
         /// <summary>
         /// Called once, as a microthread

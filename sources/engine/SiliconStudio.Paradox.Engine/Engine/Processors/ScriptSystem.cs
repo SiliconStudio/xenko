@@ -77,8 +77,7 @@ namespace SiliconStudio.Paradox.Engine.Processors
                     var asyncScript = script as AsyncScript;
                     if (asyncScript != null)
                     {
-                        asyncScript.CancellationTokenSource = new CancellationTokenSource();
-                        script.MicroThread = AddTask(asyncScript.Execute);
+                        asyncScript.MicroThread = AddTask(asyncScript.Execute);
                     }
                 }
             }
@@ -187,13 +186,7 @@ namespace SiliconStudio.Paradox.Engine.Processors
                 else
                 {
                     var asyncScript = script as AsyncScript;
-                    if (asyncScript != null)
-                    {
-                        asyncScript.CancellationTokenSource.Cancel();
-
-                        // TODO: Since special awaitables are unaware of cancellation tokens right now, raise exception manually
-                        script.MicroThread.RaiseException(new MicroThreadCanceledException(asyncScript.CancellationToken));
-                    }
+                    asyncScript?.MicroThread.Cancel();
                 }
             }
 

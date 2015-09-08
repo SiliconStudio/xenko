@@ -169,6 +169,8 @@ namespace SiliconStudio.Core.MicroThreading
                 runningMicroThread.Value = microThread;
                 var previousSyncContext = SynchronizationContext.Current;
                 SynchronizationContext.SetSynchronizationContext(microThread.SynchronizationContext);
+
+                // TODO: Do we still need to try/catch here? Everything should be caught in the continuation wrapper and put into MicroThread.Exception
                 try
                 {
                     if (microThread.State == MicroThreadState.Starting && MicroThreadStarted != null)
@@ -182,11 +184,9 @@ namespace SiliconStudio.Core.MicroThreading
                         var callback = callbacks.First;
                         while (callback != null)
                         {
-                            microThread.ThrowIfExceptionRequest();
                             callback.Invoke();
                             callback = callback.Next;
                         }
-                        microThread.ThrowIfExceptionRequest();
                     }
                 }
                 catch (Exception e)
@@ -206,7 +206,7 @@ namespace SiliconStudio.Core.MicroThreading
                         {
                             if (microThread.CompletionTask != null)
                             {
-                                if (microThread.State == MicroThreadState.Failed || microThread.State == MicroThreadState.Cancelled)
+                                if (microThread.State == MicroThreadState.Failed || microThread.State == MicroThreadState.Canceled)
                                     microThread.CompletionTask.TrySetException(microThread.Exception);
                                 else
                                     microThread.CompletionTask.TrySetResult(1);
@@ -279,7 +279,7 @@ namespace SiliconStudio.Core.MicroThreading
                 if (microThreads.All(x => x.State == MicroThreadState.Completed))
                     return;
 
-                if (microThreads.Any(x => x.State == MicroThreadState.Failed || x.State == MicroThreadState.Cancelled))
+                if (microThreads.Any(x => x.State == MicroThreadState.Failed || x.State == MicroThreadState.Canceled))
                     throw new AggregateException(microThreads.Select(x => x.Exception).Where(x => x != null));
 
                 var completionTasks = new List<Task<int>>();
