@@ -58,6 +58,8 @@ namespace SiliconStudio.Core.MicroThreading
         public T GetResult()
         {
             // Check Task Result (exception, etc...)
+            MicroThread.CancellationToken.ThrowIfCancellationRequested();
+
             var result = Result;
 
             // After result has been taken, we can reuse this item, so put it in the pool
@@ -80,7 +82,7 @@ namespace SiliconStudio.Core.MicroThreading
 
         public bool IsCompleted
         {
-            get { return isCompleted; }
+            get { return isCompleted || (MicroThread != null && MicroThread.IsOver); }
             set { isCompleted = value; }
         }
     }
