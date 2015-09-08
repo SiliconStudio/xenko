@@ -21,6 +21,7 @@ namespace SiliconStudio.Assets
         private bool isDirty;
         private Package package;
         private UDirectory sourceFolder;
+        private UFile projectFile;
 
         /// <summary>
         /// The default comparer use only the id of an assetitem to match assets.
@@ -87,6 +88,19 @@ namespace SiliconStudio.Assets
             set
             {
                 sourceFolder = value;
+            }
+        }
+
+        public UFile ProjectFile
+        {
+            get
+            {
+                return projectFile;
+                
+            }
+            set
+            {
+                projectFile = value;
             }
         }
 
@@ -176,7 +190,9 @@ namespace SiliconStudio.Assets
         {
             get
             {
-                var localSourceFolder = SourceFolder ?? (Package != null ? Package.GetDefaultAssetFolder() : UDirectory.This );
+                var localSourceFolder = SourceFolder ?? (Package != null ? 
+                    Package.GetDefaultAssetFolder()
+                    : UDirectory.This );
 
                 // Root directory of package
                 var rootDirectory = Package != null && Package.RootDirectory != null ? Package.RootDirectory : null;

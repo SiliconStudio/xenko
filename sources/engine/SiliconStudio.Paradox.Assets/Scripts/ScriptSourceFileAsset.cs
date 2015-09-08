@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Assets.Scripts
         IReadOnlyCollection<Type> GetSourcePathTypes(string path);
     }
 
-    [DataContract("EffectCompositorAsset")]
+    [DataContract("ScriptSourceFileAsset")]
     [AssetDescription(".cs")]
     [Display(95, "Script Source Code", "A C# source code file")]
     public sealed class ScriptSourceFileAsset : SourceCodeAsset

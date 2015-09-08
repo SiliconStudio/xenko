@@ -22,12 +22,20 @@ namespace SiliconStudio.Assets
         protected SourceCodeAsset()
         {
         }
+
         /// <summary>
         /// Gets or sets the absolute source location of this asset on the disk.
         /// </summary>
         /// <value>The absolute source location.</value>
         [Browsable(false)]
         public string AbsoluteSourceLocation { get; set; }
+
+        /// <summary>
+        /// Gets or sets the absolute csproj file location of this asset on the disk.
+        /// </summary>
+        /// <value>The absolute source location.</value>
+        [Browsable(false)]
+        public string AbsoluteProjectLocation { get; set; }
 
         /// <summary>
         /// Gets the sourcecode text.

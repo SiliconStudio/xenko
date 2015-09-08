@@ -910,8 +910,10 @@ namespace SiliconStudio.Assets
                 var assetItem = new AssetItem(assetPath, asset, this)
                 {
                     IsDirty = assetContent != null || aliasOccurred,
-                    SourceFolder = sourceFolder.MakeRelative(RootDirectory)
+                    SourceFolder = sourceFolder.MakeRelative(RootDirectory),
+                    ProjectFile = asset is SourceCodeAsset && assetFile.ProjectFile != null ? assetFile.ProjectFile : null
                 };
+
                 // Set the modified time to the time loaded from disk
                 if (!assetItem.IsDirty)
                     assetItem.ModifiedTime = File.GetLastWriteTime(assetFullPath);
@@ -1076,7 +1078,7 @@ namespace SiliconStudio.Assets
                 }
 
                 var assetFolderAbsolute = UPath.Combine(RootDirectory, asset.SourceFolder);
-                if (!assetFolders.Contains(assetFolderAbsolute))
+                if (!assetFolders.Contains(assetFolderAbsolute) && asset.ProjectFile == null) //ignore assets that depend on a csproj
                 {
                     assetFolders.Add(assetFolderAbsolute);
                     sharedProfile.AssetFolders.Add(new AssetFolder(assetFolderAbsolute));
@@ -1174,7 +1176,7 @@ namespace SiliconStudio.Assets
 
                         // If this kind of file an asset file?
                         var ext = fileUPath.GetFileExtension();
-                        if (!AssetRegistry.IsAssetFileExtension(ext) || ext == ".cs")
+                        if (!AssetRegistry.IsAssetFileExtension(ext) || ext == ".cs") //todo remove hard-coded
                         {
                             continue;
                         }
@@ -1197,11 +1199,11 @@ namespace SiliconStudio.Assets
                         var dir = new UDirectory(realFullPath.GetFullDirectory());
                         var parentDir = dir.GetParent();
 
-                        foreach (var projectItem in project.Items.Where(x => x.ItemType == "Compile"))
+                        foreach (var projectItem in project.Items.Where(x => x.ItemType == "Compile")) //todo add better filtering, not Compile but extension maybe?
                         {
                             var csFile = new UFile(projectItem.EvaluatedInclude);
                             var csPath = UPath.Combine(dir, csFile);
-                            listFiles.Add(new PackageLoadingAssetFile(csPath, parentDir));
+                            listFiles.Add(new PackageLoadingAssetFile(csPath, parentDir, realFullPath));
                         }
 
                         project.ProjectCollection.UnloadAllProjects();
