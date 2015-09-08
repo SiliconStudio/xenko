@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-
+using Microsoft.Build.Evaluation;
 using SharpYaml;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Diagnostics;
@@ -534,6 +534,9 @@ namespace SiliconStudio.Assets
                     filesToDelete.Clear();
                 }
 
+                //batch projects
+                var vsProjs = new Dictionary<string, Project>();
+
                 foreach (var asset in Assets)
                 {
                     if (asset.IsDirty)
@@ -542,43 +545,33 @@ namespace SiliconStudio.Assets
 
                         try
                         {
-                            var sourceCodeAsset = asset.Asset as SourceCodeAsset;
-                            if (sourceCodeAsset != null && !sourceCodeAsset.ProjectRepresentation.IsNullOrEmpty() && sourceCodeAsset.ProjectRepresentation == ".cs") //todo add support for pdxsl
+                            var sourceCodeAsset = asset.Asset as ProjectSourceCodeAsset;
+                            if (sourceCodeAsset != null)
                             {
-                                var done = false;
-                                var sharedProfiles = Profiles.Where(x => x.Platform == PlatformType.Shared);
+                                var profile = Profiles.FindSharedProfile();
+                                var lib = profile.ProjectReferences.FirstOrDefault(x => x.Type == ProjectType.Library && asset.Location.FullPath.StartsWith(x.Location.GetFileName()));
+                                if (lib == null) continue;
 
-                                foreach (var profile in sharedProfiles)
+                                var projectFullPath = UPath.Combine(RootDirectory, lib.Location);
+                                var fileFullPath = UPath.Combine(RootDirectory, asset.Location);
+                                var filePath = fileFullPath.MakeRelative(projectFullPath.GetFullDirectory());
+                                var includeName = filePath + AssetRegistry.GetDefaultExtension(sourceCodeAsset.GetType());
+
+                                Project project;
+                                if (!vsProjs.TryGetValue(projectFullPath, out project))
                                 {
-                                    var lib = profile.ProjectReferences.FirstOrDefault(x => x.Type == ProjectType.Library && asset.Location.FullPath.StartsWith(x.Location.GetFileName()));
-                                    if (lib != null)
-                                    {                                       
-                                        var projectFullPath = UPath.Combine(RootDirectory, lib.Location);
-                                        var fileFullPath = UPath.Combine(RootDirectory, asset.Location);
-                                        var filePath = fileFullPath.MakeRelative(projectFullPath.GetFullDirectory());
-                                        var includeName = filePath + sourceCodeAsset.ProjectRepresentation;
-
-                                        var project = VSProjectHelper.LoadProject(projectFullPath);
-                                        project.AddItem("Compile", includeName);
-                                        project.Save();
-                                        project.ProjectCollection.UnloadAllProjects();
-                                        project.ProjectCollection.Dispose();
-
-                                        asset.ProjectFile = projectFullPath;
-                                        asset.SourceFolder = RootDirectory.GetFullDirectory();
-
-                                        var csFile = new UFile(includeName);
-                                        assetPath = UPath.Combine(projectFullPath.GetFullDirectory(), csFile);
-                                        done = true;
-                                        break;
-                                    }
+                                    project = VSProjectHelper.LoadProject(projectFullPath);
+                                    vsProjs.Add(projectFullPath, project);
                                 }
 
-                                if (!done)
-                                {
-                                    //todo this is not properly handled
-                                    throw new Exception();
-                                }
+                                project.AddItem(AssetRegistry.GetDefaultExtension(sourceCodeAsset.GetType()) == ".cs" ? "Compile" : "None", includeName);
+                                //todo None case needs Generator and LastGenOutput properties support! (eg pdxsl)
+
+                                asset.ProjectFile = projectFullPath;
+                                asset.SourceFolder = RootDirectory.GetFullDirectory();
+
+                                var csFile = new UFile(includeName);
+                                assetPath = UPath.Combine(projectFullPath.GetFullDirectory(), csFile);
                             }
 
                             // Notifies the dependency manager that an asset with the specified path is being saved
@@ -608,6 +601,13 @@ namespace SiliconStudio.Assets
                             log.Error(this, asset.ToReference(), AssetMessageCode.AssetCannotSave, ex, assetPath);
                         }
                     }
+                }
+
+                foreach (var project in vsProjs.Values)
+                {
+                    project.Save();
+                    project.ProjectCollection.UnloadAllProjects();
+                    project.ProjectCollection.Dispose();
                 }
 
                 Assets.IsDirty = false;
@@ -949,13 +949,7 @@ namespace SiliconStudio.Assets
                 var assetContent = assetFile.AssetContent;
 
                 bool aliasOccurred;
-                var asset = LoadAsset(log, assetFullPath, assetPath, fileUPath, assetContent, out aliasOccurred);
-
-                var sourceAsset = asset as SourceCodeAsset;
-                if (sourceAsset != null)
-                {
-                    sourceAsset.ProjectRepresentation = assetFile.FilePath.GetFileExtension();
-                }
+                var asset = LoadAsset(log, assetFullPath, assetPath, assetFile.ProjectFile, assetContent, out aliasOccurred);
 
                 // Create asset item
                 var assetItem = new AssetItem(assetPath, asset, this)
@@ -1025,7 +1019,7 @@ namespace SiliconStudio.Assets
             LoadAssemblyReferencesForPackage(log, loadParameters);
         }
 
-        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, UFile fileUPath, byte[] assetContent, out bool assetDirty)
+        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, string projectFullPath, byte[] assetContent, out bool assetDirty)
         {
             var asset = assetContent != null
                 ? (Asset)AssetSerializer.Load(new MemoryStream(assetContent), Path.GetExtension(assetFullPath), log, out assetDirty)
@@ -1038,6 +1032,12 @@ namespace SiliconStudio.Assets
                 // Use an id generated from the location instead of the default id
                 sourceCodeAsset.Id = SourceCodeAsset.GenerateGuidFromLocation(assetPath);
                 sourceCodeAsset.AbsoluteSourceLocation = assetFullPath;
+
+                var projectSourceCodeAsset = asset as ProjectSourceCodeAsset;
+                if (projectSourceCodeAsset != null)
+                {
+                    projectSourceCodeAsset.AbsoluteProjectLocation = projectFullPath;
+                }
             }
 
             return asset;
@@ -1229,7 +1229,7 @@ namespace SiliconStudio.Assets
 
                         // If this kind of file an asset file?
                         var ext = fileUPath.GetFileExtension();
-                        if (!AssetRegistry.IsAssetFileExtension(ext) || ext == ".cs") //todo remove hard-coded
+                        if (!AssetRegistry.IsAssetFileExtension(ext) || AssetRegistry.IsProjectSourceCodeAssetFileExtension(ext)) //project source code assets follow the csproj pipeline
                         {
                             continue;
                         }
@@ -1239,33 +1239,36 @@ namespace SiliconStudio.Assets
                 }
             }
 
-            //iterate Compile tags of the csproj..
-            if (!package.IsSystem)
-            {
-                var sharedProfiles = package.Profiles.Where(x => x.Platform == PlatformType.Shared);
-                foreach (var profile in sharedProfiles)
-                {
-                    foreach (var libs in profile.ProjectReferences.Where(x => x.Type == ProjectType.Library))
-                    {
-                        var realFullPath = UPath.Combine(package.RootDirectory, libs.Location);
-                        var project = VSProjectHelper.LoadProject(realFullPath);
-                        var dir = new UDirectory(realFullPath.GetFullDirectory());
-                        var parentDir = dir.GetParent();
-
-                        foreach (var projectItem in project.Items.Where(x => x.ItemType == "Compile")) //todo add better filtering, not Compile but extension maybe?
-                        {
-                            var csFile = new UFile(projectItem.EvaluatedInclude);
-                            var csPath = UPath.Combine(dir, csFile);
-                            listFiles.Add(new PackageLoadingAssetFile(csPath, parentDir, realFullPath));
-                        }
-
-                        project.ProjectCollection.UnloadAllProjects();
-                        project.ProjectCollection.Dispose();
-                    }
-                }
-            }
+            //find also assets in the csproj
+            FindCodeAssetsInProject(listFiles, package);
 
             return listFiles;
+        }
+
+        private static void FindCodeAssetsInProject(ICollection<PackageLoadingAssetFile> list, Package package)
+        {
+            if (!package.IsSystem)
+            {
+                var profile = package.Profiles.FindSharedProfile();
+                foreach (var libs in profile.ProjectReferences.Where(x => x.Type == ProjectType.Library))
+                {
+                    var realFullPath = UPath.Combine(package.RootDirectory, libs.Location);
+                    var project = VSProjectHelper.LoadProject(realFullPath);
+                    var dir = new UDirectory(realFullPath.GetFullDirectory());
+                    var parentDir = dir.GetParent();
+
+                    foreach (var projectItem in project.Items.Where(x => x.ItemType == "Compile" || x.ItemType == "None").
+                        Select(x => new UFile(x.EvaluatedInclude)).
+                        Where(x => AssetRegistry.IsProjectSourceCodeAssetFileExtension(x.GetFileExtension())))
+                    {
+                        var csPath = UPath.Combine(dir, projectItem);
+                        list.Add(new PackageLoadingAssetFile(csPath, parentDir, realFullPath));
+                    }
+
+                    project.ProjectCollection.UnloadAllProjects();
+                    project.ProjectCollection.Dispose();
+                }
+            }
         }
 
         /// <summary>

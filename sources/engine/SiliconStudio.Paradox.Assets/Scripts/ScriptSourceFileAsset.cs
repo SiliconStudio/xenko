@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.Assets.Scripts
     [DataContract("ScriptSourceFileAsset")]
     [AssetDescription(".cs")]
     [Display(95, "Script Source Code", "A C# source code file")]
-    public sealed class ScriptSourceFileAsset : SourceCodeAsset
+    public sealed class ScriptSourceFileAsset : ProjectSourceCodeAsset
     {
         public IReadOnlyCollection<Type> GetContainedScriptTypes()
         {
