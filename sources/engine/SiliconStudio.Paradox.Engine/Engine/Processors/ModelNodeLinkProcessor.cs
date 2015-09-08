@@ -21,6 +21,13 @@ namespace SiliconStudio.Paradox.Engine.Processors
             return entity.Get(ModelNodeLinkComponent.Key);
         }
 
+        protected override void OnEntityRemoved(Entity entity, ModelNodeLinkComponent data)
+        {
+            // Reset TransformLink
+            if (entity.Transform.TransformLink is ModelNodeTransformLink)
+                entity.Transform.TransformLink = null;
+        }
+
         public override void Draw(RenderContext context)
         {
             foreach (var item in enabledEntities)
