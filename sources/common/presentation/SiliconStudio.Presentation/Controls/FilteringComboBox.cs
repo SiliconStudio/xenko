@@ -60,6 +60,11 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyProperty IsDropDownOpenProperty = DependencyProperty.Register("IsDropDownOpen", typeof(bool), typeof(FilteringComboBox));
 
         /// <summary>
+        /// Identifies the <see cref="OpenDropDownOnFocus"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty OpenDropDownOnFocusProperty = DependencyProperty.Register("OpenDropDownOnFocus", typeof(bool), typeof(FilteringComboBox));
+
+        /// <summary>
         /// Identifies the <see cref="UpdateSelectionOnValidation"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty UpdateSelectionOnValidationProperty = DependencyProperty.Register("UpdateSelectionOnValidation", typeof(bool), typeof(FilteringComboBox));
@@ -118,6 +123,11 @@ namespace SiliconStudio.Presentation.Controls
         /// Gets or sets whether the drop down is open.
         /// </summary>
         public bool IsDropDownOpen { get { return (bool)GetValue(IsDropDownOpenProperty); } set { SetValue(IsDropDownOpenProperty, value); } }
+
+        /// <summary>
+        /// Gets or sets whether to open the dropdown when the control got the focus.
+        /// </summary>
+        public bool OpenDropDownOnFocus { get { return (bool)GetValue(OpenDropDownOnFocusProperty); } set { SetValue(OpenDropDownOnFocusProperty, value); } }
 
         /// <summary>
         /// Gets or sets whether the validation will be cancelled if <see cref="SelectedItem"/> is null.
@@ -206,6 +216,15 @@ namespace SiliconStudio.Presentation.Controls
                 clearing = true;
                 editableTextBox.Clear();
                 clearing = false;
+            }
+        }
+
+        protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
+        {
+            base.OnGotKeyboardFocus(e);
+            if (OpenDropDownOnFocus)
+            {
+                IsDropDownOpen = true;
             }
         }
 
@@ -301,6 +320,12 @@ namespace SiliconStudio.Presentation.Controls
                 return;
             
             clearing = true;
+            if (!RequireSelectedItemToValidate)
+            {
+                updatingSelection = true;
+                SelectedItem = null;
+                updatingSelection = false;
+            }
             editableTextBox.Validate();
 
             // Defer closing the popup in case we lost the focus because of a click in the list box - so it can still raise the correct event
