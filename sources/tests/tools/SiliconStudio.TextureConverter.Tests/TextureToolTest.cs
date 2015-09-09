@@ -87,6 +87,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("stones.png", Orientation.Horizontal)]
         [TestCase("TextureArray_WMipMaps_BC3.dds", Orientation.Horizontal)]
         [TestCase("TextureCube_WMipMaps_PVRTC2_4bpp.pvr", Orientation.Vertical)]
@@ -104,6 +105,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("Texture3D_WOMipMaps_BC3.dds")]
         public void PreMultiplyAlphaTest(string file)
         {
@@ -118,6 +120,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("stones.png", PixelFormat.BC3_UNorm)]
         [TestCase("stones.png", PixelFormat.PVRTC_II_4bpp)]
         [TestCase("TextureArray_WMipMaps_BC3.dds", PixelFormat.PVRTC_II_4bpp)]
@@ -134,6 +137,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
+        [Ignore]
         [TestCase("stones.png", Filter.MipMapGeneration.Box)]
         [TestCase("TextureArray_WMipMaps_BC3.dds", Filter.MipMapGeneration.Linear)]
         public void GenerateMipMapTest(string file, Filter.MipMapGeneration filter)
@@ -148,6 +152,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
+        [Ignore]
         [TestCase("TextureArray_WMipMaps_BC3.dds")]
         public void CorrectGammaTest(string file)
         {
@@ -161,6 +166,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
+        [Ignore]
         [TestCase("TextureArray_WMipMaps_BC3.dds")]
         public void ConvertToParadoxImageTest(string file)
         {
@@ -172,6 +178,7 @@ namespace SiliconStudio.TextureConverter.Tests
             pdx.Dispose();
         }
 
+        [Ignore]
         [TestCase("TextureArray_WMipMaps_BC3.dds")]
         public void LoadParadoxImageTest(string file)
         {
@@ -188,6 +195,7 @@ namespace SiliconStudio.TextureConverter.Tests
             pdxImage.Dispose();
         }
 
+        [Ignore]
         [TestCase("TextureArray_WMipMaps_BC3.dds")]
         public void GenerateNormalMapTest(string file)
         {
@@ -201,6 +209,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
+        [Ignore]
         [TestCase("TextureArray_WMipMaps_BC3.dds")]
         public void RescaleTest(string file)
         {
@@ -220,6 +229,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
+        [Ignore]
         [TestCase("TextureArray_WMipMaps_BC3.dds")]
         public void ResizeTest(string file)
         {
@@ -239,6 +249,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
+        [Ignore]
         [TestCase("TextureArray_WMipMaps_BC3.dds")]
         public void SwitchChannelTest(string file)
         {
@@ -257,6 +268,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("TextureArray_WMipMaps_BGRA8888.dds", ".pvr", PixelFormat.None, 16)]
         [TestCase("TextureArray_WMipMaps_BC3.dds", ".pvr", PixelFormat.ETC2_RGBA, 0)]
         [TestCase("TextureArray_WMipMaps_BC3.dds", ".pvr", PixelFormat.None, 0)]
@@ -287,6 +299,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
+        [Ignore]
         [TestCase("TextureCube_WMipMaps_BC3.dds", ".pvr", Filter.Rescaling.CatmullRom, PixelFormat.ETC2_RGBA)]
         [TestCase("TextureArray_WMipMaps_PVRTC2_4bpp.pvr", ".dds", Filter.Rescaling.Nearest, PixelFormat.BC3_UNorm)]
         [TestCase("TextureCube_WMipMaps_ATC_RGBA_Explicit.pdx", ".dds", Filter.Rescaling.Lanczos3, PixelFormat.BC3_UNorm)]
@@ -369,6 +382,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("atlas_WMipMaps.dds", "stones.png")]
         public void ExtractAtlasTest(string atlasFile, string textureName)
         {
@@ -402,6 +416,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("atlas_WMipMaps.dds")]
         public void ExtractAllAtlasTest(string atlasFile)
         {
@@ -433,8 +448,7 @@ namespace SiliconStudio.TextureConverter.Tests
             }
         }
 
-
-        [TestCase("atlas_WMipMaps.dds", "atlas/square256_2.png")]
+        [TestCase("atlas_WMipMaps.dds", "atlas/square256_2.png"), Ignore]
         public void UpdateAtlasTest(string atlasFile, string textureName)
         {
             var atlas = texTool.LoadAtlas(TexAtlas.TexLayout.Import(Module.PathToInputImages + Path.GetFileNameWithoutExtension(atlasFile) + TexAtlas.TexLayout.Extension), Module.PathToInputImages + atlasFile);
@@ -478,7 +492,7 @@ namespace SiliconStudio.TextureConverter.Tests
             }
         }
 
-
+        [Ignore]
         [TestCase("atlas/stones256.png", "atlas/square256.png")]
         public void CreateArrayTest(string file1, string file2)
         {
@@ -530,6 +544,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("atlas/stones256.png", "atlas/square256.png")]
         public void CreateCubeTest(string file1, string file2)
         {
@@ -580,6 +595,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("array_WMipMaps.dds", 4)]
         public void ExtractTest(string arrayFile, int indice)
         {
@@ -614,6 +630,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("atlas/stones256.png", "atlas/square256.png")]
         public void ExtractAllTest(string file1, string file2)
         {
@@ -647,6 +664,7 @@ namespace SiliconStudio.TextureConverter.Tests
             }
         }
 
+        [Ignore]
         [TestCase("array_WMipMaps.dds", "atlas/square256.png", 3)]
         public void InsertTest(string arrayFile, string newTexture, int indice)
         {
@@ -673,6 +691,7 @@ namespace SiliconStudio.TextureConverter.Tests
             texture.Dispose();
         }
 
+        [Ignore]
         [TestCase("array_WMipMaps.dds", 3)]
         public void RemoveTest(string arrayFile, int indice)
         {
@@ -697,6 +716,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("array_WMipMaps.dds", "atlas/square256_2.png", 0)]
         public void UpdateArrayTest(string arrayFile, string textureName, int indice)
         {
