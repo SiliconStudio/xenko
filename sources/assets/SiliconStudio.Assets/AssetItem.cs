@@ -21,7 +21,7 @@ namespace SiliconStudio.Assets
         private bool isDirty;
         private Package package;
         private UDirectory sourceFolder;
-        private UFile projectFile;
+        private UFile sourceProject;
 
         /// <summary>
         /// The default comparer use only the id of an assetitem to match assets.
@@ -91,16 +91,16 @@ namespace SiliconStudio.Assets
             }
         }
 
-        public UFile ProjectFile
+        public UFile SourceProject
         {
             get
             {
-                return projectFile;
+                return sourceProject;
                 
             }
             set
             {
-                projectFile = value;
+                sourceProject = value;
             }
         }
 
@@ -173,7 +173,7 @@ namespace SiliconStudio.Assets
                 {
                     isDirty = isDirty,
                     SourceFolder = SourceFolder,
-                    ProjectFile = ProjectFile
+                    SourceProject = SourceProject
                 };
             return item;
         }

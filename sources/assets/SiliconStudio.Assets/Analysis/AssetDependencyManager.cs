@@ -704,7 +704,7 @@ namespace SiliconStudio.Assets.Analysis
                     : new AssetItem(assetItem.Location, (Asset)AssetCloner.Clone(assetItem.Asset), assetItem.Package)
                         {
                             SourceFolder = assetItem.SourceFolder,
-                            ProjectFile = assetItem.ProjectFile
+                            SourceProject = assetItem.SourceProject
                         };
                 
                 dependencies = new AssetDependencies(assetItemCloned);

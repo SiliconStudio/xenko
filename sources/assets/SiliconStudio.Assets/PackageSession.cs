@@ -650,13 +650,13 @@ namespace SiliconStudio.Assets
                             try
                             {
                                 //If we are within a csproj we need to remove the file from there as well
-                                if (assetItem?.ProjectFile != null)
+                                if (assetItem?.SourceProject != null)
                                 {
                                     Project project;
-                                    if (!vsProjs.TryGetValue(assetItem.ProjectFile, out project))
+                                    if (!vsProjs.TryGetValue(assetItem.SourceProject, out project))
                                     {
-                                        project = VSProjectHelper.LoadProject(assetItem.ProjectFile);
-                                        vsProjs.Add(assetItem.ProjectFile, project);
+                                        project = VSProjectHelper.LoadProject(assetItem.SourceProject);
+                                        vsProjs.Add(assetItem.SourceProject, project);
                                     }
                                     var item = project.Items.FirstOrDefault(x => x.ItemType == "Compile" && assetItem.FullPath.ToString().EndsWith(x.EvaluatedInclude));
                                     if (item != null)

@@ -395,7 +395,7 @@ namespace SiliconStudio.Assets
                 var assetItem = new AssetItem(asset.Location, newAsset)
                 {
                     SourceFolder = asset.SourceFolder,
-                    ProjectFile = asset.ProjectFile
+                    SourceProject = asset.SourceProject
                 };
                 package.Assets.Add(assetItem);
             }
@@ -567,7 +567,7 @@ namespace SiliconStudio.Assets
                                 project.AddItem(AssetRegistry.GetDefaultExtension(sourceCodeAsset.GetType()) == ".cs" ? "Compile" : "None", includeName);
                                 //todo None case needs Generator and LastGenOutput properties support! (eg pdxsl)
 
-                                asset.ProjectFile = projectFullPath;
+                                asset.SourceProject = projectFullPath;
                                 asset.SourceFolder = RootDirectory.GetFullDirectory();
 
                                 var csFile = new UFile(includeName);
@@ -956,7 +956,7 @@ namespace SiliconStudio.Assets
                 {
                     IsDirty = assetContent != null || aliasOccurred,
                     SourceFolder = sourceFolder.MakeRelative(RootDirectory),
-                    ProjectFile = asset is SourceCodeAsset && assetFile.ProjectFile != null ? assetFile.ProjectFile : null
+                    SourceProject = asset is SourceCodeAsset && assetFile.ProjectFile != null ? assetFile.ProjectFile : null
                 };
 
                 // Set the modified time to the time loaded from disk
@@ -1122,7 +1122,7 @@ namespace SiliconStudio.Assets
             var assetFolders = new HashSet<UDirectory>(GetDistinctAssetFolderPaths());
             foreach (var asset in Assets)
             {
-                if(asset.ProjectFile != null) continue; //We don't add assets that depend on a project to the asset folders
+                if(asset.SourceProject != null) continue; //We don't add assets that depend on a project to the asset folders
 
                 if (asset.SourceFolder == null)
                 {
@@ -1131,7 +1131,7 @@ namespace SiliconStudio.Assets
                 }
 
                 var assetFolderAbsolute = UPath.Combine(RootDirectory, asset.SourceFolder);
-                if (!assetFolders.Contains(assetFolderAbsolute) && asset.ProjectFile == null) //ignore assets that depend on a csproj
+                if (!assetFolders.Contains(assetFolderAbsolute) && asset.SourceProject == null) //ignore assets that depend on a csproj
                 {
                     assetFolders.Add(assetFolderAbsolute);
                     sharedProfile.AssetFolders.Add(new AssetFolder(assetFolderAbsolute));

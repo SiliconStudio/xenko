@@ -46,7 +46,7 @@ namespace SiliconStudio.Assets.Serializers
                 Location = item.Location;
                 SourceFolder = item.SourceFolder;
                 Asset = item.Asset;
-                ProjectFile = item.ProjectFile;
+                ProjectFile = item.SourceProject;
             }
 
             [DataMember(0)]
@@ -64,7 +64,7 @@ namespace SiliconStudio.Assets.Serializers
 
             public AssetItem ToAssetItem()
             {
-                return new AssetItem(Location, Asset) { SourceFolder = SourceFolder, ProjectFile = ProjectFile };
+                return new AssetItem(Location, Asset) { SourceFolder = SourceFolder, SourceProject = ProjectFile };
             }
         }
 
