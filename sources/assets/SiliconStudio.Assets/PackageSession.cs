@@ -652,16 +652,21 @@ namespace SiliconStudio.Assets
                                 //If we are within a csproj we need to remove the file from there as well
                                 if (assetItem?.SourceProject != null)
                                 {
-                                    Project project;
-                                    if (!vsProjs.TryGetValue(assetItem.SourceProject, out project))
+                                    var projectAsset = assetItem.Asset as ProjectSourceCodeAsset;
+                                    if (projectAsset != null)
                                     {
-                                        project = VSProjectHelper.LoadProject(assetItem.SourceProject);
-                                        vsProjs.Add(assetItem.SourceProject, project);
-                                    }
-                                    var item = project.Items.FirstOrDefault(x => x.ItemType == "Compile" && assetItem.FullPath.ToString().EndsWith(x.EvaluatedInclude));
-                                    if (item != null)
-                                    {
-                                        project.RemoveItem(item);
+                                        Project project;
+                                        if (!vsProjs.TryGetValue(assetItem.SourceProject, out project))
+                                        {
+                                            project = VSProjectHelper.LoadProject(assetItem.SourceProject);
+                                            vsProjs.Add(assetItem.SourceProject, project);
+                                        }
+                                        var include = (new UFile(projectAsset.ProjectInclude)).ToWindowsPath();
+                                        var item = project.Items.FirstOrDefault(x => (x.ItemType == "Compile" || x.ItemType == "None") && x.EvaluatedInclude == include);
+                                        if (item != null)
+                                        {
+                                            project.RemoveItem(item);
+                                        }
                                     }
                                 }
 

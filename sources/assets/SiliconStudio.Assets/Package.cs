@@ -555,7 +555,7 @@ namespace SiliconStudio.Assets
                                 var projectFullPath = UPath.Combine(RootDirectory, lib.Location);
                                 var fileFullPath = UPath.Combine(RootDirectory, asset.Location);
                                 var filePath = fileFullPath.MakeRelative(projectFullPath.GetFullDirectory());
-                                var includeName = filePath + AssetRegistry.GetDefaultExtension(sourceCodeAsset.GetType());
+                                var codeFile = new UFile(filePath + AssetRegistry.GetDefaultExtension(sourceCodeAsset.GetType()));
 
                                 Project project;
                                 if (!vsProjs.TryGetValue(projectFullPath, out project))
@@ -564,14 +564,17 @@ namespace SiliconStudio.Assets
                                     vsProjs.Add(projectFullPath, project);
                                 }
 
-                                project.AddItem(AssetRegistry.GetDefaultExtension(sourceCodeAsset.GetType()) == ".cs" ? "Compile" : "None", includeName);
-                                //todo None case needs Generator and LastGenOutput properties support! (eg pdxsl)
+                                //check if the item is already there, this is possible when saving the first time when creating from a template
+                                if (project.Items.All(x => x.EvaluatedInclude != codeFile.ToWindowsPath()))
+                                {
+                                    project.AddItem(AssetRegistry.GetDefaultExtension(sourceCodeAsset.GetType()) == ".cs" ? "Compile" : "None", codeFile.ToWindowsPath());
+                                    //todo None case needs Generator and LastGenOutput properties support! (eg pdxsl)
+                                }
 
                                 asset.SourceProject = projectFullPath;
                                 asset.SourceFolder = RootDirectory.GetFullDirectory();
 
-                                var csFile = new UFile(includeName);
-                                assetPath = UPath.Combine(projectFullPath.GetFullDirectory(), csFile);
+                                assetPath = UPath.Combine(projectFullPath.GetFullDirectory(), codeFile);
                             }
 
                             // Notifies the dependency manager that an asset with the specified path is being saved
@@ -948,8 +951,10 @@ namespace SiliconStudio.Assets
                 var assetFullPath = fileUPath.FullPath;
                 var assetContent = assetFile.AssetContent;
 
+                var projectInclude = assetFile.ProjectFile != null ? fileUPath.MakeRelative(assetFile.ProjectFile.GetFullDirectory()) : null;
+
                 bool aliasOccurred;
-                var asset = LoadAsset(log, assetFullPath, assetPath, assetFile.ProjectFile, assetContent, out aliasOccurred);
+                var asset = LoadAsset(log, assetFullPath, assetPath, assetFile.ProjectFile, projectInclude, assetContent, out aliasOccurred);
 
                 // Create asset item
                 var assetItem = new AssetItem(assetPath, asset, this)
@@ -1019,7 +1024,7 @@ namespace SiliconStudio.Assets
             LoadAssemblyReferencesForPackage(log, loadParameters);
         }
 
-        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, string projectFullPath, byte[] assetContent, out bool assetDirty)
+        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, string projectFullPath, string projectInclude, byte[] assetContent, out bool assetDirty)
         {
             var asset = assetContent != null
                 ? (Asset)AssetSerializer.Load(new MemoryStream(assetContent), Path.GetExtension(assetFullPath), log, out assetDirty)
@@ -1037,6 +1042,7 @@ namespace SiliconStudio.Assets
                 if (projectSourceCodeAsset != null)
                 {
                     projectSourceCodeAsset.AbsoluteProjectLocation = projectFullPath;
+                    projectSourceCodeAsset.ProjectInclude = projectInclude;
                 }
             }
 
@@ -1247,7 +1253,7 @@ namespace SiliconStudio.Assets
 
         private static void FindCodeAssetsInProject(ICollection<PackageLoadingAssetFile> list, Package package)
         {
-            if (!package.IsSystem)
+            if (!package.IsSystem) //user code case
             {
                 var profile = package.Profiles.FindSharedProfile();
                 foreach (var libs in profile.ProjectReferences.Where(x => x.Type == ProjectType.Library))

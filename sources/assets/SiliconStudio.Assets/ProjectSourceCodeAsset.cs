@@ -17,5 +17,8 @@ namespace SiliconStudio.Assets
         /// <value>The absolute source location.</value>
         [Browsable(false)]
         public string AbsoluteProjectLocation { get; set; }
+
+        [Browsable(false)]
+        public string ProjectInclude { get; set; }
     }
 }
