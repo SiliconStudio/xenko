@@ -21,7 +21,7 @@ using SiliconStudio.Paradox.Engine;
 namespace SiliconStudio.Paradox.Assets.Tests
 {
     [TestFixture]
-    public class TestModelAsset
+    public class ModelAssetTests
     {
         [TestFixtureSetUp]
         public void Initialize()

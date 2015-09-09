@@ -25,6 +25,7 @@ using System.Runtime.InteropServices;
 // TODO: Needed for ParameterCollection getters, but it would be better to avoid this kind of dependency.
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine.Serializers" + SiliconStudio.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine.Shaders" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Assets.Tests" + SiliconStudio.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Graphics.Regression" + SiliconStudio.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Debugger" + SiliconStudio.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("SiliconStudio.Paradox.Audio.Tests" + SiliconStudio.PublicKeys.Default)]

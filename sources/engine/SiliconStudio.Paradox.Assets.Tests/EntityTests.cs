@@ -13,7 +13,7 @@ using SiliconStudio.Paradox.Engine;
 namespace SiliconStudio.Paradox.Assets.Tests
 {
     [TestFixture]
-    public class TestEntity
+    public class EntityTests
     {
         [TestFixtureSetUp]
         public void Initialize()

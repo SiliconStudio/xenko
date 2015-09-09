@@ -1,5 +1,6 @@
 !Package
 Id: 04ed1618-1a06-4a69-ac34-1006a978af11
+SerializedVersion: 1
 Tags: []
 Meta:
     Name: SiliconStudio.Paradox.Assets.Tests
@@ -16,7 +17,6 @@ Profiles:
         InheritProfiles: []
         AssetFolders:
             -   Path: GameAssets
-                RawImports: []
         OutputGroupDirectories: {}
         Properties: {}
         ProjectReferences:
@@ -28,7 +28,6 @@ Profiles:
         InheritProfiles: []
         AssetFolders:
             -   Path: GameAssets
-                RawImports: []
         OutputGroupDirectories: {}
         Properties: {}
         ProjectReferences:
