@@ -91,9 +91,9 @@ namespace SiliconStudio.Paradox.Engine.Design
         public void CopyTo(CameraComponent camera)
         {
             if (camera == null) throw new ArgumentNullException("camera");
-            camera.Projection = Projection;
+            //camera.Projection = Projection;
             camera.VerticalFieldOfView = VerticalFieldOfView;
-            camera.OrthographicSize = OrthographicSize;
+            //camera.OrthographicSize = OrthographicSize;
             camera.NearClipPlane = NearPlane;
             camera.FarClipPlane = FarPlane;
             // TODO: Aspect ratio
