@@ -55,6 +55,7 @@
     <Compile Include="Backend\TexLibraries\DxtTexLib.cs" />
     <Compile Include="Backend\TexLibraries\ParadoxTexLibrary.cs" />
     <Compile Include="Backend\TexLibraries\PvrttTexLib.cs" />
+    <Compile Include="Frontend\AlphaLevels.cs" />
     <Compile Include="Frontend\Enumeration\Filter.cs" />
     <Compile Include="Backend\Tools.cs" />
     <Compile Include="Backend\Wrappers\AtitcNetWrapper.cs" />
