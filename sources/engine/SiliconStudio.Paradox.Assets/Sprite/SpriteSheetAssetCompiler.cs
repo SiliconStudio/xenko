@@ -301,13 +301,16 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                         imageInfoDictionary[key] = sprite;
                     }
 
+                    // find the maximum texture size supported
+                    var maximumSize = TextureHelper.FindBestTextureSize(new TextureHelper.ImportParameters(AssetParameters), new Size2(int.MaxValue/2, int.MaxValue/2));
+
                     // Initialize packing configuration from GroupAsset
                     var texturePacker = new TexturePacker
                     {
                         Algorithm = packingParameters.PackingAlgorithm,
                         AllowMultipack = packingParameters.AllowMultipacking,
-                        MaxHeight = packingParameters.AtlasMaximumSize.Y,
-                        MaxWidth = packingParameters.AtlasMaximumSize.X,
+                        MaxWidth = maximumSize.Width,
+                        MaxHeight = maximumSize.Height,
                         AllowRotation = packingParameters.AllowRotations,
                     };
 
