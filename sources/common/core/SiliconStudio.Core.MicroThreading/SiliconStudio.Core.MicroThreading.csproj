@@ -40,6 +40,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScheduleMode.cs" />
     <Compile Include="Scheduler.cs" />
+    <Compile Include="SchedulerEntry.cs" />
     <Compile Include="SchedulerEventArgs.cs" />
     <Compile Include="ScriptFlags.cs" />
     <Compile Include="SwitchToAwaiter.cs" />

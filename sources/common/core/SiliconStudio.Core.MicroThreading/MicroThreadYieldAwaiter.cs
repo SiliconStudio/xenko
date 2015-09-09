@@ -26,9 +26,9 @@ namespace SiliconStudio.Core.MicroThreading
                 if (microThread.IsOver)
                     return true;
 
-                lock (microThread.Scheduler.scheduledMicroThreads)
+                lock (microThread.Scheduler.scheduledEntries)
                 {
-                    return microThread.Scheduler.scheduledMicroThreads.Count == 0;
+                    return microThread.Scheduler.scheduledEntries.Count == 0;
                 }
             }
         }

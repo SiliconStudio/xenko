@@ -8,7 +8,7 @@ namespace SiliconStudio.Core.Collections
     /// <typeparam name="T"></typeparam>
     public class PriorityQueueNode<T>
     {
-        public T Value { get; internal set; }
+        public T Value;
 
         public int Index { get; internal set; }
 

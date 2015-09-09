@@ -13,7 +13,7 @@ namespace SiliconStudio.Core.MicroThreading
     /// <summary>
     /// Represents an execution context managed by a <see cref="Scheduler"/>, that can cooperatively yield execution to another <see cref="MicroThread"/> at any point (usually using async calls).
     /// </summary>
-    public class MicroThread : IComparable<MicroThread>
+    public class MicroThread
     {
         internal static readonly ProfilingKey ProfilingKey = new ProfilingKey("MicroThread-Running");
 
@@ -26,13 +26,9 @@ namespace SiliconStudio.Core.MicroThreading
 
         private static long globalCounterId;
 
-        // Counter that will be used to have a "stable" microthread scheduling (first added is first scheduled)
-        private int priority;
-        private long schedulerCounter;
-
         private int state;
         private CancellationTokenSource cancellationTokenSource;
-        internal PriorityQueueNode<MicroThread> ScheduledLinkedListNode;
+        internal PriorityQueueNode<SchedulerEntry> ScheduledLinkedListNode;
         internal LinkedListNode<MicroThread> AllLinkedListNode; // Also used as lock for "CompletionTask"
         internal MicroThreadCallbackList Callbacks;
         internal SynchronizationContext SynchronizationContext;
@@ -41,7 +37,7 @@ namespace SiliconStudio.Core.MicroThreading
         {
             Id = Interlocked.Increment(ref globalCounterId);
             Scheduler = scheduler;
-            ScheduledLinkedListNode = new PriorityQueueNode<MicroThread>(this);
+            ScheduledLinkedListNode = new PriorityQueueNode<SchedulerEntry>(new SchedulerEntry(this));
             AllLinkedListNode = new LinkedListNode<MicroThread>(this);
             ScheduleMode = ScheduleMode.Last;
             Flags = flags;
@@ -57,10 +53,10 @@ namespace SiliconStudio.Core.MicroThreading
         /// </value>
         public int Priority
         {
-            get { return priority; }
+            get { return ScheduledLinkedListNode.Value.Priority; }
             set
             {
-                if (priority != value)
+                if (ScheduledLinkedListNode.Value.Priority != value)
                     Reschedule(ScheduleMode.First, value);
             }
         }
@@ -147,15 +143,6 @@ namespace SiliconStudio.Core.MicroThreading
         public static MicroThread Current
         {
             get { return Scheduler.CurrentMicroThread; }
-        }
-
-        public int CompareTo(MicroThread other)
-        {
-            var priorityDiff = priority.CompareTo(other.priority);
-            if (priorityDiff != 0)
-                return priorityDiff;
-
-            return schedulerCounter.CompareTo(other.schedulerCounter);
         }
 
         public void Migrate(Scheduler scheduler)
@@ -275,17 +262,17 @@ namespace SiliconStudio.Core.MicroThreading
 
         internal void Reschedule(ScheduleMode scheduleMode, int newPriority)
         {
-            lock (Scheduler.scheduledMicroThreads)
+            lock (Scheduler.scheduledEntries)
             {
                 if (ScheduledLinkedListNode.Index != -1)
                 {
-                    Scheduler.scheduledMicroThreads.Remove(ScheduledLinkedListNode);
-                    priority = newPriority;
-                    Schedule(scheduleMode);
+                    Scheduler.scheduledEntries.Remove(ScheduledLinkedListNode);
+                    ScheduledLinkedListNode.Value.Priority = newPriority;
+                    Scheduler.Schedule(ScheduledLinkedListNode, scheduleMode);
                 }
                 else
                 {
-                    priority = newPriority;
+                    ScheduledLinkedListNode.Value.Priority = newPriority;
                 }
             }
         }
@@ -293,39 +280,28 @@ namespace SiliconStudio.Core.MicroThreading
         internal void ScheduleContinuation(ScheduleMode scheduleMode, SendOrPostCallback callback, object callbackState)
         {
             Debug.Assert(callback != null);
-            lock (Scheduler.scheduledMicroThreads)
+            lock (Scheduler.scheduledEntries)
             {
                 var node = NewCallback();
                 node.SendOrPostCallback = callback;
                 node.CallbackState = callbackState;
 
                 if (ScheduledLinkedListNode.Index == -1)
-                    Schedule(scheduleMode);
+                    Scheduler.Schedule(ScheduledLinkedListNode, scheduleMode);
             }
         }
 
         internal void ScheduleContinuation(ScheduleMode scheduleMode, Action callback)
         {
             Debug.Assert(callback != null);
-            lock (Scheduler.scheduledMicroThreads)
+            lock (Scheduler.scheduledEntries)
             {
                 var node = NewCallback();
                 node.MicroThreadAction = callback;
 
                 if (ScheduledLinkedListNode.Index == -1)
-                    Schedule(scheduleMode);
+                    Scheduler.Schedule(ScheduledLinkedListNode, scheduleMode);
             }
-        }
-
-        private void Schedule(ScheduleMode scheduleMode)
-        {
-            var nextCounter = Scheduler.SchedulerCounter++;
-            if (scheduleMode == ScheduleMode.First)
-                nextCounter = -nextCounter;
-
-            schedulerCounter = nextCounter;
-
-            Scheduler.scheduledMicroThreads.Enqueue(ScheduledLinkedListNode);
         }
 
         private MicroThreadCallbackNode NewCallback()
