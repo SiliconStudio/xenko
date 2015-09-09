@@ -12,13 +12,14 @@ using SiliconStudio.Assets;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Assets.Textures.Packing;
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.TextureConverter;
 
 namespace SiliconStudio.Paradox.Assets.Tests
 {
     [TestFixture]
-    public class TestTexturePacker
+    public class TexturePackerTests
     {
         private const string TexturePackerFolder = "SiliconStudio.Paradox.Assets.Tests/" + "TexturePacking/";
         private const string ImageOutputPath = TexturePackerFolder+"OutputImages/";
@@ -34,7 +35,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
         public void InitializeTest()
         {
             LoadParadoxAssemblies();
-            TestCommon.InitializeAssetDatabase();
+            Game.InitializeAssetDatabase();
         }
 
         [Test]

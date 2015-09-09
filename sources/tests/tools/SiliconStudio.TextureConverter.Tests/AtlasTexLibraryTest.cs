@@ -48,6 +48,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("atlas/", false, false)]
         [TestCase("atlas/", false, true)]
         [TestCase("atlas/", true, false)]
@@ -88,6 +89,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("atlas_WMipMaps.dds", "square256.png")]
         public void ExtractTest(string atlasFile, string extractedName)
         {
@@ -110,6 +112,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("atlas/")]
         public void ExtractAllTest(string directory)
         {
@@ -149,6 +152,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("atlas_WOMipMaps.png", "square256_2.png", "atlas/stones256.png")]
         public void UpdateTest(string atlasFile, string textureNameToUpdate, string newTexture)
         {

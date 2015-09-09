@@ -24,7 +24,6 @@
 using System;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Paradox.Graphics
 {

@@ -2,8 +2,8 @@
 Settings:
     Package/Scene/ActiveStream: Color Base
     Package/Scene/CameraPreviewVisible: true
-    Package/Scene/CamPitchYaw: {X: -0.5235988, Y: 0.7853982}
-    Package/Scene/CamPosition: {X: 4.0, Y: 4.0, Z: 4.0}
+    Package/Scene/CamPitchYaw: {X: -0.162163332, Y: 0.0748209655}
+    Package/Scene/CamPosition: {X: -0.112933576, Y: 2.59809875, Z: 11.640954}
     Package/Scene/ComponentGizmoSize: 1.0
     Package/Scene/FixedSizeGizmos: false
     Package/Scene/GridVisible: true

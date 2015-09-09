@@ -168,6 +168,14 @@ namespace SiliconStudio.Paradox.Graphics
         }
 
         /// <summary>
+        /// Reset the buffer (by default it is not cleared)
+        /// </summary>
+        public void Clear()
+        {
+            Utilities.ClearMemory(buffer, 0, totalSizeInBytes);
+        }
+
+        /// <summary>
         /// Gets the mipmap description of this instance for the specified mipmap level.
         /// </summary>
         /// <param name="mipmap">The mipmap.</param>

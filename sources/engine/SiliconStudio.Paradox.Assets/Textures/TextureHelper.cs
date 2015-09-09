@@ -180,28 +180,11 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// <param name="parameters">The conversion request parameters</param>
         /// <param name="imageSize">The texture output size</param>
         /// <param name="inputImageFormat">The pixel format of the input image</param>
-        /// <param name="alphaDepth">The depth of the alpha channel</param>
         /// <returns>The pixel format to use as output</returns>
-        public static PixelFormat DetermineOutputFormat(ImportParameters parameters, Int2 imageSize, PixelFormat inputImageFormat, int alphaDepth)
+        public static PixelFormat DetermineOutputFormat(ImportParameters parameters, Int2 imageSize, PixelFormat inputImageFormat)
         {
             var hint = parameters.TextureHint;
-
             var alphaMode = parameters.DesiredAlpha;
-            if (alphaMode == AlphaFormat.Auto)
-            {
-                switch (alphaDepth)
-                {
-                    case 0:
-                        alphaMode = AlphaFormat.None;
-                        break;
-                    case 1:
-                        alphaMode = AlphaFormat.Mask;
-                        break;
-                    default:
-                        alphaMode = AlphaFormat.Interpolated;
-                        break;
-                }
-            }
 
             // Default output format
             var outputFormat = PixelFormat.R8G8B8A8_UNorm;
@@ -440,6 +423,15 @@ namespace SiliconStudio.Paradox.Assets.Textures
             // texture size is now determined, we can cache it
             var textureSize = new Int2(texImage.Width, texImage.Height);
 
+            // determine the alpha format of the texture when set to Auto
+            // Note: this has to be done before the ColorKey transformation in order to be able to take advantage of image file AlphaDepth information
+            if(parameters.DesiredAlpha == AlphaFormat.Auto)
+            {
+                var colorKey = parameters.ColorKeyEnabled? (Color?)parameters.ColorKeyColor : null;
+                var alphaLevel = textureTool.GetAlphaLevels(texImage, new Rectangle(0, 0, textureSize.X, textureSize.Y), colorKey);
+                parameters.DesiredAlpha = alphaLevel.ToAlphaFormat();
+            }
+
             // Apply the color key
             if (parameters.ColorKeyEnabled)
                 textureTool.ColorKey(texImage, parameters.ColorKeyColor);
@@ -468,7 +460,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
 
             // Convert/Compress to output format
             // TODO: Change alphaFormat depending on actual image content (auto-detection)?
-            var outputFormat = DetermineOutputFormat(parameters, textureSize, texImage.Format, texImage.GetAlphaDepth());
+            var outputFormat = DetermineOutputFormat(parameters, textureSize, texImage.Format);
             textureTool.Compress(texImage, outputFormat, (TextureConverter.Requests.TextureQuality)parameters.TextureQuality);
 
             if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
@@ -488,22 +480,18 @@ namespace SiliconStudio.Paradox.Assets.Textures
             return ResultStatus.Successful;
         }
 
-        /// <summary>
-        /// Find the region of the sprite specified by the provided pixel coordinate in a texture.
-        /// </summary>
-        /// <param name="filePath">The full path to the texture</param>
-        /// <param name="pixelCoordinates">A pixel of the sprite</param>
-        /// <param name="transparencyColor">The transparency color of the texture</param>
-        /// <returns></returns>
-        public static Rectangle FindSpriteRegion(string filePath, Int2 pixelCoordinates, Color? transparencyColor)
+        private static AlphaFormat ToAlphaFormat(this AlphaLevels alphaLevels)
         {
-            using (var tool = new TextureTool())
-            using (var image = tool.Load(filePath, false))
+            switch (alphaLevels)
             {
-                tool.Decompress(image, false);
-
-                var mask = transparencyColor.HasValue ? 0xffffffff: 0xff000000;
-                return tool.FindSpriteRegion(image, pixelCoordinates, transparencyColor, mask);
+                case AlphaLevels.NoAlpha:
+                    return AlphaFormat.None;
+                case AlphaLevels.MaskAlpha:
+                    return AlphaFormat.Mask;
+                case AlphaLevels.InterpolatedAlpha:
+                    return AlphaFormat.Interpolated;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(alphaLevels), alphaLevels, null);
             }
         }
     }

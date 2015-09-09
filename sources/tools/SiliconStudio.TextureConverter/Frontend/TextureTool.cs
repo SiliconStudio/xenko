@@ -727,6 +727,83 @@ namespace SiliconStudio.TextureConverter
         }
 
         /// <summary>
+        /// Gets the alpha levels of the image in the provided region.
+        /// </summary>
+        /// <param name="texture">The texture</param>
+        /// <param name="region">The region of the texture to analyze</param>
+        /// <param name="tranparencyColor">The color used as transparent color. If null use standard alpha channel.</param>
+        /// <returns></returns>
+        public unsafe AlphaLevels GetAlphaLevels(TexImage texture, Rectangle region, Color? tranparencyColor)
+        {
+            // quick escape when it is possible to know the absence of alpha from the file itself
+            var alphaDepth = texture.GetAlphaDepth();
+            if(!tranparencyColor.HasValue && alphaDepth == 0)
+                return AlphaLevels.NoAlpha;
+
+            // check that we support the format
+            var format = texture.Format;
+            var pixelSize = format.SizeInBytes();
+            if (texture.Dimension != TexImage.TextureDimension.Texture2D || !(format.IsRGBAOrder() || format.IsBGRAOrder() || pixelSize != 4))
+                throw new NotImplementedException();
+
+            // truncate the provided region in order to be sure to be in the texture
+            region.Width = Math.Min(region.Width, texture.Width - region.Left);
+            region.Height = Math.Min(region.Height, texture.Height- region.Top);
+
+            var alphaLevel = AlphaLevels.NoAlpha;
+            var stride = texture.RowPitch;
+            var startPtr = (byte*)texture.Data + stride * region.Y + pixelSize * region.X;
+            var rowPtr = startPtr;
+
+            if (tranparencyColor.HasValue) // specific case when using a transparency color
+            {
+                var transparencyValue = format.IsRGBAOrder() ? tranparencyColor.Value.ToRgba() : tranparencyColor.Value.ToBgra();
+                
+                for (int y = 0; y < region.Height; ++y)
+                {
+                    var ptr = (int*)rowPtr;
+
+                    for (int x = 0; x < region.Width; x++)
+                    {
+                        if (*ptr == transparencyValue)
+                            return AlphaLevels.MaskAlpha;
+
+                        ptr += 1;
+                    }
+                    rowPtr += stride;
+                }
+            }
+            else // use default alpha channel
+            {
+                for (int y = 0; y < region.Height; ++y)
+                {
+                    var ptr = rowPtr+3;
+
+                    for (int x = 0; x < region.Width; x++)
+                    {
+                        var value = *ptr;
+                        if (value == 0)
+                        {
+                            if (alphaDepth == 1)
+                                return AlphaLevels.MaskAlpha;
+
+                            alphaLevel = AlphaLevels.MaskAlpha;
+                        }
+                        else if (value != 0xff)
+                        {
+                            return AlphaLevels.InterpolatedAlpha;
+                        }
+
+                        ptr += 4;
+                    }
+                    rowPtr += stride;
+                }
+            }
+
+            return alphaLevel;
+        }
+
+        /// <summary>
         /// Pick the color under the specified pixel.
         /// </summary>
         /// <param name="texture">The texture</param>

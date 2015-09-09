@@ -446,7 +446,8 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     filter |= TEX_FILTER_FLAGS.TEX_FILTER_CUBIC;
                     break;
                 case Filter.MipMapGeneration.Box:
-                    filter |= TEX_FILTER_FLAGS.TEX_FILTER_FANT;
+                    // Box filter is supported only for power of two textures
+                    filter |= image.IsPowerOfTwo() ? TEX_FILTER_FLAGS.TEX_FILTER_FANT : TEX_FILTER_FLAGS.TEX_FILTER_LINEAR;
                     break;
                 default:
                     filter |= TEX_FILTER_FLAGS.TEX_FILTER_FANT;

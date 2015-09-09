@@ -196,6 +196,11 @@ namespace SiliconStudio.Paradox.Graphics
         private int copyProgram = -1;
         private int copyProgramOffsetLocation = -1;
         private int copyProgramScaleLocation = -1;
+
+        private int copyProgramSRgb = -1;
+        private int copyProgramSRgbOffsetLocation = -1;
+        private int copyProgramSRgbScaleLocation = -1;
+
         private float[] squareVertices = {
             0.0f, 0.0f,
             1.0f, 0.0f,
@@ -589,48 +594,8 @@ namespace SiliconStudio.Paradox.Graphics
 
             if (copyProgram == -1)
             {
-                const string copyVertexShaderSource =
-                    "attribute vec2 aPosition;   \n" +
-                    "varying vec2 vTexCoord;     \n" +
-                    "uniform vec4 uScale;     \n" +
-                    "uniform vec4 uOffset;     \n" +
-                    "void main()                 \n" +
-                    "{                           \n" +
-                    "   vec4 transformedPosition = aPosition.xyxy * uScale + uOffset;" +
-                    "   gl_Position = vec4(transformedPosition.zw * 2.0 - 1.0, 0.0, 1.0); \n" +
-                    "   vTexCoord = transformedPosition.xy;   \n" +
-                    "}                           \n";
-
-                const string copyFragmentShaderSource =
-                    "precision mediump float;                            \n" +
-                    "varying vec2 vTexCoord;                             \n" +
-                    "uniform sampler2D s_texture;                        \n" +
-                    "void main()                                         \n" +
-                    "{                                                   \n" +
-                    "    gl_FragColor = texture2D(s_texture, vTexCoord); \n" +
-                    "}                                                   \n";
-
-                // First initialization of shader program
-                int vertexShader = TryCompileShader(ShaderType.VertexShader, copyVertexShaderSource);
-                int fragmentShader = TryCompileShader(ShaderType.FragmentShader, copyFragmentShaderSource);
-
-                copyProgram = GL.CreateProgram();
-                GL.AttachShader(copyProgram, vertexShader);
-                GL.AttachShader(copyProgram, fragmentShader);
-                GL.BindAttribLocation(copyProgram, 0, "aPosition");
-                GL.LinkProgram(copyProgram);
-
-                int linkStatus;
-                GL.GetProgram(copyProgram, ProgramParameter.LinkStatus, out linkStatus);
-
-                if (linkStatus != 1)
-                    throw new InvalidOperationException("Error while linking GLSL shaders.");
-
-                GL.UseProgram(copyProgram);
-                var textureLocation = GL.GetUniformLocation(copyProgram, "s_texture");
-                copyProgramOffsetLocation = GL.GetUniformLocation(copyProgram, "uOffset");
-                copyProgramScaleLocation = GL.GetUniformLocation(copyProgram, "uScale");
-                GL.Uniform1(textureLocation, 0);
+                copyProgram = CreateCopyProgram(false, out copyProgramOffsetLocation, out copyProgramScaleLocation);
+                copyProgramSRgb = CreateCopyProgram(true, out copyProgramSRgbOffsetLocation, out copyProgramSRgbScaleLocation);
             }
 
             var sourceRegionSize = new Vector2(sourceRectangle.Width, sourceRectangle.Height);
@@ -665,7 +630,14 @@ namespace SiliconStudio.Paradox.Graphics
 
             UnbindVertexArrayObject();
 
-            GL.UseProgram(copyProgram);
+            // If we are copying from an SRgb texture to a non SRgb texture, we use a special SRGb copy shader
+            var program = copyProgram;
+            if (sourceTexture.Description.Format.IsSRgb() && !destTexture.Description.Format.IsSRgb())
+            {
+                program = copyProgramSRgb;
+            }
+
+            GL.UseProgram(program);
 
             activeTexture = 0;
             GL.ActiveTexture(TextureUnit.Texture0);
@@ -700,6 +672,64 @@ namespace SiliconStudio.Paradox.Graphics
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
             GL.Viewport((int)_currentViewports[0].X, (int)_currentViewports[0].Y, (int)_currentViewports[0].Width, (int)_currentViewports[0].Height);
+        }
+
+        private int CreateCopyProgram(bool srgb, out int offsetLocation, out int scaleLocation)
+        {
+            const string copyVertexShaderSource =
+                "attribute vec2 aPosition;   \n" +
+                "varying vec2 vTexCoord;     \n" +
+                "uniform vec4 uScale;     \n" +
+                "uniform vec4 uOffset;     \n" +
+                "void main()                 \n" +
+                "{                           \n" +
+                "   vec4 transformedPosition = aPosition.xyxy * uScale + uOffset;" +
+                "   gl_Position = vec4(transformedPosition.zw * 2.0 - 1.0, 0.0, 1.0); \n" +
+                "   vTexCoord = transformedPosition.xy;   \n" +
+                "}                           \n";
+
+            const string copyFragmentShaderSource =
+                "precision mediump float;                            \n" +
+                "varying vec2 vTexCoord;                             \n" +
+                "uniform sampler2D s_texture;                        \n" +
+                "void main()                                         \n" +
+                "{                                                   \n" +
+                "    gl_FragColor = texture2D(s_texture, vTexCoord); \n" +
+                "}                                                   \n";
+
+            const string copyFragmentShaderSourceSRgb =
+                "precision mediump float;                            \n" +
+                "varying vec2 vTexCoord;                             \n" +
+                "uniform sampler2D s_texture;                        \n" +
+                "void main()                                         \n" +
+                "{                                                   \n" +
+                "    vec4 color = texture2D(s_texture, vTexCoord);   \n" +
+                "    gl_FragColor = vec4(pow(color.rgb, vec3(1.0f/2.2333f)), color.a); \n" +
+                "}                                                   \n";
+
+            // First initialization of shader program
+            int vertexShader = TryCompileShader(ShaderType.VertexShader, copyVertexShaderSource);
+            int fragmentShader = TryCompileShader(ShaderType.FragmentShader, srgb ? copyFragmentShaderSourceSRgb : copyFragmentShaderSource);
+
+            int program = GL.CreateProgram();
+            GL.AttachShader(program, vertexShader);
+            GL.AttachShader(program, fragmentShader);
+            GL.BindAttribLocation(program, 0, "aPosition");
+            GL.LinkProgram(program);
+
+            int linkStatus;
+            GL.GetProgram(program, ProgramParameter.LinkStatus, out linkStatus);
+
+            if (linkStatus != 1)
+                throw new InvalidOperationException("Error while linking GLSL shaders.");
+
+            GL.UseProgram(program);
+            var textureLocation = GL.GetUniformLocation(program, "s_texture");
+            offsetLocation = GL.GetUniformLocation(program, "uOffset");
+            scaleLocation = GL.GetUniformLocation(program, "uScale");
+            GL.Uniform1(textureLocation, 0);
+
+            return program;
         }
 
         /// <summary>

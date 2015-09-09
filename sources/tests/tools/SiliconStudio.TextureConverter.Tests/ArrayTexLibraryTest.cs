@@ -51,6 +51,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
+        [Ignore]
         [TestCase(Module.PathToAtlasImages+@"stones256.png", Module.PathToAtlasImages+@"square256.png")]
         public void CreateArrayTest(string file1, string file2)
         {
@@ -82,7 +83,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [TestCase("array_WMipMaps.dds", 4)]
+        [TestCase("array_WMipMaps.dds", 4), Ignore]
         public void ExtractTest(string arrayFile, int indice)
         {
             TexImage array = TestTools.Load(dxtLib, arrayFile);
@@ -102,7 +103,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [TestCase("atlas/stones256.png", "atlas/square256.png")]
+        [TestCase("atlas/stones256.png", "atlas/square256.png"), Ignore]
         public void ExtractAllTest(string file1, string file2)
         {
             var list = new List<TexImage>();
@@ -146,7 +147,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [TestCase("array_WOMipMaps.dds", 0, "atlas/stones256.png")]
+        [TestCase("array_WOMipMaps.dds", 0, "atlas/stones256.png"), Ignore]
         public void UpdateTest(string arrayFile, int indice, string newTexture)
         {
             TexImage array = TestTools.Load(dxtLib, arrayFile);
@@ -165,7 +166,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [TestCase("array_WMipMaps.dds", 3)]
+        [TestCase("array_WMipMaps.dds", 3), Ignore]
         public void RemoveTest(string arrayFile, int indice)
         {
             TexImage array = TestTools.Load(dxtLib, arrayFile);
@@ -187,7 +188,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [TestCase("array_WOMipMaps.dds", "atlas/square256.png", 3)]
+        [TestCase("array_WOMipMaps.dds", "atlas/square256.png", 3), Ignore]
         public void InsertTest(string arrayFile, string newTexture, int indice)
         {
             TexImage array = TestTools.Load(dxtLib, arrayFile);
@@ -210,6 +211,7 @@ namespace SiliconStudio.TextureConverter.Tests
             array.Dispose();
         }
 
+        [Ignore]
         [TestCase(Module.PathToAtlasImages+"stones256.png", Module.PathToAtlasImages + @"square256.png")]
         public void CreateCubeTest(string file1, string file2)
         {

@@ -3,6 +3,7 @@
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
 using System;
 using System.Collections.Generic;
+using OpenTK.Graphics;
 
 namespace SiliconStudio.Paradox.Graphics.OpenGL
 {
@@ -55,6 +56,27 @@ namespace SiliconStudio.Paradox.Graphics.OpenGL
                     throw new ArgumentOutOfRangeException("graphicsProfile");
             }
         }
+
+        public static GLVersion GetGLVersion(GraphicsProfile graphicsProfile)
+        {
+            switch (graphicsProfile)
+            {
+                case GraphicsProfile.Level_9_1:
+                case GraphicsProfile.Level_9_2:
+                case GraphicsProfile.Level_9_3:
+                    return GLVersion.ES2;
+                case GraphicsProfile.Level_10_0:
+                case GraphicsProfile.Level_10_1:
+                    return GLVersion.ES3;
+                case GraphicsProfile.Level_11_0:
+                case GraphicsProfile.Level_11_1:
+                case GraphicsProfile.Level_11_2:
+                    return GLVersion.ES31;
+                default:
+                    throw new ArgumentOutOfRangeException("graphicsProfile");
+            }
+        }
+
 
         public static GraphicsProfile GetFeatureLevel(int major, int minor)
         {

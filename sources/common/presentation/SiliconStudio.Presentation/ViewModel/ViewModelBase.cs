@@ -23,8 +23,8 @@ namespace SiliconStudio.Presentation.ViewModel
         public IViewModelServiceProvider ServiceProvider = ViewModelServiceProvider.NullServiceProvider;
 
         /// <summary>
-        /// A list of couple of property names that are dependent. For each couple of this list, if the first property name is notified as being changed, then
-        /// the second property name will also be notified has being changed.
+        /// A collection of property names that are dependent. For each entry of this collection, if the key property name is notified
+        /// as being changed, then the property names in the value will also be notified as being changed.
         /// </summary>
         protected readonly Dictionary<string, string[]> DependentProperties = new Dictionary<string, string[]>();
 
@@ -34,7 +34,7 @@ namespace SiliconStudio.Presentation.ViewModel
 
         protected ViewModelBase(IViewModelServiceProvider serviceProvider)
         {
-            if (serviceProvider == null) throw new ArgumentNullException("serviceProvider");
+            if (serviceProvider == null) throw new ArgumentNullException(nameof(serviceProvider));
             ServiceProvider = serviceProvider;
         }
 
@@ -98,14 +98,13 @@ namespace SiliconStudio.Presentation.ViewModel
         protected virtual bool SetValue<T>(ref T field, T value, Action updateAction, params string[] propertyNames)
         {
             if (propertyNames.Length == 0)
-                throw new ArgumentOutOfRangeException("propertyNames", @"This method must be invoked with at least one property name.");
+                throw new ArgumentOutOfRangeException(nameof(propertyNames), @"This method must be invoked with at least one property name.");
 
             if (EqualityComparer<T>.Default.Equals(field, value) == false)
             {
                 OnPropertyChanging(propertyNames);
                 field = value;
-                if (updateAction != null)
-                    updateAction();
+                updateAction?.Invoke();
                 OnPropertyChanged(propertyNames);
                 return true;
             }
@@ -191,7 +190,7 @@ namespace SiliconStudio.Presentation.ViewModel
         protected virtual bool SetValue(Func<bool> hasChangedFunction, Action updateAction, params string[] propertyNames)
         {
             if (propertyNames.Length == 0)
-                throw new ArgumentOutOfRangeException("propertyNames", @"This method must be invoked with at least one property name.");
+                throw new ArgumentOutOfRangeException(nameof(propertyNames), @"This method must be invoked with at least one property name.");
 
             bool hasChanged = true;
             if (hasChangedFunction != null)
@@ -201,8 +200,7 @@ namespace SiliconStudio.Presentation.ViewModel
             if (hasChanged)
             {
                 OnPropertyChanging(propertyNames);
-                if (updateAction != null)
-                    updateAction();
+                updateAction?.Invoke();
                 OnPropertyChanged(propertyNames);
             }
             return hasChanged;
@@ -220,15 +218,12 @@ namespace SiliconStudio.Presentation.ViewModel
             {
 #if DEBUG
                 if (changingProperties.Contains(propertyName))
-                    throw new InvalidOperationException(string.Format("OnPropertyChanging called twice for property '{0}' without invoking OnPropertyChanged between calls.", propertyName));
+                    throw new InvalidOperationException($"OnPropertyChanging called twice for property '{propertyName}' without invoking OnPropertyChanged between calls.");
 
                 changingProperties.Add(propertyName);
 #endif
 
-                if (propertyChanging != null)
-                {
-                    propertyChanging(this, new PropertyChangingEventArgs(propertyName));
-                }
+                propertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
 
                 string[] dependentProperties;
                 if (DependentProperties.TryGetValue(propertyName, out dependentProperties))
@@ -257,24 +252,21 @@ namespace SiliconStudio.Presentation.ViewModel
                         reverseList[j] = dependentProperties[dependentProperties.Length - 1 - j];
                     OnPropertyChanged(reverseList);
                 }
-                if (propertyChanged != null)
-                {
-                    propertyChanged(this, new PropertyChangedEventArgs(propertyName));
-                }
+                propertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
 #if DEBUG
                 if (!changingProperties.Contains(propertyName))
-                    throw new InvalidOperationException(string.Format("OnPropertyChanged called for property '{0}' but OnPropertyChanging was not invoked before.", propertyName));
+                    throw new InvalidOperationException($"OnPropertyChanged called for property '{propertyName}' but OnPropertyChanging was not invoked before.");
 
                 changingProperties.Remove(propertyName);
 #endif
             }
         }
 
-        protected bool HasPropertyChangingSubscriber { get { return PropertyChanging != null; } }
+        protected bool HasPropertyChangingSubscriber => PropertyChanging != null;
 
-        protected bool HasPropertyChangedSubscriber { get { return PropertyChanged != null; } }
-        
+        protected bool HasPropertyChangedSubscriber => PropertyChanged != null;
+
         /// <inheritdoc/>
         public event PropertyChangingEventHandler PropertyChanging;
 

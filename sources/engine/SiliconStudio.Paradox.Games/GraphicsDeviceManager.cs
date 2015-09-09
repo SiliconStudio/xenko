@@ -1038,6 +1038,9 @@ namespace SiliconStudio.Paradox.Games
                         throw new InvalidOperationException("Unexpected null GraphicsDevice");
                     }
 
+                    // Make sure to copy back coolor space to GraphicsDevice
+                    GraphicsDevice.ColorSpace = graphicsDeviceInformation.PresentationParameters.ColorSpace;
+
                     var presentationParameters = GraphicsDevice.Presenter.Description;
                     isReallyFullScreen = presentationParameters.IsFullScreen;
                     if (presentationParameters.BackBufferWidth != 0)
