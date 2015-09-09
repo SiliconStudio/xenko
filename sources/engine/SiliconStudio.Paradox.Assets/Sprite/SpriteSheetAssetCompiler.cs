@@ -68,6 +68,8 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                         PremultiplyAlpha = asset.PremultiplyAlpha,
                         ColorKeyColor = asset.ColorKeyColor,
                         ColorKeyEnabled = asset.ColorKeyEnabled,
+                        ColorSpace = asset.ColorSpace,
+                        Hint = TextureHint.Color
                     };
 
                     // Get absolute path of asset source on disk
@@ -192,13 +194,50 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                     {
                         Name = image.Name,
                         Region = region,
-                        IsTransparent = AssetParameters.SheetAsset.Alpha != AlphaFormat.None, // todo analyze texture region texture data to auto-determine alpha?
                         Orientation = orientation,
                         Center = center,
                         Borders = borders,
                         PixelsPerUnit = new Vector2(image.PixelsPerUnit),
-                        Texture = texture
+                        Texture = texture,
+                        IsTransparent = false,
                     });
+                }
+
+                // set the transparency information to all the sprites
+                if(AssetParameters.SheetAsset.Alpha != AlphaFormat.None) // Skip the calculation when format is forced without alpha.
+                {
+                    var urlToTexImage = new Dictionary<string, Tuple<TexImage, Image>>();
+                    using (var texTool = new TextureTool())
+                    {
+                        foreach (var sprite in imageGroupData.Sprites)
+                        {
+                            var textureUrl = AttachedReferenceManager.GetOrCreateAttachedReference(sprite.Texture).Url;
+                            if (!urlToTexImage.ContainsKey(textureUrl))
+                            {
+                                var image = assetManager.Load<Image>(textureUrl);
+                                var newTexImage = texTool.Load(image);
+                                texTool.Decompress(newTexImage, false);// the sRGB mode does not impact on the alpha level
+                                urlToTexImage[textureUrl] = Tuple.Create(newTexImage, image);
+                            }
+                            var texImage = urlToTexImage[textureUrl].Item1;
+
+                            var region = new Rectangle
+                            {
+                                X = (int)Math.Floor(sprite.Region.X),
+                                Y = (int)Math.Floor(sprite.Region.Y)
+                            };
+                            region.Width = (int)Math.Ceiling(sprite.Region.Right) - region.X;
+                            region.Height = (int)Math.Ceiling(sprite.Region.Bottom) - region.Y;
+                            sprite.IsTransparent = texTool.GetAlphaLevels(texImage, region, null) != AlphaLevels.NoAlpha; // ignore transparent color key here because the input image has already been processed
+                        }
+
+                        // free all the allocated images
+                        foreach (var tuple in urlToTexImage.Values)
+                        {
+                            tuple.Item1.Dispose();
+                            assetManager.Unload(tuple.Item2);
+                        }
+                    }
                 }
 
                 // save the imageData into the data base

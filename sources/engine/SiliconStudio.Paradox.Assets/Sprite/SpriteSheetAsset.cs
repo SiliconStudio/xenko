@@ -111,7 +111,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
         /// The texture alpha format in which all the images of the group should be converted to.
         /// </userdoc>
         [DataMember(50)]
-        [DefaultValue(AlphaFormat.Interpolated)]
+        [DefaultValue(AlphaFormat.Auto)]
         [Display(category: "Parameters")]
         public AlphaFormat Alpha { get; set; }
 
@@ -169,7 +169,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
             Sprites = new List<SpriteInfo>();
             Format = TextureFormat.Compressed;
             ColorSpace = TextureColorSpace.Auto;
-            Alpha = AlphaFormat.Interpolated;
+            Alpha = AlphaFormat.Auto;
             ColorKeyColor = new Color(255, 0, 255);
             ColorKeyEnabled = false;
             GenerateMipmaps = false;
