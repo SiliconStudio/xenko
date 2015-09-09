@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
+using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
@@ -73,13 +74,15 @@ namespace SiliconStudio.Paradox.Engine.Processors
                         HandleSynchronousException(script, e);
                     }
                 }
-
-                // Start a microthread with execute method if it's an async script
-                var asyncScript = script as AsyncScript;
-                if (asyncScript != null)
+                else
                 {
-                    asyncScript.MicroThread = AddTask(asyncScript.Execute);
-                    asyncScript.MicroThread.Priority = asyncScript.Priority;
+                    // Start a microthread with execute method if it's an async script
+                    var asyncScript = script as AsyncScript;
+                    if (asyncScript != null)
+                    {
+                        asyncScript.MicroThread = AddTask(asyncScript.Execute);
+                        asyncScript.MicroThread.Priority = asyncScript.Priority;
+                    }
                 }
             }
 
@@ -175,20 +178,17 @@ namespace SiliconStudio.Paradox.Engine.Processors
             if (!startWasPending && wasRegistered)
             {
                 // Cancel scripts that were already started
-                var startupScript = script as StartupScript;
-                if (startupScript != null)
+                try
                 {
-                    try
-                    {
-                        startupScript.Cancel();
-                    }
-                    catch (Exception e)
-                    {
-                        HandleSynchronousException(script, e);
-                    }
+                    script.Cancel();
+                }
+                catch (Exception e)
+                {
+                    HandleSynchronousException(script, e);
                 }
 
-                // TODO: Cancel async script execution
+                var asyncScript = script as AsyncScript;
+                asyncScript?.MicroThread.Cancel();
             }
 
             var syncScript = script as SyncScript;

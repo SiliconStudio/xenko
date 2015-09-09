@@ -1,5 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.MicroThreading;
@@ -13,6 +15,14 @@ namespace SiliconStudio.Paradox.Engine
     {
         [DataMemberIgnore]
         internal MicroThread MicroThread;
+
+        [DataMemberIgnore]
+        internal CancellationTokenSource CancellationTokenSource;
+
+        /// <summary>
+        /// Gets a token indicating if the script execution was canceled.
+        /// </summary>
+        public CancellationToken CancellationToken => MicroThread.CancellationToken;
 
         /// <summary>
         /// Called once, as a microthread
