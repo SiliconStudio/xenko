@@ -573,8 +573,11 @@ namespace SiliconStudio.Assets
 
                                 asset.SourceProject = projectFullPath;
                                 asset.SourceFolder = RootDirectory.GetFullDirectory();
+                                sourceCodeAsset.ProjectInclude = codeFile;
+                                sourceCodeAsset.AbsoluteSourceLocation = UPath.Combine(projectFullPath.GetFullDirectory(), codeFile);
+                                sourceCodeAsset.AbsoluteProjectLocation = projectFullPath;
 
-                                assetPath = UPath.Combine(projectFullPath.GetFullDirectory(), codeFile);
+                                assetPath = sourceCodeAsset.AbsoluteSourceLocation;
                             }
 
                             // Notifies the dependency manager that an asset with the specified path is being saved
