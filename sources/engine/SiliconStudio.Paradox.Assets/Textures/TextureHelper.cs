@@ -117,12 +117,11 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// Utility function to check that the texture size is supported on the graphics platform for the provided graphics profile.
         /// </summary>
         /// <param name="parameters">The import parameters</param>
-        /// <param name="textureSizeInput">The texture size input.</param>
         /// <param name="textureSizeRequested">The texture size requested.</param>
         /// <param name="logger">The logger.</param>
         /// <returns>true if the texture size is supported</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">graphicsProfile</exception>
-        public static Size2 FindBestTextureSize(ImportParameters parameters, Size2 textureSizeInput, Size2 textureSizeRequested, ILogger logger)
+        public static Size2 FindBestTextureSize(ImportParameters parameters, Size2 textureSizeRequested, ILogger logger = null)
         {
             var textureSize = textureSizeRequested;
 
@@ -147,7 +146,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                         // TODO: TEMPORARY SETUP A MAX TEXTURE OF 1024. THIS SHOULD BE SPECIFIED DONE IN THE ASSET INSTEAD
                         textureSize.Width = Math.Min(MathUtil.NextPowerOfTwo(textureSize.Width), 1024);
                         textureSize.Height = Math.Min(MathUtil.NextPowerOfTwo(textureSize.Height), 1024);
-                        logger.Warning("Graphic profiles 9.1/9.2/9.3 do not support mipmaps with textures that are not power of 2. Asset is automatically resized to " + textureSize);
+                        logger?.Warning("Graphic profiles 9.1/9.2/9.3 do not support mipmaps with textures that are not power of 2. Asset is automatically resized to " + textureSize);
                     }
                     maxTextureSize = parameters.GraphicsProfile >= GraphicsProfile.Level_9_3 ? 4096 : 2048;
                     break;
@@ -166,7 +165,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
 
             if (textureSize.Width > maxTextureSize || textureSize.Height > maxTextureSize)
             {
-                logger.Error("Graphic profile {0} do not support texture with resolution {2} x {3} because it is larger than {1}. " +
+                logger?.Error("Graphic profile {0} do not support texture with resolution {2} x {3} because it is larger than {1}. " +
                              "Please reduce texture size or upgrade your graphic profile.", parameters.GraphicsProfile, maxTextureSize, textureSize.Width, textureSize.Height);
                 return new Size2(Math.Min(textureSize.Width, maxTextureSize), Math.Min(textureSize.Height, maxTextureSize));
             }
@@ -409,7 +408,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
             }
 
             // Find the target size
-            targetSize = FindBestTextureSize(parameters, fromSize, targetSize, logger);
+            targetSize = FindBestTextureSize(parameters, targetSize, logger);
 
             // Resize the image only if needed
             if (targetSize != fromSize)
@@ -428,7 +427,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
             if(parameters.DesiredAlpha == AlphaFormat.Auto)
             {
                 var colorKey = parameters.ColorKeyEnabled? (Color?)parameters.ColorKeyColor : null;
-                var alphaLevel = textureTool.GetAlphaLevels(texImage, new Rectangle(0, 0, textureSize.X, textureSize.Y), colorKey);
+                var alphaLevel = textureTool.GetAlphaLevels(texImage, new Rectangle(0, 0, textureSize.X, textureSize.Y), colorKey, logger);
                 parameters.DesiredAlpha = alphaLevel.ToAlphaFormat();
             }
 
