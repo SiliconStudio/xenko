@@ -47,6 +47,7 @@ namespace SiliconStudio.Paradox.Engine.Processors
         {
             Enabled = true;
             Scheduler = new Scheduler();
+            Scheduler.ActionException += Scheduler_ActionException;
             Services.AddService(typeof(ScriptSystem), this);
         }
 
@@ -203,6 +204,11 @@ namespace SiliconStudio.Paradox.Engine.Processors
 
             // Set live reloading mode until after being started
             newScript.IsLiveReloading = true;
+        }
+
+        private void Scheduler_ActionException(Scheduler scheduler, SchedulerEntry schedulerEntry, Exception e)
+        {
+            HandleSynchronousException((Script)schedulerEntry.Token, e);
         }
 
         private void HandleSynchronousException(Script script, Exception e)

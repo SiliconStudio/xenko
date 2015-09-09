@@ -36,6 +36,9 @@ namespace SiliconStudio.Core.MicroThreading
         public event EventHandler<SchedulerThreadEventArgs> MicroThreadCallbackStart;
         public event EventHandler<SchedulerThreadEventArgs> MicroThreadCallbackEnd;
 
+        // This is part of temporary internal API, this should be improved before exposed
+        internal event Action<Scheduler, SchedulerEntry, Exception> ActionException;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Scheduler" /> class.
         /// </summary>
@@ -177,7 +180,7 @@ namespace SiliconStudio.Core.MicroThreading
                     var previousSyncContext = SynchronizationContext.Current;
                     SynchronizationContext.SetSynchronizationContext(microThread.SynchronizationContext);
 
-                // TODO: Do we still need to try/catch here? Everything should be caught in the continuation wrapper and put into MicroThread.Exception
+                    // TODO: Do we still need to try/catch here? Everything should be caught in the continuation wrapper and put into MicroThread.Exception
                     try
                     {
                         if (microThread.State == MicroThreadState.Starting && MicroThreadStarted != null)
@@ -248,7 +251,7 @@ namespace SiliconStudio.Core.MicroThreading
                     }
                     catch (Exception e)
                     {
-                        Log.Error("Unexpected exception while executing a scheduled action", e);
+                        ActionException?.Invoke(this, schedulerEntry, e);
                     }
                 }
             }
@@ -269,12 +272,6 @@ namespace SiliconStudio.Core.MicroThreading
             var microThread = new MicroThread(this, flags);
             microThread.Start(microThreadFunction);
             return microThread;
-        }
-
-        public void Add(Action simpleAction, int priority)
-        {
-            var schedulerEntryNode = new PriorityQueueNode<SchedulerEntry>(new SchedulerEntry(simpleAction, priority));
-            Schedule(schedulerEntryNode, ScheduleMode.Last);
         }
 
         /// <summary>
@@ -328,6 +325,12 @@ namespace SiliconStudio.Core.MicroThreading
         }
 
         // TODO: We will need a better API than exposing PriorityQueueNode<SchedulerEntry> before we can make this public.
+        internal void Add(Action simpleAction, int priority = 0, object token = null)
+        {
+            var schedulerEntryNode = new PriorityQueueNode<SchedulerEntry>(new SchedulerEntry(simpleAction, priority) { Token = token });
+            Schedule(schedulerEntryNode, ScheduleMode.Last);
+        }
+
         internal PriorityQueueNode<SchedulerEntry> Create(Action simpleAction, int priority)
         {
             return new PriorityQueueNode<SchedulerEntry>(new SchedulerEntry(simpleAction, priority));
