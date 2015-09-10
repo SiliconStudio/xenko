@@ -22,12 +22,13 @@ namespace SiliconStudio.Paradox.Rendering.Images
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                context.Mixin(mixin, "ToneMapShader");
+                context.Mixin(mixin, "ToneMapShader", context.GetParam(ToneMapKeys.AutoKey), context.GetParam(ToneMapKeys.AutoExposure));
 
                 {
-                    var __subMixin = new ShaderMixinSource() { Parent = mixin };
+                    var __mixinToCompose__ = context.GetParam(ColorTransformKeys.Shader);
+                    var __subMixin = new ShaderMixinSource();
                     context.PushComposition(mixin, "ToneMapOperator", __subMixin);
-                    context.Mixin(__subMixin, context.GetParam(ColorTransformKeys.Shader));
+                    context.Mixin(__subMixin, __mixinToCompose__);
                     context.PopComposition();
                 }
             }

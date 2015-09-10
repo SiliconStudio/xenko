@@ -6,20 +6,20 @@ namespace SiliconStudio.Paradox.Rendering.Images
     /// <summary>
     /// A tonemap shader
     /// </summary>
-    internal class ToneMapShader : ColorTransformShader, Texturing
+    internal class ToneMapShader<bool TAutoKeyValue, bool TAutoExposure> : ColorTransformShader, Texturing
     {
         // Luminance texture
         Texture2D LuminanceTexture;
 
         // Exposure
         float KeyValue = 0.18f;
-        bool  AutoKeyValue = false;
         float LuminanceLocalFactor = 0.0f;
         float LuminanceAverageGlobal;
 
         // Color/Gamma correction
         float Contrast = 0.0f;
         float Brightness = 0.0f;
+        float Exposure = 1.0f;
 
         // ToneMap Operator
         [Link("ToneMap.Operator")]
@@ -57,11 +57,27 @@ namespace SiliconStudio.Paradox.Rendering.Images
         }
 
         float CalculateExposure(float avgLuminance)
-        {    
-	        float keyValue = AutoKeyValue ? 1.03f - (2.0f / (2 + log10(avgLuminance + 1))) : KeyValue;
-	        float linearExposure = (keyValue / avgLuminance);
-	        float exposure = log2(max(linearExposure, 0.0001f));
-	        return exp2(exposure);
+        {   
+            float exposure;
+            if (TAutoExposure)
+            {	        
+                float keyValue;
+                if (TAutoKeyValue)
+                {
+                    keyValue = 1.03f - (2.0f / (2 + log10(avgLuminance + 1)));
+                }
+                else
+                {
+                    keyValue = KeyValue;
+                }
+	            float linearExposure = (keyValue / avgLuminance);
+	            exposure = max(linearExposure, 0.0001f);
+            }
+            else
+            {
+                exposure = Exposure;
+            }
+	        return exposure;
         }
 
         float3 ToneMap(float3 color, float avgLuminance)
