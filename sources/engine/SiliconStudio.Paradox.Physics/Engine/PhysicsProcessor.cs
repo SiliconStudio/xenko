@@ -91,7 +91,7 @@ namespace SiliconStudio.Paradox.Physics
             element.BoneIndex = -1;
 
             var skinnedElement = element as PhysicsSkinnedElementBase;
-            if (skinnedElement != null && !skinnedElement.LinkedBoneName.IsNullOrEmpty() && data.ModelComponent?.ModelViewHierarchy != null)
+            if (skinnedElement != null && !skinnedElement.NodeName.IsNullOrEmpty() && data.ModelComponent?.ModelViewHierarchy != null)
             {
                 if (!data.BoneMatricesUpdated)
                 {
@@ -105,11 +105,11 @@ namespace SiliconStudio.Paradox.Physics
                     data.BoneMatricesUpdated = true;
                 }
 
-                skinnedElement.BoneIndex = data.ModelComponent.ModelViewHierarchy.Nodes.IndexOf(x => x.Name == skinnedElement.LinkedBoneName);
+                skinnedElement.BoneIndex = data.ModelComponent.ModelViewHierarchy.Nodes.IndexOf(x => x.Name == skinnedElement.NodeName);
 
                 if (element.BoneIndex == -1)
                 {
-                    throw new Exception("The specified LinkedBoneName doesn't exist in the model hierarchy.");
+                    throw new Exception("The specified NodeName doesn't exist in the model hierarchy.");
                 }
 
                 element.BoneWorldMatrixOut = element.BoneWorldMatrix = data.ModelComponent.ModelViewHierarchy.NodeTransformations[element.BoneIndex].WorldMatrix;
