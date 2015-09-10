@@ -449,7 +449,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
             // Generate mipmaps
             if (parameters.GenerateMipmaps)
             {
-                var boxFilteringIsSupported = texImage.Format != PixelFormat.B8G8R8A8_UNorm_SRgb || (MathUtil.IsPow2(textureSize.X) && MathUtil.IsPow2(textureSize.Y));
+                var boxFilteringIsSupported = !texImage.Format.IsSRgb() || (MathUtil.IsPow2(textureSize.X) && MathUtil.IsPow2(textureSize.Y));
                 textureTool.GenerateMipMaps(texImage, boxFilteringIsSupported? Filter.MipMapGeneration.Box: Filter.MipMapGeneration.Linear);
             }
                 
