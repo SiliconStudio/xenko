@@ -91,7 +91,7 @@ namespace SiliconStudio.Paradox.Physics
             element.BoneIndex = -1;
 
             var skinnedElement = element as PhysicsSkinnedElementBase;
-            if (skinnedElement != null && !skinnedElement.LinkedBoneName.IsNullOrEmpty())
+            if (skinnedElement != null && !skinnedElement.LinkedBoneName.IsNullOrEmpty() && data.ModelComponent?.ModelViewHierarchy != null)
             {
                 if (!data.BoneMatricesUpdated)
                 {
