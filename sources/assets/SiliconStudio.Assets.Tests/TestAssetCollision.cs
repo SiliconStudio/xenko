@@ -143,7 +143,7 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreNotEqual("0", output.Location);
 
                 var assetRef = ((AssetObjectTest)output.Asset).Reference;
-                Assert.AreEqual("0_1", assetRef.Location);
+                Assert.AreEqual("0 (2)", assetRef.Location);
                 Assert.AreEqual(outputs[0].Id, assetRef.Id);
             }
         }
