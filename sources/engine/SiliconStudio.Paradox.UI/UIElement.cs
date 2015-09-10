@@ -1144,19 +1144,19 @@ namespace SiliconStudio.Paradox.UI
         internal protected virtual bool Intersects(ref Ray ray, out Vector3 intersectionPoint)
         {
             // does ray intersect element Oxy face?
-            var intersects = Collision.RayIntersectsRectangle(ref ray, ref WorldMatrixInternal, ref RenderSizeInternal, 2, out intersectionPoint);
+            var intersects = CollisionHelper.RayIntersectsRectangle(ref ray, ref WorldMatrixInternal, ref RenderSizeInternal, 2, out intersectionPoint);
 
             // if element has depth also test other faces
             if (ActualDepth > MathUtil.ZeroTolerance)
             {
                 Vector3 intersection;
-                if (Collision.RayIntersectsRectangle(ref ray, ref WorldMatrixInternal, ref RenderSizeInternal, 0, out intersection))
+                if (CollisionHelper.RayIntersectsRectangle(ref ray, ref WorldMatrixInternal, ref RenderSizeInternal, 0, out intersection))
                 {
                     intersects = true;
                     if (intersection.Z > intersectionPoint.Z)
                         intersectionPoint = intersection;
                 }
-                if (Collision.RayIntersectsRectangle(ref ray, ref WorldMatrixInternal, ref RenderSizeInternal, 1, out intersection))
+                if (CollisionHelper.RayIntersectsRectangle(ref ray, ref WorldMatrixInternal, ref RenderSizeInternal, 1, out intersection))
                 {
                     intersects = true;
                     if (intersection.Z > intersectionPoint.Z)

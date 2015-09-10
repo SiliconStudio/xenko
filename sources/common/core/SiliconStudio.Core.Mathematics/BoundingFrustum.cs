@@ -69,7 +69,7 @@ namespace SiliconStudio.Core.Mathematics
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Contains(ref BoundingBoxExt boundingBoxExt)
         {
-            return Collision.FrustumContainsBox(ref this, ref boundingBoxExt);
+            return CollisionHelper.FrustumContainsBox(ref this, ref boundingBoxExt);
         }
     }
 }
