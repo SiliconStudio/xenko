@@ -61,7 +61,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
             {
                 base.ComputeParameterHash(writer);
-                ComputeCompileTimeDependenciesHash(package.Session, writer, AssetParameters);
+                ComputeCompileTimeDependenciesHash(package, writer, AssetParameters);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
