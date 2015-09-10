@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
+using SiliconStudio.Core.IO;
+
 namespace SiliconStudio.Core
 {
     /// <summary>
@@ -15,6 +17,13 @@ namespace SiliconStudio.Core
     {
         private static readonly Regex MatchIdentifier = new Regex("^[a-zA-Z_][a-zA-Z0-9_]*$");
 
+        /// <summary>
+        /// Delegate to test if the specified location is already used.
+        /// </summary>
+        /// <param name="location">The location to try to use.</param>
+        /// <returns><c>true</c> if the specified location is already used, <c>false</c> otherwise.</returns>
+        public delegate bool ContainsLocationDelegate(UFile location);
+        
         /// <summary>
         /// Determines whether the specified string is valid namespace identifier.
         /// </summary>
@@ -71,22 +80,34 @@ namespace SiliconStudio.Core
         /// <returns><see cref="baseName"/> if no item of <see cref="existingItems"/> returns this value through <see cref="existingNameFunc"/>. Otherwise, a string formatted with <see cref="namePattern"/>, using <see cref="baseName"/> as token '{0}' and the smallest numerical value that can generate an available name, starting from 2</returns>
         public static string ComputeNewName<T>(string baseName, ICollection<T> existingItems, Func<T, string> existingNameFunc = null, string namePattern = null)
         {
-            const string defaultNamePattern = "{0} ({1})";
-            if (baseName == null) throw new ArgumentNullException("baseName");
             if (existingItems == null) throw new ArgumentNullException("existingItems");
-            if (namePattern == null) namePattern = defaultNamePattern;
-            if (!namePattern.Contains("{0}") || !namePattern.Contains("{1}")) throw new ArgumentException(@"This parameter must be a formattable string containing '{0}' and '{1}' tokens", "namePattern");
             if (existingNameFunc == null)
                 existingNameFunc = x => x.ToString();
 
+            return ComputeNewName(baseName, url => existingItems.Select(existingNameFunc).Any(x => x == url), namePattern);
+        }
+
+        /// <summary>
+        /// Generate a name for a new object that is guaranteed to be unique for the provided "contains predicate". To generate such name, a base name and a pattern for variations must be provided.
+        /// </summary>
+        /// <param name="baseName">The base name used to generate the new name. If the name is available in the collection, it will be returned as-is. Otherwise, a name following the given pattern will be returned.</param>
+        /// <param name="containsDelegate">The delegate used to determine if the asset is already existing</param>
+        /// <param name="namePattern">The pattern used to generate the new name, when the base name is unavailable. This pattern must contains the token '{0}' that will be replaced by the base name, and the token '{1}' that will be replaced by the smallest numerical value that can generate an available name, starting from 2. If null, <see cref="DefaultNamePattern"/> will be used instead.</param>
+        /// <returns><see cref="baseName"/> if the "contains predicate" returns false. Otherwise, a string formatted with <see cref="namePattern"/>, using <see cref="baseName"/> as token '{0}' and the smallest numerical value that can generate an available name, starting from 2</returns>
+        public static string ComputeNewName(string baseName, ContainsLocationDelegate containsDelegate, string namePattern = null)
+        {
+            const string DefaultNamePattern = "{0} ({1})";
+            if (baseName == null) throw new ArgumentNullException("baseName");
+            if (namePattern == null) namePattern = DefaultNamePattern;
+            if (!namePattern.Contains("{0}") || !namePattern.Contains("{1}")) throw new ArgumentException(@"This parameter must be a formattable string containing '{0}' and '{1}' tokens", "namePattern");
+
             string result = baseName;
             int counter = 1;
-            while (existingItems.Select(existingNameFunc).Any(x => x == result))
+            while (containsDelegate(result))
             {
                 result = string.Format(namePattern, baseName, ++counter);
             }
             return result;
         }
-
     }
 }
