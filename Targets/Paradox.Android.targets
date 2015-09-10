@@ -3,7 +3,6 @@
   <PropertyGroup>
     <SiliconStudioIsExecutable Condition=" '$(AndroidApplication)' == 'true'">true</SiliconStudioIsExecutable>
     <SiliconStudioNETFrameworkVersion>v2.3</SiliconStudioNETFrameworkVersion>
-    <UserLibrariesPath Condition="'$(SiliconStudioCurrentPackagePath)' != ''">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\NativeLibs</UserLibrariesPath>
   </PropertyGroup>
   
   <!-- Embed native libraries -->
@@ -27,11 +26,11 @@
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\x86_64\libbulletc.so"/>
     
     <!-- Users custom native libraries -->
-    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(UserLibrariesPath)\$(SiliconStudioPlatform)\armeabi\*.so" />
-    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(UserLibrariesPath)\$(SiliconStudioPlatform)\armeabi-v7a\*.so" />
-    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(UserLibrariesPath)\$(SiliconStudioPlatform)\arm64-v8a\*.so" />
-    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(UserLibrariesPath)\$(SiliconStudioPlatform)\x86\*.so" />
-    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(UserLibrariesPath)\$(SiliconStudioPlatform)\x86_64\*.so" />
+    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\armeabi\*.so" />
+    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\armeabi-v7a\*.so" />
+    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\arm64-v8a\*.so" />
+    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\x86\*.so" />
+    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\x86_64\*.so" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(SiliconStudioIsExecutable)' == 'true'">

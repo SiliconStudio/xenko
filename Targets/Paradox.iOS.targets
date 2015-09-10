@@ -1,7 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioNETFrameworkVersion>v1.0</SiliconStudioNETFrameworkVersion>
-    <UserLibrariesPath Condition="'$(SiliconStudioCurrentPackagePath)' != ''">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\NativeLibs</UserLibrariesPath>
   </PropertyGroup>
 
   <!-- Embed native libraries -->
@@ -10,7 +9,7 @@
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\libcore.a" />
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\libbulletc.a" />
     <!-- Users custom native libraries -->
-    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(UserLibrariesPath)\$(SiliconStudioPlatform)\*.a" />
+    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\*.a" />
   </ItemGroup>
 
   <!-- strip any "lib" prefix and populate the LibraryName value -->

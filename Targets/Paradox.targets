@@ -26,6 +26,8 @@
     <SiliconStudioAssemblyProcessor Condition="'$(SiliconStudioAssemblyProcessor)' == ''">true</SiliconStudioAssemblyProcessor>
 
     <SiliconStudioPlatformFullName Condition="'$(SiliconStudioPlatformFullName)' == ''">$(SiliconStudioPlatform)-$(SiliconStudioParadoxGraphicsApi)</SiliconStudioPlatformFullName>
+
+    <SiliconStudioUserLibrariesPath Condition="'$(SiliconStudioCurrentPackagePath)' != ''">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\NativeLibs</SiliconStudioUserLibrariesPath>
   </PropertyGroup>
 
   <!-- 
