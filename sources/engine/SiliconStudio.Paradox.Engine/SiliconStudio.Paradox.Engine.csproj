@@ -2137,7 +2137,6 @@
     <Compile Include="Rendering\RenderModel.cs" />
     <Compile Include="Engine\Processors\ChildSceneComponentChangedEventArgs.cs" />
     <Compile Include="Engine\Processors\ChildSceneProcessor.cs" />
-    <Compile Include="Engine\Design\SceneEditorCameraSettings.cs" />
     <Compile Include="Engine\Design\SceneEditorGraphicsModeHDRSettings.cs" />
     <Compile Include="Engine\Design\SceneEditorGraphicsModeLDRSettings.cs" />
     <Compile Include="Engine\Design\SceneEditorGraphicsModeSettingsBase.cs" />

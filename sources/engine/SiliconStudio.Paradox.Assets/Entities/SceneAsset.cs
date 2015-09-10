@@ -44,10 +44,11 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetUpgrader(12, 13, typeof(NewElementLayoutUpgrader2))]
     [AssetUpgrader(13, 14, typeof(RemoveGammaTransformUpgrader))]
     [AssetUpgrader(14, 15, typeof(EntityDesignUpgrader))]
+    [AssetUpgrader(15, 16, typeof(RemoveSceneEditorCameraSettings))]
     [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
-        private const int CurrentVersion = 15;
+        private const int CurrentVersion = 16;
 
         public const string FileSceneExtension = ".pdxscene";
 
@@ -499,6 +500,14 @@ namespace SiliconStudio.Paradox.Assets.Entities
                     dynamicDesignEntity.Entity = entity;
                     designEntities.Add(designEntity);
                 }
+            }
+        }
+
+        class RemoveSceneEditorCameraSettings : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                asset.Hierarchy.SceneSettings.EditorSettings.Camera = DynamicYamlEmpty.Default;
             }
         }
 
