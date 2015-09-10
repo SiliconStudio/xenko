@@ -23,11 +23,5 @@ namespace SiliconStudio.Assets.Compiler
         /// </summary>
         /// <value>The platform.</value>
         public PlatformType Platform { get; set; }
-
-        /// <summary>
-        /// Gets the package.
-        /// </summary>
-        /// <value>The package.</value>
-        public Package Package { get; set; }
     }
 }

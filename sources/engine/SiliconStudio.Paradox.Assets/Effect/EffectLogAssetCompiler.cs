@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
@@ -23,18 +24,20 @@ namespace SiliconStudio.Paradox.Assets.Effect
         {
             var originalSourcePath = asset.AbsoluteSourceLocation;
             result.ShouldWaitForPreviousBuilds = true;
-            result.BuildSteps = new AssetBuildStep(AssetItem) { new EffectLogBuildStep(context, originalSourcePath) };
+            result.BuildSteps = new AssetBuildStep(AssetItem) { new EffectLogBuildStep(context, originalSourcePath, AssetItem.Package) };
         }
 
         public class EffectLogBuildStep : EnumerableBuildStep
         {
-            private UFile originalSourcePath;
-            private AssetCompilerContext context;
+            private readonly UFile originalSourcePath;
+            private readonly AssetCompilerContext context;
+            private readonly Package package;
 
-            public EffectLogBuildStep(AssetCompilerContext context, UFile originalSourcePath)
+            public EffectLogBuildStep(AssetCompilerContext context, UFile originalSourcePath, Package package)
             {
                 this.context = context;
                 this.originalSourcePath = originalSourcePath;
+                this.package = package;
             }
 
             /// <inheritdoc/>
@@ -57,7 +60,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
                         effectCompileRequest.UsedParameters.CopyTo(compilerParameters);
                         compilerParameters.Platform = context.GetGraphicsPlatform();
                         compilerParameters.Profile = context.GetGameSettingsAsset().DefaultGraphicsProfile;
-                        steps.Add(new CommandBuildStep(new EffectCompileCommand(context, urlRoot, effectCompileRequest.EffectName, compilerParameters)));
+                        steps.Add(new CommandBuildStep(new EffectCompileCommand(context, urlRoot, effectCompileRequest.EffectName, compilerParameters, package)));
                     }
                 }
 
@@ -69,7 +72,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
             /// <inheritdoc/>
             public override BuildStep Clone()
             {
-                return new EffectLogBuildStep(context, originalSourcePath);
+                return new EffectLogBuildStep(context, originalSourcePath, package);
             }
 
             /// <inheritdoc/>

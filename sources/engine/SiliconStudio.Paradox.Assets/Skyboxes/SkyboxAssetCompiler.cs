@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
             // build the textures for windows (needed for skybox compilation)
             foreach (var dependency in asset.Model.GetDependencies())
             {
-                var assetItem = context.Package.Assets.Find(dependency.Id);
+                var assetItem = AssetItem.Package.Assets.Find(dependency.Id);
                 if (assetItem != null && assetItem.Asset is TextureAsset)
                 {
                     var textureAsset = (TextureAsset)assetItem.Asset;
