@@ -6,9 +6,6 @@ namespace SiliconStudio.Paradox.Physics
     [Display(40, "Static Collider")]
     public class StaticColliderElement : PhysicsElementBase, IPhysicsElement
     {
-        public override Types Type
-        {
-            get { return Types.StaticCollider; }
-        }
+        public override Types Type => Types.StaticCollider;
     }
 }

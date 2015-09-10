@@ -62,6 +62,8 @@
     <Compile Include="Data\ColliderShapeAssetDesc.cs" />
     <Compile Include="Elements\KinematicRigidbodyElement.cs" />
     <Compile Include="Elements\PhysicsElementBase.cs" />
+    <Compile Include="Elements\PhysicsSkinnedElementBase.cs" />
+    <Compile Include="Elements\RigidbodyElement.cs" />
     <Compile Include="Elements\StaticColliderElement.cs" />
     <Compile Include="Elements\StaticRigidbodyElement.cs" />
     <Compile Include="Engine\PhysicsColliderShape.cs" />

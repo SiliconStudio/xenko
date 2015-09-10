@@ -9,11 +9,8 @@ namespace SiliconStudio.Paradox.Physics
 {
     [DataContract("TriggerElement")]
     [Display(40, "Trigger")]
-    public class TriggerElement : PhysicsSkinnedElementBase, IPhysicsElement
+    public class TriggerElement : PhysicsElementBase, IPhysicsElement
     {
-        public override Types Type
-        {
-            get { return Types.PhantomCollider; }
-        }
+        public override Types Type => Types.PhantomCollider;
     }
 }
