@@ -24,8 +24,9 @@ namespace SiliconStudio.Paradox.Assets.Sprite
     [CategoryOrder(10, "Parameters")]
     [CategoryOrder(50, "Atlas Packing")]
     [CategoryOrder(150, "Sprites")]
-    [AssetFormatVersion(1)]
+    [AssetFormatVersion(2)]
     [AssetUpgrader(0, 1, typeof(RenameImageGroupsUpgrader))]
+    [AssetUpgrader(1, 2, typeof(RemoveMaxSizeUpgrader))]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(SpriteSheetAssetCompiler))]
     [ObjectFactory(typeof(SpriteSheetFactory))]
@@ -214,6 +215,17 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                 {
                     asset.Sprites = images;
                     asset.Images = DynamicYamlEmpty.Default;
+                }
+            }
+        }
+        class RemoveMaxSizeUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                var packing = asset.Packing;
+                if (packing != null)
+                {
+                    packing.AtlasMaximumSize = DynamicYamlEmpty.Default;
                 }
             }
         }

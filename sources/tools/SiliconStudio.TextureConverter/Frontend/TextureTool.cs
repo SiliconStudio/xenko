@@ -732,8 +732,9 @@ namespace SiliconStudio.TextureConverter
         /// <param name="texture">The texture</param>
         /// <param name="region">The region of the texture to analyze</param>
         /// <param name="tranparencyColor">The color used as transparent color. If null use standard alpha channel.</param>
+        /// <param name="logger">The logger used to log information</param>
         /// <returns></returns>
-        public unsafe AlphaLevels GetAlphaLevels(TexImage texture, Rectangle region, Color? tranparencyColor)
+        public unsafe AlphaLevels GetAlphaLevels(TexImage texture, Rectangle region, Color? tranparencyColor, ILogger logger = null)
         {
             // quick escape when it is possible to know the absence of alpha from the file itself
             var alphaDepth = texture.GetAlphaDepth();
@@ -744,7 +745,11 @@ namespace SiliconStudio.TextureConverter
             var format = texture.Format;
             var pixelSize = format.SizeInBytes();
             if (texture.Dimension != TexImage.TextureDimension.Texture2D || !(format.IsRGBAOrder() || format.IsBGRAOrder() || pixelSize != 4))
-                throw new NotImplementedException();
+            {
+                var guessedAlphaLevel = alphaDepth > 0 ? AlphaLevels.InterpolatedAlpha : AlphaLevels.NoAlpha;
+                logger?.Debug("Impossible to find alpha levels for texture type {0}. Returning default alpha level '{1}'.", format, guessedAlphaLevel);
+                return guessedAlphaLevel;
+            }
 
             // truncate the provided region in order to be sure to be in the texture
             region.Width = Math.Min(region.Width, texture.Width - region.Left);

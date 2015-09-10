@@ -418,46 +418,6 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type ctrl:FilteringComboBox}">
-        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-        <Setter Property="SnapsToDevicePixels" Value="true" />
-        <Setter Property="Background" Value="{DynamicResource LightBrush}"/>
-        <Setter Property="HorizontalAlignment" Value="Stretch"/>
-        <Setter Property="Sort">
-            <Setter.Value>
-                <ctrl:FilteringComboBoxSort/>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ctrl:FilteringComboBox}">
-                    <Grid x:Name="grid">
-                        <ctrl:TextBox x:Name="PART_EditableTextBox" ValidateOnLostFocus="False" VerticalAlignment="Center" Focusable="True"
-                                           WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}}"/>
-                        <Popup IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" x:Name="Popup" Focusable="False" AllowsTransparency="True" PopupAnimation="Slide">
-                            <Grid>
-                                <ListBox x:Name="PART_ListBox" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="380" SnapsToDevicePixels="True"
-                                         ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}}"
-                                         SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}, Mode=TwoWay}"
-                                         ItemTemplate="{TemplateBinding ItemTemplate}" ItemTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                         ItemStringFormat="{TemplateBinding ItemStringFormat}">
-                                </ListBox>
-                            </Grid>
-                        </Popup>
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
-                            <Setter Property="Opacity" TargetName="grid" Value="0.5" />
-                        </Trigger>
-                        <Trigger Property="IsGrouping" Value="true">
-                            <Setter Property="ScrollViewer.CanContentScroll" Value="false" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
 
     <Style TargetType="{x:Type ctrl:ColorPicker}">
         <Setter Property="Focusable" Value="False"/>

@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Linq;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -70,11 +71,12 @@ namespace SiliconStudio.Paradox.Rendering
         /// <summary>
         /// Creates a new material from the specified descriptor.
         /// </summary>
+        /// <param name="device"></param>
         /// <param name="descriptor">The material descriptor.</param>
         /// <returns>An instance of a <see cref="Material"/>.</returns>
         /// <exception cref="System.ArgumentNullException">descriptor</exception>
         /// <exception cref="System.InvalidOperationException">If an error occurs with the material description</exception>
-        public static Material New(MaterialDescriptor descriptor)
+        public static Material New(GraphicsDevice device, MaterialDescriptor descriptor)
         {
             if (descriptor == null) throw new ArgumentNullException("descriptor");
             var context = new MaterialGeneratorContext(new Material());
@@ -85,65 +87,16 @@ namespace SiliconStudio.Paradox.Rendering
                 throw new InvalidOperationException(string.Format("Error when creating the material [{0}]", result.ToText()));
             }
 
-            return result.Material;
-        }
+            var material = result.Material;
+            var blendState = material.Parameters.Get(Graphics.Effect.BlendStateKey);
+            if (blendState != null && blendState.GraphicsDevice == null)
+            {
+                var newState = BlendState.New(device, blendState.Description);
+                material.Parameters.Set(Effect.BlendStateKey, newState);
+            }
+            // TODO: Add other states?
 
-        public static Material NewDiffuseOnly(Texture diffuseTexture)
-        {
-            return New(
-                new MaterialDescriptor()
-                {
-                    Attributes =
-                    {
-                        Diffuse = new MaterialDiffuseMapFeature(new ComputeTextureColor(diffuseTexture)),
-                        DiffuseModel = new MaterialDiffuseLambertModelFeature(),
-                    }
-                });
-        }
-
-        public static Material NewDiffuseAndMetal(Texture diffuseTexture, float metalness = 0.0f, float glossiness = 0.0f)
-        {
-            return New(
-                new MaterialDescriptor()
-                {
-                    Attributes =
-                    {
-                        Diffuse = new MaterialDiffuseMapFeature(new ComputeTextureColor(diffuseTexture)),
-                        DiffuseModel = new MaterialDiffuseLambertModelFeature(),
-                        MicroSurface = new MaterialGlossinessMapFeature(new ComputeFloat(glossiness)),
-                        Specular = new MaterialMetalnessMapFeature(new ComputeFloat(metalness)),
-                        SpecularModel = new MaterialSpecularMicrofacetModelFeature()
-                    }
-                });
-        }
-
-        public static Material NewDiffuseOnly(Color4 diffuseColor)
-        {
-            return New(
-                new MaterialDescriptor()
-                {
-                    Attributes =
-                    {
-                        Diffuse = new MaterialDiffuseMapFeature(new ComputeColor(diffuseColor)),
-                        DiffuseModel = new MaterialDiffuseLambertModelFeature(),
-                    }
-                });
-        }
-
-        public static Material NewDiffuseAndMetal(Color4 diffuseColor, float metalness = 0.0f, float glossiness = 0.0f)
-        {
-            return New(
-                new MaterialDescriptor()
-                {
-                    Attributes =
-                    {
-                        Diffuse = new MaterialDiffuseMapFeature(new ComputeColor(diffuseColor)),
-                        DiffuseModel = new MaterialDiffuseLambertModelFeature(),
-                        MicroSurface = new MaterialGlossinessMapFeature(new ComputeFloat(glossiness)),
-                        Specular = new MaterialMetalnessMapFeature(new ComputeFloat(metalness)),
-                        SpecularModel = new MaterialSpecularMicrofacetModelFeature()
-                    }
-                });
+            return material;
         }
     }
 }

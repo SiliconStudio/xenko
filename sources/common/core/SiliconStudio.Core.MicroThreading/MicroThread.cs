@@ -236,8 +236,7 @@ namespace SiliconStudio.Core.MicroThreading
         {
             // TODO: If we unschedule the microthread after cancellation, we never give user code the chance to throw OperationCanceledException.
             // If we don't, we can't be sure that the MicroThread ends. 
-            // Should we run continuations manually? For now, set it to Canceled, so it gets removed after the next scheduling step in all cases.
-            State = MicroThreadState.Canceled;
+            // Should we run continuations manually?
 
             // Notify awaitables
             cancellationTokenSource.Cancel();

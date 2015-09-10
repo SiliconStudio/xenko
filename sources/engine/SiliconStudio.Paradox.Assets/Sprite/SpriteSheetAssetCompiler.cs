@@ -211,6 +211,9 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                     {
                         foreach (var sprite in imageGroupData.Sprites)
                         {
+                            if (sprite.Texture == null) // the sprite texture is invalid
+                                continue;
+
                             var textureUrl = AttachedReferenceManager.GetOrCreateAttachedReference(sprite.Texture).Url;
                             if (!urlToTexImage.ContainsKey(textureUrl))
                             {
@@ -228,7 +231,9 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                             };
                             region.Width = (int)Math.Ceiling(sprite.Region.Right) - region.X;
                             region.Height = (int)Math.Ceiling(sprite.Region.Bottom) - region.Y;
-                            sprite.IsTransparent = texTool.GetAlphaLevels(texImage, region, null) != AlphaLevels.NoAlpha; // ignore transparent color key here because the input image has already been processed
+
+                            var alphaLevel = texTool.GetAlphaLevels(texImage, region, null, commandContext.Logger); // ignore transparent color key here because the input image has already been processed
+                            sprite.IsTransparent = alphaLevel != AlphaLevels.NoAlpha; 
                         }
 
                         // free all the allocated images
@@ -296,13 +301,16 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                         imageInfoDictionary[key] = sprite;
                     }
 
+                    // find the maximum texture size supported
+                    var maximumSize = TextureHelper.FindBestTextureSize(new TextureHelper.ImportParameters(AssetParameters), new Size2(int.MaxValue/2, int.MaxValue/2));
+
                     // Initialize packing configuration from GroupAsset
                     var texturePacker = new TexturePacker
                     {
                         Algorithm = packingParameters.PackingAlgorithm,
                         AllowMultipack = packingParameters.AllowMultipacking,
-                        MaxHeight = packingParameters.AtlasMaximumSize.Y,
-                        MaxWidth = packingParameters.AtlasMaximumSize.X,
+                        MaxWidth = maximumSize.Width,
+                        MaxHeight = maximumSize.Height,
                         AllowRotation = packingParameters.AllowRotations,
                     };
 
