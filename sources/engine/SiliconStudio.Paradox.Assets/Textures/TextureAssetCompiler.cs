@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
     /// <summary>
     /// Texture asset compiler.
     /// </summary>
-    internal class TextureAssetCompiler : AssetCompilerBase<TextureAsset>
+    public class TextureAssetCompiler : AssetCompilerBase<TextureAsset>
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, TextureAsset asset, AssetCompilerResult result)
         {
@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// <summary>
         /// Command used to convert the texture in the storage
         /// </summary>
-        internal class TextureConvertCommand : AssetCommand<TextureConvertParameters>
+        public class TextureConvertCommand : AssetCommand<TextureConvertParameters>
         {
             public TextureConvertCommand()
             {
