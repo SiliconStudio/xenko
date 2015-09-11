@@ -704,7 +704,7 @@ namespace SiliconStudio.Paradox.Graphics
                 "void main()                                         \n" +
                 "{                                                   \n" +
                 "    vec4 color = texture2D(s_texture, vTexCoord);   \n" +
-                "    gl_FragColor = vec4(pow(color.rgb, vec3(1.0f/2.2333f)), color.a); \n" +
+                "    gl_FragColor = vec4(pow(color.rgb, vec3(1.0/2.2333)), color.a); \n" +
                 "}                                                   \n";
 
             // First initialization of shader program
