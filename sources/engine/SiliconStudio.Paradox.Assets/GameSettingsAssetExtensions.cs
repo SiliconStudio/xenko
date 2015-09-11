@@ -15,11 +15,19 @@ namespace SiliconStudio.Paradox.Assets
             return gameSettingsAsset?.Asset as GameSettingsAsset;
         }
 
-        public static GameSettingsAsset GetGameSettingsAsset(this AssetItem assetItem)
+        public static GameSettingsAsset GetGameSettingsAssetOrDefault(this AssetItem assetItem)
         {
-            var currentPackage = assetItem.Package.Session.CurrentPackage;
-            var assetGameSettings = currentPackage?.GetGameSettingsAsset();
-            return assetGameSettings;
+            var gameSettings = assetItem.Package.GetGameSettingsAsset();
+            if (gameSettings == null)
+            {
+                var session = assetItem.Package.Session;
+                var currentPackage = session.CurrentPackage;
+                if (currentPackage != null)
+                {
+                    gameSettings = currentPackage.GetGameSettingsAsset();
+                }
+            }
+            return gameSettings ?? new GameSettingsAsset();
         }
     }
 }
