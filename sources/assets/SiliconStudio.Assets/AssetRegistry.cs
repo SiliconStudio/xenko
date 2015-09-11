@@ -7,7 +7,6 @@ using System.Reflection;
 using SharpYaml.Serialization;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Diff;
-
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
@@ -154,6 +153,24 @@ namespace SiliconStudio.Assets
                 Type result;
                 RegisteredAssetFileExtensions.TryGetValue(extension, out result);
                 return result;
+            }
+        }
+
+        public static bool IsProjectSourceCodeAssetFileExtension(string extension)
+        {
+            if (extension == null) return false;
+            lock (RegisteredAssetFileExtensions)
+            {
+                var valid = RegisteredAssetFileExtensions.Contains(extension);
+                if (valid)
+                {
+                    var type = RegisteredDefaultAssetExtension.Where(x => x.Value == extension).Select(x => x.Key).FirstOrDefault();
+                    if (type != null)
+                    {
+                        return typeof(ProjectSourceCodeAsset).IsAssignableFrom(type);
+                    }
+                }
+                return false;
             }
         }
 
