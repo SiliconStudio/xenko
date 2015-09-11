@@ -11,23 +11,12 @@ namespace SiliconStudio.Assets.Serializers
 {
     internal class SourceCodeAssetSerializer : IAssetSerializer, IAssetSerializerFactory
     {
-        private static readonly Dictionary<string, Type> RegisteredExtensions = new Dictionary<string, Type>(StringComparer.InvariantCultureIgnoreCase);
-
         public static readonly SourceCodeAssetSerializer Default = new SourceCodeAssetSerializer();
-
-        public static void RegisterExtension(Type assetType, string assetFileExtension)
-        {
-            if (assetFileExtension == null) throw new ArgumentNullException("assetFileExtension");
-            if (!typeof(SourceCodeAsset).IsAssignableFrom(assetType))
-                throw new ArgumentException("Asset type must inherit SourceCodeAsset", "assetType");
-
-            RegisteredExtensions.Add(assetFileExtension, assetType);
-        }
 
         public object Load(Stream stream, string assetFileExtension, ILogger log, out bool aliasOccurred)
         {
             aliasOccurred = false;
-            var type = RegisteredExtensions[assetFileExtension];
+            var type = AssetRegistry.GetAssetTypeFromFileExtension(assetFileExtension);
             var asset = (SourceCodeAsset)Activator.CreateInstance(type);
             return asset;
         }
@@ -39,7 +28,12 @@ namespace SiliconStudio.Assets.Serializers
 
         public IAssetSerializer TryCreate(string assetFileExtension)
         {
-            return RegisteredExtensions.ContainsKey(assetFileExtension) ? this : null;
+            var assetType = AssetRegistry.GetAssetTypeFromFileExtension(assetFileExtension);
+            if (assetType != null && typeof(SourceCodeAsset).IsAssignableFrom(assetType))
+            {
+                return this;
+            }
+            return null;
         }
     }
 }
