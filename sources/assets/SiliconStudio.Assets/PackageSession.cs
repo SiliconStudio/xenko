@@ -15,6 +15,7 @@ using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using ILogger = SiliconStudio.Core.Diagnostics.ILogger;
+using Microsoft.Build.Evaluation;
 
 namespace SiliconStudio.Assets
 {
@@ -633,21 +634,46 @@ namespace SiliconStudio.Assets
                         packagesCopy.Add(packageClone);
                     }
 
+                    //batch projects
+                    var vsProjs = new Dictionary<string, Project>();
+
                     // Delete previous files
                     foreach (var fileIt in assetsOrPackagesToRemove)
                     {
                         var assetPath = fileIt.Key;
                         var assetItemOrPackage = fileIt.Value;
 
+                        var assetItem = assetItemOrPackage as AssetItem;
+
                         if (File.Exists(assetPath))
                         {
                             try
                             {
+                                //If we are within a csproj we need to remove the file from there as well
+                                if (assetItem?.SourceProject != null)
+                                {
+                                    var projectAsset = assetItem.Asset as ProjectSourceCodeAsset;
+                                    if (projectAsset != null)
+                                    {
+                                        Project project;
+                                        if (!vsProjs.TryGetValue(assetItem.SourceProject, out project))
+                                        {
+                                            project = VSProjectHelper.LoadProject(assetItem.SourceProject);
+                                            vsProjs.Add(assetItem.SourceProject, project);
+                                        }
+                                        var include = (new UFile(projectAsset.ProjectInclude)).ToWindowsPath();
+                                        var item = project.Items.FirstOrDefault(x => (x.ItemType == "Compile" || x.ItemType == "None") && x.EvaluatedInclude == include);
+                                        if (item != null)
+                                        {
+                                            project.RemoveItem(item);
+                                        }
+                                    }
+                                }
+
                                 File.Delete(assetPath);
                             }
                             catch (Exception ex)
                             {
-                                var assetItem = assetItemOrPackage as AssetItem;
                                 if (assetItem != null)
                                 {
                                     log.Error(assetItem.Package, assetItem.ToReference(), AssetMessageCode.AssetCannotDelete, ex, assetPath);
@@ -662,6 +688,13 @@ namespace SiliconStudio.Assets
                                 }
                             }
                         }
+                    }
+
+                    foreach (var project in vsProjs.Values)
+                    {
+                        project.Save();
+                        project.ProjectCollection.UnloadAllProjects();
+                        project.ProjectCollection.Dispose();
                     }
 
                     packagesSaved = true;

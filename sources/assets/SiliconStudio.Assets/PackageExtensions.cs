@@ -15,6 +15,61 @@ namespace SiliconStudio.Assets
     public static class PackageExtensions
     {
         /// <summary>
+        /// Finds an asset from all the packages by its location.
+        /// </summary>
+        /// <param name="package">The package.</param>
+        /// <param name="location">The location of the asset.</param>
+        /// <returns>An <see cref="AssetItem" /> or <c>null</c> if not found.</returns>
+        public static AssetItem FindAsset(this Package package, UFile location)
+        {
+            var packages = package.GetPackagesWithDependencies();
+            return packages.Select(packageItem => packageItem.Assets.Find(location)).FirstOrDefault(asset => asset != null);
+        }
+
+        /// <summary>
+        /// Finds an asset from all the packages by its id.
+        /// </summary>
+        /// <param name="package">The package.</param>
+        /// <param name="assetId">The assetId of the asset.</param>
+        /// <returns>An <see cref="AssetItem" /> or <c>null</c> if not found.</returns>
+        public static AssetItem FindAsset(this Package package, Guid assetId)
+        {
+            var packages = package.GetPackagesWithDependencies();
+            return packages.Select(packageItem => packageItem.Assets.Find(assetId)).FirstOrDefault(asset => asset != null);
+        }
+        public static IEnumerable<Package> GetPackagesWithDependencies(this Package currentPackage)
+        {
+            if (currentPackage == null)
+            {
+                yield break;
+            }
+
+            yield return currentPackage;
+
+            var session = currentPackage.Session;
+
+            foreach (var storeDep in currentPackage.Meta.Dependencies)
+            {
+                var package = session.Packages.Find(storeDep);
+                // In case the package is not found (when working with session not fully loaded/resolved with all deps)
+                if (package != null)
+                {
+                    yield return package;
+                }
+            }
+
+            foreach (var localDep in currentPackage.LocalDependencies)
+            {
+                var package = session.Packages.Find(localDep.Id);
+                // In case the package is not found (when working with session not fully loaded/resolved with all deps)
+                if (package != null)
+                {
+                    yield return package;
+                }
+            }
+        }
+
+        /// <summary>
         /// Finds the package dependencies for the specified <see cref="Package" />. See remarks.
         /// </summary>
         /// <param name="rootPackage">The root package.</param>

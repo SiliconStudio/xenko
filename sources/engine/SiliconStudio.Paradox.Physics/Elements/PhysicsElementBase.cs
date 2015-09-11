@@ -7,40 +7,6 @@ using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Physics
 {
-    [DataContract("PhysicsSkinnedElementBase")]
-    [Display(40, "PhysicsSkinnedElementBase")]
-    public abstract class PhysicsSkinnedElementBase : PhysicsElementBase
-    {
-        private string linkedBoneName;
-
-        /// <summary>
-        /// Gets or sets the link (usually a bone).
-        /// </summary>
-        /// <value>
-        /// The mesh's linked bone name
-        /// </value>
-        /// <userdoc>
-        /// In the case of skinned mesh this must be the bone node name linked with this element.
-        /// </userdoc>
-        [DataMember(50)]
-        public string LinkedBoneName
-        {
-            get
-            {
-                return linkedBoneName;
-            }
-            set
-            {
-                if (InternalCollider != null)
-                {
-                    throw new Exception("Cannot change LinkedBoneName when the entity is already in the scene.");
-                }
-
-                linkedBoneName = value;
-            }
-        }
-    }
-
     [DataContract("PhysicsElementBase")]
     [Display(40, "PhysicsElementBase")]
     public abstract class PhysicsElementBase
@@ -166,6 +132,37 @@ namespace SiliconStudio.Paradox.Physics
             }
         }
 
+        private bool processCollisions = true;
+
+        /// <summary>
+        /// Gets or sets if this element will store collisions
+        /// </summary>
+        /// <value>
+        /// true, false
+        /// </value>
+        /// <userdoc>
+        /// Unchecking this will help with performance, ideally if this entity has no need to access collisions information should be set to false
+        /// </userdoc>
+        [DataMember(45)]
+        public virtual bool ProcessCollisions
+        {
+            get
+            {
+                return InternalCollider?.ContactsAlwaysValid ?? processCollisions;
+            }
+            set
+            {
+                if (InternalCollider != null)
+                {
+                    InternalCollider.ContactsAlwaysValid = value;
+                }
+                else
+                {
+                    processCollisions = value;
+                }
+            }
+        }
+
         #region Ignore or Private/Internal
 
         internal Collider InternalCollider;
@@ -185,6 +182,8 @@ namespace SiliconStudio.Paradox.Physics
             internal set
             {
                 InternalCollider = value;
+                //set possibly pre-set properties
+                ProcessCollisions = processCollisions;
             }
         }
 

@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 using SiliconStudio.Core;
 
@@ -48,6 +50,14 @@ namespace SiliconStudio.Assets.Compiler
                 return DefaultCompiler;
 
             return typeToCompiler[type];
+        }
+
+        protected void UnregisterAssembly(Assembly assembly)
+        {
+            foreach (var typeToRemove in typeToCompiler.Where(typeAndCompile => typeAndCompile.Key.Assembly == assembly || typeAndCompile.Value.GetType().Assembly == assembly).Select(e => e.Key).ToList())
+            {
+                typeToCompiler.Remove(typeToRemove);
+            }
         }
 
         private static void AssertAssetType(Type assetType)

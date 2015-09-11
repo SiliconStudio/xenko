@@ -96,7 +96,7 @@ namespace SiliconStudio.Paradox.UI.Controls
             var virtualResolution = LayoutingContext.VirtualResolution;
             var worldmatrix = Matrix.Identity;
             
-            return Collision.RayIntersectsRectangle(ref ray, ref worldmatrix, ref virtualResolution, 2, out intersectionPoint);
+            return CollisionHelper.RayIntersectsRectangle(ref ray, ref worldmatrix, ref virtualResolution, 2, out intersectionPoint);
         }
     }
 }

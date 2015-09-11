@@ -50,14 +50,14 @@ namespace SiliconStudio.Assets.Compiler
             }
         }
 
-        protected static void ComputeCompileTimeDependenciesHash(PackageSession packageSession, BinarySerializationWriter writer, Asset asset)
+        protected static void ComputeCompileTimeDependenciesHash(Package package, BinarySerializationWriter writer, Asset asset)
         {
             var assetWithCompileTimeDependencies = asset as IAssetCompileTimeDependencies;
             if (assetWithCompileTimeDependencies != null)
             {
                 foreach (var dependentAssetReference in assetWithCompileTimeDependencies.EnumerateCompileTimeDependencies())
                 {
-                    var dependentAssetItem = packageSession.FindAsset(dependentAssetReference.Id) ?? packageSession.FindAsset(dependentAssetReference.Location);
+                    var dependentAssetItem = package.FindAsset(dependentAssetReference.Id) ?? package.FindAsset(dependentAssetReference.Location);
                     var dependentAsset = dependentAssetItem != null ? dependentAssetItem.Asset : null;
                     if (dependentAsset == null)
                         continue;
@@ -73,7 +73,7 @@ namespace SiliconStudio.Assets.Compiler
                     writer.SerializeExtended(ref dependentAsset, ArchiveMode.Serialize);
 
                     // Recurse
-                    ComputeCompileTimeDependenciesHash(packageSession, writer, dependentAsset);
+                    ComputeCompileTimeDependenciesHash(package, writer, dependentAsset);
                 }
             }
         }

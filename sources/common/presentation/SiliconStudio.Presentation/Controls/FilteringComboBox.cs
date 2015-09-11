@@ -65,11 +65,6 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyProperty OpenDropDownOnFocusProperty = DependencyProperty.Register("OpenDropDownOnFocus", typeof(bool), typeof(FilteringComboBox));
 
         /// <summary>
-        /// Identifies the <see cref="UpdateSelectionOnValidation"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty UpdateSelectionOnValidationProperty = DependencyProperty.Register("UpdateSelectionOnValidation", typeof(bool), typeof(FilteringComboBox));
-
-        /// <summary>
         /// Identifies the <see cref="ClearTextAfterValidation"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty ClearTextAfterValidationProperty = DependencyProperty.Register("ClearTextAfterValidation", typeof(bool), typeof(FilteringComboBox));
@@ -130,7 +125,7 @@ namespace SiliconStudio.Presentation.Controls
         public bool OpenDropDownOnFocus { get { return (bool)GetValue(OpenDropDownOnFocusProperty); } set { SetValue(OpenDropDownOnFocusProperty, value); } }
 
         /// <summary>
-        /// Gets or sets whether the validation will be cancelled if <see cref="SelectedItem"/> is null.
+        /// Gets or sets whether the validation will be cancelled if <see cref="Selector.SelectedItem"/> is null.
         /// </summary>
         public bool RequireSelectedItemToValidate { get { return (bool)GetValue(RequireSelectedItemToValidateProperty); } set { SetValue(RequireSelectedItemToValidateProperty, value); } }
 
@@ -262,7 +257,8 @@ namespace SiliconStudio.Presentation.Controls
             {
                 var displayValue = ResolveDisplayMemberValue(SelectedItem);
                 editableTextBox.Text = displayValue?.ToString();
-                editableTextBox.CaretIndex = editableTextBox.Text.Length;
+                if (editableTextBox.Text != null)
+                    editableTextBox.CaretIndex = editableTextBox.Text.Length;
             }
 
             // Update the source of the text property binding

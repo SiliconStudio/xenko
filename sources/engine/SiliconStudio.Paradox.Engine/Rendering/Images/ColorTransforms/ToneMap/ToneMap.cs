@@ -43,6 +43,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
             Operator = new ToneMapHejl2Operator();
             AdaptationRate = 1.0f;
             TemporalAdaptation = true;
+            AutoExposure = true;
         }
 
         /// <summary>
@@ -76,6 +77,24 @@ namespace SiliconStudio.Paradox.Rendering.Images
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the tonemap key is automatically calculated based on common perceptive behavior.
+        /// </summary>
+        /// <value><c>true</c> if [automatic key value]; otherwise, <c>false</c>.</value>
+        [DataMember(15)]
+        [DefaultValue(true)]
+        public bool AutoKeyValue
+        {
+            get
+            {
+                return Parameters.Get(ToneMapKeys.AutoKey);
+            }
+            set
+            {
+                Parameters.Set(ToneMapKeys.AutoKey, value);
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the key value.
         /// </summary>
         /// <value>The key value.</value>
@@ -94,21 +113,32 @@ namespace SiliconStudio.Paradox.Rendering.Images
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the tonemap key is automatically calculated based on common perceptive behavior.
+        /// Gets or sets a value indicating whether the tonemap is calculating the exposure based on the average luminance of the image else <see cref="Exposure"/> is used.
         /// </summary>
-        /// <value><c>true</c> if [automatic key value]; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if the tonemap is calculating the exposure based on the average luminance of the image; otherwise, <c>false</c>.</value>
         [DataMember(30)]
         [DefaultValue(true)]
-        public bool AutoKeyValue
+        public bool AutoExposure
         {
             get
             {
-                return Parameters.Get(ToneMapShaderKeys.AutoKeyValue);
+                return Parameters.Get(ToneMapKeys.AutoExposure);
             }
             set
             {
-                Parameters.Set(ToneMapShaderKeys.AutoKeyValue, value);
+                Parameters.Set(ToneMapKeys.AutoExposure, value);
             }
+        }
+
+        /// <summary>
+        /// Gets or sets the manual exposure value if <see cref="AutoExposure"/> is <c>false</c>.
+        /// </summary>
+        /// <value>The exposure value.</value>
+        [DataMember(32)]
+        [DefaultValue(0.0f)]
+        public float Exposure
+        {
+            get; set;
         }
 
         /// <summary>
@@ -217,6 +247,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
             // Setup parameters
             Parameters.Set(ToneMapShaderKeys.LuminanceTexture, luminanceResult.LocalTexture);
             Parameters.Set(ToneMapShaderKeys.LuminanceAverageGlobal, (float)Math.Log(adaptedLum, 2));
+            Parameters.Set(ToneMapShaderKeys.Exposure, (float)Math.Pow(2.0, Exposure));
 
             // Update operator parameters
             Operator.UpdateParameters(context);

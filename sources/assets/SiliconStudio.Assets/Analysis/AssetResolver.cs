@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 
+using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Assets.Analysis
@@ -13,13 +14,6 @@ namespace SiliconStudio.Assets.Analysis
     public sealed class AssetResolver
     {
         /// <summary>
-        /// Delegate to test if the specified location is already used.
-        /// </summary>
-        /// <param name="location">The location to try to use.</param>
-        /// <returns><c>true</c> if the specified location is already used, <c>false</c> otherwise.</returns>
-        public delegate bool ContainsAssetWithLocationDelegate(UFile location);
-
-        /// <summary>
         /// Delegate to test if an asset id is already used.
         /// </summary>
         /// <param name="guid">The unique identifier.</param>
@@ -29,7 +23,7 @@ namespace SiliconStudio.Assets.Analysis
         private readonly HashSet<Guid> existingIds;
         private readonly HashSet<string> existingLocations;
 
-        private readonly ContainsAssetWithLocationDelegate containsLocation;
+        private readonly NamingHelper.ContainsLocationDelegate containsLocation;
 
         private readonly ContainsAssetWithIdDelegate containsId;
 
@@ -43,15 +37,15 @@ namespace SiliconStudio.Assets.Analysis
         /// <summary>
         /// Initializes a new instance of the <see cref="AssetResolver" /> class.
         /// </summary>
-        /// <param name="containsAssetWithLocation">The delegate used to check if an asset location is already used.</param>
+        /// <param name="containsLocation">The delegate used to check if an asset location is already used.</param>
         /// <param name="containsAssetWithId">The delegate used to check if an asset identifier is already used.</param>
-        public AssetResolver(ContainsAssetWithLocationDelegate containsAssetWithLocation, ContainsAssetWithIdDelegate containsAssetWithId)
+        public AssetResolver(NamingHelper.ContainsLocationDelegate containsLocation, ContainsAssetWithIdDelegate containsAssetWithId)
         {
             existingIds = new HashSet<Guid>();
             existingLocations = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            ContainsAssetWithLocation = containsAssetWithLocation;
+            ContainsLocation = containsLocation;
             ContainsAssetWithId = containsAssetWithId;
-            containsLocation = DefaultContainsLocation;
+            this.containsLocation = DefaultContainsLocation;
             containsId = DefaultContainsId;
         }
 
@@ -89,7 +83,7 @@ namespace SiliconStudio.Assets.Analysis
         /// Gets or sets a delegate to test if a location is already used.
         /// </summary>
         /// <value>A delegate to test if a location is already used.</value>
-        public ContainsAssetWithLocationDelegate ContainsAssetWithLocation { get; set; }
+        public NamingHelper.ContainsLocationDelegate ContainsLocation { get; set; }
 
         /// <summary>
         /// Gets or sets a delegate to test if an asset id is already used.
@@ -106,9 +100,9 @@ namespace SiliconStudio.Assets.Analysis
         /// <returns><c>true</c> if there is a new location, <c>false</c> otherwise.</returns>
         public bool RegisterLocation(UFile location, out UFile newLocation)
         {
-            var result = FindAvailableLocation(location, containsLocation, out newLocation);
-            ExistingLocations.Add(newLocation ?? location);
-            return result;
+            newLocation = NamingHelper.ComputeNewName(location, containsLocation);
+            ExistingLocations.Add(newLocation);
+            return newLocation != location;
         }
 
         /// <summary>
@@ -166,9 +160,9 @@ namespace SiliconStudio.Assets.Analysis
             {
                 return true;
             }
-            if (ContainsAssetWithLocation != null)
+            if (ContainsLocation != null)
             {
-                return ContainsAssetWithLocation(location);
+                return ContainsLocation(location);
             }
             return false;
         }
@@ -187,33 +181,6 @@ namespace SiliconStudio.Assets.Analysis
                 return ContainsAssetWithId(guid);
             }
             return false;
-        }
-
-        /// <summary>
-        /// Finds a name available for a new asset. This method will try to create a name based on an existing name and will append
-        /// "_" + (number++) on every try.
-        /// </summary>
-        /// <param name="location">The path of the original asset.</param>
-        /// <param name="containsAssetWithLocation">The try location.</param>
-        /// <param name="newLocation">A new asset location that has the guaranty to be available when adding the assets to a package..</param>
-        /// <returns><c>true</c> if this is a new location, false otherwise.</returns>
-        /// <exception cref="System.ArgumentNullException">localNames</exception>
-        private static bool FindAvailableLocation(UFile location, ContainsAssetWithLocationDelegate containsAssetWithLocation, out UFile newLocation)
-        {
-            if (location == null) throw new ArgumentNullException("location");
-            if (containsAssetWithLocation == null) throw new ArgumentNullException("containsAssetWithLocation");
-
-            var pathStr = location.FullPath;
-            int i = 1;
-            string newPath = pathStr;
-            while (containsAssetWithLocation(newPath))
-            {
-                newPath = pathStr + "_" + i;
-                i++;
-            }
-
-            newLocation = newPath;
-            return i > 1;
         }
     }
 }

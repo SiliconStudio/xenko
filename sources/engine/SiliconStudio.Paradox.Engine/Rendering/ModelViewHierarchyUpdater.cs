@@ -55,7 +55,7 @@ namespace SiliconStudio.Paradox.Rendering
 
         public void Initialize(Model model)
         {
-            Initialize(model.Hierarchy != null ? model.Hierarchy.Nodes : null);
+            Initialize(model.Hierarchy?.Nodes);
             nodeTransformations[0].Flags &= ~ModelNodeFlags.EnableTransform;
         }
 

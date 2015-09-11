@@ -44,11 +44,13 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetUpgrader(12, 13, typeof(NewElementLayoutUpgrader2))]
     [AssetUpgrader(13, 14, typeof(RemoveGammaTransformUpgrader))]
     [AssetUpgrader(14, 15, typeof(EntityDesignUpgrader))]
-    [AssetUpgrader(15, 16, typeof(RemoveSceneEditorCameraSettings))]
+    [AssetUpgrader(15, 16, typeof(NewElementLayoutUpgrader3))]
+    [AssetUpgrader(16, 17, typeof(NewElementLayoutUpgrader4))]
+    [AssetUpgrader(17, 18, typeof(RemoveSceneEditorCameraSettings))]    
     [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
-        private const int CurrentVersion = 16;
+        private const int CurrentVersion = 18;
 
         public const string FileSceneExtension = ".pdxscene";
 
@@ -427,7 +429,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
                                 element.Node.Tag == "!CharacterElement"
                                 )
                             {
-                                element.RemoveChild("LinkedBoneName");
+                                element.RemoveChild("LinkedNodeName");
                             }
                         }
                     }
@@ -499,6 +501,69 @@ namespace SiliconStudio.Paradox.Assets.Entities
                     dynamic dynamicDesignEntity = new DynamicYamlMapping(designEntity);
                     dynamicDesignEntity.Entity = entity;
                     designEntities.Add(designEntity);
+                }
+            }
+        }
+
+        class NewElementLayoutUpgrader3 : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Entities;
+                foreach (dynamic entity in entities)
+                {
+                    var components = entity.Entity.Components;
+                    var physComponent = components["PhysicsComponent.Key"];
+                    if (physComponent == null) continue;
+
+                    foreach (dynamic element in physComponent.Elements)
+                    {
+                        if (element.Node.Tag == "!TriggerElement")
+                        {
+                            element.RemoveChild("LinkedBoneName");
+                        }
+                        else if (element.Node.Tag == "!KinematicRigidbodyElement")
+                        {
+                            element.Node.Tag = "!RigidbodyElement";
+                            element.IsKinematic = true;
+                        }
+                        else if (element.Node.Tag == "!DynamicRigidbodyElement")
+                        {
+                            element.Node.Tag = "!RigidbodyElement";
+                            element.IsKinematic = false;
+                        }
+                        else if (element.Node.Tag == "!StaticRigidbodyElement")
+                        {
+                            element.Node.Tag = "!StaticColliderElement";
+                        }
+
+                        element.ProcessCollisions = true;
+                    }
+                }
+            }
+        }
+
+        class NewElementLayoutUpgrader4 : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Entities;
+                foreach (dynamic entity in entities)
+                {
+                    var components = entity.Entity.Components;
+                    var physComponent = components["PhysicsComponent.Key"];
+                    if (physComponent == null) continue;
+
+                    foreach (dynamic element in physComponent.Elements)
+                    {
+                        if (element.Node.Tag == "!RigidbodyElement")
+                        {
+                            element.NodeName = element.LinkedBoneName;
+                            element.RemoveChild("LinkedBoneName");
+                        }
+                    }
                 }
             }
         }

@@ -22,6 +22,7 @@ namespace SiliconStudio.Assets
         protected SourceCodeAsset()
         {
         }
+
         /// <summary>
         /// Gets or sets the absolute source location of this asset on the disk.
         /// </summary>

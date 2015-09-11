@@ -202,9 +202,9 @@ namespace SiliconStudio.Paradox.Engine
                     enabledEntities.Remove(entity);
                 }
 
-                foreach (var component in entityProcessors)
+                foreach (var processor in entityProcessors)
                 {
-                    component.SetEnabled(entity, enabled);
+                    processor.SetEnabled(entity, enabled);
                 }
             }
         }

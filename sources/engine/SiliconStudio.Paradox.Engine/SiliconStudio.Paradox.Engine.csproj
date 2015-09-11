@@ -120,6 +120,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ToneMapHejl2OperatorShader.pdxsl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Images\ColorTransforms\ToneMap\ToneMapKeys.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ColorVertexStreamDefinition.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamBase.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamColor.cs" />

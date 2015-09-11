@@ -567,7 +567,7 @@ namespace SiliconStudio.Assets
             finalAsset.Base = new AssetBase(selectedMerge.Diff.Asset2);
 
             // Set the final item
-            toImport.MergedItem = new AssetItem(toImport.SelectedItem.Location, finalAsset) { SourceFolder = toImport.SelectedItem.SourceFolder };
+            toImport.MergedItem = new AssetItem(toImport.SelectedItem.Location, finalAsset) { SourceFolder = toImport.SelectedItem.SourceFolder, SourceProject = toImport.SelectedItem.SourceProject };
         }
 
 

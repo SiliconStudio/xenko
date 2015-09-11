@@ -1,14 +1,13 @@
 using SiliconStudio.Core;
 
+//Disabled from now
+
 namespace SiliconStudio.Paradox.Physics
 {
-    [DataContract("StaticRigidbodyElement")]
-    [Display(40, "Static RigidBody")]
-    public class StaticRigidbodyElement : PhysicsElementBase, IPhysicsElement
-    {
-        public override Types Type
-        {
-            get { return Types.StaticRigidBody; }
-        }
-    }
+    //[DataContract("StaticRigidbodyElement")]
+    //[Display(40, "Static Rigidbody")]
+    //public class StaticRigidbodyElement : PhysicsElementBase, IPhysicsElement
+    //{
+    //    public override Types Type => Types.StaticRigidBody;
+    //}
 }

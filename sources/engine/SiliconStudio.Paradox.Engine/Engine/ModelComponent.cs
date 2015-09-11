@@ -156,7 +156,7 @@ namespace SiliconStudio.Paradox.Engine
 
         internal void Update(TransformComponent transformComponent, ref Matrix worldMatrix)
         {
-            if (!Enabled || modelViewHierarchy == null)
+            if (!Enabled || ModelViewHierarchy == null || model == null)
                 return;
 
             // Check if scaling is negative
