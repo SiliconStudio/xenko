@@ -17,6 +17,7 @@ namespace SiliconStudio.Core.Reflection
         private static readonly object Lock = new object();
         private static readonly Dictionary<string, HashSet<Assembly>> MapCategoryToAssemblies = new Dictionary<string, HashSet<Assembly>>();
         private static readonly Dictionary<Assembly, HashSet<string>> MapAssemblyToCategories = new Dictionary<Assembly, HashSet<string>>();
+        private static readonly Dictionary<string, Assembly> AssemblyNameToAssembly = new Dictionary<string, Assembly>(StringComparer.InvariantCultureIgnoreCase);
 
         /// <summary>
         /// Occurs when an assembly is registered.
@@ -39,6 +40,32 @@ namespace SiliconStudio.Core.Reflection
             {
                 return new HashSet<Assembly>(MapAssemblyToCategories.Keys);
             }
+        }
+
+        /// <summary>
+        /// Gets a type by its typename already loaded in the assembly registry.
+        /// </summary>
+        /// <param name="fullyQualifiedTypeName">The typename</param>
+        /// <returns>The type instance or null if not found.</returns>
+        public static Type GetType(string fullyQualifiedTypeName)
+        {
+            if (fullyQualifiedTypeName == null) throw new ArgumentNullException(nameof(fullyQualifiedTypeName));
+            var assemblyIndex = fullyQualifiedTypeName.IndexOf(",");
+            if (assemblyIndex < 0)
+            {
+                throw new ArgumentException($"Invalid fulltype name [{fullyQualifiedTypeName}], expecting an assembly name", nameof(fullyQualifiedTypeName));
+            }
+            var typeName = fullyQualifiedTypeName.Substring(0, assemblyIndex);
+            var assemblyName = new AssemblyName(fullyQualifiedTypeName.Substring(assemblyIndex + 1));
+            lock (Lock)
+            {
+                Assembly assembly;
+                if (AssemblyNameToAssembly.TryGetValue(assemblyName.FullName, out assembly))
+                {
+                    return assembly.GetType(typeName);
+                }
+            }
+            return null;
         }
 
         /// <summary>
@@ -127,6 +154,10 @@ namespace SiliconStudio.Core.Reflection
                     registeredCategoriesPerAssembly = new HashSet<string>();
                     MapAssemblyToCategories.Add(assembly, registeredCategoriesPerAssembly);
                 }
+
+                // Register the assembly name
+                var assemblyName = assembly.GetName().FullName;
+                AssemblyNameToAssembly[assemblyName] = assembly;
 
                 foreach (var category in categories)
                 {
