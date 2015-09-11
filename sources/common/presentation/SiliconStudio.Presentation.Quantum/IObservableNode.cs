@@ -90,6 +90,11 @@ namespace SiliconStudio.Presentation.Quantum
         IReadOnlyDictionary<string, object> AssociatedData { get; }
 
         /// <summary>
+        /// Gets the level of depth of this node, starting from 0 for the root node.
+        /// </summary>
+        int Level { get; }
+
+        /// <summary>
         /// Gets the order number of this node in its parent.
         /// </summary>
         int? Order { get; }
