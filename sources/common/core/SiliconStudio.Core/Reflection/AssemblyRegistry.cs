@@ -60,7 +60,7 @@ namespace SiliconStudio.Core.Reflection
             lock (Lock)
             {
                 Assembly assembly;
-                if (AssemblyNameToAssembly.TryGetValue(assemblyName.FullName, out assembly))
+                if (AssemblyNameToAssembly.TryGetValue(assemblyName.Name, out assembly))
                 {
                     return assembly.GetType(typeName);
                 }
@@ -156,7 +156,7 @@ namespace SiliconStudio.Core.Reflection
                 }
 
                 // Register the assembly name
-                var assemblyName = assembly.GetName().FullName;
+                var assemblyName = assembly.GetName().Name;
                 AssemblyNameToAssembly[assemblyName] = assembly;
 
                 foreach (var category in categories)
