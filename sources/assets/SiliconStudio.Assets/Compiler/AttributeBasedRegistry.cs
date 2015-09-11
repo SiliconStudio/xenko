@@ -32,6 +32,7 @@ namespace SiliconStudio.Assets.Compiler
                 AnalyseAssembly(assembly);
 
             AssemblyRegistry.AssemblyRegistered += AssemblyRegistered;
+            AssemblyRegistry.AssemblyUnregistered += AssemblyUnregistered;
         }
 
         /// <summary>
@@ -95,6 +96,12 @@ namespace SiliconStudio.Assets.Compiler
             // Handle delay-loading assemblies
             if (e.Categories.Contains(AssemblyCommonCategories.Assets))
                 AnalyseAssembly(e.Assembly);
+        }
+
+        private void AssemblyUnregistered(object sender, AssemblyRegisteredEventArgs e)
+        {
+            if (e.Categories.Contains(AssemblyCommonCategories.Assets))
+                UnregisterAssembly(e.Assembly);
         }
     }
 }
