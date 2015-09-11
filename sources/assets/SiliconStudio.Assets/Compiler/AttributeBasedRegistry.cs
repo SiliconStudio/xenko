@@ -101,7 +101,10 @@ namespace SiliconStudio.Assets.Compiler
         private void AssemblyUnregistered(object sender, AssemblyRegisteredEventArgs e)
         {
             if (e.Categories.Contains(AssemblyCommonCategories.Assets))
+            {
+                registeredAssemblies.Remove(e.Assembly);
                 UnregisterAssembly(e.Assembly);
+            }
         }
     }
 }
