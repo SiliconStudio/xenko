@@ -57,27 +57,6 @@ namespace SiliconStudio.Paradox.Graphics.OpenGL
             }
         }
 
-        public static GLVersion GetGLVersion(GraphicsProfile graphicsProfile)
-        {
-            switch (graphicsProfile)
-            {
-                case GraphicsProfile.Level_9_1:
-                case GraphicsProfile.Level_9_2:
-                case GraphicsProfile.Level_9_3:
-                    return GLVersion.ES2;
-                case GraphicsProfile.Level_10_0:
-                case GraphicsProfile.Level_10_1:
-                    return GLVersion.ES3;
-                case GraphicsProfile.Level_11_0:
-                case GraphicsProfile.Level_11_1:
-                case GraphicsProfile.Level_11_2:
-                    return GLVersion.ES31;
-                default:
-                    throw new ArgumentOutOfRangeException("graphicsProfile");
-            }
-        }
-
-
         public static GraphicsProfile GetFeatureLevel(int major, int minor)
         {
             if (major >= 3)
@@ -125,6 +104,27 @@ namespace SiliconStudio.Paradox.Graphics.OpenGL
                     return GraphicsProfile.Level_10_0;
             }
             return GraphicsProfile.Level_9_1;
+        }
+#endif
+#if SILICONSTUDIO_PLATFORM_ANDROID
+        public static GLVersion GetGLVersion(GraphicsProfile graphicsProfile)
+        {
+            switch (graphicsProfile)
+            {
+                case GraphicsProfile.Level_9_1:
+                case GraphicsProfile.Level_9_2:
+                case GraphicsProfile.Level_9_3:
+                    return GLVersion.ES2;
+                case GraphicsProfile.Level_10_0:
+                case GraphicsProfile.Level_10_1:
+                    return GLVersion.ES3;
+                case GraphicsProfile.Level_11_0:
+                case GraphicsProfile.Level_11_1:
+                case GraphicsProfile.Level_11_2:
+                    return GLVersion.ES31;
+                default:
+                    throw new ArgumentOutOfRangeException("graphicsProfile");
+            }
         }
 #endif
     }
