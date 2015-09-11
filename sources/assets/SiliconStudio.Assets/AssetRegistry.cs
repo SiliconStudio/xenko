@@ -161,7 +161,7 @@ namespace SiliconStudio.Assets
             if (extension == null) return false;
             lock (RegisteredAssetFileExtensions)
             {
-                var valid = RegisteredAssetFileExtensions.Contains(extension);
+                var valid = RegisteredAssetFileExtensions.ContainsKey(extension);
                 if (valid)
                 {
                     var type = RegisteredDefaultAssetExtension.Where(x => x.Value == extension).Select(x => x.Key).FirstOrDefault();
