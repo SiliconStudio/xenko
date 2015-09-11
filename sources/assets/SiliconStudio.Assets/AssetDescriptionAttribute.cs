@@ -34,5 +34,10 @@ namespace SiliconStudio.Assets
         /// Gets whether this asset can be created by users using engine tools.
         /// </summary>
         public bool AllowUserCreation { get { return allowUserCreation; } }
+
+        /// <summary>
+        /// Always mark this asset type as root.
+        /// </summary>
+        public bool AlwaysMarkAsRoot { get; set; }
     }
 }

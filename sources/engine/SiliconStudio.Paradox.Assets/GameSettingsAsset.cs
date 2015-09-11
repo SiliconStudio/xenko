@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Assets
     /// Settings for a game with the default scene, resolution, graphics profile...
     /// </summary>
     [DataContract("GameSettingsAsset")]
-    [AssetDescription(FileExtension, false)]
+    [AssetDescription(FileExtension, false, AlwaysMarkAsRoot = true)]
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
     [AssetCompiler(typeof(GameSettingsAssetCompiler))]
     [ThumbnailCompiler(PreviewerCompilerNames.GameSettingsThumbnailCompilerQualifiedName)]

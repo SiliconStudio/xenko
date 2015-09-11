@@ -31,6 +31,7 @@ namespace SiliconStudio.Assets
         private static readonly List<IAssetImporter> RegisteredImportersInternal = new List<IAssetImporter>();
         private static readonly Dictionary<Type, Tuple<int, int>> RegisteredFormatVersions = new Dictionary<Type, Tuple<int, int>>();
         private static readonly HashSet<Type> RegisteredInternalAssetTypes = new HashSet<Type>();
+        private static readonly HashSet<Type> AlwaysMarkAsRootAssetTypes = new HashSet<Type>();
         private static readonly Dictionary<Type, AssetUpgraderCollection> RegisteredAssetUpgraders = new Dictionary<Type, AssetUpgraderCollection>();
         private static readonly Dictionary<string, Type> RegisteredAssetFileExtensions = new Dictionary<string, Type>(StringComparer.InvariantCultureIgnoreCase);
         private static readonly Dictionary<string, PackageUpgrader> RegisteredPackageUpgraders = new Dictionary<string, PackageUpgrader>();
@@ -274,6 +275,14 @@ namespace SiliconStudio.Assets
             lock (RegistryLock)
             {
                 return ObjectFactory.FindRegisteredFactories().Where(type => typeof(Asset).IsAssignableFrom(type) && type.IsPublic && !RegisteredInternalAssetTypes.Contains(type)).ToArray();
+            }
+        }
+
+        public static bool IsAssetTypeAlwaysMarkAsRoot(Type type)
+        {
+            lock (AlwaysMarkAsRootAssetTypes)
+            {
+                return AlwaysMarkAsRootAssetTypes.Contains(type);
             }
         }
 
@@ -532,6 +541,14 @@ namespace SiliconStudio.Assets
                         if (!assetDescriptionAttribute.AllowUserCreation)
                         {
                             RegisteredInternalAssetTypes.Add(assetType);
+                    }
+
+                    if (assetDescriptionAttribute.AlwaysMarkAsRoot)
+                    {
+                        lock (AlwaysMarkAsRootAssetTypes)
+                        {
+                            AlwaysMarkAsRootAssetTypes.Add(assetType);
+                        }
                         }
                     }
 

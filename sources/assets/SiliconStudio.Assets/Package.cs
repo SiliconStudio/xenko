@@ -167,6 +167,12 @@ namespace SiliconStudio.Assets
         public List<TemplateFolder> TemplateFolders { get; private set; }
 
         /// <summary>
+        /// Asset references that needs to be compiled even if not directly or indirectly referenced (useful for explicit code references).
+        /// </summary>
+        [DataMember(100)]
+        public RootAssetCollection RootAssets { get; private set; } = new RootAssetCollection();
+
+        /// <summary>
         /// Gets the loaded templates from the <see cref="TemplateFolders"/>
         /// </summary>
         /// <value>The templates.</value>

@@ -11,7 +11,7 @@ using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Paradox.Assets
 {
-    [PackageUpgrader("Paradox", "1.0.0-beta01", "1.3.0-alpha01")]
+    [PackageUpgrader("Paradox", "1.0.0-beta01", "1.3.0-alpha02")]
     public class ParadoxPackageUpgrader : PackageUpgrader
     {
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
@@ -40,7 +40,24 @@ namespace SiliconStudio.Paradox.Assets
 
             if (dependency.Version.MinVersion < new PackageVersion("1.3.0-alpha01"))
             {
+                // Create GameSettingsAsset
                 GameSettingsAsset.UpgraderVersion130.Upgrade(session, log, dependentPackage, dependency, dependencyPackage, assetFiles);
+            }
+
+            return true;
+        }
+
+        /// <inheritdoc/>
+        public override bool UpgradeAfterAssetsLoaded(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, PackageVersionRange dependencyVersionBeforeUpdate)
+        {
+            if (dependencyVersionBeforeUpdate.MinVersion < new PackageVersion("1.3.0-alpha02"))
+            {
+                // Add everything as root assets (since we don't know what the project was doing in the code before)
+                foreach (var assetItem in dependentPackage.Assets)
+                {
+                    if (!AssetRegistry.IsAssetTypeAlwaysMarkAsRoot(assetItem.Asset.GetType()))
+                        dependentPackage.RootAssets.Add(new AssetReference<Asset>(assetItem.Id, assetItem.Location));
+                }
             }
 
             return true;

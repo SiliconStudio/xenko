@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
 
@@ -14,6 +15,7 @@ using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Serialization.Assets;
 
 using System.Threading;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Assets;
 
 namespace SiliconStudio.Assets.CompilerApp
@@ -105,9 +107,13 @@ namespace SiliconStudio.Assets.CompilerApp
                 var buildDirectory = builderOptions.BuildDirectory;
                 var outputDirectory = builderOptions.OutputDirectory;
 
-                // Builds the project
-                var assetBuilder = new PackageCompiler(new PackageAssetEnumerator(package));
-                assetBuilder.AssetCompiled += RegisterBuildStepProcessedHandler;
+                // Process game settings asset
+                var gameSettingsAsset = package.GetGameSettingsAsset();
+                if (gameSettingsAsset == null)
+                {
+                    builderOptions.Logger.Warning("Could not find game settings asset at location [{0}]. Use a Default One", GameSettingsAsset.GameSettingsLocation);
+                    gameSettingsAsset = new GameSettingsAsset();
+                }
 
                 // Create context
                 var context = new AssetCompilerContext
@@ -115,6 +121,7 @@ namespace SiliconStudio.Assets.CompilerApp
                     Profile = builderOptions.BuildProfile,
                     Platform = builderOptions.Platform
                 };
+                context.SetGameSettingsAsset(gameSettingsAsset);
 
                 // Copy properties from shared profiles to context properties
                 if (sharedProfile != null)
@@ -125,13 +132,9 @@ namespace SiliconStudio.Assets.CompilerApp
                 // Copy properties from build profile
                 buildProfile.Properties.CopyTo(context.PackageProperties, true);
 
-                var gameSettingsAsset = package.GetGameSettingsAsset();
-                if (gameSettingsAsset == null)
-                {
-                    builderOptions.Logger.Warning("Could not find game settings asset at location [{0}]. Use a Default One", GameSettingsAsset.GameSettingsLocation);
-                    gameSettingsAsset = new GameSettingsAsset();
-                }
-                context.SetGameSettingsAsset(gameSettingsAsset);
+                // Builds the project
+                var assetBuilder = new PackageCompiler(new RootPackageAssetEnumerator(package));
+                assetBuilder.AssetCompiled += RegisterBuildStepProcessedHandler;
 
                 var assetBuildResult = assetBuilder.Compile(context);
                 assetBuildResult.CopyTo(builderOptions.Logger);

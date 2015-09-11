@@ -1116,6 +1116,24 @@ namespace SiliconStudio.Assets
                 // Validate assets from package
                 package.ValidateAssets(newLoadParameters.GenerateNewAssetIds);
 
+                if (pendingPackageUpgrades.Count > 0)
+                {
+                    // Perform post asset load upgrade
+                    foreach (var pendingPackageUpgrade in pendingPackageUpgrades)
+                    {
+                        var packageUpgrader = pendingPackageUpgrade.PackageUpgrader;
+                        var dependencyPackage = pendingPackageUpgrade.DependencyPackage;
+                        if (!packageUpgrader.UpgradeAfterAssetsLoaded(session, log, package, pendingPackageUpgrade.Dependency, dependencyPackage, pendingPackageUpgrade.DependencyVersionBeforeUpgrade))
+                        {
+                            log.Error("Error while upgrading package [{0}] for [{1}] from version [{2}] to [{3}]", package.Meta.Name, dependencyPackage.Meta.Name, pendingPackageUpgrade.Dependency.Version, dependencyPackage.Meta.Version);
+                            return false;
+                        }
+                    }
+
+                    // Mark package as dirty
+                    package.IsDirty = true;
+                }
+
                 // Mark package as ready
                 package.State = PackageState.AssetsReady;
 
@@ -1239,12 +1257,14 @@ namespace SiliconStudio.Assets
             public readonly PackageUpgrader PackageUpgrader;
             public readonly PackageDependency Dependency;
             public readonly Package DependencyPackage;
+            public readonly PackageVersionRange DependencyVersionBeforeUpgrade;
 
             public PendingPackageUpgrade(PackageUpgrader packageUpgrader, PackageDependency dependency, Package dependencyPackage)
             {
                 PackageUpgrader = packageUpgrader;
                 Dependency = dependency;
                 DependencyPackage = dependencyPackage;
+                DependencyVersionBeforeUpgrade = Dependency.Version;
             }
         }
 

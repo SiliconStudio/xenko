@@ -179,7 +179,10 @@ namespace SiliconStudio.Core.Collections
         /// <inheritdoc/>
         void ICollection<T>.CopyTo(T[] array, int arrayIndex)
         {
-            throw new NotImplementedException();
+            foreach (var item in items)
+            {
+                array[arrayIndex++] = item;
+            }
         }
 
         /// <inheritdoc/>
