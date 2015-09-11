@@ -22,7 +22,9 @@ namespace SiliconStudio.Paradox.Graphics.Font
 
         public void Initialize(SerializerSelector serializerSelector)
         {
-            parentSerializer = serializerSelector.GetSerializer<SpriteFont>();
+            // We should use serializerSelector, but DataContentSerializerHelper we might have wrong context; make sure parent is resolved through proper context
+            // (maybe we should have separate contexts for parent and members?)
+            parentSerializer = SerializerSelector.Default.GetSerializer<SpriteFont>();
             if (parentSerializer == null)
             {
                 throw new InvalidOperationException(string.Format("Could not find parent serializer for type {0}", "SiliconStudio.Paradox.Graphics.SpriteFont"));
