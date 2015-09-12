@@ -56,11 +56,11 @@ namespace SiliconStudio.Paradox.Physics
 
                 if (value)
                 {
-                    InternalCollider.ActivationState = canSleep ? BulletSharp.ActivationState.ActiveTag : BulletSharp.ActivationState.DisableDeactivation;
+                    InternalCollider.ForceActivationState(canSleep ? BulletSharp.ActivationState.ActiveTag : BulletSharp.ActivationState.DisableDeactivation);
                 }
                 else
                 {
-                    InternalCollider.ActivationState = BulletSharp.ActivationState.DisableSimulation;
+                    InternalCollider.ForceActivationState(BulletSharp.ActivationState.DisableSimulation);
                 }
             }
         }

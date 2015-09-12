@@ -75,10 +75,10 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
 
         private static unsafe void UpdateNodes(IList<SpriteStudioNodeState> nodes, Data data)
         {
-            foreach (var node in nodes)
-            {
-                node.CurrentXyPrioAngle = node.BaseNode.BaseXyPrioAngle;
-            }
+            //foreach (var node in nodes)
+            //{
+            //    node.CurrentXyPrioAngle = node.BaseNode.BaseXyPrioAngle;
+            //}
 
             var animComp = data.AnimationComponent;
             if (animComp != null && animComp.PlayingAnimations.Count > 0 && animComp.CurrentFrameResult != null)
