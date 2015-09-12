@@ -4,7 +4,6 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Paradox.SpriteStudio.Runtime;
 
 namespace SiliconStudio.Paradox.SpriteStudio.Offline
 {
@@ -17,17 +16,10 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
     {
         public SpriteStudioSheetAsset()
         {
-            Nodes = new List<SpriteStudioNode>();
-            Textures = new List<string>();
         }
 
-        [DataMember(2)]
-        public List<SpriteStudioNode> Nodes { get; private set; }
-
-        public List<string> Textures { get; private set; }
-
         [DataMemberIgnore]
-        public List<string> BuilTextures { get; } = new List<string>();
+        public List<string> BuildTextures { get; } = new List<string>();
 
         private class SpriteStudioSheetAssetFactory : IObjectFactory
         {

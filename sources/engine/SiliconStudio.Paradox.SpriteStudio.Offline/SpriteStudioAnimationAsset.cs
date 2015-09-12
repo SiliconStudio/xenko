@@ -18,24 +18,10 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
     {
         public SpriteStudioAnimationAsset()
         {
-            NodesData = new List<SpriteNodeData>();
-            Nodes = new List<SpriteStudioNode>();
         }
-
-        [DataMember(3)]
-        public List<SpriteNodeData> NodesData { get; private set; }
 
         [DataMember(1)]
         public AnimationRepeatMode RepeatMode { get; set; } = AnimationRepeatMode.LoopInfinite;
-
-        [DataMember(2)]
-        public List<SpriteStudioNode> Nodes { get; private set; }
-
-        [DataMember(4)]
-        public int EndFrame;
-
-        [DataMember(5)]
-        public int Fps;
 
         private class SpriteStudioAnimationAssetFactory : IObjectFactory
         {
