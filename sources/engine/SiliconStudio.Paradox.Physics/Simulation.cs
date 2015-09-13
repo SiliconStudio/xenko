@@ -228,12 +228,15 @@ namespace SiliconStudio.Paradox.Physics
             //contacts
             pair.Contacts.Remove(contact);
             endedContactsCache.Add(new KeyValuePair<Collision, ContactPoint>(pair, contact));
+
+            contact.Manifold.UserPersistentData = null;
+            contact.Manifold.Dispose();
         }
 
         private void PersistentManifoldContactProcessed(BulletSharp.ManifoldPoint cp, BulletSharp.CollisionObject body0, BulletSharp.CollisionObject body1)
         {
-            var colA = aliveColliders[body0];
-            var colB = aliveColliders[body1];
+            var colA = body0 != null ? aliveColliders[body0] : null;
+            var colB = body1 != null ? aliveColliders[body1] : null;
 
             if (colA == null || colB == null || !colA.ContactsAlwaysValid && !colB.ContactsAlwaysValid) return;
 
@@ -286,6 +289,7 @@ namespace SiliconStudio.Paradox.Physics
                 pair.Contacts.Add(contact);
 
                 cp.UserPersistentData = contact;
+                contact.Manifold = cp;
             }
 
             if (newPair)

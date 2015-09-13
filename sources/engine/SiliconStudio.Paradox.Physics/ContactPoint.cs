@@ -20,5 +20,7 @@ namespace SiliconStudio.Paradox.Physics
         public Vector3 PositionOnB;
 
         public Collision Pair;
+
+        internal BulletSharp.ManifoldPoint Manifold;
     }
 }

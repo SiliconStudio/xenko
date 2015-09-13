@@ -313,11 +313,11 @@ namespace SiliconStudio.Paradox.Physics
             element.Collider = null;
 
             //dispose in another thread for better performance
-            if (!now)
-            {
-                TaskList.Dispatch(toDispose, 4, 128, (i, disposable) => disposable.Dispose());
-            }
-            else
+            //if (!now)
+            //{
+            //    TaskList.Dispatch(toDispose, 4, 128, (i, disposable) => disposable.Dispose());
+            //}
+            //else
             {
                 foreach (var d in toDispose)
                 {
