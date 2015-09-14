@@ -43,6 +43,7 @@ TemplateFolders:
         - samples\Graphics\GeometricPrimitives\GeometricPrimitives.pdxtpl
         - samples\Graphics\HelloWorld\HelloWorld.pdxtpl
         - samples\Graphics\MaterialSample\MaterialSample.pdxtpl
+        - samples\Graphics\MaterialShader\MaterialShader.pdxtpl
         - samples\Graphics\RenderSceneToTexture\RenderSceneToTexture.pdxtpl
         - samples\Graphics\SimpleDynamicTexture\SimpleDynamicTexture.pdxtpl
         - samples\Graphics\SimpleModel\SimpleModel.pdxtpl
