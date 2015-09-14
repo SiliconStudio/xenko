@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <exception cref="System.ArgumentNullException">childEntity</exception>
         public static T AddChild<T>(this T parentEntity, Entity childEntity) where T : Entity
         {
-            if (childEntity == null) throw new ArgumentNullException("childEntity");
+            if (childEntity == null) throw new ArgumentNullException(nameof(childEntity));
             parentEntity.Transform.Children.Add(childEntity.Transform);
             return parentEntity;
         }
@@ -36,9 +36,32 @@ namespace SiliconStudio.Paradox.Engine
         /// <exception cref="System.ArgumentNullException">childEntity</exception>
         public static T RemoveChild<T>(this T parentEntity, Entity childEntity) where T : Entity
         {
-            if (childEntity == null) throw new ArgumentNullException("childEntity");
+            if (childEntity == null) throw new ArgumentNullException(nameof(childEntity));
             parentEntity.Transform.Children.Remove(childEntity.Transform);
             return parentEntity;
+        }
+
+        /// <summary>
+        /// Get the nth child of an Entity as stored in its <see cref="TransformComponent"/>.
+        /// </summary>
+        /// <param name="parentEntity">The parent Entity.</param>
+        /// <param name="index">The child index.</param>
+        /// <returns></returns>
+        public static Entity GetChild(this Entity parentEntity, int index)
+        {
+            if (parentEntity == null) throw new ArgumentNullException(nameof(parentEntity));
+            return parentEntity.Transform.Children[index].Entity;
+        }
+
+        /// <summary>
+        /// Returns the parent of this <see cref="Entity"/> as stored in its <see cref="TransformComponent"/>, or null if it has no parent.
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        /// <returns>The parent entity, or null if it has no parent.</returns>
+        public static Entity GetParent(this Entity entity)
+        {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            return entity.Transform.Parent?.Entity;
         }
     }
 }
