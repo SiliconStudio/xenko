@@ -1,3 +1,4 @@
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
@@ -38,10 +39,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets", "00-Targets", 
 		..\sources\common\targets\SiliconStudio.WindowsStore.CSharp.targets = ..\sources\common\targets\SiliconStudio.WindowsStore.CSharp.targets
 		..\store.config = ..\store.config
 	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "60-Presentation", "60-Presentation", "{75A820AB-0F21-40F2-9448-5D7F495B97A0}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "40-Editor", "40-Editor", "{5D2D3BE8-9910-45CA-8E45-95660DA4C563}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{D2A80DA7-3C1A-4A73-BE85-0B28847EA44C}"
 	ProjectSection(SolutionItems) = preProject
@@ -117,12 +114,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Physi
 		{42780CBD-3FE7-48E3-BD5B-59945EA20137} = {42780CBD-3FE7-48E3-BD5B-59945EA20137}
 	EndProjectSection
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SiliconStudio.Markdown", "..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.shproj", "{43B62674-AA8B-4531-BA27-855CA2580145}"
-EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SiliconStudio.Eula", "..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.shproj", "{950BADD0-AD5A-4F58-87EC-4ADAECBEA89B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.SpriteStudio.Runtime", "..\sources\engine\SiliconStudio.Paradox.SpriteStudio.Runtime\SiliconStudio.Paradox.SpriteStudio.Runtime.csproj", "{9BC63BEC-F305-451D-BB31-262938EA964D}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
+		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
+		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{d0db401e-6f96-46d0-ba9b-493b9c0777f1}*SharedItemsImports = 4
+		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{d0db401e-6f96-46d0-ba9b-493b9c0777f1}*SharedItemsImports = 4
 		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{43b62674-aa8b-4531-ba27-855ca2580145}*SharedItemsImports = 13
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{950badd0-ad5a-4f58-87ec-4adaecbea89b}*SharedItemsImports = 13
 	EndGlobalSection
@@ -385,6 +384,18 @@ Global
 		{DD592516-B341-40FE-9100-1B0FA784A060}.Testing|Android.ActiveCfg = Release|Android
 		{DD592516-B341-40FE-9100-1B0FA784A060}.Testing|Android.Build.0 = Release|Android
 		{DD592516-B341-40FE-9100-1B0FA784A060}.Testing|Android.Deploy.0 = Release|Android
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.AppStore|Android.ActiveCfg = Release|Android
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.AppStore|Android.Build.0 = Release|Android
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.AppStore|Android.Deploy.0 = Release|Android
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Debug|Android.ActiveCfg = Debug|Android
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Debug|Android.Build.0 = Debug|Android
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Debug|Android.Deploy.0 = Debug|Android
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Release|Android.ActiveCfg = Release|Android
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Release|Android.Build.0 = Release|Android
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Release|Android.Deploy.0 = Release|Android
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|Android.ActiveCfg = Release|Android
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|Android.Build.0 = Release|Android
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|Android.Deploy.0 = Release|Android
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -412,7 +423,6 @@ Global
 		{E7B1B17F-D04B-4978-B504-A6BB3EE846C9} = {4C142567-C42B-40F5-B092-798882190209}
 		{D002FEB1-00A6-4AB1-A83F-1F253465E64D} = {4C142567-C42B-40F5-B092-798882190209}
 		{DD592516-B341-40FE-9100-1B0FA784A060} = {4C142567-C42B-40F5-B092-798882190209}
-		{43B62674-AA8B-4531-BA27-855CA2580145} = {75A820AB-0F21-40F2-9448-5D7F495B97A0}
-		{950BADD0-AD5A-4F58-87EC-4ADAECBEA89B} = {5D2D3BE8-9910-45CA-8E45-95660DA4C563}
+		{9BC63BEC-F305-451D-BB31-262938EA964D} = {4C142567-C42B-40F5-B092-798882190209}
 	EndGlobalSection
 EndGlobal
