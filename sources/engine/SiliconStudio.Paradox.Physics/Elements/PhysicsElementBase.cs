@@ -188,10 +188,10 @@ namespace SiliconStudio.Paradox.Physics
         }
 
         [DataMemberIgnore]
-        public RigidBody RigidBody => (RigidBody)Collider;
+        public RigidBody RigidBody => Collider as RigidBody;
 
         [DataMemberIgnore]
-        public Character Character => (Character)Collider;
+        public Character Character => Collider as Character;
 
         internal Matrix BoneWorldMatrix;
         internal Matrix BoneWorldMatrixOut;

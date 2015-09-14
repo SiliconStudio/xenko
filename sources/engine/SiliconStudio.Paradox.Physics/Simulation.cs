@@ -228,9 +228,6 @@ namespace SiliconStudio.Paradox.Physics
             //contacts
             pair.Contacts.Remove(contact);
             endedContactsCache.Add(new KeyValuePair<Collision, ContactPoint>(pair, contact));
-
-            contact.Manifold.UserPersistentData = null;
-            contact.Manifold.Dispose();
         }
 
         private void PersistentManifoldContactProcessed(BulletSharp.ManifoldPoint cp, BulletSharp.CollisionObject body0, BulletSharp.CollisionObject body1)
