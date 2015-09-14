@@ -632,9 +632,13 @@ namespace SiliconStudio.Paradox.Graphics
 
             // If we are copying from an SRgb texture to a non SRgb texture, we use a special SRGb copy shader
             var program = copyProgram;
-            if (sourceTexture.Description.Format.IsSRgb() && !destTexture.Description.Format.IsSRgb())
+            var offsetLocation = copyProgramOffsetLocation;
+            var scaleLocation = copyProgramScaleLocation;
+            if (sourceTexture.Description.Format.IsSRgb() && destTexture == windowProvidedRenderTexture)
             {
                 program = copyProgramSRgb;
+                offsetLocation = copyProgramSRgbOffsetLocation;
+                scaleLocation = copyProgramSRgbScaleLocation;
             }
 
             GL.UseProgram(program);
@@ -652,8 +656,8 @@ namespace SiliconStudio.Paradox.Graphics
             GL.EnableVertexAttribArray(0);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 0, squareVertices);
-            GL.Uniform4(copyProgramOffsetLocation, sourceOffset.X, sourceOffset.Y, destOffset.X, destOffset.Y);
-            GL.Uniform4(copyProgramScaleLocation, sourceScale.X, sourceScale.Y, destScale.X, destScale.Y);
+            GL.Uniform4(offsetLocation, sourceOffset.X, sourceOffset.Y, destOffset.X, destOffset.Y);
+            GL.Uniform4(scaleLocation, sourceScale.X, sourceScale.Y, destScale.X, destScale.Y);
             GL.Viewport(0, 0, destTexture.Width, destTexture.Height);
             GL.DrawArrays(BeginMode.TriangleStrip, 0, 4);
             GL.DisableVertexAttribArray(0);
@@ -704,7 +708,7 @@ namespace SiliconStudio.Paradox.Graphics
                 "void main()                                         \n" +
                 "{                                                   \n" +
                 "    vec4 color = texture2D(s_texture, vTexCoord);   \n" +
-                "    gl_FragColor = vec4(pow(color.rgb, vec3(1.0/2.2333)), color.a); \n" +
+                "    gl_FragColor = vec4(sqrt(color.rgb), color.a); \n" +  // approximation of linear to SRgb
                 "}                                                   \n";
 
             // First initialization of shader program
@@ -2322,7 +2326,8 @@ namespace SiliconStudio.Paradox.Graphics
                 width,
                 height,
                 1,
-                presentationParameters.BackBufferFormat,
+                // TODO: As a workaround, because OpenTK(+OpenGLES) doesn't support to create SRgb backbuffer, we fake it by creating a non-SRgb here and CopyScaler2D is responsible to transform it to non SRgb
+                presentationParameters.BackBufferFormat.IsSRgb() ? presentationParameters.BackBufferFormat.ToNonSRgb() : presentationParameters.BackBufferFormat,
                 TextureFlags.RenderTarget | Texture.TextureFlagsCustomResourceId);
             windowProvidedRenderTexture.Reload = (graphicsResource) => { };
 

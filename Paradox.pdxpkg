@@ -43,6 +43,7 @@ TemplateFolders:
         - samples\Graphics\GeometricPrimitives\GeometricPrimitives.pdxtpl
         - samples\Graphics\HelloWorld\HelloWorld.pdxtpl
         - samples\Graphics\MaterialSample\MaterialSample.pdxtpl
+        - samples\Graphics\MaterialShader\MaterialShader.pdxtpl
         - samples\Graphics\RenderSceneToTexture\RenderSceneToTexture.pdxtpl
         - samples\Graphics\SimpleDynamicTexture\SimpleDynamicTexture.pdxtpl
         - samples\Graphics\SimpleModel\SimpleModel.pdxtpl
@@ -50,6 +51,7 @@ TemplateFolders:
         - samples\Graphics\SpriteEntity\SpriteEntity.pdxtpl
         - samples\Graphics\SpriteFonts\SpriteFonts.pdxtpl
         - samples\Graphics\SimpleTerrain\SimpleTerrain.pdxtpl
+        - samples\Graphics\SpriteStudioDemo\SpriteStudioDemo.pdxtpl
         - samples\Input\TouchInputs\TouchInputs.pdxtpl
         - samples\Input\GravitySensor\GravitySensor.pdxtpl
         - samples\Physics\CharacterControllerSample\CharacterControllerSample.pdxtpl

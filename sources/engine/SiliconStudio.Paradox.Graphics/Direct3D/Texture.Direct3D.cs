@@ -85,10 +85,16 @@ namespace SiliconStudio.Paradox.Graphics
         /// Initializes from a native SharpDX.Texture
         /// </summary>
         /// <param name="texture">The texture.</param>
-        internal Texture InitializeFrom(Texture2D texture)
+        internal Texture InitializeFrom(Texture2D texture, bool isSrgb)
         {
             NativeDeviceChild = texture;
-            return InitializeFrom(ConvertFromNativeDescription(texture.Description));
+            var newTextureDescription = ConvertFromNativeDescription(texture.Description);
+
+            // We might have created the swapchain as a non-srgb format (esp on Win10&RT) but we want it to behave like it is (esp. for the view and render target)
+            if (isSrgb)
+                newTextureDescription.Format = newTextureDescription.Format.ToSRgb();
+
+            return InitializeFrom(newTextureDescription);
         }
 
         private void InitializeFromImpl(DataBox[] dataBoxes = null)
