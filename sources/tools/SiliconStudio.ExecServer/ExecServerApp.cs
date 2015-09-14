@@ -226,6 +226,13 @@ namespace SiliconStudio.ExecServer
                 try
                 {
                     File.Copy(originalExecServerAppPath, copyExecServer, true);
+
+                    // Copy the .config file as well
+                    var executableConfigFile = executablePath + ".config";
+                    if (File.Exists(executableConfigFile))
+                    {
+                        File.Copy(executableConfigFile, copyExecServer + ".config", true);
+                    }
                 }
                 catch (IOException)
                 {
