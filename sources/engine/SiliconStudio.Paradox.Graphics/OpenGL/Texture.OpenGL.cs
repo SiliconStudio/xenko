@@ -267,8 +267,7 @@ namespace SiliconStudio.Paradox.Graphics
                                 }
                                 else
                                 {
-                                    GL.TexImage2D(dataSetTarget, i, (TextureComponentCount2D)internalFormat,
-                                        width, height, 0, format, type, data);
+                                    GL.TexImage2D(dataSetTarget, i, internalFormat, width, height, 0, format, type, data);
                                 }
                             }
                             else if (setSize == 3)
