@@ -75,10 +75,9 @@ namespace SiliconStudio.Paradox.Animations
 
         internal void Cleanup()
         {
-            if (curveEvaluatorOptimizedVector3 != null)
-                curveEvaluatorOptimizedVector3.Cleanup();
-            if (curveEvaluatorOptimizedQuaternion != null)
-                curveEvaluatorOptimizedQuaternion.Cleanup();
+            curveEvaluatorOptimizedFloat?.Cleanup();
+            curveEvaluatorOptimizedVector3?.Cleanup();
+            curveEvaluatorOptimizedQuaternion?.Cleanup();
 
             Channels.Clear();
             BlenderChannels = null;
