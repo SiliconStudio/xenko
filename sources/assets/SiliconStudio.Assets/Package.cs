@@ -371,16 +371,8 @@ namespace SiliconStudio.Assets
         internal UDirectory GetDefaultAssetFolder()
         {
             var sharedProfile = Profiles.FindSharedProfile();
-            if (sharedProfile != null)
-            {
-                var folder = sharedProfile.AssetFolders.FirstOrDefault();
-                if (folder != null && folder.Path != null)
-                {
-                    return folder.Path;
-                }
-            }
-
-            return "Assets/" + PackageProfile.SharedName;
+            var folder = sharedProfile?.AssetFolders.FirstOrDefault();
+            return folder?.Path ?? ("Assets/" + PackageProfile.SharedName);
         }
 
 
@@ -556,7 +548,8 @@ namespace SiliconStudio.Assets
                             if (sourceCodeAsset != null)
                             {
                                 var profile = Profiles.FindSharedProfile();
-                                var lib = profile.ProjectReferences.FirstOrDefault(x => x.Type == ProjectType.Library && asset.Location.FullPath.StartsWith(x.Location.GetFileName()));
+
+                                var lib = profile?.ProjectReferences.FirstOrDefault(x => x.Type == ProjectType.Library && asset.Location.FullPath.StartsWith(x.Location.GetFileName()));
                                 if (lib == null) continue;
 
                                 var projectFullPath = UPath.Combine(RootDirectory, lib.Location);
@@ -1266,23 +1259,26 @@ namespace SiliconStudio.Assets
             if (!package.IsSystem) //user code case
             {
                 var profile = package.Profiles.FindSharedProfile();
-                foreach (var libs in profile.ProjectReferences.Where(x => x.Type == ProjectType.Library))
+                if (profile != null)
                 {
-                    var realFullPath = UPath.Combine(package.RootDirectory, libs.Location);
-                    var project = VSProjectHelper.LoadProject(realFullPath);
-                    var dir = new UDirectory(realFullPath.GetFullDirectory());
-                    var parentDir = dir.GetParent();
-
-                    foreach (var projectItem in project.Items.Where(x => x.ItemType == "Compile" || x.ItemType == "None").
-                        Select(x => new UFile(x.EvaluatedInclude)).
-                        Where(x => AssetRegistry.IsProjectSourceCodeAssetFileExtension(x.GetFileExtension())))
+                    foreach (var libs in profile.ProjectReferences.Where(x => x.Type == ProjectType.Library))
                     {
-                        var csPath = UPath.Combine(dir, projectItem);
-                        list.Add(new PackageLoadingAssetFile(csPath, parentDir, realFullPath));
-                    }
+                        var realFullPath = UPath.Combine(package.RootDirectory, libs.Location);
+                        var project = VSProjectHelper.LoadProject(realFullPath);
+                        var dir = new UDirectory(realFullPath.GetFullDirectory());
+                        var parentDir = dir.GetParent();
 
-                    project.ProjectCollection.UnloadAllProjects();
-                    project.ProjectCollection.Dispose();
+                        foreach (var projectItem in project.Items.Where(x => x.ItemType == "Compile" || x.ItemType == "None").
+                            Select(x => new UFile(x.EvaluatedInclude)).
+                            Where(x => AssetRegistry.IsProjectSourceCodeAssetFileExtension(x.GetFileExtension())))
+                        {
+                            var csPath = UPath.Combine(dir, projectItem);
+                            list.Add(new PackageLoadingAssetFile(csPath, parentDir, realFullPath));
+                        }
+
+                        project.ProjectCollection.UnloadAllProjects();
+                        project.ProjectCollection.Dispose();
+                    }
                 }
             }
         }
