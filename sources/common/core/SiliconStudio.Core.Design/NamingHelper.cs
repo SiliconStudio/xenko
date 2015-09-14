@@ -16,6 +16,7 @@ namespace SiliconStudio.Core
     public static class NamingHelper
     {
         private static readonly Regex MatchIdentifier = new Regex("^[a-zA-Z_][a-zA-Z0-9_]*$");
+        const string DefaultNamePattern = "{0} ({1})";
 
         /// <summary>
         /// Delegate to test if the specified location is already used.
@@ -43,7 +44,7 @@ namespace SiliconStudio.Core
         /// <returns><c>true</c> if is a valid namespace identifier; otherwise, <c>false</c>.</returns>
         public static bool IsValidNamespace(string text, out string error)
         {
-            if (text == null) throw new ArgumentNullException("text");
+            if (text == null) throw new ArgumentNullException(nameof(text));
 
             if (string.IsNullOrWhiteSpace(text))
             {
@@ -65,7 +66,7 @@ namespace SiliconStudio.Core
         /// <exception cref="System.ArgumentNullException">text</exception>
         public static bool IsIdentifier(string text)
         {
-            if (text == null) throw new ArgumentNullException("text");
+            if (text == null) throw new ArgumentNullException(nameof(text));
             return MatchIdentifier.Match(text).Success;
         }
 
@@ -78,9 +79,9 @@ namespace SiliconStudio.Core
         /// <param name="existingNameFunc">A function used to extract the name of an object of the given collection. If null, the <see cref="object.ToString"/> method will be used.</param>
         /// <param name="namePattern">The pattern used to generate the new name, when the base name is unavailable. This pattern must contains the token '{0}' that will be replaced by the base name, and the token '{1}' that will be replaced by the smallest numerical value that can generate an available name, starting from 2. If null, <see cref="DefaultNamePattern"/> will be used instead.</param>
         /// <returns><see cref="baseName"/> if no item of <see cref="existingItems"/> returns this value through <see cref="existingNameFunc"/>. Otherwise, a string formatted with <see cref="namePattern"/>, using <see cref="baseName"/> as token '{0}' and the smallest numerical value that can generate an available name, starting from 2</returns>
-        public static string ComputeNewName<T>(string baseName, ICollection<T> existingItems, Func<T, string> existingNameFunc = null, string namePattern = null)
+        public static string ComputeNewName<T>(string baseName, IEnumerable<T> existingItems, Func<T, string> existingNameFunc = null, string namePattern = null)
         {
-            if (existingItems == null) throw new ArgumentNullException("existingItems");
+            if (existingItems == null) throw new ArgumentNullException(nameof(existingItems));
             if (existingNameFunc == null)
                 existingNameFunc = x => x.ToString();
 
@@ -96,10 +97,9 @@ namespace SiliconStudio.Core
         /// <returns><see cref="baseName"/> if the "contains predicate" returns false. Otherwise, a string formatted with <see cref="namePattern"/>, using <see cref="baseName"/> as token '{0}' and the smallest numerical value that can generate an available name, starting from 2</returns>
         public static string ComputeNewName(string baseName, ContainsLocationDelegate containsDelegate, string namePattern = null)
         {
-            const string DefaultNamePattern = "{0} ({1})";
-            if (baseName == null) throw new ArgumentNullException("baseName");
+            if (baseName == null) throw new ArgumentNullException(nameof(baseName));
             if (namePattern == null) namePattern = DefaultNamePattern;
-            if (!namePattern.Contains("{0}") || !namePattern.Contains("{1}")) throw new ArgumentException(@"This parameter must be a formattable string containing '{0}' and '{1}' tokens", "namePattern");
+            if (!namePattern.Contains("{0}") || !namePattern.Contains("{1}")) throw new ArgumentException(@"This parameter must be a formattable string containing '{0}' and '{1}' tokens", nameof(namePattern));
 
             string result = baseName;
             int counter = 1;
