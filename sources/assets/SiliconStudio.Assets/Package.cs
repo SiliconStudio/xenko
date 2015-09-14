@@ -551,6 +551,7 @@ namespace SiliconStudio.Assets
 
                         try
                         {
+                            //Handle the ProjectSourceCodeAsset differently then regular assets in regards of Path
                             var sourceCodeAsset = asset.Asset as ProjectSourceCodeAsset;
                             if (sourceCodeAsset != null)
                             {
