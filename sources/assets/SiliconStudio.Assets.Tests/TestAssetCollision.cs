@@ -117,7 +117,7 @@ namespace SiliconStudio.Assets.Tests
 
             // Tries to use existing ids
             var outputs = new AssetItemCollection();
-            AssetCollision.Clean(inputs, outputs, AssetResolver.FromPackage(package), true);
+            AssetCollision.Clean(null, inputs, outputs, AssetResolver.FromPackage(package), true);
 
             // Make sure we are generating exactly the same number of elements
             Assert.AreEqual(inputs.Count, outputs.Count);
