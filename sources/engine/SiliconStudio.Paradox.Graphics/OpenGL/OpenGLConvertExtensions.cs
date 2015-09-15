@@ -40,6 +40,7 @@ namespace SiliconStudio.Paradox.Graphics
         private const PixelInternalFormat Rgb32f = (PixelInternalFormat)0x8815;
         private const PixelInternalFormat Rgba32f = (PixelInternalFormat)0x8814;
         private const PixelInternalFormat SrgbAlpha = (PixelInternalFormat)0x8C42;
+        private const PixelInternalFormat Srgb8Alpha8 = (PixelInternalFormat)0x8C43;
 #else
         private const PixelInternalFormat DepthComponent16 = PixelInternalFormat.DepthComponent16;
         private const PixelInternalFormat Depth24Stencil8 = PixelInternalFormat.Depth24Stencil8;
@@ -54,6 +55,7 @@ namespace SiliconStudio.Paradox.Graphics
         private const PixelInternalFormat Rgb32f = PixelInternalFormat.Rgb32f;
         private const PixelInternalFormat Rgba32f = PixelInternalFormat.Rgba32f;
         private const PixelInternalFormat SrgbAlpha = PixelInternalFormat.SrgbAlpha;
+        private const PixelInternalFormat Srgb8Alpha8 = PixelInternalFormat.Srgb8Alpha8;
 #endif
 
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
@@ -374,8 +376,8 @@ namespace SiliconStudio.Paradox.Graphics
                     pixelSize = 4;
                     break;
                 case PixelFormat.R8G8B8A8_UNorm_SRgb:
-                    internalFormat = SrgbAlpha;
-                    format = (PixelFormatGl)(SrgbAlpha);
+                    internalFormat = graphicsDevice.currentVersionMajor < 3 ? SrgbAlpha : Srgb8Alpha8;
+                    format = graphicsDevice.currentVersionMajor < 3 ? (PixelFormatGl)SrgbAlpha : PixelFormatGl.Rgba;
                     type = PixelType.UnsignedByte;
                     pixelSize = 4;
                     break;

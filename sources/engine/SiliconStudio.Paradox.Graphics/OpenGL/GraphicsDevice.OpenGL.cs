@@ -85,7 +85,8 @@ namespace SiliconStudio.Paradox.Graphics
         internal SamplerState defaultSamplerState;
         internal DepthStencilState defaultDepthStencilState;
         internal BlendState defaultBlendState;
-        internal int versionMajor, versionMinor;
+        internal int versionMajor, versionMinor; // queried version
+        internal int currentVersionMajor, currentVersionMinor; // glGetVersion
         internal Texture windowProvidedRenderTexture;
         internal Texture windowProvidedDepthTexture;
 
@@ -2182,18 +2183,14 @@ namespace SiliconStudio.Paradox.Graphics
             // Find back OpenGL version from requested version
             OpenGLUtils.GetGLVersion(requestedGraphicsProfile, out versionMajor, out versionMinor);
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-#if SILICONSTUDIO_PLATFORM_ANDROID
-            // if the retrieved version of OpenGL does not correspond to the one used for initialization, we should fix it.
-            var glVersion = gameWindow.ContextRenderingApi == GLVersion.ES2 ? 2 : 3;
-            if (glVersion != versionMajor)
+            // check what is actually created
+            if (!OpenGLUtils.GetCurrentGLVersion(out currentVersionMajor, out currentVersionMinor))
             {
-                versionMajor = glVersion;
-                versionMinor = 0;
+                currentVersionMajor = versionMajor;
+                currentVersionMinor = versionMinor;
             }
-#elif SILICONSTUDIO_PLATFORM_IOS
-            // TODO: correct OpenGL version on iOS too?
-#endif
+
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             IsOpenGLES2 = (versionMajor < 3);
             creationFlags |= GraphicsContextFlags.Embedded;
 #endif
@@ -2321,14 +2318,9 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
 
             // TODO: iOS (and possibly other platforms): get real render buffer ID for color/depth?
-            windowProvidedRenderTexture = Texture.New2D(
-                this,
-                width,
-                height,
-                1,
+            windowProvidedRenderTexture = Texture.New2D(this, width, height, 1,
                 // TODO: As a workaround, because OpenTK(+OpenGLES) doesn't support to create SRgb backbuffer, we fake it by creating a non-SRgb here and CopyScaler2D is responsible to transform it to non SRgb
-                presentationParameters.BackBufferFormat.IsSRgb() ? presentationParameters.BackBufferFormat.ToNonSRgb() : presentationParameters.BackBufferFormat,
-                TextureFlags.RenderTarget | Texture.TextureFlagsCustomResourceId);
+                presentationParameters.BackBufferFormat.IsSRgb() ? presentationParameters.BackBufferFormat.ToNonSRgb() : presentationParameters.BackBufferFormat, TextureFlags.RenderTarget | Texture.TextureFlagsCustomResourceId);
             windowProvidedRenderTexture.Reload = (graphicsResource) => { };
 
             boundFBO = windowProvidedFrameBuffer;
@@ -2377,7 +2369,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <param name="presentationParameters">The presentation parameters.</param>
         /// <returns></returns>
-        SwapChainBackend CreateSwapChainBackend(PresentationParameters presentationParameters)
+        private SwapChainBackend CreateSwapChainBackend(PresentationParameters presentationParameters)
         {
             var swapChainBackend = new SwapChainBackend();
             return swapChainBackend;
@@ -2401,10 +2393,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <value>The default render target.</value>
         internal Texture DefaultRenderTarget
         {
-            get
-            {
-                return defaultRenderTarget;
-            }
+            get { return defaultRenderTarget; }
         }
 
         /// <summary>
@@ -2420,7 +2409,6 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
             //throw new NotImplementedException();
         }*/
-
         /// <summary>
         /// Gets or sets a value indicating whether this GraphicsDevice is in fullscreen.
         /// </summary>
@@ -2535,5 +2523,5 @@ namespace SiliconStudio.Paradox.Graphics
         }
     }
 }
- 
+
 #endif

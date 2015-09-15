@@ -77,7 +77,7 @@ namespace SiliconStudio.Paradox.Graphics
             deviceRoot.HasRenderTargetHalf = SupportedExtensions.Contains("GL_EXT_color_buffer_half_float");
             deviceRoot.HasVAO = isOpenGLES3 || SupportedExtensions.Contains("GL_OES_vertex_array_object");
 
-            HasSRgb = SupportedExtensions.Contains("GL_EXT_sRGB");
+            HasSRgb = isOpenGLES3 || SupportedExtensions.Contains("GL_EXT_sRGB");
 
             // Compute shaders available in OpenGL ES 3.1
             HasComputeShaders = isOpenGLES3 && deviceRoot.versionMinor >= 1;

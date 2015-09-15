@@ -3,7 +3,13 @@
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using OpenTK.Graphics;
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+using OpenTK.Graphics.ES30;
+#else
+using OpenTK.Graphics.OpenGL;
+#endif
 
 namespace SiliconStudio.Paradox.Graphics.OpenGL
 {
@@ -127,6 +133,39 @@ namespace SiliconStudio.Paradox.Graphics.OpenGL
             }
         }
 #endif
+
+        private readonly static Regex MatchOpenGLVersion = new Regex(@"OpenGL\s+ES\s+([0-9\.]+)");
+
+        public static bool GetCurrentGLVersion(out int versionMajor, out int versionMinor)
+        {
+            versionMajor = 0;
+            versionMinor = 0;
+
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+            var versionVendorText = GL.GetString(StringName.Version);
+            var match = MatchOpenGLVersion.Match(versionVendorText);
+            if (!match.Success)
+                return false;
+
+            var versionText = match.Groups[1].Value;
+            var dotIndex = versionText.IndexOf(".");
+
+            if (!int.TryParse(dotIndex != -1 ? versionText.Substring(0, dotIndex) : versionText, out versionMajor))
+            {
+                return false;
+            }
+
+            if (dotIndex == -1)
+            {
+                return true;
+            }
+            return int.TryParse(versionText.Substring(dotIndex + 1), out versionMinor);
+#else
+            GL.GetInteger(GetPName.MajorVersion, out versionMajor);
+            GL.GetInteger(GetPName.MinorVersion, out versionMajor);
+            return true;
+#endif
+        }
     }
 }
 #endif

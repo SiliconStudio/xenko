@@ -77,15 +77,15 @@ namespace SiliconStudio.Paradox.Games.Android
             }
 
             // Query first the maximum supported profile, as some devices are crashing if we try to instantiate a 3.0 on a device supporting only 2.0
-            var maximumProfile = GetMaximumSupportedProfile();
+            var maximumVersion = GetMaximumSupportedProfile();
 
             foreach (var profile in RequestedGraphicsProfile)
             {
-                if (profile > maximumProfile)
+                var version = OpenGLUtils.GetGLVersion(profile);
+                if (version > maximumVersion)
                 {
                     continue;
                 }
-                var version = OpenGLUtils.GetGLVersion(profile);
                 ContextRenderingApi = version;
                 GraphicsMode = new GraphicsMode(requestedColorFormat, 0, requestedStencil);
                 base.CreateFrameBuffer();
@@ -95,12 +95,8 @@ namespace SiliconStudio.Paradox.Games.Android
             throw new Exception("Unable to create a graphics context on the device. Maybe you should lower the preferred GraphicsProfile.");
         }
 
-        private readonly static Regex MatchOpenGLVersion = new Regex(@"OpenGL\s+ES\s+([0-9\.]+)");
-
-        private GraphicsProfile GetMaximumSupportedProfile()
+        private GLVersion GetMaximumSupportedProfile()
         {
-            var profile = GraphicsProfile.Level_9_1;
-
             var window = ((AndroidWindow)this.WindowInfo);
             var mode = new AndroidGraphicsMode(window.Display, (int)this.ContextRenderingApi, new GraphicsMode(32, 0, 0));
             using (var context = new AndroidGraphicsContext(mode, window, this.GraphicsContext, GLVersion.ES2, GraphicsContextFlags.Embedded))
@@ -110,29 +106,22 @@ namespace SiliconStudio.Paradox.Games.Android
 
                 context.MakeCurrent(window);
 
-                var versionVendorText = GL.GetString(StringName.Version);
-                var match = MatchOpenGLVersion.Match(versionVendorText);
-                if (match.Success)
+                int versionMajor, versionMinor;
+                if (!OpenGLUtils.GetCurrentGLVersion(out versionMajor, out versionMinor))
                 {
-                    var versionText = match.Groups[1].Value;
-                    if (versionText.StartsWith("2"))
-                    {
-                        profile = GraphicsProfile.Level_9_1;
-                    }
-                    else if (versionText.StartsWith("3.1"))
-                    {
-                        profile = GraphicsProfile.Level_10_0;
-                    }
-                    else if (versionText.StartsWith("3"))
-                    {
-                        profile = GraphicsProfile.Level_10_0;
-                    }
+                    versionMajor = 2;
+                    versionMinor = 0;
                 }
 
                 context.MakeCurrent(null);
                 window.DestroySurface();
+
+                if (versionMajor == 3)
+                {
+                    return (versionMinor >= 1) ? GLVersion.ES31 : GLVersion.ES3;
+                }
+                return GLVersion.ES2;
             }
-            return profile;
         }
     }
 }
