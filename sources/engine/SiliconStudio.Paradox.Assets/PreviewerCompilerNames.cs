@@ -39,5 +39,7 @@ namespace SiliconStudio.Paradox.Assets
         public const string ProceduralModelThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "ProceduralModelThumbnailCompiler" + PreviewAssemblyQualifiedName;
         [Obsolete]
         public const string GameSettingsThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "GameSettingsThumbnailCompiler" + PreviewAssemblyQualifiedName;
+        [Obsolete]
+        public const string ScriptSourceFileThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "ScriptSourceFileThumbnailCompiler" + PreviewAssemblyQualifiedName;
     }
 }

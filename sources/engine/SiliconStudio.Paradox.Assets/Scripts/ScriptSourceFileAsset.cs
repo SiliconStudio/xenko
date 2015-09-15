@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Assets.Scripts
 {
@@ -17,6 +13,7 @@ namespace SiliconStudio.Paradox.Assets.Scripts
 
     [DataContract("ScriptSourceFileAsset")]
     [AssetDescription(".cs")]
+    [ThumbnailCompiler(PreviewerCompilerNames.ScriptSourceFileThumbnailCompilerQualifiedName)]
     [Display(95, "Script Source Code", "A C# source code file")]
     public sealed class ScriptSourceFileAsset : ProjectSourceCodeAsset
     {
