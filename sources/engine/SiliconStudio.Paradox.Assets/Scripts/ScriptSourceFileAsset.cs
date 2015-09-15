@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Assets.Scripts
     }
 
     [DataContract("ScriptSourceFileAsset")]
-    [AssetDescription(".cs")]
+    [AssetDescription(".cs", AlwaysMarkAsRoot = true)]
     [ThumbnailCompiler(PreviewerCompilerNames.ScriptSourceFileThumbnailCompilerQualifiedName)]
     [Display(95, "Script Source Code", "A C# source code file")]
     public sealed class ScriptSourceFileAsset : ProjectSourceCodeAsset
