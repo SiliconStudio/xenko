@@ -376,6 +376,9 @@ namespace SiliconStudio.Assets
             // Prepare assets for merge if any
             PrepareMerge(cancelToken);
 
+            // Fix asset locations after prepare for merge
+            FixAssetLocations();
+
             return isImportOk;
         }
 
@@ -501,24 +504,42 @@ namespace SiliconStudio.Assets
                 // Asset references are a special case while importing, as we are
                 // going to try to rematch them, so if they changed, we expect to 
                 // use the original instance
-                if (typeof(IContentReference).IsAssignableFrom(node.InstanceType))
+                var baseReference = GetContentReference(node.BaseNode?.Instance);
+                var asset1Reference = GetContentReference(node.Asset1Node?.Instance);
+                var asset2Instance = node.Asset2Node?.Instance;
+                var asset2Reference = GetContentReference(asset2Instance);
+
+                var baseFileName = baseReference != null ? new UFile(baseReference.Location).GetFileName() : null;
+                var asset1FileName = asset1Reference != null ? new UFile(asset1Reference.Location).GetFileName() : null;
+                var asset2FileName = asset2Reference != null ? new UFile(asset2Reference.Location).GetFileName() : null;
+
+                // If we have the same reference between the base and imported item, but reference changes in the current item, keep the current item
+                if (baseFileName == asset2FileName && asset1FileName != asset2FileName)
                 {
-                    if (node.Asset2Node != null)
-                    {
-                        var instance = (IContentReference)node.Asset2Node.Instance;
+                    return Diff3ChangeType.MergeFromAsset1;
+                }
+
+                if (node.Asset2Node != null)
+                {
+                    if (asset2Instance != null && asset2Reference != null)
+                    { 
                         AssetItem realItem;
                         // Ids are remapped, so we are going to remap here, both on the
                         // new base and on the merged result
-                        if (idRemapping.TryGetValue(instance.Id, out realItem))
+                        if (idRemapping.TryGetValue(asset2Reference.Id, out realItem))
                         {
-                            IContentReference newReference;
-                            if (instance is AssetReference)
+                            object newReference;
+                            if (asset2Instance is AssetReference)
                             {
-                                newReference = AssetReference.New(instance.GetType(), realItem.Id, realItem.Location);
+                                newReference = AssetReference.New(asset2Instance.GetType(), realItem.Id, realItem.Location);
+                            }
+                            else if (asset2Instance is ContentReference)
+                            {
+                                newReference = ContentReference.New(asset2Instance.GetType(), realItem.Id, realItem.Location);
                             }
                             else
                             {
-                                newReference = ContentReference.New(instance.GetType(), realItem.Id, realItem.Location);
+                                newReference = AttachedReferenceManager.CreateSerializableVersion(asset2Instance.GetType(), realItem.Id, realItem.Location);
                             }
                             node.ReplaceValue(newReference, diff3Node => diff3Node.Asset2Node);
                         }
@@ -529,26 +550,6 @@ namespace SiliconStudio.Assets
                     if (node.Asset1Node != null)
                     {
                         return Diff3ChangeType.MergeFromAsset1;
-                    }
-                }
-                else
-                {
-                    // If the instance is not a content reference itself, there might a reference attached
-                    var instance = node.Asset2Node.Instance;
-                    var reference = instance != null ? AttachedReferenceManager.GetAttachedReference(instance) : null;
-
-                    if (reference != null)
-                    {
-                        AssetItem realItem;
-                        // Ids are remapped, so we are going to remap here, both on the
-                        // new base and on the merged result
-                        if (idRemapping.TryGetValue(reference.Id, out realItem))
-                        {
-                            var newReference = AttachedReferenceManager.CreateSerializableVersion(instance.GetType(), realItem.Id, realItem.Location);
-                            node.ReplaceValue(newReference, diff3Node => diff3Node.Asset2Node);
-                        }
-
-                        return Diff3ChangeType.MergeFromAsset2;
                     }
                 }
 
@@ -937,15 +938,12 @@ namespace SiliconStudio.Assets
         {
             sourceFileToAssets.Clear();
 
-            var allImports = AllImports().ToList();
-
             // Pass 1) => Prepare imports
             // - Check for assets with same source
             // - Fix location
             foreach (var fileToImport in Imports.Where(it => it.Enabled))
             {
                 var assetPackage = fileToImport.Package;
-                var assetResolver = AssetResolver.FromPackage(assetPackage);
 
                 foreach (var import in fileToImport.ByImporters.Where(it => it.Enabled))
                 {
@@ -961,9 +959,6 @@ namespace SiliconStudio.Assets
                         try
                         {
                             var assetItem = assetToImport.Item;
-
-                            // Fix asset location
-                            FixAssetLocation(assetItem, fileToImport.Directory, assetResolver, allImports);
 
                             // Freeze asset importItem and calculate source hash
                             FreezeAssetImport(import.Importer, assetItem);
@@ -992,6 +987,31 @@ namespace SiliconStudio.Assets
                         {
                             OnProgress(AssetImportSessionEventType.End, AssetImportSessionStepType.ComputeHash, assetToImport);
                         }
+                    }
+                }
+            }
+        }
+
+        private void FixAssetLocations()
+        {
+            var allImports = AllImports().ToList();
+
+            // Pass 1) => Prepare imports
+            // - Check for assets with same source
+            // - Fix location
+            foreach (var fileToImport in Imports.Where(it => it.Enabled))
+            {
+                var assetPackage = fileToImport.Package;
+                var assetResolver = AssetResolver.FromPackage(assetPackage);
+
+                foreach (var import in fileToImport.ByImporters.Where(it => it.Enabled))
+                {
+                    foreach (var assetToImport in import.Items.Where(it => it.Enabled))
+                    {
+                        var assetItem = assetToImport.Item;
+
+                        // Fix asset location
+                        FixAssetLocation(assetItem, fileToImport.Directory, assetResolver, allImports);
                     }
                 }
             }
@@ -1074,18 +1094,20 @@ namespace SiliconStudio.Assets
             {
                 var base1 = referenceDiff.BaseNode.Instance;
                 var newRef = referenceDiff.Asset2Node.Instance;
+                var baseReference = GetContentReference(base1);
+                var asset2Reference = GetContentReference(newRef);
 
-                if (base1 != null && newRef != null)
+                var baseFileName = baseReference != null ? new UFile(baseReference.Location).GetFileName() : null;
+                var asset2FileName = asset2Reference != null ? new UFile(asset2Reference.Location).GetFileName() : null;
+
+                if (base1 != null && newRef != null && baseFileName != null && baseFileName == asset2FileName)
                 {
-                    var baseId = GetContentId(base1);
-                    var asset2Id = GetContentId(newRef);
-
                     // Check if the referenced asset is existing in the session
-                    var baseItem1 = session.FindAsset(baseId);
+                    var baseItem1 = session.FindAsset(baseReference.Id);
                     if (baseItem1 != null)
                     {
                         // Try to find an asset from the import session that is matching 
-                        var subImport1 = toImport.Items.Where(it => it.Enabled).FirstOrDefault(importList => importList.Item.Id == asset2Id);
+                        var subImport1 = toImport.Items.Where(it => it.Enabled).FirstOrDefault(importList => importList.Item.Id == asset2Reference.Id);
                         if (subImport1 != null && baseItem1.Asset.GetType() == subImport1.Item.Asset.GetType())
                         {
                             RecursiveCalculateMatchAndPrepareMerge(toImport, subImport1, baseItem1);
@@ -1121,16 +1143,21 @@ namespace SiliconStudio.Assets
             return false;
         }
 
-        private static Guid GetContentId(object instance)
+        private static IContentReference GetContentReference(object instance)
         {
+            if (instance == null)
+            {
+                return null;
+            }
+
             var contentReference = instance as IContentReference;
             if (contentReference != null)
             {
-                return contentReference.Id;
+                return contentReference;
             }
 
             var attachedReference = AttachedReferenceManager.GetAttachedReference(instance);
-            return attachedReference != null ? attachedReference.Id : Guid.Empty;
+            return attachedReference;
         }
 
         private Diff3ChangeType MergeImportPolicy(Diff3Node node)

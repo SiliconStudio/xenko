@@ -7,7 +7,7 @@ namespace SiliconStudio.Core.Serialization
     /// <summary>
     /// Stores the object reference information, so that it is easy to work on partially loaded or CPU version of assets with <see cref="Assets.AssetManager"/>.
     /// </summary>
-    public class AttachedReference
+    public class AttachedReference : IContentReference
     {
         /// <summary>
         /// The asset URL of the referenced data.
@@ -30,5 +30,9 @@ namespace SiliconStudio.Core.Serialization
         /// This needs to be manually interpreted by a custom <see cref="DataSerializer{T}"/> implementation.
         /// </summary>
         public object Data;
+
+        Guid IContentReference.Id => Id;
+
+        string IContentReference.Location => Url;
     }
 }
