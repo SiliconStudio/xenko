@@ -622,18 +622,6 @@ namespace SiliconStudio.Assets
                         }
                     }
 
-                    // Save all dirty assets
-                    packagesCopy.Clear();
-                    foreach (var package in LocalPackages)
-                    {
-                        // Save the package to disk and all its assets
-                        package.Save(log);
-
-                        // Clone the package (but not all assets inside, just the structure)
-                        var packageClone = package.Clone(false);
-                        packagesCopy.Add(packageClone);
-                    }
-
                     //batch projects
                     var vsProjs = new Dictionary<string, Project>();
 
@@ -695,6 +683,18 @@ namespace SiliconStudio.Assets
                         project.Save();
                         project.ProjectCollection.UnloadAllProjects();
                         project.ProjectCollection.Dispose();
+                    }
+
+                    // Save all dirty assets
+                    packagesCopy.Clear();
+                    foreach (var package in LocalPackages)
+                    {
+                        // Save the package to disk and all its assets
+                        package.Save(log);
+
+                        // Clone the package (but not all assets inside, just the structure)
+                        var packageClone = package.Clone(false);
+                        packagesCopy.Add(packageClone);
                     }
 
                     packagesSaved = true;

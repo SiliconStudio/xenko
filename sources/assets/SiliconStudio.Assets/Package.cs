@@ -1254,31 +1254,39 @@ namespace SiliconStudio.Assets
             return listFiles;
         }
 
+        public static List<string> FindCodeAssetsInProject(string projectFullPath)
+        {
+            var realFullPath = new UFile(projectFullPath);
+            var project = VSProjectHelper.LoadProject(realFullPath);
+            var dir = new UDirectory(realFullPath.GetFullDirectory());
+
+            var result = project.Items.Where(x => (x.ItemType == "Compile" || x.ItemType == "None") && string.IsNullOrEmpty(x.GetMetadataValue("AutoGen")))
+                .Select(x => new UFile(x.EvaluatedInclude)).Where(x => AssetRegistry.IsProjectSourceCodeAssetFileExtension(x.GetFileExtension()))
+                .Select(projectItem => UPath.Combine(dir, projectItem)).Select(csPath => (string)csPath).ToList();
+
+            project.ProjectCollection.UnloadAllProjects();
+            project.ProjectCollection.Dispose();
+
+            return result;
+        }
+
         private static void FindCodeAssetsInProject(ICollection<PackageLoadingAssetFile> list, Package package)
         {
-            if (!package.IsSystem) //user code case
+            if (package.IsSystem) return;
+
+            var profile = package.Profiles.FindSharedProfile();
+            if (profile == null) return;
+
+            foreach (var libs in profile.ProjectReferences.Where(x => x.Type == ProjectType.Library))
             {
-                var profile = package.Profiles.FindSharedProfile();
-                if (profile != null)
+                var realFullPath = UPath.Combine(package.RootDirectory, libs.Location);
+                var codePaths = FindCodeAssetsInProject(realFullPath);
+                var dir = new UDirectory(realFullPath.GetFullDirectory());
+                var parentDir = dir.GetParent();
+
+                foreach (var codePath in codePaths)
                 {
-                    foreach (var libs in profile.ProjectReferences.Where(x => x.Type == ProjectType.Library))
-                    {
-                        var realFullPath = UPath.Combine(package.RootDirectory, libs.Location);
-                        var project = VSProjectHelper.LoadProject(realFullPath);
-                        var dir = new UDirectory(realFullPath.GetFullDirectory());
-                        var parentDir = dir.GetParent();
-
-                        foreach (var projectItem in project.Items.Where(x => x.ItemType == "Compile" || x.ItemType == "None").
-                            Select(x => new UFile(x.EvaluatedInclude)).
-                            Where(x => AssetRegistry.IsProjectSourceCodeAssetFileExtension(x.GetFileExtension())))
-                        {
-                            var csPath = UPath.Combine(dir, projectItem);
-                            list.Add(new PackageLoadingAssetFile(csPath, parentDir, realFullPath));
-                        }
-
-                        project.ProjectCollection.UnloadAllProjects();
-                        project.ProjectCollection.Dispose();
-                    }
+                    list.Add(new PackageLoadingAssetFile(codePath, parentDir, realFullPath));
                 }
             }
         }
