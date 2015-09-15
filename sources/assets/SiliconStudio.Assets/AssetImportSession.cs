@@ -519,7 +519,7 @@ namespace SiliconStudio.Assets
                     return Diff3ChangeType.MergeFromAsset1;
                 }
 
-                if (node.Asset2Node != null)
+                if (node.Asset2Node != null && (baseReference != null || asset1Reference != null || asset2Reference != null))
                 {
                     if (asset2Instance != null && asset2Reference != null)
                     { 
