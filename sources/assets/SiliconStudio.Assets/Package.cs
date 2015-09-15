@@ -841,7 +841,7 @@ namespace SiliconStudio.Assets
                 resolver.AlwaysCreateNewId = alwaysGenerateNewAssetId;
 
                 // Clean assets
-                AssetCollision.Clean(TemporaryAssets, outputItems, resolver, false);
+                AssetCollision.Clean(this, TemporaryAssets, outputItems, resolver, false);
 
                 // Add them back to the package
                 foreach (var item in outputItems)
