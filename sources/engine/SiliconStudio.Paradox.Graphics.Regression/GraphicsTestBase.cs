@@ -130,7 +130,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             // Register 3D card name
-            ImageTester.ImageTestResultConnection.DeviceName += "_" + GraphicsDevice.Adapter.Description.Split('\0', ' ')[0]; // Workaround for sharpDX bug: Description ends with an series trailing of '\0' characters
+            ImageTester.ImageTestResultConnection.DeviceName += "_" + GraphicsDevice.Adapter.Description.Split('\0')[0].TrimEnd(' '); // Workaround for sharpDX bug: Description ends with an series trailing of '\0' characters
 #endif
 
             Script.AddTask(RegisterTestsInternal);
