@@ -171,7 +171,7 @@ namespace SiliconStudio.Paradox.Graphics
         {
             return ( (int)(format) >= 1 && (int)(format) <= 115 )      // DirectX formats
                 || ((int) (format) >= 1024 && (int) (format) <= 1029)  // PVRTC formats
-                || ((int) (format) >= 1088 && (int) (format) <= 1095) // ETC formats
+                || ((int) (format) >= 1088 && (int) (format) <= 1097) // ETC formats
                 || ((int) (format) >= 1120 && (int) (format) <= 1122); // ATITC formats
         }
 
@@ -314,6 +314,7 @@ namespace SiliconStudio.Paradox.Graphics
                 case PixelFormat.PVRTC_II_4bpp:
                 case PixelFormat.ETC1:
                 case PixelFormat.ETC2_RGB:
+                case PixelFormat.ETC2_RGB_SRgb:
                 case PixelFormat.ETC2_RGBA:
                 case PixelFormat.ETC2_RGBA_SRgb:
                 case PixelFormat.ETC2_RGB_A1:
@@ -619,6 +620,7 @@ namespace SiliconStudio.Paradox.Graphics
                     PixelFormat.PVRTC_II_4bpp,
                     PixelFormat.ETC1,
                     PixelFormat.ETC2_RGB,
+                    PixelFormat.ETC2_RGB_SRgb,
                     PixelFormat.ETC2_RGBA,
                     PixelFormat.ETC2_RGBA_SRgb,
                     PixelFormat.ETC2_RGB_A1,
@@ -641,6 +643,12 @@ namespace SiliconStudio.Paradox.Graphics
                     PixelFormat.B8G8R8A8_UNorm_SRgb,
                     PixelFormat.B8G8R8X8_UNorm_SRgb,
                     PixelFormat.BC7_UNorm_SRgb,
+                    PixelFormat.PVRTC_2bpp_RGB_SRgb,
+                    PixelFormat.PVRTC_2bpp_RGBA_SRgb,
+                    PixelFormat.PVRTC_4bpp_RGB_SRgb,
+                    PixelFormat.PVRTC_4bpp_RGBA_SRgb,
+                    PixelFormat.ETC2_RGBA_SRgb,
+                    PixelFormat.ETC2_RGB_SRgb,
                 }, srgbFormats);
 
             // Init srgb formats
@@ -710,6 +718,18 @@ namespace SiliconStudio.Paradox.Graphics
                 { PixelFormat.B8G8R8X8_UNorm, PixelFormat.B8G8R8X8_UNorm_SRgb },
                 { PixelFormat.BC7_UNorm_SRgb, PixelFormat.BC7_UNorm },
                 { PixelFormat.BC7_UNorm, PixelFormat.BC7_UNorm_SRgb },
+                { PixelFormat.PVRTC_2bpp_RGB_SRgb, PixelFormat.PVRTC_2bpp_RGB },
+                { PixelFormat.PVRTC_2bpp_RGB, PixelFormat.PVRTC_2bpp_RGB_SRgb },
+                { PixelFormat.PVRTC_2bpp_RGBA_SRgb, PixelFormat.PVRTC_2bpp_RGBA },
+                { PixelFormat.PVRTC_2bpp_RGBA, PixelFormat.PVRTC_2bpp_RGBA_SRgb },
+                { PixelFormat.PVRTC_4bpp_RGB_SRgb, PixelFormat.PVRTC_4bpp_RGB },
+                { PixelFormat.PVRTC_4bpp_RGB, PixelFormat.PVRTC_4bpp_RGB_SRgb },
+                { PixelFormat.PVRTC_4bpp_RGBA_SRgb, PixelFormat.PVRTC_4bpp_RGBA },
+                { PixelFormat.PVRTC_4bpp_RGBA, PixelFormat.PVRTC_4bpp_RGBA_SRgb },
+                { PixelFormat.ETC2_RGBA_SRgb, PixelFormat.ETC2_RGBA },
+                { PixelFormat.ETC2_RGBA, PixelFormat.ETC2_RGBA_SRgb },
+                { PixelFormat.ETC2_RGB_SRgb, PixelFormat.ETC2_RGB },
+                { PixelFormat.ETC2_RGB, PixelFormat.ETC2_RGB_SRgb },
             };
         }
 

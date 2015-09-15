@@ -314,6 +314,9 @@ namespace SiliconStudio.Paradox.Graphics
                     case PixelFormat.PVRTC_4bpp_RGBA_SRgb:
                         inputFormat = PixelFormat.PVRTC_4bpp_RGBA;
                         break;
+                    case PixelFormat.ETC2_RGB_SRgb:
+                        inputFormat = PixelFormat.ETC2_RGB;
+                        break;
                     case PixelFormat.ETC2_RGBA_SRgb:
                         inputFormat = PixelFormat.ETC2_RGBA;
                         break;

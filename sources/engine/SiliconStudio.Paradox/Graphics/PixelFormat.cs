@@ -557,6 +557,7 @@ namespace SiliconStudio.Paradox.Graphics
         EAC_RG11_Unsigned = unchecked((int)1094),
         EAC_RG11_Signed = unchecked((int)1095),
         ETC2_RGBA_SRgb = unchecked((int)1096),
+        ETC2_RGB_SRgb = unchecked((int)1097),
 
         ATC_RGB = unchecked((int)1120),
         ATC_RGBA_Explicit = unchecked((int)1121),
