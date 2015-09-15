@@ -20,5 +20,8 @@ namespace SiliconStudio.Assets
 
         [Browsable(false)]
         public string ProjectInclude { get; set; }
+
+        [Browsable(false)]
+        public string ProjectName { get; set; }
     }
 }

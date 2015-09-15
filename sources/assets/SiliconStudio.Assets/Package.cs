@@ -574,6 +574,7 @@ namespace SiliconStudio.Assets
                                 asset.SourceProject = projectFullPath;
                                 asset.SourceFolder = RootDirectory.GetFullDirectory();
                                 sourceCodeAsset.ProjectInclude = codeFile;
+                                sourceCodeAsset.ProjectName = Path.GetFileNameWithoutExtension(projectFullPath.ToWindowsPath());
                                 sourceCodeAsset.AbsoluteSourceLocation = UPath.Combine(projectFullPath.GetFullDirectory(), codeFile);
                                 sourceCodeAsset.AbsoluteProjectLocation = projectFullPath;
 
@@ -1046,6 +1047,7 @@ namespace SiliconStudio.Assets
                 {
                     projectSourceCodeAsset.AbsoluteProjectLocation = projectFullPath;
                     projectSourceCodeAsset.ProjectInclude = projectInclude;
+                    projectSourceCodeAsset.ProjectName = Path.GetFileNameWithoutExtension(projectFullPath);
                 }
             }
 
