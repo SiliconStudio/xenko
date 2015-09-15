@@ -87,10 +87,10 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
     // Writes the output sprite font binary file.
     internal static class StaticSpriteFontWriter
     {
-        public static Graphics.SpriteFont CreateSpriteFontData(IFontFactory fontFactory, SpriteFontAsset options, Glyph[] glyphs, float lineSpacing, float baseLine, Bitmap bitmap)
+        public static Graphics.SpriteFont CreateSpriteFontData(IFontFactory fontFactory, SpriteFontAsset options, Glyph[] glyphs, float lineSpacing, float baseLine, Bitmap bitmap, bool srgb)
         {
             var fontGlyphs = ConvertGlyphs(glyphs);
-            var images = new[] { GetImage(options, bitmap) };
+            var images = new[] { GetImage(options, bitmap, srgb) };
             var sizeInPixels = FontHelper.PointsToPixels(options.Size);
 
             return fontFactory.NewStatic(sizeInPixels, fontGlyphs, images, baseLine, lineSpacing, null, options.Spacing, options.LineSpacing, options.DefaultCharacter);
@@ -115,13 +115,13 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
             return fontGlyphs;
         }
 
-        static Graphics.Image GetImage(SpriteFontAsset options, Bitmap bitmap)
+        static Graphics.Image GetImage(SpriteFontAsset options, Bitmap bitmap, bool srgb)
         {
             switch (options.Format)
             {
                 //case FontTextureFormat.Auto:
                 case FontTextureFormat.Rgba32:
-                    return GetImageRgba32(bitmap);
+                    return GetImageRgba32(bitmap, srgb);
              
                 //case FontTextureFormat.CompressedMono:
                 //    return GetCompressedMono(bitmap, options);
@@ -133,9 +133,9 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
 
 
         // Writes an uncompressed 32 bit font texture.
-        static Graphics.Image GetImageRgba32(Bitmap bitmap)
+        static Graphics.Image GetImageRgba32(Bitmap bitmap, bool srgb)
         {
-            var image = Graphics.Image.New2D(bitmap.Width, bitmap.Height, 1, Graphics.PixelFormat.R8G8B8A8_UNorm);
+            var image = Graphics.Image.New2D(bitmap.Width, bitmap.Height, 1, srgb ? Graphics.PixelFormat.R8G8B8A8_UNorm_SRgb : Graphics.PixelFormat.R8G8B8A8_UNorm);
             var pixelBuffer = image.PixelBuffer[0];
             using (var bitmapData = new BitmapUtils.PixelAccessor(bitmap, ImageLockMode.ReadOnly))
             {
