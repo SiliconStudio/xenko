@@ -4,8 +4,7 @@
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
   <Import Project="..\..\targets\Paradox.PreSettings.targets" />
   <PropertyGroup>
@@ -134,6 +133,7 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
       <Project>{1320f627-ee43-4115-8e89-19d1753e51f2}</Project>
       <Name>SiliconStudio.Core.MicroThreading</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
       <Project>{5210fb81-b807-49bb-af0d-31fb6a83a572}</Project>
