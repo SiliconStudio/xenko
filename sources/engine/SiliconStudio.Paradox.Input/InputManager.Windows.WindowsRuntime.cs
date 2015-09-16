@@ -230,8 +230,8 @@ namespace SiliconStudio.Paradox.Input
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_STORE
             GamePadFactories.Add(new XInputGamePadFactory());
-            HasMouse = true;
 #endif
+            HasMouse = new Windows.Devices.Input.MouseCapabilities().MousePresent > 0;
         }
 
         public override void Initialize()
