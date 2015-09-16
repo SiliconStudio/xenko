@@ -398,7 +398,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
             // Special case when the input texture is monochromatic but it is supposed to be a color and we are working in SRGB
             // In that case, we need to transform it to a supported SRGB format (R8G8B8A8_UNorm_SRgb)
             // TODO: As part of a conversion phase, this code may be moved to a dedicated method in this class at some point
-            if (parameters.TextureHint == TextureHint.Color && parameters.IsSRgb && texImage.Format == PixelFormat.R8_UNorm || texImage.Format == PixelFormat.A8_UNorm)
+            if (parameters.TextureHint == TextureHint.Color && parameters.IsSRgb && (texImage.Format == PixelFormat.R8_UNorm || texImage.Format == PixelFormat.A8_UNorm))
             {
                 textureTool.Convert(texImage, PixelFormat.R8G8B8A8_UNorm_SRgb);
             }
