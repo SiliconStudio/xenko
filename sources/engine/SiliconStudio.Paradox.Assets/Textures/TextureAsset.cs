@@ -198,7 +198,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
 
         private class TransformSRgbToColorSpace : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 if (asset.SRgb != null)
                 {

@@ -21,6 +21,11 @@ namespace SiliconStudio.Paradox.Assets.Effect
     public sealed class EffectLogAsset : SourceCodeAsset
     {
         /// <summary>
+        /// The default file name used to store effect compile logs.
+        /// </summary>
+        public const string DefaultFile = "EffectCompileLog";
+
+        /// <summary>
         /// The default file extension used by the <see cref="EffectLogAsset"/>.
         /// </summary>
         public const string FileExtension = ".pdxeffectlog";

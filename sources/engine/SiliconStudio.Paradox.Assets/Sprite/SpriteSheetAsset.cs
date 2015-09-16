@@ -208,7 +208,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
 
         class RenameImageGroupsUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var images = asset.Images;
                 if (images != null)
@@ -220,7 +220,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
         }
         class RemoveMaxSizeUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var packing = asset.Packing;
                 if (packing != null)

@@ -72,6 +72,7 @@
     <Compile Include="AssetImportTracked.cs" />
     <Compile Include="AssetItemCollection.cs" />
     <Compile Include="AssetMember.cs" />
+    <Compile Include="AssetMigrationContext.cs" />
     <Compile Include="AssetPropertyKeyNameResolver.cs" />
     <Compile Include="AssetReferenceDataSerializer.cs" />
     <Compile Include="AssetSelector.cs" />

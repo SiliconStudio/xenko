@@ -716,7 +716,8 @@ namespace SiliconStudio.Assets
             {
                 bool aliasOccurred;
                 var packageFile = new PackageLoadingAssetFile(filePath, Path.GetDirectoryName(filePath));
-                AssetMigration.MigrateAssetIfNeeded(log, packageFile);
+                var context = new AssetMigrationContext(null, log);
+                AssetMigration.MigrateAssetIfNeeded(context, packageFile);
 
                 var package = packageFile.AssetContent != null
                     ? (Package)AssetSerializer.Load(new MemoryStream(packageFile.AssetContent), Path.GetExtension(filePath), log, out aliasOccurred)
@@ -895,6 +896,9 @@ namespace SiliconStudio.Assets
                 log.Info(progressMessage);
             }
 
+
+            var context = new AssetMigrationContext(this, log);
+
             // Update step counter for log progress
             var tasks = new List<System.Threading.Tasks.Task>();
             for (int i = 0; i < assetFiles.Count; i++)
@@ -907,8 +911,8 @@ namespace SiliconStudio.Assets
                 }
 
                 var task = cancelToken.HasValue ?
-                    System.Threading.Tasks.Task.Factory.StartNew(() => LoadAsset(log, assetFile, loggerResult), cancelToken.Value) : 
-                    System.Threading.Tasks.Task.Factory.StartNew(() => LoadAsset(log, assetFile, loggerResult));
+                    System.Threading.Tasks.Task.Factory.StartNew(() => LoadAsset(context, assetFile, loggerResult), cancelToken.Value) : 
+                    System.Threading.Tasks.Task.Factory.StartNew(() => LoadAsset(context, assetFile, loggerResult));
 
                 tasks.Add(task);
             }
@@ -931,7 +935,7 @@ namespace SiliconStudio.Assets
             }
         }
 
-        private void LoadAsset(ILogger log, PackageLoadingAssetFile assetFile, LoggerResult loggerResult)
+        private void LoadAsset(AssetMigrationContext context, PackageLoadingAssetFile assetFile, LoggerResult loggerResult)
         {
             var fileUPath = assetFile.FilePath;
             var sourceFolder = assetFile.SourceFolder;
@@ -947,7 +951,7 @@ namespace SiliconStudio.Assets
                 // the loop
             try
             {
-                AssetMigration.MigrateAssetIfNeeded(log, assetFile);
+                AssetMigration.MigrateAssetIfNeeded(context, assetFile);
 
                 // Try to load only if asset is not already in the package or assetRef.Asset is null
                 var assetPath = fileUPath.MakeRelative(sourceFolder).GetDirectoryAndFileName();
@@ -958,7 +962,7 @@ namespace SiliconStudio.Assets
                 var projectInclude = assetFile.ProjectFile != null ? fileUPath.MakeRelative(assetFile.ProjectFile.GetFullDirectory()) : null;
 
                 bool aliasOccurred;
-                var asset = LoadAsset(log, assetFullPath, assetPath, assetFile.ProjectFile, projectInclude, assetContent, out aliasOccurred);
+                var asset = LoadAsset(context.Log, assetFullPath, assetPath, assetFile.ProjectFile, projectInclude, assetContent, out aliasOccurred);
 
                 // Create asset item
                 var assetItem = new AssetItem(assetPath, asset, this)
@@ -995,7 +999,7 @@ namespace SiliconStudio.Assets
                     column = yamlException.Start.Column;
                 }
 
-                var module = log.Module;
+                var module = context.Log.Module;
 
                 var assetReference = new AssetReference<Asset>(Guid.Empty, fileUPath.FullPath);
 
@@ -1005,7 +1009,7 @@ namespace SiliconStudio.Assets
                     loggerResult.Module = "{0}({1},{2})".ToFormat(Path.GetFullPath(fileUPath.FullPath), row, column);
                 }
 
-                log.Error(this, assetReference, AssetMessageCode.AssetLoadingFailed, ex, fileUPath, ex.Message);
+                context.Log.Error(this, assetReference, AssetMessageCode.AssetLoadingFailed, ex, fileUPath, ex.Message);
 
                 if (loggerResult != null)
                 {
@@ -1336,7 +1340,7 @@ namespace SiliconStudio.Assets
 
         private class RemoveRawImports : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 if (asset.Profiles != null)
                 {

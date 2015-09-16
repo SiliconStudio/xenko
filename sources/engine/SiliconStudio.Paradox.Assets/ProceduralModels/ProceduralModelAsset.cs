@@ -60,7 +60,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
 
         private class Upgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 // Introduction of MaterialInstance
                 var material = asset.Type.Material;
@@ -92,7 +92,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
 
         class RenameCapsuleHeight : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var proceduralType = asset.Type;
                 if (proceduralType.Node.Tag == "!CapsuleProceduralModel" && proceduralType.Height != null)
@@ -105,7 +105,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
 
         class RenameDiameters : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var proceduralType = asset.Type;
                 if (proceduralType.Diameter != null)
