@@ -233,7 +233,12 @@ namespace SiliconStudio.Paradox.Audio
                     break;
             }
         }
-        
+
+        private int GetAudioDeviceChannels()
+        {
+            return XAudio2.GetDeviceDetails(0).OutputFormat.Channels;
+        }
+
         private void UpdateMusicVolume()
         {
             // volume factor used in order to adjust Sound Music and Sound Effect Maximum volumes
@@ -242,7 +247,11 @@ namespace SiliconStudio.Paradox.Audio
             if (streamVolume != null)
             {
                 var vol = volumeAdjustFactor * currentMusic.Volume;
-                streamVolume.SetAllVolumes(2, new[] { vol, vol });
+                var channels = GetAudioDeviceChannels();
+                var volumes = new float[channels];
+                for (int i = 0; i < channels; i++)
+                    volumes[i] = vol;
+                streamVolume.SetAllVolumes(channels, volumes);
             }
         }
         
