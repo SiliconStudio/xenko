@@ -28,6 +28,6 @@ namespace SiliconStudio.Paradox.Engine
         public List<SpriteStudioNodeState> Nodes { get; } = new List<SpriteStudioNodeState>();
 
         [DataMemberIgnore]
-        public List<SpriteStudioNodeState> SortedNodes { get; set; }
+        internal List<SpriteStudioNodeState> SortedNodes { get; set; }
     }
 }
