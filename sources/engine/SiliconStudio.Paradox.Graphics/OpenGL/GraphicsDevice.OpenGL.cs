@@ -635,7 +635,7 @@ namespace SiliconStudio.Paradox.Graphics
             var program = copyProgram;
             var offsetLocation = copyProgramOffsetLocation;
             var scaleLocation = copyProgramScaleLocation;
-            if (Features.HasSRgb && sourceTexture.Description.Format.IsSRgb() && destTexture == windowProvidedRenderTexture)
+            if (sourceTexture.Description.Format.IsSRgb() && destTexture == windowProvidedRenderTexture)
             {
                 program = copyProgramSRgb;
                 offsetLocation = copyProgramSRgbOffsetLocation;
