@@ -86,6 +86,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
             public ShadowMapBiasParameters()
             {
                 DepthBias = 0.01f;
+                NormalOffsetScale = 10.0f;
             }
 
             /// <summary>
@@ -103,7 +104,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
             /// <value>The offset scale.</value>
             /// <userdoc>A factor specifying the offset to add to the calculated depth with respect to the surface normal.</userdoc>
             [DataMember(20)]
-            [DefaultValue(0.0f)]
+            [DefaultValue(10.0f)]
             public float NormalOffsetScale { get; set; }
         }
     }
