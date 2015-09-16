@@ -1361,6 +1361,20 @@ namespace SiliconStudio.Assets
                         }
                     }
                 }
+
+                // Delete existing effect log file
+                // TODO: Ideally we would like to perform this in a plugin instead of doing it here, but as we don't have the infrastructure to do it, we workaround it here.
+                var effectLogPath = Path.Combine(Path.GetDirectoryName(assetFile.FilePath), @"Assets\Shared\EffectCompileLog.pdxeffectlog");
+                if (File.Exists(effectLogPath))
+                {
+                    try
+                    {
+                        File.Delete(effectLogPath);
+                    }
+                    catch (IOException)
+                    {
+                    }
+                }
             }
         }
     }
