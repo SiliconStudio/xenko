@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Audio
                                                                 AudioCategory = AudioStreamCategory.GameEffects })
             {
                 var creationFlags = MediaEngineCreateFlags.None;
-#if SILICONSTUDIO_PLATFORM_WINDOWS_STORE
+#if !SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
                 // MSDN: On the phone, the Media Engine only supports frame-server mode. Attempting to initialize the interface in either rendering mode or audio mode will fail.
                 creationFlags |= MediaEngineCreateFlags.AudioOnly;
 #endif
