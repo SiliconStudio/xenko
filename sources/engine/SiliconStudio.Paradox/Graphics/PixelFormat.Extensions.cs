@@ -140,6 +140,8 @@ namespace SiliconStudio.Paradox.Graphics
 
                 case PixelFormat.PVRTC_2bpp_RGBA:
                 case PixelFormat.PVRTC_4bpp_RGBA:
+                case PixelFormat.PVRTC_2bpp_RGBA_SRgb:
+                case PixelFormat.PVRTC_4bpp_RGBA_SRgb:
                     return 8;
 
                 case PixelFormat.PVRTC_II_2bpp:
@@ -170,7 +172,7 @@ namespace SiliconStudio.Paradox.Graphics
         public static bool IsValid(this PixelFormat format )
         {
             return ( (int)(format) >= 1 && (int)(format) <= 115 )      // DirectX formats
-                || ((int) (format) >= 1024 && (int) (format) <= 1029)  // PVRTC formats
+                || ((int) (format) >= 1024 && (int) (format) <= 1033)  // PVRTC formats
                 || ((int) (format) >= 1088 && (int) (format) <= 1097) // ETC formats
                 || ((int) (format) >= 1120 && (int) (format) <= 1122); // ATITC formats
         }
@@ -310,6 +312,10 @@ namespace SiliconStudio.Paradox.Graphics
                 case PixelFormat.PVRTC_2bpp_RGBA:
                 case PixelFormat.PVRTC_4bpp_RGB:
                 case PixelFormat.PVRTC_4bpp_RGBA:
+                case PixelFormat.PVRTC_2bpp_RGB_SRgb:
+                case PixelFormat.PVRTC_2bpp_RGBA_SRgb:
+                case PixelFormat.PVRTC_4bpp_RGB_SRgb:
+                case PixelFormat.PVRTC_4bpp_RGBA_SRgb:
                 case PixelFormat.PVRTC_II_2bpp:
                 case PixelFormat.PVRTC_II_4bpp:
                 case PixelFormat.ETC1:
