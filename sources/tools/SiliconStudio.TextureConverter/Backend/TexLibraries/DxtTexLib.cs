@@ -136,6 +136,10 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     CompressingRequest compress = (CompressingRequest)request;
                     return SupportFormat(compress.Format) && SupportFormat(image.Format);
 
+                case RequestType.Converting:
+                    ConvertingRequest converting = (ConvertingRequest)request;
+                    return SupportFormat(converting.Format) && SupportFormat(converting.Format);
+
                 case RequestType.Export:
                     return SupportFormat(image.Format) && Path.GetExtension(((ExportRequest)request).FilePath).Equals(".dds");
 
@@ -173,6 +177,9 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     break;
                 case RequestType.Decompressing:
                     Decompress(image, libraryData, (DecompressingRequest)request);
+                    break;
+                case RequestType.Converting:
+                    Convert(image, libraryData, (ConvertingRequest)request);
                     break;
                 case RequestType.MipMapsGeneration:
                     GenerateMipMaps(image, libraryData, (MipMapsGenerationRequest)request);
@@ -376,6 +383,43 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             libraryData.DxtImages = libraryData.Image.GetImages();
             libraryData.Metadata = libraryData.Image.metadata;
             image.DisposingLibrary = this;
+
+            UpdateImage(image, libraryData);
+        }
+
+        /// <summary>
+        /// Convert the specified image.
+        /// </summary>
+        /// <param name="image">The image.</param>
+        /// <param name="libraryData">The library data.</param>
+        /// <param name="request">The decompression request</param>
+        /// <exception cref="TextureToolsException">Decompression failed</exception>
+        private void Convert(TexImage image, DxtTextureLibraryData libraryData, ConvertingRequest request)
+        {
+            // TODO: temp if request format is SRGB we force it to non-srgb to perform the conversion. Will not work if texture input is SRGB
+            var outputFormat = request.Format.IsSRgb() ? request.Format.ToNonSRgb() : request.Format;
+
+            Log.Info("Converting texture from {0} to {1}", ((PixelFormat)libraryData.Metadata.format), outputFormat);
+
+            var scratchImage = new ScratchImage();
+            var hr = Utilities.Convert(libraryData.DxtImages, libraryData.DxtImages.Length, ref libraryData.Metadata, (DXGI_FORMAT)outputFormat, TEX_FILTER_FLAGS.TEX_FILTER_BOX, 0.0f, scratchImage);
+
+            if (hr != HRESULT.S_OK)
+            {
+                Log.Error("Converting failed: " + hr);
+                throw new TextureToolsException("Converting failed: " + hr);
+            }
+
+            // Freeing Memory
+            if (image.DisposingLibrary != null) image.DisposingLibrary.Dispose(image);
+
+            libraryData.Image = scratchImage;
+            libraryData.DxtImages = libraryData.Image.GetImages();
+            libraryData.Metadata = libraryData.Image.metadata;
+            image.DisposingLibrary = this;
+
+            // adapt the image format based on desired output format
+            ChangeDxtImageType(libraryData, (DXGI_FORMAT)request.Format);
 
             UpdateImage(image, libraryData);
         }

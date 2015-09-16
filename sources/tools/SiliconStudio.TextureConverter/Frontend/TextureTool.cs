@@ -384,14 +384,21 @@ namespace SiliconStudio.TextureConverter
         /// <param name="isSRgb">Indicate is the image to decompress is an sRGB image</param>
         public void Decompress(TexImage image, bool isSRgb)
         {
-            if (!image.Format.IsCompressed())
+            if (image.Format.IsCompressed())
             {
-                return;
+                ExecuteRequest(image, new DecompressingRequest(isSRgb, image.Format));
             }
-
-            ExecuteRequest(image, new DecompressingRequest(isSRgb, image.Format));
         }
 
+        /// <summary>
+        /// Converts the <see cref="TexImage"/> to the specified destination pixelformat.
+        /// </summary>
+        /// <param name="image">The <see cref="TexImage"/>.</param>
+        /// <param name="destinationFormat">The destination pixel format</param>
+        public void Convert(TexImage image, PixelFormat destinationFormat)
+        {
+            ExecuteRequest(image, new ConvertingRequest(destinationFormat));
+        }
 
         /// <summary>
         /// Saves the specified <see cref="TexImage"/> into a file.
@@ -1424,7 +1431,6 @@ namespace SiliconStudio.TextureConverter
                 }
             }
         }
-
 
         static void Main(string[] args)
         {

@@ -12,6 +12,7 @@ namespace SiliconStudio.TextureConverter
         Loading,
         Rescaling,
         Compressing,
+        Converting,
         SwitchingChannels,
         Flipping,
         FlippingSub,
