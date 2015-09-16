@@ -8,6 +8,7 @@ using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Paradox.Assets.Effect;
 
 namespace SiliconStudio.Paradox.Assets
 {
@@ -42,6 +43,18 @@ namespace SiliconStudio.Paradox.Assets
             {
                 // Create GameSettingsAsset
                 GameSettingsAsset.UpgraderVersion130.Upgrade(session, log, dependentPackage, dependency, dependencyPackage, assetFiles);
+            }
+
+            if (dependency.Version.MinVersion < new PackageVersion("1.3.0-alpha02"))
+            {
+                // Delete EffectLogAsset
+                foreach (var assetFile in assetFiles)
+                {
+                    if (assetFile.FilePath.GetFileName() == EffectLogAsset.DefaultFile)
+                    {
+                        assetFile.Deleted = true;
+                    }
+                }
             }
 
             return true;
