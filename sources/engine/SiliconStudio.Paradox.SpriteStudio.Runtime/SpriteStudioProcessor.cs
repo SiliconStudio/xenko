@@ -35,9 +35,23 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
             return data;
         }
 
-        private static void PreProcessNodes(Data data, IList<SpriteStudioNode> nodes)
+        protected override void OnEntityAdding(Entity entity, Data data)
+        {
+            PrepareNodes(data);
+        }
+
+        protected override void OnEntityRemoved(Entity entity, Data data)
         {
             data.SpriteStudioComponent.Nodes.Clear();
+        }
+
+        internal static SpriteStudioNodeState InitializeNodes(SpriteStudioComponent spriteStudioComponent)
+        {
+            spriteStudioComponent.Nodes.Clear();
+
+            var nodes = spriteStudioComponent.Sheet?.NodesInfo;
+            if (nodes == null)
+                return null;
 
             foreach (var node in nodes)
             {
@@ -47,30 +61,31 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                     Sprite = node.Sprite,
                     BaseNode = node
                 };
-                data.SpriteStudioComponent.Nodes.Add(nodeState);
+                spriteStudioComponent.Nodes.Add(nodeState);
             }
 
+            SpriteStudioNodeState rootNode = null;
             for (var i = 0; i < nodes.Count; i++)
             {
-                var nodeState = data.SpriteStudioComponent.Nodes[i];
+                var nodeState = spriteStudioComponent.Nodes[i];
                 var nodeAsset = nodes[i];
 
                 if (nodeAsset.Id == -1)
                 {
-                    data.RootNode = nodeState;
+                    rootNode = nodeState;
                 }
                 else if (nodeAsset.Id > -1)
                 {
-                    nodeState.ParentNode = data.SpriteStudioComponent.Nodes.FirstOrDefault(x => x.BaseNode.Id == nodeAsset.ParentId);
+                    nodeState.ParentNode = spriteStudioComponent.Nodes.FirstOrDefault(x => x.BaseNode.Id == nodeAsset.ParentId);
                 }
 
-                foreach (var subNode in data.SpriteStudioComponent.Nodes.Where(subNode => subNode.BaseNode.ParentId == nodeAsset.Id))
+                foreach (var subNode in spriteStudioComponent.Nodes.Where(subNode => subNode.BaseNode.ParentId == nodeAsset.Id))
                 {
                     nodeState.ChildrenNodes.Add(subNode);
                 }
             }
 
-            data.Sheet = data.SpriteStudioComponent.Sheet;
+            return rootNode;
         }
 
         private static unsafe void UpdateNodes(IList<SpriteStudioNodeState> nodes, Data data)
@@ -123,6 +138,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
 
         private static void SortNodes(Data data, IEnumerable<SpriteStudioNodeState> nodes)
         {
+            // TODO: Avoid reallocating
             data.SpriteStudioComponent.SortedNodes = nodes.OrderBy(x => x.CurrentXyPrioAngle.Z).ToList();
         }
 
@@ -131,25 +147,35 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
             Sprites.Clear();
             foreach (var spriteStateKeyPair in enabledEntities)
             {
-                var assetNodes = spriteStateKeyPair.Value?.SpriteStudioComponent?.Sheet?.NodesInfo;
-                if (assetNodes == null) continue;
-
-                if (spriteStateKeyPair.Value.Sheet != spriteStateKeyPair.Value.SpriteStudioComponent.Sheet) // sheet changed? force pre-process
-                {
-                    spriteStateKeyPair.Value.RootNode = null;
-                }
-
-                if (spriteStateKeyPair.Value.RootNode == null)
-                {
-                    PreProcessNodes(spriteStateKeyPair.Value, assetNodes);
-                }
-                if (spriteStateKeyPair.Value.RootNode == null) continue;
+                if (!PrepareNodes(spriteStateKeyPair.Value))
+                    continue;
 
                 UpdateNodes(spriteStateKeyPair.Value.SpriteStudioComponent.Nodes, spriteStateKeyPair.Value);
                 SortNodes(spriteStateKeyPair.Value, spriteStateKeyPair.Value.SpriteStudioComponent.Nodes);
                 spriteStateKeyPair.Value.RootNode.UpdateTransformation();
                 Sprites.Add(spriteStateKeyPair.Value);
             }
+        }
+
+        private static bool PrepareNodes(Data data)
+        {
+            var sheet = data.SpriteStudioComponent.Sheet;
+            if (data.Sheet != sheet) // sheet changed? force pre-process
+            {
+                data.RootNode = null;
+                data.SpriteStudioComponent.Nodes.Clear();
+            }
+
+            var assetNodes = sheet?.NodesInfo;
+            if (assetNodes == null) return false;
+
+            if (data.RootNode == null)
+            {
+                data.RootNode = InitializeNodes(data.SpriteStudioComponent);
+                data.Sheet = sheet;
+            }
+
+            return (data.RootNode != null);
         }
     }
 }
