@@ -69,7 +69,7 @@ namespace SiliconStudio.Paradox.VisualStudio
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
     public sealed class ParadoxPackage : Package, IOleComponent
     {
-        public const string Version = "1.156";
+        public const string Version = "1.3";
 
         private readonly Dictionary<EnvDTE.Project, string> previousProjectPlatforms = new Dictionary<EnvDTE.Project, string>();
         private EnvDTE.Project currentStartupProject;
