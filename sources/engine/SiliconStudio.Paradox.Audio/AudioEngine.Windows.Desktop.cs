@@ -242,7 +242,15 @@ namespace SiliconStudio.Paradox.Audio
             if (streamVolume != null)
             {
                 var vol = volumeAdjustFactor * currentMusic.Volume;
-                streamVolume.SetAllVolumes(2, new[] { vol, vol });
+
+                // Query number of channels
+                var channelCount = streamVolume.ChannelCount;
+                var volumes = new float[channelCount];
+                for (int i = 0; i < channelCount; ++i)
+                    volumes[i] = vol;
+
+                // Set volumes
+                streamVolume.SetAllVolumes(volumes.Length, volumes);
             }
         }
         
