@@ -3,6 +3,8 @@
 using System;
 using System.Runtime.InteropServices;
 
+using SiliconStudio.Core.Reflection;
+
 namespace SiliconStudio.Core.Serialization.Serializers
 {
     /// <summary>
@@ -242,7 +244,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             }
             else if (mode == ArchiveMode.Deserialize)
             {
-                var type = Type.GetType(stream.ReadString());
+                var type = AssemblyRegistry.GetType(stream.ReadString());
                 var value = stream.ReadInt32();
                 if (type != null)
                     obj = (Enum)Enum.ToObject(type, value);
