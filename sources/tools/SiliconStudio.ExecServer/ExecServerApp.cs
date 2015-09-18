@@ -25,6 +25,7 @@ namespace SiliconStudio.ExecServer
     {
         private const string DisableExecServerAppDomainCaching = "DisableExecServerAppDomainCaching";
         private const int MaxRetryProcess = 10;
+        private const int RetryWait = 500; // in ms
 
         /// <summary>
         /// Runs the specified arguments copy.
@@ -164,7 +165,9 @@ namespace SiliconStudio.ExecServer
                 }
 
                 // Wait for 
-                Thread.Sleep(100);
+
+                Console.WriteLine("Waiting {0}ms for the proxy server to start and connect to it", RetryWait);
+                Thread.Sleep(RetryWait);
             }
 
             Console.WriteLine("ERROR cannot run command: {0} {1}", Assembly.GetEntryAssembly().Location, string.Join(" ", args));
