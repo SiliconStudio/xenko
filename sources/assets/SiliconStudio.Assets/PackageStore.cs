@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
+
 using NuGet;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
@@ -86,6 +88,12 @@ namespace SiliconStudio.Assets
             {
                 packagesDirectory = UPath.Combine(globalInstallationPath, (UDirectory)NugetStore.DefaultGamePackagesDirectory);
                 store = new NugetStore(globalInstallationPath);
+            }
+            else
+            {
+                // We should exit from here if NuGet is not configured.
+                MessageBox.Show($"Unexpected installation. Cannot find a proper NuGet configuration for [{defaultPackageName}] in [{globalInstallationPath}]", "Installation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Environment.Exit(1);
             }
         }
 
