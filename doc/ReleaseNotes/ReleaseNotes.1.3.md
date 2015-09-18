@@ -255,6 +255,15 @@ Lastly, node link information is now visible in the scene tree view for easier d
 - Sprite Sheets: They are now automatically packed. If this affects you, you can simply disable this setting by editing your Sprite Sheet asset.
 
 
+# Version 1.3.2-beta
+
+Release date: 2015/09/19
+
+## Issues fixed
+
+- Assets: Fix compilation error on first compilation that can occur when the proxy server takes more time to initialize than expected. 
+- GameStudio: Fix wrong namespace generated when creating a script from the GameStudio. 
+
 # Version 1.3.1-beta
 
 Release date: 2015/09/18
