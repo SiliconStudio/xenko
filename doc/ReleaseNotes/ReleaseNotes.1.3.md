@@ -254,6 +254,19 @@ Lastly, node link information is now visible in the scene tree view for easier d
 - Physics: Collision events are removed. An async/await pattern is encouraged from now on.
 - Sprite Sheets: They are now automatically packed. If this affects you, you can simply disable this setting by editing your Sprite Sheet asset.
 
+
+# Version 1.3.1-beta
+
+Release date: 2015/09/18
+
+## Issues fixed
+
+- Assets: Fix compilation of user custom assets/components not working properly with the background asset compiler
+- Assets: Display an error to the user if we cannot find a proper NuGet configuration when running the GameStudio from a custom directory
+- GameStudio: Reenable assembly reloading command when undoing reloading action
+- GameStudio: Remove constraint on DisplayAttribute.Order for user custom EntityComponent 
+- Physics: Fix Rigidbody NodeName list when adding a new element 
+
 # Version 1.3.0-beta
 
 Release date: 2015/09/17
