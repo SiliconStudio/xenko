@@ -338,11 +338,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Sprit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.SpriteStudio.Runtime", "..\sources\engine\SiliconStudio.Paradox.SpriteStudio.Runtime\SiliconStudio.Paradox.SpriteStudio.Runtime.csproj", "{9BC63BEC-F305-451D-BB31-262938EA964D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Launcher", "..\sources\install\SiliconStudio.Launcher\SiliconStudio.Launcher.csproj", "{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
-		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{d0db401e-6f96-46d0-ba9b-493b9c0777f1}*SharedItemsImports = 4
+		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
+		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{d0db401e-6f96-46d0-ba9b-493b9c0777f1}*SharedItemsImports = 4
 		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{43b62674-aa8b-4531-ba27-855ca2580145}*SharedItemsImports = 13
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{950badd0-ad5a-4f58-87ec-4adaecbea89b}*SharedItemsImports = 13
@@ -2046,6 +2049,30 @@ Global
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|Win32.ActiveCfg = Release|Any CPU
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|Win32.Build.0 = Release|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.AppStore|Win32.ActiveCfg = Release|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.AppStore|Win32.Build.0 = Release|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.Debug|Win32.Build.0 = Debug|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.Release|Win32.ActiveCfg = Release|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.Release|Win32.Build.0 = Release|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.Testing|Any CPU.ActiveCfg = Release|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.Testing|Any CPU.Build.0 = Release|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.Testing|Win32.ActiveCfg = Release|Any CPU
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.Testing|Win32.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2143,5 +2170,6 @@ Global
 		{8D783A73-0BE3-423E-8FF6-984125C07BFE} = {A2A4342E-024B-4063-B10C-1DA96CA3046D}
 		{63562B0A-E501-42C2-97BB-13D3AD3A7DB4} = {4C142567-C42B-40F5-B092-798882190209}
 		{9BC63BEC-F305-451D-BB31-262938EA964D} = {4C142567-C42B-40F5-B092-798882190209}
+		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C} = {A2A4342E-024B-4063-B10C-1DA96CA3046D}
 	EndGlobalSection
 EndGlobal
