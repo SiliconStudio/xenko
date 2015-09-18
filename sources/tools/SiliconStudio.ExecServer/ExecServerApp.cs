@@ -23,6 +23,8 @@ namespace SiliconStudio.ExecServer
     /// </summary>
     public class ExecServerApp
     {
+        private string execServerPath;
+
         private const string DisableExecServerAppDomainCaching = "DisableExecServerAppDomainCaching";
         private const int MaxRetryProcess = 10;
         private const int RetryWait = 500; // in ms
@@ -61,6 +63,7 @@ namespace SiliconStudio.ExecServer
             {
                 var executablePath = ExtractPath(args, "executable");
                 var workingDirectory = ExtractPath(args, "working directory");
+                execServerPath = Path.Combine(Path.GetDirectoryName(executablePath), Path.GetFileNameWithoutExtension(executablePath) + "_ExecServer.exe");
                 var result = RunClient(executablePath, workingDirectory, args);
                 return result;
             }
@@ -170,7 +173,7 @@ namespace SiliconStudio.ExecServer
                 Thread.Sleep(RetryWait);
             }
 
-            Console.WriteLine("ERROR cannot run command: {0} {1}", Assembly.GetEntryAssembly().Location, string.Join(" ", args));
+            Console.WriteLine("ERROR cannot connect to proxy server: {0} {1}", execServerPath, string.Join(" ", args));
             return 1;
         }
 
@@ -211,11 +214,10 @@ namespace SiliconStudio.ExecServer
             var originalTime = File.GetLastWriteTimeUtc(originalExecServerAppPath);
 
             // Avoid locking ExecServer.exe original file, so we are using the name of the executable path and append _ExecServer.exe
-            var copyExecServer = Path.Combine(Path.GetDirectoryName(executablePath), Path.GetFileNameWithoutExtension(executablePath) + "_ExecServer.exe");
             var copyExecFile = false;
-            if (File.Exists(copyExecServer))
+            if (File.Exists(execServerPath))
             {
-                var copyExecServerTime = File.GetLastWriteTimeUtc(copyExecServer);
+                var copyExecServerTime = File.GetLastWriteTimeUtc(execServerPath);
                 // If exec server has changed, we need to copy the new version to it
                 copyExecFile = originalTime != copyExecServerTime;
             }
@@ -228,13 +230,13 @@ namespace SiliconStudio.ExecServer
             {
                 try
                 {
-                    File.Copy(originalExecServerAppPath, copyExecServer, true);
+                    File.Copy(originalExecServerAppPath, execServerPath, true);
 
                     // Copy the .config file as well
                     var executableConfigFile = executablePath + ".config";
                     if (File.Exists(executableConfigFile))
                     {
-                        File.Copy(executableConfigFile, copyExecServer + ".config", true);
+                        File.Copy(executableConfigFile, execServerPath + ".config", true);
                     }
                 }
                 catch (IOException)
@@ -245,9 +247,9 @@ namespace SiliconStudio.ExecServer
             // NOTE: We are not using Process.Start as it is for some unknown reasons blocking the process calling this process on Process.ExitProcess
             // Handling directly the creation of the process with Win32 function solves this. Not sure why.
             var arguments = string.Format("/server \"{0}\"", executablePath);
-            if (!ProcessHelper.LaunchProcess(copyExecServer, arguments))
+            if (!ProcessHelper.LaunchProcess(execServerPath, arguments))
             {
-                Console.WriteLine("Error, unable to launch process [{0}]", copyExecServer);
+                Console.WriteLine("Error, unable to launch process [{0}]", execServerPath);
             }
         }
 
