@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
@@ -61,7 +62,7 @@ namespace SiliconStudio.Paradox.Engine.Processors
             transformationRoots.Clear();
         }
 
-        internal static void UpdateTransformations(FastCollection<TransformComponent> transformationComponents, bool skipSpecialRoots)
+        internal static void UpdateTransformations(FastCollection<TransformComponent> transformationComponents)
         {
             // To avoid GC pressure (due to lambda), parallelize only if required
             if (transformationComponents.Count >= 1024)
@@ -72,14 +73,11 @@ namespace SiliconStudio.Paradox.Engine.Processors
                     1024,
                     (i, transformation) =>
                         {
-                            if (skipSpecialRoots && transformation.isSpecialRoot)
-                                return;
-
                             UpdateTransformation(transformation);
 
                             // Recurse
                             if (transformation.Children.Count > 0)
-                                UpdateTransformations(transformation.Children, true);
+                                UpdateTransformations(transformation.Children);
                         }
                     );
             }
@@ -87,14 +85,11 @@ namespace SiliconStudio.Paradox.Engine.Processors
             {
                 foreach (var transformation in transformationComponents)
                 {
-                    if (skipSpecialRoots && transformation.isSpecialRoot)
-                        continue;
-
                     UpdateTransformation(transformation);
 
                     // Recurse
                     if (transformation.Children.Count > 0)
-                        UpdateTransformations(transformation.Children, true);
+                        UpdateTransformations(transformation.Children);
                 }
             }
         }
@@ -103,7 +98,7 @@ namespace SiliconStudio.Paradox.Engine.Processors
         {
             // Update transform
             transform.UpdateLocalMatrix();
-            transform.UpdateWorldMatrixNonRecursive();
+            transform.UpdateWorldMatrixInternal(false);
         }
 
         /// <summary>
@@ -114,11 +109,10 @@ namespace SiliconStudio.Paradox.Engine.Processors
         {
             notSpecialRootComponents.Clear();
             foreach (var t in transformationRoots)
-                if(!t.isSpecialRoot)
-                    notSpecialRootComponents.Add(t);
+                notSpecialRootComponents.Add(t);
 
             // Special roots are already filtered out
-            UpdateTransformations(notSpecialRootComponents, false);
+            UpdateTransformations(notSpecialRootComponents);
         }
 
         /// <summary>

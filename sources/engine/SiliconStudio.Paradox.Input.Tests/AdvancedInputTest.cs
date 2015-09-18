@@ -92,7 +92,7 @@ namespace SiliconStudio.Paradox.Input.Tests
         protected override Task LoadContent()
         {
             // Load the fonts
-            spriteFont11 = Asset.Load<SpriteFont>("Arial11");
+            spriteFont11 = Asset.Load<SpriteFont>("Arial");
 
             // load the round texture 
             roundTexture = Asset.Load<Texture>("round");

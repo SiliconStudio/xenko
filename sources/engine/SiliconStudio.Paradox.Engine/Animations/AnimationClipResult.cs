@@ -28,6 +28,6 @@ namespace SiliconStudio.Paradox.Animations
         /// <summary>
         /// Stores all animation channel struct values at a given time.
         /// </summary>
-        internal byte[] Data = EmptyData;
+        public byte[] Data = EmptyData;
     }
 }

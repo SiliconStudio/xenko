@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 using SiliconStudio.Core;
@@ -42,6 +43,19 @@ namespace SiliconStudio.TextureConverter.TexLibraries
     internal class DxtTexLib : ITexLibrary
     {
         private static Logger Log = GlobalLogger.GetLogger("DxtTexLib");
+
+        private static HashSet<string> SupportedExtensions = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase)
+        {
+            ".dds",
+            ".bmp",
+            ".tga",
+            ".jpg",
+            ".jpeg",
+            ".jpe",
+            ".png",
+            ".tiff",
+            ".tif",
+        };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DxtTexLib"/> class.
@@ -116,11 +130,15 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             {
                 case RequestType.Loading:
                     LoadingRequest loader = (LoadingRequest)request;
-                    return loader.Mode==LoadingRequest.LoadingMode.FilePath && Path.GetExtension(loader.FilePath).Equals(".dds");
+                    return loader.Mode==LoadingRequest.LoadingMode.FilePath && SupportedExtensions.Contains(Path.GetExtension(loader.FilePath));
 
                 case RequestType.Compressing:
                     CompressingRequest compress = (CompressingRequest)request;
                     return SupportFormat(compress.Format) && SupportFormat(image.Format);
+
+                case RequestType.Converting:
+                    ConvertingRequest converting = (ConvertingRequest)request;
+                    return SupportFormat(converting.Format) && SupportFormat(converting.Format);
 
                 case RequestType.Export:
                     return SupportFormat(image.Format) && Path.GetExtension(((ExportRequest)request).FilePath).Equals(".dds");
@@ -160,6 +178,9 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 case RequestType.Decompressing:
                     Decompress(image, libraryData, (DecompressingRequest)request);
                     break;
+                case RequestType.Converting:
+                    Convert(image, libraryData, (ConvertingRequest)request);
+                    break;
                 case RequestType.MipMapsGeneration:
                     GenerateMipMaps(image, libraryData, (MipMapsGenerationRequest)request);
                     break;
@@ -194,7 +215,21 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
             libraryData.Image = new ScratchImage();
             libraryData.Metadata = new TexMetadata();
-            HRESULT hr = Utilities.LoadDDSFile(loader.FilePath, DDS_FLAGS.DDS_FLAGS_NONE, out libraryData.Metadata, libraryData.Image);
+
+            var extension = Path.GetExtension(loader.FilePath);
+            HRESULT hr = 0;
+            if (extension.EndsWith(".dds", StringComparison.InvariantCultureIgnoreCase))
+            {
+                hr = Utilities.LoadDDSFile(loader.FilePath, DDS_FLAGS.DDS_FLAGS_NONE, out libraryData.Metadata, libraryData.Image);
+            }
+            else if (extension.EndsWith(".tga", StringComparison.InvariantCultureIgnoreCase))
+            {
+                hr = Utilities.LoadTGAFile(loader.FilePath, out libraryData.Metadata, libraryData.Image);
+            }
+            else
+            {
+                hr = Utilities.LoadWICFile(loader.FilePath, WIC_FLAGS.WIC_FLAGS_NONE, out libraryData.Metadata, libraryData.Image);
+            }
 
             if (hr != HRESULT.S_OK)
             {
@@ -353,6 +388,43 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         }
 
         /// <summary>
+        /// Convert the specified image.
+        /// </summary>
+        /// <param name="image">The image.</param>
+        /// <param name="libraryData">The library data.</param>
+        /// <param name="request">The decompression request</param>
+        /// <exception cref="TextureToolsException">Decompression failed</exception>
+        private void Convert(TexImage image, DxtTextureLibraryData libraryData, ConvertingRequest request)
+        {
+            // TODO: temp if request format is SRGB we force it to non-srgb to perform the conversion. Will not work if texture input is SRGB
+            var outputFormat = request.Format.IsSRgb() ? request.Format.ToNonSRgb() : request.Format;
+
+            Log.Info("Converting texture from {0} to {1}", ((PixelFormat)libraryData.Metadata.format), outputFormat);
+
+            var scratchImage = new ScratchImage();
+            var hr = Utilities.Convert(libraryData.DxtImages, libraryData.DxtImages.Length, ref libraryData.Metadata, (DXGI_FORMAT)outputFormat, TEX_FILTER_FLAGS.TEX_FILTER_BOX, 0.0f, scratchImage);
+
+            if (hr != HRESULT.S_OK)
+            {
+                Log.Error("Converting failed: " + hr);
+                throw new TextureToolsException("Converting failed: " + hr);
+            }
+
+            // Freeing Memory
+            if (image.DisposingLibrary != null) image.DisposingLibrary.Dispose(image);
+
+            libraryData.Image = scratchImage;
+            libraryData.DxtImages = libraryData.Image.GetImages();
+            libraryData.Metadata = libraryData.Image.metadata;
+            image.DisposingLibrary = this;
+
+            // adapt the image format based on desired output format
+            ChangeDxtImageType(libraryData, (DXGI_FORMAT)request.Format);
+
+            UpdateImage(image, libraryData);
+        }
+
+        /// <summary>
         /// Decompresses the specified image.
         /// </summary>
         /// <param name="image">The image.</param>
@@ -418,7 +490,8 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     filter |= TEX_FILTER_FLAGS.TEX_FILTER_CUBIC;
                     break;
                 case Filter.MipMapGeneration.Box:
-                    filter |= TEX_FILTER_FLAGS.TEX_FILTER_FANT;
+                    // Box filter is supported only for power of two textures
+                    filter |= image.IsPowerOfTwo() ? TEX_FILTER_FLAGS.TEX_FILTER_FANT : TEX_FILTER_FLAGS.TEX_FILTER_LINEAR;
                     break;
                 default:
                     filter |= TEX_FILTER_FLAGS.TEX_FILTER_FANT;

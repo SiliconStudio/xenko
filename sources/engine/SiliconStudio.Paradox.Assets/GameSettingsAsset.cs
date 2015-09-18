@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
@@ -22,7 +23,7 @@ namespace SiliconStudio.Paradox.Assets
     /// Settings for a game with the default scene, resolution, graphics profile...
     /// </summary>
     [DataContract("GameSettingsAsset")]
-    [AssetDescription(FileExtension, false)]
+    [AssetDescription(FileExtension, false, AlwaysMarkAsRoot = true)]
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
     [AssetCompiler(typeof(GameSettingsAssetCompiler))]
     [ThumbnailCompiler(PreviewerCompilerNames.GameSettingsThumbnailCompilerQualifiedName)]
@@ -42,12 +43,15 @@ namespace SiliconStudio.Paradox.Assets
             BackBufferWidth = 1280;
             BackBufferHeight = 720;
             DefaultGraphicsProfile = GraphicsProfile.Level_10_0;
+            RenderingMode = RenderingMode.HDR;
+            ColorSpace = ColorSpace.Linear;
         }
 
         /// <summary>
         /// Gets or sets the default scene.
         /// </summary>
         /// <userdoc>The default scene that will be loaded at game startup.</userdoc>
+        [DataMember(10)]
         public Scene DefaultScene { get; set; }
 
         /// <summary>
@@ -58,6 +62,8 @@ namespace SiliconStudio.Paradox.Assets
         /// Might be overriden depending on actual device resolution and/or ratio.
         /// On Windows, it will be the window size. On Android/iOS, it will be the off-screen target resolution.
         /// </userdoc>
+        [DataMember(20)]
+        [Display(null, null, "Graphics")]
         public int BackBufferWidth { get; set; }
 
         /// <summary>
@@ -68,25 +74,61 @@ namespace SiliconStudio.Paradox.Assets
         /// Might be overriden depending on actual device resolution and/or ratio.
         /// On Windows, it will be the window size. On Android/iOS, it will be the off-screen target resolution.
         /// </userdoc>
+        [DataMember(30)]
+        [Display(null, null, "Graphics")]
         public int BackBufferHeight { get; set; }
 
         /// <summary>
         /// Gets or sets the default graphics profile.
         /// </summary>
         /// <userdoc>The graphics feature level this game require.</userdoc>
+        [DataMember(40)]
+        [Display(null, null, "Graphics")]
         public GraphicsProfile DefaultGraphicsProfile { get; set; }
 
         /// <summary>
         /// Gets or sets the display orientation.
         /// </summary>
         /// <userdoc>The display orientations this game support.</userdoc>
+        [DataMember(50)]
+        [Display(null, null, "Graphics")]
         public DisplayOrientation DisplayOrientation { get; set; }
 
         /// <summary>
         /// Gets or sets the texture quality.
         /// </summary>
         /// <userdoc>The texture quality when encoding textures. Higher settings might result in much slower build depending on the target platform.</userdoc>
+        [DataMember(60)]
+        [Display(null, null, "Graphics")]
         public TextureQuality TextureQuality { get; set; }
+
+        /// <summary>
+        /// Gets or sets the rendering mode.
+        /// </summary>
+        /// <value>The rendering mode.</value>
+        /// <userdoc>The default rendering mode (HDR or LDR) used to render the preview and thumbnail. This value doesn't affect the runtime but only the editor.</userdoc>
+        [DataMember(70)]
+        [DefaultValue(Assets.RenderingMode.HDR)]
+        [Display("Editor Rendering Mode", null, "Graphics")]
+        public RenderingMode RenderingMode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the colorspace.
+        /// </summary>
+        /// <value>The colorspace.</value>
+        /// <userdoc>The colorspace (Gamma or Linear) used for rendering. This value affects both the runtime and editor.</userdoc>
+        [DataMember(80)]
+        [DefaultValue(ColorSpace.Linear)]
+        [Display(null, null, "Graphics")]
+        public ColorSpace ColorSpace { get; set; }
+
+        /// <summary>
+        /// Gets or sets the game settings per profiles.
+        /// </summary>
+        [DataMember(90)]
+        [Browsable(false)]
+        [DefaultValue(null)]
+        public Dictionary<string, IGameSettingsProfile> Profiles { get; set; }
 
         internal class UpgraderVersion130
         {

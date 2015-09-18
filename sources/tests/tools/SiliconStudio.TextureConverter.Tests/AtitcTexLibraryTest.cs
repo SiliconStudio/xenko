@@ -29,6 +29,7 @@ namespace SiliconStudio.TextureConverter.Tests
             paraLib.Dispose();
         }
 
+        [Ignore]
         [TestCase("Texture3D_WMipMaps_ATC_RGBA_Explicit.pdx")]
         [TestCase("TextureArray_WMipMaps_ATC_RGBA_Explicit.pdx")]
         public void StartLibraryTest(string file)
@@ -43,6 +44,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
+        [Ignore]
         [TestCase("Texture3D_WMipMaps_ATC_RGBA_Explicit.pdx")]
         [TestCase("TextureArray_WMipMaps_ATC_RGBA_Explicit.pdx")]
         public void EndLibraryTest(string file)
@@ -64,7 +66,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
-        [Test]
+        [Test, Ignore]
         public void CanHandleRequestTest()
         {
             TexImage image = LoadInput("TextureArray_WMipMaps_ATC_RGBA_Explicit.pdx");
@@ -77,6 +79,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("Texture3D_WMipMaps_ATC_RGBA_Explicit.pdx")]
         [TestCase("TextureArray_WMipMaps_ATC_RGBA_Explicit.pdx")]
         [TestCase("TextureCube_WMipMaps_ATC_RGBA_Explicit.pdx")]
@@ -89,6 +92,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
+        [Ignore]
         [TestCase("Texture3D_WMipMap_RGBA8888.pdx", Paradox.Graphics.PixelFormat.ATC_RGBA_Explicit)]
         [TestCase("TextureArray_WMipMaps_RGBA8888.pdx", Paradox.Graphics.PixelFormat.ATC_RGBA_Interpolated)]
         [TestCase("TextureCube_WMipMaps_RGBA8888.pdx", Paradox.Graphics.PixelFormat.ATC_RGBA_Explicit)]

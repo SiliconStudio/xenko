@@ -51,9 +51,9 @@ namespace SiliconStudio.Presentation.Behaviors
         public Type EventOwnerType { get { return (Type)GetValue(EventOwnerTypeProperty); } set { SetValue(EventOwnerTypeProperty, value); } }
 
         /// <summary>
-        /// Gets or sets whether to set the event has handled.
+        /// Gets or sets whether to set the event as handled.
         /// </summary>
-        public bool HandleEvent { get { return (bool)GetValue(HandleEventProperty); } set { SetValue(EventOwnerTypeProperty, value); } }
+        public bool HandleEvent { get { return (bool)GetValue(HandleEventProperty); } set { SetValue(HandleEventProperty, value); } }
 
         /// <summary>
         /// Invoked when the monitored event is raised.

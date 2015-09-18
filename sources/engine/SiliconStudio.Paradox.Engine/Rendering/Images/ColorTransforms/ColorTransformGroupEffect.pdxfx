@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
 
         if (ColorTransformKeys.Enabled)
         {
-            mixin ColorTransformKeys.Shader;
+            mixin ColorTransformKeys.Shader, ColorTransformKeys.GenericArguments;
         }
         else
         {

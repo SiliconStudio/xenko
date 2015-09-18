@@ -26,6 +26,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("Texture3D_WMipMaps_ATC_RGBA_Explicit.pdx")]
         [TestCase("TextureArray_WMipMaps_ATC_RGBA_Explicit.pdx")]
         [TestCase("TextureCube_WMipMaps_RGBA8888.pdx")]
@@ -39,7 +40,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Test]
+        [Test, Ignore]
         public void CanHandleRequestTest()
         {
             TexImage image = TestTools.Load(library, "Texture3D_WMipMaps_ATC_RGBA_Explicit.pdx");
@@ -53,6 +54,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("Texture3D_WMipMaps_ATC_RGBA_Explicit.pdx")]
         [TestCase("TextureArray_WMipMaps_ATC_RGBA_Explicit.pdx")]
         [TestCase("TextureCube_WMipMaps_RGBA8888.pdx")]
@@ -65,6 +67,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
+        [Ignore]
         [TestCase("Texture3D_WMipMaps_ATC_RGBA_Explicit.pdx", 4)]
         [TestCase("TextureArray_WMipMaps_ATC_RGBA_Explicit.pdx", 512)]
         [TestCase("TextureCube_WMipMaps_RGBA8888.pdx", 16)]
@@ -77,6 +80,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
+        [Ignore]
         [TestCase("Texture3D_WMipMaps_ATC_RGBA_Explicit.pdx")]
         [TestCase("TextureArray_WMipMaps_ATC_RGBA_Explicit.pdx")]
         [TestCase("TextureCube_WMipMaps_RGBA8888.pdx")]

@@ -44,6 +44,11 @@ namespace SiliconStudio.Paradox.Rendering
         /// </summary>
         public RasterizerState RasterizerState;
 
+        /// <summary>
+        /// A boolean indicating whether the RasterizerState defines by this instance is overloading all other rasterizer states (coming from Material for example).
+        /// </summary>
+        public bool ForceRasterizer;
+
         public bool HasTransparency { get; private set; }
 
         public bool IsGeometryInverted;
@@ -107,6 +112,7 @@ namespace SiliconStudio.Paradox.Rendering
         public void Draw(RenderContext context)
         {
             // Retrieve effect parameters
+            var graphicsDevice = context.GraphicsDevice;
             var mesh = Mesh;
             var currentRenderData = mesh.Draw;
             var material = Material;
@@ -117,12 +123,30 @@ namespace SiliconStudio.Paradox.Rendering
             parameters.Set(TransformationKeys.World, WorldMatrix);
 
             // TODO: We should clarify exactly how to override rasterizer states. Currently setup here on Context.Parameters to allow Material/ModelComponent overrides, but this is ugly
-            context.Parameters.Set(Effect.RasterizerStateKey, RasterizerState);
+            // Apply rasterizer
+            var rasterizer = RasterizerState; 
+            if (!ForceRasterizer && Material.CullMode.HasValue && Material.CullMode.Value != RasterizerState.Description.CullMode)
+            {
+                switch (Material.CullMode.Value)
+                {
+                    case CullMode.Back:
+                        rasterizer = graphicsDevice.RasterizerStates.CullBack;
+                        break;
+                    case CullMode.Front:
+                        rasterizer = graphicsDevice.RasterizerStates.CullFront;
+                        break;
+                    case CullMode.None:
+                        rasterizer = graphicsDevice.RasterizerStates.CullNone;
+                        break;
+                }
+            }
+            context.Parameters.Set(Effect.RasterizerStateKey, rasterizer);
 
+            // Handle picking
             if (context.IsPicking()) // TODO move this code corresponding to picking outside of the runtime code!
             {
                 parameters.Set(ModelComponentPickingShaderKeys.ModelComponentId, new Color4(RenderModel.ModelComponent.Id));
-                parameters.Set(ModelComponentPickingShaderKeys.MeshId, new Color4(Mesh.NodeIndex));
+                parameters.Set(ModelComponentPickingShaderKeys.MeshId, new Color4(RenderModel.ModelComponent.Model.Meshes.IndexOf(Mesh)));
                 parameters.Set(ModelComponentPickingShaderKeys.MaterialId, new Color4(Mesh.MaterialIndex));
 
                 // Don't use the materials blend state on picking targets
@@ -178,8 +202,6 @@ namespace SiliconStudio.Paradox.Rendering
             {
                 if (currentRenderData != null)
                 {
-                    var graphicsDevice = context.GraphicsDevice;
-
                     graphicsDevice.SetVertexArrayObject(vao);
 
                     if (currentRenderData.IndexBuffer == null)

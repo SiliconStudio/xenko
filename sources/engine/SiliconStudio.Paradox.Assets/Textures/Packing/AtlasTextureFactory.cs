@@ -14,10 +14,11 @@ namespace SiliconStudio.Paradox.Assets.Textures.Packing
         /// Creates texture atlas image from a given texture atlas
         /// </summary>
         /// <param name="atlasTextureLayout">Input texture atlas</param>
+        /// <param name="srgb">True if the texture atlas should be generated to a SRgb texture</param>
         /// <returns></returns>
-        public static Image CreateTextureAtlas(AtlasTextureLayout atlasTextureLayout)
+        public static Image CreateTextureAtlas(AtlasTextureLayout atlasTextureLayout, bool srgb)
         {
-            var atlasTexture = Image.New2D(atlasTextureLayout.Width, atlasTextureLayout.Height, 1, PixelFormat.R8G8B8A8_UNorm);
+            var atlasTexture = Image.New2D(atlasTextureLayout.Width, atlasTextureLayout.Height, 1, srgb ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm);
 
             unsafe
             {

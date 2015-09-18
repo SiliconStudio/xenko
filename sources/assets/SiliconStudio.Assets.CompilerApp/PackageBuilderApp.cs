@@ -22,6 +22,7 @@ using SiliconStudio.Paradox.Assets.SpriteFont;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Rendering.Materials;
 using SiliconStudio.Paradox.Rendering.ProceduralModels;
+using SiliconStudio.Paradox.SpriteStudio.Offline;
 
 namespace SiliconStudio.Assets.CompilerApp
 {
@@ -49,6 +50,7 @@ namespace SiliconStudio.Assets.CompilerApp
             RuntimeHelpers.RunModuleConstructor(typeof(MaterialKeys).Module.ModuleHandle);
             RuntimeHelpers.RunModuleConstructor(typeof(SpriteFontAsset).Module.ModuleHandle);
             RuntimeHelpers.RunModuleConstructor(typeof(ModelAsset).Module.ModuleHandle);
+            RuntimeHelpers.RunModuleConstructor(typeof(SpriteStudioAnimationAsset).Module.ModuleHandle);
             //var project = new Package();
             //project.Save("test.pdxpkg");
 

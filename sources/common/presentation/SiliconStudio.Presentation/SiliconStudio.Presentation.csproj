@@ -49,10 +49,13 @@
     <Compile Include="Behaviors\NumericTextBoxTransactionalRepeatButtonsBehavior.cs" />
     <Compile Include="Behaviors\OnEventBehavior.cs" />
     <Compile Include="Behaviors\OnEventSetPropertyBehavior.cs" />
+    <Compile Include="Behaviors\OnMouseEventBehavior.cs" />
+    <Compile Include="Behaviors\OverrideCursorBehavior.cs" />
     <Compile Include="Behaviors\SliderDragFromTrackBehavior.cs" />
     <Compile Include="Behaviors\TextBoxCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\ThumbTransactionalDragBehavior.cs" />
     <Compile Include="Controls\ExpandableItemsControl.cs" />
+    <Compile Include="Controls\FilteringComboBoxSort.cs" />
     <Compile Include="Controls\TreeViewElementFinder.cs" />
     <Compile Include="Controls\TreeView.cs" />
     <Compile Include="Controls\TreeViewItem.cs" />
@@ -108,6 +111,7 @@
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="MarkupExtensions\FalseExtension.cs" />
     <Compile Include="MarkupExtensions\IntExtension.cs" />
+    <Compile Include="MarkupExtensions\KeyExtension.cs" />
     <Compile Include="MarkupExtensions\TrueExtension.cs" />
     <Compile Include="Core\TimeoutDispatcherTimer.cs" />
     <Compile Include="ValueConverters\EnumToDisplayName.cs" />

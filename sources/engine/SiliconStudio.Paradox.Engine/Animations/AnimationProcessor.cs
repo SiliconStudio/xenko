@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Animations
 
 
         public AnimationProcessor()
-            : base(new PropertyKey[] { ModelComponent.Key, AnimationComponent.Key })
+            : base(new PropertyKey[] { AnimationComponent.Key })
         {
             Order = -500;
         }
@@ -123,28 +123,26 @@ namespace SiliconStudio.Paradox.Animations
                         animationOperations.Add(AnimationOperation.NewBlend(playingAnimation.BlendOperation, currentBlend));
                 }
 
-                var modelViewHierarchy = associatedData.ModelComponent.ModelViewHierarchy;
-
                 if (animationOperations.Count > 0)
                 {
                     // Animation blending
                     animationComponent.Blender.Compute(animationOperations, ref associatedData.AnimationClipResult);
+                    animationComponent.CurrentFrameResult = associatedData.AnimationClipResult;
 
-                    // Update animation data
-                    if (modelViewHierarchy != null)
-                        meshAnimation.Update(modelViewHierarchy, associatedData.AnimationClipResult);
-                }
-                else
-                {
-                    // If nothing is playing, reset to bind pose
-                    if (modelViewHierarchy != null)
-                        modelViewHierarchy.ResetInitialValues();
+                    // Update animation data if we have a model component
+                    if (associatedData.ModelComponent != null)
+                    {
+                        var modelViewHierarchy = associatedData.ModelComponent.ModelViewHierarchy;
+                        if (modelViewHierarchy != null)
+                            meshAnimation.Update(modelViewHierarchy, associatedData.AnimationClipResult);
+                    }
                 }
 
                 // Update weight animation
                 for (int index = 0; index < animationComponent.PlayingAnimations.Count; index++)
                 {
                     var playingAnimation = animationComponent.PlayingAnimations[index];
+                    bool removeAnimation = false;
                     if (playingAnimation.RemainingTime > TimeSpan.Zero)
                     {
                         playingAnimation.Weight += (playingAnimation.WeightTarget - playingAnimation.Weight)*
@@ -153,9 +151,19 @@ namespace SiliconStudio.Paradox.Animations
                         if (playingAnimation.RemainingTime <= TimeSpan.Zero)
                         {
                             playingAnimation.Weight = playingAnimation.WeightTarget;
+
+                            // If weight target was 0, removes the animation
+                            if (playingAnimation.Weight == 0.0f)
+                                removeAnimation = true;
                         }
                     }
-                    else if (playingAnimation.Weight / totalWeight <= 0.01f)
+
+                    if (playingAnimation.RepeatMode == AnimationRepeatMode.PlayOnce && playingAnimation.CurrentTime == playingAnimation.Clip.Duration)
+                    {
+                        removeAnimation = true;
+                    }
+
+                    if (removeAnimation)
                     {
                         animationComponent.PlayingAnimations.RemoveAt(index--);
 

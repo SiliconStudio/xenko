@@ -149,7 +149,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         public class RemoveParametersUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 asset.Parameters = DynamicYamlEmpty.Default;
             }

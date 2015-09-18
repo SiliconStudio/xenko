@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
         public SpriteTestGame()
         {   
-            CurrentVersion = 5;
+            CurrentVersion = 6;
             GraphicsDeviceManager.PreferredDepthStencilFormat = PixelFormat.D24_UNorm_S8_UInt;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1 };
         }

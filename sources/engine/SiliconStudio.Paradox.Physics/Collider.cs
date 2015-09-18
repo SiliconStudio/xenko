@@ -56,11 +56,11 @@ namespace SiliconStudio.Paradox.Physics
 
                 if (value)
                 {
-                    InternalCollider.ActivationState = canSleep ? BulletSharp.ActivationState.ActiveTag : BulletSharp.ActivationState.DisableDeactivation;
+                    InternalCollider.ForceActivationState(canSleep ? BulletSharp.ActivationState.ActiveTag : BulletSharp.ActivationState.DisableDeactivation);
                 }
                 else
                 {
-                    InternalCollider.ActivationState = BulletSharp.ActivationState.DisableSimulation;
+                    InternalCollider.ForceActivationState(BulletSharp.ActivationState.DisableSimulation);
                 }
             }
         }
@@ -96,13 +96,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <value>
         ///   <c>true</c> if this instance is active; otherwise, <c>false</c>.
         /// </value>
-        public bool IsActive
-        {
-            get
-            {
-                return InternalCollider.IsActive;
-            }
-        }
+        public bool IsActive => InternalCollider.IsActive;
 
         /// <summary>
         /// Attempts to awake the collider.
@@ -269,21 +263,13 @@ namespace SiliconStudio.Paradox.Physics
         /// </value>
         public bool ContactsAlwaysValid { get; set; }
 
-        private readonly List<Collision> pairs = new List<Collision>();
-
         /// <summary>
         /// Gets the contacts.
         /// </summary>
         /// <value>
         /// The contacts.
         /// </value>
-        public List<Collision> Pairs
-        {
-            get
-            {
-                return pairs;
-            }
-        }
+        public List<Collision> Collisions { get; } = new List<Collision>();
 
         internal Channel<Collision> FirstCollisionChannel;
 

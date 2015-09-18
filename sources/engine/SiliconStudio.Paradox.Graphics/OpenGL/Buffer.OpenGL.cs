@@ -53,13 +53,13 @@ namespace SiliconStudio.Paradox.Graphics
         {
             bufferDescription = description;
             ViewFlags = viewFlags;
-            ViewFormat = viewFormat;
 
 #if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             int pixelSize;
             bool isCompressed;
-            OpenGLConvertExtensions.ConvertPixelFormat(GraphicsDevice, viewFormat, out internalFormat, out glPixelFormat, out type, out pixelSize, out isCompressed);
+            OpenGLConvertExtensions.ConvertPixelFormat(GraphicsDevice, ref viewFormat, out internalFormat, out glPixelFormat, out type, out pixelSize, out isCompressed);
 #endif
+            ViewFormat = viewFormat;
 
             Recreate(dataPointer);
 

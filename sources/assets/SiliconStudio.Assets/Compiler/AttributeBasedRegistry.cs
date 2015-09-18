@@ -20,6 +20,9 @@ namespace SiliconStudio.Assets.Compiler
         private readonly Logger log = GlobalLogger.GetLogger("AssetsCompiler.AttributeBasedRegistry");
 
         private readonly HashSet<Assembly> registeredAssemblies = new HashSet<Assembly>();
+        private readonly HashSet<Assembly> assembliesToRegister = new HashSet<Assembly>();
+
+        private bool assembliesChanged;
 
         /// <summary>
         /// Create an instance of that registry
@@ -29,22 +32,16 @@ namespace SiliconStudio.Assets.Compiler
             // Statically find all assemblies related to assets and register them
             var assemblies = AssemblyRegistry.Find(AssemblyCommonCategories.Assets);
             foreach (var assembly in assemblies)
-                AnalyseAssembly(assembly);
+            {
+                RegisterAssembly(assembly);
+            }
 
             AssemblyRegistry.AssemblyRegistered += AssemblyRegistered;
+            AssemblyRegistry.AssemblyUnregistered += AssemblyUnregistered;
         }
 
-        /// <summary>
-        /// Analyses an assembly and extracted asset compilers.
-        /// </summary>
-        /// <param name="assembly"></param>
-        private void AnalyseAssembly(Assembly assembly)
+        private void RegisterCompilersFromAssembly(Assembly assembly)
         {
-            if (assembly == null) throw new ArgumentNullException("assembly");
-
-            if (registeredAssemblies.Contains(assembly))
-                return;
-            
             // Process Asset types.
             foreach (var type in assembly.GetTypes())
             {
@@ -67,12 +64,11 @@ namespace SiliconStudio.Assets.Compiler
                     log.Error("Unable to instantiate compiler [{0}]", ex, compilerAttribute.TypeName);
                 }
             }
-            registeredAssemblies.Add(assembly);
         }
 
         protected virtual bool ProcessAttribute(T compilerAttribute, Type type)
         {
-            var compilerType = Type.GetType(compilerAttribute.TypeName);
+            var compilerType = AssemblyRegistry.GetType(compilerAttribute.TypeName);
             if (compilerType == null)
             {
                 log.Error("Unable to find compiler [{0}] for asset [{1}]", compilerAttribute.TypeName, type);
@@ -90,11 +86,48 @@ namespace SiliconStudio.Assets.Compiler
             return true;
         }
 
+        protected override void EnsureTypes()
+        {
+            if (assembliesChanged)
+            {
+                foreach (var assembly in assembliesToRegister)
+                {
+                    if (!registeredAssemblies.Contains(assembly))
+                    {
+                        RegisterCompilersFromAssembly(assembly);
+                        registeredAssemblies.Add(assembly);
+                    }
+                }
+                assembliesToRegister.Clear();
+                assembliesChanged = false;
+            }
+        }
+
+        private void RegisterAssembly(Assembly assembly)
+        {
+            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+            assembliesToRegister.Add(assembly);
+            assembliesChanged = true;
+        }
+
+        private void UnregisterAssembly(Assembly assembly)
+        {
+            registeredAssemblies.Remove(assembly);
+            UnregisterCompilersFromAssembly(assembly);
+            assembliesChanged = true;
+        }
+
         private void AssemblyRegistered(object sender, AssemblyRegisteredEventArgs e)
         {
             // Handle delay-loading assemblies
             if (e.Categories.Contains(AssemblyCommonCategories.Assets))
-                AnalyseAssembly(e.Assembly);
+                RegisterAssembly(e.Assembly);
+        }
+
+        private void AssemblyUnregistered(object sender, AssemblyRegisteredEventArgs e)
+        {
+            if (e.Categories.Contains(AssemblyCommonCategories.Assets))
+                UnregisterAssembly(e.Assembly);
         }
     }
 }

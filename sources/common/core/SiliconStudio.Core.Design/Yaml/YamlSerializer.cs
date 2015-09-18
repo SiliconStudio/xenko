@@ -161,6 +161,19 @@ namespace SiliconStudio.Core.Yaml
             serializer.Serialize(emitter, instance, type);
         }
 
+        /// <summary>
+        /// Serializes an object to specified stream in YAML format.
+        /// </summary>
+        /// <param name="emitter">The emitter.</param>
+        /// <param name="instance">The object to serialize.</param>
+        /// <param name="type">The type.</param>
+        /// <param name="contextSettings">The context settings.</param>
+        /// <param name="keepOnlySealedOverrides">if set to <c>true</c> [keep only sealed overrides].</param>
+        public static void Serialize(IEmitter emitter, object instance, Type type, SerializerContextSettings contextSettings, bool keepOnlySealedOverrides = false)
+        {
+            var serializer = GetYamlSerializer(keepOnlySealedOverrides);
+            serializer.Serialize(emitter, instance, type, contextSettings);
+        }
 
         /// <summary>
         /// Serializes an object to specified stream in YAML format.
@@ -289,7 +302,7 @@ namespace SiliconStudio.Core.Yaml
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
-                    attribute = new YamlMemberAttribute(memberAttribute.Name, mode) { Order = memberAttribute.Order };
+                    attribute = new YamlMemberAttribute(memberAttribute.Name, mode) { Order = memberAttribute.Order, Mask = memberAttribute.Mask };
                     //Trace.WriteLine(string.Format("Attribute remapped {0}", memberAttribute.Name));
                 }
                 else if (originalAttribute is DataMemberIgnoreAttribute)

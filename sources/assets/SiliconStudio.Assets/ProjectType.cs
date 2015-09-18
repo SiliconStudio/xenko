@@ -4,6 +4,8 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Assets
 {
+    // REMARK: Beware of the order of values in this enum, it is used for sorting.
+
     /// <summary>
     /// Type of the project.
     /// </summary>

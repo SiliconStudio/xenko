@@ -1,0 +1,16 @@
+!Texture
+Id: 8cc3c13d-b050-49ae-87cf-a58107f4e474
+SerializedVersion: 1
+Tags: []
+Source: ../../../data/tests/SmallJpeg.jpg
+ColorKeyEnabled: true
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+~Base:
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: 1
+        Tags: []
+        Source: 
+        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

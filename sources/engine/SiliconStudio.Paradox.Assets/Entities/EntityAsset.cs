@@ -98,7 +98,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
 
         class Upgrader : IAssetUpgrader
         {
-            public void Upgrade(int currentVersion, int targetVersion, ILogger log, YamlMappingNode yamlAssetNode)
+            public void Upgrade(AssetMigrationContext context, int currentVersion, int targetVersion, YamlMappingNode yamlAssetNode, PackageLoadingAssetFile assetFile)
             {
                 dynamic asset = new DynamicYamlMapping(yamlAssetNode);
 

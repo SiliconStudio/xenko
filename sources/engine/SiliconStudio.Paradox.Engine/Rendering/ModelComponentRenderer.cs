@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Engine;
@@ -35,6 +36,7 @@ namespace SiliconStudio.Paradox.Rendering
     /// </summary>
     public class ModelComponentRenderer : EntityComponentRendererBase
     {
+        private readonly static Logger Log = GlobalLogger.GetLogger("ModelComponentRenderer");
         private static readonly PropertyKey<RenderModelEffectSlotManager> RenderModelManagerKey = new PropertyKey<RenderModelEffectSlotManager>("ModelProcessor.RenderModelManagerKey", typeof(ModelComponentRenderer));
         private static readonly PropertyKey<ModelComponentRenderer> Current = new PropertyKey<ModelComponentRenderer>("ModelComponentRenderer.Current", typeof(ModelComponentRenderer));
 
@@ -123,6 +125,11 @@ namespace SiliconStudio.Paradox.Rendering
         public RasterizerState RasterizerState { get; set; }
 
         /// <summary>
+        /// Gets or sets a boolean indicating whether the rasterizer state set on this instance is overriding any rasterizer states defines at the material level.
+        /// </summary>
+        public bool ForceRasterizer { get; set; }
+
+        /// <summary>
         /// Gets or sets the rasterizer state used for meshes with an inverted geometry. If not set, use the <see cref="RasterizerState"/>
         /// </summary>
         /// <value>The rasterizer state for inverted geometry.</value>
@@ -132,7 +139,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// Allows to override the culling mode. If null, takes the culling mode from the current <see cref="SceneCameraRenderer"/>
         /// </summary>
         /// <value>The culling mode override.</value>
-        public CullingMode CullingMode { get; set; }
+        public CameraCullingMode CullingMode { get; set; }
 
         /// <summary>
         /// Gets the dynamic effect compiler created by this instance. This value may be null if <see cref="EffectName"/> is null and the renderer hasn't been called.
@@ -335,9 +342,9 @@ namespace SiliconStudio.Paradox.Rendering
 
                 // Fast AABB transform: http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
                 // Compute transformed AABB (by world)
-                // TODO: CullingMode should be pluggable
+                // TODO: CameraCullingMode should be pluggable
                 // TODO: This should not be necessary. Add proper bounding boxes to gizmos etc.
-                if (CullingMode == CullingMode.Frustum && boundingBox.Extent != Vector3.Zero && !frustum.Contains(ref boundingBox))
+                if (CullingMode == CameraCullingMode.Frustum && boundingBox.Extent != Vector3.Zero && !frustum.Contains(ref boundingBox))
                 {
                     continue;
                 }
@@ -350,6 +357,7 @@ namespace SiliconStudio.Paradox.Rendering
                 var projectedZ = projectedPosition.Z / projectedPosition.W;
 
                 renderMesh.RasterizerState = renderMesh.IsGeometryInverted ? RasterizerStateForInvertedGeometry : RasterizerState;
+                renderMesh.ForceRasterizer = ForceRasterizer;
 
                 renderMesh.UpdateMaterial();
 
@@ -365,7 +373,19 @@ namespace SiliconStudio.Paradox.Rendering
         {
             if (dynamicEffectCompiler.Update(renderMesh, passParameters))
             {
-                renderMesh.Initialize(context.GraphicsDevice);
+                try
+                {
+                    renderMesh.Initialize(context.GraphicsDevice);
+                }
+                catch (Exception e)
+                {
+                    Log.Error("Could not initialize RenderMesh, trying again with error fallback effect", e);
+
+                    // Try again with error effect to show user something failed with this model
+                    // TODO: What if an exception happens in this case too? Mark renderMesh as ignored or null?
+                    dynamicEffectCompiler.SwitchFallbackEffect(FallbackEffectType.Error, renderMesh, passParameters);
+                    renderMesh.Initialize(context.GraphicsDevice);
+                }
             }
         }
     }

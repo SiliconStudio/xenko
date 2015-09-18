@@ -20,10 +20,10 @@ namespace SiliconStudio.Paradox.Rendering.Images
     {
         public static readonly ParameterKey<Texture> LuminanceTexture = ParameterKeys.New<Texture>();
         public static readonly ParameterKey<float> KeyValue = ParameterKeys.New<float>(0.18f);
-        public static readonly ParameterKey<bool> AutoKeyValue = ParameterKeys.New<bool>(false);
-        public static readonly ParameterKey<float> LuminanceLocalFactor = ParameterKeys.New<float>(0.5f);
+        public static readonly ParameterKey<float> LuminanceLocalFactor = ParameterKeys.New<float>(0.0f);
         public static readonly ParameterKey<float> LuminanceAverageGlobal = ParameterKeys.New<float>();
         public static readonly ParameterKey<float> Contrast = ParameterKeys.New<float>(0.0f);
         public static readonly ParameterKey<float> Brightness = ParameterKeys.New<float>(0.0f);
+        public static readonly ParameterKey<float> Exposure = ParameterKeys.New<float>(1.0f);
     }
 }

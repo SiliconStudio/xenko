@@ -29,7 +29,6 @@
     <Compile Include="ChannelMicroThreadAwaiter.cs" />
     <Compile Include="ChannelPreference.cs" />
     <Compile Include="MicroThread.cs" />
-    <Compile Include="MicroThreadCancelledException.cs" />
     <Compile Include="MicroThreadEvent.cs" />
     <Compile Include="MicroThreadFlags.cs" />
     <Compile Include="MicroThreadLocal.cs" />
@@ -41,6 +40,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScheduleMode.cs" />
     <Compile Include="Scheduler.cs" />
+    <Compile Include="SchedulerEntry.cs" />
     <Compile Include="SchedulerEventArgs.cs" />
     <Compile Include="ScriptFlags.cs" />
     <Compile Include="SwitchToAwaiter.cs" />

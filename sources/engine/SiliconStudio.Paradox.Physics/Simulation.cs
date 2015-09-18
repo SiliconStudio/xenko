@@ -210,16 +210,16 @@ namespace SiliconStudio.Paradox.Physics
                 deletedPairsCache.Add(new KeyValuePair<Collider, Collision>(colA, pair));
                 deletedPairsCache.Add(new KeyValuePair<Collider, Collision>(colB, pair));
 
-                colA.Pairs.Remove(pair);
-                colB.Pairs.Remove(pair);
+                colA.Collisions.Remove(pair);
+                colB.Collisions.Remove(pair);
 
                 //did we remove all the pairs?
-                if (colA.Pairs.Count == 0)
+                if (colA.Collisions.Count == 0)
                 {
                     absLastPairsCache.Add(new KeyValuePair<Collider, Collision>(colA, pair));
                 }
                 //did we remove all the pairs?
-                if (colB.Pairs.Count == 0)
+                if (colB.Collisions.Count == 0)
                 {
                     absLastPairsCache.Add(new KeyValuePair<Collider, Collision>(colB, pair));
                 }
@@ -232,15 +232,15 @@ namespace SiliconStudio.Paradox.Physics
 
         private void PersistentManifoldContactProcessed(BulletSharp.ManifoldPoint cp, BulletSharp.CollisionObject body0, BulletSharp.CollisionObject body1)
         {
-            var colA = aliveColliders[body0];
-            var colB = aliveColliders[body1];
+            var colA = body0 != null ? aliveColliders[body0] : null;
+            var colB = body1 != null ? aliveColliders[body1] : null;
 
             if (colA == null || colB == null || !colA.ContactsAlwaysValid && !colB.ContactsAlwaysValid) return;
 
             //Pairs management
             Collision pair = null;
             var newPair = true;
-            foreach (var pair1 in colA.Pairs)
+            foreach (var pair1 in colA.Collisions)
             {
                 if ((pair1.ColliderA != colA || pair1.ColliderB != colB) && (pair1.ColliderA != colB || pair1.ColliderB != colA)) continue;
                 pair = pair1;
@@ -257,8 +257,8 @@ namespace SiliconStudio.Paradox.Physics
                     Contacts = new List<ContactPoint>()
                 };
 
-                colA.Pairs.Add(pair);
-                colB.Pairs.Add(pair);
+                colA.Collisions.Add(pair);
+                colB.Collisions.Add(pair);
             }
 
             //Contacts management
@@ -286,18 +286,19 @@ namespace SiliconStudio.Paradox.Physics
                 pair.Contacts.Add(contact);
 
                 cp.UserPersistentData = contact;
+                contact.Manifold = cp;
             }
 
             if (newPair)
             {
                 //are we the first pair we detect?
-                if (colA.Pairs.Count == 1)
+                if (colA.Collisions.Count == 1)
                 {
                     firstPairsCache.Add(new KeyValuePair<Collider, Collision>(colA, pair));
                 }
 
                 //are we the first pair we detect?
-                if (colB.Pairs.Count == 1)
+                if (colB.Collisions.Count == 1)
                 {
                     firstPairsCache.Add(new KeyValuePair<Collider, Collision>(colB, pair));
                 }

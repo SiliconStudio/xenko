@@ -34,6 +34,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
             DownscaleCount = 6;
             UpscaleCount = 4;
             EnableAverageLuminanceReadback = true;
+            readback = new ImageReadback<Half>();
         }
 
         protected override void InitializeCore()
@@ -49,8 +50,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
             multiScaler = ToLoadAndUnload(new ImageMultiScaler());
 
             // Readback is always going to be done on the 1x1 texture
-            readback = ToLoadAndUnload(new ImageReadback<Half>(Context));
-            readback.SetInput(luminance1x1);
+            readback = ToLoadAndUnload(readback);
 
             // Blur used before upscaling 
             blur = ToLoadAndUnload(new GaussianBlur());
@@ -134,6 +134,13 @@ namespace SiliconStudio.Paradox.Rendering.Images
             }
         }
 
+        public override void Reset()
+        {
+            readback.Reset();
+
+            base.Reset();
+        }
+
         protected override void DrawCore(RenderContext context)
         {
             var input = GetSafeInput(0);
@@ -194,6 +201,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
             // Calculate average luminance only if needed
             if (EnableAverageLuminanceReadback)
             {
+                readback.SetInput(luminance1x1);
                 readback.Draw();
                 var rawLogValue = readback.Result[0];
                 AverageLuminance = (float)Math.Pow(2.0, rawLogValue);

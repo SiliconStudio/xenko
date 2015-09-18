@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Rendering.Images
 {
@@ -77,7 +78,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
             }
         
             brightPassFilter.Parameters.Set(BrightFilterShaderKeys.BrightPassThreshold, Threshold);
-            brightPassFilter.Parameters.Set(BrightFilterShaderKeys.ColorModulator, Color);
+            brightPassFilter.Parameters.Set(BrightFilterShaderKeys.ColorModulator, Color.ToColorSpace(GraphicsDevice.ColorSpace));
             
             brightPassFilter.SetInput(input);
             brightPassFilter.SetOutput(output);

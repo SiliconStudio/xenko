@@ -11,15 +11,18 @@ namespace SiliconStudio.Paradox.Rendering.Images
     {
         private readonly ColorTransformGroup group;
 
+        private readonly RenderContext renderContext;
+
         private readonly ParameterCollection sharedParameters;
 
         private readonly ParameterCollection transformParameters;
 
         private readonly List<Texture> inputs;
 
-        public ColorTransformContext(ColorTransformGroup @group)
+        public ColorTransformContext(ColorTransformGroup @group, RenderContext renderContext)
         {
             this.group = group;
+            this.renderContext = renderContext;
             inputs = new List<Texture>();
             sharedParameters = group.Parameters;
             transformParameters = new ParameterCollection();
@@ -46,6 +49,14 @@ namespace SiliconStudio.Paradox.Rendering.Images
             get
             {
                 return sharedParameters;
+            }
+        }
+
+        public RenderContext RenderContext
+        {
+            get
+            {
+                return renderContext;
             }
         }
     }

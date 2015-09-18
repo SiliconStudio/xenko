@@ -13,7 +13,7 @@
     <AssemblyName>SiliconStudio.Paradox.Engine</AssemblyName>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
-    <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions) --generate-user-doc</SiliconStudioAssemblyProcessorOptions>
+    <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions)</SiliconStudioAssemblyProcessorOptions>
     <ParadoxProjectPlatformDependentWindows>true</ParadoxProjectPlatformDependentWindows>
     <ParadoxBuildTags>*</ParadoxBuildTags>
   </PropertyGroup>
@@ -75,6 +75,9 @@
     <Compile Include="Animations\AnimationCurveEvaluatorOptimizedQuaternionGroup.cs" />
     <Compile Include="Animations\Interpolator.cs" />
     <Compile Include="Engine\Design\EffectCompilationMode.cs" />
+    <Compile Include="Engine\LightComponentExtensions.cs" />
+    <Compile Include="Engine\ModelNodeTransformLink.cs" />
+    <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />
     <Compile Include="Engine\Network\ClientRouterMessage.cs" />
     <Compile Include="Engine\Network\SocketExtensions.cs" />
     <Compile Include="Engine\Network\SocketMessageLayer.cs" />
@@ -93,14 +96,31 @@
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketClient.cs" />
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketListener.cs" />
     <Compile Include="Engine\StartupScript.cs" />
+    <Compile Include="Engine\TransformLink.cs" />
+    <Compile Include="Engine\TransformOperation.cs" />
     <Compile Include="Rendering\Composers\DirectRenderFrameProvider.cs" />
-    <Compile Include="Rendering\CullingMode.cs" />
+    <Compile Include="Rendering\CameraCullingMode.cs" />
     <Compile Include="Rendering\Images\AntiAliasing\FXAAShaderEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>FXAAShaderEffect.pdxfx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Images\ColorTransforms\LuminanceToChannelShader.cs">
+      <DependentUpon>LuminanceToChannelShader.pdxsl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Images\ColorTransforms\LuminanceToChannelTransform.cs" />
+    <Compile Include="Rendering\Images\ColorTransforms\ToneMap\ToneMapHejl2Operator.cs" />
+    <Compile Include="Rendering\Images\ColorTransforms\ToneMap\ToneMapHejl2OperatorShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ToneMapHejl2OperatorShader.pdxsl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\ColorTransforms\ToneMap\ToneMapKeys.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ColorVertexStreamDefinition.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamBase.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamColor.cs" />
@@ -1221,13 +1241,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Images\ColorTransforms\GammaTransform.cs" />
-    <Compile Include="Rendering\Images\ColorTransforms\GammaTransformShader.cs">
-      <DependentUpon>GammaTransformShader.pdxsl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Rendering\Images\ColorTransforms\ToneMap\ToneMap.cs" />
     <Compile Include="Rendering\Images\ColorTransforms\ToneMap\ToneMapCommonOperator.cs" />
     <Compile Include="Rendering\Images\ColorTransforms\ToneMap\ToneMapCommonOperatorShader.cs">
@@ -1503,10 +1516,10 @@
     <Compile Include="Rendering\Lights\IDirectLight.cs" />
     <Compile Include="Rendering\Lights\IEnvironmentLight.cs" />
     <Compile Include="Rendering\Lights\ILight.cs" />
-    <Compile Include="Rendering\Lights\ILightColor.cs" />
+    <Compile Include="Rendering\Colors\IColorProvider.cs" />
     <Compile Include="Rendering\Lights\ILightShadow.cs" />
     <Compile Include="Rendering\Lights\LightAmbient.cs" />
-    <Compile Include="Rendering\Lights\LightColorRgb.cs" />
+    <Compile Include="Rendering\Colors\ColorRgbProvider.cs" />
     <Compile Include="Engine\LightComponent.cs" />
     <Compile Include="Rendering\Lights\LightComponentCollection.cs" />
     <Compile Include="Rendering\Lights\LightDirectional.cs" />
@@ -2125,7 +2138,6 @@
     <Compile Include="Rendering\RenderModel.cs" />
     <Compile Include="Engine\Processors\ChildSceneComponentChangedEventArgs.cs" />
     <Compile Include="Engine\Processors\ChildSceneProcessor.cs" />
-    <Compile Include="Engine\Design\SceneEditorCameraSettings.cs" />
     <Compile Include="Engine\Design\SceneEditorGraphicsModeHDRSettings.cs" />
     <Compile Include="Engine\Design\SceneEditorGraphicsModeLDRSettings.cs" />
     <Compile Include="Engine\Design\SceneEditorGraphicsModeSettingsBase.cs" />
@@ -2270,6 +2282,14 @@
     <None Include="Rendering\BRDF\BRDFMicrofacet.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>BRDFMicrofacet.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\ColorTransforms\LuminanceToChannelShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>LuminanceToChannelShader.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\ColorTransforms\ToneMap\ToneMapHejl2OperatorShader.pdxsl">
+      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <LastGenOutput>ToneMapHejl2OperatorShader.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\ComputeColors\Shaders\3dsMax\ComputeColorAdd3ds.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
@@ -2707,10 +2727,6 @@
     <None Include="Rendering\Images\ColorTransforms\ColorTransformShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ColorTransformShader.cs</LastGenOutput>
-    </None>
-    <None Include="Rendering\Images\ColorTransforms\GammaTransformShader.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>GammaTransformShader.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Images\ColorTransforms\Noise\FilmGrainShader.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

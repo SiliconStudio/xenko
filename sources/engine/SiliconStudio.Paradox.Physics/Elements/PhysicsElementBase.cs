@@ -7,40 +7,6 @@ using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Physics
 {
-    [DataContract("PhysicsSkinnedElementBase")]
-    [Display(40, "PhysicsSkinnedElementBase")]
-    public abstract class PhysicsSkinnedElementBase : PhysicsElementBase
-    {
-        private string linkedBoneName;
-
-        /// <summary>
-        /// Gets or sets the link (usually a bone).
-        /// </summary>
-        /// <value>
-        /// The mesh's linked bone name
-        /// </value>
-        /// <userdoc>
-        /// In the case of skinned mesh this must be the bone node name linked with this element.
-        /// </userdoc>
-        [DataMember(50)]
-        public string LinkedBoneName
-        {
-            get
-            {
-                return linkedBoneName;
-            }
-            set
-            {
-                if (InternalCollider != null)
-                {
-                    throw new Exception("Cannot change LinkedBoneName when the entity is already in the scene.");
-                }
-
-                linkedBoneName = value;
-            }
-        }
-    }
-
     [DataContract("PhysicsElementBase")]
     [Display(40, "PhysicsElementBase")]
     public abstract class PhysicsElementBase
@@ -58,16 +24,34 @@ namespace SiliconStudio.Paradox.Physics
 
         public enum Types
         {
+            /// <userdoc>
+            /// A static trigger zone
+            /// </userdoc>
             [Display("Trigger")]
             PhantomCollider,
+            /// <userdoc>
+            /// A static Collider
+            /// </userdoc>
             [Display("Static Collider")]
             StaticCollider,
+            /// <userdoc>
+            /// A static RigidBody
+            /// </userdoc>
             [Display("Static RigidBody")]
             StaticRigidBody,
+            /// <userdoc>
+            /// A dynamic RigidBody
+            /// </userdoc>
             [Display("Dynamic RigidBody")]
             DynamicRigidBody,
+            /// <userdoc>
+            /// A kinematic RigidBody
+            /// </userdoc>
             [Display("Kinematic RigidBody")]
             KinematicRigidBody,
+            /// <userdoc>
+            /// A Character Controller
+            /// </userdoc>
             [Display("Character")]
             CharacterController
         };
@@ -99,7 +83,7 @@ namespace SiliconStudio.Paradox.Physics
         /// The collision group.
         /// </value>
         /// <userdoc>
-        /// The collision group of this element, default is AllFilter.
+        /// The collision group of this element, default is DefaultFilter.
         /// </userdoc>
         [DataMember(30)]
         public CollisionFilterGroups CollisionGroup
@@ -128,7 +112,7 @@ namespace SiliconStudio.Paradox.Physics
         /// The can collide with.
         /// </value>
         /// <userdoc>
-        /// Which collider groups this element can collide with, when nothing is selected AllFilter is intended to be default.
+        /// Which collider groups this element can collide with, when nothing is selected it will collide with all groups.
         /// </userdoc>
         [DataMember(40)]
         public CollisionFilterGroupFlags CanCollideWith
@@ -145,6 +129,37 @@ namespace SiliconStudio.Paradox.Physics
                 }
 
                 canCollideWith = value;
+            }
+        }
+
+        private bool processCollisions = true;
+
+        /// <summary>
+        /// Gets or sets if this element will store collisions
+        /// </summary>
+        /// <value>
+        /// true, false
+        /// </value>
+        /// <userdoc>
+        /// Unchecking this will help with performance, ideally if this entity has no need to access collisions information should be set to false
+        /// </userdoc>
+        [DataMember(45)]
+        public virtual bool ProcessCollisions
+        {
+            get
+            {
+                return InternalCollider?.ContactsAlwaysValid ?? processCollisions;
+            }
+            set
+            {
+                if (InternalCollider != null)
+                {
+                    InternalCollider.ContactsAlwaysValid = value;
+                }
+                else
+                {
+                    processCollisions = value;
+                }
             }
         }
 
@@ -167,14 +182,16 @@ namespace SiliconStudio.Paradox.Physics
             internal set
             {
                 InternalCollider = value;
+                //set possibly pre-set properties
+                ProcessCollisions = processCollisions;
             }
         }
 
         [DataMemberIgnore]
-        public RigidBody RigidBody => (RigidBody)Collider;
+        public RigidBody RigidBody => Collider as RigidBody;
 
         [DataMemberIgnore]
-        public Character Character => (Character)Collider;
+        public Character Character => Collider as Character;
 
         internal Matrix BoneWorldMatrix;
         internal Matrix BoneWorldMatrixOut;

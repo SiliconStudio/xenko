@@ -45,6 +45,14 @@ namespace SiliconStudio.Core.Serialization
                     if (obj == null && contentSerializerContext.LoadContentReferences)
                     {
                         var contentSerializer = cachedContentSerializer ?? (cachedContentSerializer = contentSerializerContext.AssetManager.Serializer.GetSerializer(null, typeof(T)));
+                        if (contentSerializer == null)
+                        {
+                            // Need to read chunk header to know actual type (note that we can't cache it in cachedContentSerializer as it depends on content)
+                            var chunkHeader = contentSerializerContext.AssetManager.ReadChunkHeader(contentReference.Location);
+                            if (chunkHeader == null || (contentSerializer = contentSerializerContext.AssetManager.Serializer.GetSerializer(Type.GetType(chunkHeader.Type), typeof(T))) == null)
+                                throw new InvalidOperationException(string.Format("Could not find a valid content serializer for {0} when loading {1}", typeof(T), contentReference.Location));
+                        }
+
                         // First time, let's create it
                         obj = (T)contentSerializer.Construct(contentSerializerContext);
                         contentSerializerContext.AssetManager.RegisterDeserializedObject(contentReference.Location, obj);

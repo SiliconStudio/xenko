@@ -9,7 +9,6 @@ namespace SiliconStudio.Paradox.Engine.Processors
 {
     public class ModelNodeLinkProcessor : EntityProcessor<ModelNodeLinkComponent>
     {
-        internal HashSet<ModelNodeLinkComponent> DirtyLinks = new HashSet<ModelNodeLinkComponent>();
         internal ModelProcessor meshProcessor;
 
         public ModelNodeLinkProcessor()
@@ -22,54 +21,35 @@ namespace SiliconStudio.Paradox.Engine.Processors
             return entity.Get(ModelNodeLinkComponent.Key);
         }
 
-        protected override void OnEntityAdding(Entity entity, ModelNodeLinkComponent data)
-        {
-            data.Processor = this;
-
-            if (meshProcessor == null)
-                meshProcessor = EntityManager.GetProcessor<ModelProcessor>();
-
-            lock (DirtyLinks)
-            {
-                DirtyLinks.Add(data);
-
-                // Mark it as invalid
-                data.EntityLink.NodeIndex = -1;
-            }
-        }
-
         protected override void OnEntityRemoved(Entity entity, ModelNodeLinkComponent data)
         {
-            if (meshProcessor == null)
-                meshProcessor = EntityManager.GetProcessor<ModelProcessor>();
-
-            meshProcessor.UnlinkEntity(data.EntityLink);
-
-            data.Processor = null;
+            // Reset TransformLink
+            if (entity.Transform.TransformLink is ModelNodeTransformLink)
+                entity.Transform.TransformLink = null;
         }
 
         public override void Draw(RenderContext context)
         {
-            lock (DirtyLinks)
+            foreach (var item in enabledEntities)
             {
-                if (DirtyLinks.Count == 0)
-                    return;
+                var modelNodeLink = item.Value;
+                var transformComponent = item.Key.Transform;
+                var transformLink = transformComponent.TransformLink as ModelNodeTransformLink;
 
-                if (meshProcessor == null)
-                    meshProcessor = EntityManager.GetProcessor<ModelProcessor>();
+                // Try to use Target, otherwise Parent
+                var modelComponent = modelNodeLink.Target;
+                var modelEntity = modelComponent?.Entity ?? transformComponent.Parent?.Entity;
 
-                if (meshProcessor == null) // (no model in the scene)
-                    return;
-
-                foreach (var transformationLinkComponent in DirtyLinks)
+                // Check against Entity instead of ModelComponent to avoid having to get ModelComponent when nothing changed)
+                if (transformLink == null || transformLink.NeedsRecreate(modelEntity, modelNodeLink.NodeName))
                 {
-                    // ModelNodeLinkComponent has been changed, regenerate link
-                    meshProcessor.UnlinkEntity(transformationLinkComponent.EntityLink);
-                    if(transformationLinkComponent.Target != null)
-                        meshProcessor.LinkEntity(transformationLinkComponent.Entity, transformationLinkComponent.Target, transformationLinkComponent.NodeName);
-                }
+                    // In case we use parent, modelComponent still needs to be resolved
+                    if (modelComponent == null)
+                        modelComponent = modelEntity?.Get(ModelComponent.Key);
 
-                DirtyLinks.Clear();
+                    // If model component is not parent, we want to use forceRecursive because we might want to update this link before the modelComponent.Entity is updated (depending on order of transformation update)
+                    transformComponent.TransformLink = modelComponent != null ? new ModelNodeTransformLink(modelComponent, modelNodeLink.NodeName, modelEntity != transformComponent.Parent?.Entity) : null;
+                }
             }
         }
     }

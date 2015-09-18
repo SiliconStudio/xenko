@@ -72,7 +72,7 @@ namespace SiliconStudio.Core.Mathematics
         public bool Intersects(ref Ray ray)
         {
             float distance;
-            return Collision.RayIntersectsSphere(ref ray, ref this, out distance);
+            return CollisionHelper.RayIntersectsSphere(ref ray, ref this, out distance);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>Whether the two objects intersected.</returns>
         public bool Intersects(ref Ray ray, out float distance)
         {
-            return Collision.RayIntersectsSphere(ref ray, ref this, out distance);
+            return CollisionHelper.RayIntersectsSphere(ref ray, ref this, out distance);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>Whether the two objects intersected.</returns>
         public bool Intersects(ref Ray ray, out Vector3 point)
         {
-            return Collision.RayIntersectsSphere(ref ray, ref this, out point);
+            return CollisionHelper.RayIntersectsSphere(ref ray, ref this, out point);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>Whether the two objects intersected.</returns>
         public PlaneIntersectionType Intersects(ref Plane plane)
         {
-            return Collision.PlaneIntersectsSphere(ref plane, ref this);
+            return CollisionHelper.PlaneIntersectsSphere(ref plane, ref this);
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>Whether the two objects intersected.</returns>
         public bool Intersects(ref Vector3 vertex1, ref Vector3 vertex2, ref Vector3 vertex3)
         {
-            return Collision.SphereIntersectsTriangle(ref this, ref vertex1, ref vertex2, ref vertex3);
+            return CollisionHelper.SphereIntersectsTriangle(ref this, ref vertex1, ref vertex2, ref vertex3);
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>Whether the two objects intersected.</returns>
         public bool Intersects(ref BoundingBox box)
         {
-            return Collision.BoxIntersectsSphere(ref box, ref this);
+            return CollisionHelper.BoxIntersectsSphere(ref box, ref this);
         }
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>Whether the two objects intersected.</returns>
         public bool Intersects(ref BoundingSphere sphere)
         {
-            return Collision.SphereIntersectsSphere(ref this, ref sphere);
+            return CollisionHelper.SphereIntersectsSphere(ref this, ref sphere);
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>The type of containment the two objects have.</returns>
         public ContainmentType Contains(ref Vector3 point)
         {
-            return Collision.SphereContainsPoint(ref this, ref point);
+            return CollisionHelper.SphereContainsPoint(ref this, ref point);
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>The type of containment the two objects have.</returns>
         public ContainmentType Contains(ref Vector3 vertex1, ref Vector3 vertex2, ref Vector3 vertex3)
         {
-            return Collision.SphereContainsTriangle(ref this, ref vertex1, ref vertex2, ref vertex3);
+            return CollisionHelper.SphereContainsTriangle(ref this, ref vertex1, ref vertex2, ref vertex3);
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>The type of containment the two objects have.</returns>
         public ContainmentType Contains(ref BoundingBox box)
         {
-            return Collision.SphereContainsBox(ref this, ref box);
+            return CollisionHelper.SphereContainsBox(ref this, ref box);
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>The type of containment the two objects have.</returns>
         public ContainmentType Contains(ref BoundingSphere sphere)
         {
-            return Collision.SphereContainsSphere(ref this, ref sphere);
+            return CollisionHelper.SphereContainsSphere(ref this, ref sphere);
         }
 
         /// <summary>

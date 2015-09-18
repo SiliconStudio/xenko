@@ -92,7 +92,7 @@ namespace SiliconStudio.Core.Serialization.Assets
                 //}
             }
 
-            throw new Exception(string.Format("Could not find a serializer for the type [{0}, {1}]", storageType == null ? null : storageType.Name, objectType == null ? null : objectType.Name));
+            return null;
         }
 
         private static IContentSerializer GetSerializer(List<IContentSerializer> serializers, Type storageType)

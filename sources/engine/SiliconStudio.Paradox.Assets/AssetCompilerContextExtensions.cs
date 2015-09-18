@@ -2,6 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+
+using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Assets.Textures;
@@ -18,14 +20,34 @@ namespace SiliconStudio.Paradox.Assets
             return context.Properties.Get(GameSettingsAssetKey);
         }
 
+        public static ColorSpace GetColorSpace(this AssetCompilerContext context)
+        {
+            var settings = context.GetGameSettingsAsset();
+            return settings.ColorSpace;
+        }
+
         public static void SetGameSettingsAsset(this AssetCompilerContext context, GameSettingsAsset gameSettingsAsset)
         {
             context.Properties.Set(GameSettingsAssetKey, gameSettingsAsset);
         }
 
+        public static IGameSettingsProfile GetGameSettingsForCurrentProfile(this AssetCompilerContext context)
+        {
+            var gameSettings = context.GetGameSettingsAsset();
+            IGameSettingsProfile gameSettingsProfile = null;
+            if (gameSettings != null && gameSettings.Profiles != null)
+            {
+                gameSettings.Profiles.TryGetValue(context.Profile, out gameSettingsProfile);
+            }
+            // TODO: Return default game settings profile based on the platform
+            return gameSettingsProfile;
+        }
+
         public static GraphicsPlatform GetGraphicsPlatform(this AssetCompilerContext context)
         {
-            return context.Platform.GetDefaultGraphicsPlatform();
+            var  gameSettingsProfile = GetGameSettingsForCurrentProfile(context);
+            var graphicsPlatform =  gameSettingsProfile?.GraphicsPlatform ?? context.Platform.GetDefaultGraphicsPlatform();
+            return graphicsPlatform;
         }
 
         public static Paradox.Graphics.GraphicsPlatform GetDefaultGraphicsPlatform(this PlatformType platformType)

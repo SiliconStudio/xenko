@@ -173,7 +173,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
                 // TODO: Make this pluggable
                 // TODO: Shadows should work on mobile platforms
                 if (context.GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0
-                    && (Platform.Type == PlatformType.Windows || Platform.Type == PlatformType.WindowsStore))
+                    && (Platform.Type == PlatformType.Windows || Platform.Type == PlatformType.WindowsStore || Platform.Type == PlatformType.Windows10))
                 {
                     shadowMapRenderer = new ShadowMapRenderer(modelRenderer.EffectName);
                     shadowMapRenderer.Renderers.Add(typeof(LightDirectional), new LightDirectionalShadowMapRenderer());
@@ -360,7 +360,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
                 {
                     ILightShadowMapRenderer currentShadowRenderer = null;
 
-                    for (int i = 0; i < lightCount; i++)
+                    for (int i = 0; i < lightMaxCount; i++)
                     {
                         var light = lightCollection[i];
                         var directLight = (IDirectLight)light.Type;
@@ -409,12 +409,6 @@ namespace SiliconStudio.Paradox.Rendering.Lights
 
                         parametersKeyIdBuilder.Write(light.Id);
                         directLightsPerModel.Add(new LightEntry(directLightShaderGroupEntryKeys.Count, directLightShaderGroupEntryKeysNoShadows.Count, light, shadowTexture));
-
-
-                        if (directLightsPerModel.Count == lightMaxCount)
-                        {
-                            break;
-                        }
                     }
 
                     if (directLightsPerModel.Count > 0)

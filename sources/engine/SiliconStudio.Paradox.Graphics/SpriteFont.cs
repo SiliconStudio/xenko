@@ -9,6 +9,7 @@ using System.Text;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Graphics.Font;
 
 using Color = SiliconStudio.Core.Mathematics.Color;
@@ -20,6 +21,7 @@ namespace SiliconStudio.Paradox.Graphics
     /// SpriteFont to use with <see cref="SpriteBatch"/>. See <see cref="SpriteFont"/> to learn how to use it.
     /// </summary>
     [DataContract]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<SpriteFont>), Profile = "Asset")]
     public class SpriteFont : ComponentBase
     {
         public static readonly Logger Logger = GlobalLogger.GetLogger("SpriteFont");
@@ -490,7 +492,7 @@ namespace SiliconStudio.Paradox.Graphics
             else // scan the text line by line incrementing y start position
             {
                 // measure the whole string in order to be able to determine xStart
-                var wholeSize = elementsize.HasValue ? elementsize.Value : MeasureString(ref text, ref fontSize);
+                var wholeSize = elementsize ?? MeasureString(ref text, ref fontSize);
 
                 // scan the text line by line
                 var yStart = 0f;

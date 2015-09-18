@@ -13,9 +13,6 @@ namespace SiliconStudio.TextureConverter.Tests
 {
     class TestTools
     {
-        public static readonly string InputTestFolder = "../../sources/data/tests/tools/texturetools/input/";
-        public static readonly string TempFolder = "../../sources/data/tests/tools/texturetools/temp/";
-
         public static string ComputeSHA1(string filePath)
         {
             var file = new FileStream(filePath, FileMode.Open);
@@ -51,7 +48,7 @@ namespace SiliconStudio.TextureConverter.Tests
         public static TexImage Load(ITexLibrary library, string file)
         {
             var image = new TexImage();
-            library.Execute(image, new LoadingRequest(InputTestFolder + file, false));
+            library.Execute(image, new LoadingRequest(Module.PathToInputImages + file, false));
             image.Name = file;
             image.CurrentLibrary = library;
             return image;

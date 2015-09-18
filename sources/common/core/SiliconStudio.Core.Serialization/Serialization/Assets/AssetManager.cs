@@ -398,6 +398,29 @@ namespace SiliconStudio.Core.Serialization.Assets
             SetAssetObject(assetReference, obj);
         }
 
+        internal ChunkHeader ReadChunkHeader(string url)
+        {
+            if (!FileProvider.FileExists(url))
+            {
+                HandleAssetNotFound(url);
+                return null;
+            }
+
+            using (var stream = FileProvider.OpenStream(url, VirtualFileMode.Open, VirtualFileAccess.Read))
+            {
+                // File does not exist
+                // TODO/Benlitz: Add a log entry for that, it's not expected to happen
+                if (stream == null)
+                    return null;
+
+                Type headerObjType = null;
+
+                // Read header
+                var streamReader = new BinarySerializationReader(stream);
+                return ChunkHeader.Read(streamReader);
+            }
+        }
+
         private object DeserializeObject(Queue<DeserializeOperation> serializeOperations, AssetReference parentAssetReference, string url, Type objType, object obj, AssetManagerLoaderSettings settings)
         {
             // Try to find already loaded object

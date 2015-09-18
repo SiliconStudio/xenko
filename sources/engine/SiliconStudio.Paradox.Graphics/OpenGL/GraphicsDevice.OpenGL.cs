@@ -85,7 +85,8 @@ namespace SiliconStudio.Paradox.Graphics
         internal SamplerState defaultSamplerState;
         internal DepthStencilState defaultDepthStencilState;
         internal BlendState defaultBlendState;
-        internal int versionMajor, versionMinor;
+        internal int versionMajor, versionMinor; // queried version
+        internal int currentVersionMajor, currentVersionMinor; // glGetVersion
         internal Texture windowProvidedRenderTexture;
         internal Texture windowProvidedDepthTexture;
 
@@ -196,6 +197,11 @@ namespace SiliconStudio.Paradox.Graphics
         private int copyProgram = -1;
         private int copyProgramOffsetLocation = -1;
         private int copyProgramScaleLocation = -1;
+
+        private int copyProgramSRgb = -1;
+        private int copyProgramSRgbOffsetLocation = -1;
+        private int copyProgramSRgbScaleLocation = -1;
+
         private float[] squareVertices = {
             0.0f, 0.0f,
             1.0f, 0.0f,
@@ -589,48 +595,8 @@ namespace SiliconStudio.Paradox.Graphics
 
             if (copyProgram == -1)
             {
-                const string copyVertexShaderSource =
-                    "attribute vec2 aPosition;   \n" +
-                    "varying vec2 vTexCoord;     \n" +
-                    "uniform vec4 uScale;     \n" +
-                    "uniform vec4 uOffset;     \n" +
-                    "void main()                 \n" +
-                    "{                           \n" +
-                    "   vec4 transformedPosition = aPosition.xyxy * uScale + uOffset;" +
-                    "   gl_Position = vec4(transformedPosition.zw * 2.0 - 1.0, 0.0, 1.0); \n" +
-                    "   vTexCoord = transformedPosition.xy;   \n" +
-                    "}                           \n";
-
-                const string copyFragmentShaderSource =
-                    "precision mediump float;                            \n" +
-                    "varying vec2 vTexCoord;                             \n" +
-                    "uniform sampler2D s_texture;                        \n" +
-                    "void main()                                         \n" +
-                    "{                                                   \n" +
-                    "    gl_FragColor = texture2D(s_texture, vTexCoord); \n" +
-                    "}                                                   \n";
-
-                // First initialization of shader program
-                int vertexShader = TryCompileShader(ShaderType.VertexShader, copyVertexShaderSource);
-                int fragmentShader = TryCompileShader(ShaderType.FragmentShader, copyFragmentShaderSource);
-
-                copyProgram = GL.CreateProgram();
-                GL.AttachShader(copyProgram, vertexShader);
-                GL.AttachShader(copyProgram, fragmentShader);
-                GL.BindAttribLocation(copyProgram, 0, "aPosition");
-                GL.LinkProgram(copyProgram);
-
-                int linkStatus;
-                GL.GetProgram(copyProgram, ProgramParameter.LinkStatus, out linkStatus);
-
-                if (linkStatus != 1)
-                    throw new InvalidOperationException("Error while linking GLSL shaders.");
-
-                GL.UseProgram(copyProgram);
-                var textureLocation = GL.GetUniformLocation(copyProgram, "s_texture");
-                copyProgramOffsetLocation = GL.GetUniformLocation(copyProgram, "uOffset");
-                copyProgramScaleLocation = GL.GetUniformLocation(copyProgram, "uScale");
-                GL.Uniform1(textureLocation, 0);
+                copyProgram = CreateCopyProgram(false, out copyProgramOffsetLocation, out copyProgramScaleLocation);
+                copyProgramSRgb = CreateCopyProgram(true, out copyProgramSRgbOffsetLocation, out copyProgramSRgbScaleLocation);
             }
 
             var sourceRegionSize = new Vector2(sourceRectangle.Width, sourceRectangle.Height);
@@ -665,7 +631,18 @@ namespace SiliconStudio.Paradox.Graphics
 
             UnbindVertexArrayObject();
 
-            GL.UseProgram(copyProgram);
+            // If we are copying from an SRgb texture to a non SRgb texture, we use a special SRGb copy shader
+            var program = copyProgram;
+            var offsetLocation = copyProgramOffsetLocation;
+            var scaleLocation = copyProgramScaleLocation;
+            if (sourceTexture.Description.Format.IsSRgb() && destTexture == windowProvidedRenderTexture)
+            {
+                program = copyProgramSRgb;
+                offsetLocation = copyProgramSRgbOffsetLocation;
+                scaleLocation = copyProgramSRgbScaleLocation;
+            }
+
+            GL.UseProgram(program);
 
             activeTexture = 0;
             GL.ActiveTexture(TextureUnit.Texture0);
@@ -680,8 +657,8 @@ namespace SiliconStudio.Paradox.Graphics
             GL.EnableVertexAttribArray(0);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 0, squareVertices);
-            GL.Uniform4(copyProgramOffsetLocation, sourceOffset.X, sourceOffset.Y, destOffset.X, destOffset.Y);
-            GL.Uniform4(copyProgramScaleLocation, sourceScale.X, sourceScale.Y, destScale.X, destScale.Y);
+            GL.Uniform4(offsetLocation, sourceOffset.X, sourceOffset.Y, destOffset.X, destOffset.Y);
+            GL.Uniform4(scaleLocation, sourceScale.X, sourceScale.Y, destScale.X, destScale.Y);
             GL.Viewport(0, 0, destTexture.Width, destTexture.Height);
             GL.DrawArrays(BeginMode.TriangleStrip, 0, 4);
             GL.DisableVertexAttribArray(0);
@@ -700,6 +677,64 @@ namespace SiliconStudio.Paradox.Graphics
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
             GL.Viewport((int)_currentViewports[0].X, (int)_currentViewports[0].Y, (int)_currentViewports[0].Width, (int)_currentViewports[0].Height);
+        }
+
+        private int CreateCopyProgram(bool srgb, out int offsetLocation, out int scaleLocation)
+        {
+            const string copyVertexShaderSource =
+                "attribute vec2 aPosition;   \n" +
+                "varying vec2 vTexCoord;     \n" +
+                "uniform vec4 uScale;     \n" +
+                "uniform vec4 uOffset;     \n" +
+                "void main()                 \n" +
+                "{                           \n" +
+                "   vec4 transformedPosition = aPosition.xyxy * uScale + uOffset;" +
+                "   gl_Position = vec4(transformedPosition.zw * 2.0 - 1.0, 0.0, 1.0); \n" +
+                "   vTexCoord = transformedPosition.xy;   \n" +
+                "}                           \n";
+
+            const string copyFragmentShaderSource =
+                "precision mediump float;                            \n" +
+                "varying vec2 vTexCoord;                             \n" +
+                "uniform sampler2D s_texture;                        \n" +
+                "void main()                                         \n" +
+                "{                                                   \n" +
+                "    gl_FragColor = texture2D(s_texture, vTexCoord); \n" +
+                "}                                                   \n";
+
+            const string copyFragmentShaderSourceSRgb =
+                "precision mediump float;                            \n" +
+                "varying vec2 vTexCoord;                             \n" +
+                "uniform sampler2D s_texture;                        \n" +
+                "void main()                                         \n" +
+                "{                                                   \n" +
+                "    vec4 color = texture2D(s_texture, vTexCoord);   \n" +
+                "    gl_FragColor = vec4(sqrt(color.rgb), color.a); \n" +  // approximation of linear to SRgb
+                "}                                                   \n";
+
+            // First initialization of shader program
+            int vertexShader = TryCompileShader(ShaderType.VertexShader, copyVertexShaderSource);
+            int fragmentShader = TryCompileShader(ShaderType.FragmentShader, srgb ? copyFragmentShaderSourceSRgb : copyFragmentShaderSource);
+
+            int program = GL.CreateProgram();
+            GL.AttachShader(program, vertexShader);
+            GL.AttachShader(program, fragmentShader);
+            GL.BindAttribLocation(program, 0, "aPosition");
+            GL.LinkProgram(program);
+
+            int linkStatus;
+            GL.GetProgram(program, ProgramParameter.LinkStatus, out linkStatus);
+
+            if (linkStatus != 1)
+                throw new InvalidOperationException("Error while linking GLSL shaders.");
+
+            GL.UseProgram(program);
+            var textureLocation = GL.GetUniformLocation(program, "s_texture");
+            offsetLocation = GL.GetUniformLocation(program, "uOffset");
+            scaleLocation = GL.GetUniformLocation(program, "uScale");
+            GL.Uniform1(textureLocation, 0);
+
+            return program;
         }
 
         /// <summary>
@@ -2148,18 +2183,14 @@ namespace SiliconStudio.Paradox.Graphics
             // Find back OpenGL version from requested version
             OpenGLUtils.GetGLVersion(requestedGraphicsProfile, out versionMajor, out versionMinor);
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-#if SILICONSTUDIO_PLATFORM_ANDROID
-            // if the retrieved version of OpenGL does not correspond to the one used for initialization, we should fix it.
-            var glVersion = gameWindow.ContextRenderingApi == GLVersion.ES2 ? 2 : 3;
-            if (glVersion != versionMajor)
+            // check what is actually created
+            if (!OpenGLUtils.GetCurrentGLVersion(out currentVersionMajor, out currentVersionMinor))
             {
-                versionMajor = glVersion;
-                versionMinor = 0;
+                currentVersionMajor = versionMajor;
+                currentVersionMinor = versionMinor;
             }
-#elif SILICONSTUDIO_PLATFORM_IOS
-            // TODO: correct OpenGL version on iOS too?
-#endif
+
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
             IsOpenGLES2 = (versionMajor < 3);
             creationFlags |= GraphicsContextFlags.Embedded;
 #endif
@@ -2287,13 +2318,9 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
 
             // TODO: iOS (and possibly other platforms): get real render buffer ID for color/depth?
-            windowProvidedRenderTexture = Texture.New2D(
-                this,
-                width,
-                height,
-                1,
-                presentationParameters.BackBufferFormat,
-                TextureFlags.RenderTarget | Texture.TextureFlagsCustomResourceId);
+            windowProvidedRenderTexture = Texture.New2D(this, width, height, 1,
+                // TODO: As a workaround, because OpenTK(+OpenGLES) doesn't support to create SRgb backbuffer, we fake it by creating a non-SRgb here and CopyScaler2D is responsible to transform it to non SRgb
+                presentationParameters.BackBufferFormat.IsSRgb() ? presentationParameters.BackBufferFormat.ToNonSRgb() : presentationParameters.BackBufferFormat, TextureFlags.RenderTarget | Texture.TextureFlagsCustomResourceId);
             windowProvidedRenderTexture.Reload = (graphicsResource) => { };
 
             boundFBO = windowProvidedFrameBuffer;
@@ -2342,7 +2369,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <param name="presentationParameters">The presentation parameters.</param>
         /// <returns></returns>
-        SwapChainBackend CreateSwapChainBackend(PresentationParameters presentationParameters)
+        private SwapChainBackend CreateSwapChainBackend(PresentationParameters presentationParameters)
         {
             var swapChainBackend = new SwapChainBackend();
             return swapChainBackend;
@@ -2366,10 +2393,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <value>The default render target.</value>
         internal Texture DefaultRenderTarget
         {
-            get
-            {
-                return defaultRenderTarget;
-            }
+            get { return defaultRenderTarget; }
         }
 
         /// <summary>
@@ -2385,7 +2409,6 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
             //throw new NotImplementedException();
         }*/
-
         /// <summary>
         /// Gets or sets a value indicating whether this GraphicsDevice is in fullscreen.
         /// </summary>
@@ -2500,5 +2523,5 @@ namespace SiliconStudio.Paradox.Graphics
         }
     }
 }
- 
+
 #endif

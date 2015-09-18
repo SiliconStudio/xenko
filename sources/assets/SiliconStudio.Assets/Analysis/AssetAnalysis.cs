@@ -101,7 +101,6 @@ namespace SiliconStudio.Assets.Analysis
         internal static void UpdateAssetReferences(AssetItem assetItem, IEnumerable<AssetReferenceLink> assetReferences, ILogger log, AssetAnalysisParameters parameters)
         {
             var package = assetItem.Package;
-            var session = package.Session;
 
             // Update reference
             foreach (var assetReferenceLink in assetReferences.Where(link => link.Reference is IContentReference))
@@ -115,12 +114,12 @@ namespace SiliconStudio.Assets.Analysis
 
                 // Update Asset references (AssetReference, AssetBase, ContentReference)
                 var id = contentReference.Id;
-                var newItemReference = session.FindAsset(id);
+                var newItemReference = package.FindAsset(id);
 
                 // If asset was not found by id try to find by its location
                 if (newItemReference == null)
                 {
-                    newItemReference = session.FindAsset(contentReference.Location);
+                    newItemReference = package.FindAsset(contentReference.Location);
                     if (newItemReference != null)
                     {
                         // If asset was found by its location, just emit a warning
@@ -149,7 +148,7 @@ namespace SiliconStudio.Assets.Analysis
                     assetReferenceLink.UpdateReference(newItemReference.Id, newLocationWithoutExtension);
                     assetItem.IsDirty = true;
                 }
-            }    
+            }
         }
     }
 }

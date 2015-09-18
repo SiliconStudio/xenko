@@ -14,6 +14,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <summary>
         /// Cleans the specified input items.
         /// </summary>
+        /// <param name="package">The package to process (optional).</param>
         /// <param name="inputItems">The input items.</param>
         /// <param name="outputItems">The output items.</param>
         /// <param name="assetResolver">The asset resolver.</param>
@@ -26,7 +27,7 @@ namespace SiliconStudio.Assets.Analysis
         /// assetResolver
         /// </exception>
         /// <exception cref="System.ArgumentException">List cannot contain null items;inputItems</exception>
-        public static void Clean(ICollection<AssetItem> inputItems, ICollection<AssetItem> outputItems, AssetResolver assetResolver, bool cloneInput)
+        public static void Clean(Package package, ICollection<AssetItem> inputItems, ICollection<AssetItem> outputItems, AssetResolver assetResolver, bool cloneInput)
         {
             if (inputItems == null) throw new ArgumentNullException("inputItems");
             if (outputItems == null) throw new ArgumentNullException("outputItems");
@@ -151,6 +152,57 @@ namespace SiliconStudio.Assets.Analysis
                         assetLink.UpdateReference(newId, newLocation);
                         item.IsDirty = true;
                     }
+                }
+            }
+
+            // Process roots (until references in package are handled in general)
+            if (package != null)
+            {
+                UpdateRootAssets(package.RootAssets, idRemap, locationRemap);
+
+                // We check dependencies to be consistent with other places, but nothing should be changed in there
+                // (except if we were to instantiate multiple packages referencing each other at once?)
+                foreach (var dependency in package.LocalDependencies)
+                {
+                    if (dependency.RootAssets != null)
+                        UpdateRootAssets(dependency.RootAssets, idRemap, locationRemap);
+                }
+                foreach (var dependency in package.Meta.Dependencies)
+                {
+                    if (dependency.RootAssets != null)
+                        UpdateRootAssets(dependency.RootAssets, idRemap, locationRemap);
+                }
+            }
+        }
+
+        private static void UpdateRootAssets(RootAssetCollection rootAssetCollection, Dictionary<Guid, Tuple<Guid, UFile>> idRemap, Dictionary<UFile, UFile> locationRemap)
+        {
+            foreach (var rootAsset in rootAssetCollection.ToArray())
+            {
+                var location = (UFile)rootAsset.Location;
+                var id = rootAsset.Id;
+
+                Tuple<Guid, UFile> newId;
+                UFile newLocation;
+
+                bool changed = false;
+                if (idRemap.TryGetValue(id, out newId))
+                {
+                    id = newId.Item1;
+                    location = newId.Item2;
+                    changed = true;
+                }
+                if (!changed && locationRemap.TryGetValue(location, out newLocation))
+                {
+                    location = newLocation;
+                    changed = true;
+                }
+
+                if (changed)
+                {
+                    var newRootAsset = new AssetReference<Asset>(id, location);
+                    rootAssetCollection.Remove(rootAsset.Id);
+                    rootAssetCollection.Add(newRootAsset);
                 }
             }
         }

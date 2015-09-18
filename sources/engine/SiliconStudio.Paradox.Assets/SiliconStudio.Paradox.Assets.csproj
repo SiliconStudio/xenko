@@ -11,7 +11,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
-    <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions) --generate-user-doc</SiliconStudioAssemblyProcessorOptions>
+    <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions)</SiliconStudioAssemblyProcessorOptions>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -160,8 +160,10 @@
     <Compile Include="Entities\SceneAsset.cs" />
     <Compile Include="GameSettingsAssetCompiler.cs" />
     <Compile Include="GameSettingsAssetExtensions.cs" />
+    <Compile Include="GameSettingsProfileBase.cs" />
     <Compile Include="GameUserSettings.cs" />
-    <Compile Include="Materials\ComputeShaderBaseExtensions.cs" />
+    <Compile Include="IGameSettingsProfile.cs" />
+    <Compile Include="Materials\ComputeShaderClassBaseExtensions.cs" />
     <Compile Include="Materials\MaterialNodeClassLoader.cs" />
     <Compile Include="Materials\MaterialStreamFactory.cs" />
     <Compile Include="Materials\ShaderGeneratorContextExtensions.cs" />
@@ -169,6 +171,8 @@
     <Compile Include="ParadoxPackageUpgrader.cs" />
     <Compile Include="ProceduralModels\ProceduralModelAsset.cs" />
     <Compile Include="ProceduralModels\ProceduralModelAssetCompiler.cs" />
+    <Compile Include="RenderingMode.cs" />
+    <Compile Include="Scripts\ScriptSourceFileAsset.cs" />
     <Compile Include="Sprite\SpriteSheetAsset.cs" />
     <Compile Include="Sprite\SpriteSheetAssetCompiler.cs" />
     <Compile Include="Sprite\SpriteInfo.cs" />
@@ -192,6 +196,7 @@
     <Compile Include="Skyboxes\SkyboxGenerator.cs" />
     <Compile Include="Skyboxes\SkyboxPreFilteringDiffuseOrder.cs" />
     <Compile Include="Sprite\SpriteSheetType.cs" />
+    <Compile Include="Textures\TextureColorSpace.cs" />
     <Compile Include="Sprite\PackingAttributes.cs" />
     <Compile Include="Textures\Packing\AtlasTextureElement.cs" />
     <Compile Include="Textures\Packing\AtlasTextureLayout.cs" />
@@ -228,6 +233,7 @@
     <Compile Include="Textures\TextureFormat.cs" />
     <Compile Include="Textures\TextureImporter.cs" />
     <Compile Include="PreviewerCompilerNames.cs" />
+    <Compile Include="WindowsGameSettingsProfile.cs" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

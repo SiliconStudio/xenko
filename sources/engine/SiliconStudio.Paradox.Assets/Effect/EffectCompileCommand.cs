@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
@@ -27,14 +28,16 @@ namespace SiliconStudio.Paradox.Assets.Effect
         private readonly UDirectory baseUrl;
         private string effectName;
         private CompilerParameters compilerParameters;
+        private readonly Package package;
         private static Dictionary<string, int> PermutationCount = new Dictionary<string, int>();
 
-        public EffectCompileCommand(AssetCompilerContext context, UDirectory baseUrl, string effectName, CompilerParameters compilerParameters)
+        public EffectCompileCommand(AssetCompilerContext context, UDirectory baseUrl, string effectName, CompilerParameters compilerParameters, Package package)
         {
             this.context = context;
             this.baseUrl = baseUrl;
             this.effectName = effectName;
             this.compilerParameters = compilerParameters;
+            this.package = package;
         }
 
         public override string Title
@@ -104,7 +107,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
             // Generate sourcecode if configured
             if (compilerParameters.ContainsKey(EffectSourceCodeKeys.Enable))
             {
-                var outputDirectory = UPath.Combine(context.Package.RootDirectory, baseUrl);
+                var outputDirectory = UPath.Combine(package.RootDirectory, baseUrl);
                 var outputClassFile = effectName + ".bytecode." + compilerParameters.Platform + "." + compilerParameters.Profile + ".cs";
                 var fullOutputClassFile = Path.Combine(outputDirectory.ToWindowsPath(), outputClassFile);
 

@@ -150,7 +150,7 @@ namespace SiliconStudio.Paradox.Graphics
                 PixelType type;
                 int pixelSize;
                 bool compressed;
-                OpenGLConvertExtensions.ConvertPixelFormat(GraphicsDevice, Description.Format, out internalFormat, out format, out type, out pixelSize, out compressed);
+                OpenGLConvertExtensions.ConvertPixelFormat(GraphicsDevice, ref textureDescription.Format, out internalFormat, out format, out type, out pixelSize, out compressed);
 
                 InternalFormat = internalFormat;
                 FormatGl = format;
@@ -267,8 +267,7 @@ namespace SiliconStudio.Paradox.Graphics
                                 }
                                 else
                                 {
-                                    GL.TexImage2D(dataSetTarget, i, (TextureComponentCount2D)internalFormat,
-                                        width, height, 0, format, type, data);
+                                    GL.TexImage2D(dataSetTarget, i, internalFormat, width, height, 0, format, type, data);
                                 }
                             }
                             else if (setSize == 3)

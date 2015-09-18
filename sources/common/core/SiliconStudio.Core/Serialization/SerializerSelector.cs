@@ -66,11 +66,15 @@ namespace SiliconStudio.Core.Serialization
 
         static SerializerSelector()
         {
-            Default = new SerializerSelector("Default");
+            // Do a two step initialization to make sure field is set and accessible during construction
+            Default = new SerializerSelector(false, true, "Default");
+            Default.Initialize();
 
-            Asset = new SerializerSelector("Default", "Asset");
+            Asset = new SerializerSelector(false, true, "Default", "Asset");
+            Asset.Initialize();
 
-            AssetWithReuse = new SerializerSelector(true, "Default", "Asset");
+            AssetWithReuse = new SerializerSelector(true, true, "Default", "Asset");
+            AssetWithReuse.Initialize();
         }
 
         /// <summary>
@@ -82,13 +86,24 @@ namespace SiliconStudio.Core.Serialization
         {
             this.reuseReferences = reuseReferences;
             this.profiles = profiles;
-            invalidated = true;
-            DataSerializerFactory.RegisterSerializerSelector(this);
-            UpdateDataSerializers();
+            Initialize();
         }
 
         public SerializerSelector(params string[] profiles) : this(false, profiles)
         {
+        }
+
+        private SerializerSelector(bool reuseReferences, bool unusedPrivateCtor, params string[] profiles)
+        {
+            this.reuseReferences = reuseReferences;
+            this.profiles = profiles;
+        }
+
+        private void Initialize()
+        {
+            invalidated = true;
+            DataSerializerFactory.RegisterSerializerSelector(this);
+            UpdateDataSerializers();
         }
 
         /// <summary>

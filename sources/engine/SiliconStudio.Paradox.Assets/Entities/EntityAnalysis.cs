@@ -70,9 +70,9 @@ namespace SiliconStudio.Paradox.Assets.Entities
                         throw new InvalidOperationException("Found a reference to a component which doesn't have any entity");
                     }
                         
-                    Entity realEntity;
+                    EntityDesign realEntity;
                     if (entityHierarchy.Entities.TryGetValue(containingEntity.Id, out realEntity)
-                        && realEntity.Components.TryGetValue(entityLink.EntityComponent.GetDefaultKey(), out obj))
+                        && realEntity.Entity.Components.TryGetValue(entityLink.EntityComponent.GetDefaultKey(), out obj))
                     {
                         // If we already have the proper item, let's skip
                         if (obj == entityLink.EntityComponent)
@@ -87,10 +87,10 @@ namespace SiliconStudio.Paradox.Assets.Entities
                         throw new InvalidOperationException("Found a reference to a script which doesn't have any entity");
                     }
 
-                    Entity realEntity;
+                    EntityDesign realEntity;
                     ScriptComponent scriptComponent;
                     if (entityHierarchy.Entities.TryGetValue(containingEntity.Id, out realEntity)
-                        && realEntity.Components.TryGetValue(ScriptComponent.Key, out scriptComponent))
+                        && realEntity.Entity.Components.TryGetValue(ScriptComponent.Key, out scriptComponent))
                     {
                         obj = scriptComponent.Scripts.FirstOrDefault(x => x.Id == entityLink.EntityScript.Id);
                         if (obj == entityLink.EntityScript)
@@ -99,10 +99,10 @@ namespace SiliconStudio.Paradox.Assets.Entities
                 }
                 else
                 {
-                    Entity realEntity;
+                    EntityDesign realEntity;
                     if (entityHierarchy.Entities.TryGetValue(entityLink.Entity.Id, out realEntity))
                     {
-                        obj = realEntity;
+                        obj = realEntity.Entity;
 
                         // If we already have the proper item, let's skip
                         if (obj == entityLink.Entity)
@@ -141,8 +141,8 @@ namespace SiliconStudio.Paradox.Assets.Entities
 
             foreach (var entity in entityHierarchy.Entities)
             {
-                if (idRemapping.TryGetValue(entity.Id, out newId))
-                    entity.Id = newId;
+                if (idRemapping.TryGetValue(entity.Entity.Id, out newId))
+                    entity.Entity.Id = newId;
             }
 
             // Sort again the EntityCollection (since ID changed)

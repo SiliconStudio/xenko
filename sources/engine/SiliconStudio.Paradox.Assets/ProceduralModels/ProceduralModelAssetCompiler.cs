@@ -17,12 +17,12 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, ProceduralModelAsset asset, AssetCompilerResult result)
         {
-            result.BuildSteps = new ListBuildStep { new GeometricPrimitiveCompileCommand(urlInStorage, asset, context.Package) };
+            result.BuildSteps = new ListBuildStep { new GeometricPrimitiveCompileCommand(urlInStorage, asset) };
         }
 
         private class GeometricPrimitiveCompileCommand : AssetCommand<ProceduralModelAsset>
         {
-            public GeometricPrimitiveCompileCommand(string url, ProceduralModelAsset assetParameters, Package package)
+            public GeometricPrimitiveCompileCommand(string url, ProceduralModelAsset assetParameters)
                 : base(url, assetParameters)
             {
             }

@@ -27,6 +27,7 @@ namespace SiliconStudio.TextureConverter.Tests
             library.Dispose();
         }
 
+        [Ignore]
         [TestCase("duck.jpg")]
         [TestCase("stones.png")]
         [TestCase("snap1.psd")]
@@ -40,6 +41,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("duck.jpg")]
         [TestCase("stones.png")]
         public void EndLibraryTest(string file)
@@ -52,6 +54,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
+        [Ignore]
         [TestCase("duck.jpg")]
         [TestCase("stones.png")]
         public void CorrectGammaTest(string file)
@@ -63,6 +66,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
+        [Ignore]
         [TestCase("duck.jpg", Orientation.Horizontal)]
         [TestCase("stones.png", Orientation.Vertical)]
         public void FlipTest(string file, Orientation orientation)
@@ -74,6 +78,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
+        [Ignore]
         [TestCase("duck.jpg", Filter.Rescaling.Bicubic)]
         [TestCase("stones.png", Filter.Rescaling.Bilinear)]
         [TestCase("duck.jpg", Filter.Rescaling.Box)]
@@ -89,12 +94,12 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
-        [Test]
+        [Test, Ignore]
         public void FixedRescale3DTest()
         {
             DxtTexLib lib = new DxtTexLib();
             TexImage image = new TexImage();
-            lib.Execute(image, new LoadingRequest(TestTools.InputTestFolder+"Texture3D_WMipMaps_BGRA8888.dds", false));
+            lib.Execute(image, new LoadingRequest(Module.PathToInputImages+"Texture3D_WMipMaps_BGRA8888.dds", false));
             image.Name = "Texture3D_WMipMaps_BGRA8888.dds";
             lib.EndLibrary(image);
             library.StartLibrary(image);
@@ -105,6 +110,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("stones.png", Filter.Rescaling.Bicubic)]
         [TestCase("stones.png", Filter.Rescaling.Bilinear)]
         [TestCase("stones.png", Filter.Rescaling.Box)]
@@ -121,6 +127,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("duck.jpg")]
         [TestCase("stones.png")]
         public void SwitchChannelsTest(string file)
@@ -133,17 +140,18 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("TextureArray_WMipMaps_BGRA8888", ".dds", 0)]
         [TestCase("TextureArray_WMipMaps_BGRA8888", ".dds", 16)]
         public void ExportArrayTest(string fileName, string extension, int minMipMapSize)
         {
             DxtTexLib lib = new DxtTexLib();
             TexImage image = new TexImage();
-            lib.Execute(image, new LoadingRequest(TestTools.InputTestFolder + fileName + extension, false));
+            lib.Execute(image, new LoadingRequest(Module.PathToInputImages + fileName + extension, false));
             lib.EndLibrary(image);
             library.StartLibrary(image);
 
-            library.Execute(image, new ExportRequest(TestTools.TempFolder + "FITexLibTest_ExportArrayTest_" + fileName + ".png", minMipMapSize));
+            library.Execute(image, new ExportRequest(Module.PathToOutputImages + "FITexLibTest_ExportArrayTest_" + fileName + ".png", minMipMapSize));
 
             int ct = 0;
             for (int i = 0; i < image.ArraySize; ++i)
@@ -152,7 +160,7 @@ namespace SiliconStudio.TextureConverter.Tests
                 {
                     if (image.SubImageArray[ct].Height < minMipMapSize || image.SubImageArray[ct].Width < minMipMapSize)
                         break;
-                    string file = TestTools.TempFolder + "FITexLibTest_ExportArrayTest_" + fileName + "-ind_" + i + "-mip_" + j + ".png";
+                    string file = Module.PathToOutputImages + "FITexLibTest_ExportArrayTest_" + fileName + "-ind_" + i + "-mip_" + j + ".png";
                     Assert.IsTrue(File.Exists(file));
 
                     //Console.WriteLine("FITexLibTest_ExportArrayTest_" + minMipMapSize + "_" + fileName + "-ind_" + i + "-mip_" + j + ".png" + "." + TestTools.ComputeSHA1(file));
@@ -166,7 +174,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Test]
+        [Test, Ignore]
         public void CanHandleRequestTest()
         {
             TexImage image = TestTools.Load(library, "stones.png");

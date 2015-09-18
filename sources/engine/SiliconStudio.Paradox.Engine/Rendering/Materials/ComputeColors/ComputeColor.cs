@@ -5,6 +5,7 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
@@ -53,7 +54,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
             var key = context.GetParameterKey(Key ?? baseKeys.ValueBaseKey ?? MaterialKeys.GenericValueColor4);
 
             // Store the color in Linear space
-            var color = Value.ToLinear();
+            var color =  baseKeys.IsColor ? Value.ToColorSpace(context.ColorSpace) : Value;
             if (PremultiplyAlpha)
                 color = Color4.PremultiplyAlpha(color);
             

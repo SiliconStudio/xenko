@@ -4,8 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
+using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Serialization.Assets;
@@ -23,11 +25,11 @@ namespace SiliconStudio.Paradox.Engine.Processors
         /// <summary>
         /// Contains all currently executed scripts
         /// </summary>
-        private HashSet<Script> registeredScripts = new HashSet<Script>();
-        private HashSet<Script> scriptsToStart = new HashSet<Script>();
-        private HashSet<SyncScript> syncScripts = new HashSet<SyncScript>();
-        private List<Script> scriptsToStartCopy = new List<Script>();
-        private List<SyncScript> syncScriptsCopy = new List<SyncScript>();
+        private readonly HashSet<Script> registeredScripts = new HashSet<Script>();
+        private readonly HashSet<Script> scriptsToStart = new HashSet<Script>();
+        private readonly HashSet<SyncScript> syncScripts = new HashSet<SyncScript>();
+        private readonly List<Script> scriptsToStartCopy = new List<Script>();
+        private readonly List<SyncScript> syncScriptsCopy = new List<SyncScript>();
 
         /// <summary>
         /// Gets the scheduler.
@@ -45,39 +47,48 @@ namespace SiliconStudio.Paradox.Engine.Processors
         {
             Enabled = true;
             Scheduler = new Scheduler();
+            Scheduler.ActionException += Scheduler_ActionException;
             Services.AddService(typeof(ScriptSystem), this);
         }
 
         public override void Update(GameTime gameTime)
         {
-            scriptsToStartCopy.Clear();
+            // Copy scripts to process (so that scripts added during this frame don't affect us)
+            // TODO: How to handle scripts that we want to start during current frame?
             scriptsToStartCopy.AddRange(scriptsToStart);
+            scriptsToStart.Clear();
+            syncScriptsCopy.AddRange(syncScripts);
 
-            // Start new scripts
+            // Schedule new scripts: StartupScript.Start() and AsyncScript.Execute()
             foreach (var script in scriptsToStartCopy)
             {
                 // Start the script
                 var startupScript = script as StartupScript;
                 if (startupScript != null)
                 {
-                    try
-                    {
-                        startupScript.Start();
-                    }
-                    catch (Exception e)
-                    {
-                        HandleSynchronousException(script, e);
-                    }
+                    Scheduler.Add(startupScript.Start, startupScript.Priority);
                 }
-
-                // Start a microthread with execute method if it's an async script
-                var asyncScript = script as AsyncScript;
-                if (asyncScript != null)
+                else
                 {
-                    script.MicroThread = AddTask(asyncScript.Execute);
+                    // Start a microthread with execute method if it's an async script
+                    var asyncScript = script as AsyncScript;
+                    if (asyncScript != null)
+                    {
+                        asyncScript.MicroThread = AddTask(asyncScript.Execute, asyncScript.Priority);
+                    }
                 }
             }
-            scriptsToStart.Clear();
+
+            // Schedule existing scripts: SyncScript.Update()
+            foreach (var syncScript in syncScriptsCopy)
+            {
+                // Update priority
+                var updateSchedulerNode = syncScript.UpdateSchedulerNode;
+                updateSchedulerNode.Value.Priority = syncScript.Priority;
+
+                // Schedule
+                Scheduler.Schedule(updateSchedulerNode, ScheduleMode.Last);
+            }
 
             // Run current micro threads
             Scheduler.Run();
@@ -89,21 +100,8 @@ namespace SiliconStudio.Paradox.Engine.Processors
                     script.IsLiveReloading = false;
             }
 
+            scriptsToStartCopy.Clear();
             syncScriptsCopy.Clear();
-            syncScriptsCopy.AddRange(syncScripts);
-
-            // Execute sync scripts
-            foreach (var script in syncScriptsCopy)
-            {
-                try
-                {
-                    script.Update();
-                }
-                catch (Exception e)
-                {
-                    HandleSynchronousException(script, e);
-                }
-            }
         }
 
         /// <summary>
@@ -120,9 +118,12 @@ namespace SiliconStudio.Paradox.Engine.Processors
         /// </summary>
         /// <param name="microThreadFunction">The micro thread function.</param>
         /// <returns>MicroThread.</returns>
-        public MicroThread AddTask(Func<Task> microThreadFunction)
+        public MicroThread AddTask(Func<Task> microThreadFunction, int priority = 0)
         {
-            return Scheduler.Add(microThreadFunction);
+            var microThread = Scheduler.Create();
+            microThread.Priority = priority;
+            microThread.Start(microThreadFunction);
+            return microThread;
         }
 
         /// <summary>
@@ -151,6 +152,8 @@ namespace SiliconStudio.Paradox.Engine.Processors
             var syncScript = script as SyncScript;
             if (syncScript != null)
             {
+                syncScript.UpdateSchedulerNode = Scheduler.Create(syncScript.Update, syncScript.Priority);
+                syncScript.UpdateSchedulerNode.Value.Token = syncScript;
                 syncScripts.Add(syncScript);
             }
         }
@@ -168,26 +171,24 @@ namespace SiliconStudio.Paradox.Engine.Processors
             if (!startWasPending && wasRegistered)
             {
                 // Cancel scripts that were already started
-                var startupScript = script as StartupScript;
-                if (startupScript != null)
+                try
                 {
-                    try
-                    {
-                        startupScript.Cancel();
-                    }
-                    catch (Exception e)
-                    {
-                        HandleSynchronousException(script, e);
-                    }
+                    script.Cancel();
+                }
+                catch (Exception e)
+                {
+                    HandleSynchronousException(script, e);
                 }
 
-                // TODO: Cancel async script execution
+                var asyncScript = script as AsyncScript;
+                asyncScript?.MicroThread.Cancel();
             }
 
             var syncScript = script as SyncScript;
             if (syncScript != null)
             {
                 syncScripts.Remove(syncScript);
+                syncScript.UpdateSchedulerNode = null;
             }
         }
 
@@ -203,6 +204,11 @@ namespace SiliconStudio.Paradox.Engine.Processors
 
             // Set live reloading mode until after being started
             newScript.IsLiveReloading = true;
+        }
+
+        private void Scheduler_ActionException(Scheduler scheduler, SchedulerEntry schedulerEntry, Exception e)
+        {
+            HandleSynchronousException((Script)schedulerEntry.Token, e);
         }
 
         private void HandleSynchronousException(Script script, Exception e)
@@ -221,6 +227,16 @@ namespace SiliconStudio.Paradox.Engine.Processors
             }
 
             registeredScripts.Remove(script);
+        }
+
+        class PriorityScriptComparer : IComparer<Script>
+        {
+            public static readonly PriorityScriptComparer Default = new PriorityScriptComparer();
+
+            public int Compare(Script x, Script y)
+            {
+                return x.Priority.CompareTo(y.Priority);
+            }
         }
     }
 }

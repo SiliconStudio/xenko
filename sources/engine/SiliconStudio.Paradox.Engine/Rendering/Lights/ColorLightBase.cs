@@ -5,6 +5,8 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Rendering.Colors;
 
 namespace SiliconStudio.Paradox.Rendering.Lights
 {
@@ -16,7 +18,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
     {
         protected ColorLightBase()
         {
-            Color = new LightColorRgb();
+            Color = new ColorRgbProvider();
         }
 
         /// <summary>
@@ -26,15 +28,17 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         /// <userdoc>The color emitted by the light.</userdoc>
         [DataMember(-10)]
         [NotNull]
-        public ILightColor Color { get; set; }
+        public IColorProvider Color { get; set; }
 
         /// <summary>
         /// Computes the color with intensity, result is in linear space.
         /// </summary>
         /// <returns>Gets the color of this light in linear space.</returns>
-        public Color3 ComputeColor(float intensity)
+        public Color3 ComputeColor(ColorSpace colorSpace, float intensity)
         {
-            return (Color != null ? Color.ComputeColor() : new Color3(1.0f)).ToLinear() * intensity;
+            var color = (Color != null ? Color.ComputeColor() : new Color3(1.0f));
+            color = color.ToColorSpace(colorSpace) * intensity;
+            return color;
         }
 
         public abstract bool Update(LightComponent lightComponent);

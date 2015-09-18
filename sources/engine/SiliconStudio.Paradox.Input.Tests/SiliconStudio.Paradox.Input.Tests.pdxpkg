@@ -1,5 +1,6 @@
 !Package
 Id: 6d251236-da95-409a-8f4b-7d42ae1fd32c
+SerializedVersion: 1
 Tags: []
 Meta:
     Name: SiliconStudio.Paradox.Input.Tests
@@ -8,7 +9,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Paradox
-            Version: 1.2.0-beta
+            Version: 1.3.0-beta
 LocalDependencies: []
 Profiles:
     -   Name: Shared
@@ -16,13 +17,8 @@ Profiles:
         InheritProfiles: []
         AssetFolders:
             -   Path: GameAssets
-                RawImports: []
         OutputGroupDirectories: {}
-        Properties:
-            GameSettingsAsset.BackBufferHeight: 720
-            GameSettingsAsset.BackBufferWidth: 1280
-            GameSettingsAsset.DefaultGraphicsProfile: Level_10_0
-            GameSettingsAsset.DefaultScene: ae4ecc1b-0b47-4c9d-ac8e-7f9720913084:MainScene
+        Properties: {}
         ProjectReferences:
             -   Id: 01700344-cf44-482c-bebc-60213b0f844c
                 Location: SiliconStudio.Paradox.Input.Tests.Windows.csproj
@@ -32,8 +28,7 @@ Profiles:
         InheritProfiles: []
         AssetFolders: []
         OutputGroupDirectories: {}
-        Properties:
-            GameSettingsAsset.DefaultGraphicsProfile: Level_9_1
+        Properties: {}
         ProjectReferences:
             -   Id: 01700344-cf44-482c-bebc-60213b0f844c
                 Location: SiliconStudio.Paradox.Input.Tests.Windows.csproj
@@ -43,8 +38,7 @@ Profiles:
         InheritProfiles: []
         AssetFolders: []
         OutputGroupDirectories: {}
-        Properties:
-            GameSettingsAsset.DefaultGraphicsProfile: Level_9_1
+        Properties: {}
         ProjectReferences:
             -   Id: 01700344-cf44-482c-bebc-60213b0f844c
                 Location: SiliconStudio.Paradox.Input.Tests.Android.csproj
@@ -54,8 +48,7 @@ Profiles:
         InheritProfiles: []
         AssetFolders: []
         OutputGroupDirectories: {}
-        Properties:
-            GameSettingsAsset.DefaultGraphicsProfile: Level_9_1
+        Properties: {}
         ProjectReferences:
             -   Id: 01700344-cf44-482c-bebc-60213b0f844c
                 Location: SiliconStudio.Paradox.Input.Tests.iOS.csproj

@@ -49,13 +49,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 var reference = AttachedReferenceManager.GetAttachedReference(runtimeAsset);
 
 
-                var assetItem = package.Session.FindAsset(reference.Id) ?? package.Session.FindAsset(reference.Url);
+                var assetItem = package.FindAsset(reference.Id) ?? package.FindAsset(reference.Url);
 
-                if (assetItem == null)
-                {
-                    return null;
-                }
-                return assetItem.Asset;
+                return assetItem?.Asset;
             };            
         }
     }

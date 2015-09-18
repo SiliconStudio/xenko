@@ -101,6 +101,20 @@ namespace SiliconStudio.Core.IO
         }
 
         /// <summary>
+        /// Gets the name of the file with its extension.
+        /// </summary>
+        /// <value>The name of file.</value>
+        public string GetFullPathWithoutExtension()
+        {
+            var span = new StringSpan(0, FullPath.Length);
+            if (NameSpan.IsValid)
+            {
+                span.Length = NameSpan.Next;
+            }
+            return span.IsValid ? FullPath.Substring(span) : null;
+        }
+
+        /// <summary>
         /// Makes this instance relative to the specified anchor directory.
         /// </summary>
         /// <param name="anchorDirectory">The anchor directory.</param>

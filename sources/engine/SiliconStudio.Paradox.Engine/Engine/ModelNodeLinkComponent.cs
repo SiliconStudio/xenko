@@ -14,30 +14,15 @@ namespace SiliconStudio.Paradox.Engine
     {
         public static PropertyKey<ModelNodeLinkComponent> Key = new PropertyKey<ModelNodeLinkComponent>("Key", typeof(ModelNodeLinkComponent));
 
-        internal ModelProcessor.EntityLink EntityLink;
-        internal ModelNodeLinkProcessor Processor;
-        private ModelComponent target;
-        private string nodeName;
-
         /// <summary>
         /// Gets or sets the model which contains the hierarchy to use.
         /// </summary>
         /// <value>
         /// The model which contains the hierarchy to use.
         /// </value>
-        /// <userdoc>The reference to the target entity to which attach the current entity.</userdoc>
-        public ModelComponent Target
-        {
-            get
-            {
-                return target;
-            }
-            set
-            {
-                target = value;
-                UpdateDirty();
-            }
-        }
+        /// <userdoc>The reference to the target entity to which attach the current entity. If null, parent will be used.</userdoc>
+        [Display("Target (Parent if not set)")]
+        public ModelComponent Target { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the node.
@@ -46,30 +31,7 @@ namespace SiliconStudio.Paradox.Engine
         /// The name of the node.
         /// </value>
         /// <userdoc>The name of node of the model of the target entity to which attach the current entity.</userdoc>
-        public string NodeName
-        {
-            get
-            {
-                return nodeName;
-            }
-            set
-            {
-                nodeName = value;
-                UpdateDirty();
-            }
-        }
-
-        private void UpdateDirty()
-        {
-            var processor = Processor;
-            if (processor != null)
-            {
-                lock (processor.DirtyLinks)
-                {
-                    processor.DirtyLinks.Add(this);
-                }
-            }
-        }
+        public string NodeName { get; set; }
 
         public override PropertyKey GetDefaultKey()
         {

@@ -4,7 +4,7 @@
 //     Paradox Effect Compiler File Generated:
 //     Effect [UIEffectSeparateAlpha]
 //
-//     Command Line: C:\DEV\paradox\sources\engine\SiliconStudio.Paradox.Graphics\Shaders.Bytecodes\..\..\..\..\Bin\Windows-Direct3D11\SiliconStudio.Assets.CompilerApp.exe --platform=Windows --profile=Windows --graphics-platform=OpenGLES --output-path=C:\DEV\paradox\sources\engine\SiliconStudio.Paradox.Graphics\Shaders.Bytecodes\obj\app_data --build-path=C:\DEV\paradox\sources\engine\SiliconStudio.Paradox.Graphics\Shaders.Bytecodes\obj\build_app_data --package-file=Graphics.pdxpkg
+//     Command Line: D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Graphics\Shaders.Bytecodes\..\..\..\..\Bin\Windows-Direct3D11\SiliconStudio.Assets.CompilerApp.exe --profile=Windows-OpenGLES --output-path=D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Graphics\Shaders.Bytecodes\obj\app_data --build-path=D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Graphics\Shaders.Bytecodes\obj\build_app_data --package-file=Graphics.pdxpkg
 //     Changes to this file may cause incorrect behavior and will be lost if
 //     the code is regenerated.
 // </auto-generated>

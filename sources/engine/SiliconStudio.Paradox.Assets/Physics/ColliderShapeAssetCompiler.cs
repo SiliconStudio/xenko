@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
         {
             result.BuildSteps = new AssetBuildStep(AssetItem)
             {
-                new ColliderShapeCombineCommand(urlInStorage, asset, context.Package),
+                new ColliderShapeCombineCommand(urlInStorage, asset, AssetItem.Package),
             };
 
             result.ShouldWaitForPreviousBuilds = asset.ColliderShapes.Any(shape => shape != null && shape.GetType() == typeof(ConvexHullColliderShapeDesc));
@@ -61,7 +61,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
             {
                 base.ComputeParameterHash(writer);
-                ComputeCompileTimeDependenciesHash(package.Session, writer, AssetParameters);
+                ComputeCompileTimeDependenciesHash(package, writer, AssetParameters);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)

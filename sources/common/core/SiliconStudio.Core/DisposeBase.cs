@@ -82,8 +82,8 @@ namespace SiliconStudio.Core
             int newCounter = Interlocked.Decrement(ref counter);
             if (newCounter == 0)
             {
-                IsDisposed = true;
                 Destroy();
+                IsDisposed = true;
             }
             else if (newCounter < 0)
             {

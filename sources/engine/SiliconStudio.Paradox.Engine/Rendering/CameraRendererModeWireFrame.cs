@@ -175,14 +175,16 @@ namespace SiliconStudio.Paradox.Rendering
                     context.Parameters.Set(MaterialFrontBackBlendShaderKeys.UseNormalBackFace, EnableBackColor);
                 }
 
-                context.Parameters.Set(MaterialFrontBackBlendShaderKeys.ColorFront, FrontColor);
-                context.Parameters.Set(MaterialFrontBackBlendShaderKeys.ColorBack, EnableBackColor ? BackColor : FrontColor);
+                context.Parameters.Set(MaterialFrontBackBlendShaderKeys.ColorFront, FrontColor.ToColorSpace(graphicsDevice.ColorSpace));
+                context.Parameters.Set(MaterialFrontBackBlendShaderKeys.ColorBack, (EnableBackColor ? BackColor : FrontColor).ToColorSpace(graphicsDevice.ColorSpace));
                 context.Parameters.Set(MaterialFrontBackBlendShaderKeys.AlphaBlend, AlphaBlend * BlendFactor);
                 context.Parameters.Set(MaterialFrontBackBlendShaderKeys.ColorBlend, (EnableColorBlend ? ColorBlend : AlphaBlend) * BlendFactor);
 
                 graphicsDevice.SetBlendState(graphicsDevice.BlendStates.AlphaBlend);
                 graphicsDevice.SetRasterizerState(EnableBackColor || ShowBackface ? graphicsDevice.RasterizerStates.WireFrame : graphicsDevice.RasterizerStates.WireFrameCullBack);
                 graphicsDevice.SetDepthStencilState(graphicsDevice.DepthStencilStates.Default);
+
+                modelComponentAndPickingRenderer.ModelRenderer.ForceRasterizer = true;
 
                 base.DrawCore(context);
             }

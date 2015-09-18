@@ -25,17 +25,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         /// Gets or sets the color multiplier. Default is <see cref="SiliconStudio.Core.Mathematics.Color.White"/>
         /// </summary>
         /// <value>The color multiplier.</value>
-        public Color4 Color
-        {
-            get
-            {
-                return Parameters.Get(ImageScalerShaderKeys.Color);
-            }
-            set
-            {
-                Parameters.Set(ImageScalerShaderKeys.Color, value);
-            }
-        }
+        public Color4 Color { get; set; }
 
         /// <summary>
         /// Copy only the red channel. Default is <c>false</c>
@@ -74,6 +64,14 @@ namespace SiliconStudio.Paradox.Rendering.Images
             base.SetDefaultParameters();
             Color = Color4.White;
             IsOnlyChannelRed = false;
+        }
+
+        protected override void UpdateParameters()
+        {
+            base.UpdateParameters();
+
+            // Use actual ColorSpace
+            Parameters.Set(ImageScalerShaderKeys.Color, Color.ToColorSpace(GraphicsDevice.ColorSpace));
         }
     }
 }

@@ -14,10 +14,6 @@ class SpriteBatch : SpriteBase
     {
         float4 swizzleColor = streams.Swizzle == 0 ? base.Shading() : base.Shading().rrrr;
         float4 finalColor = swizzleColor * streams.Color;
-
-        if(!any(finalColor))
-            discard;
-
         return finalColor;
     }
 };

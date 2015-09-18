@@ -70,12 +70,9 @@ namespace SiliconStudio.Paradox.Physics
 
         private void Simulate(float deltaTime)
         {
-            var simulationTasks = scenes.Select(simulation1 => Task.Run(() => simulation1.Simulation.Simulate(deltaTime))).ToArray();
-            Task.WaitAll(simulationTasks);
-
-            //in this case contacts are cached so we proccess after simulations are done
             foreach (var simulation in scenes)
             {
+                simulation.Simulation.Simulate(deltaTime);
                 simulation.Simulation.ProcessContacts();
             }
         }

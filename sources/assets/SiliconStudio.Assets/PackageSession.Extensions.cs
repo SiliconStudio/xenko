@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Assets
 {
@@ -20,7 +21,7 @@ namespace SiliconStudio.Assets
         /// <returns>An <see cref="AssetItem" /> or <c>null</c> if not found.</returns>
         public static AssetItem FindAsset(this PackageSession session, UFile location)
         {
-            var packages = session.CurrentPackage != null ? session.GetPackagesFromCurrent() : session.Packages;
+            var packages = session.Packages;
             return packages.Select(packageItem => packageItem.Assets.Find(location)).FirstOrDefault(asset => asset != null);
         }
 
@@ -32,7 +33,14 @@ namespace SiliconStudio.Assets
         /// <returns>An <see cref="AssetItem" /> or <c>null</c> if not found.</returns>
         public static AssetItem FindAsset(this PackageSession session, Guid assetId)
         {
-            return session.Packages.Select(packageItem => packageItem.Assets.Find(assetId)).FirstOrDefault(asset => asset != null);
+            var packages = session.Packages;
+            return packages.Select(packageItem => packageItem.Assets.Find(assetId)).FirstOrDefault(asset => asset != null);
+        }
+
+        public static AssetItem FindAssetFromAttachedReference(this PackageSession session, object obj)
+        {
+            var reference = AttachedReferenceManager.GetAttachedReference(obj);
+            return reference != null ? FindAsset(session, reference.Id) : null;
         }
 
         /// <summary>
@@ -44,7 +52,7 @@ namespace SiliconStudio.Assets
             if (originalAssetItem == null) throw new ArgumentNullException("originalAssetItem");
 
             // Find the asset from the session
-            var assetItem = session.FindAsset(originalAssetItem.Id);
+            var assetItem = originalAssetItem.Package.FindAsset(originalAssetItem.Id);
             if (assetItem == null)
             {
                 throw new ArgumentException("Cannot find the specified AssetItem instance in the session");

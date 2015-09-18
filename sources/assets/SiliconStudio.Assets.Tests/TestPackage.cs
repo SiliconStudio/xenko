@@ -61,6 +61,7 @@ namespace SiliconStudio.Assets.Tests
             Assert.AreEqual(project.Id, project2.Id);
             Assert.IsTrue(project2.Profiles.Count > 0);
             Assert.IsTrue(project2.Profiles.First().AssetFolders.Count > 0);
+            Assert.AreEqual(project2, project2Result.Session.CurrentPackage); // Check that the current package is setup when loading a single package
             var sourceFolder = project.Profiles.First().AssetFolders.First().Path;
             Assert.AreEqual(sourceFolder, project2.Profiles.First().AssetFolders.First().Path);
 

@@ -3,7 +3,6 @@
 
 using System.ComponentModel;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Assets.Textures.Packing;
 
 namespace SiliconStudio.Paradox.Assets.Sprite
@@ -24,8 +23,6 @@ namespace SiliconStudio.Paradox.Assets.Sprite
 
             AllowMultipacking = true;
             AllowRotations = true;
-
-            AtlasMaximumSize = new Int2(2048);
 
             BorderSize = 2;
         }
@@ -61,13 +58,6 @@ namespace SiliconStudio.Paradox.Assets.Sprite
         [DataMember(30)]
         [DefaultValue(true)]
         public bool AllowRotations { get; set; }
-
-        /// <summary>
-        /// Gets or sets maximum size for generated atlas textures
-        /// </summary>
-        /// <userdoc>The maximum size of the generated atlas textures.</userdoc>
-        [DataMember(40)]
-        public Int2 AtlasMaximumSize { get; set; }
 
         /// <summary>
         /// Gets or sets the size of the border for sprites inside atlas texture

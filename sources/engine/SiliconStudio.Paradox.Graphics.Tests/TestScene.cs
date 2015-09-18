@@ -45,15 +45,14 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             // Create a procedural model with a diffuse material
             var model = new Model();
-            var material = Material.New(
-                new MaterialDescriptor
+            var material = Material.New(GraphicsDevice, new MaterialDescriptor
+            {
+                Attributes =
                 {
-                    Attributes =
-                    {
-                        Diffuse = new MaterialDiffuseMapFeature(new ComputeColor(Color.White)),
-                        DiffuseModel = new MaterialDiffuseLambertModelFeature()
-                    }
-                });
+                    Diffuse = new MaterialDiffuseMapFeature(new ComputeColor(Color.White)),
+                    DiffuseModel = new MaterialDiffuseLambertModelFeature()
+                }
+            });
             model.Materials.Add(material);
             cubeEntity.Add(new ModelComponent(model));
 

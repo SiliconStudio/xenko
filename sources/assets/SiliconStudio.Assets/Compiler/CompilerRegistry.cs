@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 using SiliconStudio.Core;
 
@@ -12,7 +14,7 @@ namespace SiliconStudio.Assets.Compiler
     /// A registry containing the compiler associated to all the asset types
     /// </summary>
     /// <typeparam name="T">The type of the class implementing the <see cref="IAssetCompiler"/> interface to register.</typeparam>
-    public class CompilerRegistry<T> where T: class, IAssetCompiler
+    public abstract class CompilerRegistry<T> where T: class, IAssetCompiler
     {
         private readonly Dictionary<Type, T> typeToCompiler = new Dictionary<Type, T>();
 
@@ -43,11 +45,25 @@ namespace SiliconStudio.Assets.Compiler
         public T GetCompiler(Type type)
         {
             AssertAssetType(type);
+            EnsureTypes();
 
             if (!typeToCompiler.ContainsKey(type))
                 return DefaultCompiler;
 
             return typeToCompiler[type];
+        }
+
+        protected virtual void EnsureTypes()
+        {
+        }
+
+
+        protected void UnregisterCompilersFromAssembly(Assembly assembly)
+        {
+            foreach (var typeToRemove in typeToCompiler.Where(typeAndCompile => typeAndCompile.Key.Assembly == assembly || typeAndCompile.Value.GetType().Assembly == assembly).Select(e => e.Key).ToList())
+            {
+                typeToCompiler.Remove(typeToRemove);
+            }
         }
 
         private static void AssertAssetType(Type assetType)

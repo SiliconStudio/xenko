@@ -22,14 +22,14 @@ namespace SiliconStudio.Paradox.Assets.Entities
             // Note: Instead of copying the whole asset (with its potentially big hierarchy), we first copy the asset only (without the hierarchy), then the sub-hierarchy to extract.
 
             // create the hierarchy of the sub-tree
-            var subTreeRoot = source.Hierarchy.Entities[sourceRootEntity];
+            var subTreeRoot = source.Hierarchy.Entities[sourceRootEntity].Entity;
             var subTreeHierarchy = new EntityHierarchyData { Entities = { subTreeRoot }, RootEntities = { sourceRootEntity } };
             foreach (var subTreeEntity in subTreeRoot.EnumerateChildren(true))
-                subTreeHierarchy.Entities.Add(subTreeEntity);
+                subTreeHierarchy.Entities.Add(source.Hierarchy.Entities[subTreeEntity.Id]);
 
             // clone the entities of the sub-tree
             var clonedHierarchy = (EntityHierarchyData)AssetCloner.Clone(subTreeHierarchy);
-            clonedHierarchy.Entities[sourceRootEntity].Transform.Parent = null;
+            clonedHierarchy.Entities[sourceRootEntity].Entity.Transform.Parent = null;
 
             // set to null reference outside of the sub-tree
             EntityAnalysis.FixupEntityReferences(clonedHierarchy);
@@ -74,12 +74,12 @@ namespace SiliconStudio.Paradox.Assets.Entities
             // Let's optimize if really needed
             foreach (var currentEntity in hierarchy.Entities)
             {
-                var transformationComponent = currentEntity.Get(TransformComponent.Key);
+                var transformationComponent = currentEntity.Entity.Get(TransformComponent.Key);
                 if (transformationComponent == null)
                     continue;
 
                 if (transformationComponent.Children.Any(x => x.Entity == entity))
-                    return currentEntity;
+                    return currentEntity.Entity;
             }
 
             return null;
@@ -137,8 +137,8 @@ namespace SiliconStudio.Paradox.Assets.Entities
             // We gather entities that were added in our source since last import
             // Note: We only cares about the ones that are in source but not in base -- everything else should be in entityBase.IdMapping
             //       (otherwise it means entity has been deleted already in dest and/or source, so merge is deleted)
-            var sourceExtraIds = new HashSet<Guid>(clonedSource.Hierarchy.Entities.Select(x => x.Id));  // Everything in source,
-            sourceExtraIds.ExceptWith(entityBaseAsset.Hierarchy.Entities.Select(x => x.Id));            // but not in base,
+            var sourceExtraIds = new HashSet<Guid>(clonedSource.Hierarchy.Entities.Select(x => x.Entity.Id));  // Everything in source,
+            sourceExtraIds.ExceptWith(entityBaseAsset.Hierarchy.Entities.Select(x => x.Entity.Id));            // but not in base,
             sourceExtraIds.ExceptWith(entitiesSourceId);                                                // and not in entityBase.IdMapping...
 
             foreach (var sourceEntityId in sourceExtraIds)
@@ -150,7 +150,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
 
                 // Add it in our new entity, if possible at the same location
                 var asset = entityDiff3.Asset2;
-                var parentSourceEntity = FindParent(clonedSource.Hierarchy, entityDiff3.Asset2);
+                var parentSourceEntity = FindParent(clonedSource.Hierarchy, entityDiff3.Asset2.Entity);
                 Guid parentDestEntityId;
                 if (!oppositeMapping.TryGetValue(parentSourceEntity.Id, out parentDestEntityId))
                     continue;
@@ -168,9 +168,9 @@ namespace SiliconStudio.Paradox.Assets.Entities
         // TODO: Use Diff3Node?
         class EntityDiff3
         {
-            public Entity Base;
-            public Entity Asset1;
-            public Entity Asset2;
+            public EntityDesign Base;
+            public EntityDesign Asset1;
+            public EntityDesign Asset2;
             public MergeResult MergeResult;
         }
 
@@ -184,17 +184,17 @@ namespace SiliconStudio.Paradox.Assets.Entities
             // Generate entity mapping
             var entityMapping = new Dictionary<Guid, Guid>();
             var reverseEntityMapping = new Dictionary<Guid, Guid>();
-            foreach (var entity in newAsset.Hierarchy.Entities)
+            foreach (var entityDesign in newAsset.Hierarchy.Entities)
             {
                 // Generate new Id
                 var newEntityId = Guid.NewGuid();
 
                 // Update mappings
-                entityMapping.Add(newEntityId, entity.Id);
-                reverseEntityMapping.Add(entity.Id, newEntityId);
+                entityMapping.Add(newEntityId, entityDesign.Entity.Id);
+                reverseEntityMapping.Add(entityDesign.Entity.Id, newEntityId);
 
                 // Update entity with new id
-                entity.Id = newEntityId;
+                entityDesign.Entity.Id = newEntityId;
             }
 
             // Rewrite entity references

@@ -229,6 +229,7 @@ namespace SiliconStudio.Paradox.Engine
                     if (gameSettings.DefaultGraphicsProfileUsed > 0) deviceManager.PreferredGraphicsProfile = new[] { gameSettings.DefaultGraphicsProfileUsed };
                     if (gameSettings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = gameSettings.DefaultBackBufferWidth;
                     if (gameSettings.DefaultBackBufferHeight > 0) deviceManager.PreferredBackBufferHeight = gameSettings.DefaultBackBufferHeight;
+                    deviceManager.PreferredColorSpace = gameSettings.ColorSpace;
                     SceneSystem.InitialSceneUrl = gameSettings.DefaultSceneUrl;
                 }
             }
@@ -261,7 +262,7 @@ namespace SiliconStudio.Paradox.Engine
 
         internal static void InitializeAssetDatabase()
         {
-            using (var profile = Profiler.Begin(GameProfilingKeys.ObjectDatabaseInitialize))
+            using (Profiler.Begin(GameProfilingKeys.ObjectDatabaseInitialize))
             {
                 // Create and mount database file system
                 var objDatabase = new ObjectDatabase("/data/db", "index", "/local/db");

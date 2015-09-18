@@ -85,12 +85,6 @@ namespace SiliconStudio.Assets.Tests
         public Dictionary<string, AssetReference<AssetObjectTestSub>> References { get; set; }
     }
 
-    [DataContract("!AssetObjectTestRaw")]
-    [AssetDescription(".pdxraw")]
-    public class AssetObjectTestRaw : SourceCodeAsset
-    {
-    }
-
     [DataContract("!AssetObjectTestSub")]
     [AssetDescription(".pdxtestsub")]
     public class AssetObjectTestSub : Asset

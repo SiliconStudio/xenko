@@ -126,11 +126,11 @@ namespace SiliconStudio.TextureConverter.Tests
         public static void ExportTest(TexImage image, ITexLibrary library, string file)
         {
             String outputFile = library.GetType().Name + "_ExportTest_" + file;
-            library.Execute(image, new ExportRequest(TestTools.TempFolder + outputFile, 0));
+            library.Execute(image, new ExportRequest(Module.PathToOutputImages + outputFile, 0));
 
-            //Console.WriteLine("ExportTest_" + file + "." + TestTools.ComputeSHA1(TestTools.TempFolder + outputFile));
-            Assert.IsTrue(TestTools.ComputeSHA1(TestTools.TempFolder + outputFile).Equals(TestTools.GetInstance().Checksum["ExportTest_" + file]));
-            File.Delete(TestTools.TempFolder + outputFile);
+            //Console.WriteLine("ExportTest_" + file + "." + TestTools.ComputeSHA1(Module.PathToOutputImages + outputFile));
+            Assert.IsTrue(TestTools.ComputeSHA1(Module.PathToOutputImages + outputFile).Equals(TestTools.GetInstance().Checksum["ExportTest_" + file]));
+            File.Delete(Module.PathToOutputImages + outputFile);
         }
 
         public static void PreMultiplyAlphaTest(TexImage image, ITexLibrary library)
@@ -152,10 +152,10 @@ namespace SiliconStudio.TextureConverter.Tests
         public static void ExportMinMipMapTest(TexImage image, ITexLibrary library, int minMipMapSize)
         {
             String outputFile = library.GetType().Name + "_ExportTest_MinMipMapSize-" + minMipMapSize + "_" + image.Name;
-            library.Execute(image, new ExportRequest(TestTools.TempFolder + outputFile, minMipMapSize));
+            library.Execute(image, new ExportRequest(Module.PathToOutputImages + outputFile, minMipMapSize));
 
             TexImage image2 = new TexImage();
-            library.Execute(image2, new LoadingRequest(TestTools.TempFolder + outputFile, false));
+            library.Execute(image2, new LoadingRequest(Module.PathToOutputImages + outputFile, false));
             image2.CurrentLibrary = library;
 
             image.Update();
@@ -170,9 +170,9 @@ namespace SiliconStudio.TextureConverter.Tests
             Assert.IsTrue(image.ArraySize == image2.ArraySize);
 
 
-            //Console.WriteLine("ExportMinMipMapTest_" + minMipMapSize + "_" + image.Name + "." + TestTools.ComputeSHA1(TestTools.TempFolder + outputFile));
-            Assert.IsTrue(TestTools.ComputeSHA1(TestTools.TempFolder + outputFile).Equals(TestTools.GetInstance().Checksum["ExportMinMipMapTest_" + minMipMapSize + "_" + image.Name]));
-            File.Delete(TestTools.TempFolder + outputFile);
+            //Console.WriteLine("ExportMinMipMapTest_" + minMipMapSize + "_" + image.Name + "." + TestTools.ComputeSHA1(Module.PathToOutputImages + outputFile));
+            Assert.IsTrue(TestTools.ComputeSHA1(Module.PathToOutputImages + outputFile).Equals(TestTools.GetInstance().Checksum["ExportMinMipMapTest_" + minMipMapSize + "_" + image.Name]));
+            File.Delete(Module.PathToOutputImages + outputFile);
 
             image2.Dispose();
         }

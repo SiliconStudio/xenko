@@ -182,6 +182,30 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Color4"/> struct.
+        /// </summary>
+        /// <param name="color"><see cref="Color"/> used to initialize the color.</param>
+        public Color4(Color color)
+        {
+            R = color.R / 255.0f;
+            G = color.G / 255.0f;
+            B = color.B / 255.0f;
+            A = color.A / 255.0f;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Color4"/> struct.
+        /// </summary>
+        /// <param name="color"><see cref="Color"/> used to initialize the color.</param>
+        public Color4(ColorBGRA color)
+        {
+            R = color.R / 255.0f;
+            G = color.G / 255.0f;
+            B = color.B / 255.0f;
+            A = color.A / 255.0f;
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="SharpDX.Color4"/> struct.
         /// </summary>
         /// <param name="color"><see cref="SharpDX.Color3"/> used to initialize the color.</param>
@@ -831,7 +855,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>The result of the conversion.</returns>
         public static explicit operator Color4(ColorBGRA value)
         {
-            return new Color4(value.R, value.G, value.B, value.A);
+            return new Color4(value);
         }
 
         /// <summary>

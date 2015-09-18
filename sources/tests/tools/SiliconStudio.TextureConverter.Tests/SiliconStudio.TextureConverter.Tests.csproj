@@ -28,9 +28,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\..\..\data\tests\TextureConverter\**\*.*">
+      <Link>$(AssemblyName)\InputImages\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="ArrayTexLibraryTest.cs" />
     <Compile Include="AtitcTexLibraryTest.cs" />
     <Compile Include="AtlasTexLibraryTest.cs" />
+    <Compile Include="Module.cs" />
+    <Compile Include="TestFindSprites.cs" />
     <Compile Include="DxtTexLibTest.cs" />
     <Compile Include="FITexLibTest.cs" />
     <Compile Include="ParadoxTexLibraryTest.cs" />
@@ -44,6 +52,11 @@
     <Compile Include="TextureToolTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>

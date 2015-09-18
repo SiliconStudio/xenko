@@ -184,11 +184,16 @@
       <Project>{dd592516-b341-40fe-9100-1b0fa784a060}</Project>
       <Name>SiliconStudio.Paradox.Physics</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Paradox.UI\SiliconStudio.Paradox.UI.csproj">
+      <Project>{bb9deeef-f18c-40d8-b016-6434cc71b8c3}</Project>
+      <Name>SiliconStudio.Paradox.UI</Name>
+    </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Compile Include="BasicInputTest.cs" />
     <Compile Include="AdvancedInputTest.cs" />
     <Compile Include="Module.cs" />
+    <Compile Include="SensorGameTest.cs" />
     <None Include="SiliconStudio.Paradox.Input.Tests.pdxpkg" />
   </ItemGroup>
   <ItemGroup>

@@ -14,15 +14,14 @@ namespace SiliconStudio.Assets.Compiler
         }
 
         /// <summary>
+        /// Gets or sets the name of the profile being built.
+        /// </summary>
+        public string Profile { get; set; }
+
+        /// <summary>
         /// Gets or sets the target platform for compiler is being used for.
         /// </summary>
         /// <value>The platform.</value>
         public PlatformType Platform { get; set; }
-
-        /// <summary>
-        /// Gets the package.
-        /// </summary>
-        /// <value>The package.</value>
-        public Package Package { get; set; }
     }
 }

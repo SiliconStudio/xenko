@@ -29,7 +29,7 @@ namespace SiliconStudio.Assets.Tests
 
             // Tries to use existing ids
             var outputs = new AssetItemCollection();
-            AssetCollision.Clean(inputs, outputs, new AssetResolver(), true);
+            AssetCollision.Clean(null, inputs, outputs, new AssetResolver(), true);
 
             // Make sure we are generating exactly the same number of elements
             Assert.AreEqual(inputs.Count, outputs.Count);
@@ -71,7 +71,7 @@ namespace SiliconStudio.Assets.Tests
 
             // Force to use new ids
             var outputs = new AssetItemCollection();
-            AssetCollision.Clean(inputs, outputs, new AssetResolver() { AlwaysCreateNewId = true }, true);
+            AssetCollision.Clean(null, inputs, outputs, new AssetResolver() { AlwaysCreateNewId = true }, true);
 
             // Make sure we are generating exactly the same number of elements
             Assert.AreEqual(inputs.Count, outputs.Count);
@@ -117,7 +117,7 @@ namespace SiliconStudio.Assets.Tests
 
             // Tries to use existing ids
             var outputs = new AssetItemCollection();
-            AssetCollision.Clean(inputs, outputs, AssetResolver.FromPackage(package), true);
+            AssetCollision.Clean(null, inputs, outputs, AssetResolver.FromPackage(package), true);
 
             // Make sure we are generating exactly the same number of elements
             Assert.AreEqual(inputs.Count, outputs.Count);
@@ -143,7 +143,7 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreNotEqual("0", output.Location);
 
                 var assetRef = ((AssetObjectTest)output.Asset).Reference;
-                Assert.AreEqual("0_1", assetRef.Location);
+                Assert.AreEqual("0 (2)", assetRef.Location);
                 Assert.AreEqual(outputs[0].Id, assetRef.Id);
             }
         }

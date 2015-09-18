@@ -69,6 +69,11 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         public int PreferredFullScreenOutputIndex;
 
+        /// <summary>
+        /// The colorspace used.
+        /// </summary>
+        public ColorSpace ColorSpace;
+
         #endregion
 
         #region Constructors and Destructors
@@ -86,6 +91,7 @@ namespace SiliconStudio.Paradox.Graphics
             MultiSampleCount = MSAALevel.None;
             IsFullScreen = false;
             RefreshRate = new Rational(60, 1); // by default
+            ColorSpace = ColorSpace.Linear;
         }
 
         /// <summary>
@@ -128,7 +134,7 @@ namespace SiliconStudio.Paradox.Graphics
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return BackBufferFormat == other.BackBufferFormat && BackBufferHeight == other.BackBufferHeight && BackBufferWidth == other.BackBufferWidth && DepthStencilFormat == other.DepthStencilFormat && Equals(DeviceWindowHandle, other.DeviceWindowHandle) && IsFullScreen.Equals(other.IsFullScreen) && MultiSampleCount == other.MultiSampleCount && PresentationInterval == other.PresentationInterval && RefreshRate.Equals(other.RefreshRate) && PreferredFullScreenOutputIndex == other.PreferredFullScreenOutputIndex;
+            return BackBufferFormat == other.BackBufferFormat && BackBufferHeight == other.BackBufferHeight && BackBufferWidth == other.BackBufferWidth && DepthStencilFormat == other.DepthStencilFormat && Equals(DeviceWindowHandle, other.DeviceWindowHandle) && IsFullScreen == other.IsFullScreen && MultiSampleCount == other.MultiSampleCount && PresentationInterval == other.PresentationInterval && RefreshRate.Equals(other.RefreshRate) && PreferredFullScreenOutputIndex == other.PreferredFullScreenOutputIndex && ColorSpace == other.ColorSpace;
         }
 
         public override bool Equals(object obj)
@@ -153,6 +159,7 @@ namespace SiliconStudio.Paradox.Graphics
                 hashCode = (hashCode * 397) ^ (int)PresentationInterval;
                 hashCode = (hashCode * 397) ^ RefreshRate.GetHashCode();
                 hashCode = (hashCode * 397) ^ PreferredFullScreenOutputIndex;
+                hashCode = (hashCode * 397) ^ (int)ColorSpace;
                 return hashCode;
             }
         }

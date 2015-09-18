@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
 
@@ -14,6 +15,7 @@ using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Serialization.Assets;
 
 using System.Threading;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Paradox.Assets;
 
 namespace SiliconStudio.Assets.CompilerApp
@@ -66,6 +68,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
             assetLogger = new RemoteLogForwarder(builderOptions.Logger, builderOptions.LogPipeNames);
             GlobalLogger.GlobalMessageLogged += assetLogger;
+            PackageSession projectSession = null;
             try
             {
                 // TODO handle solution file + package-id ?
@@ -86,7 +89,7 @@ namespace SiliconStudio.Assets.CompilerApp
                     return BuildResultCode.BuildError;
                 }
 
-                var projectSession = projectSessionResult.Session;
+                projectSession = projectSessionResult.Session;
 
                 // Check build configuration
                 var package = projectSession.LocalPackages.Last();
@@ -104,16 +107,21 @@ namespace SiliconStudio.Assets.CompilerApp
                 var buildDirectory = builderOptions.BuildDirectory;
                 var outputDirectory = builderOptions.OutputDirectory;
 
-                // Builds the project
-                var assetBuilder = new PackageCompiler();
-                assetBuilder.AssetCompiled += RegisterBuildStepProcessedHandler;
+                // Process game settings asset
+                var gameSettingsAsset = package.GetGameSettingsAsset();
+                if (gameSettingsAsset == null)
+                {
+                    builderOptions.Logger.Warning("Could not find game settings asset at location [{0}]. Use a Default One", GameSettingsAsset.GameSettingsLocation);
+                    gameSettingsAsset = new GameSettingsAsset();
+                }
 
                 // Create context
                 var context = new AssetCompilerContext
                 {
-                    Package = package,
+                    Profile = builderOptions.BuildProfile,
                     Platform = builderOptions.Platform
                 };
+                context.SetGameSettingsAsset(gameSettingsAsset);
 
                 // Copy properties from shared profiles to context properties
                 if (sharedProfile != null)
@@ -124,14 +132,9 @@ namespace SiliconStudio.Assets.CompilerApp
                 // Copy properties from build profile
                 buildProfile.Properties.CopyTo(context.PackageProperties, true);
 
-            var gameSettingsAsset = context.Package.GetGameSettingsAsset();
-            if (gameSettingsAsset == null)
-            {
-                builderOptions.Logger.Error("Could not find game settings asset at location [{0}]", GameSettingsAsset.GameSettingsLocation);
-                return BuildResultCode.BuildError;
-            }
-
-            context.SetGameSettingsAsset(gameSettingsAsset);
+                // Builds the project
+                var assetBuilder = new PackageCompiler(new RootPackageAssetEnumerator(package));
+                assetBuilder.AssetCompiled += RegisterBuildStepProcessedHandler;
 
                 var assetBuildResult = assetBuilder.Compile(context);
                 assetBuildResult.CopyTo(builderOptions.Logger);
@@ -161,6 +164,12 @@ namespace SiliconStudio.Assets.CompilerApp
                 if (builder != null)
                 {
                     builder.Dispose();
+                }
+
+                // Dispose the session (in order to unload assemblies)
+                if (projectSession != null)
+                {
+                    projectSession.Dispose();
                 }
 
                 // Flush and close logger
