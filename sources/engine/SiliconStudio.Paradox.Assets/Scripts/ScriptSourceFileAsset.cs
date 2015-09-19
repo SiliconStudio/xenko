@@ -9,6 +9,8 @@ namespace SiliconStudio.Paradox.Assets.Scripts
     public interface IScriptTypesProvider
     {
         IReadOnlyCollection<Type> GetSourcePathTypes(string path);
+
+        string GetNamespaceForProject(string projectName);
     }
 
     [DataContract("ScriptSourceFileAsset")]
