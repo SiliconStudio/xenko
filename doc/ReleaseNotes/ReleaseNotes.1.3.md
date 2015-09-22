@@ -255,6 +255,17 @@ Lastly, node link information is now visible in the scene tree view for easier d
 - Sprite Sheets: They are now automatically packed. If this affects you, you can simply disable this setting by editing your Sprite Sheet asset.
 
 
+# Version 1.3.3-beta
+
+Release date: 2015/09/22
+
+## Issues fixed
+
+- GameStudio: When creating a script, use namespace directly from VS project.
+- Engine: Fix `LightComponent.SetColor` extension method that was throwing an exception
+- Physics: Fix upgrade from previous version to avoid error on `LinkedBoneName`
+- Physics: Fix gizmo in sub-entity when shape type is Asset
+
 # Version 1.3.2-beta
 
 Release date: 2015/09/19
