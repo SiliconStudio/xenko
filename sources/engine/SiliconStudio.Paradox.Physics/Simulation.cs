@@ -1004,13 +1004,11 @@ namespace SiliconStudio.Paradox.Physics
         /// </summary>
         public float FixedTimeStep { get; set; }
 
-        //todo needs integration with tick callback from bullet (native library fixes needed for monotouch)
-        //public void ClearForces()
-        //{
-        //    if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
-
-        //    discreteDynamicsWorld.ClearForces();
-        //}
+        public void ClearForces()
+        {
+            if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
+            discreteDynamicsWorld.ClearForces();
+        }
 
         public bool SpeculativeContactRestitution
         {
