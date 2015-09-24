@@ -350,11 +350,6 @@ namespace SiliconStudio.Assets
                 throw new ArgumentException("An asset [{0}] with the same location [{1}] is already registered ".ToFormat(mapPathToId[location], location.GetDirectoryAndFileName()), "item");
             }
 
-            if (!string.IsNullOrEmpty(location.GetFileExtension()))
-            {
-                throw new ArgumentException("An asset [{0}] cannot be registered with an extension [{1}]".ToFormat(location, location.GetFileExtension()), "item");
-            }
-
             if (mapIdToPath.ContainsKey(item.Id))
             {
                 throw new ArgumentException("An asset with the same id [{0}] is already registered with the location [{1}]".ToFormat(item.Id, location.GetDirectoryAndFileName()), "item");
