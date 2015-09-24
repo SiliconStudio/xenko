@@ -4,7 +4,8 @@
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <DocumentationFile></DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <Import Project="..\..\targets\Paradox.PreSettings.targets" />
   <PropertyGroup>
@@ -98,6 +99,7 @@
     <Compile Include="Constraint.cs" />
     <Compile Include="Shapes\ConvexHullColliderShape.cs" />
     <Compile Include="Shapes\CylinderColliderShape.cs" />
+    <Compile Include="Shapes\HeightfieldColliderShape.cs" />
     <Compile Include="Simulation.cs" />
     <Compile Include="Constraints\GearConstraint.cs" />
     <Compile Include="Constraints\Generic6DoFConstraint.cs" />
