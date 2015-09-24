@@ -205,7 +205,9 @@ namespace SiliconStudio.Paradox.Physics
 
         public void Dispose()
         {
-            if(Shape != null) Shape.Dispose();
+            if (Shape == null) return;
+            Shape.Dispose();
+            Shape = null;
         }
     }
 }
