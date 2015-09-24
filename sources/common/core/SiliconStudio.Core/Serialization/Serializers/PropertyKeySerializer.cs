@@ -3,6 +3,8 @@
 using System;
 using System.Reflection;
 
+using SiliconStudio.Core.Reflection;
+
 namespace SiliconStudio.Core.Serialization.Serializers
 {
     public class PropertyKeySerializer<T> : DataSerializer<T> where T : PropertyKey
@@ -18,7 +20,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             {
                 var parameterName = stream.ReadString();
                 var ownerTypeName = stream.ReadString();
-                var ownerType = Type.GetType(ownerTypeName);
+                var ownerType = AssemblyRegistry.GetType(ownerTypeName);
 
                 obj = (T)ownerType.GetTypeInfo().GetDeclaredField(parameterName).GetValue(null);
             }

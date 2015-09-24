@@ -232,8 +232,12 @@ namespace SiliconStudio.Paradox.Physics
 
         private void PersistentManifoldContactProcessed(BulletSharp.ManifoldPoint cp, BulletSharp.CollisionObject body0, BulletSharp.CollisionObject body1)
         {
-            var colA = body0 != null ? aliveColliders[body0] : null;
-            var colB = body1 != null ? aliveColliders[body1] : null;
+            if (body0 == null || body1 == null) return;
+
+            //this can fail and will fail in the case of multiple scenes and bodies not of the current simulation ( working as intended )
+            Collider colA, colB;
+            if (!aliveColliders.TryGetValue(body0, out colA)) return;
+            if (!aliveColliders.TryGetValue(body1, out colB)) return;
 
             if (colA == null || colB == null || !colA.ContactsAlwaysValid && !colB.ContactsAlwaysValid) return;
 
@@ -323,12 +327,21 @@ namespace SiliconStudio.Paradox.Physics
         public void Dispose()
         {
             //if (mSoftRigidDynamicsWorld != null) mSoftRigidDynamicsWorld.Dispose();
-            if (discreteDynamicsWorld != null) discreteDynamicsWorld.Dispose();
-            else if (collisionWorld != null) collisionWorld.Dispose();
+            if (discreteDynamicsWorld != null)
+            {
+                discreteDynamicsWorld.Dispose();
+            }
+            else
+            {
+                collisionWorld?.Dispose();
+            }
 
-            if (broadphase != null) broadphase.Dispose();
-            if (dispatcher != null) dispatcher.Dispose();
-            if (collisionConfiguration != null) collisionConfiguration.Dispose();
+            broadphase?.Dispose();
+            dispatcher?.Dispose();
+            collisionConfiguration?.Dispose();
+
+            BulletSharp.PersistentManifold.ContactProcessed -= PersistentManifoldContactProcessed;
+            BulletSharp.PersistentManifold.ContactDestroyed -= PersistentManifoldContactDestroyed;
         }
 
         /// <summary>
@@ -991,13 +1004,11 @@ namespace SiliconStudio.Paradox.Physics
         /// </summary>
         public float FixedTimeStep { get; set; }
 
-        //todo needs integration with tick callback from bullet (native library fixes needed for monotouch)
-        //public void ClearForces()
-        //{
-        //    if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
-
-        //    discreteDynamicsWorld.ClearForces();
-        //}
+        public void ClearForces()
+        {
+            if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
+            discreteDynamicsWorld.ClearForces();
+        }
 
         public bool SpeculativeContactRestitution
         {
@@ -1027,7 +1038,7 @@ namespace SiliconStudio.Paradox.Physics
         protected virtual void OnSimulationBegin(SimulationArgs e)
         {
             var handler = SimulationBegin;
-            if (handler != null) handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         internal void Simulate(float deltaTime)
@@ -1056,7 +1067,7 @@ namespace SiliconStudio.Paradox.Physics
         protected virtual void OnSimulationEnd(SimulationArgs e)
         {
             var handler = SimulationEnd;
-            if (handler != null) handler(this, e);
+            handler?.Invoke(this, e);
         }
     }
 }

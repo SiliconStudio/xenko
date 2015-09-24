@@ -65,7 +65,9 @@ namespace SiliconStudio.Core.Reflection
                     return assembly.GetType(typeName);
                 }
             }
-            return null;
+
+            // Fallback to default lookup
+            return Type.GetType(fullyQualifiedTypeName);
         }
 
         /// <summary>

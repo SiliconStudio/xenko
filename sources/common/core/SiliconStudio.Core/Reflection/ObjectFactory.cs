@@ -36,7 +36,7 @@ namespace SiliconStudio.Core.Reflection
                 var factoryAttribute = objectType.GetTypeInfo().GetCustomAttribute<ObjectFactoryAttribute>();
                 if (factoryAttribute != null)
                 {
-                    var factoryType = Type.GetType(factoryAttribute.FactoryTypeName);
+                    var factoryType = AssemblyRegistry.GetType(factoryAttribute.FactoryTypeName);
                     if (factoryType == null)
                     {
                         throw new ArgumentException("The type [{0}] for the ObjectFactoryAttribute of [{1}] was not found".ToFormat(factoryAttribute.FactoryTypeName, objectType));

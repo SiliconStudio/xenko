@@ -387,6 +387,10 @@ namespace SiliconStudio.Core.IO.Tests
         {
             Assert.AreEqual("test", new UFile("test.txt").GetFileName());
             Assert.AreEqual(".txt", new UFile("test.txt").GetFileExtension());
+
+            Assert.AreEqual("test.another", new UFile("test.another.txt").GetFileName());
+            Assert.AreEqual(".txt", new UFile("test.another.txt").GetFileExtension());
+
             Assert.AreEqual(".txt", new UFile(".txt").GetFileExtension());
             Assert.IsFalse(new UFile("test.txt").IsAbsolute);
         }

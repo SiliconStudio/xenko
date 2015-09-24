@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Core.Serialization.Contents
@@ -75,7 +76,7 @@ namespace SiliconStudio.Core.Serialization.Contents
                 else if (mode == ArchiveMode.Deserialize)
                 {
                     string typeName = stream.ReadString();
-                    chunkReference = new ChunkReference(Type.GetType(typeName), stream.ReadString());
+                    chunkReference = new ChunkReference(AssemblyRegistry.GetType(typeName), stream.ReadString());
                 }
             }
         }

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Engine.Design;
 using SiliconStudio.Paradox.Engine.Processors;
 using SiliconStudio.Paradox.Games;
@@ -262,7 +263,7 @@ namespace SiliconStudio.Paradox.Engine
             {
                 return;
             }
-            var renderType = Type.GetType(rendererTypeAttribute.TypeName);
+            var renderType = AssemblyRegistry.GetType(rendererTypeAttribute.TypeName);
             if (renderType != null && typeof(IEntityComponentRenderer).GetTypeInfo().IsAssignableFrom(renderType.GetTypeInfo()) && renderType.GetTypeInfo().DeclaredConstructors.Any(x => !x.IsStatic && x.GetParameters().Length == 0))
             {
                 var entityComponentRendererType = new EntityComponentRendererType(type, renderType, rendererTypeAttribute.Order);

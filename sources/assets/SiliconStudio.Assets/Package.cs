@@ -1260,11 +1260,21 @@ namespace SiliconStudio.Assets
             return listFiles;
         }
 
-        public static List<string> FindCodeAssetsInProject(string projectFullPath)
+        public static List<string> FindCodeAssetsInProject(string projectFullPath, out string nameSpace)
         {
             var realFullPath = new UFile(projectFullPath);
             var project = VSProjectHelper.LoadProject(realFullPath);
             var dir = new UDirectory(realFullPath.GetFullDirectory());
+
+            var nameSpaceProp = project.AllEvaluatedProperties.Where(x => x.Name == "RootNamespace").FirstOrDefault();
+            if (nameSpaceProp != null)
+            {
+                nameSpace = nameSpaceProp.EvaluatedValue;
+            }
+            else
+            {
+                nameSpace = string.Empty;
+            }
 
             var result = project.Items.Where(x => (x.ItemType == "Compile" || x.ItemType == "None") && string.IsNullOrEmpty(x.GetMetadataValue("AutoGen")))
                 .Select(x => new UFile(x.EvaluatedInclude)).Where(x => AssetRegistry.IsProjectSourceCodeAssetFileExtension(x.GetFileExtension()))
@@ -1286,7 +1296,8 @@ namespace SiliconStudio.Assets
             foreach (var libs in profile.ProjectReferences.Where(x => x.Type == ProjectType.Library))
             {
                 var realFullPath = UPath.Combine(package.RootDirectory, libs.Location);
-                var codePaths = FindCodeAssetsInProject(realFullPath);
+                string @namespace;
+                var codePaths = FindCodeAssetsInProject(realFullPath, out @namespace);
                 var dir = new UDirectory(realFullPath.GetFullDirectory());
                 var parentDir = dir.GetParent();
 
