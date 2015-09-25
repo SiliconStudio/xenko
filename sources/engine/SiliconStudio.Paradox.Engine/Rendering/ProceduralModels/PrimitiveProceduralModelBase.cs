@@ -41,6 +41,9 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
             }
         }
 
+        [DataMember(510)]
+        public Vector3 Scale = Vector3.One;
+
         /// <inheritdoc/>
         [DataMemberIgnore]
         public IEnumerable<KeyValuePair<string, MaterialInstance>> MaterialInstances { get { yield return new KeyValuePair<string, MaterialInstance>("Material", MaterialInstance); } }
@@ -57,6 +60,15 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
             if (data.Vertices.Length == 0)
             {
                 throw new InvalidOperationException("Invalid GeometricPrimitive [{0}]. Expecting non-zero Vertices array");
+            }
+
+            //Scale if necessary
+            if (Scale != Vector3.One)
+            {
+                for (var index = 0; index < data.Vertices.Length; index++)
+                {
+                    data.Vertices[index].Position *= Scale;
+                }
             }
 
             var boundingBox = BoundingBox.Empty;
