@@ -140,10 +140,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <value>
         /// <c>true</c> if this instance is grounded; otherwise, <c>false</c>.
         /// </value>
-        public bool IsGrounded
-        {
-            get { return KinematicCharacter.OnGround(); }
-        }
+        public bool IsGrounded => KinematicCharacter.OnGround();
 
         /// <summary>
         /// Teleports the specified target position.

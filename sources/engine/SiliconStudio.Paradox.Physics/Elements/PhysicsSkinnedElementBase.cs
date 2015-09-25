@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <userdoc>
         /// In the case of skinned mesh this must be the bone node name linked with this element.
         /// </userdoc>
-        [DataMember(50)]
+        [DataMember(190)]
         public string NodeName
         {
             get
