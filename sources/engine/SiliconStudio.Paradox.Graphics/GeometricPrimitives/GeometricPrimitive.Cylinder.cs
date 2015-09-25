@@ -99,7 +99,7 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             }
 
             // Helper creates a triangle fan to close the end of a cylinder.
-            private static void CreateCylinderCap(List<VertexPositionNormalTexture> vertices, List<int> indices, int tessellation, float height, float radius, float textureTiling, bool isTop)
+            private static void CreateCylinderCap(List<VertexPositionNormalTexture> vertices, List<int> indices, int tessellation, float height, float radius, float uScale, float vScale, bool isTop)
             {
                 // Create cap indices.
                 for (int i = 0; i < tessellation - 2; i++)
@@ -133,7 +133,7 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
                 {
                     var circleVector = GetCircleVector(i, tessellation);
                     var position = (circleVector*radius) + (normal*height);
-                    var textureCoordinate = new Vector2(textureTiling * (circleVector.X * textureScale.X + 0.5f), textureTiling * (circleVector.Z * textureScale.Y + 0.5f));
+                    var textureCoordinate = new Vector2(uScale * (circleVector.X * textureScale.X + 0.5f), vScale * (circleVector.Z * textureScale.Y + 0.5f));
 
                     vertices.Add(new VertexPositionNormalTexture(position, normal, textureCoordinate));
                 }
@@ -146,14 +146,15 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// <param name="height">The height.</param>
             /// <param name="radius">The radius.</param>
             /// <param name="tessellation">The tessellation.</param>
-            /// <param name="textureTiling">The texture tiling.</param>
+            /// <param name="vScale"></param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
+            /// <param name="uScale"></param>
             /// <returns>A cylinder primitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;tessellation must be &gt;= 3</exception>
-            public static GeometricPrimitive New(GraphicsDevice device, float height = 1.0f, float radius = 0.5f, int tessellation = 32, float textureTiling = 1, bool toLeftHanded = false)
+            public static GeometricPrimitive New(GraphicsDevice device, float height = 1.0f, float radius = 0.5f, int tessellation = 32, float uScale = 1.0f, float vScale = 1.0f, bool toLeftHanded = false)
             {
                 // Create the primitive object.
-                return new GeometricPrimitive(device, New(height, radius, tessellation, textureTiling, toLeftHanded));
+                return new GeometricPrimitive(device, New(height, radius, tessellation, uScale, vScale, toLeftHanded));
             }
 
             /// <summary>
@@ -162,11 +163,12 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// <param name="height">The height.</param>
             /// <param name="radius">The radius.</param>
             /// <param name="tessellation">The tessellation.</param>
-            /// <param name="textureTiling">The texture tiling.</param>
+            /// <param name="vScale"></param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
+            /// <param name="uScale"></param>
             /// <returns>A cylinder primitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;tessellation must be &gt;= 3</exception>
-            public static GeometricMeshData<VertexPositionNormalTexture> New(float height = 1.0f, float radius = 0.5f, int tessellation = 32, float textureTiling = 1, bool toLeftHanded = false)
+            public static GeometricMeshData<VertexPositionNormalTexture> New(float height = 1.0f, float radius = 0.5f, int tessellation = 32, float uScale = 1.0f, float vScale = 1.0f, bool toLeftHanded = false)
             {
                 if (tessellation < 3)
                     tessellation = 3;
@@ -187,10 +189,10 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
 
                     var sideOffset = normal*radius;
 
-                    var textureCoordinate = new Vector2(textureTiling * i/tessellation, 0);
+                    var textureCoordinate = new Vector2((float)i/tessellation, 0);
                     
-                    vertices.Add(new VertexPositionNormalTexture(sideOffset + topOffset, normal, textureCoordinate));
-                    vertices.Add(new VertexPositionNormalTexture(sideOffset - topOffset, normal, textureCoordinate + Vector2.UnitY));
+                    vertices.Add(new VertexPositionNormalTexture(sideOffset + topOffset, normal, textureCoordinate * new Vector2(uScale, vScale)));
+                    vertices.Add(new VertexPositionNormalTexture(sideOffset - topOffset, normal, (textureCoordinate + Vector2.UnitY) * new Vector2(uScale, vScale)));
 
                     indices.Add(i*2);
                     indices.Add((i*2 + 2)%(stride*2));
@@ -202,8 +204,8 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
                 }
 
                 // Create flat triangle fan caps to seal the top and bottom.
-                CreateCylinderCap(vertices, indices, tessellation, height, radius, textureTiling, true);
-                CreateCylinderCap(vertices, indices, tessellation, height, radius, textureTiling, false);
+                CreateCylinderCap(vertices, indices, tessellation, height, radius, uScale, vScale, true);
+                CreateCylinderCap(vertices, indices, tessellation, height, radius, uScale, vScale, false);
 
                 // Create the primitive object.
                 return new GeometricMeshData<VertexPositionNormalTexture>(vertices.ToArray(), indices.ToArray(), toLeftHanded) {Name = "Cylinder"};

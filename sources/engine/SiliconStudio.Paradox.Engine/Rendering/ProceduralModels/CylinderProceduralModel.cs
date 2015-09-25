@@ -24,7 +24,6 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
             Height = 1.0f;
             Radius = 0.5f;
             Tessellation = 32;
-            ScaleUV = 1;
         }
 
         /// <summary>
@@ -54,18 +53,9 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         [DefaultValue(32)]
         public int Tessellation { get; set; }
 
-        /// <summary>
-        /// Gets or sets the scale to apply on texcoord uv.
-        /// </summary>
-        /// <value>The scale uv.</value>
-        /// <userdoc>The scales to apply onto the UV coordinates of the cylinder. This can be used to tile a texture on it.</userdoc>
-        [DataMember(40)]
-        [DefaultValue(1.0f)]
-        public float ScaleUV { get; set; }
-
         protected override GeometricMeshData<VertexPositionNormalTexture> CreatePrimitiveMeshData()
         {
-            return GeometricPrimitive.Cylinder.New(Height, Radius, Tessellation, ScaleUV);
+            return GeometricPrimitive.Cylinder.New(Height, Radius, Tessellation, UvScale.X, UvScale.Y);
         }
     }
 }
