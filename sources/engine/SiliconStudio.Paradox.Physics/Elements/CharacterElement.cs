@@ -15,8 +15,6 @@ namespace SiliconStudio.Paradox.Physics
 
         public override Types Type => Types.CharacterController;
 
-        private float stepHeight;
-
         /// <summary>
         /// Gets or sets the height of the character step.
         /// </summary>
@@ -24,26 +22,11 @@ namespace SiliconStudio.Paradox.Physics
         /// The height of the character step.
         /// </value>
         /// <userdoc>
-        /// Only valid for CharacterController type, describes the max slope height a character can climb.
+        /// Only valid for CharacterController type, describes the max slope height a character can climb. Cannot change during run-time.
         /// </userdoc>
         [DataMember(75)]
         [DefaultValue(0.1f)]
-        public float StepHeight
-        {
-            get
-            {
-                return stepHeight;
-            }
-            set
-            {
-                if (InternalCollider != null)
-                {
-                    throw new Exception("Cannot change StepHeight when the entity is already in the scene.");
-                }
-
-                stepHeight = value;
-            }
-        }
+        public float StepHeight { get; set; }
 
         private float fallSpeed = 10.0f;
 

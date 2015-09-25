@@ -74,8 +74,6 @@ namespace SiliconStudio.Paradox.Physics
         [DataMemberIgnore]
         public bool CanScaleShape { get; private set; }
 
-        private CollisionFilterGroups collisionGroup;
-
         /// <summary>
         /// Gets or sets the collision group.
         /// </summary>
@@ -83,27 +81,10 @@ namespace SiliconStudio.Paradox.Physics
         /// The collision group.
         /// </value>
         /// <userdoc>
-        /// The collision group of this element, default is DefaultFilter.
+        /// The collision group of this element, default is DefaultFilter. Cannot change during run-time.
         /// </userdoc>
         [DataMember(30)]
-        public CollisionFilterGroups CollisionGroup
-        {
-            get
-            {
-                return collisionGroup;
-            }
-            set
-            {
-                if (InternalCollider != null)
-                {
-                    throw new Exception("Cannot change CollisionGroup when the entity is already in the scene.");
-                }
-
-                collisionGroup = value;
-            }
-        }
-
-        private CollisionFilterGroupFlags canCollideWith;
+        public CollisionFilterGroups CollisionGroup { get; set; }
 
         /// <summary>
         /// Gets or sets the can collide with.
@@ -112,25 +93,10 @@ namespace SiliconStudio.Paradox.Physics
         /// The can collide with.
         /// </value>
         /// <userdoc>
-        /// Which collider groups this element can collide with, when nothing is selected it will collide with all groups.
+        /// Which collider groups this element can collide with, when nothing is selected it will collide with all groups. Cannot change during run-time.
         /// </userdoc>
         [DataMember(40)]
-        public CollisionFilterGroupFlags CanCollideWith
-        {
-            get
-            {
-                return canCollideWith;
-            }
-            set
-            {
-                if (InternalCollider != null)
-                {
-                    throw new Exception("Cannot change CanCollideWith when the entity is already in the scene.");
-                }
-
-                canCollideWith = value;
-            }
-        }
+        public CollisionFilterGroupFlags CanCollideWith { get; set; }
 
         private bool processCollisions = true;
 

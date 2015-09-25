@@ -4,6 +4,7 @@
 using SiliconStudio.Core.Mathematics;
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -50,6 +51,13 @@ namespace SiliconStudio.Paradox.Physics
         /// </summary>
         public static bool DisableSimulation = false;
 
+        public delegate PhysicsEngineFlags OnSimulationCreationDelegate();
+
+        /// <summary>
+        /// Temporary solution to inject engine flags
+        /// </summary>
+        public static OnSimulationCreationDelegate OnSimulationCreation;
+
         /// <summary>
         /// Initializes the Physics engine using the specified flags.
         /// </summary>
@@ -57,6 +65,14 @@ namespace SiliconStudio.Paradox.Physics
         /// <exception cref="System.NotImplementedException">SoftBody processing is not yet available</exception>
         internal Simulation(PhysicsEngineFlags flags = PhysicsEngineFlags.None)
         {
+            if (flags == PhysicsEngineFlags.None)
+            {
+                if (OnSimulationCreation != null)
+                {
+                    flags = OnSimulationCreation();
+                }
+            }
+
             MaxSubSteps = 1;
             FixedTimeStep = 1.0f / 60.0f;
 
@@ -356,7 +372,7 @@ namespace SiliconStudio.Paradox.Physics
                 InternalCollider = new BulletSharp.CollisionObject
                 {
                     CollisionShape = shape.InternalShape,
-                    ContactProcessingThreshold = 1e18f
+                    ContactProcessingThreshold = !canCcd ? 1e18f : 1e30f
                 }
             };
 
@@ -384,7 +400,7 @@ namespace SiliconStudio.Paradox.Physics
 
             rb.InternalCollider = rb.InternalRigidBody;
 
-            rb.InternalCollider.ContactProcessingThreshold = 1e18f;
+            rb.InternalCollider.ContactProcessingThreshold = !canCcd ? 1e18f : 1e30f;
 
             if (collider.NeedsCustomCollisionCallback)
             {
@@ -423,7 +439,7 @@ namespace SiliconStudio.Paradox.Physics
                 ch.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.CustomMaterialCallback;
             }
 
-            ch.InternalCollider.ContactProcessingThreshold = 1e18f;
+            ch.InternalCollider.ContactProcessingThreshold = !canCcd ? 1e18f : 1e30f;
 
             ch.KinematicCharacter = new BulletSharp.KinematicCharacterController((BulletSharp.PairCachingGhostObject)ch.InternalCollider, (BulletSharp.ConvexShape)collider.InternalShape, stepHeight);
 
