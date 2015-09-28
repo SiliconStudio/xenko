@@ -29,7 +29,7 @@ namespace SiliconStudio.Core.Diagnostics
             Messages = new TrackingCollection<ILogMessage>();
             IsLoggingProgressAsInfo = false;
             // By default, all logs are enabled for a local logger.
-            ActivateLog(LogMessageType.Verbose);
+            ActivateLog(LogMessageType.Debug);
         }
 
         /// <summary>
