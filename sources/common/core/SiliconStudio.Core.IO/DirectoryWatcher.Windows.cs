@@ -263,7 +263,10 @@ namespace SiliconStudio.Core.IO
                     IncludeSubdirectories = true
                 };
 
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+// FIXME: Manu: This seems to be used for Designers in VS. Do we actually need this?
             watcher.BeginInit();
+#endif
 
             watcher.Changed += OnModified;
             watcher.Created += OnModified;
@@ -271,7 +274,10 @@ namespace SiliconStudio.Core.IO
             watcher.Renamed += OnModified;
             watcher.Error += WatcherOnError;
 
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+// FIXME: Manu: This seems to be used for Designers in VS. Do we actually need this?
             watcher.EndInit();
+#endif
             watcher.EnableRaisingEvents = true;
 
             //Console.WriteLine("Watcher created {0}", directory);
