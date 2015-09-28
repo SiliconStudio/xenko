@@ -208,7 +208,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <exception cref="TextureToolsException">Loading dds file failed</exception>
         private void Load(TexImage image, DxtTextureLibraryData libraryData, LoadingRequest loader)
         {
-            Log.Info("Loading " + loader.FilePath + " ...");
+            Log.Debug("Loading " + loader.FilePath + " ...");
 
             libraryData = new DxtTextureLibraryData();
             image.LibraryData[this] = libraryData;
@@ -287,7 +287,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <exception cref="TextureToolsException">Compression failed</exception>
         private void Compress(TexImage image, DxtTextureLibraryData libraryData, CompressingRequest request)
         {
-            Log.Info("Converting/Compressing with " + request.Format + " ...");
+            Log.Debug("Converting/Compressing with " + request.Format + " ...");
 
             if(libraryData.DxtImages == null || libraryData.DxtImages.Length == 0)
                 return;
@@ -342,7 +342,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             int width = request.ComputeWidth(image);
             int height = request.ComputeHeight(image);
 
-            Log.Info("Rescaling to " + width + "x" + height + " ...");
+            Log.Debug("Rescaling to " + width + "x" + height + " ...");
 
             TEX_FILTER_FLAGS filter;
             switch(request.Filter)
@@ -399,7 +399,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             // TODO: temp if request format is SRGB we force it to non-srgb to perform the conversion. Will not work if texture input is SRGB
             var outputFormat = request.Format.IsSRgb() ? request.Format.ToNonSRgb() : request.Format;
 
-            Log.Info("Converting texture from {0} to {1}", ((PixelFormat)libraryData.Metadata.format), outputFormat);
+            Log.Debug("Converting texture from {0} to {1}", ((PixelFormat)libraryData.Metadata.format), outputFormat);
 
             var scratchImage = new ScratchImage();
             var hr = Utilities.Convert(libraryData.DxtImages, libraryData.DxtImages.Length, ref libraryData.Metadata, (DXGI_FORMAT)outputFormat, TEX_FILTER_FLAGS.TEX_FILTER_BOX, 0.0f, scratchImage);
@@ -433,7 +433,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <exception cref="TextureToolsException">Decompression failed</exception>
         private void Decompress(TexImage image, DxtTextureLibraryData libraryData, DecompressingRequest request)
         {
-            Log.Info("Decompressing texture ...");
+            Log.Debug("Decompressing texture ...");
 
             // determine the output format to avoid any sRGB/RGB conversions (only decompression, no conversion)
             var outputFormat = !((PixelFormat)libraryData.Metadata.format).IsSRgb() ? request.DecompressedFormat.ToNonSRgb() : request.DecompressedFormat.ToSRgb();
@@ -475,7 +475,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// </exception>
         private void GenerateMipMaps(TexImage image, DxtTextureLibraryData libraryData, MipMapsGenerationRequest request)
         {
-            Log.Info("Generating Mipmaps ... ");
+            Log.Debug("Generating Mipmaps ... ");
 
             var filter = TEX_FILTER_FLAGS.TEX_FILTER_DEFAULT;
             switch (request.Filter)
@@ -552,7 +552,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// </exception>
         private void Export(TexImage image, DxtTextureLibraryData libraryData, ExportRequest request)
         {
-            Log.Info("Exporting to " + request.FilePath + " ...");
+            Log.Debug("Exporting to " + request.FilePath + " ...");
 
             if (request.MinimumMipMapSize > 1 && request.MinimumMipMapSize <= libraryData.Metadata.Width && request.MinimumMipMapSize <= libraryData.Metadata.Height) // if a mimimun mipmap size was requested
             {
@@ -654,7 +654,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <exception cref="TexLibraryException">Failed to generate the normal map</exception>
         public void GenerateNormalMap(TexImage image, DxtTextureLibraryData libraryData, NormalMapGenerationRequest request)
         {
-            Log.Info("Generating Normal Map ... ");
+            Log.Debug("Generating Normal Map ... ");
 
             ScratchImage scratchImage = new ScratchImage();
 
@@ -686,7 +686,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <param name="libraryData">The library data.</param>
         public void PreMultiplyAlpha(TexImage image, DxtTextureLibraryData libraryData)
         {
-            Log.Info("Premultiplying alpha ... ");
+            Log.Debug("Premultiplying alpha ... ");
 
             ScratchImage scratchImage = new ScratchImage();
 

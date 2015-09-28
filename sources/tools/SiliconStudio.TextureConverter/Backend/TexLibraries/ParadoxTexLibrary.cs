@@ -130,7 +130,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <exception cref="TexLibraryException">Unsupported file extension.</exception>
         private void Export(TexImage image, ParadoxTextureLibraryData libraryDataf, ExportRequest request)
         {
-            Log.Info("Exporting to " + request.FilePath + " ...");
+            Log.Debug("Exporting to " + request.FilePath + " ...");
 
             Image pdxImage = null;
 
@@ -296,7 +296,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <exception cref="System.NotImplementedException"></exception>
         private void ExportToParadox(TexImage image, ParadoxTextureLibraryData libraryData, ExportToParadoxRequest request)
         {
-            Log.Info("Exporting to Paradox Image ...");
+            Log.Debug("Exporting to Paradox Image ...");
 
             Image pdxImage = null;
             switch (image.Dimension)
@@ -335,7 +335,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <param name="request">The request.</param>
         private void Load(TexImage image, LoadingRequest request)
         {
-            Log.Info("Loading Paradox Image ...");
+            Log.Debug("Loading Paradox Image ...");
 
             var libraryData = new ParadoxTextureLibraryData();
             image.LibraryData[this] = libraryData;
