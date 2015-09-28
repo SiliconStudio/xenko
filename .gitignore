@@ -3,3 +3,5 @@ Release
 obj/
 x64Debug/
 Bin/
+*.csproj.user
+*.vcxproj.user
