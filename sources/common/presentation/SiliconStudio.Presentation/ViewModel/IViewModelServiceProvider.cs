@@ -10,6 +10,16 @@ namespace SiliconStudio.Presentation.ViewModel
     public interface IViewModelServiceProvider
     {
         /// <summary>
+        /// Raised when a service is registered to this service provider.
+        /// </summary>
+        event EventHandler<ServiceRegistrationEventArgs> ServiceRegistered;
+
+        /// <summary>
+        /// Raised when a service is unregistered from this service provider.
+        /// </summary>
+        event EventHandler<ServiceRegistrationEventArgs> ServiceUnregistered;
+
+        /// <summary>
         /// Register a new service in this <see cref="ViewModelServiceProvider"/>.
         /// </summary>
         /// <param name="service">The service to register.</param>

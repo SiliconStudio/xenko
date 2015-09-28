@@ -7,8 +7,6 @@ namespace SiliconStudio.Paradox.Physics
     [Display(40, "PhysicsSkinnedElementBase")]
     public abstract class PhysicsSkinnedElementBase : PhysicsElementBase
     {
-        private string nodeName;
-
         /// <summary>
         /// Gets or sets the link (usually a bone).
         /// </summary>
@@ -16,24 +14,9 @@ namespace SiliconStudio.Paradox.Physics
         /// The mesh's linked bone name
         /// </value>
         /// <userdoc>
-        /// In the case of skinned mesh this must be the bone node name linked with this element.
+        /// In the case of skinned mesh this must be the bone node name linked with this element. Cannot change during run-time.
         /// </userdoc>
-        [DataMember(50)]
-        public string NodeName
-        {
-            get
-            {
-                return nodeName;
-            }
-            set
-            {
-                if (InternalCollider != null)
-                {
-                    throw new Exception("Cannot change NodeName when the entity is already in the scene.");
-                }
-
-                nodeName = value;
-            }
-        }
+        [DataMember(190)]
+        public string NodeName { get; set; }
     }
 }

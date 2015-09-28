@@ -25,7 +25,6 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
             Normal = NormalDirection.UpY;
             Size = new Vector2(1.0f);
             Tessellation = new Int2(1);
-            UVScales = new Vector2(1);
         }
 
         /// <summary>
@@ -47,16 +46,6 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         [DefaultValue(1)]
         [Display("Tessellation")]
         public Int2 Tessellation { get; set; }
-
-        /// <summary>
-        /// Gets or sets the UV scales.
-        /// </summary>
-        /// <value>The UV scales</value>
-        /// <userdoc>The scales to apply to the UV coordinates of the plane. This can be used to tile a texture on it.</userdoc>
-        [DataMember(30)]
-        [DefaultValue(1.0f)]
-        [Display("UV Scales")]
-        public Vector2 UVScales { get; set; }
         
         /// <summary>
         /// Gets or sets the normal direction of the plane.
@@ -78,7 +67,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
 
         protected override GeometricMeshData<VertexPositionNormalTexture> CreatePrimitiveMeshData()
         {
-            return GeometricPrimitive.Plane.New(Size.X, Size.Y, Tessellation.X, Tessellation.Y, UVScales.X, UVScales.Y, GenerateBackFace, false, Normal);
+            return GeometricPrimitive.Plane.New(Size.X, Size.Y, Tessellation.X, Tessellation.Y, UvScale.X, UvScale.Y, GenerateBackFace, false, Normal);
         }
     }
 }

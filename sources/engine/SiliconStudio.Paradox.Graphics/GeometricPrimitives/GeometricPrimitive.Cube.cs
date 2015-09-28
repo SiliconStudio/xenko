@@ -114,12 +114,14 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// </summary>
             /// <param name="device">The device.</param>
             /// <param name="size">The size.</param>
+            /// <param name="vScale"></param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
+            /// <param name="uScale"></param>
             /// <returns>A cube.</returns>
-            public static GeometricPrimitive New(GraphicsDevice device, float size = 1.0f, bool toLeftHanded = false)
+            public static GeometricPrimitive New(GraphicsDevice device, float size = 1.0f, float uScale = 1.0f, float vScale = 1.0f, bool toLeftHanded = false)
             {
                 // Create the primitive object.
-                return new GeometricPrimitive(device, New(size, toLeftHanded));
+                return new GeometricPrimitive(device, New(size, uScale, vScale, toLeftHanded));
             }
 
             /// <summary>
@@ -127,35 +129,47 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// </summary>
             /// <param name="device">The device.</param>
             /// <param name="size">The size.</param>
+            /// <param name="vScale"></param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
+            /// <param name="uScale"></param>
             /// <returns>A cube.</returns>
-            public static GeometricPrimitive New(GraphicsDevice device, Vector3 size, bool toLeftHanded = false)
+            public static GeometricPrimitive New(GraphicsDevice device, Vector3 size, float uScale = 1.0f, float vScale = 1.0f, bool toLeftHanded = false)
             {
                 // Create the primitive object.
-                return new GeometricPrimitive(device, New(size, toLeftHanded));
+                return new GeometricPrimitive(device, New(size, uScale, vScale, toLeftHanded));
             }
 
             /// <summary>
             /// Creates a cube with six faces each one pointing in a different direction.
             /// </summary>
             /// <param name="size">The size.</param>
+            /// <param name="vScale"></param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
+            /// <param name="uScale"></param>
             /// <returns>A cube.</returns>
-            public static GeometricMeshData<VertexPositionNormalTexture> New(float size = 1.0f, bool toLeftHanded = false)
+            public static GeometricMeshData<VertexPositionNormalTexture> New(float size = 1.0f, float uScale = 1.0f, float vScale = 1.0f, bool toLeftHanded = false)
             {
-                return New(new Vector3(size), toLeftHanded);
+                return New(new Vector3(size), uScale, vScale, toLeftHanded);
             }
 
             /// <summary>
             /// Creates a cube with six faces each one pointing in a different direction.
             /// </summary>
             /// <param name="size">The size.</param>
+            /// <param name="vScale"></param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
+            /// <param name="uScale"></param>
             /// <returns>A cube.</returns>
-            public static GeometricMeshData<VertexPositionNormalTexture> New(Vector3 size, bool toLeftHanded = false)
+            public static GeometricMeshData<VertexPositionNormalTexture> New(Vector3 size, float uScale = 1.0f, float vScale = 1.0f, bool toLeftHanded = false)
             {
                 var vertices = new VertexPositionNormalTexture[CubeFaceCount * 4];
                 var indices = new int[CubeFaceCount * 6];
+
+                var texCoords = new Vector2[4];
+                for (var i = 0; i < 4; i++)
+                {
+                    texCoords[i] = textureCoordinates[i]*new Vector2(uScale, vScale);
+                }
 
                 size /= 2.0f;
 
@@ -186,10 +200,10 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
                     indices[indexCount++] = (vbase + 3);
 
                     // Four vertices per face.
-                    vertices[vertexCount++] = new VertexPositionNormalTexture((normal - side1 - side2) * size, normal, textureCoordinates[0]);
-                    vertices[vertexCount++] = new VertexPositionNormalTexture((normal - side1 + side2) * size, normal, textureCoordinates[1]);
-                    vertices[vertexCount++] = new VertexPositionNormalTexture((normal + side1 + side2) * size, normal, textureCoordinates[2]);
-                    vertices[vertexCount++] = new VertexPositionNormalTexture((normal + side1 - side2) * size, normal, textureCoordinates[3]);
+                    vertices[vertexCount++] = new VertexPositionNormalTexture((normal - side1 - side2) * size, normal, texCoords[0]);
+                    vertices[vertexCount++] = new VertexPositionNormalTexture((normal - side1 + side2) * size, normal, texCoords[1]);
+                    vertices[vertexCount++] = new VertexPositionNormalTexture((normal + side1 + side2) * size, normal, texCoords[2]);
+                    vertices[vertexCount++] = new VertexPositionNormalTexture((normal + side1 - side2) * size, normal, texCoords[3]);
                 }
 
                 // Create the primitive object.

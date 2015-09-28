@@ -121,11 +121,13 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// <param name="graphicsDevice">The graphics device.</param>
             /// <param name="radius">The radius.</param>
             /// <param name="tessellation">The tessellation.</param>
+            /// <param name="vScale"></param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
+            /// <param name="uScale"></param>
             /// <returns>A Geodesic sphere.</returns>
-            public static GeometricPrimitive New(GraphicsDevice graphicsDevice, float radius = 0.5f, int tessellation = 3, bool toLeftHanded = false)
+            public static GeometricPrimitive New(GraphicsDevice graphicsDevice, float radius = 0.5f, int tessellation = 3, float uScale = 1.0f, float vScale = 1.0f, bool toLeftHanded = false)
             {
-                return new GeometricPrimitive(graphicsDevice, New(radius, tessellation,  toLeftHanded));
+                return new GeometricPrimitive(graphicsDevice, New(radius, tessellation, uScale, vScale, toLeftHanded));
             }
 
             /// <summary>
@@ -133,12 +135,14 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// </summary>
             /// <param name="radius">The radius.</param>
             /// <param name="tessellation">The tessellation.</param>
+            /// <param name="vScale"></param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
+            /// <param name="uScale"></param>
             /// <returns>A Geodesic sphere.</returns>
-            public static GeometricMeshData<VertexPositionNormalTexture> New(float radius = 0.5f, int tessellation = 3, bool toLeftHanded = false)
+            public static GeometricMeshData<VertexPositionNormalTexture> New(float radius = 0.5f, int tessellation = 3, float uScale = 1.0f, float vScale = 1.0f, bool toLeftHanded = false)
             {
                 var sphere = new GeoSphereData();
-                return sphere.Create(radius, tessellation, toLeftHanded);
+                return sphere.Create(radius, tessellation, uScale, vScale, toLeftHanded);
             }
 
             private struct GeoSphereData
@@ -161,9 +165,11 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
                 /// </summary>
                 /// <param name="radius">The radius.</param>
                 /// <param name="tessellation">The tessellation.</param>
+                /// <param name="vScale"></param>
                 /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
+                /// <param name="uScale"></param>
                 /// <returns>A Geodesic sphere.</returns>
-                public unsafe GeometricMeshData<VertexPositionNormalTexture> Create(float radius = 0.5f, int tessellation = 3, bool toLeftHanded = false)
+                public unsafe GeometricMeshData<VertexPositionNormalTexture> Create(float radius = 0.5f, int tessellation = 3, float uScale = 1.0f, float vScale = 1.0f, bool toLeftHanded = false)
                 {
                     if (tessellation < 3)
                         tessellation = 3;
@@ -268,6 +274,7 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
                         float v = (float)(latitude / Math.PI);
 
                         var texcoord = new Vector2(1.0f - u, v);
+                        texcoord *= new Vector2(uScale, vScale);
                         vertices.Add(new VertexPositionNormalTexture(pos, normal, texcoord));
                     }
 

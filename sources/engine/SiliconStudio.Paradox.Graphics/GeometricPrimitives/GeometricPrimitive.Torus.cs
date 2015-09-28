@@ -94,12 +94,14 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// <param name="majorRadius">The majorRadius.</param>
             /// <param name="minorRadius">The minorRadius.</param>
             /// <param name="tessellation">The tessellation.</param>
+            /// <param name="vScale"></param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
+            /// <param name="uScale"></param>
             /// <returns>A Torus primitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;tessellation parameter out of range</exception>
-            public static GeometricPrimitive New(GraphicsDevice device, float majorRadius = 0.5f, float minorRadius = 0.16666f, int tessellation = 32, bool toLeftHanded = false)
+            public static GeometricPrimitive New(GraphicsDevice device, float majorRadius = 0.5f, float minorRadius = 0.16666f, int tessellation = 32, float uScale = 1.0f, float vScale = 1.0f, bool toLeftHanded = false)
             {
-                return new GeometricPrimitive(device, New(majorRadius, minorRadius, tessellation, toLeftHanded));
+                return new GeometricPrimitive(device, New(majorRadius, minorRadius, tessellation, uScale, vScale, toLeftHanded));
             }
 
             /// <summary>
@@ -108,10 +110,12 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// <param name="majorRadius">The major radius of the torus.</param>
             /// <param name="minorRadius">The minor radius of the torus.</param>
             /// <param name="tessellation">The tessellation.</param>
+            /// <param name="vScale"></param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
+            /// <param name="uScale"></param>
             /// <returns>A Torus primitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;tessellation parameter out of range</exception>
-            public static GeometricMeshData<VertexPositionNormalTexture> New(float majorRadius = 0.5f, float minorRadius = 0.16666f, int tessellation = 32, bool toLeftHanded = false)
+            public static GeometricMeshData<VertexPositionNormalTexture> New(float majorRadius = 0.5f, float minorRadius = 0.16666f, int tessellation = 32, float uScale = 1.0f, float vScale = 1.0f, bool toLeftHanded = false)
             {
                 var vertices = new List<VertexPositionNormalTexture>();
                 var indices = new List<int>();
@@ -120,6 +124,8 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
                     tessellation = 3;
 
                 int stride = tessellation + 1;
+
+                var texFactor = new Vector2(uScale, vScale);
 
                 // First we loop around the main ring of the torus.
                 for (int i = 0; i <= tessellation; i++)
@@ -148,7 +154,7 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
                         Vector3.TransformCoordinate(ref position, ref transform, out position);
                         Vector3.TransformNormal(ref normal, ref transform, out normal);
 
-                        vertices.Add(new VertexPositionNormalTexture(position, normal, textureCoordinate));
+                        vertices.Add(new VertexPositionNormalTexture(position, normal, textureCoordinate * texFactor));
 
                         // And create indices for two triangles.
                         int nextI = (i + 1)%stride;
