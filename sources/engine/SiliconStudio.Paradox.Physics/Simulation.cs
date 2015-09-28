@@ -4,6 +4,7 @@
 using SiliconStudio.Core.Mathematics;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Physics
@@ -210,9 +211,9 @@ namespace SiliconStudio.Paradox.Physics
             endedContactsCache.Clear();
         }
 
-        private void PersistentManifoldContactDestroyed(object userPersistantData)
+        private void PersistentManifoldContactDestroyed(IntPtr userPersistantData)
         {
-            var contact = (ContactPoint)userPersistantData;
+            var contact = (ContactPoint)GCHandle.FromIntPtr(userPersistantData).Target;
             var pair = contact.Pair;
             var colA = pair.ColliderA;
             var colB = pair.ColliderB;
@@ -244,6 +245,7 @@ namespace SiliconStudio.Paradox.Physics
             //contacts
             pair.Contacts.Remove(contact);
             endedContactsCache.Add(new KeyValuePair<Collision, ContactPoint>(pair, contact));
+            contact.Handle.Free();
         }
 
         private void PersistentManifoldContactProcessed(BulletSharp.ManifoldPoint cp, BulletSharp.CollisionObject body0, BulletSharp.CollisionObject body1)
@@ -286,7 +288,7 @@ namespace SiliconStudio.Paradox.Physics
             var newContact = true;
             foreach (var contact1 in pair.Contacts)
             {
-                if (contact1 != cp.UserPersistentData) continue;
+                if (contact1.Handle.IsAllocated && cp.UserPersistentPtr != IntPtr.Zero && contact1.Handle.Target != GCHandle.FromIntPtr(cp.UserPersistentPtr).Target) continue;
                 contact = contact1;
                 newContact = false;
                 break;
@@ -305,7 +307,8 @@ namespace SiliconStudio.Paradox.Physics
 
                 pair.Contacts.Add(contact);
 
-                cp.UserPersistentData = contact;
+                contact.Handle = GCHandle.Alloc(contact);
+                cp.UserPersistentPtr = GCHandle.ToIntPtr(contact.Handle);
                 contact.Manifold = cp;
             }
 
