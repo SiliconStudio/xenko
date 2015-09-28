@@ -151,21 +151,6 @@ namespace SiliconStudio.Assets.CompilerApp
 
             TextWriterLogListener fileLogListener = null;
 
-            // Output logs to the console with colored messages
-            if (options.SlavePipe == null)
-            {
-                if (redirectLogToAppDomainAction != null)
-                {
-                    globalLoggerOnGlobalMessageLogged = new LogListenerRedirectToAction(redirectLogToAppDomainAction);
-                }
-                else
-                {
-                    globalLoggerOnGlobalMessageLogged = new ConsoleLogListener { LogMode = ConsoleLogMode.Always };
-                }
-                globalLoggerOnGlobalMessageLogged.TextFormatter = FormatLog;
-                GlobalLogger.GlobalMessageLogged += globalLoggerOnGlobalMessageLogged;
-            }
-
             BuildResultCode exitCode;
 
             try
@@ -174,6 +159,21 @@ namespace SiliconStudio.Assets.CompilerApp
 
                 // Activate proper log level
                 buildEngineLogger.ActivateLog(options.LoggerType);
+
+                // Output logs to the console with colored messages
+                if (options.SlavePipe == null)
+                {
+                    if (redirectLogToAppDomainAction != null)
+                    {
+                        globalLoggerOnGlobalMessageLogged = new LogListenerRedirectToAction(redirectLogToAppDomainAction);
+                    }
+                    else
+                    {
+                        globalLoggerOnGlobalMessageLogged = new ConsoleLogListener { LogMode = ConsoleLogMode.Always };
+                    }
+                    globalLoggerOnGlobalMessageLogged.TextFormatter = FormatLog;
+                    GlobalLogger.GlobalMessageLogged += globalLoggerOnGlobalMessageLogged;
+                }
 
                 if (unexpectedArgs.Any())
                 {
