@@ -164,9 +164,13 @@ namespace SiliconStudio.Assets
                 var loggerResult = logger as LoggerResult;
                 if (loggerResult != null)
                 {
-                    loggerResult.Module = string.Format("{0}({1},{2})", e.File, e.LineNumber, e.ColumnNumber);
+                    loggerResult.Module = $"{e.File}({e.LineNumber},{e.ColumnNumber})";
                 }
-                switch (e.Importance)
+
+                // Redirect task execution messages to verbose output
+                var importance = e is TaskCommandLineEventArgs ? MessageImportance.Normal : e.Importance;
+
+                switch (importance)
                 {
                     case MessageImportance.High:
                         logger.Info(e.Message);
