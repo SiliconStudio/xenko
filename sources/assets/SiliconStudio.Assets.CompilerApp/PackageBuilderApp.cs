@@ -63,7 +63,8 @@ namespace SiliconStudio.Assets.CompilerApp
 
             var exeName = Path.GetFileName(Assembly.GetExecutingAssembly().Location);
             var showHelp = false;
-            var options = new PackageBuilderOptions(new ForwardingLoggerResult(GlobalLogger.GetLogger("BuildEngine")));
+            var buildEngineLogger = GlobalLogger.GetLogger("BuildEngine");
+            var options = new PackageBuilderOptions(new ForwardingLoggerResult(buildEngineLogger));
 
             var p = new OptionSet
             {
@@ -170,6 +171,10 @@ namespace SiliconStudio.Assets.CompilerApp
             try
             {
                 var unexpectedArgs = p.Parse(args);
+
+                // Activate proper log level
+                buildEngineLogger.ActivateLog(options.LoggerType);
+
                 if (unexpectedArgs.Any())
                 {
                     throw new OptionException("Unexpected arguments [{0}]".ToFormat(string.Join(", ", unexpectedArgs)), "args");
