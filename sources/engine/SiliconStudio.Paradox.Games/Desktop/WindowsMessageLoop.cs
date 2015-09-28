@@ -144,7 +144,7 @@ namespace SiliconStudio.Paradox.Games
                 }
                 else
                 {
-                    var gameForm = Control as GameForm;
+//                    var gameForm = Control as GameForm;
 
                     var localHandle = controlHandle;
                     if (localHandle != IntPtr.Zero)
