@@ -61,6 +61,9 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                 var nodeState = new SpriteStudioNodeState
                 {
                     CurrentXyPrioAngle = node.BaseXyPrioAngle,
+                    Scale = node.BaseScale,
+                    Transparency = node.BaseTransparency,
+                    Hide = node.BaseHide,
                     Sprite = node.Sprite,
                     BaseNode = node
                 };
@@ -132,6 +135,22 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                             else if (channel.PropertyName.StartsWith("angl"))
                             {
                                 node.CurrentXyPrioAngle.W = value;
+                            }
+                            else if (channel.PropertyName.StartsWith("scax"))
+                            {
+                                node.Scale.X = value;
+                            }
+                            else if (channel.PropertyName.StartsWith("scay"))
+                            {
+                                node.Scale.Y = value;
+                            }
+                            else if (channel.PropertyName.StartsWith("tran"))
+                            {
+                                node.Transparency = value;
+                            }
+                            else if (channel.PropertyName.StartsWith("hide"))
+                            {
+                                node.Hide = value > float.Epsilon;
                             }
                         }
                     }

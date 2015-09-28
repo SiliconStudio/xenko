@@ -31,6 +31,7 @@
     <Compile Include="SpriteStudioSheetAssetCompiler.cs" />
     <Compile Include="SpriteStudioSsaxImporter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpriteStudioXmlImport.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\assets\SiliconStudio.Assets\SiliconStudio.Assets.csproj">

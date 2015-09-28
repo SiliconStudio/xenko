@@ -20,6 +20,9 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
         public bool VFlipped;
 
         public Vector4 BaseXyPrioAngle;
+        public Vector2 BaseScale = Vector2.One;
+        public float BaseTransparency = 1.0f;
+        public bool BaseHide;
         public Sprite Sprite;
     }
 }

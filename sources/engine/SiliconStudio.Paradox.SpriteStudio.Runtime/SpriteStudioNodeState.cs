@@ -16,6 +16,12 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
 
         public Vector4 CurrentXyPrioAngle;
 
+        public Vector2 Scale;
+
+        public float Transparency;
+
+        public bool Hide;
+
         public Sprite Sprite;
 
         public SpriteStudioNode BaseNode;
@@ -23,9 +29,10 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
         internal void UpdateTransformation()
         {
             var unit = Sprite.PixelsPerUnit;
+            var scale = Matrix.Scaling(Scale.X, Scale.Y, 0.1f);
             var rot = Matrix.RotationZ(CurrentXyPrioAngle.W);
             var pos = Matrix.Translation(CurrentXyPrioAngle.X / unit.X, CurrentXyPrioAngle.Y / unit.Y, 0.0f);
-            Matrix.Multiply(ref rot, ref pos, out LocalTransform);
+            LocalTransform = scale*rot*pos;
 
             if (ParentNode != null)
             {

@@ -1,3 +1,4 @@
+using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
@@ -111,7 +112,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
 
                 foreach (var node in spriteState.SpriteStudioComponent.SortedNodes)
                 {
-                    if (node.Sprite?.Texture == null || node.Sprite.Region.Width <= 0 || node.Sprite.Region.Height <= 0f) continue;
+                    if (node.Sprite?.Texture == null || node.Sprite.Region.Width <= 0 || node.Sprite.Region.Height <= 0f || node.Hide) continue;
 
                     // Update the sprite batch
                     var blendState = isPicking ? device.BlendStates.Opaque : renderItems.HasTransparency ? device.BlendStates.NonPremultiplied : device.BlendStates.Opaque;
@@ -159,6 +160,8 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                     var centerOffset = Vector2.Modulate(normalizedCenter, size);
                     worldMatrix.M41 -= centerOffset.X * worldMatrix.M11 + centerOffset.Y * worldMatrix.M21;
                     worldMatrix.M42 -= centerOffset.X * worldMatrix.M12 + centerOffset.Y * worldMatrix.M22;
+
+                    color.A = (byte)Math.Min(node.Transparency * 255.0f, 255.0f);
 
                     // draw the sprite
                     sprite3DBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref size, ref color, node.Sprite.Orientation, SwizzleMode.None, renderItem.Depth);

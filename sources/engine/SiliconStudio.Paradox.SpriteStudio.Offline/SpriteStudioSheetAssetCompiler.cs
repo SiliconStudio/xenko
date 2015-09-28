@@ -75,88 +75,11 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                var xmlDoc = XDocument.Load(AssetParameters.Source);
-                if (xmlDoc.Root == null) return null;
-
-                var nameSpace = xmlDoc.Root.Name.Namespace;
-
+                int endFrame, fps;
                 var nodes = new List<SpriteStudioNode>();
+                var nodesData = new List<SpriteNodeData>();
 
-                var parts = xmlDoc.Descendants(nameSpace + "Part").ToList();
-                foreach (var part in parts)
-                {
-                    var type = part.Descendants(nameSpace + "Type").First();
-                    var name = part.Descendants(nameSpace + "Name").First();
-                    if (type.Value == "1")
-                    {
-                        var node = new SpriteStudioNode { Name = name.Value, Id = -1, ParentId = -2 };
-                        nodes.Add(node);
-                    }
-                    else if (type.Value == "0")
-                    {
-                        int nodeId, parentId;
-                        if (!int.TryParse(part.Descendants(nameSpace + "ID").First().Value, out nodeId)) continue;
-                        if (!int.TryParse(part.Descendants(nameSpace + "ParentID").First().Value, out parentId)) continue;
-
-                        int textureId;
-                        if (!int.TryParse(part.Descendants(nameSpace + "PicID").First().Value, out textureId)) continue;
-                        var pictAreaX = part.Descendants(nameSpace + "PictArea").First();
-                        int top, left, bottom, right;
-                        if (!int.TryParse(pictAreaX.Descendants(nameSpace + "Top").First().Value, out top)) continue;
-                        if (!int.TryParse(pictAreaX.Descendants(nameSpace + "Left").First().Value, out left)) continue;
-                        if (!int.TryParse(pictAreaX.Descendants(nameSpace + "Bottom").First().Value, out bottom)) continue;
-                        if (!int.TryParse(pictAreaX.Descendants(nameSpace + "Right").First().Value, out right)) continue;
-                        var rect = new RectangleF(left, top, right - left, bottom - top);
-
-                        int pivotX, pivotY;
-                        if (!int.TryParse(part.Descendants(nameSpace + "OriginX").First().Value, out pivotX)) continue;
-                        if (!int.TryParse(part.Descendants(nameSpace + "OriginY").First().Value, out pivotY)) continue;
-
-                        var node = new SpriteStudioNode
-                        {
-                            Name = name.Value,
-                            Id = nodeId,
-                            ParentId = parentId,
-                            PictureId = textureId,
-                            Rectangle = rect,
-                            Pivot = new Vector2(pivotX, pivotY)
-                        };
-
-                        //discover base pose (frame 1)
-
-                        var attribs = part.Descendants(nameSpace + "Attribute");
-                        foreach (var attrib in attribs)
-                        {
-                            var tag = attrib.Attributes("Tag").First().Value;
-                            var keys = attrib.Descendants(nameSpace + "Key");
-                            var values = keys.Select(key => new Dictionary<string, string>
-                        {
-                            {"time", key.Attribute("Time").Value}, {"value", key.Descendants(nameSpace + "Value").FirstOrDefault().Value}
-                        }).ToList();
-
-                            switch (tag)
-                            {
-                                case "POSX":
-                                    node.BaseXyPrioAngle.X = Convert.ToSingle(values.Select(x => x.First(y => y.Key == "value").Value).First());
-                                    break;
-
-                                case "POSY":
-                                    node.BaseXyPrioAngle.Y = -Convert.ToSingle(values.Select(x => x.First(y => y.Key == "value").Value).First());
-                                    break;
-
-                                case "PRIO":
-                                    node.BaseXyPrioAngle.Z = Convert.ToSingle(values.Select(x => x.First(y => y.Key == "value").Value).First());
-                                    break;
-
-                                case "ANGL":
-                                    node.BaseXyPrioAngle.W = MathUtil.DegreesToRadians(Convert.ToSingle(values.Select(x => x.First(y => y.Key == "value").Value).First()));
-                                    break;
-                            }
-                        }
-
-                        nodes.Add(node);
-                    }
-                }
+                if (!SpriteStudioXmlImport.Load(AssetParameters.Source, nodes, nodesData, out endFrame, out fps)) return null;
 
                 var assetManager = new AssetManager();
 
