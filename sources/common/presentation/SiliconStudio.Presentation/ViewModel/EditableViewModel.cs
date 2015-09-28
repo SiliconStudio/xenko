@@ -51,7 +51,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <summary>
         /// Gets the transactional action stack used by this view model.
         /// </summary>
-        public ITransactionalActionStack ActionStack { get { return ServiceProvider.Get<ITransactionalActionStack>(); } }
+        public ITransactionalActionStack ActionStack => ServiceProvider.Get<ITransactionalActionStack>();
 
         /// <summary>
         /// Registers the given collection to create <see cref="CollectionChangedViewModelActionItem"/> in the action stack when it is modified.
@@ -60,7 +60,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <param name="collection">The collection to register.</param>
         protected void RegisterMemberCollectionForActionStack(string name, INotifyCollectionChanged collection)
         {
-            if (collection == null) throw new ArgumentNullException("collection");
+            if (collection == null) throw new ArgumentNullException(nameof(collection));
             collection.CollectionChanged += (sender, e) => CollectionChanged(sender, e, name);
         }
 
@@ -270,11 +270,11 @@ namespace SiliconStudio.Presentation.ViewModel
         protected override bool SetValue<T>(ref T field, T value, Action updateAction, params string[] propertyNames)
         {
             if (propertyNames.Length == 0)
-                throw new ArgumentOutOfRangeException("propertyNames", @"This method must be invoked with at least one property name.");
+                throw new ArgumentOutOfRangeException(nameof(propertyNames), @"This method must be invoked with at least one property name.");
 
             if (EqualityComparer<T>.Default.Equals(field, value) == false)
             {
-                string concatPropertyName = string.Join(", ", propertyNames.Where(x => !uncancellableChanges.Contains(x)).Select(s => string.Format("'{0}'", s)));
+                string concatPropertyName = string.Join(", ", propertyNames.Where(x => !uncancellableChanges.Contains(x)).Select(s => $"'{s}'"));
                 if (concatPropertyName.Length > 0)
                 {
                     ActionStack.BeginTransaction();
@@ -295,11 +295,11 @@ namespace SiliconStudio.Presentation.ViewModel
         protected override bool SetValue(Func<bool> hasChangedFunction, Action updateAction, params string[] propertyNames)
         {
             if (propertyNames.Length == 0)
-                throw new ArgumentOutOfRangeException("propertyNames", @"This method must be invoked with at least one property name.");
+                throw new ArgumentOutOfRangeException(nameof(propertyNames), @"This method must be invoked with at least one property name.");
 
             if (hasChangedFunction == null || hasChangedFunction())
             {
-                string concatPropertyName = string.Join(", ", propertyNames.Where(x => !uncancellableChanges.Contains(x)).Select(s => string.Format("'{0}'", s)));
+                string concatPropertyName = string.Join(", ", propertyNames.Where(x => !uncancellableChanges.Contains(x)).Select(s => $"'{s}'"));
                 if (concatPropertyName.Length > 0)
                 {
                     ActionStack.BeginTransaction();
@@ -321,8 +321,8 @@ namespace SiliconStudio.Presentation.ViewModel
         {
             foreach (string propertyName in propertyNames.Where(x => x != "IsDirty" && !uncancellableChanges.Contains(x)))
             {
-                PropertyInfo propertyInfo = GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
-                if (propertyInfo != null && propertyInfo.GetSetMethod() != null && propertyInfo.GetSetMethod().IsPublic)
+                var propertyInfo = GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
+                if (propertyInfo?.GetSetMethod() != null && propertyInfo.GetSetMethod().IsPublic)
                 {
                     preEditValues.Add(propertyName, propertyInfo.GetValue(this));
                 }
@@ -338,12 +338,17 @@ namespace SiliconStudio.Presentation.ViewModel
 
             foreach (string propertyName in propertyNames.Where(x => x != "IsDirty" && !uncancellableChanges.Contains(x)))
             {
-                string displayName = string.Format("Updated '{0}'", propertyName);
+                string displayName = $"Updated '{propertyName}'";
                 object preEditValue;
                 if (preEditValues.TryGetValue(propertyName, out preEditValue) && !uncancellableChanges.Contains(propertyName))
                 {
-                    var actionItem = CreatePropertyChangeActionItem(displayName, propertyName, preEditValue);
-                    ActionStack.Add(actionItem);
+                    var propertyInfo = GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
+                    var postEditValue = propertyInfo.GetValue(this);
+                    if (!Equals(preEditValue, postEditValue))
+                    {
+                        var actionItem = CreatePropertyChangeActionItem(displayName, propertyName, preEditValue);
+                        ActionStack.Add(actionItem);
+                    }
                 }
                 preEditValues.Remove(propertyName);
             }
@@ -375,7 +380,7 @@ namespace SiliconStudio.Presentation.ViewModel
 
         private void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e, string collectionName)
         {
-            string displayName = string.Format("Updated collection '{0}' ({1})", collectionName, e.Action);
+            string displayName = $"Updated collection '{collectionName}' ({e.Action})";
             var list = sender as IList;
             if (list == null)
             {
