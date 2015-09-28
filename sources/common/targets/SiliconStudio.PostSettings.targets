@@ -50,7 +50,7 @@
   <!-- Import the specific compiler targets for the selected platform/language -->
   <Import Condition="'$(SiliconStudioCompilerTargetsEnable)' != 'false'" Project="$(SiliconStudioCompilerTargets)" />
   
-  <Target Name="RunSiliconStudioAssemblyProcessor" AfterTargets="CoreCompile" Condition=" '$(SiliconStudioAssemblyProcessor)' == 'true' and '$(SiliconStudioAssemblyProcessorPath)' != '' and '$(SiliconStudioAssemblyProcessorGlobal)' == 'true' and '$(SiliconStudioAssemblyProcessorOptions)' != '' ">
+  <Target Name="RunSiliconStudioAssemblyProcessor" AfterTargets="CoreCompile" Condition=" '$(SiliconStudioAssemblyProcessor)' == 'true' and '$(SiliconStudioAssemblyProcessorPath)' != '' and '$(SiliconStudioAssemblyProcessorGlobal)' == 'true' and '$(SiliconStudioAssemblyProcessorOptions)' != '' and '$(SiliconStudioCoreCLR)' != 'true'">
     <PropertyGroup Condition="'$(ParadoxUserBuild)' != 'true'">
       <!-- Add SiliconStudio.Core path to assembly search directory -->
       <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioCoreAssemblyPath)' != ''">$(SiliconStudioAssemblyProcessorOptions) --assembly="$(SiliconStudioCoreAssemblyPath)"</SiliconStudioAssemblyProcessorOptions>

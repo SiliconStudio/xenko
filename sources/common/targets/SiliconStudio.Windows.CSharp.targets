@@ -1,4 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Condition="'$(TargetFrameworkProfile)'==''" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Condition="'$(TargetFrameworkProfile)'!=''" Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <!-- If SiliconStudioCoreCLR is defined to true we will use CoreFX, otherwise the usual stuff to find out if 
+       we are compiling against the .NET Framework or against a profile. -->
+  <Import Condition="'$(SiliconStudioCoreCLR)' != 'true' and '$(TargetFrameworkProfile)'==''" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Condition="'$(SiliconStudioCoreCLR)' != 'true' and '$(TargetFrameworkProfile)'!=''" Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <Import Condition="'$(SiliconStudioCoreCLR)' == 'true'" Project="$(SolutionDir)\..\CoreFX\configs\CoreCLR.CSharp.targets" />
 </Project>
