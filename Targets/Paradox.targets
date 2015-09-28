@@ -137,7 +137,7 @@
     </PropertyGroup>
     
     <!-- Run assembly processor -->
-    <Message Importance="High" Text="SiliconStudio AssemblyProcessor: $(SiliconStudioAssemblyProcessorCommand)"/>
+    <Message Importance="Normal" Text="SiliconStudio AssemblyProcessor: $(SiliconStudioAssemblyProcessorCommand)"/>
     <Exec Command="$(SiliconStudioAssemblyProcessorCommand)">
       <Output TaskParameter="ExitCode" PropertyName="SiliconStudioAssemblyProcessorErrorCode"/>
     </Exec>
