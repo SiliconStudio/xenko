@@ -161,7 +161,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 buildEngineLogger.ActivateLog(options.LoggerType);
 
                 // Output logs to the console with colored messages
-                if (options.SlavePipe == null)
+                if (options.SlavePipe == null && !options.LogPipeNames.Any())
                 {
                     if (redirectLogToAppDomainAction != null)
                     {
