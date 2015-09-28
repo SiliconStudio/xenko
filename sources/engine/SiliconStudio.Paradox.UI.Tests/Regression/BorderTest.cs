@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Regression tests for <see cref="Border"/>
     /// </summary>
-    public class BorderTest : UnitTestGameBase
+    public class BorderTest : UITestGameBase
     {
         private Border border;
 

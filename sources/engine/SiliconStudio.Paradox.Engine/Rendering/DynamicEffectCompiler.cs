@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Rendering
         // How long to wait before trying to recompile an effect that failed compilation (only on Windows Desktop)
         private static readonly TimeSpan ErrorCheckTimeSpan = new TimeSpan(TimeSpan.TicksPerSecond);
 
-        private readonly FastList<ParameterCollection> parameterCollections;
+        private FastListStruct<ParameterCollection> parameterCollections;
 
         private readonly string effectName;
         private bool asyncEffectCompiler;
@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="effectName">Name of the effect.</param>
-        /// <param name="asyncDynamicEffectCompiler">if set to <c>true</c> it can compile effect asynchronously.</param>
+        /// <param name="taskPriority">The task priority.</param>
         /// <exception cref="System.ArgumentNullException">services
         /// or
         /// effectName</exception>
@@ -42,16 +42,15 @@ namespace SiliconStudio.Paradox.Rendering
             this.taskPriority = taskPriority;
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
             GraphicsDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
-            parameterCollections = new FastList<ParameterCollection>();
+            parameterCollections = new FastListStruct<ParameterCollection>(8);
 
             // Default behavior for fallback effect: load effect with same name but empty compiler parameters
             ComputeFallbackEffect = (dynamicEffectCompiler, type, name, parameters) =>
             {
                 ParameterCollection usedParameters;
-                var compilerParameters = new CompilerParameters();
+                var compilerParameters = new CompilerParameters { TaskPriority = -1 };
 
                 // We want high priority
-                compilerParameters.TaskPriority = -1;
 
                 var effect = dynamicEffectCompiler.EffectSystem.LoadEffect(effectName, compilerParameters, out usedParameters).WaitForResult();
                 return new ComputeFallbackEffectResult(effect, usedParameters);
@@ -118,11 +117,7 @@ namespace SiliconStudio.Paradox.Rendering
                         var compilerParameters = new CompilerParameters();
                         effectInstance.CurrentlyCompilingUsedParameters.CopyTo(compilerParameters);
 
-                        effectInstance.HasErrors = true;
-
-                        // Fallback for errors
-                        var fallbackEffect = ComputeFallbackEffect(this, FallbackEffectType.Error, EffectName, compilerParameters);
-                        UpdateEffect(effectInstance, fallbackEffect.Effect, fallbackEffect.UsedParameters, passParameters);
+                        SwitchFallbackEffect(FallbackEffectType.Error, effectInstance, passParameters, compilerParameters);
                     }
                     else
                     {
@@ -168,6 +163,20 @@ namespace SiliconStudio.Paradox.Rendering
             return effectChanged;
         }
 
+        public void SwitchFallbackEffect(FallbackEffectType fallbackEffectType, DynamicEffectInstance effectInstance, ParameterCollection passParameters)
+        {
+            var compilerParameters = BuildCompilerParameters(effectInstance, passParameters);
+            SwitchFallbackEffect(fallbackEffectType, effectInstance, passParameters, compilerParameters);
+        }
+
+        private void SwitchFallbackEffect(FallbackEffectType fallbackEffectType, DynamicEffectInstance effectInstance, ParameterCollection passParameters, CompilerParameters compilerParameters)
+        {
+            // Fallback for errors
+            effectInstance.HasErrors = true;
+            var fallbackEffect = ComputeFallbackEffect(this, fallbackEffectType, EffectName, compilerParameters);
+            UpdateEffect(effectInstance, fallbackEffect.Effect, fallbackEffect.UsedParameters, passParameters);
+        }
+
         private bool HasCollectionChanged(DynamicEffectInstance effectInstance, ParameterCollection passParameters)
         {
             PrepareUpdater(effectInstance, passParameters);
@@ -176,31 +185,7 @@ namespace SiliconStudio.Paradox.Rendering
 
         private void CreateEffect(DynamicEffectInstance effectInstance, ParameterCollection passParameters)
         {
-            var compilerParameters = new CompilerParameters();
-            parameterCollections.Clear(true);
-            if (passParameters != null)
-            {
-                parameterCollections.Add(passParameters);
-            }
-            effectInstance.FillParameterCollections(parameterCollections);
-
-            foreach (var parameterCollection in parameterCollections)
-            {
-                if (parameterCollection != null)
-                {
-                    foreach (var parameter in parameterCollection.InternalValues)
-                    {
-                        compilerParameters.SetObject(parameter.Key, parameter.Value.Object);
-                    }
-                }
-            }
-
-            compilerParameters.TaskPriority = taskPriority;
-
-            foreach (var parameter in GraphicsDevice.Parameters.InternalValues)
-            {
-                compilerParameters.SetObject(parameter.Key, parameter.Value.Object);
-            }
+            var compilerParameters = BuildCompilerParameters(effectInstance, passParameters);
 
             // Compile shader
             // possible exception in LoadEffect
@@ -212,12 +197,7 @@ namespace SiliconStudio.Paradox.Rendering
             }
             catch (Exception)
             {
-                effectInstance.HasErrors = true;
-
-                // Fallback to error effect
-                var fallbackEffect = ComputeFallbackEffect(this, FallbackEffectType.Error, EffectName, compilerParameters);
-                UpdateEffect(effectInstance, fallbackEffect.Effect, fallbackEffect.UsedParameters, passParameters);
-
+                SwitchFallbackEffect(FallbackEffectType.Error, effectInstance, passParameters, compilerParameters);
                 return;
             }
 
@@ -243,6 +223,36 @@ namespace SiliconStudio.Paradox.Rendering
             // Effect has been updated
             effectInstance.CurrentlyCompilingEffect = null;
             effectInstance.CurrentlyCompilingUsedParameters = null;
+        }
+
+        private CompilerParameters BuildCompilerParameters(DynamicEffectInstance effectInstance, ParameterCollection passParameters)
+        {
+            var compilerParameters = new CompilerParameters();
+            parameterCollections.Clear();
+            if (passParameters != null)
+            {
+                parameterCollections.Add(passParameters);
+            }
+            effectInstance.FillParameterCollections(ref parameterCollections);
+
+            foreach (var parameterCollection in parameterCollections)
+            {
+                if (parameterCollection != null)
+                {
+                    foreach (var parameter in parameterCollection.InternalValues)
+                    {
+                        compilerParameters.SetObject(parameter.Key, parameter.Value.Object);
+                    }
+                }
+            }
+
+            compilerParameters.TaskPriority = taskPriority;
+
+            foreach (var parameter in GraphicsDevice.Parameters.InternalValues)
+            {
+                compilerParameters.SetObject(parameter.Key, parameter.Value.Object);
+            }
+            return compilerParameters;
         }
 
         private void UpdateEffect(DynamicEffectInstance effectInstance, Effect compiledEffect, ParameterCollection usedParameters, ParameterCollection passParameters)
@@ -277,13 +287,13 @@ namespace SiliconStudio.Paradox.Rendering
         /// <param name="passParameters">The pass parameters.</param>
         private void PrepareUpdater(DynamicEffectInstance effectInstance, ParameterCollection passParameters)
         {
-            parameterCollections.Clear(true);
+            parameterCollections.Clear();
             parameterCollections.Add(effectInstance.UpdaterDefinition.Parameters);
             if (passParameters != null)
             {
                 parameterCollections.Add(passParameters);
             }
-            effectInstance.FillParameterCollections(parameterCollections);
+            effectInstance.FillParameterCollections(ref parameterCollections);
             parameterCollections.Add(GraphicsDevice.Parameters);
 
             // Collections are mostly stable, but sometimes not (i.e. material change)

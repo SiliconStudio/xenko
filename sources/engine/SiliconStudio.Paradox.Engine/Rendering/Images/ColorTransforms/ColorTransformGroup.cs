@@ -22,10 +22,11 @@ namespace SiliconStudio.Paradox.Rendering.Images
         private readonly ParameterCollection transformsParameters;
         private ImageEffectShader transformGroupEffect;
         private readonly Dictionary<ParameterCompositeKey, ParameterKey> compositeKeys;
+        private readonly ColorTransformCollection preTransforms;
         private readonly ColorTransformCollection transforms;
+        private readonly ColorTransformCollection postTransforms;
         private readonly List<ColorTransform> collectTransforms;
         private readonly List<ColorTransform> enabledTransforms;
-        private readonly GammaTransform gammaTransform;
         private ColorTransformContext transformContext;
         private readonly string colorTransformGroupEffectName;
 
@@ -44,11 +45,12 @@ namespace SiliconStudio.Paradox.Rendering.Images
             : base(colorTransformGroupEffect)
         {
             compositeKeys = new Dictionary<ParameterCompositeKey, ParameterKey>();
+            preTransforms = new ColorTransformCollection();
             transforms = new ColorTransformCollection();
+            postTransforms = new ColorTransformCollection();
             enabledTransforms = new List<ColorTransform>();
             collectTransforms = new List<ColorTransform>();
             transformsParameters = new ParameterCollection();
-            gammaTransform = new GammaTransform();
             colorTransformGroupEffectName = colorTransformGroupEffect ?? "ColorTransformGroupEffect";
         }
 
@@ -64,7 +66,20 @@ namespace SiliconStudio.Paradox.Rendering.Images
             // we are adding parameter collections after as transform parameters should override previous parameters
             transformGroupEffect.ParameterCollections.Add(transformsParameters);
 
-            this.transformContext = new ColorTransformContext(this);
+            this.transformContext = new ColorTransformContext(this, Context);
+        }
+
+        /// <summary>
+        /// Gets the pre transforms applied before the standard <see cref="Transforms"/>.
+        /// </summary>
+        /// <value>The pre transforms.</value>
+        [DataMemberIgnore]
+        public ColorTransformCollection PreTransforms
+        {
+            get
+            {
+                return preTransforms;
+            }
         }
 
         /// <summary>
@@ -74,6 +89,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
         [DataMember(10)]
         [Display("Transforms", Expand = ExpandRule.Always)]
         [NotNullItems]
+        [MemberCollection(CanReorderItems = true)]
         public ColorTransformCollection Transforms
         {
             get
@@ -83,16 +99,15 @@ namespace SiliconStudio.Paradox.Rendering.Images
         }
 
         /// <summary>
-        /// Gets the gamma transform that is applied after all <see cref="Transforms"/>
+        /// Gets the post transforms applied after the standard <see cref="Transforms"/>.
         /// </summary>
-        /// <value>The gamma transform.</value>
-        /// <userdoc>Converts the colors from the linear-space to the gamma-space. This re-adjusts the levels white and black to properly display on monitors and TV screens.</userdoc>
-        [DataMember(20)]
-        public GammaTransform GammaTransform
+        /// <value>The post transforms.</value>
+        [DataMemberIgnore]
+        public ColorTransformCollection PostTransforms
         {
             get
             {
-                return gammaTransform;
+                return postTransforms;
             }
         }
 
@@ -117,12 +132,18 @@ namespace SiliconStudio.Paradox.Rendering.Images
 
         protected virtual void CollectPreTransforms()
         {
+            foreach (var transform in preTransforms)
+            {
+                AddTemporaryTransform(transform);
+            }
         }
-
 
         protected virtual void CollectPostTransforms()
         {
-            AddTemporaryTransform(gammaTransform);
+            foreach (var transform in postTransforms)
+            {
+                AddTemporaryTransform(transform);
+            }
         }
 
         protected void AddTemporaryTransform(ColorTransform transform)

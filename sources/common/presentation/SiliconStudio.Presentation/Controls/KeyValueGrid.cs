@@ -18,6 +18,8 @@ namespace SiliconStudio.Presentation.Controls
     {
         private bool gridParametersInvalidated;
 
+        public static readonly DependencyProperty UseFullRowProperty = DependencyProperty.RegisterAttached("UseFullRow", typeof(bool), typeof(KeyValueGrid));
+
         /// <summary>
         /// Initializes a new instance of the <see cref="KeyValueGrid"/> class.
         /// </summary>
@@ -25,6 +27,16 @@ namespace SiliconStudio.Presentation.Controls
         {
             ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0.0, GridUnitType.Auto) });
             ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1.0, GridUnitType.Star) });
+        }
+
+        public static bool GetUseFullRow(DependencyObject obj)
+        {
+            return (bool)obj.GetValue(UseFullRowProperty);
+        }
+
+        public static void SetUseFullRow(DependencyObject obj, bool value)
+        {
+            obj.SetValue(UseFullRowProperty, value);
         }
 
         /// <summary>
@@ -61,11 +73,19 @@ namespace SiliconStudio.Presentation.Controls
                 element.SetValue(ColumnProperty, column);
                 element.SetValue(RowProperty, row);
 
-                column++;
-                if (column > 1)
+                if (column == 0 && GetUseFullRow(element))
                 {
-                    column = 0;
+                    element.SetValue(ColumnSpanProperty, 2);
                     row++;
+                }
+                else
+                {
+                    column++;
+                    if (column > 1)
+                    {
+                        column = 0;
+                        row++;
+                    }
                 }
             }
         }

@@ -254,9 +254,8 @@ namespace SiliconStudio.Paradox.Rendering.Images
             thresholdAlphaCoC = ToLoadAndUnload(new ImageEffectShader("ThresholdAlphaCoC"));
             thresholdAlphaCoCFront = ToLoadAndUnload(new ImageEffectShader("ThresholdAlphaCoCFront"));
             pointDepthShader = ToLoadAndUnload(new ImageEffectShader("PointDepth"));
-            depthReadBack = ToLoadAndUnload(new ImageReadback<Half>(Context));
+            depthReadBack = ToLoadAndUnload(new ImageReadback<Half>());
             depthCenter1x1 = Texture.New2D(GraphicsDevice, 1, 1, 1, PixelFormat.R16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this);
-            depthReadBack.SetInput(depthCenter1x1);
         }
 
         /// <summary>
@@ -366,9 +365,8 @@ namespace SiliconStudio.Paradox.Rendering.Images
             {
                 // TODO replace this by physical camera parameters (aperture, focus distance...)
                 var diffToTarget = (autoFocusDistanceTarget - autoFocusDistanceCurrent);
-                var absDiff = Math.Abs(diffToTarget);
                 var maxAmplitude = farPlane * 0.2f;
-                if (absDiff > maxAmplitude) diffToTarget = diffToTarget / absDiff * maxAmplitude;
+                diffToTarget = MathUtil.Clamp(diffToTarget, -maxAmplitude, maxAmplitude);
                 autoFocusDistanceCurrent = autoFocusDistanceCurrent + 0.1f * diffToTarget;
                 if (autoFocusDistanceCurrent < 1f) autoFocusDistanceCurrent = 1f;
                 depthAreas = new Vector4(0.5f, autoFocusDistanceCurrent, autoFocusDistanceCurrent, autoFocusDistanceCurrent + farPlane * 0.5f);
@@ -388,6 +386,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
                 pointDepthShader.SetOutput(depthCenter1x1);
                 pointDepthShader.Draw("Center Depth");
 
+                depthReadBack.SetInput(depthCenter1x1);
                 depthReadBack.Draw("Center_Depth_Readback");
                 var centerDepth = depthReadBack.Result[0];
                 autoFocusDistanceTarget = centerDepth;

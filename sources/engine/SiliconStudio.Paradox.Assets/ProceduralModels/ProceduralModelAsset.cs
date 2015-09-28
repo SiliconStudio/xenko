@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using SharpYaml;
 using SharpYaml.Serialization;
@@ -11,7 +12,10 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Rendering.ProceduralModels;
 
@@ -25,10 +29,11 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
     [ThumbnailCompiler(PreviewerCompilerNames.ProceduralModelThumbnailCompilerQualifiedName, true)]
     [AssetCompiler(typeof(ProceduralModelAssetCompiler))]
     [Display(185, "Procedural Model", "A procedural model")]
-    [AssetFormatVersion(4)]
+    [AssetFormatVersion(5)]
     [AssetUpgrader(0, 1, 2, typeof(Upgrader))]
     [AssetUpgrader(2, 3, typeof(RenameCapsuleHeight))]
     [AssetUpgrader(3, 4, typeof(RenameDiameters))]
+    [AssetUpgrader(4, 5, typeof(Standardization))]
     public sealed class ProceduralModelAsset : Asset, IModelAsset
     {
         /// <summary>
@@ -60,7 +65,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
 
         private class Upgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 // Introduction of MaterialInstance
                 var material = asset.Type.Material;
@@ -92,7 +97,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
 
         class RenameCapsuleHeight : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var proceduralType = asset.Type;
                 if (proceduralType.Node.Tag == "!CapsuleProceduralModel" && proceduralType.Height != null)
@@ -105,7 +110,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
 
         class RenameDiameters : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var proceduralType = asset.Type;
                 if (proceduralType.Diameter != null)
@@ -116,6 +121,57 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
                 if (proceduralType.Node.Tag == "!TorusProceduralModel" && proceduralType.Thickness != null)
                 {
                     proceduralType.Thickness = 0.5f * (float)proceduralType.Thickness;
+                }
+            }
+        }
+
+        class Standardization : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            {
+                var proceduralType = asset.Type;
+
+                if (proceduralType.ScaleUV != null)
+                {
+                    var currentScale = (float)proceduralType.ScaleUV;
+
+                    var vecSize = new YamlMappingNode
+                    {
+                        { new YamlScalarNode("X"), new YamlScalarNode(currentScale.ToString(CultureInfo.InvariantCulture)) },
+                        { new YamlScalarNode("Y"), new YamlScalarNode(currentScale.ToString(CultureInfo.InvariantCulture)) }
+                    };
+                    vecSize.Style = YamlStyle.Flow;
+
+                    proceduralType.RemoveChild("ScaleUV");
+
+                    proceduralType.UvScale = vecSize;
+                }
+                else if (proceduralType.UVScales != null)
+                {
+                    var x = (float)proceduralType.UVScales.X;
+                    var y = (float)proceduralType.UVScales.Y;
+
+                    var vecSize = new YamlMappingNode
+                    {
+                        { new YamlScalarNode("X"), new YamlScalarNode(x.ToString(CultureInfo.InvariantCulture)) },
+                        { new YamlScalarNode("Y"), new YamlScalarNode(y.ToString(CultureInfo.InvariantCulture)) }
+                    };
+                    vecSize.Style = YamlStyle.Flow;
+
+                    proceduralType.RemoveChild("UVScales");
+
+                    proceduralType.UvScale = vecSize;
+                }
+                else
+                {
+                    var vecSize = new YamlMappingNode
+                    {
+                        { new YamlScalarNode("X"), new YamlScalarNode("1") },
+                        { new YamlScalarNode("Y"), new YamlScalarNode("1") }
+                    };
+                    vecSize.Style = YamlStyle.Flow;
+
+                    proceduralType.UvScale = vecSize;
                 }
             }
         }

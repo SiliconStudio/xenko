@@ -913,7 +913,11 @@ namespace SiliconStudio.Paradox.Graphics
             int subResourceIndex = this.GetSubResourceIndex(arraySlice, mipSlice);
 
             // If this texture is declared as default usage, we use UpdateSubresource that supports sub resource region.
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+            if (this.Usage == GraphicsResourceUsage.Default || (this.Usage == GraphicsResourceUsage.Dynamic && GraphicsDevice.IsOpenGLES2))
+#else
             if (this.Usage == GraphicsResourceUsage.Default)
+#endif
             {
                 // If using a specific region, we need to handle this case
                 if (region.HasValue)

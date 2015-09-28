@@ -120,17 +120,21 @@ namespace SiliconStudio.Paradox.TestRunner2
                 server = StartServer();
                 ProcessOutputs adbOutputs;
 
+                var adbPath = AndroidDeviceEnumerator.GetAdbPath();
+                if (adbPath == null)
+                    throw new InvalidOperationException("Can't find adb");
+
                 var logStack = new List<string>();
                 if (reinstall)
                 {
                     // force stop - only works for Android 3.0 and above.
-                    adbOutputs = ShellHelper.RunProcessAndGetOutput(@"adb", string.Format(@"-s {0} shell am force-stop {1}", device.Serial, packageName));
+                    adbOutputs = ShellHelper.RunProcessAndGetOutput(adbPath, string.Format(@"-s {0} shell am force-stop {1}", device.Serial, packageName));
 
                     // uninstall
-                    adbOutputs = ShellHelper.RunProcessAndGetOutput(@"adb", string.Format(@"-s {0} uninstall {1}", device.Serial, packageName));
+                    adbOutputs = ShellHelper.RunProcessAndGetOutput(adbPath, string.Format(@"-s {0} uninstall {1}", device.Serial, packageName));
 
                     // install
-                    adbOutputs = ShellHelper.RunProcessAndGetOutput(@"adb", string.Format(@"-s {0} install {1}", device.Serial, packageFile));
+                    adbOutputs = ShellHelper.RunProcessAndGetOutput(adbPath, string.Format(@"-s {0} install {1}", device.Serial, packageFile));
                     Console.WriteLine("adb install: exitcode {0}\nOutput: {1}\nErrors: {2}", adbOutputs.ExitCode, adbOutputs.OutputAsString, adbOutputs.ErrorsAsString);
                     if (adbOutputs.ExitCode != 0)
                         throw new InvalidOperationException("Invalid error code from adb install.\n Shell log: {0}");
@@ -147,7 +151,7 @@ namespace SiliconStudio.Paradox.TestRunner2
                     AddAndroidParameter(parameters, TestRunner.ParadoxBranchName, branchName);
                 Console.WriteLine(parameters.ToString());
 
-                adbOutputs = ShellHelper.RunProcessAndGetOutput(@"adb", parameters.ToString());
+                adbOutputs = ShellHelper.RunProcessAndGetOutput(adbPath, parameters.ToString());
                 Console.WriteLine("adb shell am start: exitcode {0}\nOutput: {1}\nErrors: {2}", adbOutputs.ExitCode, adbOutputs.OutputAsString, adbOutputs.ErrorsAsString);
                 if (adbOutputs.ExitCode != 0)
                     throw new InvalidOperationException("Invalid error code from adb shell am start.");

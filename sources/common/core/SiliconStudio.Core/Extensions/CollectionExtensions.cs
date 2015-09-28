@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 
+using SiliconStudio.Core.Collections;
+
 namespace SiliconStudio.Core.Extensions
 {
     /// <summary>

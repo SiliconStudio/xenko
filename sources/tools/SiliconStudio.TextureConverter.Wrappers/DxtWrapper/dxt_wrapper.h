@@ -25,7 +25,9 @@ extern "C" {
 	DXT_API HRESULT dxtPremultiplyAlpha( const DirectX::Image* srcImages, int nimages, const DirectX::TexMetadata& metadata, int flags, DirectX::ScratchImage& result );
 
 	// I/O functions
-	DXT_API HRESULT dxtLoadDDSFile(LPCWSTR szFile, int flags, DirectX::TexMetadata* metadata, DirectX::ScratchImage& image);
+	DXT_API HRESULT dxtLoadTGAFile(LPCWSTR szFile, DirectX::TexMetadata* metadata, DirectX::ScratchImage& image);
+	DXT_API HRESULT dxtLoadWICFile(LPCWSTR szFile, int wicflags, DirectX::TexMetadata* metadata, DirectX::ScratchImage& image);
+	DXT_API HRESULT dxtLoadDDSFile(LPCWSTR szFile, int ddsflags, DirectX::TexMetadata* metadata, DirectX::ScratchImage& image);
 	DXT_API HRESULT dxtSaveToDDSFile( const DirectX::Image& image, int flags, LPCWSTR szFile );
     DXT_API HRESULT dxtSaveToDDSFileArray( const DirectX::Image* images, int nimages, const DirectX::TexMetadata& metadata, int flags, LPCWSTR szFile );
 

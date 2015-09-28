@@ -4,6 +4,8 @@
 using SiliconStudio.Core.Mathematics;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -50,6 +52,13 @@ namespace SiliconStudio.Paradox.Physics
         /// </summary>
         public static bool DisableSimulation = false;
 
+        public delegate PhysicsEngineFlags OnSimulationCreationDelegate();
+
+        /// <summary>
+        /// Temporary solution to inject engine flags
+        /// </summary>
+        public static OnSimulationCreationDelegate OnSimulationCreation;
+
         /// <summary>
         /// Initializes the Physics engine using the specified flags.
         /// </summary>
@@ -57,6 +66,14 @@ namespace SiliconStudio.Paradox.Physics
         /// <exception cref="System.NotImplementedException">SoftBody processing is not yet available</exception>
         internal Simulation(PhysicsEngineFlags flags = PhysicsEngineFlags.None)
         {
+            if (flags == PhysicsEngineFlags.None)
+            {
+                if (OnSimulationCreation != null)
+                {
+                    flags = OnSimulationCreation();
+                }
+            }
+
             MaxSubSteps = 1;
             FixedTimeStep = 1.0f / 60.0f;
 
@@ -194,9 +211,9 @@ namespace SiliconStudio.Paradox.Physics
             endedContactsCache.Clear();
         }
 
-        private void PersistentManifoldContactDestroyed(object userPersistantData)
+        private void PersistentManifoldContactDestroyed(IntPtr userPersistantData)
         {
-            var contact = (ContactPoint)userPersistantData;
+            var contact = (ContactPoint)GCHandle.FromIntPtr(userPersistantData).Target;
             var pair = contact.Pair;
             var colA = pair.ColliderA;
             var colB = pair.ColliderB;
@@ -210,16 +227,16 @@ namespace SiliconStudio.Paradox.Physics
                 deletedPairsCache.Add(new KeyValuePair<Collider, Collision>(colA, pair));
                 deletedPairsCache.Add(new KeyValuePair<Collider, Collision>(colB, pair));
 
-                colA.Pairs.Remove(pair);
-                colB.Pairs.Remove(pair);
+                colA.Collisions.Remove(pair);
+                colB.Collisions.Remove(pair);
 
                 //did we remove all the pairs?
-                if (colA.Pairs.Count == 0)
+                if (colA.Collisions.Count == 0)
                 {
                     absLastPairsCache.Add(new KeyValuePair<Collider, Collision>(colA, pair));
                 }
                 //did we remove all the pairs?
-                if (colB.Pairs.Count == 0)
+                if (colB.Collisions.Count == 0)
                 {
                     absLastPairsCache.Add(new KeyValuePair<Collider, Collision>(colB, pair));
                 }
@@ -228,19 +245,24 @@ namespace SiliconStudio.Paradox.Physics
             //contacts
             pair.Contacts.Remove(contact);
             endedContactsCache.Add(new KeyValuePair<Collision, ContactPoint>(pair, contact));
+            contact.Handle.Free();
         }
 
         private void PersistentManifoldContactProcessed(BulletSharp.ManifoldPoint cp, BulletSharp.CollisionObject body0, BulletSharp.CollisionObject body1)
         {
-            var colA = aliveColliders[body0];
-            var colB = aliveColliders[body1];
+            if (body0 == null || body1 == null) return;
+
+            //this can fail and will fail in the case of multiple scenes and bodies not of the current simulation ( working as intended )
+            Collider colA, colB;
+            if (!aliveColliders.TryGetValue(body0, out colA)) return;
+            if (!aliveColliders.TryGetValue(body1, out colB)) return;
 
             if (colA == null || colB == null || !colA.ContactsAlwaysValid && !colB.ContactsAlwaysValid) return;
 
             //Pairs management
             Collision pair = null;
             var newPair = true;
-            foreach (var pair1 in colA.Pairs)
+            foreach (var pair1 in colA.Collisions)
             {
                 if ((pair1.ColliderA != colA || pair1.ColliderB != colB) && (pair1.ColliderA != colB || pair1.ColliderB != colA)) continue;
                 pair = pair1;
@@ -257,8 +279,8 @@ namespace SiliconStudio.Paradox.Physics
                     Contacts = new List<ContactPoint>()
                 };
 
-                colA.Pairs.Add(pair);
-                colB.Pairs.Add(pair);
+                colA.Collisions.Add(pair);
+                colB.Collisions.Add(pair);
             }
 
             //Contacts management
@@ -266,7 +288,7 @@ namespace SiliconStudio.Paradox.Physics
             var newContact = true;
             foreach (var contact1 in pair.Contacts)
             {
-                if (contact1 != cp.UserPersistentData) continue;
+                if (contact1.Handle.IsAllocated && cp.UserPersistentPtr != IntPtr.Zero && contact1.Handle.Target != GCHandle.FromIntPtr(cp.UserPersistentPtr).Target) continue;
                 contact = contact1;
                 newContact = false;
                 break;
@@ -285,19 +307,21 @@ namespace SiliconStudio.Paradox.Physics
 
                 pair.Contacts.Add(contact);
 
-                cp.UserPersistentData = contact;
+                contact.Handle = GCHandle.Alloc(contact);
+                cp.UserPersistentPtr = GCHandle.ToIntPtr(contact.Handle);
+                contact.Manifold = cp;
             }
 
             if (newPair)
             {
                 //are we the first pair we detect?
-                if (colA.Pairs.Count == 1)
+                if (colA.Collisions.Count == 1)
                 {
                     firstPairsCache.Add(new KeyValuePair<Collider, Collision>(colA, pair));
                 }
 
                 //are we the first pair we detect?
-                if (colB.Pairs.Count == 1)
+                if (colB.Collisions.Count == 1)
                 {
                     firstPairsCache.Add(new KeyValuePair<Collider, Collision>(colB, pair));
                 }
@@ -322,12 +346,21 @@ namespace SiliconStudio.Paradox.Physics
         public void Dispose()
         {
             //if (mSoftRigidDynamicsWorld != null) mSoftRigidDynamicsWorld.Dispose();
-            if (discreteDynamicsWorld != null) discreteDynamicsWorld.Dispose();
-            else if (collisionWorld != null) collisionWorld.Dispose();
+            if (discreteDynamicsWorld != null)
+            {
+                discreteDynamicsWorld.Dispose();
+            }
+            else
+            {
+                collisionWorld?.Dispose();
+            }
 
-            if (broadphase != null) broadphase.Dispose();
-            if (dispatcher != null) dispatcher.Dispose();
-            if (collisionConfiguration != null) collisionConfiguration.Dispose();
+            broadphase?.Dispose();
+            dispatcher?.Dispose();
+            collisionConfiguration?.Dispose();
+
+            BulletSharp.PersistentManifold.ContactProcessed -= PersistentManifoldContactProcessed;
+            BulletSharp.PersistentManifold.ContactDestroyed -= PersistentManifoldContactDestroyed;
         }
 
         /// <summary>
@@ -342,7 +375,7 @@ namespace SiliconStudio.Paradox.Physics
                 InternalCollider = new BulletSharp.CollisionObject
                 {
                     CollisionShape = shape.InternalShape,
-                    ContactProcessingThreshold = 1e18f
+                    ContactProcessingThreshold = !canCcd ? 1e18f : 1e30f
                 }
             };
 
@@ -370,7 +403,7 @@ namespace SiliconStudio.Paradox.Physics
 
             rb.InternalCollider = rb.InternalRigidBody;
 
-            rb.InternalCollider.ContactProcessingThreshold = 1e18f;
+            rb.InternalCollider.ContactProcessingThreshold = !canCcd ? 1e18f : 1e30f;
 
             if (collider.NeedsCustomCollisionCallback)
             {
@@ -409,7 +442,7 @@ namespace SiliconStudio.Paradox.Physics
                 ch.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.CustomMaterialCallback;
             }
 
-            ch.InternalCollider.ContactProcessingThreshold = 1e18f;
+            ch.InternalCollider.ContactProcessingThreshold = !canCcd ? 1e18f : 1e30f;
 
             ch.KinematicCharacter = new BulletSharp.KinematicCharacterController((BulletSharp.PairCachingGhostObject)ch.InternalCollider, (BulletSharp.ConvexShape)collider.InternalShape, stepHeight);
 
@@ -990,13 +1023,11 @@ namespace SiliconStudio.Paradox.Physics
         /// </summary>
         public float FixedTimeStep { get; set; }
 
-        //todo needs integration with tick callback from bullet (native library fixes needed for monotouch)
-        //public void ClearForces()
-        //{
-        //    if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
-
-        //    discreteDynamicsWorld.ClearForces();
-        //}
+        public void ClearForces()
+        {
+            if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
+            discreteDynamicsWorld.ClearForces();
+        }
 
         public bool SpeculativeContactRestitution
         {
@@ -1026,7 +1057,7 @@ namespace SiliconStudio.Paradox.Physics
         protected virtual void OnSimulationBegin(SimulationArgs e)
         {
             var handler = SimulationBegin;
-            if (handler != null) handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         internal void Simulate(float deltaTime)
@@ -1055,7 +1086,7 @@ namespace SiliconStudio.Paradox.Physics
         protected virtual void OnSimulationEnd(SimulationArgs e)
         {
             var handler = SimulationEnd;
-            if (handler != null) handler(this, e);
+            handler?.Invoke(this, e);
         }
     }
 }

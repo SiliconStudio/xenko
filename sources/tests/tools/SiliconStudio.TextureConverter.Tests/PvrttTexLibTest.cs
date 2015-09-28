@@ -26,6 +26,7 @@ namespace SiliconStudio.TextureConverter.Tests
             library.Dispose();
         }
 
+        [Ignore]
         [TestCase("TextureArray_WMipMaps_BGRA8888.dds")]
         [TestCase("TextureCube_WMipMaps_BGRA8888.dds")]
         public void StartLibraryTest(string file)
@@ -33,7 +34,7 @@ namespace SiliconStudio.TextureConverter.Tests
             TexImage image = new TexImage();
 
             var dxtLib = new DxtTexLib();
-            dxtLib.Execute(image, new LoadingRequest(TestTools.InputTestFolder + file, false));
+            dxtLib.Execute(image, new LoadingRequest(Module.PathToInputImages + file, false));
             image.CurrentLibrary = dxtLib;
             dxtLib.EndLibrary(image);
 
@@ -43,7 +44,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Test]
+        [Test, Ignore]
         public void CanHandleRequestTest()
         {
             TexImage image = TestTools.Load(library, "TextureArray_WMipMaps_PVRTC2_4bpp.pvr");
@@ -61,6 +62,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("TextureArray_WMipMaps_PVRTC2_4bpp.pvr")]
         [TestCase("TextureCube_WMipMaps_PVRTC2_4bpp.pvr")]
         public void DecompressTest(string file)
@@ -73,6 +75,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("TextureArray_WMipMaps_RGBA8888.pvr", Paradox.Graphics.PixelFormat.PVRTC_II_4bpp)]
         [TestCase("TextureCube_WMipMaps_RGBA8888.pvr", Paradox.Graphics.PixelFormat.PVRTC_II_4bpp)]
         [TestCase("TextureArray_WMipMaps_RGBA8888.pvr", Paradox.Graphics.PixelFormat.ETC2_RGBA)]
@@ -87,6 +90,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("TextureArray_WOMipMaps_PVRTC2_4bpp.pvr", Filter.MipMapGeneration.Box)]
         [TestCase("TextureCube_WOMipMaps_PVRTC2_4bpp.pvr", Filter.MipMapGeneration.Cubic)]
         public void GenerateMipMapTest(string file, Filter.MipMapGeneration filter)
@@ -99,6 +103,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("TextureArray_WMipMaps_PVRTC2_4bpp.pvr", "PvrttTexLib_GenerateNormalMapTest_TextureArray_WOMipMaps_PVRTC2_4bpp.pvr")]
         [TestCase("TextureCube_WMipMaps_PVRTC2_4bpp.pvr", "PvrttTexLib_GenerateNormalMapTest_TextureCube_WOMipMaps_PVRTC2_4bpp.pvr")]
         public void GenerateNormalMapTest(string file, string outFile)
@@ -111,6 +116,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("TextureArray_WMipMaps_RGBA8888.pvr", Filter.Rescaling.Bicubic)]
         [TestCase("TextureCube_WMipMaps_RGBA8888.pvr", Filter.Rescaling.Bilinear)]
         [TestCase("TextureArray_WMipMaps_RGBA8888.pvr", Filter.Rescaling.Nearest)]
@@ -124,6 +130,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("TextureArray_WMipMaps_RGBA8888.pvr", Filter.Rescaling.Bicubic)]
         [TestCase("TextureCube_WMipMaps_RGBA8888.pvr", Filter.Rescaling.Bilinear)]
         [TestCase("TextureArray_WMipMaps_RGBA8888.pvr", Filter.Rescaling.Box)]
@@ -137,6 +144,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("TextureArray_WMipMaps_PVRTC2_4bpp.pvr")]
         [TestCase("TextureCube_WMipMaps_PVRTC2_4bpp.pvr")]
         public void ExportTest(String file)
@@ -149,6 +157,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
+        [Ignore]
         [TestCase("TextureArray_WMipMaps_PVRTC2_4bpp.pvr", 16)]
         [TestCase("TextureArray_WMipMaps_PVRTC2_4bpp.pvr", 512)]
         [TestCase("TextureCube_WMipMaps_PVRTC2_4bpp.pvr", 8)]
@@ -162,6 +171,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
+        [Ignore]
         [TestCase("TextureArray_WMipMaps_RGBA8888.pvr")]
         [TestCase("TextureCube_WMipMaps_RGBA8888.pvr")]
         public void SwitchChannelsTest(string file)
@@ -173,6 +183,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
+        [Ignore]
         [TestCase("TextureArray_WMipMaps_RGBA8888.pvr", Orientation.Horizontal)]
         [TestCase("TextureCube_WMipMaps_RGBA8888.pvr", Orientation.Vertical)]
         public void FlipTest(String file, Orientation orientation)
@@ -184,6 +195,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
+        [Ignore]
         [TestCase("TextureArray_WMipMaps_RGBA8888.pvr")]
         [TestCase("TextureCube_WMipMaps_RGBA8888.pvr")]
         public void PreMultiplyAlphaTest(String file)

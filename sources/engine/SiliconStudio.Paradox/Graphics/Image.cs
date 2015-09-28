@@ -127,7 +127,7 @@ namespace SiliconStudio.Paradox.Graphics
         private bool bufferIsDisposable;
 
         /// <summary>
-        /// Handke != null if the buffer is a pinned managed object on the LOH (Large Object Heap).
+        /// Handle != null if the buffer is a pinned managed object on the LOH (Large Object Heap).
         /// </summary>
         private GCHandle? handle;
 
@@ -165,6 +165,14 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 Utilities.FreeMemory(buffer);
             }
+        }
+
+        /// <summary>
+        /// Reset the buffer (by default it is not cleared)
+        /// </summary>
+        public void Clear()
+        {
+            Utilities.ClearMemory(buffer, 0, totalSizeInBytes);
         }
 
         /// <summary>
@@ -840,12 +848,17 @@ namespace SiliconStudio.Paradox.Graphics
                         bpb = 8;
                         break;
                     case PixelFormat.PVRTC_4bpp_RGB:
+                    case PixelFormat.PVRTC_4bpp_RGB_SRgb:
                     case PixelFormat.PVRTC_4bpp_RGBA:
+                    case PixelFormat.PVRTC_4bpp_RGBA_SRgb:
                     case PixelFormat.PVRTC_II_4bpp:
                         minWidth = 8;
                         minHeight = 8;
                         break;
+                    case PixelFormat.PVRTC_2bpp_RGB:
+                    case PixelFormat.PVRTC_2bpp_RGB_SRgb:
                     case PixelFormat.PVRTC_2bpp_RGBA:
+                    case PixelFormat.PVRTC_2bpp_RGBA_SRgb:
                     case PixelFormat.PVRTC_II_2bpp:
                         minWidth = 16;
                         minHeight = 8;

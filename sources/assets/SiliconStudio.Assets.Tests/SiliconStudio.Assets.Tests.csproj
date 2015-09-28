@@ -128,17 +128,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="data\box.fbx" />
+    <None Include="data\SiliconStudio.Assets.Tests\TestPackage\TestRaw.pdxraw">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="data\uv.dds" />
   </ItemGroup>
   <ItemGroup>
     <None Include="data\SiliconStudio.Assets.Tests\TestBasicPackageCreateSaveLoad\TestPackage_TestBasicPackageCreateSaveLoad_Reference.pdxpkg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="data\SiliconStudio.Assets.Tests\TestPackage\TestRawAsset.pdxraw">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SiliconStudio.Assets.Tests\Projects\CircularDeps\" />

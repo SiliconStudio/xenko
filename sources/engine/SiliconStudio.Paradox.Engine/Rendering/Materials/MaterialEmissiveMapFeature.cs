@@ -59,7 +59,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
         public IComputeScalar Intensity { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [use alpha].
+        /// Gets or sets a value indicating whether to use the alpha component of the emissive map as main alpha color for the material.
         /// </summary>
         /// <value><c>true</c> if [use alpha]; otherwise, <c>false</c>.</value>
         /// <userdoc>If checked, use the alpha component of the emissive map as main alpha color for the material. Otherwise, ignore it and use the diffuse alpha color.</userdoc>

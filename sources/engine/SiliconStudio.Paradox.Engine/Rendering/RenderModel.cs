@@ -1,81 +1,53 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
 using System.Collections.Generic;
 
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Engine.Processors;
 
 namespace SiliconStudio.Paradox.Rendering
 {
     public class RenderModel
     {
-        public RenderModel(Entity entity)
+        public RenderModel(ModelComponent modelComponent)
         {
-            if (entity == null) throw new ArgumentNullException("entity");
-            Entity = entity;
-            ModelComponent = entity.Get<ModelComponent>();
-            if (ModelComponent == null)
-            {
-                throw new ArgumentException("Entity must have a ModelComponent");
-            }
-
-            Parameters = ModelComponent.Parameters;
-            TransformComponent = entity.Transform;
-            RenderMeshesList = new List<RenderMeshCollection>(4);
-            Update();
+            RenderMeshesPerEffectSlot = new FastListStruct<FastListStruct<RenderMesh>>(4);
+            ModelComponent = modelComponent;
         }
-
-        public readonly Entity Entity;
 
         public readonly ModelComponent ModelComponent;
 
-        public ParameterCollection Parameters { get; private set; }
+        internal FastListStruct<FastListStruct<RenderMesh>> RenderMeshesPerEffectSlot;
 
-        public Model Model { get; private set; }
+        private Model previousModel;
 
-        public EntityGroup Group { get; private set; }
-
-        internal void Update()
+        public bool Update()
         {
-            Group = Entity.Group;
-            var previousModel = Model;
-            Model = ModelComponent.Model;
+            if (!ModelComponent.Enabled || ModelComponent.ModelViewHierarchy == null || ModelComponent.Model == null)
+            {
+                return false;
+            }
 
-            if (previousModel != Model)
+            var newModel = ModelComponent.Model;
+            if (previousModel != newModel)
             {
                 // When changing the model, we need to regenerate the render meshes
-                foreach (var renderMeshes in RenderMeshesList)
+                for(int i = 0; i < RenderMeshesPerEffectSlot.Count; i++)
                 {
-                    if (renderMeshes != null)
-                    {
-                        // TODO: Should we dispose something here?
-                        renderMeshes.Clear();
-                        renderMeshes.TransformUpdated = false;
-                    }
+                    // TODO: We should dispose render mehses here, but need to check exactly how
+                    // Changing a struct so make a copy first (TODO: Replace with ref locals when released)
+                    var renderMeshes = RenderMeshesPerEffectSlot[i];
+                    renderMeshes.Clear();
+                    RenderMeshesPerEffectSlot[i] = renderMeshes;
                 }
+
+                previousModel = newModel;
             }
-            else
-            {
-                // When changing the model, we need to regenerate the render meshes
-                foreach (var renderMeshes in RenderMeshesList)
-                {
-                    if (renderMeshes != null)
-                    {
-                        renderMeshes.TransformUpdated = false;
-                    }
-                }
-            }
+
+            return true;
         }
-
-        public readonly TransformComponent TransformComponent;
-
-        internal readonly List<RenderMeshCollection> RenderMeshesList;
-
-        public List<ModelProcessor.EntityLink> Links;
 
         public Material GetMaterial(int materialIndex)
         {
@@ -85,12 +57,12 @@ namespace SiliconStudio.Paradox.Rendering
 
             // Try to get material first from model instance, then model
             return ModelComponent.Materials.GetItemOrNull(materialIndex)
-                ?? (Model != null ? GetMaterialHelper(Model.Materials, materialIndex) : null);
+                ?? GetMaterialHelper(ModelComponent.Model.Materials, materialIndex);
         }
 
         public MaterialInstance GetMaterialInstance(int materialIndex)
         {
-            return Model.Materials.GetItemOrNull(materialIndex);
+            return ModelComponent.Model.Materials.GetItemOrNull(materialIndex);
         }
 
         private static Material GetMaterialHelper(List<MaterialInstance> materials, int index)
@@ -103,10 +75,4 @@ namespace SiliconStudio.Paradox.Rendering
             return null;
         }
     }
-
-    internal class RenderMeshCollection : List<RenderMesh>
-    {
-        public bool TransformUpdated { get; set; }
-    }
-
 }

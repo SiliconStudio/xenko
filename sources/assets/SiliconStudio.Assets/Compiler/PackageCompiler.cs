@@ -19,6 +19,7 @@ namespace SiliconStudio.Assets.Compiler
     {
         private static readonly AssetCompilerRegistry assetCompilerRegistry = new AssetCompilerRegistry();
         private readonly List<IPackageCompiler> compilers;
+        private readonly IPackageCompilerSource packageCompilerSource;
 
         static PackageCompiler()
         {
@@ -35,8 +36,9 @@ namespace SiliconStudio.Assets.Compiler
         /// </summary>
         public EventHandler<AssetCompiledArgs> AssetCompiled;
 
-        public PackageCompiler()
+        public PackageCompiler(IPackageCompilerSource packageCompilerSource)
         {
+            this.packageCompilerSource = packageCompilerSource;
             compilers = new List<IPackageCompiler>();
         }
 
@@ -55,97 +57,25 @@ namespace SiliconStudio.Assets.Compiler
         {
             if (compilerContext == null) throw new ArgumentNullException("compilerContext");
 
-            if (compilerContext.Package == null)
-            {
-                throw new ArgumentException("Expecting a non null package", "compilerContext");
-            }
-
-            if (compilerContext.Package.Session == null)
-            {
-                throw new ArgumentException("Expecting a package attached to a session", "compilerContext");
-            }
-
             var result = new AssetCompilerResult();
 
-            // Check integrity of the packages
-            var packageAnalysis = new PackageSessionAnalysis(compilerContext.Package.Session, new PackageAnalysisParameters());
-            packageAnalysis.Run(result);
+            var assets = packageCompilerSource.GetAssets(result).ToList();
             if (result.HasErrors)
             {
                 return result;
             }
 
+            var defaultAssetsCompiler = new DefaultAssetsCompiler(assets);
+            defaultAssetsCompiler.AssetCompiled += OnAssetCompiled;
+
             // Add default compilers
             compilers.Clear();
-
-            var defaultAssetsCompiler = new DefaultAssetsCompiler();
-            defaultAssetsCompiler.AssetCompiled += OnAssetCompiled;
-            compilers.Add(defaultAssetsCompiler); 
-
-            var packagesProcessed = new HashSet<Package>();
-            RecursiveCompile(result, compilerContext, packagesProcessed);
-
-            return result;
-        }
-
-        /// <summary>
-        /// Compile the current package and all child package recursively by generating a list of build steps
-        /// </summary>
-        private void RecursiveCompile(AssetCompilerResult result, AssetCompilerContext context, HashSet<Package> processed)
-        {
-            if (result == null) throw new ArgumentNullException("result");
-            if (context == null) throw new ArgumentNullException("context");
-            if (context.Package == null) throw new ArgumentException("context.Package cannot be null", "context");
-
-            if (processed.Contains(context.Package))
-            {
-                return;
-            }
-            processed.Add(context.Package);
-
-            var package = context.Package;
-            var session = package.Session;
-
-            // 1. first recursively process all store packages
-            foreach (var packageDependency in package.Meta.Dependencies)
-            {
-                var subPackage = session.Packages.Find(packageDependency);
-                if (subPackage != null)
-                {
-                    // Work on an immutable copy for the whole set of assets to compile
-                    var contextCopy = (AssetCompilerContext)context.Clone();
-                    contextCopy.Package = subPackage;
-                    RecursiveCompile(result, contextCopy, processed);
-                }
-                else
-                {
-                    result.Error("Unable to find package [{0}]", packageDependency);
-                }
-            }
-
-            // 2. recursively process all local packages
-            foreach (var subPackageReference in package.LocalDependencies)
-            {
-                var subPackage = session.Packages.Find(subPackageReference.Id);
-                if (subPackage != null)
-                {
-                    // Work on an immutable copy for the whole set of assets to compile
-                    var contextCopy = (AssetCompilerContext)context.Clone();
-                    contextCopy.Package = subPackage;
-                    RecursiveCompile(result, contextCopy, processed);
-                }
-                else
-                {
-                    result.Error("Unable to find package [{0}]", subPackageReference);
-                }
-            }
-
-            result.Info("Compiling package [{0}]", package.FullPath);
+            compilers.Add(defaultAssetsCompiler);
 
             // Compile using all PackageCompiler
             foreach (var compiler in compilers)
             {
-                var compilerResult = compiler.Compile(context);
+                var compilerResult = compiler.Compile(compilerContext);
                 compilerResult.CopyTo(result);
                 while (compilerResult.BuildSteps.Count > 0)
                 {
@@ -154,6 +84,8 @@ namespace SiliconStudio.Assets.Compiler
                     result.BuildSteps.Add(step);
                 }
             }
+
+            return result;
         }
 
         private void OnAssetCompiled(object sender, AssetCompiledArgs assetCompiledArgs)
@@ -170,107 +102,22 @@ namespace SiliconStudio.Assets.Compiler
         /// </summary>
         private class DefaultAssetsCompiler : ItemListCompiler, IPackageCompiler
         {
-            public DefaultAssetsCompiler()
+            private readonly IList<AssetItem> assets;
+
+            public DefaultAssetsCompiler(IList<AssetItem> assets)
                 : base(assetCompilerRegistry)
             {
+                this.assets = assets;
             }
 
             public AssetCompilerResult Compile(AssetCompilerContext context)
             {
                 var result = new AssetCompilerResult();
 
-                var package = context.Package;
-
-                // Sort the items to build by build order
-                var assets = package.Assets.ToList();
-                assets.Sort((item1, item2) => item1.Asset != null && item2.Asset != null ? item1.Asset.InternalBuildOrder.CompareTo(item2.Asset.InternalBuildOrder) : 0);
-
-                // Import all assets provided by this psckage
-                GenerateRawImportBuildSteps(context, result);
-
                 // generate the build steps required to build the assets via base class
                 Compile(context, assets, result);
 
                 return result;
-            }
-
-            /// <summary>
-            /// Generate the build step corresponding to raw imports of the current package file.
-            /// </summary>
-            /// <param name="context">The compilation context</param>
-            /// <param name="result">The compilation current result</param>
-            private void GenerateRawImportBuildSteps(AssetCompilerContext context, AssetCompilerResult result)
-            {
-                if (context.Package.RootDirectory == null)
-                    return;
-
-                foreach (var profile in context.Package.Profiles)
-                {
-                    foreach (var sourceFolder in profile.AssetFolders)
-                    {
-                        var baseDirectory = Path.GetFullPath(context.Package.RootDirectory);
-                        // Use sub directory
-                        baseDirectory = Path.Combine(baseDirectory, sourceFolder.Path);
-
-                        if (!Directory.Exists(baseDirectory))
-                        {
-                            continue;
-                        }
-
-                        var baseUDirectory = new UDirectory(baseDirectory);
-                        var hashSet = new HashSet<string>();
-
-                        // Imports explicit
-                        foreach (var rawImport in sourceFolder.RawImports)
-                        {
-                            var sourceDirectory = baseUDirectory;
-                            if (!string.IsNullOrEmpty(rawImport.SourceDirectory))
-                                sourceDirectory = UPath.Combine(sourceDirectory, rawImport.SourceDirectory);
-
-                            if (!Directory.Exists(sourceDirectory))
-                            {
-                                result.Error("Unable to find raw import directory [{0}]", sourceDirectory);
-                                continue;
-                            }
-
-                            var files = Directory.EnumerateFiles(sourceDirectory, "*.*", SearchOption.AllDirectories).ToList();
-                            var importRegexes = rawImport.Patterns.Select(x => new Regex(Selectors.PathSelector.TransformToRegex(x))).ToArray();
-                            foreach (var file in files)
-                            {
-                                var pathToFileRelativeToProject = new UFile(file).MakeRelative(sourceDirectory);
-                                var outputPath = pathToFileRelativeToProject;
-                                if (!string.IsNullOrEmpty(rawImport.TargetLocation))
-                                    outputPath = UPath.Combine(rawImport.TargetLocation, outputPath);
-
-                                foreach (var importRegex in importRegexes)
-                                {
-                                    if (importRegex.Match(pathToFileRelativeToProject).Success && hashSet.Add(outputPath))
-                                    {
-                                        result.BuildSteps.Add(new ImportStreamCommand
-                                        {
-                                            SourcePath = file,
-                                            Location = outputPath,
-                                        });
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            private static readonly Regex ChangeWildcardToRegex = new Regex(@"(?<!\*)\*");
-
-            private static Regex CompileRawImport(string rawImport)
-            {
-                // Replace / by \
-                rawImport = rawImport.Replace("\\", "/");
-                // escape . by \.
-                rawImport = rawImport.Replace(".", "\\.");
-                // Transform * by .*?
-                rawImport = ChangeWildcardToRegex.Replace(rawImport, ".*?");
-                return new Regex(rawImport, RegexOptions.IgnoreCase);
             }
         }
     }

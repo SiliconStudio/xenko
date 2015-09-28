@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
 
@@ -398,6 +399,29 @@ namespace SiliconStudio.Core.Serialization.Assets
             SetAssetObject(assetReference, obj);
         }
 
+        internal ChunkHeader ReadChunkHeader(string url)
+        {
+            if (!FileProvider.FileExists(url))
+            {
+                HandleAssetNotFound(url);
+                return null;
+            }
+
+            using (var stream = FileProvider.OpenStream(url, VirtualFileMode.Open, VirtualFileAccess.Read))
+            {
+                // File does not exist
+                // TODO/Benlitz: Add a log entry for that, it's not expected to happen
+                if (stream == null)
+                    return null;
+
+                Type headerObjType = null;
+
+                // Read header
+                var streamReader = new BinarySerializationReader(stream);
+                return ChunkHeader.Read(streamReader);
+            }
+        }
+
         private object DeserializeObject(Queue<DeserializeOperation> serializeOperations, AssetReference parentAssetReference, string url, Type objType, object obj, AssetManagerLoaderSettings settings)
         {
             // Try to find already loaded object
@@ -424,63 +448,70 @@ namespace SiliconStudio.Core.Serialization.Assets
             object result;
 
             // Open asset binary stream
-            using (var stream = FileProvider.OpenStream(url, VirtualFileMode.Open, VirtualFileAccess.Read))
+            try
             {
-                // File does not exist
-                // TODO/Benlitz: Add a log entry for that, it's not expected to happen
-                if (stream == null)
-                    return null;
-
-                Type headerObjType = null;
-
-                // Read header
-                var streamReader = new BinarySerializationReader(stream);
-                var chunkHeader = ChunkHeader.Read(streamReader);
-                if (chunkHeader != null)
+                using (var stream = FileProvider.OpenStream(url, VirtualFileMode.Open, VirtualFileAccess.Read))
                 {
-                    headerObjType = Type.GetType(chunkHeader.Type);
+                    // File does not exist
+                    // TODO/Benlitz: Add a log entry for that, it's not expected to happen
+                    if (stream == null)
+                        return null;
+
+                    Type headerObjType = null;
+
+                    // Read header
+                    var streamReader = new BinarySerializationReader(stream);
+                    var chunkHeader = ChunkHeader.Read(streamReader);
+                    if (chunkHeader != null)
+                    {
+                        headerObjType = AssemblyRegistry.GetType(chunkHeader.Type);
+                    }
+
+                    // Find serializer
+                    var serializer = Serializer.GetSerializer(headerObjType, objType);
+                    if (serializer == null)
+                        throw new InvalidOperationException(string.Format("Content serializer for {0}/{1} could not be found.", headerObjType, objType));
+                    contentSerializerContext = new ContentSerializerContext(url, ArchiveMode.Deserialize, this) { LoadContentReferences = settings.LoadContentReferences };
+
+                    // Read chunk references
+                    if (chunkHeader != null && chunkHeader.OffsetToReferences != -1)
+                    {
+                        // Seek to where references are stored and deserialize them
+                        streamReader.NativeStream.Seek(chunkHeader.OffsetToReferences, SeekOrigin.Begin);
+                        contentSerializerContext.SerializeReferences(streamReader);
+                        streamReader.NativeStream.Seek(chunkHeader.OffsetToObject, SeekOrigin.Begin);
+                    }
+
+                    if (assetReference == null)
+                    {
+                        // Create AssetReference
+                        assetReference = new AssetReference(url, parentAssetReference == null);
+                        contentSerializerContext.AssetReference = assetReference;
+                        result = obj ?? serializer.Construct(contentSerializerContext);
+                        SetAssetObject(assetReference, result);
+                    }
+                    else
+                    {
+                        result = assetReference.Object;
+                        contentSerializerContext.AssetReference = assetReference;
+                    }
+
+                    assetReference.Deserialized = true;
+
+                    PrepareSerializerContext(contentSerializerContext, streamReader.Context);
+
+                    contentSerializerContext.SerializeContent(streamReader, serializer, result);
+
+                    // Add reference
+                    if (parentAssetReference != null)
+                    {
+                        parentAssetReference.References.Add(assetReference);
+                    }
                 }
-
-                // Find serializer
-                var serializer = Serializer.GetSerializer(headerObjType, objType);
-                if (serializer == null)
-                    throw new InvalidOperationException(string.Format("Content serializer for {0}/{1} could not be found.", headerObjType, objType));
-                contentSerializerContext = new ContentSerializerContext(url, ArchiveMode.Deserialize, this) { LoadContentReferences = settings.LoadContentReferences };
-
-                // Read chunk references
-                if (chunkHeader != null && chunkHeader.OffsetToReferences != -1)
-                {
-                    // Seek to where references are stored and deserialize them
-                    streamReader.NativeStream.Seek(chunkHeader.OffsetToReferences, SeekOrigin.Begin);
-                    contentSerializerContext.SerializeReferences(streamReader);
-                    streamReader.NativeStream.Seek(chunkHeader.OffsetToObject, SeekOrigin.Begin);
-                }
-
-                if (assetReference == null)
-                {
-                    // Create AssetReference
-                    assetReference = new AssetReference(url, parentAssetReference == null);
-                    contentSerializerContext.AssetReference = assetReference;
-                    result = obj ?? serializer.Construct(contentSerializerContext);
-                    SetAssetObject(assetReference, result);
-                }
-                else
-                {
-                    result = assetReference.Object;
-                    contentSerializerContext.AssetReference = assetReference;
-                }
-
-                assetReference.Deserialized = true;
-
-                PrepareSerializerContext(contentSerializerContext, streamReader.Context);
-
-                contentSerializerContext.SerializeContent(streamReader, serializer, result);
-
-                // Add reference
-                if (parentAssetReference != null)
-                {
-                    parentAssetReference.References.Add(assetReference);
-                }
+            }
+            catch (Exception exception)
+            {
+                throw new AssetManagerException(string.Format("Unexpected exception while loading asset [{0}]. Reason: {1}. Check inner-exception for details.", url, exception.Message), exception);
             }
 
             if (settings.LoadContentReferences)
@@ -654,12 +685,14 @@ namespace SiliconStudio.Core.Serialization.Assets
         // TODO: Replug this when an asset is not found?
         private static void HandleAssetNotFound(string url)
         {
+            var errorMessage = string.Format("The asset '{0}' does not exist. Path should be 'Subfolder/AssetName'", url);
+
             // If a debugger is attached, throw an exception (we do that instead of Debugger.Break so that user can easily ignore this specific type of exception)
             if (Debugger.IsAttached)
             {
                 try
                 {
-                    throw new AssetManagerException(string.Format("Asset [{0}] not found.", url));
+                    throw new AssetManagerException(errorMessage);
                 }
                 catch (Exception)
                 {
@@ -667,7 +700,7 @@ namespace SiliconStudio.Core.Serialization.Assets
             }
 
             // Log error
-            Log.Error("Asset [{0}] could not be found.", url);
+            Log.Error(errorMessage);
         }
     }
 }

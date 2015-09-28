@@ -6,6 +6,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine.Design;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Rendering.Lights;
 
 namespace SiliconStudio.Paradox.Engine
@@ -72,7 +73,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>The position.</value>
         /// <remarks>This property should only be used inside a renderer and not from a script as it is updated after scripts</remarks>
         [DataMemberIgnore]
-        public Vector3 Position;
+        internal Vector3 Position;
 
         /// <summary>
         /// Gets the light direction in World-Space (computed by the <see cref="LightProcessor"/>) (readonly field).
@@ -80,33 +81,34 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>The direction.</value>
         /// <remarks>This property should only be used inside a renderer and not from a script as it is updated after scripts</remarks>
         [DataMemberIgnore]
-        public Vector3 Direction;
+        internal Vector3 Direction;
 
         [DataMemberIgnore]
-        public Color3 Color;
+        internal Color3 Color;
 
         /// <summary>
         /// The bounding box of this light in WS after the <see cref="LightProcessor"/> has been applied (readonly field).
         /// </summary>
         [DataMemberIgnore]
-        public BoundingBox BoundingBox;
+        internal BoundingBox BoundingBox;
 
         /// <summary>
         /// The bounding box extents of this light in WS after the <see cref="LightProcessor"/> has been applied (readonly field).
         /// </summary>
         [DataMemberIgnore]
-        public BoundingBoxExt BoundingBoxExt;
+        internal BoundingBoxExt BoundingBoxExt;
 
         /// <summary>
         /// The determines whether this instance has a valid bounding box (readonly field).
         /// </summary>
         [DataMemberIgnore]
-        public bool HasBoundingBox;
+        internal bool HasBoundingBox;
 
         /// <summary>
         /// Updates this instance( <see cref="Position"/>, <see cref="Direction"/>, <see cref="HasBoundingBox"/>, <see cref="BoundingBox"/>, <see cref="BoundingBoxExt"/>
         /// </summary>
-        public bool Update()
+        /// <param name="colorSpace"></param>
+        public bool Update(ColorSpace colorSpace)
         {
             if (Type == null || !Enabled || !Type.Update(this))
             {
@@ -124,7 +126,7 @@ namespace SiliconStudio.Paradox.Engine
 
             // Color
             var colorLight = Type as IColorLight;
-            Color = (colorLight != null) ? colorLight.ComputeColor(Intensity) : new Color3();
+            Color = (colorLight != null) ? colorLight.ComputeColor(colorSpace, Intensity) : new Color3();
 
             // Compute bounding boxes
             HasBoundingBox = false;
@@ -141,7 +143,6 @@ namespace SiliconStudio.Paradox.Engine
 
             return true;
         }
-
 
         public override PropertyKey GetDefaultKey()
         {

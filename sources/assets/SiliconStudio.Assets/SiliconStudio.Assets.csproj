@@ -11,12 +11,12 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
-    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization --generate-user-doc</SiliconStudioAssemblyProcessorOptions>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Build, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.Build.Framework, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.Build.Utilities.v12.0, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Build.Framework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Build.Utilities.Core, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="NuGet">
       <HintPath>..\..\..\deps\Nuget\NuGet.core.dll</HintPath>
@@ -32,6 +32,7 @@
       <HintPath>..\..\common\deps\SharpYaml\SharpYaml.dll</HintPath>
     </Reference>
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
@@ -72,6 +73,7 @@
     <Compile Include="AssetImportTracked.cs" />
     <Compile Include="AssetItemCollection.cs" />
     <Compile Include="AssetMember.cs" />
+    <Compile Include="AssetMigrationContext.cs" />
     <Compile Include="AssetPropertyKeyNameResolver.cs" />
     <Compile Include="AssetReferenceDataSerializer.cs" />
     <Compile Include="AssetSelector.cs" />
@@ -90,7 +92,10 @@
     <Compile Include="AssetImporterBase.cs" />
     <Compile Include="AssetToImport.cs" />
     <Compile Include="AssetImportSession.cs" />
+    <Compile Include="Compiler\IPackageCompilerSource.cs" />
     <Compile Include="Compiler\IPackageCompiler.cs" />
+    <Compile Include="Compiler\PackageAssetEnumerator.cs" />
+    <Compile Include="Compiler\RootPackageAssetEnumerator.cs" />
     <Compile Include="Diff\AssetMergePolicies.cs" />
     <Compile Include="Diff\Diff3NodeType.cs" />
     <Compile Include="Diff\DiffAttributeBase.cs" />
@@ -130,10 +135,12 @@
     <Compile Include="PackageDependency.cs" />
     <Compile Include="PackageExtensions.cs" />
     <Compile Include="PackageLoadingAssetFile.cs" />
+    <Compile Include="PackageReferenceBase.cs" />
+    <Compile Include="PackageSaveSourceFileOperations.cs" />
     <Compile Include="PackageSessionHelper.cs" />
     <Compile Include="PackageSessionHelper.Solution.cs" />
     <Compile Include="PackageLoadParameters.cs" />
-    <Compile Include="PackageSettings.cs" />
+    <Compile Include="PackageUserSettings.cs" />
     <Compile Include="PackageStore.cs" />
     <Compile Include="PackageMeta.cs" />
     <Compile Include="PackageReference.cs" />
@@ -159,7 +166,10 @@
     <Compile Include="AssetBase.cs" />
     <Compile Include="PackageSessionProfilingKeys.cs" />
     <Compile Include="PackageSessionResult.cs" />
+    <Compile Include="ProjectSourceCodeAsset.cs" />
     <Compile Include="RawAsset.cs" />
+    <Compile Include="PackageSaveParameters.cs" />
+    <Compile Include="RootAssetCollection.cs" />
     <Compile Include="Serializers\AssetItemSerializer.cs" />
     <Compile Include="Serializers\AssetYamlSerializer.cs" />
     <Compile Include="Serializers\InvariantObjectCloneSerializer.cs" />

@@ -51,6 +51,14 @@ namespace SiliconStudio.Core.Collections
             this.Items[this.Count++] = item;
         }
 
+        public void AddRange(FastListStruct<T> items)
+        {
+            for (int i = 0; i < items.Count; i++)
+            {
+                Add(items[i]);
+            }
+        }
+
         public void Insert(int index, T item)
         {
             if (Count == Items.Length)
@@ -78,9 +86,28 @@ namespace SiliconStudio.Core.Collections
             Items[Count] = default(T);
         }
 
+        public bool Remove(T item)
+        {
+            int index = IndexOf(item);
+            if (index >= 0)
+            {
+                RemoveAt(index);
+                return true;
+            }
+
+            return false;
+        }
+
         public void Clear()
         {
             this.Count = 0;
+        }
+
+        public T[] ToArray()
+        {
+            var destinationArray = new T[Count];
+            Array.Copy(Items, 0, destinationArray, 0, Count);
+            return destinationArray;            
         }
 
         public void EnsureCapacity(int newCapacity)
@@ -130,6 +157,23 @@ namespace SiliconStudio.Core.Collections
         public int IndexOf(T item)
         {
             return Array.IndexOf(Items, item, 0, Count);
+        }
+
+        /// <summary>
+        /// Remove an item by swapping it with the last item and removing it from the last position. This function prevents to shift values from the list on removal but does not maintain order.
+        /// </summary>
+        /// <param name="list">The list.</param>
+        /// <param name="index">Index of the item to remove.</param>
+        public void SwapRemoveAt(int index)
+        {
+            if (index < 0 || index >= Count) throw new ArgumentOutOfRangeException("index");
+
+            if (index < Count - 1)
+            {
+                Items[index] = Items[Count - 1];
+            }
+
+            RemoveAt(Count - 1);
         }
 
         #region Nested type: Enumerator

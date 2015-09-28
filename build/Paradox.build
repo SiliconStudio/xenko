@@ -2,15 +2,15 @@
 <!--
 Build file used to build Paradox and package it from the command line.
 Example of use: 
-"C:\Program Files (x86)\MSBuild\12.0\Bin\MSBuild" Paradox.build /t:PackageLauncher
+"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild" Paradox.build /t:PackageLauncher
 -->
-<Project ToolsVersion="12.0" DefaultTarget="Help" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTarget="Help" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ParadoxRoot>$(MSBuildThisFileDirectory)..\</ParadoxRoot>
     <ParadoxRootBin>$(ParadoxRoot)Bin\Windows-Direct3D11\</ParadoxRootBin>
     <ParadoxPackage>$(ParadoxRoot)Paradox.pdxpkg</ParadoxPackage>
     <ParadoxSolution>$(ParadoxRoot)build\Paradox</ParadoxSolution>
-    <BuildProperties>Configuration=Release;GenerateDoc=true;NoWarn=1591;DeployExtension=false</BuildProperties>
+    <BuildProperties>Configuration=Release;SiliconStudioGenerateDoc=true;NoWarn=1591;DeployExtension=false</BuildProperties>
     <BuildProperties Condition="'$(SiliconStudioSign)' != ''">$(BuildProperties);SiliconStudioSign=$(SiliconStudioSign)</BuildProperties>
     <BuildProperties Condition="'$(SiliconStudioOfficialBuild)' != ''">$(BuildProperties);SiliconStudioOfficialBuild=$(SiliconStudioOfficialBuild)</BuildProperties>
     <ILRepackPath>$(ParadoxRootBin)ILRepack.exe</ILRepackPath>

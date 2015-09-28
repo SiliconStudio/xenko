@@ -859,7 +859,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Creates a quaternion that rotates around the x-axis.
+        /// Creates a quaternion that rotates around the y-axis.
         /// </summary>
         /// <param name="angle">Angle of rotation in radians.</param>
         /// <param name="result">When the method completes, contains the newly created quaternion.</param>
@@ -870,7 +870,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Creates a quaternion that rotates around the x-axis.
+        /// Creates a quaternion that rotates around the y-axis.
         /// </summary>
         /// <param name="angle">Angle of rotation in radians.</param>
         /// <returns>The created rotation quaternion.</returns>
@@ -882,7 +882,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Creates a quaternion that rotates around the x-axis.
+        /// Creates a quaternion that rotates around the z-axis.
         /// </summary>
         /// <param name="angle">Angle of rotation in radians.</param>
         /// <param name="result">When the method completes, contains the newly created quaternion.</param>
@@ -893,7 +893,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Creates a quaternion that rotates around the x-axis.
+        /// Creates a quaternion that rotates around the z-axis.
         /// </summary>
         /// <param name="angle">Angle of rotation in radians.</param>
         /// <returns>The created rotation quaternion.</returns>

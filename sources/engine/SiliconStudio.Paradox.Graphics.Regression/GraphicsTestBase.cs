@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Games;
 
 namespace SiliconStudio.Paradox.Graphics.Regression
@@ -129,7 +130,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             // Register 3D card name
-            ImageTester.ImageTestResultConnection.DeviceName += "_" + GraphicsDevice.Adapter.Description.Split('\0')[0]; // Workaround for sharpDX bug: Description ends with an series trailing of '\0' characters
+            ImageTester.ImageTestResultConnection.DeviceName += "_" + GraphicsDevice.Adapter.Description.Split('\0')[0].TrimEnd(' '); // Workaround for sharpDX bug: Description ends with an series trailing of '\0' characters
 #endif
 
             Script.AddTask(RegisterTestsInternal);
@@ -137,7 +138,8 @@ namespace SiliconStudio.Paradox.Graphics.Regression
 
         private Task RegisterTestsInternal()
         {
-            RegisterTests();
+            if(!FrameGameSystem.IsUnityTestFeeding)
+                RegisterTests();
 
             return Task.FromResult(true);
         }
@@ -157,6 +159,20 @@ namespace SiliconStudio.Paradox.Graphics.Regression
                 Exit();
             else if (FrameGameSystem.TakeSnapshot)
                 SaveBackBuffer();
+        }
+        protected void RunDrawTest(Action<Game> action, bool takeSnapshot = false)
+        {
+            // create the game instance
+            var typeGame = GetType();
+            var game = (GraphicsTestBase)Activator.CreateInstance(typeGame);
+
+            // register the tests.
+            game.FrameGameSystem.IsUnityTestFeeding = true;
+            game.FrameGameSystem.Draw(() => action(game));
+            if (takeSnapshot)
+                game.FrameGameSystem.TakeScreenshot();
+
+            RunGameTest(game);
         }
 
         /// <summary>

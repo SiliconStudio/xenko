@@ -49,6 +49,7 @@ namespace SiliconStudio.Paradox.Graphics
         private int currentStateIndex;
         private readonly List<StateAndTargets> allocatedStates = new List<StateAndTargets>(10);
         private PrimitiveQuad primitiveQuad;
+        private ColorSpace colorSpace;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="GraphicsDevice" /> class.
@@ -218,6 +219,19 @@ namespace SiliconStudio.Paradox.Graphics
         ///     Gets a value indicating whether this instance supports GPU markers and profiling.
         /// </summary>
         public bool IsProfilingSupported { get; private set; }
+
+        /// <summary>
+        /// Gets the default color space.
+        /// </summary>
+        /// <value>The default color space.</value>
+        public ColorSpace ColorSpace
+        {
+            get { return Features.HasSRgb ? colorSpace : ColorSpace.Gamma; }
+            set
+            {
+                colorSpace = value;
+            }
+        }
 
         /// <summary>
         ///     Gets the parameters attached to this particular device. This Parameters are used to override <see cref="Effect" /> parameters.

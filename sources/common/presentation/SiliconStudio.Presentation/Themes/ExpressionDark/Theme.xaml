@@ -418,37 +418,6 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type ctrl:FilteringComboBox}">
-        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-        <Setter Property="SnapsToDevicePixels" Value="true" />
-        <Setter Property="Background" Value="{DynamicResource LightBrush}"/>
-        <Setter Property="HorizontalAlignment" Value="Stretch"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ctrl:FilteringComboBox}">
-                    <Grid x:Name="grid">
-                        <ctrl:TextBox x:Name="PART_EditableTextBox" ValidateOnLostFocus="False" VerticalAlignment="Center" Focusable="True"
-                                           WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}}"/>
-                        <Popup IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" x:Name="Popup" Focusable="False" AllowsTransparency="True" PopupAnimation="Slide">
-                            <Grid>
-                                <ListBox x:Name="PART_ListBox" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="380" SnapsToDevicePixels="True" ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}}" SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}}">
-                            </ListBox>
-                            </Grid>
-                        </Popup>
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
-                            <Setter Property="Opacity" TargetName="grid" Value="0.5" />
-                        </Trigger>
-                        <Trigger Property="IsGrouping" Value="true">
-                            <Setter Property="ScrollViewer.CanContentScroll" Value="false" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
 
     <Style TargetType="{x:Type ctrl:ColorPicker}">
         <Setter Property="Focusable" Value="False"/>
@@ -1330,8 +1299,8 @@
     <Style d:IsControlPart="True" TargetType="{x:Type ListBoxItem}">
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="OverridesDefaultStyle" Value="true" />
-        <Setter Property="Margin" Value="1,1,1,0"/>
-        <Setter Property="Padding" Value="5,2,5,2"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Padding" Value="6,3,6,3"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
@@ -4360,5 +4329,147 @@
     <Style TargetType="{x:Type Image}">
         <Setter Property="RenderOptions.BitmapScalingMode" Value="NearestNeighbor"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
+    </Style>
+
+    <Style TargetType="{x:Type ctrl:TreeView}">
+        <Style.Resources>
+            <ResourceDictionary />
+        </Style.Resources>
+        <Setter Property="Panel.Background" Value="{StaticResource ControlBackgroundBrush}"/>
+        <Setter Property="VirtualizingStackPanel.IsVirtualizing" Value="False" />
+        <Setter Property="Border.BorderBrush" Value="{StaticResource SolidBorderBrush}" />
+        <Setter Property="Border.BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="1" />
+        <Setter Property="TextElement.Foreground" Value="{StaticResource TextBrush}"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ctrl:TreeView}">
+                    <Border BorderThickness="{TemplateBinding Border.BorderThickness}"
+                            BorderBrush="{TemplateBinding Border.BorderBrush}" Name="Bd" SnapsToDevicePixels="True">
+                        <ScrollViewer CanContentScroll="True" x:Name="scroller"
+                                HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+                                VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
+                                Background="{TemplateBinding Panel.Background}"
+                                Padding="{TemplateBinding Control.Padding}"
+                                SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" 
+                                Focusable="False">
+                            <ItemsPresenter x:Name="content" DockPanel.Dock="Top" />
+                        </ScrollViewer>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="UIElement.IsEnabled" Value="False">
+                            <Setter Property="Panel.Background" TargetName="Bd">
+                                <Setter.Value>
+                                    <DynamicResource ResourceKey="{x:Static SystemColors.ControlBrushKey}" />
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type ctrl:TreeViewItem}">
+        <Style.Resources>
+            <ResourceDictionary />
+        </Style.Resources>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="HorizontalContentAlignment" Value="{Binding Path=HorizontalContentAlignment, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ItemsControl, AncestorLevel=1}, FallbackValue=Left}" />
+        <Setter Property="VerticalContentAlignment" Value="{Binding Path=VerticalContentAlignment, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ItemsControl, AncestorLevel=1}, FallbackValue=Center}" />
+        <Setter Property="Padding" Value="1,4" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="FocusVisualStyle">
+            <Setter.Value>
+                <Style TargetType="{x:Type IFrameworkInputElement}">
+                    <Style.Resources>
+                        <ResourceDictionary />
+                    </Style.Resources>
+                    <Setter Property="Control.Template">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <Rectangle />
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ctrl:TreeViewItem}">
+                    <StackPanel Background="Transparent" x:Name="stacki">
+                        <Grid Background="Transparent" SnapsToDevicePixels="True" VerticalAlignment="Center" x:Name="border">
+                            <Rectangle x:Name="Background" IsHitTestVisible="False" Opacity="0.25" Fill="{TemplateBinding Background}"/>
+                            <Rectangle x:Name="HoverRectangle" IsHitTestVisible="False" Opacity="0" Fill="{StaticResource NormalBrush}"/>
+                            <Rectangle x:Name="SelectedRectangle" IsHitTestVisible="False" Opacity="0" Fill="{StaticResource SelectedBackgroundBrush}"/>
+                            <DockPanel x:Name="ct" Margin="{TemplateBinding Padding}">
+                                <FrameworkElement DockPanel.Dock="Left" Margin="{Binding Offset, RelativeSource={RelativeSource TemplatedParent}, Converter={cvt:NumericToThickness}, ConverterParameter={me:Thickness 1,0,0,0}}"/>
+                                <ToggleButton DockPanel.Dock="Left" 
+                                    IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ctrl:TreeViewItem}},Path=IsExpanded,FallbackValue=False}"
+                                    Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type ctrl:TreeViewItem}},Path=HasItems, Converter={cvt:VisibleOrHidden},FallbackValue=Hidden}"
+                                    ClickMode="Press" Name="Expander" HorizontalAlignment="Right">
+                                    <ToggleButton.Style>
+                                        <Style TargetType="{x:Type ToggleButton}">
+                                            <Style.Resources>
+                                                <ResourceDictionary />
+                                            </Style.Resources>
+                                            <Setter Property="Focusable" Value="False" />
+                                            <Setter Property="Width" Value="12" />
+                                            <Setter Property="Height" Value="12" />
+                                            <Setter Property="Margin" Value="0,0,4,0" />
+                                            <Setter Property="Template" Value="{StaticResource DarkExpanderToggleButton}"/>
+                                        </Style>
+                                    </ToggleButton.Style>
+                                </ToggleButton>
+                                <ContentPresenter x:Name="content"
+                                    FocusManager.IsFocusScope="True" 
+                                    Content="{TemplateBinding HeaderedContentControl.Header}"
+                                    ContentTemplate="{TemplateBinding HeaderedContentControl.HeaderTemplate}"
+                                    ContentStringFormat="{TemplateBinding HeaderedItemsControl.HeaderStringFormat}"
+                                    ContentTemplateSelector="{TemplateBinding HeaderedItemsControl.HeaderTemplateSelector}"
+                                    ContentSource="Header"
+                                    HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
+                                    VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
+                                    SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                            </DockPanel>
+                            <Rectangle x:Name="FocusVisualElement" Stroke="{StaticResource HoverShineBrush}" StrokeThickness="0" RadiusX="1" RadiusY="1" Opacity="0" IsHitTestVisible="False" Margin="1,1,1,1"/>
+                        </Grid>
+                        <ItemsPresenter x:Name="itemsPresenter" Visibility="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Converter={cvt:VisibleOrCollapsed}, FallbackValue=Hidden}"/>
+                    </StackPanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter Property="Opacity" TargetName="FocusVisualElement" Value="1"/>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="true">
+                            <Setter Property="Opacity" TargetName="SelectedRectangle" Value="1"/>
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True" SourceName="border"/>
+                                <Condition Property="Selector.IsSelected" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Opacity" TargetName="HoverRectangle" Value="1"/>
+                        </MultiTrigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}" />
+                        </Trigger>
+
+                        <Trigger Property="ctrl:TreeViewItem.IsEditing" Value="True">
+                            <Setter TargetName="content" Property="ContentPresenter.ContentTemplate" 
+                                    Value="{Binding TemplateEdit, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ctrl:TreeViewItem}, AncestorLevel=1}}"/>
+                            <Setter TargetName="content" Property="ContentPresenter.ContentTemplateSelector" 
+                                    Value="{Binding TemplateSelectorEdit, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ctrl:TreeViewItem}, AncestorLevel=1}}"/>
+                            <Setter Property="Padding" Value="0" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 </ResourceDictionary>

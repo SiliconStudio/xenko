@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// <summary>
     /// Test the mouse over event/property/designs
     /// </summary>
-    public class MouseOverTest : UnitTestGameBase
+    public class MouseOverTest : UITestGameBase
     {
         private Button button1;
         private Button button2;

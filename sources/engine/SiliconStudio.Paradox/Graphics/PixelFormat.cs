@@ -543,6 +543,10 @@ namespace SiliconStudio.Paradox.Graphics
         PVRTC_II_2bpp = unchecked((int)1028),
         PVRTC_II_4bpp = unchecked((int)1029),
 
+        PVRTC_2bpp_RGB_SRgb = unchecked((int)1030),
+        PVRTC_2bpp_RGBA_SRgb = unchecked((int)1031),
+        PVRTC_4bpp_RGB_SRgb = unchecked((int)1032),
+        PVRTC_4bpp_RGBA_SRgb = unchecked((int)1033),
 
         ETC1 = unchecked((int)1088),
         ETC2_RGB = unchecked((int)1089),
@@ -552,6 +556,8 @@ namespace SiliconStudio.Paradox.Graphics
         EAC_R11_Signed = unchecked((int)1093),
         EAC_RG11_Unsigned = unchecked((int)1094),
         EAC_RG11_Signed = unchecked((int)1095),
+        ETC2_RGBA_SRgb = unchecked((int)1096),
+        ETC2_RGB_SRgb = unchecked((int)1097),
 
         ATC_RGB = unchecked((int)1120),
         ATC_RGBA_Explicit = unchecked((int)1121),

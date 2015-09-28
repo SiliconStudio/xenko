@@ -2,24 +2,45 @@
 Id: 0d564cf9-3de7-4550-8bdd-ad29f7c57d36
 SerializedVersion: 1
 Tags: []
+Type: Sprite2D
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Format: Color32Bits
 Alpha: None
+Packing:
+    AtlasMaximumSize: {X: 2048, Y: 2048}
+    BorderSize: 8
 Sprites:
-    -   Source: ../../../data/tests/ImageBorders.png
-        Name: NotRotated
-        TextureRegion:
-            X: 10
-            Y: 10
-            Width: 256
-            Height: 128
-        Borders: {X: 75, Y: 40, Z: 30, W: 15}
-    -   Source: ../../../data/tests/ImageBorders.png
-        Name: Rotated90
-        TextureRegion:
-            X: 374
-            Y: 0
-            Width: 128
-            Height: 256
+    -   Source: ../../../data/tests/TexturePacking/imageBorder.png
+        Name: NRNR
+        TextureRegion: {X: 10, Y: 10, Width: 256, Height: 64}
+        PixelsPerUnit: 1.0
+        Center: {X: 32.0, Y: 48.0}
+        CenterFromMiddle: false
+        Borders: {X: 75.0, Y: 40.0, Z: 15.0, W: 7.5}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   Source: ../../../data/tests/TexturePacking/imageBorder.png
+        Name: RNR
+        TextureRegion: {X: 375, Y: 0, Width: 64, Height: 256}
+        PixelsPerUnit: 1.0
         Orientation: Rotated90
-        Borders: {X: 15, Y: 30, Z: 75, W: 40}
+        Center: {X: 16.0, Y: 32.0}
+        CenterFromMiddle: false
+        Borders: {X: 7.5, Y: 15.0, Z: 75.0, W: 40.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   Source: ../../../data/tests/TexturePacking/imageBorder.png
+        Name: NRR
+        TextureRegion: {X: 375, Y: 0, Width: 64, Height: 256}
+        PixelsPerUnit: 1.0
+        Center: {X: 16.0, Y: 32.0}
+        CenterFromMiddle: false
+        Borders: {X: 7.5, Y: 15.0, Z: 75.0, W: 40.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   Source: ../../../data/tests/TexturePacking/imageBorder.png
+        Name: RR
+        TextureRegion: {X: 10, Y: 10, Width: 256, Height: 64}
+        PixelsPerUnit: 1.0
+        Orientation: Rotated90
+        Center: {X: 32.0, Y: 48.0}
+        CenterFromMiddle: false
+        Borders: {X: 75.0, Y: 40.0, Z: 15.0, W: 7.5}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}

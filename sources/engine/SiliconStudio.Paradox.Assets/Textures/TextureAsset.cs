@@ -7,6 +7,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Assets.Textures
@@ -22,8 +23,12 @@ namespace SiliconStudio.Paradox.Assets.Textures
     [CategoryOrder(10, "Size")]
     [CategoryOrder(20, "Format")]
     [CategoryOrder(30, "Transparency")]
+    [AssetFormatVersion(TextureAssetVersion)]
+    [AssetUpgrader(0, 1, typeof(TransformSRgbToColorSpace))]
     public sealed class TextureAsset : AssetImport
     {
+        private const int TextureAssetVersion = 1;
+
         /// <summary>
         /// The default file extension used by the <see cref="TextureAsset"/>.
         /// </summary>
@@ -160,9 +165,9 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// with a HDR/gamma correct rendering.
         /// </userdoc>
         [DataMember(70)]
-        [DefaultValue(false)]
-        [Display("sRGB", null, "Format")]
-        public bool SRgb { get; set; }
+        [DefaultValue(TextureColorSpace.Auto)]
+        [Display("ColorSpace", null, "Format")]
+        public TextureColorSpace ColorSpace { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to convert the texture in premultiply alpha.
@@ -182,6 +187,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
             Height = 100.0f;
             Format = TextureFormat.Compressed;
             Hint = TextureHint.Color;
+            ColorSpace = TextureColorSpace.Auto;
             Alpha = AlphaFormat.Auto;
             ColorKeyColor = new Color(255, 0, 255);
             ColorKeyEnabled = false;
@@ -189,5 +195,19 @@ namespace SiliconStudio.Paradox.Assets.Textures
             GenerateMipmaps = true;
             PremultiplyAlpha = true;
         }
+
+        private class TransformSRgbToColorSpace : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            {
+                if (asset.SRgb != null)
+                {
+                    // By default transform to auto
+                    asset.ColorSpace = TextureColorSpace.Auto;
+                    asset.RemoveChild("SRgb");
+                }
+            }
+        }
+ 
     }
 }

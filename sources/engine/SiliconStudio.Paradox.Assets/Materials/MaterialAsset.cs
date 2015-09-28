@@ -81,6 +81,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         [DataMember(20)]
         [NotNull]
         [Category]
+        [MemberCollection(CanReorderItems = true)]
         public MaterialBlendLayers Layers { get; set; }
 
         /// <summary>
@@ -113,9 +114,9 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 };
                 newMaterial.Attributes.Diffuse = new MaterialDiffuseMapFeature
                 {
-                    DiffuseMap = new ComputeColor
+                    DiffuseMap = new ComputeTextureColor
                     {
-                        Value = new Color4(0.98f, 0.9f, 0.7f, 1.0f)
+                        FallbackValue = new ComputeColor(new Color4(0.98f, 0.9f, 0.7f, 1.0f))
                     }
                 };
                 newMaterial.Attributes.DiffuseModel = new MaterialDiffuseLambertModelFeature();
@@ -148,7 +149,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         public class RemoveParametersUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 asset.Parameters = DynamicYamlEmpty.Default;
             }

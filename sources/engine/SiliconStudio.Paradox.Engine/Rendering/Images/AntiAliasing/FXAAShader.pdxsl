@@ -3,7 +3,6 @@
 #ifndef FXAA_QUALITY__PRESET
 #define FXAA_QUALITY__PRESET 15
 #endif
-//#define FXAA_GREEN_AS_LUMA 1
 class FXAAShader : ImageEffectShader
 {
 
@@ -2060,6 +2059,6 @@ half4 FxaaPixelShader(
         var texCoord = streams.TexCoord;
 
         float2 screenPixelRatio = Texture0TexelSize;
-        return float4(FxaaPixelShader(texCoord, 0, Texture0, Texture0, Texture0, screenPixelRatio, 0, 0, 0, 0.75, 0.063, 0.0312, 8, 0.125, 0.05, 0).rgb, 1.0f); // output alpha = 1.0f
+        return FxaaPixelShader(texCoord, 0, Texture0, Texture0, Texture0, screenPixelRatio, 0, 0, 0, 0.75, 0.063, 0.0312, 8, 0.125, 0.05, 0);
     }
 };

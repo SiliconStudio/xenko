@@ -46,7 +46,21 @@
 #endif
 #endif
 
-#define DIRECTX_TEX_VERSION 131
+// VS 2010/2012 do not support =default =delete
+#ifndef DIRECTX_CTOR_DEFAULT
+#if defined(_MSC_VER) && (_MSC_VER < 1800)
+#define DIRECTX_CTOR_DEFAULT {}
+#define DIRECTX_CTOR_DELETE ;
+#else
+#define DIRECTX_CTOR_DEFAULT =default;
+#define DIRECTX_CTOR_DELETE =delete;
+#endif
+#endif
+
+#define DIRECTX_TEX_VERSION 133
+
+struct IWICImagingFactory;
+
 
 namespace DirectX
 {
@@ -363,19 +377,6 @@ namespace DirectX
                                    _In_z_ LPCWSTR szFile, _In_opt_ const GUID* targetFormat = nullptr,
                                    _In_opt_ std::function<void DIRECTX_STD_CALLCONV(IPropertyBag2*)> setCustomProps = nullptr );
 
-    enum WICCodecs
-    {
-        WIC_CODEC_BMP       =1,     // Windows Bitmap (.bmp)
-        WIC_CODEC_JPEG,             // Joint Photographic Experts Group (.jpg, .jpeg)
-        WIC_CODEC_PNG,              // Portable Network Graphics (.png)
-        WIC_CODEC_TIFF,             // Tagged Image File Format  (.tif, .tiff)
-        WIC_CODEC_GIF,              // Graphics Interchange Format  (.gif)
-        WIC_CODEC_WMP,              // Windows Media Photo / HD Photo / JPEG XR (.hdp, .jxr, .wdp)
-        WIC_CODEC_ICO,              // Windows Icon (.ico)
-    };
-
-    REFGUID __cdecl GetWICCodec( _In_ WICCodecs codec );
-
     //---------------------------------------------------------------------------------
     // Texture conversion, resizing, mipmap generation, and block compression
 
@@ -510,6 +511,9 @@ namespace DirectX
         TEX_COMPRESS_UNIFORM        = 0x40000,
             // Uniform color weighting for BC1-3 compression; by default uses perceptual weighting
 
+        TEX_COMPRESS_BC7_USE_3SUBSETS = 0x80000,
+            // Enables exhaustive search for BC7 compress for mode 0 and 2; by default skips trying these modes
+
         TEX_COMPRESS_SRGB_IN        = 0x1000000,
         TEX_COMPRESS_SRGB_OUT       = 0x2000000,
         TEX_COMPRESS_SRGB           = ( TEX_COMPRESS_SRGB_IN | TEX_COMPRESS_SRGB_OUT ),
@@ -570,6 +574,7 @@ namespace DirectX
 
     //---------------------------------------------------------------------------------
     // Misc image operations
+
     struct Rect
     {
         size_t x;
@@ -577,7 +582,7 @@ namespace DirectX
         size_t w;
         size_t h;
 
-        Rect() {}
+        Rect() DIRECTX_CTOR_DEFAULT
         Rect( size_t _x, size_t _y, size_t _w, size_t _h ) : x(_x), y(_y), w(_w), h(_h) {}
     };
 
@@ -604,6 +609,25 @@ namespace DirectX
     };
 
     HRESULT __cdecl ComputeMSE( _In_ const Image& image1, _In_ const Image& image2, _Out_ float& mse, _Out_writes_opt_(4) float* mseV, _In_ DWORD flags = 0 );
+
+    //---------------------------------------------------------------------------------
+    // WIC utility code
+
+    enum WICCodecs
+    {
+        WIC_CODEC_BMP = 1,     // Windows Bitmap (.bmp)
+        WIC_CODEC_JPEG,             // Joint Photographic Experts Group (.jpg, .jpeg)
+        WIC_CODEC_PNG,              // Portable Network Graphics (.png)
+        WIC_CODEC_TIFF,             // Tagged Image File Format  (.tif, .tiff)
+        WIC_CODEC_GIF,              // Graphics Interchange Format  (.gif)
+        WIC_CODEC_WMP,              // Windows Media Photo / HD Photo / JPEG XR (.hdp, .jxr, .wdp)
+        WIC_CODEC_ICO,              // Windows Icon (.ico)
+    };
+
+    REFGUID __cdecl GetWICCodec(_In_ WICCodecs codec);
+
+    IWICImagingFactory* __cdecl GetWICFactory( bool& iswic2 );
+    void __cdecl SetWICFactory( _In_opt_ IWICImagingFactory* pWIC);
 
     //---------------------------------------------------------------------------------
     // Direct3D 11 functions

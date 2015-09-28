@@ -51,7 +51,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets the <see cref="ObservableViewModel"/> that owns this node.
         /// </summary>
-        public ObservableViewModel Owner { get; private set; }
+        public ObservableViewModel Owner { get; }
 
         /// <summary>
         /// Gets or sets the name of this node. Note that the name can be used to access this node from its parent using a dynamic object.
@@ -66,7 +66,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets the path of this node. The path is constructed from the name of all node from the root to this one, separated by periods.
         /// </summary>
-        public string Path { get { return Parent != null ? Parent.Path + '.' + Name : Name; } }
+        public string Path => Parent != null ? Parent.Path + '.' + Name : Name;
 
         /// <summary>
         /// Gets the parent of this node.
@@ -91,7 +91,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets or sets whether this node should be displayed in the view.
         /// </summary>
-        public bool IsVisible { get { return isVisible; } set { SetValue(ref isVisible, value, () => { var handler = IsVisibleChanged; if (handler != null) handler(this, EventArgs.Empty); }); } }
+        public bool IsVisible { get { return isVisible; } set { SetValue(ref isVisible, value, () => IsVisibleChanged?.Invoke(this, EventArgs.Empty)); } }
 
         /// <summary>
         /// Gets or sets whether this node can be modified in the view.
@@ -106,27 +106,32 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets or sets the index of this node, relative to its parent node when its contains a collection. Can be null of this node is not in a collection.
         /// </summary>
-        public object Index { get; private set; }
+        public object Index { get; }
 
         /// <summary>
         /// Gets a unique identifier for this observable node.
         /// </summary>
-        public Guid Guid { get; private set; }
+        public Guid Guid { get; }
 
         /// <summary>
         /// Gets the list of children nodes.
         /// </summary>
-        public IReadOnlyCollection<IObservableNode> Children { get { return initializingChildren != null ? (IReadOnlyCollection<IObservableNode>)initializingChildren : children; } }
+        public IReadOnlyCollection<IObservableNode> Children => initializingChildren != null ? (IReadOnlyCollection<IObservableNode>)initializingChildren : children;
 
         /// <summary>
         /// Gets the list of commands available in this node.
         /// </summary>
-        public IEnumerable<INodeCommandWrapper> Commands { get { return commands; } }
+        public IEnumerable<INodeCommandWrapper> Commands => commands;
 
         /// <summary>
         /// Gets additional data associated to this content. This can be used when the content itself does not contain enough information to be used as a view model.
         /// </summary>
-        public IReadOnlyDictionary<string, object> AssociatedData { get { return associatedData; } }
+        public IReadOnlyDictionary<string, object> AssociatedData => associatedData;
+
+        /// <summary>
+        /// Gets the level of depth of this node, starting from 0 for the root node.
+        /// </summary>
+        public int Level => Parent?.Level + 1 ?? 0;
 
         /// <summary>
         /// Gets the order number of this node in its parent.
@@ -192,7 +197,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override string ToString()
         {
-            return string.Format("{0}: [{1}]", Name, Value);
+            return $"{Name}: [{Value}]";
         }
 
         public void AddAssociatedData(string key, object value)
@@ -368,7 +373,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         protected void AddChild(ObservableNode node)
         {
-            if (node == null) throw new ArgumentNullException("node");
+            if (node == null) throw new ArgumentNullException(nameof(node));
             if (node.Parent != null) throw new InvalidOperationException("The node already have a parent.");
             if (Children.Contains(node)) throw new InvalidOperationException("The node is already in the children list of its parent.");
             if (initializingChildren == null)
@@ -393,7 +398,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         protected void RemoveChild(ObservableNode node)
         {
-            if (node == null) throw new ArgumentNullException("node");
+            if (node == null) throw new ArgumentNullException(nameof(node));
             if (!Children.Contains(node)) throw new InvalidOperationException("The node is not in the children list of its parent.");
 
             if (node.IsVisible)
@@ -419,12 +424,12 @@ namespace SiliconStudio.Presentation.Quantum
         
         protected void AddCommand(INodeCommandWrapper command)
         {
-            if (command == null) throw new ArgumentNullException("command");
-            OnPropertyChanging(string.Format("{0}{1}", ObservableViewModel.HasCommandPrefix, command.Name));
+            if (command == null) throw new ArgumentNullException(nameof(command));
+            OnPropertyChanging($"{ObservableViewModel.HasCommandPrefix}{command.Name}");
             OnPropertyChanging(command.Name);
             commands.Add(command);
             OnPropertyChanged(command.Name);
-            OnPropertyChanged(string.Format("{0}{1}", ObservableViewModel.HasCommandPrefix, command.Name));
+            OnPropertyChanged($"{ObservableViewModel.HasCommandPrefix}{command.Name}");
         }
 
         protected void ClearCommands()
@@ -432,23 +437,18 @@ namespace SiliconStudio.Presentation.Quantum
             var commandNames = commands.Select(x => x.Name).ToList();
             foreach (string commandName in commandNames)
             {
-                OnPropertyChanging(string.Format("{0}{1}", ObservableViewModel.HasCommandPrefix, commandName));
+                OnPropertyChanging($"{ObservableViewModel.HasCommandPrefix}{commandName}");
                 OnPropertyChanging(commandName);
             }
             commands.Clear();
             for (int i = commandNames.Count - 1; i >= 0; --i)
             {
                 OnPropertyChanged(commandNames[i]);
-                OnPropertyChanged(string.Format("{0}{1}", ObservableViewModel.HasCommandPrefix, commandNames[i]));
+                OnPropertyChanged($"{ObservableViewModel.HasCommandPrefix}{commandNames[i]}");
             }
         }
 
-        protected void OnValueChanged()
-        {
-            var handler = ValueChanged;
-            if (handler != null)
-                handler(this, EventArgs.Empty);
-        }
+        protected void OnValueChanged() => ValueChanged?.Invoke(this, EventArgs.Empty);
 
         protected void CheckDynamicMemberConsistency()
         {
@@ -459,10 +459,10 @@ namespace SiliconStudio.Presentation.Quantum
                     throw new InvalidOperationException("This node has a child with a null or blank name");
 
                 if (child.Name.Contains('.'))
-                    throw new InvalidOperationException(string.Format("This node has a child which contains a period (.) in its name: {0}", child.Name));
+                    throw new InvalidOperationException($"This node has a child which contains a period (.) in its name: {child.Name}");
 
                 if (memberNames.Contains(child.Name))
-                    throw new InvalidOperationException(string.Format("This node contains several members named {0}", child.Name));
+                    throw new InvalidOperationException($"This node contains several members named {child.Name}");
 
                 memberNames.Add(child.Name);
             }
@@ -473,7 +473,7 @@ namespace SiliconStudio.Presentation.Quantum
                     throw new InvalidOperationException("This node has a command with a null or blank name {0}");
 
                 if (memberNames.Contains(command.Name))
-                    throw new InvalidOperationException(string.Format("This node contains several members named {0}", command.Name));
+                    throw new InvalidOperationException($"This node contains several members named {command.Name}");
 
                 memberNames.Add(command.Name);
             }
@@ -484,7 +484,7 @@ namespace SiliconStudio.Presentation.Quantum
                     throw new InvalidOperationException("This node has associated data with a null or blank name {0}");
 
                 if (memberNames.Contains(associatedDataKey))
-                    throw new InvalidOperationException(string.Format("This node contains several members named {0}", associatedDataKey));
+                    throw new InvalidOperationException($"This node contains several members named {associatedDataKey}");
 
                 memberNames.Add(associatedDataKey);
             }

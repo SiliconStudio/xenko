@@ -23,8 +23,11 @@ namespace SiliconStudio.ExecServer
     /// </summary>
     public class ExecServerApp
     {
+        private string execServerPath;
+
         private const string DisableExecServerAppDomainCaching = "DisableExecServerAppDomainCaching";
         private const int MaxRetryProcess = 10;
+        private const int RetryWait = 500; // in ms
 
         /// <summary>
         /// Runs the specified arguments copy.
@@ -43,23 +46,25 @@ namespace SiliconStudio.ExecServer
             if (args[0] == "/direct")
             {
                 args.RemoveAt(0);
-                var executablePath = ExtractExePath(args);
+                var executablePath = ExtractPath(args, "executable");
                 var execServerApp = new ExecServerRemote(executablePath, false, false);
-                int result = execServerApp.Run(args.ToArray());
+                int result = execServerApp.Run(Environment.CurrentDirectory, args.ToArray());
                 return result;
             }
 
             if (args[0] == "/server")
             {
                 args.RemoveAt(0);
-                var executablePath = ExtractExePath(args);
+                var executablePath = ExtractPath(args, "executable");
                 RunServer(executablePath);
                 return 0;
             }
             else
             {
-                var executablePath = ExtractExePath(args);
-                var result = RunClient(executablePath, args);
+                var executablePath = ExtractPath(args, "executable");
+                var workingDirectory = ExtractPath(args, "working directory");
+                execServerPath = Path.Combine(Path.GetDirectoryName(executablePath), Path.GetFileNameWithoutExtension(executablePath) + "_ExecServer.exe");
+                var result = RunClient(executablePath, workingDirectory, args);
                 return result;
             }
         }
@@ -99,9 +104,10 @@ namespace SiliconStudio.ExecServer
         /// it will start it automatically.
         /// </summary>
         /// <param name="executablePath">The executable path.</param>
+        /// <param name="workingDirectory">The working directory.</param>
         /// <param name="args">The arguments.</param>
         /// <returns>Return status.</returns>
-        private int RunClient(string executablePath, List<string> args)
+        private int RunClient(string executablePath, string workingDirectory, List<string> args)
         {
             var address = GetEndpointAddress(executablePath);
 
@@ -128,7 +134,7 @@ namespace SiliconStudio.ExecServer
                     //Console.WriteLine("{0}: ExecServer - running start", DateTime.Now);
                     try
                     {
-                        var result = service.Run(args.ToArray());
+                        var result = service.Run(workingDirectory, args.ToArray());
                         //Console.WriteLine("{0}: ExecServer - running end", DateTime.Now);
                         return result;
                     }
@@ -162,10 +168,12 @@ namespace SiliconStudio.ExecServer
                 }
 
                 // Wait for 
-                Thread.Sleep(100);
+
+                Console.WriteLine("Waiting {0}ms for the proxy server to start and connect to it", RetryWait);
+                Thread.Sleep(RetryWait);
             }
 
-            Console.WriteLine("ERROR cannot run command: {0} {1}", Assembly.GetEntryAssembly().Location, string.Join(" ", args));
+            Console.WriteLine("ERROR cannot connect to proxy server: {0} {1}", execServerPath, string.Join(" ", args));
             return 1;
         }
 
@@ -206,11 +214,10 @@ namespace SiliconStudio.ExecServer
             var originalTime = File.GetLastWriteTimeUtc(originalExecServerAppPath);
 
             // Avoid locking ExecServer.exe original file, so we are using the name of the executable path and append _ExecServer.exe
-            var copyExecServer = Path.Combine(Path.GetDirectoryName(executablePath), Path.GetFileNameWithoutExtension(executablePath) + "_ExecServer.exe");
             var copyExecFile = false;
-            if (File.Exists(copyExecServer))
+            if (File.Exists(execServerPath))
             {
-                var copyExecServerTime = File.GetLastWriteTimeUtc(copyExecServer);
+                var copyExecServerTime = File.GetLastWriteTimeUtc(execServerPath);
                 // If exec server has changed, we need to copy the new version to it
                 copyExecFile = originalTime != copyExecServerTime;
             }
@@ -223,7 +230,14 @@ namespace SiliconStudio.ExecServer
             {
                 try
                 {
-                    File.Copy(originalExecServerAppPath, copyExecServer, true);
+                    File.Copy(originalExecServerAppPath, execServerPath, true);
+
+                    // Copy the .config file as well
+                    var executableConfigFile = executablePath + ".config";
+                    if (File.Exists(executableConfigFile))
+                    {
+                        File.Copy(executableConfigFile, execServerPath + ".config", true);
+                    }
                 }
                 catch (IOException)
                 {
@@ -233,9 +247,9 @@ namespace SiliconStudio.ExecServer
             // NOTE: We are not using Process.Start as it is for some unknown reasons blocking the process calling this process on Process.ExitProcess
             // Handling directly the creation of the process with Win32 function solves this. Not sure why.
             var arguments = string.Format("/server \"{0}\"", executablePath);
-            if (!ProcessHelper.LaunchProcess(copyExecServer, arguments))
+            if (!ProcessHelper.LaunchProcess(execServerPath, arguments))
             {
-                Console.WriteLine("Error, unable to launch process [{0}]", copyExecServer);
+                Console.WriteLine("Error, unable to launch process [{0}]", execServerPath);
             }
         }
 
@@ -248,20 +262,17 @@ namespace SiliconStudio.ExecServer
             return address;
         }
 
-        private static string ExtractExePath(List<string> args)
+        private static string ExtractPath(List<string> args, string type)
         {
             if (args.Count == 0)
             {
-                throw new InvalidOperationException("Expecting path to executable argument");
+                throw new InvalidOperationException(string.Format("Expecting path to {0} argument", type));
             }
 
-            var fullExePath = args[0];
+            var path = args[0];
             args.RemoveAt(0);
-
-            // Make sure the executable has a directory
-            fullExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fullExePath);
-
-            return fullExePath;
+            path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
+            return path;
         }
 
         private class ExecServerRemoteClient : DuplexClientBase<IExecServerRemote>

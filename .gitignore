@@ -66,6 +66,7 @@ sources/engine/SiliconStudio.Paradox.Graphics.Tests/log/
 sources/engine/SiliconStudio.Paradox.Graphics/log/
 sources/engine/SiliconStudio.Paradox.Graphics/Shaders/log/
 sources/engine/SiliconStudio.Paradox.Input.Tests/app_data/
+sources/engine/SiliconStudio.Paradox.UI.Tests/log/
 sources/engine/SiliconStudio.Paradox.UI.Tests/app_data/
 sources/engine/SiliconStudio.Paradox.Graphics.Tests/app_data/
 sources/tests/framework/Paradox.Framework.Audio.Tests/app_data/
@@ -75,3 +76,5 @@ libbulletc.a
 *.CachedGlyphs
 *.CachedImage
 sources/engine/SiliconStudio.Paradox.Graphics/Shaders.Bytecodes/log/
+log
+sources/tools/SiliconStudio.Paradox.Assimp.Translation/x64Debug/.NETFramework,Version=v4.5.1.AssemblyAttributes.asm

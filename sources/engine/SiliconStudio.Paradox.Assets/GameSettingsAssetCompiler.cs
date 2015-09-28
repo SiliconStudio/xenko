@@ -8,6 +8,7 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Engine.Design;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.Assets
 {
@@ -40,8 +41,8 @@ namespace SiliconStudio.Paradox.Assets
 
                 // Hash used parameters from package
                 writer.Write(package.Id);
-                writer.Write(package.Settings.GetValue(GameUserSettings.Effect.EffectCompilation));
-                writer.Write(package.Settings.GetValue(GameUserSettings.Effect.RecordUsedEffects));
+                writer.Write(package.UserSettings.GetValue(GameUserSettings.Effect.EffectCompilation));
+                writer.Write(package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects));
 
                 // Hash platform
                 writer.Write(platform);
@@ -49,13 +50,18 @@ namespace SiliconStudio.Paradox.Assets
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                var result = new GameSettings();
+                var result = new GameSettings
+                {
+                    PackageId = package.Id,
+                    DefaultSceneUrl = AssetParameters.DefaultScene != null ? AttachedReferenceManager.GetUrl(AssetParameters.DefaultScene) : null,
+                    DefaultBackBufferWidth = AssetParameters.BackBufferWidth,
+                    DefaultBackBufferHeight = AssetParameters.BackBufferHeight,
+                    DefaultGraphicsProfileUsed = AssetParameters.DefaultGraphicsProfile,
+                    ColorSpace =  AssetParameters.ColorSpace,
+                    EffectCompilation = package.UserSettings.GetValue(GameUserSettings.Effect.EffectCompilation),
+                    RecordUsedEffects = package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects)
+                };
 
-                result.DefaultSceneUrl = AssetParameters.DefaultScene != null ? AttachedReferenceManager.GetUrl(AssetParameters.DefaultScene) : null;
-                result.DefaultBackBufferWidth = AssetParameters.BackBufferWidth;
-                result.DefaultBackBufferHeight = AssetParameters.BackBufferHeight;
-                result.DefaultGraphicsProfileUsed = AssetParameters.DefaultGraphicsProfile;
-                
                 // TODO: Platform-specific settings have priority
                 //if (platform != PlatformType.Shared)
                 //{
@@ -66,13 +72,6 @@ namespace SiliconStudio.Paradox.Assets
                 //        result.DefaultGraphicsProfileUsed = customProfile;
                 //    }
                 //}
-
-                // Save package id
-                result.PackageId = package.Id;
-
-                // Save some package user settings
-                result.EffectCompilation = package.Settings.GetValue(GameUserSettings.Effect.EffectCompilation);
-                result.RecordUsedEffects = package.Settings.GetValue(GameUserSettings.Effect.RecordUsedEffects);
 
                 var assetManager = new AssetManager();
                 assetManager.Save(Url, result);

@@ -62,25 +62,29 @@ namespace SiliconStudio.TextureConverter.Requests
             Mode = LoadingMode.FilePath;
             LoadAsSRgb = loadAsSRgb;
         }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadingRequest"/> class to load a texture from a <see cref="TexImage"/> instance.
         /// </summary>
         /// <param name="image">The image.</param>
-        public LoadingRequest(TexImage image)
+        /// <param name="loadAsSRgb">Indicate if the input file should be loaded as in sRGB file</param>
+        public LoadingRequest(TexImage image, bool loadAsSRgb = false)
         {
             Image = image;
             Mode = LoadingMode.TexImage;
+            LoadAsSRgb = loadAsSRgb;
         }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadingRequest"/> class to load a texture from a <see cref="SiliconStudio.Paradox.Graphics.Image"/> instance.
         /// </summary>
         /// <param name="image">The image.</param>
-        public LoadingRequest(Paradox.Graphics.Image image)
+        /// <param name="loadAsSRgb">Indicate if the input file should be loaded as in sRGB file</param>
+        public LoadingRequest(Paradox.Graphics.Image image, bool loadAsSRgb = false)
         {
             PdxImage = image;
             Mode = LoadingMode.PdxImage;
+            LoadAsSRgb = loadAsSRgb;
         }
     }
 }

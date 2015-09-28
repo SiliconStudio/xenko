@@ -8,7 +8,7 @@ namespace SiliconStudio.Core.MicroThreading
         Starting,
         Running,
         Completed,
-        Cancelled,
+        Canceled,
         Failed,
     }
 }

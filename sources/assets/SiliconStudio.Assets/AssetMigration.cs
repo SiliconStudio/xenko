@@ -20,7 +20,7 @@ namespace SiliconStudio.Assets
     /// </summary>
     static class AssetMigration
     {
-        public static bool MigrateAssetIfNeeded(ILogger log, PackageLoadingAssetFile loadAsset)
+        public static bool MigrateAssetIfNeeded(AssetMigrationContext context, PackageLoadingAssetFile loadAsset)
         {
             var assetFullPath = loadAsset.FilePath.FullPath;
 
@@ -85,7 +85,7 @@ namespace SiliconStudio.Assets
             if (serializedVersion < expectedVersion)
             {
                 // Perform asset upgrade
-                log.Verbose("{0} needs update, from version {1} to version {2}", Path.GetFullPath(assetFullPath), serializedVersion, expectedVersion);
+                context.Log.Verbose("{0} needs update, from version {1} to version {2}", Path.GetFullPath(assetFullPath), serializedVersion, expectedVersion);
 
                 // transform the stream into string.
                 string assetAsString;
@@ -115,7 +115,7 @@ namespace SiliconStudio.Assets
                     int targetVersion;
                     // This will throw an exception if no upgrader is available for the given version, exiting the loop in case of error.
                     var upgrader = assetUpgraders.GetUpgrader(currentVersion, out targetVersion);
-                    upgrader.Upgrade(currentVersion, targetVersion, log, yamlRootNode);
+                    upgrader.Upgrade(context, currentVersion, targetVersion, yamlRootNode, loadAsset);
                     currentVersion = targetVersion;
                 }
 
@@ -132,7 +132,7 @@ namespace SiliconStudio.Assets
                     throw new InvalidOperationException(string.Format("Asset of type {0} was migrated, but still its new version {1} doesn't match expected version {2}.", assetType, newSerializedVersion, expectedVersion));
                 }
 
-                log.Info("{0} updated from version {1} to version {2}", Path.GetFullPath(assetFullPath), serializedVersion, expectedVersion);
+                context.Log.Info("{0} updated from version {1} to version {2}", Path.GetFullPath(assetFullPath), serializedVersion, expectedVersion);
 
                 var preferredIndent = YamlSerializer.GetSerializerSettings().PreferredIndent;
 

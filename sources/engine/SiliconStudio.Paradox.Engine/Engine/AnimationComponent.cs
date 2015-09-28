@@ -28,6 +28,11 @@ namespace SiliconStudio.Paradox.Engine
         [DataMemberIgnore]
         internal AnimationBlender Blender = new AnimationBlender();
 
+        //Please note that this will be gone most likely when we renew the animation system.
+        //But for now it's the only way to allow user code to read animation results
+        [DataMemberIgnore]
+        public AnimationClipResult CurrentFrameResult;
+
         public static PropertyKey<AnimationComponent> Key = new PropertyKey<AnimationComponent>("Key", typeof(AnimationComponent));
 
         public AnimationComponent()
@@ -39,14 +44,27 @@ namespace SiliconStudio.Paradox.Engine
 
         void playingAnimations_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
-            if (e.Action == NotifyCollectionChangedAction.Remove)
+            var item = (PlayingAnimation)e.Item;
+            switch (e.Action)
             {
-                var item = (PlayingAnimation)e.Item;
-                var evaluator = item.Evaluator;
-                if (evaluator != null)
+                case NotifyCollectionChangedAction.Add:
                 {
-                    Blender.ReleaseEvaluator(evaluator);
-                    item.Evaluator = null;
+                    item.attached = true;
+                    break;
+                }
+                case NotifyCollectionChangedAction.Remove:
+                {
+                    var evaluator = item.Evaluator;
+                    if (evaluator != null)
+                    {
+                        Blender.ReleaseEvaluator(evaluator);
+                        item.Evaluator = null;
+                    }
+
+                    item.endedTCS?.TrySetResult(true);
+                    item.endedTCS = null;
+                    item.attached = false;
+                    break;
                 }
             }
         }
@@ -64,10 +82,12 @@ namespace SiliconStudio.Paradox.Engine
         /// Plays right away the animation with the specified name, instantly removing all other blended animations.
         /// </summary>
         /// <param name="name">The animation name.</param>
-        public void Play(string name)
+        public PlayingAnimation Play(string name)
         {
             PlayingAnimations.Clear();
-            PlayingAnimations.Add(new PlayingAnimation(this, name) { CurrentTime = TimeSpan.Zero, Weight = 1.0f });
+            var playingAnimation = new PlayingAnimation(this, name) { CurrentTime = TimeSpan.Zero, Weight = 1.0f };
+            PlayingAnimations.Add(playingAnimation);
+            return playingAnimation;
         }
 
         /// <summary>
@@ -76,7 +96,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <param name="name">The name.</param>
         /// <param name="fadeTimeSpan">The fade time span.</param>
         /// <exception cref="ArgumentException">name</exception>
-        public void Crossfade(string name, TimeSpan fadeTimeSpan)
+        public PlayingAnimation Crossfade(string name, TimeSpan fadeTimeSpan)
         {
             if (!Animations.ContainsKey(name))
                 throw new ArgumentException("name");
@@ -89,7 +109,7 @@ namespace SiliconStudio.Paradox.Engine
             }
 
             // Blend to new animation
-            Blend(name, 1.0f, fadeTimeSpan);
+            return Blend(name, 1.0f, fadeTimeSpan);
         }
 
         /// <summary>
@@ -99,7 +119,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <param name="desiredWeight">The desired weight.</param>
         /// <param name="fadeTimeSpan">The fade time span.</param>
         /// <exception cref="ArgumentException">name</exception>
-        public void Blend(string name, float desiredWeight, TimeSpan fadeTimeSpan)
+        public PlayingAnimation Blend(string name, float desiredWeight, TimeSpan fadeTimeSpan)
         {
             if (!Animations.ContainsKey(name))
                 throw new ArgumentException("name");
@@ -116,6 +136,8 @@ namespace SiliconStudio.Paradox.Engine
             {
                 playingAnimation.Weight = desiredWeight;
             }
+
+            return playingAnimation;
         }
 
         public PlayingAnimation NewPlayingAnimation(string name)

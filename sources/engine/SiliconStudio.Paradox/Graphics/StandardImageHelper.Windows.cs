@@ -95,12 +95,12 @@ namespace SiliconStudio.Paradox.Graphics
                 try
                 {
                     // Copy memory
-                    if (description.Format == PixelFormat.R8G8B8A8_UNorm)
+                    if (description.Format == PixelFormat.R8G8B8A8_UNorm || description.Format == PixelFormat.R8G8B8A8_UNorm_SRgb)
                         CopyMemoryBGRA(bitmapData.Scan0, pixelBuffers[0].DataPointer, pixelBuffers[0].BufferStride);
-                    else if (description.Format == PixelFormat.B8G8R8A8_UNorm)
+                    else if (description.Format == PixelFormat.B8G8R8A8_UNorm || description.Format == PixelFormat.B8G8R8A8_UNorm_SRgb)
                         Utilities.CopyMemory(bitmapData.Scan0, pixelBuffers[0].DataPointer, pixelBuffers[0].BufferStride);
                     else
-                        throw new NotSupportedException();
+                        throw new NotSupportedException(string.Format("Pixel format [{0}] is not supported", description.Format));
                 }
                 finally
                 {

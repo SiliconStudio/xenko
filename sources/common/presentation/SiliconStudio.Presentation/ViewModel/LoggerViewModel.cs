@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -30,6 +31,7 @@ namespace SiliconStudio.Presentation.ViewModel
 
         private int updateInterval = DefaultUpdateInterval;
         private bool updatePending;
+        private bool hasNewMessages;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggerViewModel"/> class.
@@ -42,6 +44,7 @@ namespace SiliconStudio.Presentation.ViewModel
             RemoveLoggerCommand = new AnonymousCommand<Logger>(serviceProvider, RemoveLogger);
             ClearLoggersCommand = new AnonymousCommand(serviceProvider, ClearLoggers);
             ClearMessagesCommand = new AsyncCommand(serviceProvider, ClearMessages);
+            ClearNewMessageFlagCommand = new AnonymousCommand(serviceProvider, () => HasNewMessages = false);
             messages.CollectionChanged += MessagesCollectionChanged;
         }
 
@@ -53,7 +56,7 @@ namespace SiliconStudio.Presentation.ViewModel
         public LoggerViewModel(IViewModelServiceProvider serviceProvider, Logger logger)
             : this(serviceProvider)
         {
-            if (logger == null) throw new ArgumentNullException("logger");
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
             Loggers.Add(logger, new List<ILogMessage>());
             logger.MessageLogged += MessageLogged;
         }
@@ -66,7 +69,7 @@ namespace SiliconStudio.Presentation.ViewModel
         public LoggerViewModel(IViewModelServiceProvider serviceProvider, IEnumerable<Logger> loggers)
             : this(serviceProvider)
         {
-            if (loggers == null) throw new ArgumentNullException("loggers");
+            if (loggers == null) throw new ArgumentNullException(nameof(loggers));
             foreach (var logger in loggers)
             {
                 Loggers.Add(logger, new List<ILogMessage>());
@@ -84,7 +87,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <summary>
         /// Gets the collection of messages currently contained in this view model.
         /// </summary>
-        public IReadOnlyObservableCollection<ILogMessage> Messages { get { return messages; } }
+        public IReadOnlyObservableCollection<ILogMessage> Messages => messages;
 
         /// <summary>
         /// Gets or sets the interval in milliseconds between updates of the <see cref="Messages"/> collection. When a message is logged into one of the loggers,
@@ -96,12 +99,19 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <summary>
         /// Gets whether the monitored logs have warnings.
         /// </summary>
+        /// <remarks>This property does not raise the <see cref="INotifyPropertyChanging.PropertyChanging"/> and <see cref="INotifyPropertyChanged.PropertyChanged"/> events.</remarks>
         public bool HasWarnings { get; private set; }
 
         /// <summary>
         /// Gets whether the monitored logs have errors.
         /// </summary>
+        /// <remarks>This property does not raise the <see cref="INotifyPropertyChanging.PropertyChanging"/> and <see cref="INotifyPropertyChanged.PropertyChanged"/> events.</remarks>
         public bool HasErrors { get; private set; }
+
+        /// <summary>
+        /// Gets whether the monitored logs have new messages.
+        /// </summary>
+        public bool HasNewMessages { get { return hasNewMessages; } private set { SetValue(ref hasNewMessages, value); } }
 
         /// <summary>
         /// Gets the command that will add a logger to monitor.
@@ -122,8 +132,12 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <summary>
         /// Gets the command that will clear the <see cref="Messages"/> collection.
         /// </summary>
-        public ICommandBase ClearMessagesCommand { get; private set; }
+        public ICommandBase ClearMessagesCommand { get; }
 
+        /// <summary>
+        /// Gets the command that will reset the <see cref="HasNewMessages"/> flag.
+        /// </summary>
+        public ICommandBase ClearNewMessageFlagCommand { get; }
         /// <summary>
         /// Adds a <see cref="Logger"/> to monitor.
         /// </summary>
@@ -270,6 +284,7 @@ namespace SiliconStudio.Presentation.ViewModel
                         }
                     }
                 }
+                HasNewMessages = true;
             }
             else
             {

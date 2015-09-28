@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Rendering
             PreRenderers = new SafeList<IGraphicsRenderer>();
             PostRenderers = new SafeList<IGraphicsRenderer>();
             CullingMask = EntityGroupMask.All;
-            CullingMode = CullingMode.Frustum;
+            CullingMode = CameraCullingMode.Frustum;
         }
 
         /// <summary>
@@ -67,8 +67,8 @@ namespace SiliconStudio.Paradox.Rendering
         /// <value>The culling mode.</value>
         /// <userdoc>The type of culling to perform on entities. Culling consist into skipping not visible or insignificant entities during rendering in order to improve performances.</userdoc>
         [DataMember(40)]
-        [DefaultValue(CullingMode.Frustum)]
-        public CullingMode CullingMode { get; set; }
+        [DefaultValue(CameraCullingMode.Frustum)]
+        public CameraCullingMode CullingMode { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating the current rendering is for picking or not.

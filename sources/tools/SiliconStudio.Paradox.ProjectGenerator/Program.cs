@@ -321,7 +321,7 @@ namespace SiliconStudio.Paradox.ProjectGenerator
             foreach (var solutionProject in solution.Projects.ToArray())
             {
                 // Is it really a project?
-                if (!solutionProject.FullPath.EndsWith(".csproj") && !solutionProject.FullPath.EndsWith(".vcxproj"))
+                if (!solutionProject.FullPath.EndsWith(".csproj") && !solutionProject.FullPath.EndsWith(".vcxproj") && !solutionProject.FullPath.EndsWith(".shproj"))
                     continue;
 
                 // Load XML project
@@ -511,7 +511,7 @@ namespace SiliconStudio.Paradox.ProjectGenerator
             }
             else if (platform == "Windows10")
             {
-                configurations.Add("Windows10", "Windows10");
+                configurations.Add("Windows10", "Any CPU");
                 needDeploy = true;
             }
             else if (platform == "iOS")

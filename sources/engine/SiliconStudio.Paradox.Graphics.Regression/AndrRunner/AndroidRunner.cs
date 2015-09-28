@@ -17,18 +17,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Sockets;
 using System.Reflection;
 using System.Threading.Tasks;
-using Android.App;
 using Android.Content;
-using Android.Widget;
 using NUnit.Framework.Api;
 using NUnit.Framework.Internal;
-using NUnitLite;
-using NUnit.Framework.Api;
-using NUnit.Framework.Internal;
-using NUnit.Framework.Internal.Commands;
 using NUnit.Framework.Internal.WorkItems;
 
 namespace Android.NUnitLite {
@@ -37,6 +30,7 @@ namespace Android.NUnitLite {
 		
 		private AndroidRunner ()
 		{
+		    writer = Console.Out;
 		}
 		
 		public bool AutoStart { get; set; }
@@ -45,44 +39,40 @@ namespace Android.NUnitLite {
 		
 		#region writer
 		
-		public TextWriter Writer { get; set; }
+		private TextWriter writer { get; set; }
 		
 		public bool OpenWriter (string message, Context activity)
 		{
 			DateTime now = DateTime.Now;
-			// let the application provide it's own TextWriter to ease automation with AutoStart property
-			if (Writer == null) {
-				Writer = Console.Out;
-			}
 
-			Writer.WriteLine ("[Runner executing:\t{0}]", message);
+			writer.WriteLine ("[Runner executing:\t{0}]", message);
 			// FIXME
-			Writer.WriteLine ("[M4A Version:\t{0}]", "???");
+			writer.WriteLine ("[M4A Version:\t{0}]", "???");
 			
-			Writer.WriteLine ("[Board:\t\t{0}]", Android.OS.Build.Board);
-			Writer.WriteLine ("[Bootloader:\t{0}]", Android.OS.Build.Bootloader);
-			Writer.WriteLine ("[Brand:\t\t{0}]", Android.OS.Build.Brand);
-			Writer.WriteLine ("[CpuAbi:\t{0} {1}]", Android.OS.Build.CpuAbi, Android.OS.Build.CpuAbi2);
-			Writer.WriteLine ("[Device:\t{0}]", Android.OS.Build.Device);
-			Writer.WriteLine ("[Display:\t{0}]", Android.OS.Build.Display);
-			Writer.WriteLine ("[Fingerprint:\t{0}]", Android.OS.Build.Fingerprint);
-			Writer.WriteLine ("[Hardware:\t{0}]", Android.OS.Build.Hardware);
-			Writer.WriteLine ("[Host:\t\t{0}]", Android.OS.Build.Host);
-			Writer.WriteLine ("[Id:\t\t{0}]", Android.OS.Build.Id);
-			Writer.WriteLine ("[Manufacturer:\t{0}]", Android.OS.Build.Manufacturer);
-			Writer.WriteLine ("[Model:\t\t{0}]", Android.OS.Build.Model);
-			Writer.WriteLine ("[Product:\t{0}]", Android.OS.Build.Product);
-			Writer.WriteLine ("[Radio:\t\t{0}]", Android.OS.Build.Radio);
-			Writer.WriteLine ("[Tags:\t\t{0}]", Android.OS.Build.Tags);
-			Writer.WriteLine ("[Time:\t\t{0}]", Android.OS.Build.Time);
-			Writer.WriteLine ("[Type:\t\t{0}]", Android.OS.Build.Type);
-			Writer.WriteLine ("[User:\t\t{0}]", Android.OS.Build.User);
-			Writer.WriteLine ("[VERSION.Codename:\t{0}]", Android.OS.Build.VERSION.Codename);
-			Writer.WriteLine ("[VERSION.Incremental:\t{0}]", Android.OS.Build.VERSION.Incremental);
-			Writer.WriteLine ("[VERSION.Release:\t{0}]", Android.OS.Build.VERSION.Release);
-			Writer.WriteLine ("[VERSION.Sdk:\t\t{0}]", Android.OS.Build.VERSION.Sdk);
-			Writer.WriteLine ("[VERSION.SdkInt:\t{0}]", Android.OS.Build.VERSION.SdkInt);
-			Writer.WriteLine ("[Device Date/Time:\t{0}]", now); // to match earlier C.WL output
+			writer.WriteLine ("[Board:\t\t{0}]", Android.OS.Build.Board);
+			writer.WriteLine ("[Bootloader:\t{0}]", Android.OS.Build.Bootloader);
+			writer.WriteLine ("[Brand:\t\t{0}]", Android.OS.Build.Brand);
+			writer.WriteLine ("[CpuAbi:\t{0} {1}]", Android.OS.Build.CpuAbi, Android.OS.Build.CpuAbi2);
+			writer.WriteLine ("[Device:\t{0}]", Android.OS.Build.Device);
+			writer.WriteLine ("[Display:\t{0}]", Android.OS.Build.Display);
+			writer.WriteLine ("[Fingerprint:\t{0}]", Android.OS.Build.Fingerprint);
+			writer.WriteLine ("[Hardware:\t{0}]", Android.OS.Build.Hardware);
+			writer.WriteLine ("[Host:\t\t{0}]", Android.OS.Build.Host);
+			writer.WriteLine ("[Id:\t\t{0}]", Android.OS.Build.Id);
+			writer.WriteLine ("[Manufacturer:\t{0}]", Android.OS.Build.Manufacturer);
+			writer.WriteLine ("[Model:\t\t{0}]", Android.OS.Build.Model);
+			writer.WriteLine ("[Product:\t{0}]", Android.OS.Build.Product);
+			writer.WriteLine ("[Radio:\t\t{0}]", Android.OS.Build.Radio);
+			writer.WriteLine ("[Tags:\t\t{0}]", Android.OS.Build.Tags);
+			writer.WriteLine ("[Time:\t\t{0}]", Android.OS.Build.Time);
+			writer.WriteLine ("[Type:\t\t{0}]", Android.OS.Build.Type);
+			writer.WriteLine ("[User:\t\t{0}]", Android.OS.Build.User);
+			writer.WriteLine ("[VERSION.Codename:\t{0}]", Android.OS.Build.VERSION.Codename);
+			writer.WriteLine ("[VERSION.Incremental:\t{0}]", Android.OS.Build.VERSION.Incremental);
+			writer.WriteLine ("[VERSION.Release:\t{0}]", Android.OS.Build.VERSION.Release);
+			writer.WriteLine ("[VERSION.Sdk:\t\t{0}]", Android.OS.Build.VERSION.Sdk);
+			writer.WriteLine ("[VERSION.SdkInt:\t{0}]", Android.OS.Build.VERSION.SdkInt);
+			writer.WriteLine ("[Device Date/Time:\t{0}]", now); // to match earlier C.WL output
 			
 			// FIXME: add data about how the app was compiled (e.g. ARMvX, LLVM, Linker options)
 
@@ -91,8 +81,6 @@ namespace Android.NUnitLite {
 		
 		public void CloseWriter ()
 		{
-			Writer.Close ();
-			Writer = null;
 		}
 
 		#endregion
@@ -100,8 +88,8 @@ namespace Android.NUnitLite {
 		public void TestStarted (ITest test)
 		{
 			if (test is TestSuite) {
-				Writer.WriteLine ();
-				Writer.WriteLine (test.Name);
+				writer.WriteLine ();
+				writer.WriteLine (test.Name);
 			}
 		}
 
@@ -112,49 +100,49 @@ namespace Android.NUnitLite {
             if (result.Test is TestSuite)
             {
                 if (!result.IsFailure() && !result.IsSuccess() && !result.IsInconclusive() && !result.IsIgnored())
-                    Writer.WriteLine("\t[INFO] {0}", result.Message);
+                    writer.WriteLine("\t[INFO] {0}", result.Message);
 
                 string name = result.Test.Name;
                 if (!String.IsNullOrEmpty(name))
-                    Writer.WriteLine("{0} : {1} ms", name, result.Duration.TotalMilliseconds);
+                    writer.WriteLine("{0} : {1} ms", name, result.Duration.TotalMilliseconds);
             }
             else
             {
                 if (result.IsSuccess())
                 {
-                    Writer.Write("\t[PASS] ");
+                    writer.Write("\t[PASS] ");
                 }
                 else if (result.IsIgnored())
                 {
-                    Writer.Write("\t[IGNORED] ");
+                    writer.Write("\t[IGNORED] ");
                 }
                 else if (result.IsFailure())
                 {
-                    Writer.Write("\t[FAIL] ");
+                    writer.Write("\t[FAIL] ");
                 }
                 else if (result.IsInconclusive())
                 {
-                    Writer.Write("\t[INCONCLUSIVE] ");
+                    writer.Write("\t[INCONCLUSIVE] ");
                 }
                 else
                 {
-                    Writer.Write("\t[INFO] ");
+                    writer.Write("\t[INFO] ");
                 }
-                Writer.Write(result.Test.Name);
+                writer.Write(result.Test.Name);
 
                 string message = result.Message;
                 if (!String.IsNullOrEmpty(message))
                 {
-                    Writer.Write(" : {0}", message.Replace("\r\n", "\\r\\n"));
+                    writer.Write(" : {0}", message.Replace("\r\n", "\\r\\n"));
                 }
-                Writer.WriteLine();
+                writer.WriteLine();
 
                 string stacktrace = result.StackTrace;
                 if (!String.IsNullOrEmpty(result.StackTrace))
                 {
                     string[] lines = stacktrace.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
                     foreach (string line in lines)
-                        Writer.WriteLine("\t\t{0}", line);
+                        writer.WriteLine("\t\t{0}", line);
                 }
             }
 	    }

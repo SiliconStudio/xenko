@@ -3,6 +3,8 @@
 using System;
 using System.Reflection;
 
+using SiliconStudio.Core.Reflection;
+
 namespace SiliconStudio.Core.Serialization.Serializers
 {
     public class PropertyInfoSerializer : DataSerializer<PropertyInfo>
@@ -19,7 +21,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
                 var declaringTypeName = stream.ReadString();
                 var propertyName = stream.ReadString();
 
-                var ownerType = Type.GetType(declaringTypeName);
+                var ownerType = AssemblyRegistry.GetType(declaringTypeName);
                 if (ownerType == null)
                     throw new InvalidOperationException("Could not find the appropriate type.");
 

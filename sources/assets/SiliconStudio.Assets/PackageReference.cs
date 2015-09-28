@@ -10,7 +10,7 @@ namespace SiliconStudio.Assets
     /// A reference to a local package loaded into the same <see cref="PackageSession"/>.
     /// </summary>
     [DataContract("PackageReference")]
-    public sealed class PackageReference
+    public sealed class PackageReference : PackageReferenceBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PackageReference"/> class.

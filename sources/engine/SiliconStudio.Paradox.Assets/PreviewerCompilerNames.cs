@@ -9,12 +9,10 @@ namespace SiliconStudio.Paradox.Assets
     {
         // TODO: This will removed
         [Obsolete]
-        private const string SharedAssemblyQualifiedName = "Version=0.1.0.0, Culture=neutral, PublicKeyToken=null";
-        [Obsolete]
         private const string PreviewAssemblyName = "SiliconStudio.Paradox.GameStudio.Plugin";
 
         [Obsolete]
-        private const string PreviewAssemblyQualifiedName = ", " + PreviewAssemblyName + ", " + SharedAssemblyQualifiedName;
+        private const string PreviewAssemblyQualifiedName = ", " + PreviewAssemblyName;
 
         [Obsolete]
         private const string ThumbnailCompilersNamespace = "SiliconStudio.Paradox.GameStudio.Plugin.ThumbnailCompilers.";
@@ -41,5 +39,7 @@ namespace SiliconStudio.Paradox.Assets
         public const string ProceduralModelThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "ProceduralModelThumbnailCompiler" + PreviewAssemblyQualifiedName;
         [Obsolete]
         public const string GameSettingsThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "GameSettingsThumbnailCompiler" + PreviewAssemblyQualifiedName;
+        [Obsolete]
+        public const string ScriptSourceFileThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "ScriptSourceFileThumbnailCompiler" + PreviewAssemblyQualifiedName;
     }
 }

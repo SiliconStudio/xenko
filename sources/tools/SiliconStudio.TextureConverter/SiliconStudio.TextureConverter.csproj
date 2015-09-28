@@ -41,6 +41,7 @@
     <Compile Include="Backend\Requests\AtlasExtractionRequest.cs" />
     <Compile Include="Backend\Requests\AtlasUpdateRequest.cs" />
     <Compile Include="Backend\Requests\ColorKeyRequest.cs" />
+    <Compile Include="Backend\Requests\ConvertingRequest.cs" />
     <Compile Include="Backend\Requests\CubeCreationRequest.cs" />
     <Compile Include="Backend\Requests\FlippingSubRequest.cs" />
     <Compile Include="Backend\Requests\GammaCorrectionRequest.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="Backend\TexLibraries\DxtTexLib.cs" />
     <Compile Include="Backend\TexLibraries\ParadoxTexLibrary.cs" />
     <Compile Include="Backend\TexLibraries\PvrttTexLib.cs" />
+    <Compile Include="Frontend\AlphaLevels.cs" />
     <Compile Include="Frontend\Enumeration\Filter.cs" />
     <Compile Include="Backend\Tools.cs" />
     <Compile Include="Backend\Wrappers\AtitcNetWrapper.cs" />

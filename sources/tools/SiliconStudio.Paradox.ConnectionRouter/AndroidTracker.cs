@@ -24,6 +24,11 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             // Start new devices
             int startLocalPort = 51153; // Use ports in the dynamic port range
 
+            // Check if ADB is on the path
+            var adbPath = AndroidDeviceEnumerator.GetAdbPath();
+            if (adbPath == null)
+                return;
+
             // Wait and process android device changes events
             while (true)
             {
@@ -39,7 +44,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                     // First, try adb reverse port mapping (supported on newest adb+device)
                     // This is the best solution, as nothing specific needs to be done.
                     // NOTE: disabled for now, as it's difficult to know what to try first from the device itself.
-                    //var output = ShellHelper.RunProcessAndGetOutput(@"adb", string.Format(@"-s {0} reverse tcp:{1} tcp:{2}", newAndroidDevice, LocalPort, LocalPort));
+                    //var output = ShellHelper.RunProcessAndGetOutput(AndroidDeviceEnumerator.GetAdbPath(), string.Format(@"-s {0} reverse tcp:{1} tcp:{2}", newAndroidDevice, LocalPort, LocalPort));
                     //if (output.ExitCode == 0)
                     //    continue;
 
@@ -52,7 +57,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                         if (startLocalPort >= 65536) // Make sure we stay in the range of dynamic ports: 49152-65535
                             startLocalPort = 49152;
 
-                        var output = ShellHelper.RunProcessAndGetOutput(@"adb", string.Format(@"-s {0} forward tcp:{1} tcp:{2}", connectedDevice.Key, testedLocalPort, RouterClient.DefaultListenPort));
+                        var output = ShellHelper.RunProcessAndGetOutput(adbPath, string.Format(@"-s {0} forward tcp:{1} tcp:{2}", connectedDevice.Key, testedLocalPort, RouterClient.DefaultListenPort));
 
                         if (output.ExitCode == 0)
                         {

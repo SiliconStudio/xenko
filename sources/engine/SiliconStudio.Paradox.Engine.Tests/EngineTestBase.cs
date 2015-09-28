@@ -7,6 +7,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Rendering.Composers;
 using SiliconStudio.Paradox.Graphics.Regression;
+using SiliconStudio.Paradox.Rendering.Colors;
 using SiliconStudio.Paradox.Rendering.Lights;
 
 namespace SiliconStudio.Paradox.Engine.Tests
@@ -60,7 +61,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             Scene = new Scene { Settings = { GraphicsCompositor = graphicsCompositor } };
             Scene.AddChild(Camera);
 
-            var ambientLight = new Entity { new LightComponent { Type = new LightAmbient { Color = new LightColorRgb(Color.White) }, Intensity = 1 } };
+            var ambientLight = new Entity { new LightComponent { Type = new LightAmbient { Color = new ColorRgbProvider(Color.White) }, Intensity = 1 } };
             Scene.AddChild(ambientLight);
 
             SceneSystem.SceneInstance = new SceneInstance(Services, Scene);

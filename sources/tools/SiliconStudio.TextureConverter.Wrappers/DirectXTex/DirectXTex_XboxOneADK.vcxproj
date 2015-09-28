@@ -52,7 +52,7 @@
     <ClCompile Include="DirectXTexWIC.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <RootNamespace>DirectXTex_XboxOneADK</RootNamespace>
+    <RootNamespace>DirectXTex</RootNamespace>
     <ProjectGuid>{8f6cd012-9ad4-4ee1-9cbe-7b112e5ceb39}</ProjectGuid>
     <DefaultLanguage>en-US</DefaultLanguage>
     <Keyword>Win32Proj</Keyword>
@@ -65,7 +65,6 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <PlatformToolset>v110</PlatformToolset>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <EmbedManifest>false</EmbedManifest>
     <GenerateManifest>false</GenerateManifest>
@@ -74,7 +73,6 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <PlatformToolset>v110</PlatformToolset>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <EmbedManifest>false</EmbedManifest>
     <GenerateManifest>false</GenerateManifest>

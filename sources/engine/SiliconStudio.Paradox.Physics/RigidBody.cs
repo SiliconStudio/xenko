@@ -172,10 +172,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <value>
         /// The total torque.
         /// </value>
-        public Vector3 TotalTorque
-        {
-            get { return InternalRigidBody.TotalTorque; }
-        }
+        public Vector3 TotalTorque => InternalRigidBody.TotalTorque;
 
         /// <summary>
         /// Applies the impulse.
@@ -263,10 +260,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <value>
         /// The total force.
         /// </value>
-        public Vector3 TotalForce
-        {
-            get { return InternalRigidBody.TotalForce; }
-        }
+        public Vector3 TotalForce => InternalRigidBody.TotalForce;
 
         /// <summary>
         /// Gets or sets the angular factor.
@@ -313,18 +307,39 @@ namespace SiliconStudio.Paradox.Physics
                         if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.StaticObject)) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.StaticObject;
                         if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.KinematicObject)) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.KinematicObject;
                         if(InternalRigidBody != null && Simulation != null && !OverrideGravity) InternalRigidBody.Gravity = Simulation.Gravity;
+                        if (InternalRigidBody != null)
+                        {
+                            InternalRigidBody.InterpolationAngularVelocity = Vector3.Zero;
+                            InternalRigidBody.LinearVelocity = Vector3.Zero;
+                            InternalRigidBody.InterpolationAngularVelocity = Vector3.Zero;
+                            InternalRigidBody.AngularVelocity = Vector3.Zero;
+                        }
                         break;
 
                     case RigidBodyTypes.Static:
                         if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.KinematicObject)) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.KinematicObject;
                         InternalRigidBody.CollisionFlags |= BulletSharp.CollisionFlags.StaticObject;
                         if (InternalRigidBody != null && !OverrideGravity) InternalRigidBody.Gravity = Vector3.Zero;
+                        if (InternalRigidBody != null)
+                        {
+                            InternalRigidBody.InterpolationAngularVelocity = Vector3.Zero;
+                            InternalRigidBody.LinearVelocity = Vector3.Zero;
+                            InternalRigidBody.InterpolationAngularVelocity = Vector3.Zero;
+                            InternalRigidBody.AngularVelocity = Vector3.Zero;
+                        }
                         break;
 
                     case RigidBodyTypes.Kinematic:
                         if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.StaticObject)) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.StaticObject;
                         InternalRigidBody.CollisionFlags |= BulletSharp.CollisionFlags.KinematicObject;
                         if (InternalRigidBody != null && !OverrideGravity) InternalRigidBody.Gravity = Vector3.Zero;
+                        if (InternalRigidBody != null)
+                        {
+                            InternalRigidBody.InterpolationAngularVelocity = Vector3.Zero;
+                            InternalRigidBody.LinearVelocity = Vector3.Zero;
+                            InternalRigidBody.InterpolationAngularVelocity = Vector3.Zero;
+                            InternalRigidBody.AngularVelocity = Vector3.Zero;
+                        }
                         break;
                 }
             }

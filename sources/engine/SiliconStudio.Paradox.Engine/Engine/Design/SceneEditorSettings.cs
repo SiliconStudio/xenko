@@ -22,7 +22,6 @@ namespace SiliconStudio.Paradox.Engine.Design
         {
             GridColor = (Color3)new Color(180, 180, 180);
             SceneUnit = 1.0f;
-            Camera = new SceneEditorCameraSettings();
             Mode = new SceneEditorGraphicsModeLDRSettings();
         }
 
@@ -41,16 +40,6 @@ namespace SiliconStudio.Paradox.Engine.Design
         /// <userdoc>The scene unit, used to scale gizmos and camera speed.</userdoc>
         [DataMember(7)]
         public float SceneUnit { get; set; }
-
-        /// <summary>
-        /// Gets or sets the camera.
-        /// </summary>
-        /// <value>The camera.</value>
-        /// <userdoc>The settings for the camera used in the scene editor</userdoc>
-        [DataMember(10)]
-        [NotNull]
-        [Display("Camera", Expand = ExpandRule.Always)]
-        public SceneEditorCameraSettings Camera { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to use HDR when displaying a scene in the editor.

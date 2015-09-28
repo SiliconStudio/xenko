@@ -7,7 +7,7 @@ namespace SiliconStudio.Core.MicroThreading
 {
     public struct MicroThreadYieldAwaiter : INotifyCompletion
     {
-        private MicroThread microThread;
+        private readonly MicroThread microThread;
 
         public MicroThreadYieldAwaiter(MicroThread microThread)
         {
@@ -23,16 +23,19 @@ namespace SiliconStudio.Core.MicroThreading
         {
             get
             {
-                lock (microThread.Scheduler.scheduledMicroThreads)
+                if (microThread.IsOver)
+                    return true;
+
+                lock (microThread.Scheduler.scheduledEntries)
                 {
-                    return microThread.Scheduler.scheduledMicroThreads.Count == 0;
+                    return microThread.Scheduler.scheduledEntries.Count == 0;
                 }
             }
         }
 
         public void GetResult()
         {
-            // Check Task Result (exception, etc...)
+            microThread.CancellationToken.ThrowIfCancellationRequested();
         }
 
         public void OnCompleted(Action continuation)

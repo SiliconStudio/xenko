@@ -88,6 +88,8 @@ namespace SiliconStudio.Paradox.Games
 
         private bool isReallyFullScreen;
 
+        private ColorSpace preferredColorSpace;
+
         #endregion
 
         #region Constructors and Destructors
@@ -109,6 +111,7 @@ namespace SiliconStudio.Paradox.Games
 
             // Defines all default values
             SynchronizeWithVerticalRetrace = true;
+            PreferredColorSpace = ColorSpace.Linear;
             PreferredBackBufferFormat = PixelFormat.R8G8B8A8_UNorm;;
             PreferredDepthStencilFormat = PixelFormat.D24_UNorm_S8_UInt;
             preferredBackBufferWidth = DefaultBackBufferWidth;
@@ -197,6 +200,26 @@ namespace SiliconStudio.Paradox.Games
         /// </summary>
         /// <value>The device creation flags.</value>
         public DeviceCreationFlags DeviceCreationFlags { get; set; }
+
+        /// <summary>
+        /// Gets or sets the default color space.
+        /// </summary>
+        /// <value>The default color space.</value>
+        public ColorSpace PreferredColorSpace
+        {
+            get
+            {
+                return preferredColorSpace;
+            }
+            set
+            {
+                if (preferredColorSpace != value)
+                {
+                    preferredColorSpace = value;
+                    deviceSettingsChanged = true;
+                }
+            }
+        }
 
         /// <summary>
         /// Sets the preferred graphics profile.
@@ -601,7 +624,34 @@ namespace SiliconStudio.Paradox.Games
                     PreferMultiSampling = PreferMultiSampling,
                     SynchronizeWithVerticalRetrace = SynchronizeWithVerticalRetrace,
                     PreferredGraphicsProfile = (GraphicsProfile[])PreferredGraphicsProfile.Clone(),
-                };
+                    ColorSpace = PreferredColorSpace
+            };
+
+            // Remap to Srgb backbuffer if necessary
+            if (PreferredColorSpace == ColorSpace.Linear)
+            {
+                // If the device support SRgb and ColorSpace is linear, we use automatically a SRgb backbuffer
+                if (preferredParameters.PreferredBackBufferFormat == PixelFormat.R8G8B8A8_UNorm)
+                {
+                    preferredParameters.PreferredBackBufferFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
+                }
+                else if (preferredParameters.PreferredBackBufferFormat == PixelFormat.B8G8R8A8_UNorm)
+                {
+                    preferredParameters.PreferredBackBufferFormat = PixelFormat.B8G8R8A8_UNorm_SRgb;
+                }
+            }
+            else
+            {
+                // If we are looking for gamma and the backbuffer format is SRgb, switch back to non srgb
+                if (preferredParameters.PreferredBackBufferFormat == PixelFormat.R8G8B8A8_UNorm_SRgb)
+                {
+                    preferredParameters.PreferredBackBufferFormat = PixelFormat.R8G8B8A8_UNorm;
+                }
+                else if (preferredParameters.PreferredBackBufferFormat == PixelFormat.B8G8R8A8_UNorm_SRgb)
+                {
+                    preferredParameters.PreferredBackBufferFormat = PixelFormat.B8G8R8A8_UNorm;
+                }
+            }
 
             // Setup resized value if there is a resize pending
             if (!IsFullScreen && isBackBufferToResize)
@@ -988,6 +1038,9 @@ namespace SiliconStudio.Paradox.Games
                         throw new InvalidOperationException("Unexpected null GraphicsDevice");
                     }
 
+                    // Make sure to copy back coolor space to GraphicsDevice
+                    GraphicsDevice.ColorSpace = graphicsDeviceInformation.PresentationParameters.ColorSpace;
+
                     var presentationParameters = GraphicsDevice.Presenter.Description;
                     isReallyFullScreen = presentationParameters.IsFullScreen;
                     if (presentationParameters.BackBufferWidth != 0)
@@ -999,7 +1052,6 @@ namespace SiliconStudio.Paradox.Games
                     {
                         height = presentationParameters.BackBufferHeight;
                     }
-
                     deviceSettingsChanged = false;
                 }
                 finally

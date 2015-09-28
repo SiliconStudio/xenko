@@ -76,6 +76,23 @@ namespace SiliconStudio.Assets.Analysis
                 ProcessPackageUPaths();
             }
 
+            if (Parameters.IsProcessingAssetReferences)
+            {
+                ProcessRootAssetReferences(package.RootAssets, package, log);
+                foreach (var dependency in package.LocalDependencies)
+                {
+                    var referencedPackage = package.Session.Packages.Find(dependency.Id);
+                    if (referencedPackage != null)
+                        ProcessRootAssetReferences(dependency.RootAssets, referencedPackage, log);
+                }
+                foreach (var dependency in package.Meta.Dependencies)
+                {
+                    var referencedPackage = package.Session.Packages.Find(dependency);
+                    if (referencedPackage != null)
+                        ProcessRootAssetReferences(dependency.RootAssets, referencedPackage, log);
+                }
+            }
+
             ProcessAssets().CopyTo(log);
         }
 
@@ -159,6 +176,52 @@ namespace SiliconStudio.Assets.Analysis
 
             var packageReferenceLinks = AssetReferenceAnalysis.Visit(package);
             CommonAnalysis.UpdatePaths(package, packageReferenceLinks.Where(link => link.Reference is UPath), Parameters);
+        }
+
+        /// <summary>
+        /// Fix and/or remove invalid RootAssets entries.
+        /// Note: at some point, we might want to make IContentReference be part of the same workflow as standard asset references.
+        /// </summary>
+        /// <param name="rootAssets">The root assets to check.</param>
+        /// <param name="referencedPackage">The package where to look for root reference.</param>
+        /// <param name="log">The logger.</param>
+        private void ProcessRootAssetReferences(RootAssetCollection rootAssets, Package referencedPackage, ILogger log)
+        {
+            foreach (var rootAsset in rootAssets.ToArray())
+            {
+                // Update Asset references (AssetReference, AssetBase, ContentReference)
+                var id = rootAsset.Id;
+                var newItemReference = referencedPackage.Assets.Find(id);
+
+                // If asset was not found by id try to find by its location
+                if (newItemReference == null)
+                {
+                    newItemReference = referencedPackage.Assets.Find(rootAsset.Location);
+                    if (newItemReference != null)
+                    {
+                        // If asset was found by its location, just emit a warning
+                        log.Warning(package, rootAsset, AssetMessageCode.AssetReferenceChanged, rootAsset, newItemReference.Id);
+                    }
+                }
+
+                // If asset was not found, remove the reference
+                if (newItemReference == null)
+                {
+                    log.Warning(package, rootAsset, AssetMessageCode.AssetNotFound, rootAsset);
+                    rootAssets.Remove(rootAsset.Id);
+                    package.IsDirty = true;
+                    continue;
+                }
+
+                // Only update location that are actually different
+                var newLocationWithoutExtension = newItemReference.Location;
+                if (newLocationWithoutExtension != rootAsset.Location || newItemReference.Id != rootAsset.Id)
+                {
+                    rootAssets.Remove(rootAsset.Id);
+                    rootAssets.Add(new AssetReference<Asset>(newItemReference.Id, newLocationWithoutExtension));
+                    package.IsDirty = true;
+                }
+            }
         }
 
         public LoggerResult ProcessAssets()

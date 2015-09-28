@@ -8,6 +8,15 @@ namespace SiliconStudio.Core.Mathematics
     public static class VectorExtensions
     {
         /// <summary>
+        /// Return the Y/X components of the vector in the inverse order.
+        /// </summary>
+        /// <param name="vector">the input vector</param>
+        public static Vector2 YX(this Vector2 vector)
+        {
+            return new Vector2(vector.Y, vector.X);
+        }
+
+        /// <summary>
         /// Return the X/Y components of the vector.
         /// </summary>
         /// <param name="vector">the input vector</param>

@@ -97,8 +97,9 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
         /// </summary>
         /// <param name="fontFactory">The font factory used to create the fonts</param>
         /// <param name="fontAsset">The font description.</param>
+        /// <param name="srgb"></param>
         /// <returns>A SpriteFontData object.</returns>
-        public static Graphics.SpriteFont Compile(IFontFactory fontFactory, SpriteFontAsset fontAsset)
+        public static Graphics.SpriteFont Compile(IFontFactory fontFactory, SpriteFontAsset fontAsset, bool srgb)
         {
             if(fontAsset.IsDynamic)
                 throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for static fonts");
@@ -136,7 +137,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
                 }
             }
 
-            return StaticSpriteFontWriter.CreateSpriteFontData(fontFactory, fontAsset, glyphs, lineSpacing, baseLine, bitmap);
+            return StaticSpriteFontWriter.CreateSpriteFontData(fontFactory, fontAsset, glyphs, lineSpacing, baseLine, bitmap, srgb);
         }
 
         static Glyph[] ImportFont(SpriteFontAsset options, out float lineSpacing, out float baseLine)

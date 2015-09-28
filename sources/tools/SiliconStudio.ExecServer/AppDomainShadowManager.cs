@@ -48,10 +48,11 @@ namespace SiliconStudio.ExecServer
         /// <summary>
         /// Runs the assembly with the specified arguments.xit
         /// </summary>
+        /// <param name="workingDirectory">The working directory.</param>
         /// <param name="args">The main arguments.</param>
         /// <param name="logger">The logger.</param>
         /// <returns>System.Int32.</returns>
-        public int Run(string[] args, IServerLogger logger)
+        public int Run(string workingDirectory, string[] args, IServerLogger logger)
         {
             lock (disposingLock)
             {
@@ -60,22 +61,23 @@ namespace SiliconStudio.ExecServer
                     logger.OnLog("Error, server is being shutdown, cannot run Compiler", ConsoleColor.Red);
                     return 1;
                 }
+            }
 
-                AppDomainShadow shadowDomain = null;
-                try
+
+            AppDomainShadow shadowDomain = null;
+            try
+            {
+                shadowDomain = GetOrNew(IsCachingAppDomain);
+                return shadowDomain.Run(workingDirectory, args, logger);
+            }
+            finally
+            {
+                if (shadowDomain != null)
                 {
-                    shadowDomain = GetOrNew(IsCachingAppDomain);
-                    return shadowDomain.Run(args, logger);
-                }
-                finally
-                {
-                    if (shadowDomain != null)
+                    shadowDomain.EndRun();
+                    if (!IsCachingAppDomain)
                     {
-                        shadowDomain.EndRun();
-                        if (!IsCachingAppDomain)
-                        {
-                            shadowDomain.Dispose();
-                        }
+                        shadowDomain.Dispose();
                     }
                 }
             }

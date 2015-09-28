@@ -2,6 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 
+using SiliconStudio.Core.Reflection;
+
 namespace SiliconStudio.Core.Serialization.Serializers
 {
     [DataSerializerGlobal(typeof(TypeSerializer))]
@@ -16,7 +18,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             else
             {
                 var typeName = stream.ReadString();
-                type = Type.GetType(typeName);
+                type = AssemblyRegistry.GetType(typeName);
             }
         }
     }

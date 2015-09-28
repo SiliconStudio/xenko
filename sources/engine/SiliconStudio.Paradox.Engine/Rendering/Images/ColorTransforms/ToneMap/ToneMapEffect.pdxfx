@@ -8,9 +8,10 @@ namespace SiliconStudio.Paradox.Rendering.Images
     shader ToneMapEffect
     {
         using params ColorTransformKeys;
+        using params ToneMapKeys;
 
         // Mixin 
-        mixin ToneMapShader;
+        mixin ToneMapShader<ToneMapKeys.AutoKey, ToneMapKeys.AutoExposure>;
         mixin compose ToneMapOperator = ColorTransformKeys.Shader;
     };
 }

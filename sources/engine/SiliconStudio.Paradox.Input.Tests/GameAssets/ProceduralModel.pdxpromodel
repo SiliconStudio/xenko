@@ -1,0 +1,7 @@
+!ProceduralModelAsset
+Id: 7f74ef46-cba9-4feb-b94a-1d1d056f4d4c
+SerializedVersion: 4
+Tags: []
+Type: !TeapotProceduralModel
+    MaterialInstance:
+        Material: db59d494-42a0-4470-aadf-5c629cd67e3f:Material

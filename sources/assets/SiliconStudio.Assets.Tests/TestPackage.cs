@@ -61,6 +61,7 @@ namespace SiliconStudio.Assets.Tests
             Assert.AreEqual(project.Id, project2.Id);
             Assert.IsTrue(project2.Profiles.Count > 0);
             Assert.IsTrue(project2.Profiles.First().AssetFolders.Count > 0);
+            Assert.AreEqual(project2, project2Result.Session.CurrentPackage); // Check that the current package is setup when loading a single package
             var sourceFolder = project.Profiles.First().AssetFolders.First().Path;
             Assert.AreEqual(sourceFolder, project2.Profiles.First().AssetFolders.First().Path);
 
@@ -122,9 +123,6 @@ namespace SiliconStudio.Assets.Tests
             Assert.NotNull(folder);
             Assert.NotNull(folder.Path);
             Assert.NotNull(folder.Path.IsAbsolute);
-            var import = folder.RawImports.FirstOrDefault();
-            Assert.NotNull(import);
-            Assert.IsTrue(import.SourceDirectory != null && import.SourceDirectory.IsRelative);
 
             // Save project back to disk on a different location
             project.FullPath = Path.Combine(DirectoryTestBase, @"TestPackage2\TestPackage2.pdxpkg");

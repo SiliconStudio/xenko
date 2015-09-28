@@ -287,7 +287,7 @@ namespace SiliconStudio.Paradox.Rendering
             var pixelFormat = PixelFormat.None;
             if (description.Format == RenderFrameFormat.LDR)
             {
-                pixelFormat = PixelFormat.R8G8B8A8_UNorm;
+                pixelFormat = device.ColorSpace == ColorSpace.Linear ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm;
             }
             else if (description.Format == RenderFrameFormat.HDR)
             {

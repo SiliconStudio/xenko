@@ -32,7 +32,7 @@ namespace SiliconStudio.TextureConverter
         private List<ITexLibrary> textureLibraries;
 
         private static Logger Log = GlobalLogger.GetLogger("TextureTool");
-
+        
         static TextureTool()
         {
             NativeLibrary.PreloadLibrary("AtitcWrapper.dll");
@@ -343,14 +343,14 @@ namespace SiliconStudio.TextureConverter
         /// Loads the specified image of the class <see cref="SiliconStudio.Paradox.Graphics.Image"/>.
         /// </summary>
         /// <param name="image">The image.</param>
+        /// <param name="isSRgb">Indicate if the input file contains sRGB data</param>
         /// <remarks>The ownership of the provided image is not taken by the tex tool. The user has to dispose it him-self</remarks>
         /// <returns>An instance of the class <see cref="TexImage"/> containing your loaded image</returns>
-        public TexImage Load(Image image)
+        public TexImage Load(Image image, bool isSRgb = false)
         {
             if (image == null) throw new ArgumentNullException("image");
-            return Load(new LoadingRequest(image));
+            return Load(new LoadingRequest(image, isSRgb));
         }
-
 
         /// <summary>
         /// Loads the specified request.
@@ -384,14 +384,21 @@ namespace SiliconStudio.TextureConverter
         /// <param name="isSRgb">Indicate is the image to decompress is an sRGB image</param>
         public void Decompress(TexImage image, bool isSRgb)
         {
-            if (!image.Format.IsCompressed())
+            if (image.Format.IsCompressed())
             {
-                return;
+                ExecuteRequest(image, new DecompressingRequest(isSRgb, image.Format));
             }
-
-            ExecuteRequest(image, new DecompressingRequest(isSRgb, image.Format));
         }
 
+        /// <summary>
+        /// Converts the <see cref="TexImage"/> to the specified destination pixelformat.
+        /// </summary>
+        /// <param name="image">The <see cref="TexImage"/>.</param>
+        /// <param name="destinationFormat">The destination pixel format</param>
+        public void Convert(TexImage image, PixelFormat destinationFormat)
+        {
+            ExecuteRequest(image, new ConvertingRequest(destinationFormat));
+        }
 
         /// <summary>
         /// Saves the specified <see cref="TexImage"/> into a file.
@@ -669,6 +676,9 @@ namespace SiliconStudio.TextureConverter
         /// <returns>The <see cref="TexImage"/> containing the alpha component as rgb color. Note: it is the user responsibility to dispose the returned image.</returns>
         public unsafe TexImage CreateImageFromAlphaComponent(TexImage texImage)
         {
+            if (texImage.Dimension != TexImage.TextureDimension.Texture2D || texImage.Format.IsCompressed())
+                throw new NotImplementedException();
+
             var alphaImage = (TexImage)texImage.Clone(true);
 
             var rowPtr = alphaImage.Data;
@@ -687,6 +697,254 @@ namespace SiliconStudio.TextureConverter
             }
 
             return alphaImage;
+        }
+
+        private enum EdgeDirection
+        {
+            Left = 0,
+            Top = 1,
+            Right = 2,
+            Bottom = 3,
+        }
+
+        private int RotationDirection(EdgeDirection previousDirection, EdgeDirection currentDirection)
+        {
+            if (currentDirection == EdgeDirection.Left && previousDirection == EdgeDirection.Bottom)
+                return 1;
+
+            if (currentDirection == EdgeDirection.Bottom && previousDirection == EdgeDirection.Left)
+                return -1;
+
+            return currentDirection - previousDirection;
+        }
+
+        /// <summary>
+        /// Transform a integer encoded as Rgba to Bgra.
+        /// </summary>
+        /// <param name="value">The input value</param>
+        /// <returns>The swapped value</returns>
+        private static uint RgbaToBgra(uint value)
+        {
+            var b1 = (value >> 0) & 0xff;
+            var b2 = (value >> 8) & 0xff;
+            var b3 = (value >> 16) & 0xff;
+            var b4 = (value >> 24) & 0xff;
+
+            return b4 << 24 | b1 << 16 | b2 << 8 | b3 << 0;
+        }
+
+        /// <summary>
+        /// Gets the alpha levels of the image in the provided region.
+        /// </summary>
+        /// <param name="texture">The texture</param>
+        /// <param name="region">The region of the texture to analyze</param>
+        /// <param name="tranparencyColor">The color used as transparent color. If null use standard alpha channel.</param>
+        /// <param name="logger">The logger used to log information</param>
+        /// <returns></returns>
+        public unsafe AlphaLevels GetAlphaLevels(TexImage texture, Rectangle region, Color? tranparencyColor, ILogger logger = null)
+        {
+            // quick escape when it is possible to know the absence of alpha from the file itself
+            var alphaDepth = texture.GetAlphaDepth();
+            if(!tranparencyColor.HasValue && alphaDepth == 0)
+                return AlphaLevels.NoAlpha;
+
+            // check that we support the format
+            var format = texture.Format;
+            var pixelSize = format.SizeInBytes();
+            if (texture.Dimension != TexImage.TextureDimension.Texture2D || !(format.IsRGBAOrder() || format.IsBGRAOrder() || pixelSize != 4))
+            {
+                var guessedAlphaLevel = alphaDepth > 0 ? AlphaLevels.InterpolatedAlpha : AlphaLevels.NoAlpha;
+                logger?.Debug("Impossible to find alpha levels for texture type {0}. Returning default alpha level '{1}'.", format, guessedAlphaLevel);
+                return guessedAlphaLevel;
+            }
+
+            // truncate the provided region in order to be sure to be in the texture
+            region.Width = Math.Min(region.Width, texture.Width - region.Left);
+            region.Height = Math.Min(region.Height, texture.Height- region.Top);
+
+            var alphaLevel = AlphaLevels.NoAlpha;
+            var stride = texture.RowPitch;
+            var startPtr = (byte*)texture.Data + stride * region.Y + pixelSize * region.X;
+            var rowPtr = startPtr;
+
+            if (tranparencyColor.HasValue) // specific case when using a transparency color
+            {
+                var transparencyValue = format.IsRGBAOrder() ? tranparencyColor.Value.ToRgba() : tranparencyColor.Value.ToBgra();
+                
+                for (int y = 0; y < region.Height; ++y)
+                {
+                    var ptr = (int*)rowPtr;
+
+                    for (int x = 0; x < region.Width; x++)
+                    {
+                        if (*ptr == transparencyValue)
+                            return AlphaLevels.MaskAlpha;
+
+                        ptr += 1;
+                    }
+                    rowPtr += stride;
+                }
+            }
+            else // use default alpha channel
+            {
+                for (int y = 0; y < region.Height; ++y)
+                {
+                    var ptr = rowPtr+3;
+
+                    for (int x = 0; x < region.Width; x++)
+                    {
+                        var value = *ptr;
+                        if (value == 0)
+                        {
+                            if (alphaDepth == 1)
+                                return AlphaLevels.MaskAlpha;
+
+                            alphaLevel = AlphaLevels.MaskAlpha;
+                        }
+                        else if (value != 0xff)
+                        {
+                            return AlphaLevels.InterpolatedAlpha;
+                        }
+
+                        ptr += 4;
+                    }
+                    rowPtr += stride;
+                }
+            }
+
+            return alphaLevel;
+        }
+
+        /// <summary>
+        /// Pick the color under the specified pixel.
+        /// </summary>
+        /// <param name="texture">The texture</param>
+        /// <param name="pixel">The coordinate of the pixel</param>
+        public unsafe Color PickColor(TexImage texture, Int2 pixel)
+        {
+            if (texture == null) throw new ArgumentNullException(nameof(texture));
+
+            var format = texture.Format;
+            if (texture.Dimension != TexImage.TextureDimension.Texture2D || !(format.IsRGBAOrder() || format.IsBGRAOrder() || format.SizeInBytes() != 4))
+                throw new NotImplementedException();
+
+            // check that the pixel is inside the texture
+            var textureRegion = new Rectangle(0, 0, texture.Width, texture.Height);
+            if (!textureRegion.Contains(pixel))
+                throw new ArgumentException("The provided pixel coordinate is outside of the texture");
+
+            var ptr = (uint*)texture.Data;
+            var stride = texture.RowPitch / 4;
+
+            var pixelColorInt = ptr[stride*pixel.Y + pixel.X];
+            var pixelColor = format.IsRGBAOrder() ? Color.FromRgba(pixelColorInt) : Color.FromBgra(pixelColorInt);
+
+            return pixelColor;
+        }
+
+        /// <summary>
+        /// Find the region of the texture containing the sprite under the specified pixel.
+        /// </summary>
+        /// <param name="texture">The texture containing the sprite</param>
+        /// <param name="pixel">The coordinate of the pixel specifying the sprite</param>
+        /// <param name="separatorColor">The separator color that delimit the sprites. If null the <see cref="Color.Transparent"/> color is used</param>
+        /// <param name="separatorMask">The mask specifying which bits of the color should be checked. The bits are ordered as AABBGGRR.</param>
+        /// <returns></returns>
+        public unsafe Rectangle FindSpriteRegion(TexImage texture, Int2 pixel, Color? separatorColor = null, uint separatorMask = 0xff000000)
+        {
+            if (texture == null) throw new ArgumentNullException(nameof(texture));
+
+            var format = texture.Format;
+            if (texture.Dimension != TexImage.TextureDimension.Texture2D || !(format.IsRGBAOrder() || format.IsBGRAOrder() || format.SizeInBytes() != 4))
+                throw new NotImplementedException();
+
+            // adjust the separator color the mask depending on the color format.
+            var separator = (uint)(separatorColor ?? Color.Transparent).ToRgba();
+            if(texture.Format.IsBGRAOrder())
+            {
+                separator = RgbaToBgra(separator);
+                separatorMask = RgbaToBgra(separatorMask);
+            }
+            var maskedSeparator = separator & separatorMask;
+            
+            var ptr = (uint*)texture.Data;
+            var stride = texture.RowPitch / 4;
+
+            // check for empty region (provided pixel is not valid)
+            var textureRegion = new Rectangle(0, 0, texture.Width, texture.Height);
+            if (!textureRegion.Contains(pixel) || (ptr[pixel.Y * stride + pixel.X] & separatorMask) == maskedSeparator)
+                return new Rectangle(pixel.X, pixel.Y, 0, 0);
+
+            // initialize the region with the provided pixel
+            var region = new Rectangle(pixel.X, pixel.Y, 1, 1);
+
+            var nextSearchOffsets = new[,]
+            {
+                { new Int2(-1, -1),  new Int2( 0, -1) },
+                { new Int2( 1, -1),  new Int2( 1,  0) },
+                { new Int2( 1,  1),  new Int2( 0,  1) },
+                { new Int2(-1,  1),  new Int2(-1,  0) }
+            };
+
+            var contourLeftEgde = pixel;
+            var rotationDirection = 0;
+            do
+            {
+                // Stage 1: Find an edge of the shape (look to the left of the provided pixel as long as possible)
+                var startEdge = contourLeftEgde;
+                var startEdgeDirection = EdgeDirection.Left;
+                for (int x = startEdge.X; x >= 0; --x)
+                {
+                    if ((ptr[startEdge.Y * stride + x] & separatorMask) == maskedSeparator)
+                        break;
+
+                    startEdge.X = x;
+                }
+
+                // Stage 2: Determine the whole contour of the shape and update the region. 
+                // Note: the found contour can correspond to an internal hole contour or the external shape contour.
+                var currentEdge = startEdge;
+                var currentEdgeDirection = startEdgeDirection;
+                do
+                {
+                    var previousEdgeDirection = currentEdgeDirection;
+
+                    var diagonalPixel = currentEdge + nextSearchOffsets[(int)currentEdgeDirection, 0];
+                    var diagonalIsSeparator = !textureRegion.Contains(diagonalPixel) || (ptr[diagonalPixel.Y * stride + diagonalPixel.X] & separatorMask) == maskedSeparator;
+                    var neighbourPixel = currentEdge + nextSearchOffsets[(int)currentEdgeDirection, 1];
+                    var neighbourIsSeparator = !textureRegion.Contains(neighbourPixel) || (ptr[neighbourPixel.Y * stride + neighbourPixel.X] & separatorMask) == maskedSeparator;
+
+                    // determine the next edge position
+                    if (!diagonalIsSeparator)
+                    {
+                        currentEdge = diagonalPixel;
+                        currentEdgeDirection = (EdgeDirection)(((int)currentEdgeDirection + 3) % 4);
+                    }
+                    else if (!neighbourIsSeparator)
+                    {
+                        currentEdge = neighbourPixel;
+                    }
+                    else
+                    {
+                        currentEdgeDirection = (EdgeDirection)(((int)currentEdgeDirection + 1) % 4);
+                    }
+
+                    // keep record of the point of the edge which is 
+                    if (currentEdge.X < contourLeftEgde.X)
+                        contourLeftEgde = currentEdge;
+
+                    // increase or decrease the rotation counter based on the sequence of edge direction
+                    rotationDirection += RotationDirection(previousEdgeDirection, currentEdgeDirection);
+
+                    // update the rectangle
+                    region = Rectangle.Union(region, currentEdge);
+                }
+                while (currentEdge != startEdge || currentEdgeDirection != startEdgeDirection); // as long as we do not close the contour continue to explore
+                
+            } // repeat the process as long as the edge found is not the shape external contour.
+            while (rotationDirection != 4);
+
+            return region;
         }
 
         /// <summary>
@@ -1173,7 +1431,6 @@ namespace SiliconStudio.TextureConverter
                 }
             }
         }
-
 
         static void Main(string[] args)
         {

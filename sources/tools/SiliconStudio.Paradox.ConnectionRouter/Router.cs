@@ -45,43 +45,46 @@ namespace SiliconStudio.Paradox.ConnectionRouter
         private SimpleSocket CreateSocketContext()
         {
             var socketContext = new SimpleSocket();
-            socketContext.Connected = async (clientSocketContext) =>
+            socketContext.Connected = (clientSocketContext) =>
             {
-                try
+                Task.Run(async () =>
                 {
-                    // Routing
-                    var routerMessage = (RouterMessage)await clientSocketContext.ReadStream.ReadInt16Async();
-
-                    Log.Info("Client {0}:{1} connected, with message {2}", clientSocketContext.RemoteAddress, clientSocketContext.RemotePort, routerMessage);
-
-                    switch (routerMessage)
+                    try
                     {
-                        case RouterMessage.ServiceProvideServer:
+                        // Routing
+                        var routerMessage = (RouterMessage)await clientSocketContext.ReadStream.ReadInt16Async();
+
+                        Log.Info("Client {0}:{1} connected, with message {2}", clientSocketContext.RemoteAddress, clientSocketContext.RemotePort, routerMessage);
+
+                        switch (routerMessage)
                         {
-                            await HandleMessageServiceProvideServer(clientSocketContext);
-                            break;
+                            case RouterMessage.ServiceProvideServer:
+                            {
+                                await HandleMessageServiceProvideServer(clientSocketContext);
+                                break;
+                            }
+                            case RouterMessage.ServerStarted:
+                            {
+                                await HandleMessageServerStarted(clientSocketContext);
+                                break;
+                            }
+                            case RouterMessage.ClientRequestServer:
+                            {
+                                await HandleMessageClientRequestServer(clientSocketContext);
+                                break;
+                            }
+                            default:
+                                throw new ArgumentOutOfRangeException(string.Format("Router: Unknown message: {0}", routerMessage));
                         }
-                        case RouterMessage.ServerStarted:
-                        {
-                            await HandleMessageServerStarted(clientSocketContext);
-                            break;
-                        }
-                        case RouterMessage.ClientRequestServer:
-                        {
-                            await HandleMessageClientRequestServer(clientSocketContext);
-                            break;
-                        }
-                        default:
-                            throw new ArgumentOutOfRangeException(string.Format("Router: Unknown message: {0}", routerMessage));
                     }
-                }
-                catch (Exception e)
-                {
-                    // TODO: Ideally, separate socket-related error messages (disconnection) from real errors
-                    // Unfortunately, it seems WinRT returns Exception, so it seems we can't filter with SocketException/IOException only?
-                    Log.Info("Client {0}:{1} disconnected with exception: {2}", clientSocketContext.RemoteAddress, clientSocketContext.RemotePort, e.Message);
-                    clientSocketContext.Dispose();
-                }
+                    catch (Exception e)
+                    {
+                        // TODO: Ideally, separate socket-related error messages (disconnection) from real errors
+                        // Unfortunately, it seems WinRT returns Exception, so it seems we can't filter with SocketException/IOException only?
+                        Log.Info("Client {0}:{1} disconnected with exception: {2}", clientSocketContext.RemoteAddress, clientSocketContext.RemotePort, e.Message);
+                        clientSocketContext.Dispose();
+                    }
+                });
             };
 
             return socketContext;

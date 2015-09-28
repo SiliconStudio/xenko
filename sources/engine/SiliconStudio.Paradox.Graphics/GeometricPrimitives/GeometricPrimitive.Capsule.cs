@@ -93,12 +93,14 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// <param name="length">The length. That is the distance between the two sphere centers.</param>
             /// <param name="radius">The radius of the capsule.</param>
             /// <param name="tessellation">The tessellation.</param>
+            /// <param name="vScale"></param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
+            /// <param name="uScale"></param>
             /// <returns>A sphere primitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;Must be &gt;= 3</exception>
-            public static GeometricPrimitive New(GraphicsDevice device, float length = 1.0f, float radius = 0.5f, int tessellation = 8, bool toLeftHanded = false)
+            public static GeometricPrimitive New(GraphicsDevice device, float length = 1.0f, float radius = 0.5f, int tessellation = 8, float uScale = 1.0f, float vScale = 1.0f, bool toLeftHanded = false)
             {
-                return new GeometricPrimitive(device, New(length, radius, tessellation, toLeftHanded));
+                return new GeometricPrimitive(device, New(length, radius, tessellation, uScale, vScale, toLeftHanded));
             }
 
             /// <summary>
@@ -107,10 +109,12 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// <param name="length">The length of the capsule. That is the distance between the two sphere centers.</param>
             /// <param name="radius">The radius of the capsule.</param>
             /// <param name="tessellation">The tessellation.</param>
+            /// <param name="vScale"></param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
+            /// <param name="uScale"></param>
             /// <returns>A sphere primitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;Must be &gt;= 3</exception>
-            public static GeometricMeshData<VertexPositionNormalTexture> New(float length = 1.0f, float radius = 0.5f, int tessellation = 8, bool toLeftHanded = false)
+            public static GeometricMeshData<VertexPositionNormalTexture> New(float length = 1.0f, float radius = 0.5f, int tessellation = 8, float uScale = 1.0f, float vScale = 1.0f, bool toLeftHanded = false)
             {
                 if (tessellation < 3) tessellation = 3;
 
@@ -157,7 +161,7 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
                         dz *= dxz;
 
                         var normal = new Vector3(dx, dy, dz);
-                        var textureCoordinate = new Vector2(u, v);
+                        var textureCoordinate = new Vector2(u * uScale, v * vScale);
                         var position = radius * normal + new Vector3(0, deltaY, 0);
 
                         vertices[vertexCount++] = new VertexPositionNormalTexture(position, normal, textureCoordinate);

@@ -11,6 +11,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.ReferenceCounting;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Engine.Design;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Rendering;
@@ -202,9 +203,9 @@ namespace SiliconStudio.Paradox.Engine
                     enabledEntities.Remove(entity);
                 }
 
-                foreach (var component in entityProcessors)
+                foreach (var processor in entityProcessors)
                 {
-                    component.SetEnabled(entity, enabled);
+                    processor.SetEnabled(entity, enabled);
                 }
             }
         }
@@ -418,7 +419,7 @@ namespace SiliconStudio.Paradox.Engine
             var processorAttributes = type.GetTypeInfo().GetCustomAttributes<DefaultEntityComponentProcessorAttribute>();
             foreach (var processorAttributeType in processorAttributes)
             {
-                var processorType = Type.GetType(processorAttributeType.TypeName);
+                var processorType = AssemblyRegistry.GetType(processorAttributeType.TypeName);
                 if (processorType == null)
                 {
                     continue;

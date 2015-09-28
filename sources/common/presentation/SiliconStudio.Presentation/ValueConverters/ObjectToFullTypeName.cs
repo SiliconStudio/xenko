@@ -3,6 +3,8 @@
 using System;
 using System.Globalization;
 
+using SiliconStudio.Core.Reflection;
+
 namespace SiliconStudio.Presentation.ValueConverters
 {
     /// <summary>
@@ -28,7 +30,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string typeName = value.ToString();
-            return typeName == NullObjectType ? null : Type.GetType(typeName);
+            return typeName == NullObjectType ? null : AssemblyRegistry.GetType(typeName);
         }
     }
 }

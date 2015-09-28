@@ -18,13 +18,15 @@ using SiliconStudio.Paradox.Assets.Textures;
 namespace SiliconStudio.Paradox.Assets.Sprite
 {
     /// <summary>
-    /// This asset reprensents a sheet (group) of sprites.
+    /// This asset represents a sheet (group) of sprites.
     /// </summary>
     [DataContract("SpriteSheet")]
     [CategoryOrder(10, "Parameters")]
+    [CategoryOrder(50, "Atlas Packing")]
     [CategoryOrder(150, "Sprites")]
-    [AssetFormatVersion(1)]
+    [AssetFormatVersion(2)]
     [AssetUpgrader(0, 1, typeof(RenameImageGroupsUpgrader))]
+    [AssetUpgrader(1, 2, typeof(RemoveMaxSizeUpgrader))]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(SpriteSheetAssetCompiler))]
     [ObjectFactory(typeof(SpriteSheetFactory))]
@@ -91,6 +93,18 @@ namespace SiliconStudio.Paradox.Assets.Sprite
         public TextureFormat Format { get; set; }
 
         /// <summary>
+        /// Gets or sets the value indicating whether the output texture is encoded into the standard RGB color space.
+        /// </summary>
+        /// <userdoc>
+        /// If checked, the input image is considered as an sRGB image. This should be default for colored texture
+        /// with a HDR/gamma correct rendering.
+        /// </userdoc>
+        [DataMember(45)]
+        [DefaultValue(TextureColorSpace.Auto)]
+        [Display("ColorSpace", null, "Parameters")]
+        public TextureColorSpace ColorSpace { get; set; }
+
+        /// <summary>
         /// Gets or sets the alpha format.
         /// </summary>
         /// <value>The alpha format.</value>
@@ -98,7 +112,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
         /// The texture alpha format in which all the images of the group should be converted to.
         /// </userdoc>
         [DataMember(50)]
-        [DefaultValue(AlphaFormat.Interpolated)]
+        [DefaultValue(AlphaFormat.Auto)]
         [Display(category: "Parameters")]
         public AlphaFormat Alpha { get; set; }
 
@@ -131,26 +145,57 @@ namespace SiliconStudio.Paradox.Assets.Sprite
         /// Gets or sets the sprites of the sheet.
         /// </summary>
         /// <userdoc>
+        /// The parameters used to pack the sprites into atlas.
+        /// </userdoc>
+        [NotNull]
+        [DataMember(100)]
+        [Category("Atlas Packing")]
+        public PackingAttributes Packing { get; set; }
+
+        /// <summary>
+        /// Gets or sets the sprites of the sheet.
+        /// </summary>
+        /// <userdoc>
         /// The list of sprites composing the sheet.
         /// </userdoc>
         [DataMember(150)]
         [Category]
         public List<SpriteInfo> Sprites { get; set; }
-
+        
+        /// <summary>
+        /// Sets default value of SpriteSheetAsset.
+        /// </summary>
         public override void SetDefaults()
         {
             Sprites = new List<SpriteInfo>();
             Format = TextureFormat.Compressed;
-            Alpha = AlphaFormat.Interpolated;
+            ColorSpace = TextureColorSpace.Auto;
+            Alpha = AlphaFormat.Auto;
             ColorKeyColor = new Color(255, 0, 255);
             ColorKeyEnabled = false;
             GenerateMipmaps = false;
             PremultiplyAlpha = true;
+            Packing = new PackingAttributes();
         }
 
+        /// <summary>
+        /// Retrieves Url for a texture given absolute path and sprite index
+        /// </summary>
+        /// <param name="textureAbsolutePath">Absolute Url of a texture</param>
+        /// <param name="spriteIndex">Sprite index</param>
         public static string BuildTextureUrl(UFile textureAbsolutePath, int spriteIndex)
         {
             return textureAbsolutePath + "__IMAGE_TEXTURE__" + spriteIndex;
+        }
+
+        /// <summary>
+        /// Retrieves Url for an atlas texture given absolute path and atlas index
+        /// </summary>
+        /// <param name="textureAbsolutePath">Absolute Url of an atlas texture</param>
+        /// <param name="atlasIndex">Atlas index</param>
+        public static string BuildTextureAtlasUrl(UFile textureAbsolutePath, int atlasIndex)
+        {
+            return textureAbsolutePath + "__ATLAS_TEXTURE__" + atlasIndex;
         }
 
         private class SpriteSheetFactory : IObjectFactory
@@ -163,13 +208,24 @@ namespace SiliconStudio.Paradox.Assets.Sprite
 
         class RenameImageGroupsUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var images = asset.Images;
                 if (images != null)
                 {
                     asset.Sprites = images;
                     asset.Images = DynamicYamlEmpty.Default;
+                }
+            }
+        }
+        class RemoveMaxSizeUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            {
+                var packing = asset.Packing;
+                if (packing != null)
+                {
+                    packing.AtlasMaximumSize = DynamicYamlEmpty.Default;
                 }
             }
         }

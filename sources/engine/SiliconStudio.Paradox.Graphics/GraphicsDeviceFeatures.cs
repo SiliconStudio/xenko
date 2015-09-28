@@ -62,6 +62,11 @@ namespace SiliconStudio.Paradox.Graphics
         public readonly bool HasDriverCommandLists;
 
         /// <summary>
+        /// Boolean indicating if this device supports SRGB texture and render targets.
+        /// </summary>
+        public readonly bool HasSRgb;
+
+        /// <summary>
         /// Is the device being profiled.
         /// </summary>
         public readonly bool IsProfiled;

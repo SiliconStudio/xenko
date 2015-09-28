@@ -33,7 +33,7 @@ namespace SiliconStudio.Core.Yaml
         /// <summary>
         /// Deserializes an object from the specified stream (expecting a YAML string).
         /// </summary>
-        /// <param name="stream">A YAML string from a stream .</param>
+        /// <param name="stream">A YAML string from a stream.</param>
         /// <returns>An instance of the YAML data.</returns>
         public static object Deserialize(Stream stream)
         {
@@ -42,9 +42,25 @@ namespace SiliconStudio.Core.Yaml
         }
 
         /// <summary>
+        /// Deserializes an object from the specified stream (expecting a YAML string) into an existing object.
+        /// </summary>
+        /// <param name="stream">A YAML string from a stream.</param>
+        /// <param name="existingObject">The object to deserialize into.</param>
+        /// <returns>An instance of the YAML data.</returns>
+        public static object Deserialize(Stream stream, object existingObject)
+        {
+            if (existingObject == null) throw new ArgumentNullException("existingObject");
+            using (var textReader = new StreamReader(stream))
+            {
+                var serializer = GetYamlSerializer(false);
+                return serializer.Deserialize(textReader, existingObject.GetType(), existingObject);
+            }
+        }
+
+        /// <summary>
         /// Deserializes an object from the specified stream (expecting a YAML string).
         /// </summary>
-        /// <param name="stream">A YAML string from a stream .</param>
+        /// <param name="stream">A YAML string from a stream.</param>
         /// <param name="expectedType">The expected type.</param>
         /// <param name="contextSettings">The context settings.</param>
         /// <returns>An instance of the YAML data.</returns>
@@ -145,6 +161,19 @@ namespace SiliconStudio.Core.Yaml
             serializer.Serialize(emitter, instance, type);
         }
 
+        /// <summary>
+        /// Serializes an object to specified stream in YAML format.
+        /// </summary>
+        /// <param name="emitter">The emitter.</param>
+        /// <param name="instance">The object to serialize.</param>
+        /// <param name="type">The type.</param>
+        /// <param name="contextSettings">The context settings.</param>
+        /// <param name="keepOnlySealedOverrides">if set to <c>true</c> [keep only sealed overrides].</param>
+        public static void Serialize(IEmitter emitter, object instance, Type type, SerializerContextSettings contextSettings, bool keepOnlySealedOverrides = false)
+        {
+            var serializer = GetYamlSerializer(keepOnlySealedOverrides);
+            serializer.Serialize(emitter, instance, type, contextSettings);
+        }
 
         /// <summary>
         /// Serializes an object to specified stream in YAML format.
@@ -273,7 +302,7 @@ namespace SiliconStudio.Core.Yaml
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
-                    attribute = new YamlMemberAttribute(memberAttribute.Name, mode) { Order = memberAttribute.Order };
+                    attribute = new YamlMemberAttribute(memberAttribute.Name, mode) { Order = memberAttribute.Order, Mask = memberAttribute.Mask };
                     //Trace.WriteLine(string.Format("Attribute remapped {0}", memberAttribute.Name));
                 }
                 else if (originalAttribute is DataMemberIgnoreAttribute)

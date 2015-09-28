@@ -222,7 +222,7 @@ namespace SiliconStudio {
 							auto keyFrame = keyFrames[i];
 							Vector3 rotation = keyFrame.Value;
 
-							auto finalMatrix = Matrix::RotationX(rotation.X) * Matrix::RotationY(rotation.Y) * Matrix::RotationZ(rotation.Z) * rotationAdjust;
+							auto finalMatrix = Matrix::Transpose(rotationAdjust) * Matrix::RotationX(rotation.X) * Matrix::RotationY(rotation.Y) * Matrix::RotationZ(rotation.Z) * rotationAdjust;
 							Vector3 scaling;
 							Quaternion rotationQuat;
 							Vector3 translation;

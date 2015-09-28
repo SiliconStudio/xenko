@@ -131,17 +131,17 @@ namespace SiliconStudio.Presentation.Quantum
         public int? CustomOrder { get { return customOrder; } set { SetValue(ref customOrder, value, "CustomOrder", "Order"); } }
 
         /// <inheritdoc/>
-        public sealed override bool IsPrimitive { get { AssertInit(); return isPrimitive; } }
+        public sealed override bool IsPrimitive { get { return isPrimitive; } }
         
         // To distinguish between lists and items of a list (which have the same TargetNode if the items are primitive types), we check whether the TargetNode is
         // the same of the one of its parent. If so, we're likely in an item of a list of primitive objects. 
         /// <inheritdoc/>
-        public sealed override bool HasList { get { AssertInit(); return (targetNode.Content.Descriptor is CollectionDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable); } }
+        public sealed override bool HasList { get { return (targetNode.Content.Descriptor is CollectionDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable); } }
 
         // To distinguish between dictionaries and items of a dictionary (which have the same TargetNode if the value type is a primitive type), we check whether the TargetNode is
         // the same of the one of its parent. If so, we're likely in an item of a dictionary of primitive objects. 
         /// <inheritdoc/>
-        public sealed override bool HasDictionary { get { AssertInit(); return (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary); } }
+        public sealed override bool HasDictionary { get { return (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary); } }
 
         internal Guid ModelGuid { get { return targetNode.Guid; } }
 
@@ -297,7 +297,9 @@ namespace SiliconStudio.Presentation.Quantum
                     // while holding an enumerable reference.
                     //if (modelNode.Content.ShouldProcessReference || ModelNodeParent.sourceNode != modelNode)
                     {
-                        foreach (var reference in referenceEnumerable)
+                        // Note: we are making a copy of the reference list because it can be updated from the Initialize method of the
+                        // observable node in the case of scene objects. Doing this is a hack, but parts of this framework will be redesigned later to improve this
+                        foreach (var reference in referenceEnumerable.ToList())
                         {
                             // The type might be a boxed primitive type, such as float, if the collection has object as generic argument.
                             // In this case, we must set the actual type to have type converter working, since they usually can't convert

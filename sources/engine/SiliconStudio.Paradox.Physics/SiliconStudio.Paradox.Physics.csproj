@@ -3,6 +3,10 @@
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <DocumentationFile>
+    </DocumentationFile>
+  </PropertyGroup>
   <Import Project="..\..\targets\Paradox.PreSettings.targets" />
   <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
@@ -13,7 +17,7 @@
     <AssemblyName>SiliconStudio.Paradox.Physics</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
-    <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key --generate-user-doc</SiliconStudioAssemblyProcessorOptions>
+    <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key</SiliconStudioAssemblyProcessorOptions>
     <ParadoxBuildTags>*</ParadoxBuildTags>
     <ParadoxBulletPlatform>Windows</ParadoxBulletPlatform>
     <ParadoxBulletPlatform Condition="'$(SiliconStudioPlatform)' == 'iOS'">iOS</ParadoxBulletPlatform>
@@ -50,13 +54,19 @@
     <Compile Include="Data\ConvexHullColliderShapeDesc.cs" />
     <Compile Include="Data\CylinderColliderShapeDesc.cs" />
     <Compile Include="Data\IColliderShapeDesc.cs" />
+    <Compile Include="Elements\CharacterElement.cs" />
+    <Compile Include="Elements\IPhysicsElement.cs" />
     <Compile Include="Data\SphereColliderShapeDesc.cs" />
     <Compile Include="Data\StaticPlaneColliderShapeDesc.cs" />
     <Compile Include="Data\ColliderShapeAssetDesc.cs" />
+    <Compile Include="Elements\PhysicsElementBase.cs" />
+    <Compile Include="Elements\PhysicsSkinnedElementBase.cs" />
+    <Compile Include="Elements\RigidbodyElement.cs" />
+    <Compile Include="Elements\StaticColliderElement.cs" />
     <Compile Include="Engine\PhysicsColliderShape.cs" />
     <Compile Include="Engine\PhysicsComponent.cs" />
-    <Compile Include="Engine\PhysicsElement.cs" />
     <Compile Include="Engine\PhysicsProcessor.cs" />
+    <Compile Include="Elements\TriggerElement.cs" />
     <Compile Include="IPhysicsSystem.cs" />
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
@@ -86,6 +96,7 @@
     <Compile Include="Constraint.cs" />
     <Compile Include="Shapes\ConvexHullColliderShape.cs" />
     <Compile Include="Shapes\CylinderColliderShape.cs" />
+    <Compile Include="Shapes\HeightfieldColliderShape.cs" />
     <Compile Include="Simulation.cs" />
     <Compile Include="Constraints\GearConstraint.cs" />
     <Compile Include="Constraints\Generic6DoFConstraint.cs" />
@@ -99,7 +110,7 @@
     <Compile Include="Shapes\StaticPlaneColliderShape.cs" />
     <Compile Include="Constraints\TranslationalLimitMotor.cs" />
     <Compile Include="ColliderShapeTypes.cs" />
-    <Compile Include="CollisionFilterGroups.cs" />
+    <Compile Include="Elements\CollisionFilterGroups.cs" />
     <Compile Include="ConstraintTypes.cs" />
     <Compile Include="ContactPoint.cs" />
     <Compile Include="HitResult.cs" />
@@ -121,6 +132,7 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
       <Project>{1320f627-ee43-4115-8e89-19d1753e51f2}</Project>
       <Name>SiliconStudio.Core.MicroThreading</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
       <Project>{5210fb81-b807-49bb-af0d-31fb6a83a572}</Project>

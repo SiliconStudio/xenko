@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Graphics.Font
 
         public void Initialize(SerializerSelector serializerSelector)
         {
-            parentSerializer = serializerSelector.GetSerializer<SpriteFont>();
+            parentSerializer = SerializerSelector.Default.GetSerializer<SpriteFont>();
             if (parentSerializer == null)
             {
                 throw new InvalidOperationException(string.Format("Could not find parent serializer for type {0}", "SiliconStudio.Paradox.Graphics.SpriteFont"));

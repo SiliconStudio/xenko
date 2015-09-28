@@ -44,7 +44,7 @@ namespace SiliconStudio.Assets.Tests
 
             class AssetUpgrader1 : IAssetUpgrader
             {
-                public void Upgrade(int currentVersion, int targetVersion, ILogger log, YamlMappingNode yamlAssetNode)
+                public void Upgrade(AssetMigrationContext context, int currentVersion, int targetVersion, YamlMappingNode yamlAssetNode, PackageLoadingAssetFile assetFile)
                 {
                     dynamic asset = new DynamicYamlMapping(yamlAssetNode);
 
@@ -58,7 +58,7 @@ namespace SiliconStudio.Assets.Tests
 
             class AssetUpgrader2 : IAssetUpgrader
             {
-                public void Upgrade(int currentVersion, int targetVersion, ILogger log, YamlMappingNode yamlAssetNode)
+                public void Upgrade(AssetMigrationContext context, int currentVersion, int targetVersion, YamlMappingNode yamlAssetNode, PackageLoadingAssetFile assetFile)
                 {
                     dynamic asset = new DynamicYamlMapping(yamlAssetNode);
 
@@ -81,7 +81,7 @@ namespace SiliconStudio.Assets.Tests
 
             class AssetUpgrader3 : IAssetUpgrader
             {
-                public void Upgrade(int currentVersion, int targetVersion, ILogger log, YamlMappingNode yamlAssetNode)
+                public void Upgrade(AssetMigrationContext context, int currentVersion, int targetVersion, YamlMappingNode yamlAssetNode, PackageLoadingAssetFile assetFile)
                 {
                     dynamic asset = new DynamicYamlMapping(yamlAssetNode);
 
@@ -136,7 +136,8 @@ namespace SiliconStudio.Assets.Tests
             AssetSerializer.Save(outputFilePath, asset);
 
             var logger = new LoggerResult();
-            Assert.AreEqual(AssetMigration.MigrateAssetIfNeeded(logger, loadingFilePath), needMigration);
+            var context = new AssetMigrationContext(null, logger);
+            Assert.AreEqual(AssetMigration.MigrateAssetIfNeeded(context, loadingFilePath), needMigration);
 
             if (needMigration)
             {

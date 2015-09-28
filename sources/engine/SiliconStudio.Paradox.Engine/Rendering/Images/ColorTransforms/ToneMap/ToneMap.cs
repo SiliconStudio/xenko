@@ -40,8 +40,10 @@ namespace SiliconStudio.Paradox.Rendering.Images
         {
             timer = new Stopwatch();
             AutoKeyValue = true;
-            Operator = new ToneMapHejlDawsonOperator();
+            Operator = new ToneMapHejl2Operator();
             AdaptationRate = 1.0f;
+            TemporalAdaptation = true;
+            AutoExposure = true;
         }
 
         /// <summary>
@@ -75,6 +77,24 @@ namespace SiliconStudio.Paradox.Rendering.Images
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the tonemap key is automatically calculated based on common perceptive behavior.
+        /// </summary>
+        /// <value><c>true</c> if [automatic key value]; otherwise, <c>false</c>.</value>
+        [DataMember(15)]
+        [DefaultValue(true)]
+        public bool AutoKeyValue
+        {
+            get
+            {
+                return Parameters.Get(ToneMapKeys.AutoKey);
+            }
+            set
+            {
+                Parameters.Set(ToneMapKeys.AutoKey, value);
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the key value.
         /// </summary>
         /// <value>The key value.</value>
@@ -93,22 +113,42 @@ namespace SiliconStudio.Paradox.Rendering.Images
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [automatic key value].
+        /// Gets or sets a value indicating whether the tonemap is calculating the exposure based on the average luminance of the image else <see cref="Exposure"/> is used.
         /// </summary>
-        /// <value><c>true</c> if [automatic key value]; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if the tonemap is calculating the exposure based on the average luminance of the image; otherwise, <c>false</c>.</value>
         [DataMember(30)]
         [DefaultValue(true)]
-        public bool AutoKeyValue
+        public bool AutoExposure
         {
             get
             {
-                return Parameters.Get(ToneMapShaderKeys.AutoKeyValue);
+                return Parameters.Get(ToneMapKeys.AutoExposure);
             }
             set
             {
-                Parameters.Set(ToneMapShaderKeys.AutoKeyValue, value);
+                Parameters.Set(ToneMapKeys.AutoExposure, value);
             }
         }
+
+        /// <summary>
+        /// Gets or sets the manual exposure value if <see cref="AutoExposure"/> is <c>false</c>.
+        /// </summary>
+        /// <value>The exposure value.</value>
+        [DataMember(32)]
+        [DefaultValue(0.0f)]
+        public float Exposure
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to update the luminance progressively based on the current time.
+        /// </summary>
+        /// <value><c>true</c> the luminance is updated progressively based on the current time; otherwise, <c>false</c>.</value>
+        [DataMember(35)]
+        [DefaultValue(true)]
+        [Display("Temporal adaptation?")]
+        public bool TemporalAdaptation { get; set; }
 
         /// <summary>
         /// Gets or sets the adaptation rate.
@@ -119,11 +159,11 @@ namespace SiliconStudio.Paradox.Rendering.Images
         public float AdaptationRate { get; set; }
 
         /// <summary>
-        /// Gets or sets the luminance local factor.
+        /// Gets or sets the luminance local factor. 0.0: No local influence, only global influence, 1.0: No global influence, Only local influence.
         /// </summary>
         /// <value>The luminance local factor.</value>
         [DataMember(50)]
-        [DefaultValue(0.5f)]
+        [DefaultValue(0.0f)]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
         public float LuminanceLocalFactor
         {
@@ -188,25 +228,26 @@ namespace SiliconStudio.Paradox.Rendering.Images
 
             var luminanceResult = context.SharedParameters.Get(LuminanceEffect.LuminanceResult);
 
-            var avgLuminanceLog = 0.18f; // TODO: Add a parmetrized average luminance
-            if (luminanceResult.LocalTexture != null)
+            // Get the average luminance
+            float adaptedLum = luminanceResult.AverageLuminance;
+            if (TemporalAdaptation)
             {
                 // Get adapted luminance
                 // From "Perceptual effects in real-time tone mapping" by Grzegorz Krawczyk, Karol Myszkowski, Hans-Peter Seidel, p. 3, Equation 5
-                var adaptedLum = (float)(previousLuminance + (luminanceResult.AverageLuminance - previousLuminance) * (1.0 - Math.Exp(-elapsedTime.TotalSeconds * AdaptationRate)));
-                avgLuminanceLog = (float)Math.Log(adaptedLum, 2);
+                adaptedLum = (float)(previousLuminance + (luminanceResult.AverageLuminance - previousLuminance) * (1.0 - Math.Exp(-elapsedTime.TotalSeconds * AdaptationRate)));
                 previousLuminance = adaptedLum;
+            }
 
-                if (AutoKeyValue)
-                {
-                    // From "Perceptual effects in real-time tone mapping" by Grzegorz Krawczyk, Karol Myszkowski, Hans-Peter Seidel, p. 4, Equation 11
-                    KeyValue = 1.03f - (2.0f / (2.0f + (float)Math.Log10(adaptedLum + 1)));
-                }
+            if (AutoKeyValue)
+            {
+                // From "Perceptual effects in real-time tone mapping" by Grzegorz Krawczyk, Karol Myszkowski, Hans-Peter Seidel, p. 4, Equation 11
+                KeyValue = 1.03f - (2.0f / (2.0f + (float)Math.Log10(adaptedLum + 1)));
             }
 
             // Setup parameters
             Parameters.Set(ToneMapShaderKeys.LuminanceTexture, luminanceResult.LocalTexture);
-            Parameters.Set(ToneMapShaderKeys.LuminanceAverageGlobal, avgLuminanceLog);
+            Parameters.Set(ToneMapShaderKeys.LuminanceAverageGlobal, (float)Math.Log(adaptedLum, 2));
+            Parameters.Set(ToneMapShaderKeys.Exposure, (float)Math.Pow(2.0, Exposure));
 
             // Update operator parameters
             Operator.UpdateParameters(context);

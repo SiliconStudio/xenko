@@ -12,8 +12,10 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Assets.SpriteFont.Compiler;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Graphics.Font;
 
 using Font = SharpDX.DirectWrite.Font;
@@ -26,6 +28,8 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
 
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SpriteFontAsset asset, AssetCompilerResult result)
         {
+            var colorSpace = context.GetColorSpace();
+
             if (asset.IsDynamic)
             {
                 UFile fontPathOnDisk;
@@ -67,16 +71,18 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
                 assetClone.Source = !string.IsNullOrEmpty(asset.Source) ? UPath.Combine(assetDirectory, asset.Source): null;
                 assetClone.CharacterSet = !string.IsNullOrEmpty(asset.CharacterSet) ? UPath.Combine(assetDirectory, asset.CharacterSet): null;
 
-                result.BuildSteps = new AssetBuildStep(AssetItem) { new StaticFontCommand(urlInStorage, assetClone) };
+                result.BuildSteps = new AssetBuildStep(AssetItem) { new StaticFontCommand(urlInStorage, assetClone, colorSpace) };
             }
         }
 
         internal class StaticFontCommand : AssetCommand<SpriteFontAsset>
         {
+            private ColorSpace colorspace;
 
-            public StaticFontCommand(string url, SpriteFontAsset description)
+            public StaticFontCommand(string url, SpriteFontAsset description, ColorSpace colorspace)
                 : base(url, description)
             {
+                this.colorspace = colorspace;
             }
 
             public override IEnumerable<ObjectUrl> GetInputFiles()
@@ -90,13 +96,19 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
                     yield return new ObjectUrl(UrlType.File, AssetParameters.CharacterSet);
             }
 
+            protected override void ComputeParameterHash(BinarySerializationWriter writer)
+            {
+                base.ComputeParameterHash(writer);
+                writer.Write(colorspace);
+            }
+
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 // try to import the font from the original bitmap or ttf file
                 Graphics.SpriteFont staticFont;
                 try
                 {
-                    staticFont = StaticFontCompiler.Compile(FontDataFactory, AssetParameters);
+                    staticFont = StaticFontCompiler.Compile(FontDataFactory, AssetParameters, colorspace == ColorSpace.Linear);
                 }
                 catch (FontNotFoundException ex) 
                 {

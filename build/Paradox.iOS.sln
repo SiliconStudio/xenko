@@ -1,8 +1,8 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 14.0.23107.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "30-Core", "30-Core", "{2E93E2B5-4500-4E47-9B65-E705218AB578}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "50-Engine", "50-Engine", "{4C142567-C42B-40F5-B092-798882190209}"
@@ -114,7 +114,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Physi
 		{42780CBD-3FE7-48E3-BD5B-59945EA20137} = {42780CBD-3FE7-48E3-BD5B-59945EA20137}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.SpriteStudio.Runtime", "..\sources\engine\SiliconStudio.Paradox.SpriteStudio.Runtime\SiliconStudio.Paradox.SpriteStudio.Runtime.csproj", "{9BC63BEC-F305-451D-BB31-262938EA964D}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
+		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
+		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{d0db401e-6f96-46d0-ba9b-493b9c0777f1}*SharedItemsImports = 4
+		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{d0db401e-6f96-46d0-ba9b-493b9c0777f1}*SharedItemsImports = 4
+		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{43b62674-aa8b-4531-ba27-855ca2580145}*SharedItemsImports = 13
+		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{950badd0-ad5a-4f58-87ec-4adaecbea89b}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AppStore|iPhone = AppStore|iPhone
 		AppStore|iPhoneSimulator = AppStore|iPhoneSimulator
@@ -630,6 +640,30 @@ Global
 		{DD592516-B341-40FE-9100-1B0FA784A060}.Testing|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
 		{DD592516-B341-40FE-9100-1B0FA784A060}.Testing|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
 		{DD592516-B341-40FE-9100-1B0FA784A060}.Testing|iPhoneSimulator.Deploy.0 = Release|iPhoneSimulator
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.AppStore|iPhone.ActiveCfg = Release|iPhone
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.AppStore|iPhone.Build.0 = Release|iPhone
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.AppStore|iPhone.Deploy.0 = Release|iPhone
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Debug|iPhone.ActiveCfg = Debug|iPhone
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Debug|iPhone.Build.0 = Debug|iPhone
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Debug|iPhone.Deploy.0 = Debug|iPhone
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Release|iPhone.ActiveCfg = Release|iPhone
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Release|iPhone.Build.0 = Release|iPhone
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Release|iPhone.Deploy.0 = Release|iPhone
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|iPhone.ActiveCfg = Release|iPhone
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|iPhone.Build.0 = Release|iPhone
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|iPhone.Deploy.0 = Release|iPhone
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.AppStore|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.AppStore|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.AppStore|iPhoneSimulator.Deploy.0 = Release|iPhoneSimulator
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Debug|iPhoneSimulator.Deploy.0 = Debug|iPhoneSimulator
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Release|iPhoneSimulator.Deploy.0 = Release|iPhoneSimulator
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|iPhoneSimulator.Deploy.0 = Release|iPhoneSimulator
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -657,5 +691,6 @@ Global
 		{E7B1B17F-D04B-4978-B504-A6BB3EE846C9} = {4C142567-C42B-40F5-B092-798882190209}
 		{D002FEB1-00A6-4AB1-A83F-1F253465E64D} = {4C142567-C42B-40F5-B092-798882190209}
 		{DD592516-B341-40FE-9100-1B0FA784A060} = {4C142567-C42B-40F5-B092-798882190209}
+		{9BC63BEC-F305-451D-BB31-262938EA964D} = {4C142567-C42B-40F5-B092-798882190209}
 	EndGlobalSection
 EndGlobal

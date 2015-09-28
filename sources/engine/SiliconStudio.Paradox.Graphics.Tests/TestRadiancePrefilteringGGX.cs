@@ -104,7 +104,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             if (displayedViews == null || spriteBatch == null)
                 return;
 
-            spriteEffect = EffectSystem.LoadEffect("SpriteEffectWithGamma").WaitForResult();
+            spriteEffect = EffectSystem.LoadEffect("SpriteEffect").WaitForResult();
 
             var size = new Vector2(screenSize.X / 3f, screenSize.Y / 4f);
 

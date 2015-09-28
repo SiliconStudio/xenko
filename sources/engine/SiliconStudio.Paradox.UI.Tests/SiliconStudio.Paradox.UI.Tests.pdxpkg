@@ -1,5 +1,6 @@
 !Package
 Id: b18707e8-1d26-49fc-9911-3834506d8149
+SerializedVersion: 1
 Tags: []
 Meta:
     Name: SiliconStudio.Paradox.UI.Tests
@@ -8,7 +9,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Paradox
-            Version: 1.2.0-beta
+            Version: 1.3.0-beta
 LocalDependencies: []
 Profiles:
     -   Name: Shared
@@ -16,13 +17,8 @@ Profiles:
         InheritProfiles: []
         AssetFolders:
             -   Path: Assets
-                RawImports: []
         OutputGroupDirectories: {}
-        Properties:
-            GameSettingsAsset.BackBufferHeight: 720
-            GameSettingsAsset.BackBufferWidth: 1280
-            GameSettingsAsset.DefaultGraphicsProfile: Level_10_0
-            GameSettingsAsset.DefaultScene: b28bf403-c197-43c7-8614-c422d702909c:MainScene
+        Properties: {}
         ProjectReferences:
             -   Id: e7b1b17f-d04b-4978-b504-a6bb3ee846c9
                 Location: SiliconStudio.Paradox.UI.Tests.Windows.csproj
@@ -32,10 +28,8 @@ Profiles:
         InheritProfiles: []
         AssetFolders:
             -   Path: Assets/Windows
-                RawImports: []
         OutputGroupDirectories: {}
-        Properties:
-            GameSettingsAsset.DefaultGraphicsProfile: Level_9_1
+        Properties: {}
         ProjectReferences:
             -   Id: e7b1b17f-d04b-4978-b504-a6bb3ee846c9
                 Location: SiliconStudio.Paradox.UI.Tests.Windows.csproj
@@ -45,10 +39,8 @@ Profiles:
         InheritProfiles: []
         AssetFolders:
             -   Path: Assets/Android
-                RawImports: []
         OutputGroupDirectories: {}
-        Properties:
-            GameSettingsAsset.DefaultGraphicsProfile: Level_9_1
+        Properties: {}
         ProjectReferences:
             -   Id: e7b1b17f-d04b-4978-b504-a6bb3ee846c9
                 Location: SiliconStudio.Paradox.UI.Tests.Android.csproj
@@ -58,10 +50,8 @@ Profiles:
         InheritProfiles: []
         AssetFolders:
             -   Path: Assets/iPhone
-                RawImports: []
         OutputGroupDirectories: {}
-        Properties:
-            GameSettingsAsset.DefaultGraphicsProfile: Level_9_1
+        Properties: {}
         ProjectReferences:
             -   Id: e7b1b17f-d04b-4978-b504-a6bb3ee846c9
                 Location: SiliconStudio.Paradox.UI.Tests.iOS.csproj

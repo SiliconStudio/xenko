@@ -9,6 +9,7 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Engine.Processors;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Rendering.Lights;
 using SiliconStudio.Paradox.Shaders;
@@ -67,7 +68,7 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
 
         private List<LightComponent> visibleLights;
 
-        private RasterizerState shadowRasterizerState;
+        private readonly List<RenderModelCollection> shadowRenderModels = new List<RenderModelCollection>(); 
 
         public ShadowMapRenderer(string effectName)
         {
@@ -87,6 +88,7 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
             // Creates a model renderer for the shadows casters
             shadowModelComponentRenderer = new ModelComponentRenderer(effectName + ".ShadowMapCaster")
             {
+                CullingMode =  CameraCullingMode.None,
                 Callbacks =
                 {
                     UpdateMeshes = FilterCasters,
@@ -143,13 +145,16 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
                 return;
             }
 
-            this.visibleLights = visibleLights;
-
-            using (context.PushTagAndRestore(Current, this))
+            if (Enabled)
             {
-                PreDrawCoreInternal(context);
-                DrawCore(context);
-                PostDrawCoreInternal(context);
+                this.visibleLights = visibleLights;
+
+                using (context.PushTagAndRestore(Current, this))
+                {
+                    PreDrawCoreInternal(context);
+                    DrawCore(context);
+                    PostDrawCoreInternal(context);
+                }
             }
         }
 
@@ -164,19 +169,30 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
                 opaqueRenderItems.Clear();
                 transparentRenderItems.Clear();
 
-                // When rendering shadow maps, objects should not be culled by the rasterizer (in case the object is out of the frustum but cast
-                // a shadow into the frustum)
-                shadowModelComponentRenderer.RasterizerState = shadowRasterizerState;
+                // Query all models for the specified culling mask and collect render models
+                var modelProcessor = SceneInstance.GetProcessor<ModelProcessor>();
+                shadowRenderModels.Clear();
+                modelProcessor.QueryModelGroupsByMask(cullingMask, shadowRenderModels);
 
-                // We should not cull models in the view frustum, as objects can be outside the frustum and cast shadows
-                // TODO: We need at some point to be perform shadow culling based on the frustum of the shadow view
-                shadowModelComponentRenderer.CullingModeOverride = CullingMode.None;
-                shadowModelComponentRenderer.CurrentCullingMask = cullingMask;
-                shadowModelComponentRenderer.Prepare(context, opaqueRenderItems, transparentRenderItems);
+                // Copy the ViewProjectionMatrix to the model renderer
+                shadowModelComponentRenderer.ViewProjectionMatrix = ShadowCamera.ViewProjectionMatrix;
+
+                foreach (var renderModelList in shadowRenderModels)
+                {
+                    shadowModelComponentRenderer.RenderModels = renderModelList;
+                    shadowModelComponentRenderer.Prepare(context, opaqueRenderItems, transparentRenderItems);
+                }
+
+                // Render only Opaque items for now
+                // TODO: Add semi-transparent items with light
                 shadowModelComponentRenderer.Draw(context, opaqueRenderItems, 0, opaqueRenderItems.Count - 1);
             }
             finally
             {
+                // Make sure we clear any references left so that we don't hold them in memory
+                shadowRenderModels.Clear();
+                shadowModelComponentRenderer.RenderModels = null;
+
                 context.PopParameters();
                 context.GraphicsDevice.PopState();
             }
@@ -187,7 +203,12 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
             base.InitializeCore();
 
             var shadowRenderState = new RasterizerStateDescription(CullMode.None) { DepthClipEnable = false };
-            shadowRasterizerState = RasterizerState.New(Context.GraphicsDevice, shadowRenderState);
+
+            // When rendering shadow maps, objects should not be culled by the rasterizer (in case the object is out of the frustum but cast
+            // a shadow into the frustum)
+            shadowModelComponentRenderer.RasterizerState = RasterizerState.New(Context.GraphicsDevice, shadowRenderState);
+            shadowModelComponentRenderer.ForceRasterizer = true;
+
         }
 
         protected void DrawCore(RenderContext context)
@@ -347,13 +368,12 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
             return factor;
         }
 
-        private static void FilterCasters(RenderContext context, FastList<RenderMesh> meshes)
+        private static void FilterCasters(RenderContext context, ref FastListStruct<RenderMesh> meshes)
         {
             for (int i = 0; i < meshes.Count; i++)
             {
-                var mesh = meshes[i];
                 // If there is no caster
-                if (!mesh.IsShadowCaster)
+                if (!meshes[i].IsShadowCaster)
                 {
                     meshes.SwapRemoveAt(i--);
                 }

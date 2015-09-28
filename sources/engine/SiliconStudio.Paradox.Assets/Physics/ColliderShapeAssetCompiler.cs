@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SiliconStudio.Assets;
 using VHACDSharp;
 
 namespace SiliconStudio.Paradox.Assets.Physics
@@ -31,7 +32,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
         {
             result.BuildSteps = new AssetBuildStep(AssetItem)
             {
-                new ColliderShapeCombineCommand(urlInStorage, asset),
+                new ColliderShapeCombineCommand(urlInStorage, asset, AssetItem.Package),
             };
 
             result.ShouldWaitForPreviousBuilds = asset.ColliderShapes.Any(shape => shape != null && shape.GetType() == typeof(ConvexHullColliderShapeDesc));
@@ -39,10 +40,13 @@ namespace SiliconStudio.Paradox.Assets.Physics
 
         private class ColliderShapeCombineCommand : AssetCommand<ColliderShapeAsset>
         {
-            public ColliderShapeCombineCommand(string url, ColliderShapeAsset assetParameters)
+            public ColliderShapeCombineCommand(string url, ColliderShapeAsset assetParameters, Package package)
                 : base(url, assetParameters)
             {
+                this.package = package;
             }
+
+            private readonly Package package;
 
             private ConvexHullMesh convexHullMesh;
 
@@ -52,6 +56,12 @@ namespace SiliconStudio.Paradox.Assets.Physics
                 {
                     if (convexHullMesh != null) convexHullMesh.Cancel();
                 }
+            }
+
+            protected override void ComputeParameterHash(BinarySerializationWriter writer)
+            {
+                base.ComputeParameterHash(writer);
+                ComputeCompileTimeDependenciesHash(package, writer, AssetParameters);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)

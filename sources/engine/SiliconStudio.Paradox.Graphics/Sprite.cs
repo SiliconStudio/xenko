@@ -64,11 +64,15 @@ namespace SiliconStudio.Paradox.Graphics
         public Sprite(string fragmentName, Texture texture)
         {
             Name = fragmentName;
+            PixelsPerUnit = new Vector2(100);
             IsTransparent = true;
-
+            
             Texture = texture;
-            if(texture != null)
+            if (texture != null)
+            {
                 Region = new Rectangle(0, 0, texture.ViewWidth, texture.ViewHeight);
+                Center = new Vector2(Region.Width/2, Region.Height/2);
+            }
         }
 
         /// <summary>
@@ -84,7 +88,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// The position of the center of the image in pixels.
         /// </summary>
-        public Vector2 Center;
+        public Vector2 Center { get; set; }
 
         /// <summary>
         /// The rectangle specifying the region of the texture to use as fragment.
@@ -175,6 +179,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// Gets or sets the pixels per scene unit of the sprite.
         /// </summary>
+        /// <remarks>The value is trunked to a strictly positive value.</remarks>
         public Vector2 PixelsPerUnit
         {
             get { return pixelsPerUnit; }
@@ -184,6 +189,8 @@ namespace SiliconStudio.Paradox.Graphics
                     return;
 
                 pixelsPerUnit = value;
+                pixelsPerUnit.X = Math.Max(MathUtil.ZeroTolerance, pixelsPerUnit.X);
+                pixelsPerUnit.Y = Math.Max(MathUtil.ZeroTolerance, pixelsPerUnit.Y);
                 UpdateSizes();
             }
         }

@@ -64,8 +64,11 @@ namespace SiliconStudio.Paradox.Engine
             if (MainRenderFrame == null)
             {
                 MainRenderFrame = RenderFrame.FromTexture(GraphicsDevice.BackBuffer, GraphicsDevice.DepthStencilBuffer);
-                previousWidth = MainRenderFrame.Width;
-                previousHeight = MainRenderFrame.Height;
+                if (MainRenderFrame != null)
+                {
+                    previousWidth = MainRenderFrame.Width;
+                    previousHeight = MainRenderFrame.Height;
+                }
             }
 
             // Create the drawing context
@@ -82,7 +85,7 @@ namespace SiliconStudio.Paradox.Engine
 
         public override void Draw(GameTime gameTime)
         {
-            if (SceneInstance == null)
+            if (SceneInstance == null || MainRenderFrame == null)
             {
                 return;
             }

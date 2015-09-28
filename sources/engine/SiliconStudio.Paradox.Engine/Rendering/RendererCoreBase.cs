@@ -7,6 +7,7 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Graphics;
 
 using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
@@ -58,6 +59,34 @@ namespace SiliconStudio.Paradox.Rendering
         [DataMemberIgnore]
         protected RenderContext Context { get; private set; }
 
+        /// <summary>
+        /// Gets the <see cref="IServiceRegistry"/>.
+        /// </summary>
+        /// <value>The service registry.</value>
+        [DataMemberIgnore]
+        protected IServiceRegistry Services { get; private set; }
+
+        /// <summary>
+        /// Gets the <see cref="AssetManager"/>.
+        /// </summary>
+        /// <value>The asset manager.</value>
+        [DataMemberIgnore]
+        protected AssetManager Assets { get; private set; }
+
+        /// <summary>
+        /// Gets the graphics device.
+        /// </summary>
+        /// <value>The graphics device.</value>
+        [DataMemberIgnore]
+        protected GraphicsDevice GraphicsDevice { get; private set; }
+
+        /// <summary>
+        /// Gets the effect system.
+        /// </summary>
+        /// <value>The effect system.</value>
+        [DataMemberIgnore]
+        protected EffectSystem EffectSystem { get; private set; }
+
         public bool Initialized { get; private set; }
 
         public void Initialize(RenderContext context)
@@ -72,6 +101,12 @@ namespace SiliconStudio.Paradox.Rendering
 
             Context = context;
             subRenderersToUnload.Clear();
+
+            // Initialize most common services related to rendering
+            Services = Context.Services;
+            Assets = Services.GetSafeServiceAs<AssetManager>();
+            EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
+            GraphicsDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
 
             InitializeCore();
 
@@ -194,11 +229,6 @@ namespace SiliconStudio.Paradox.Rendering
                 throw new InvalidOperationException("Cannot use a different context between Load and Draw");
             }
 
-            if (!Enabled)
-            {
-                return;
-            }
-
             if (Name != null && Profiling)
             {
                 context.GraphicsDevice.BeginProfile(Color.Green, Name);
@@ -209,7 +239,6 @@ namespace SiliconStudio.Paradox.Rendering
             // Allow scoped allocation RenderTargets
             isInDrawCore = true;
         }
-
 
         protected void PostDrawCoreInternal(RenderContext context)
         {

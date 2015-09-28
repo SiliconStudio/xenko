@@ -12,6 +12,8 @@ using SiliconStudio.Paradox.Physics;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Paradox.Assets.Physics
 {
@@ -23,7 +25,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
     [AssetUpgrader(0, 1, typeof(UpgraderShapeDescriptions))]
     [AssetUpgrader(1, 2, typeof(Box2DRemovalUpgrader))]
     [Display("Collider Shape", "A physics collider shape")]
-    public class ColliderShapeAsset : Asset
+    public class ColliderShapeAsset : Asset, IAssetCompileTimeDependencies
     {
         public const string FileExtension = ".pdxphy";
 
@@ -54,7 +56,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
 
         private class UpgraderShapeDescriptions : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 if (asset.ColliderShapes == null)
                     return;
@@ -100,7 +102,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
 
         private class Box2DRemovalUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(int currentVersion, int targetVersion, ILogger log, dynamic asset)
+            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 if (asset.ColliderShapes == null)
                     return;
@@ -116,6 +118,15 @@ namespace SiliconStudio.Paradox.Assets.Physics
                     shape.Size.Y = shape.Size.Y;
                     shape.Size.Z = 0.01f;
                 }
+            }
+        }
+
+        public IEnumerable<IContentReference> EnumerateCompileTimeDependencies()
+        {
+            foreach (var shapeDesc in ColliderShapes.OfType<ConvexHullColliderShapeDesc>())
+            {
+                var reference = AttachedReferenceManager.GetAttachedReference(shapeDesc.Model);
+                yield return new AssetReference<Asset>(reference.Id, reference.Url);
             }
         }
     }

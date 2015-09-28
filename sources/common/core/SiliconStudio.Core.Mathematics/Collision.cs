@@ -57,7 +57,7 @@ namespace SiliconStudio.Core.Mathematics
     /// <summary>
     /// Contains static methods to help in determining intersections, containment, etc.
     /// </summary>
-    public static class Collision
+    public static class CollisionHelper
     {
         /// <summary>
         /// Determines the closest point between a point and a triangle.

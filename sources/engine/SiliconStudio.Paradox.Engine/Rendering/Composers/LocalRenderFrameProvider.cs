@@ -4,6 +4,7 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Rendering.Composers
@@ -16,6 +17,7 @@ namespace SiliconStudio.Paradox.Rendering.Composers
     public sealed class LocalRenderFrameProvider : RenderFrameProviderBase, IGraphicsLayerOutput
     {
         private RenderFrame currentFrame;
+        private ColorSpace colorSpace;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalRenderFrameProvider"/> class.
@@ -56,10 +58,13 @@ namespace SiliconStudio.Paradox.Rendering.Composers
             var relativeFrame = context.Tags.Get(RelativeSizeSource == RenderFrameRelativeMode.Current ? RenderFrame.Current : SceneGraphicsLayer.Master);
 
             // Check if we need to resize it
-            if (currentFrame != null && (currentFrame.Descriptor != Descriptor || currentFrame.CheckIfResizeRequired(relativeFrame)))
+            if (currentFrame != null && (currentFrame.Descriptor != Descriptor || currentFrame.CheckIfResizeRequired(relativeFrame) || Descriptor.Format == RenderFrameFormat.LDR && colorSpace != context.GraphicsDevice.ColorSpace))
             {
                 Dispose();
             }
+
+            // Store the colorSpace
+            colorSpace = context.GraphicsDevice.ColorSpace;
 
             // Allocate the render frame if necessary
             // TODO: Should we use allocated shared textures from RenderContext?

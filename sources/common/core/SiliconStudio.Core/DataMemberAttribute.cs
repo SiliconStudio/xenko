@@ -10,8 +10,18 @@ namespace SiliconStudio.Core
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
     public sealed class DataMemberAttribute : Attribute
     {
+        // Ideally should point to YamlMemberAttribute.DefaultMask, but it is not referenced in this assembly
+        public const uint DefaultMask = 1;
+
         private readonly DataMemberMode mode;
         private readonly string name;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DataMemberAttribute"/> class.
+        /// </summary>
+        public DataMemberAttribute()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DataMemberAttribute"/> class.
@@ -99,5 +109,11 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <value>The order.</value>
         public int? Order { get; set; }
+
+        /// <summary>
+        /// Gets or sets the mask to filter out members.
+        /// </summary>
+        /// <value>The mask.</value>
+        public uint Mask { get; set; } = DefaultMask;
     }
 }

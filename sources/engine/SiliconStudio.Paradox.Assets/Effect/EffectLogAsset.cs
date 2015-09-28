@@ -15,11 +15,16 @@ namespace SiliconStudio.Paradox.Assets.Effect
     /// Describes an effect asset. 
     /// </summary>
     [DataContract("EffectLibrary")]
-    [AssetDescription(FileExtension, false)]
+    [AssetDescription(FileExtension, false, AlwaysMarkAsRoot = true)]
     [AssetCompiler(typeof(EffectLogAssetCompiler))]
     [Display(98, "Effect Library", "An effect library")]
     public sealed class EffectLogAsset : SourceCodeAsset
     {
+        /// <summary>
+        /// The default file name used to store effect compile logs.
+        /// </summary>
+        public const string DefaultFile = "EffectCompileLog";
+
         /// <summary>
         /// The default file extension used by the <see cref="EffectLogAsset"/>.
         /// </summary>
@@ -30,31 +35,6 @@ namespace SiliconStudio.Paradox.Assets.Effect
         /// </summary>
         public EffectLogAsset()
         {
-        }
-
-        /// <summary>
-        /// Gets the text.
-        /// </summary>
-        /// <value>The text.</value>
-        public string Text
-        {
-            get; set;
-        }
-
-        public override void Load()
-        {
-            if (!string.IsNullOrEmpty(AbsoluteSourceLocation))
-            {
-                Text = File.ReadAllText(AbsoluteSourceLocation);
-            }
-        }
-
-        public override void Save()
-        {
-            if (!string.IsNullOrEmpty(AbsoluteSourceLocation))
-            {
-                File.WriteAllText(AbsoluteSourceLocation, Text, Encoding.UTF8);
-            }
         }
 
         protected override int InternalBuildOrder

@@ -11,44 +11,6 @@ using SiliconStudio.Core.Yaml;
 namespace SiliconStudio.Core.Settings
 {
     [YamlSerializerFactory]
-    internal class SettingsCollectionSerializer : SettingsDictionarySerializer
-    {
-        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
-        {
-            var type = typeDescriptor.Type;
-            return type == typeof(SettingsCollection) ? this : null;
-        }
-
-        protected override void CreateOrTransformObject(ref ObjectContext objectContext)
-        {
-            var settingsCollection = (SettingsCollection)objectContext.Instance;
-            var settingsDictionary = new SettingsDictionary { Tags = settingsCollection };
-
-            if (objectContext.SerializerContext.IsSerializing)
-            {
-                settingsCollection.Profile.Group.EncodeSettings(settingsCollection.Profile, settingsDictionary);
-            }
-
-            objectContext.Instance = settingsDictionary;
-
-            base.CreateOrTransformObject(ref objectContext);
-        }
-
-        protected override void TransformObjectAfterRead(ref ObjectContext objectContext)
-        {
-            if (!objectContext.SerializerContext.IsSerializing)
-            {
-                var settingsDictionary = (SettingsDictionary)objectContext.Instance;
-                var settingsCollection = (SettingsCollection)settingsDictionary.Tags;
-
-                settingsCollection.Profile.Group.DecodeSettings(settingsDictionary, settingsCollection.Profile);
-
-                objectContext.Instance = settingsCollection;
-            }
-        }
-    }
-
-    [YamlSerializerFactory]
     internal class SettingsDictionarySerializer : DictionarySerializer
     {
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)

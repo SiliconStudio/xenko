@@ -13,7 +13,7 @@ namespace SiliconStudio.Core.MicroThreading
     /// <summary>
     /// Represents an execution context managed by a <see cref="Scheduler"/>, that can cooperatively yield execution to another <see cref="MicroThread"/> at any point (usually using async calls).
     /// </summary>
-    public class MicroThread : IComparable<MicroThread>
+    public class MicroThread
     {
         internal static readonly ProfilingKey ProfilingKey = new ProfilingKey("MicroThread-Running");
 
@@ -26,12 +26,9 @@ namespace SiliconStudio.Core.MicroThreading
 
         private static long globalCounterId;
 
-        // Counter that will be used to have a "stable" microthread scheduling (first added is first scheduled)
-        private int priority;
-        private long schedulerCounter;
-
         private int state;
-        internal PriorityQueueNode<MicroThread> ScheduledLinkedListNode;
+        private CancellationTokenSource cancellationTokenSource;
+        internal PriorityQueueNode<SchedulerEntry> ScheduledLinkedListNode;
         internal LinkedListNode<MicroThread> AllLinkedListNode; // Also used as lock for "CompletionTask"
         internal MicroThreadCallbackList Callbacks;
         internal SynchronizationContext SynchronizationContext;
@@ -40,11 +37,12 @@ namespace SiliconStudio.Core.MicroThreading
         {
             Id = Interlocked.Increment(ref globalCounterId);
             Scheduler = scheduler;
-            ScheduledLinkedListNode = new PriorityQueueNode<MicroThread>(this);
+            ScheduledLinkedListNode = new PriorityQueueNode<SchedulerEntry>(new SchedulerEntry(this));
             AllLinkedListNode = new LinkedListNode<MicroThread>(this);
             ScheduleMode = ScheduleMode.Last;
             Flags = flags;
             Tags = new PropertyContainer(this);
+            cancellationTokenSource = new CancellationTokenSource();
         }
 
         /// <summary>
@@ -55,8 +53,12 @@ namespace SiliconStudio.Core.MicroThreading
         /// </value>
         public int Priority
         {
-            get { return priority; }
-            set { priority = value; }
+            get { return ScheduledLinkedListNode.Value.Priority; }
+            set
+            {
+                if (ScheduledLinkedListNode.Value.Priority != value)
+                    Reschedule(ScheduleMode.First, value);
+            }
         }
 
         /// <summary>
@@ -111,18 +113,17 @@ namespace SiliconStudio.Core.MicroThreading
         public ScheduleMode ScheduleMode { get; set; }
 
         /// <summary>
-        /// Gets or sets the exception to raise.
-        /// </summary>
-        /// <value>The exception to raise.</value>
-        internal Exception ExceptionToRaise { get; set; }
-
-        /// <summary>
         /// Gets or sets the task that will be executed upon completion (used internally for <see cref="Scheduler.WhenAll"/>)
         /// </summary>
         internal TaskCompletionSource<int> CompletionTask { get; set; }
 
+        /// <value>
+        /// A token for listening to the cancellation of the MicroThread.
+        /// </value>
+        public CancellationToken CancellationToken => cancellationTokenSource.Token;
+
         /// <summary>
-        /// Indicates whether the MicroThread is terminated or not, either in Completed, Cancelled or Failed status.
+        /// Indicates whether the MicroThread is terminated or not, either in Completed, Canceled or Failed status.
         /// </summary>
         public bool IsOver
         {
@@ -130,7 +131,7 @@ namespace SiliconStudio.Core.MicroThreading
             {
                 return
                     State == MicroThreadState.Completed ||
-                    State == MicroThreadState.Cancelled ||
+                    State == MicroThreadState.Canceled ||
                     State == MicroThreadState.Failed;
             }
         }
@@ -142,15 +143,6 @@ namespace SiliconStudio.Core.MicroThreading
         public static MicroThread Current
         {
             get { return Scheduler.CurrentMicroThread; }
-        }
-
-        public int CompareTo(MicroThread other)
-        {
-            var priorityDiff = priority.CompareTo(other.priority);
-            if (priorityDiff != 0)
-                return priorityDiff;
-
-            return schedulerCounter.CompareTo(other.schedulerCounter);
         }
 
         public void Migrate(Scheduler scheduler)
@@ -190,6 +182,11 @@ namespace SiliconStudio.Core.MicroThreading
                         throw new InvalidOperationException("MicroThread completed in an invalid state.");
                     State = MicroThreadState.Completed;
                 }
+                catch (OperationCanceledException e)
+                {
+                    // Exit gracefully on cancellation exceptions
+                    SetException(e);
+                }
                 catch (Exception e)
                 {
                     Scheduler.Log.Error("Unexpected exception while executing a micro-thread. Reason: {0}", new object[] {e});
@@ -226,23 +223,32 @@ namespace SiliconStudio.Core.MicroThreading
         /// <returns>Task.</returns>
         public async Task Run()
         {
-            Reschedule(ScheduleMode.First);
+            Reschedule(ScheduleMode.First, Priority);
             var currentScheduler = Scheduler.Current;
             if (currentScheduler == Scheduler)
                 await Scheduler.Yield();
         }
 
         /// <summary>
-        /// Raises an exception from within the <see cref="MicroThread"/>.
+        /// Cancels the <see cref="MicroThread"/>.
         /// </summary>
-        /// As an exception can only be raised cooperatively, there is no guarantee it will actually happen or when it will happen.
-        /// The scheduler usually checks for them before and after a continuation is running.
-        /// Only one Exception is currently recorded.
-        /// <param name="e">The exception.</param>
-        public void RaiseException(Exception e)
+        public void Cancel()
         {
-            if (ExceptionToRaise == null)
-                ExceptionToRaise = e;
+            // TODO: If we unschedule the microthread after cancellation, we never give user code the chance to throw OperationCanceledException.
+            // If we don't, we can't be sure that the MicroThread ends. 
+            // Should we run continuations manually?
+
+            // Notify awaitables
+            cancellationTokenSource.Cancel();
+
+            // Unschedule microthread
+            //lock (Scheduler.scheduledMicroThreads)
+            //{
+            //    if (ScheduledLinkedListNode.Index != -1)
+            //    {
+            //        Scheduler.scheduledMicroThreads.Remove(ScheduledLinkedListNode);
+            //    }
+            //}
         }
 
         internal void SetException(Exception exception)
@@ -250,18 +256,22 @@ namespace SiliconStudio.Core.MicroThreading
             Exception = exception;
 
             // Depending on if exception was raised from outside or inside, set appropriate state
-            State = (exception == ExceptionToRaise) ? MicroThreadState.Cancelled : MicroThreadState.Failed;
+            State = (exception is OperationCanceledException) ? MicroThreadState.Canceled : MicroThreadState.Failed;
         }
 
-        internal void Reschedule(ScheduleMode scheduleMode)
+        internal void Reschedule(ScheduleMode scheduleMode, int newPriority)
         {
-            lock (Scheduler.scheduledMicroThreads)
+            lock (Scheduler.scheduledEntries)
             {
                 if (ScheduledLinkedListNode.Index != -1)
                 {
-                    Scheduler.scheduledMicroThreads.Remove(ScheduledLinkedListNode);
-
-                    Schedule(scheduleMode);
+                    Scheduler.scheduledEntries.Remove(ScheduledLinkedListNode);
+                    ScheduledLinkedListNode.Value.Priority = newPriority;
+                    Scheduler.Schedule(ScheduledLinkedListNode, scheduleMode);
+                }
+                else
+                {
+                    ScheduledLinkedListNode.Value.Priority = newPriority;
                 }
             }
         }
@@ -269,45 +279,28 @@ namespace SiliconStudio.Core.MicroThreading
         internal void ScheduleContinuation(ScheduleMode scheduleMode, SendOrPostCallback callback, object callbackState)
         {
             Debug.Assert(callback != null);
-            lock (Scheduler.scheduledMicroThreads)
+            lock (Scheduler.scheduledEntries)
             {
                 var node = NewCallback();
                 node.SendOrPostCallback = callback;
                 node.CallbackState = callbackState;
 
                 if (ScheduledLinkedListNode.Index == -1)
-                    Schedule(scheduleMode);
+                    Scheduler.Schedule(ScheduledLinkedListNode, scheduleMode);
             }
         }
 
         internal void ScheduleContinuation(ScheduleMode scheduleMode, Action callback)
         {
             Debug.Assert(callback != null);
-            lock (Scheduler.scheduledMicroThreads)
+            lock (Scheduler.scheduledEntries)
             {
                 var node = NewCallback();
                 node.MicroThreadAction = callback;
 
                 if (ScheduledLinkedListNode.Index == -1)
-                    Schedule(scheduleMode);
+                    Scheduler.Schedule(ScheduledLinkedListNode, scheduleMode);
             }
-        }
-
-        private void Schedule(ScheduleMode scheduleMode)
-        {
-            var nextCounter = Scheduler.SchedulerCounter++;
-            if (scheduleMode == ScheduleMode.First)
-                nextCounter = -nextCounter;
-
-            schedulerCounter = nextCounter;
-
-            Scheduler.scheduledMicroThreads.Enqueue(ScheduledLinkedListNode);
-        }
-
-        internal void ThrowIfExceptionRequest()
-        {
-            if (ExceptionToRaise != null)
-                throw ExceptionToRaise;
         }
 
         private MicroThreadCallbackNode NewCallback()

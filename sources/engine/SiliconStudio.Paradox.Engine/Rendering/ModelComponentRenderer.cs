@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Engine;
@@ -15,7 +16,7 @@ namespace SiliconStudio.Paradox.Rendering
 
     public class ModelComponentRendererCallback
     {
-        public delegate void UpdateMeshesDelegate(RenderContext context, FastList<RenderMesh> meshes);
+        public delegate void UpdateMeshesDelegate(RenderContext context, ref FastListStruct<RenderMesh> meshes);
 
         public delegate void PreRenderMeshDelegate(RenderContext context, RenderMesh renderMesh);
 
@@ -31,19 +32,27 @@ namespace SiliconStudio.Paradox.Rendering
     }
 
     /// <summary>
-    /// This <see cref="EntityComponentRendererBase"/> is responsible to prepare and render meshes for a specific pass.
+    /// Renders a collection of <see cref="RenderModel"/>.
     /// </summary>
     public class ModelComponentRenderer : EntityComponentRendererBase
     {
-        private readonly static PropertyKey<ModelComponentRenderer> Current = new PropertyKey<ModelComponentRenderer>("ModelComponentRenderer.Current", typeof(ModelComponentRenderer));
+        private readonly static Logger Log = GlobalLogger.GetLogger("ModelComponentRenderer");
+        private static readonly PropertyKey<RenderModelEffectSlotManager> RenderModelManagerKey = new PropertyKey<RenderModelEffectSlotManager>("ModelProcessor.RenderModelManagerKey", typeof(ModelComponentRenderer));
+        private static readonly PropertyKey<ModelComponentRenderer> Current = new PropertyKey<ModelComponentRenderer>("ModelComponentRenderer.Current", typeof(ModelComponentRenderer));
 
         private int modelRenderSlot;
 
-        private readonly FastList<RenderMesh> meshesToRender;
+        private FastListStruct<RenderMesh> meshesToRender;
+
+        private readonly List<RenderModelCollection> renderModelCollections = new List<RenderModelCollection>();
 
         private DynamicEffectCompiler dynamicEffectCompiler;
         private string effectName;
-        
+
+        private MeshSkinningUpdater skinningUpdater;
+
+        private RenderModelEffectSlotManager slotManager;
+
         public override bool SupportPicking { get { return true; } }
 
         /// <summary>
@@ -66,11 +75,8 @@ namespace SiliconStudio.Paradox.Rendering
             }
 
             meshesToRender = new FastList<RenderMesh>();
-
-            modelRenderSlot = -1;
-
             Callbacks = new ModelComponentRendererCallback();
-            CustomRenderModelList = new List<RenderModel>();
+            skinningUpdater = new MeshSkinningUpdater(256);
         }
 
         /// <summary>
@@ -102,16 +108,15 @@ namespace SiliconStudio.Paradox.Rendering
         public ModelComponentRendererCallback Callbacks { get; private set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [use custom render model list].
+        /// View-Projection Matrix used for culling and calculating the z depth of the meshes to render.
         /// </summary>
-        /// <value><c>true</c> if [use custom render model list]; otherwise, <c>false</c>.</value>
-        public bool UseCustomRenderModelList { get; set; }
+        public Matrix ViewProjectionMatrix;
 
         /// <summary>
-        /// Gets the custom render model list to be used instead of the model processor list
+        /// Gets or sets the list of <see cref="RenderModel"/> to be used for rendering. If null, the list from <see cref="ModelProcessor"/> is used.
         /// </summary>
         /// <value>The custom render model list.</value>
-        public List<RenderModel> CustomRenderModelList { get; private set; }
+        public List<RenderModel> RenderModels { get; set; }
 
         /// <summary>
         /// Gets or sets the state of the rasterizer to overrides the default one.
@@ -120,199 +125,32 @@ namespace SiliconStudio.Paradox.Rendering
         public RasterizerState RasterizerState { get; set; }
 
         /// <summary>
+        /// Gets or sets a boolean indicating whether the rasterizer state set on this instance is overriding any rasterizer states defines at the material level.
+        /// </summary>
+        public bool ForceRasterizer { get; set; }
+
+        /// <summary>
+        /// Gets or sets the rasterizer state used for meshes with an inverted geometry. If not set, use the <see cref="RasterizerState"/>
+        /// </summary>
+        /// <value>The rasterizer state for inverted geometry.</value>
+        public RasterizerState RasterizerStateForInvertedGeometry { get; set; }
+
+        /// <summary>
         /// Allows to override the culling mode. If null, takes the culling mode from the current <see cref="SceneCameraRenderer"/>
         /// </summary>
         /// <value>The culling mode override.</value>
-        public CullingMode? CullingModeOverride { get; set; }
+        public CameraCullingMode CullingMode { get; set; }
 
+        /// <summary>
+        /// Gets the dynamic effect compiler created by this instance. This value may be null if <see cref="EffectName"/> is null and the renderer hasn't been called.
+        /// </summary>
+        /// <value>The dynamic effect compiler.</value>
         public DynamicEffectCompiler DynamicEffectCompiler
         {
             get
             {
                 return dynamicEffectCompiler;
             }
-        }
-
-        protected override void InitializeCore()
-        {
-            base.InitializeCore();
-
-            if (effectName != null)
-            {
-                dynamicEffectCompiler = new DynamicEffectCompiler(Services, effectName);
-            }
-        }
-
-        protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
-        {
-            // If EffectName is not setup, exit
-            if (effectName == null)
-            {
-                return;
-            }
-
-            if (dynamicEffectCompiler == null)
-            {
-                dynamicEffectCompiler = new DynamicEffectCompiler(Services, effectName);                
-            }
-
-            // If we don't have yet a render slot, create a new one
-            if (modelRenderSlot < 0)
-            {
-                var pipelineModelState = GetOrCreateModelRendererState(context);
-
-                // Allocate (or reuse) a slot for the pass of this processor
-                // Note: The slot is passed as out, so that when ModelRendererState.ModelSlotAdded callback is fired,
-                // ModelRenderer.modelRenderSlot is valid (it might call PrepareModelForRendering recursively).
-                modelRenderSlot = pipelineModelState.AllocateModelSlot(EffectName);
-            }
-
-            if (UseCustomRenderModelList)
-            {
-                PrepareModels(context, CustomRenderModelList, opaqueList, transparentList);
-            }
-            else
-            {
-                // Get all meshes from the render model processor
-                var modelProcessor = SceneInstance.GetProcessor<ModelProcessor>();
-                foreach (var renderModelGroup in modelProcessor.ModelGroups)
-                {
-                    // Perform culling on group and accept
-                    if (!CurrentCullingMask.Contains(renderModelGroup.Group))
-                    {
-                        continue;
-                    }
-
-                    PrepareModels(context, renderModelGroup, opaqueList, transparentList);
-                }
-            }
-        }
-
-        private void PrepareModels(RenderContext context, List<RenderModel> renderModels, RenderItemCollection opaqueList, RenderItemCollection transparentList)
-        {
-            // If no camera, early exit
-            var camera = context.GetCurrentCamera();
-            if (camera == null)
-            {
-                return;
-            }
-
-            var viewProjectionMatrix = camera.ViewProjectionMatrix;
-            var preRenderModel = Callbacks.PreRenderModel;
-
-            var sceneCameraRenderer = context.Tags.Get(SceneCameraRenderer.Current);
-            var cullingMode = CullingModeOverride.HasValue ? CullingModeOverride.Value : sceneCameraRenderer != null ? sceneCameraRenderer.CullingMode : CullingMode.None;
-            var frustum = new BoundingFrustum(ref viewProjectionMatrix);
-
-            var cameraRenderMode = sceneCameraRenderer != null ? sceneCameraRenderer.Mode : null;
-
-            foreach (var renderModel in renderModels)
-            {
-                // If Model is null, then skip it
-                if (renderModel.Model == null)
-                {
-                    continue;
-                }
-
-                if (preRenderModel != null)
-                {
-                    if (!preRenderModel(context, renderModel))
-                    {
-                        continue;
-                    }
-                }
-
-                // Always prepare the slot for the render meshes even if they are not used.
-                EnsureRenderMeshes(renderModel);
-
-                var meshes = PrepareModelForRendering(context, renderModel);
-
-                foreach (var renderMesh in meshes)
-                {
-                    if (!renderMesh.Enabled)
-                    {
-                        continue;
-                    }
-
-                    // Perform frustum culling
-                    if (cullingMode == CullingMode.Frustum)
-                    {
-                        // Always render meshes with unspecified bounds
-                        // TODO: This should not be necessary. Add proper bounding boxes to gizmos etc.
-                        if (renderMesh.BoundingBox.Extent != Vector3.Zero)
-                        {
-                            // Fast AABB transform: http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
-                            // Compute transformed AABB (by world)
-                            if (!frustum.Contains(ref renderMesh.BoundingBox))
-                                continue;
-                        }
-                    }
-
-                    // Project the position
-                    // TODO: This could be done in a SIMD batch, but we need to figure-out how to plugin in with RenderMesh object
-                    var worldPosition = new Vector4(renderMesh.WorldMatrix.TranslationVector, 1.0f);
-                    Vector4 projectedPosition;
-                    Vector4.Transform(ref worldPosition, ref viewProjectionMatrix, out projectedPosition);
-                    var projectedZ = projectedPosition.Z / projectedPosition.W;
-
-                    // TODO: Should this be set somewhere else?
-                    var rasterizerState = cameraRenderMode != null ? cameraRenderMode.GetDefaultRasterizerState(renderMesh.IsGeometryInverted) : null;
-                    renderMesh.RasterizerState = RasterizerState ?? rasterizerState;
-
-                    renderMesh.UpdateMaterial();
-                    var list = renderMesh.HasTransparency ? transparentList : opaqueList;
-                    list.Add(new RenderItem(this, renderMesh, projectedZ));
-                }
-            }
-        }
-
-        protected override void DrawCore(RenderContext context, RenderItemCollection renderItemList, int fromIndex, int toIndex)
-        {
-            // Get all meshes from render models
-            meshesToRender.Clear();
-            for(int i = fromIndex; i <= toIndex; i++)
-            {
-                meshesToRender.Add((RenderMesh)renderItemList[i].DrawContext);
-            }
-
-            // Slow path there is a callback
-            if (Callbacks.UpdateMeshes != null)
-            {
-                Callbacks.UpdateMeshes(context, meshesToRender);
-            }
-
-            // Fetch callback on PreRenderGroup
-            var preRenderMesh = Callbacks.PreRenderMesh;
-
-            foreach (var mesh in meshesToRender)
-            {
-                // If the EntityGroup is changing, call the callback to allow to plug specific parameters for this group
-                if (preRenderMesh != null)
-                {
-                    preRenderMesh(context, mesh);
-                }
-
-                // Update Effect and mesh
-                UpdateEffect(context, mesh, context.Parameters);
-
-                // Draw the mesh
-                mesh.Draw(context);
-            }
-        }
-
-        protected override void Unload()
-        {
-            if (modelRenderSlot < 0)
-            {
-                var pipelineModelState = GetOrCreateModelRendererState(Context);
-
-                // Release the slot (note: if shared, it will wait for all its usage to be released)
-                pipelineModelState.ReleaseModelSlot(modelRenderSlot);
-
-                // TODO: Remove RenderMeshes
-            }
-
-            base.Unload();
         }
 
         /// <summary>
@@ -338,60 +176,194 @@ namespace SiliconStudio.Paradox.Rendering
             if (component == null) throw new ArgumentNullException("component");
             component.Tags.Set(Current, renderer);
         }
-
-        private void EnsureRenderMeshes(RenderModel renderModel)
+        
+        protected override void InitializeCore()
         {
-            var renderMeshes = renderModel.RenderMeshesList;
-            if (modelRenderSlot < renderMeshes.Count)
+            base.InitializeCore();
+
+            // Create a slot manager
+            var sceneInstance = SceneInstance.GetCurrent(Context);
+            if (sceneInstance == null)
             {
-                return;
+                // If we don't have a scene instance (unlikely, but possible)
+                slotManager = new RenderModelEffectSlotManager();
             }
-            for (int i = renderMeshes.Count; i <= modelRenderSlot; i++)
+            else
             {
-                renderMeshes.Add(null);
+                // If we have a scene instance, we can store our state there, as we expect to share render models 
+                slotManager = sceneInstance.Tags.Get(RenderModelManagerKey);
+                if (slotManager == null)
+                {
+                    slotManager = new RenderModelEffectSlotManager();
+                    sceneInstance.Tags.Set(RenderModelManagerKey, slotManager);
+                }
+            }
+
+            if (dynamicEffectCompiler == null)
+            {
+                dynamicEffectCompiler = new DynamicEffectCompiler(Services, effectName);
+
+                // Allocate (or reuse) a slot for the pass of this processor
+                // Note: The slot is passed as out, so that when ModelRendererState.ModelSlotAdded callback is fired,
+                // ModelRenderer.modelRenderSlot is valid (it might call PrepareRenderMeshes recursively).
+                modelRenderSlot = slotManager.AllocateSlot(EffectName);
             }
         }
 
-        private List<RenderMesh> PrepareModelForRendering(RenderContext context, RenderModel renderModel)
+        protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
-            // Create the list of RenderMesh objects
-            var renderMeshes = renderModel.RenderMeshesList[modelRenderSlot];
-            var modelMeshes = renderModel.ModelComponent.Model.Meshes;
-
-            // If render mesh is new or the model changed, generate new render mesh
-            if (renderMeshes == null || (renderMeshes.Count == 00 && modelMeshes.Count > 0))
+            // If there is a list of models to render, use this list directly
+            if (RenderModels != null)
             {
-                if (renderMeshes == null)
+                PrepareModels(context, RenderModels, opaqueList, transparentList);
+            }
+            else
+            {
+                // Otherwise, use the models from the ModelProcessor
+                var modelProcessor = SceneInstance.GetProcessor<ModelProcessor>();
+                renderModelCollections.Clear();
+                modelProcessor.QueryModelGroupsByMask(CurrentCullingMask, renderModelCollections);
+                foreach (var renderModelGroup in renderModelCollections)
                 {
-                    renderMeshes = new RenderMeshCollection();
-                    renderModel.RenderMeshesList[modelRenderSlot] = renderMeshes;
-                }
-
-                foreach (var mesh in modelMeshes)
-                {
-                    var renderMesh = new RenderMesh(renderModel, mesh);
-                    //UpdateEffect(context, renderMesh, null);
-
-                    // Register mesh for rendering
-                    renderMeshes.Add(renderMesh);
+                    PrepareModels(context, renderModelGroup, opaqueList, transparentList);
                 }
             }
+        }
 
-            // Update RenderModel transform
-            if (!renderMeshes.TransformUpdated)
+        protected override void DrawCore(RenderContext context, RenderItemCollection renderItemList, int fromIndex, int toIndex)
+        {
+            if (dynamicEffectCompiler == null)
             {
+                throw new InvalidOperationException("This instance is not correctly initialized (no EffectName)");
+            }
+
+            // Get all meshes from render models
+            meshesToRender.Clear();
+            for(int i = fromIndex; i <= toIndex; i++)
+            {
+                meshesToRender.Add((RenderMesh)renderItemList[i].DrawContext);
+            }
+
+            // Slow path there is a callback
+            if (Callbacks.UpdateMeshes != null)
+            {
+                Callbacks.UpdateMeshes(context, ref meshesToRender);
+            }
+
+            // Fetch callback on PreRenderGroup
+            var preRenderMesh = Callbacks.PreRenderMesh;
+
+            for (int i = 0; i < meshesToRender.Count; i++)
+            {
+                var renderMesh = meshesToRender[i];
+
+                // If the EntityGroup is changing, call the callback to allow to plug specific parameters for this group
+                if (preRenderMesh != null)
+                {
+                    preRenderMesh(context, renderMesh);
+                }
+
+                // Update Effect and mesh
+                UpdateEffect(context, renderMesh, context.Parameters);
+
+                // Draw the mesh
+                renderMesh.Draw(context);
+            }
+        }
+
+        protected override void Unload()
+        {
+            if (dynamicEffectCompiler != null)
+            {
+                // Release the slot (note: if shared, it will wait for all its usage to be released)
+                slotManager.ReleaseSlot(modelRenderSlot);
+                // TODO: Remove RenderMeshes
+            }
+
+            base.Unload();
+        }
+
+        private void PrepareModels(RenderContext context, List<RenderModel> renderModels, RenderItemCollection opaqueList, RenderItemCollection transparentList)
+        {
+            var preRenderModel = Callbacks.PreRenderModel;
+
+            foreach (var renderModel in renderModels)
+            {
+                var modelComponent = renderModel.ModelComponent;
+                var meshes = modelComponent.Model.Meshes;
+                int meshCount = meshes.Count;
+                if (meshCount == 0)
+                {
+                    continue;
+                }
+
+                if (preRenderModel != null && !preRenderModel(context, renderModel))
+                {
+                    continue;
+                }
+
+                // Always prepare the slot for the render meshes even if they are not used.
+                for (int i = renderModel.RenderMeshesPerEffectSlot.Count; i <= modelRenderSlot; i++)
+                {
+                    renderModel.RenderMeshesPerEffectSlot.Add(new FastListStruct<RenderMesh>(meshCount));
+                }
+
+                PrepareRenderMeshes(renderModel, meshes, ref renderModel.RenderMeshesPerEffectSlot.Items[modelRenderSlot], opaqueList, transparentList);
+            }
+        }
+
+        private void PrepareRenderMeshes(RenderModel renderModel, List<Mesh> meshes, ref FastListStruct<RenderMesh> renderMeshes, RenderItemCollection opaqueList, RenderItemCollection transparentList)
+        {
+            // Add new render meshes
+            for (int i = renderMeshes.Count; i < meshes.Count; i++)
+            {
+                var renderMesh = new RenderMesh(renderModel, meshes[i]);
+                renderMeshes.Add(renderMesh);
+            }
+
+            // Create the bounding frustum locally on the stack, so that frustum.Contains is performed with boundingBox that is also on the stack
+            var frustum = new BoundingFrustum(ref ViewProjectionMatrix);
+
+            for (int i = 0; i < renderMeshes.Count; i++)
+            {
+                var renderMesh = renderMeshes[i];
                 // Update the model hierarchy
                 var modelViewHierarchy = renderModel.ModelComponent.ModelViewHierarchy;
+                modelViewHierarchy.UpdateRenderMesh(renderMesh);
 
-                modelViewHierarchy.UpdateToRenderModel(renderModel, modelRenderSlot);
+                if (!renderMesh.Enabled)
+                {
+                    continue;
+                }
 
                 // Upload skinning blend matrices
-                MeshSkinningUpdater.Update(modelViewHierarchy, renderModel, modelRenderSlot);
+                BoundingBoxExt boundingBox;
+                skinningUpdater.Update(modelViewHierarchy, renderMesh, out boundingBox);
 
-                renderMeshes.TransformUpdated = true;
+                // Fast AABB transform: http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
+                // Compute transformed AABB (by world)
+                // TODO: CameraCullingMode should be pluggable
+                // TODO: This should not be necessary. Add proper bounding boxes to gizmos etc.
+                if (CullingMode == CameraCullingMode.Frustum && boundingBox.Extent != Vector3.Zero && !frustum.Contains(ref boundingBox))
+                {
+                    continue;
+                }
+
+                // Project the position
+                // TODO: This could be done in a SIMD batch, but we need to figure-out how to plugin in with RenderMesh object
+                var worldPosition = new Vector4(renderMesh.WorldMatrix.TranslationVector, 1.0f);
+                Vector4 projectedPosition;
+                Vector4.Transform(ref worldPosition, ref ViewProjectionMatrix, out projectedPosition);
+                var projectedZ = projectedPosition.Z / projectedPosition.W;
+
+                renderMesh.RasterizerState = renderMesh.IsGeometryInverted ? RasterizerStateForInvertedGeometry : RasterizerState;
+                renderMesh.ForceRasterizer = ForceRasterizer;
+
+                renderMesh.UpdateMaterial();
+
+                var list = renderMesh.HasTransparency ? transparentList : opaqueList;
+                list.Add(new RenderItem(this, renderMesh, projectedZ));
             }
-
-            return renderMeshes;
         }
 
         /// <summary>
@@ -401,51 +373,19 @@ namespace SiliconStudio.Paradox.Rendering
         {
             if (dynamicEffectCompiler.Update(renderMesh, passParameters))
             {
-                renderMesh.Initialize(context.GraphicsDevice);
-            }
-        }
+                try
+                {
+                    renderMesh.Initialize(context.GraphicsDevice);
+                }
+                catch (Exception e)
+                {
+                    Log.Error("Could not initialize RenderMesh, trying again with error fallback effect", e);
 
-        internal ModelRendererState GetOrCreateModelRendererState(RenderContext context, bool createMeshStateIfNotFound = true)
-        {
-            var pipelineState = SceneInstance.Tags.Get(ModelRendererState.Key);
-            if (createMeshStateIfNotFound && pipelineState == null)
-            {
-                pipelineState = new ModelRendererState();
-                SceneInstance.Tags.Set(ModelRendererState.Key, pipelineState);
-            }
-            return pipelineState;
-        }
-
-        /// <summary>
-        /// A list to ensure that all delegates are not null.
-        /// </summary>
-        /// <typeparam name="T">A delegate</typeparam>
-        public class SafeDelegateList<T> : ConstrainedList<T> where T : class
-        {
-            private const string ExceptionError = "The delegate added to the list cannot be null";
-            private readonly ModelComponentRenderer renderer;
-
-            internal SafeDelegateList(ModelComponentRenderer renderer)
-                : base(Constraint, true, ExceptionError)
-            {
-                this.renderer = renderer;
-            }
-
-            public new ModelComponentRenderer Add(T item)
-            {
-                base.Add(item);
-                return renderer;
-            }
-
-            public new ModelComponentRenderer Insert(int index, T item)
-            {
-                base.Insert(index, item);
-                return renderer;
-            }
-
-            private static bool Constraint(ConstrainedList<T> constrainedList, T arg2)
-            {
-                return arg2 != null;
+                    // Try again with error effect to show user something failed with this model
+                    // TODO: What if an exception happens in this case too? Mark renderMesh as ignored or null?
+                    dynamicEffectCompiler.SwitchFallbackEffect(FallbackEffectType.Error, renderMesh, passParameters);
+                    renderMesh.Initialize(context.GraphicsDevice);
+                }
             }
         }
     }

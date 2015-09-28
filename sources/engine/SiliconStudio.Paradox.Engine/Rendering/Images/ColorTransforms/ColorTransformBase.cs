@@ -53,6 +53,23 @@ namespace SiliconStudio.Paradox.Rendering.Images
             }
         }
 
+        /// <summary>
+        /// Gets or sets the generic arguments used by the shader. Default is null.
+        /// </summary>
+        /// <value>The generic arguments used by the shader. Default is null</value>
+        [DataMemberIgnore]
+        public object[] GenericArguments
+        {
+            get
+            {
+                return Parameters.Get(ColorTransformKeys.GenericArguments);
+            }
+            set
+            {
+                Parameters.Set(ColorTransformKeys.GenericArguments, value);
+            }
+        }
+
 
         /// <summary>
         /// Gets the parameters.

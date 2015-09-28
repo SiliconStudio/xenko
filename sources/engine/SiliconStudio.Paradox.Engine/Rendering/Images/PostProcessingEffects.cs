@@ -7,6 +7,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Rendering.Composers;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Rendering.Materials;
 
 namespace SiliconStudio.Paradox.Rendering.Images
 {
@@ -180,6 +181,28 @@ namespace SiliconStudio.Paradox.Rendering.Images
             }
         }
 
+        /// <summary>
+        /// Disables all post processing effects.
+        /// </summary>
+        public void DisableAll()
+        {
+            depthOfField.Enabled = false;
+            bloom.Enabled = false;
+            lightStreak.Enabled = false;
+            lensFlare.Enabled = false;
+            ssaa.Enabled = false;
+            colorTransformsGroup.Enabled = false;
+        }
+
+        public override void Reset()
+        {
+            // TODO: Check how to reset other effects too
+            // Reset the luminance effect
+            luminanceEffect.Reset();
+
+            base.Reset();
+        }
+
         protected override void InitializeCore()
         {
             base.InitializeCore();
@@ -246,7 +269,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
             // Luminance pass (only if tone mapping is enabled)
             // TODO: This is not super pluggable to have this kind of dependencies. Check how to improve this
             var toneMap = colorTransformsGroup.Transforms.Get<ToneMap>();
-            if (colorTransformsGroup.Enabled && toneMap != null && toneMap.LuminanceLocalFactor > 0.0f)
+            if (colorTransformsGroup.Enabled && toneMap != null && toneMap.Enabled)
             {
                 const int LocalLuminanceDownScale = 3;
 
@@ -307,7 +330,26 @@ namespace SiliconStudio.Paradox.Rendering.Images
                 outputForLastEffectBeforeAntiAliasing = NewScopedRenderTarget2D(output.Width, output.Height, output.Format);
             }
 
-            // Color transform group pass (tonemap, color grading, gamma correction)
+            // When FXAA is enabled we need to detect whether the ColorTransformGroup should output the Luminance into the alpha or not
+            var fxaa = ssaa as FXAAEffect;
+            var luminanceToChannelTransform = colorTransformsGroup.PostTransforms.Get<LuminanceToChannelTransform>();
+            if (fxaa != null)
+            {
+                if (luminanceToChannelTransform == null)
+                {
+                    luminanceToChannelTransform = new LuminanceToChannelTransform { ColorChannel = ColorChannel.A };
+                    colorTransformsGroup.PostTransforms.Add(luminanceToChannelTransform);
+                }
+
+                // Only enabled when FXAA is enabled and InputLuminanceInAlpha is true
+                luminanceToChannelTransform.Enabled = fxaa.Enabled && fxaa.InputLuminanceInAlpha;
+            }
+            else if (luminanceToChannelTransform != null)
+            {
+                luminanceToChannelTransform.Enabled = false;
+            }
+
+            // Color transform group pass (tonemap, color grading)
             var lastEffect = colorTransformsGroup.Enabled ? (ImageEffect)colorTransformsGroup: Scaler;
             lastEffect.SetInput(currentInput);
             lastEffect.SetOutput(outputForLastEffectBeforeAntiAliasing);

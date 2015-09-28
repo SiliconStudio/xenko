@@ -51,7 +51,7 @@ namespace SiliconStudio.Paradox.Graphics
             // Initialize the swap chain
             swapChain = CreateSwapChain();
 
-            backBuffer = new Texture(device).InitializeFrom(swapChain.GetBackBuffer<SharpDX.Direct3D11.Texture2D>(0));
+            backBuffer = new Texture(device).InitializeFrom(swapChain.GetBackBuffer<SharpDX.Direct3D11.Texture2D>(0), Description.BackBufferFormat.IsSRgb());
 
             // Reload should get backbuffer from swapchain as well
             //backBufferTexture.Reload = graphicsResource => ((Texture)graphicsResource).Recreate(swapChain.GetBackBuffer<SharpDX.Direct3D11.Texture>(0));
@@ -195,7 +195,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             // Put it in our back buffer texture
             // TODO: Update new size
-            backBuffer.InitializeFrom(backBufferTexture);
+            backBuffer.InitializeFrom(backBufferTexture, Description.BackBufferFormat.IsSRgb());
             backBuffer.LifetimeState = GraphicsResourceLifetimeState.Active;
         }
 
@@ -217,13 +217,18 @@ namespace SiliconStudio.Paradox.Graphics
             }
 #endif
 
+            // If format is same as before, using Unknown (None) will keep the current
+            // We do that because on Win10/RT, actual format might be the non-srgb one and we don't want to switch to srgb one by mistake (or need #ifdef)
+            if (format == backBuffer.Format)
+                format = PixelFormat.None;
+
             swapChain.ResizeBuffers(bufferCount, width, height, (SharpDX.DXGI.Format)format, SwapChainFlags.None);
 
             // Get newly created native texture
             var backBufferTexture = swapChain.GetBackBuffer<SharpDX.Direct3D11.Texture2D>(0);
 
             // Put it in our back buffer texture
-            backBuffer.InitializeFrom(backBufferTexture);
+            backBuffer.InitializeFrom(backBufferTexture, Description.BackBufferFormat.IsSRgb());
         }
 
         protected override void ResizeDepthStencilBuffer(int width, int height, PixelFormat format)
@@ -264,7 +269,7 @@ namespace SiliconStudio.Paradox.Graphics
                 // Automatic sizing
                 Width = Description.BackBufferWidth,
                 Height = Description.BackBufferHeight,
-                Format = SharpDX.DXGI.Format.B8G8R8A8_UNorm, // TODO: Check if we can use the Description.BackBufferFormat
+                Format = (SharpDX.DXGI.Format)Description.BackBufferFormat.ToNonSRgb(),
                 Stereo = false,
                 SampleDescription = new SharpDX.DXGI.SampleDescription((int)Description.MultiSampleCount, 0),
                 Usage = Usage.BackBuffer | Usage.RenderTargetOutput,

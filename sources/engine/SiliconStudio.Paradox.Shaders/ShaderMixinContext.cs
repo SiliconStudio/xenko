@@ -234,7 +234,7 @@ namespace SiliconStudio.Paradox.Shaders
             } 
             else if (builder != null)
             {
-                if (genericParameters.Length != 0)
+                if (genericParameters != null && genericParameters.Length != 0)
                 {
                     throw new InvalidOperationException(string.Format("Generic Parameters are not supported with [{0}]", builder.GetType().GetTypeInfo().Name));
                 }

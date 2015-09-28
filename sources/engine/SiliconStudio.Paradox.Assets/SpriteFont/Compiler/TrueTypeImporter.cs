@@ -24,18 +24,17 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using SharpDX.Direct2D1;
-using SharpDX.DirectWrite;
-using SharpDX.Mathematics.Interop;
-
 using SiliconStudio.Paradox.Graphics.Font;
-
-using Factory = SharpDX.DirectWrite.Factory;
 
 namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
 {
     using System.Drawing;
     using System.Drawing.Imaging;
+    using SharpDX.DirectWrite;
+    using SharpDX.Mathematics.Interop;
+    using Factory = SharpDX.DirectWrite.Factory;
 
     // This code was originally taken from DirectXTk but rewritten with DirectWrite
     // for more accuracy in font rendering

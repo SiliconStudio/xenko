@@ -28,6 +28,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         /// <param name="offset">The offset.</param>
         protected ComputeTextureBase(Texture texture, TextureCoordinate texcoordIndex, Vector2 scale, Vector2 offset)
         {
+            Enabled = true;
             Texture = texture;
             TexcoordIndex = texcoordIndex;
             Sampler = new ComputeColorParameterSampler();
@@ -35,6 +36,13 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
             Offset = offset;
             Key = null;
         }
+
+        /// <summary>
+        /// Gets or sets the enable state of the texture.
+        /// </summary>
+        /// <userdoc>If unchecked, the texture value is ignored and the fallback value is used instead.</userdoc>
+        [DefaultValue(true)]
+        public bool Enabled { get; set; }
 
         /// <summary>
         /// The texture Reference.
@@ -153,8 +161,14 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
 
         protected abstract string GetTextureChannelAsString();
 
+        public abstract ShaderSource GenerateShaderFromFallbackValue(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys);
+
         public override ShaderSource GenerateShaderSource(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys)
         {
+            if (!Enabled || Texture == null) // generate shader from default value when the texture is null or disabled
+                return GenerateShaderFromFallbackValue(context, baseKeys);
+
+            // generate shader from the texture
             // TODO: Use a generated UsedTexcoordIndex when backing textures
             var usedTexcoord = "TEXCOORD" + MaterialUtility.GetTextureIndex(TexcoordIndex);
 

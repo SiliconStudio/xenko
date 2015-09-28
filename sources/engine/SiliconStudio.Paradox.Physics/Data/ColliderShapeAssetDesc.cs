@@ -29,9 +29,14 @@ namespace SiliconStudio.Paradox.Physics
             var other = obj as ColliderShapeAssetDesc;
             if (other == null) return -1;
 
-            if (other.Shape == Shape) return 0;
+            if (other.Shape == null || Shape == null) return other.Shape == Shape ? 0 : 1;
+            if (other.Shape.Descriptions.Count != Shape.Descriptions.Count) return 1;
+            if (other.Shape.Descriptions.Where((t, i) => t.CompareTo(Shape.Descriptions[i]) != 0).Any())
+            {
+                return 1;
+            }
 
-            return 1;
+            return other.Shape == Shape ? 0 : 1;
         }
     }
 }

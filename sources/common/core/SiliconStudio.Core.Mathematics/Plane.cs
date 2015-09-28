@@ -205,7 +205,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>Whether the two objects intersected.</returns>
         public PlaneIntersectionType Intersects(ref Vector3 point)
         {
-            return Collision.PlaneIntersectsPoint(ref this, ref point);
+            return CollisionHelper.PlaneIntersectsPoint(ref this, ref point);
         }
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace SiliconStudio.Core.Mathematics
         public bool Intersects(ref Ray ray)
         {
             float distance;
-            return Collision.RayIntersectsPlane(ref ray, ref this, out distance);
+            return CollisionHelper.RayIntersectsPlane(ref ray, ref this, out distance);
         }
 
         /// <summary>
@@ -228,7 +228,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>Whether the two objects intersected.</returns>
         public bool Intersects(ref Ray ray, out float distance)
         {
-            return Collision.RayIntersectsPlane(ref ray, ref this, out distance);
+            return CollisionHelper.RayIntersectsPlane(ref ray, ref this, out distance);
         }
 
         /// <summary>
@@ -240,7 +240,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>Whether the two objects intersected.</returns>
         public bool Intersects(ref Ray ray, out Vector3 point)
         {
-            return Collision.RayIntersectsPlane(ref ray, ref this, out point);
+            return CollisionHelper.RayIntersectsPlane(ref ray, ref this, out point);
         }
 
         /// <summary>
@@ -250,7 +250,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>Whether the two objects intersected.</returns>
         public bool Intersects(ref Plane plane)
         {
-            return Collision.PlaneIntersectsPlane(ref this, ref plane);
+            return CollisionHelper.PlaneIntersectsPlane(ref this, ref plane);
         }
 
         /// <summary>
@@ -262,7 +262,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>Whether the two objects intersected.</returns>
         public bool Intersects(ref Plane plane, out Ray line)
         {
-            return Collision.PlaneIntersectsPlane(ref this, ref plane, out line);
+            return CollisionHelper.PlaneIntersectsPlane(ref this, ref plane, out line);
         }
 
         /// <summary>
@@ -274,7 +274,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>Whether the two objects intersected.</returns>
         public PlaneIntersectionType Intersects(ref Vector3 vertex1, ref Vector3 vertex2, ref Vector3 vertex3)
         {
-            return Collision.PlaneIntersectsTriangle(ref this, ref vertex1, ref vertex2, ref vertex3);
+            return CollisionHelper.PlaneIntersectsTriangle(ref this, ref vertex1, ref vertex2, ref vertex3);
         }
 
         /// <summary>
@@ -284,7 +284,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>Whether the two objects intersected.</returns>
         public PlaneIntersectionType Intersects(ref BoundingBox box)
         {
-            return Collision.PlaneIntersectsBox(ref this, ref box);
+            return CollisionHelper.PlaneIntersectsBox(ref this, ref box);
         }
 
         /// <summary>
@@ -294,7 +294,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>Whether the two objects intersected.</returns>
         public PlaneIntersectionType Intersects(ref BoundingSphere sphere)
         {
-            return Collision.PlaneIntersectsSphere(ref this, ref sphere);
+            return CollisionHelper.PlaneIntersectsSphere(ref this, ref sphere);
         }
 
         /// <summary>

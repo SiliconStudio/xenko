@@ -1,0 +1,14 @@
+!Texture
+Id: 231c5969-26ee-4a8c-9d29-6146ee723740
+SerializedVersion: 1
+Tags: []
+Source: ../../../data/tests/SmallPngMask.png
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+~Base:
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: 1
+        Tags: []
+        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
