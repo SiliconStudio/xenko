@@ -57,7 +57,11 @@ namespace SiliconStudio.Paradox.Games
 #elif SILICONSTUDIO_PLATFORM_IOS
             return new GamePlatformiOS(game);
 #else
+#if !SILICONSTUDIO_RUNTIME_CORECLR
             return new GamePlatformDesktop(game);
+#else
+            return new GamePlatformDesktopCoreCLR(game);
+#endif
 #endif
         }
 

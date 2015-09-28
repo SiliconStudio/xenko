@@ -43,9 +43,8 @@
     <Compile Include="Android\GamePlatformAndroid.cs" />
     <Compile Include="Android\GameWindowAndroid.cs" />
     <Compile Include="AssemblyDoc.cs" />
-    <Compile Include="Desktop\GameForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Desktop\GamePlatformDesktopCoreCLR.cs" />
+    <Compile Include="Desktop\GameForm.cs" />
     <Compile Include="Desktop\WindowsMessageLoop.cs" />
     <Compile Include="Desktop\Win32Native.cs" />
     <Compile Include="GameContext.Android.cs" />
