@@ -40,13 +40,12 @@ namespace SiliconStudio.Paradox.Engine
         public static void SetColor(this LightComponent light, Color3 color)
         {
             var colorLight = light.Type as IColorLight;
-            if (colorLight != null)
-            {
-                var lightColorRgb = colorLight.Color as ColorRgbProvider ?? new ColorRgbProvider();
-                lightColorRgb.Value = color;
-                colorLight.Color = lightColorRgb;
-            }
-            throw new InvalidOperationException("The LightComponent doesn't contain a color light type IColorLight");
+            if (colorLight == null)
+                throw new InvalidOperationException("The LightComponent doesn't contain a color light type IColorLight");
+
+            var lightColorRgb = colorLight.Color as ColorRgbProvider ?? new ColorRgbProvider();
+            lightColorRgb.Value = color;
+            colorLight.Color = lightColorRgb;
         }
     }
 }

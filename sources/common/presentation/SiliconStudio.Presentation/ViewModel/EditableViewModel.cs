@@ -127,7 +127,15 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <returns><c>True</c> if the field was modified and events were raised, <c>False</c> if the new value was equal to the old one and nothing was done.</returns>
         protected bool SetValueUncancellable<T>(ref T field, T value, Action updateAction, params string[] propertyNames)
         {
-            propertyNames.ForEach(x => uncancellableChanges.Add(x));
+            foreach (var propertyName in propertyNames)
+            {
+                uncancellableChanges.Add(propertyName);
+                string[] dependentProperties;
+                if (DependentProperties.TryGetValue(propertyName, out dependentProperties))
+                {
+                    dependentProperties.ForEach(x => uncancellableChanges.Add(x));
+                }
+            }
             try
             {
                 var result = SetValue(ref field, value, updateAction, propertyNames);
@@ -135,7 +143,15 @@ namespace SiliconStudio.Presentation.ViewModel
             }
             finally
             {
-                propertyNames.ForEach(x => uncancellableChanges.Remove(x));
+                foreach (var propertyName in propertyNames)
+                {
+                    uncancellableChanges.Remove(propertyName);
+                    string[] dependentProperties;
+                    if (DependentProperties.TryGetValue(propertyName, out dependentProperties))
+                    {
+                        dependentProperties.ForEach(x => uncancellableChanges.Remove(x));
+                    }
+                }
             }
         }
 
@@ -222,7 +238,15 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <returns><c>True</c> if the update was done and events were raised, <c>False</c> if <see cref="hasChangedFunction"/> is not <c>null</c> and returned false.</returns>
         protected virtual bool SetValueUncancellable(Func<bool> hasChangedFunction, Action updateAction, params string[] propertyNames)
         {
-            propertyNames.ForEach(x => uncancellableChanges.Add(x));
+            foreach (var propertyName in propertyNames)
+            {
+                uncancellableChanges.Add(propertyName);
+                string[] dependentProperties;
+                if (DependentProperties.TryGetValue(propertyName, out dependentProperties))
+                {
+                    dependentProperties.ForEach(x => uncancellableChanges.Add(x));
+                }
+            }
             try
             {
                 var result = SetValue(hasChangedFunction, updateAction, propertyNames);
@@ -230,7 +254,15 @@ namespace SiliconStudio.Presentation.ViewModel
             }
             finally
             {
-                propertyNames.ForEach(x => uncancellableChanges.Remove(x));
+                foreach (var propertyName in propertyNames)
+                {
+                    uncancellableChanges.Remove(propertyName);
+                    string[] dependentProperties;
+                    if (DependentProperties.TryGetValue(propertyName, out dependentProperties))
+                    {
+                        dependentProperties.ForEach(x => uncancellableChanges.Remove(x));
+                    }
+                }
             }
         }
 

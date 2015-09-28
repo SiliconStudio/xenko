@@ -14,7 +14,10 @@ namespace SiliconStudio.Presentation.ViewModel
         private readonly IViewModelServiceProvider parentProvider;
         private readonly List<object> services = new List<object>();
 
-        public static IViewModelServiceProvider NullServiceProvider = new ViewModelServiceProvider(Enumerable.Empty<object>());
+        /// <summary>
+        /// An empty service provider.
+        /// </summary>
+        public static IViewModelServiceProvider NullServiceProvider = new NullServiceProvider();
 
         public ViewModelServiceProvider(IEnumerable<object> services = null)
             : this(null, services)
@@ -43,27 +46,35 @@ namespace SiliconStudio.Presentation.ViewModel
         }
 
         /// <inheritdoc/>
+        public event EventHandler<ServiceRegistrationEventArgs> ServiceRegistered;
+
+        /// <inheritdoc/>
+        public event EventHandler<ServiceRegistrationEventArgs> ServiceUnregistered;
+
+        /// <inheritdoc/>
         public void RegisterService(object service)
         {
-            if (service == null) throw new ArgumentNullException("service");
+            if (service == null) throw new ArgumentNullException(nameof(service));
             if (services.Any(x => x.GetType() == service.GetType()))
                 throw new InvalidOperationException("A service of the same type has already been registered.");
 
             services.Add(service);
+            ServiceRegistered?.Invoke(this, new ServiceRegistrationEventArgs(service));
         }
 
         /// <inheritdoc/>
         public void UnregisterService(object service)
         {
-            if (service == null) throw new ArgumentNullException("service");
+            if (service == null) throw new ArgumentNullException(nameof(service));
 
             services.Remove(service);
+            ServiceUnregistered?.Invoke(this, new ServiceRegistrationEventArgs(service));
         }
 
         /// <inheritdoc/>
         public object TryGet(Type serviceType)
         {
-            if (serviceType == null) throw new ArgumentNullException("serviceType");
+            if (serviceType == null) throw new ArgumentNullException(nameof(serviceType));
             object serviceFound = null;
 
             foreach (var service in services.Where(serviceType.IsInstanceOfType))

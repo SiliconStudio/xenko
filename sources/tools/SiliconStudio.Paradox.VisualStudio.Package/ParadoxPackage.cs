@@ -69,7 +69,7 @@ namespace SiliconStudio.Paradox.VisualStudio
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
     public sealed class ParadoxPackage : Package, IOleComponent
     {
-        public const string Version = "1.156";
+        public const string Version = "1.3";
 
         private readonly Dictionary<EnvDTE.Project, string> previousProjectPlatforms = new Dictionary<EnvDTE.Project, string>();
         private EnvDTE.Project currentStartupProject;
@@ -230,8 +230,14 @@ namespace SiliconStudio.Paradox.VisualStudio
             string startupPlatform;
             var hasPreviousPlatform = previousProjectPlatforms.TryGetValue(currentStartupProject, out startupPlatform);
 
+            SolutionConfiguration2 newConfiguration = null;
+
+            bool foundPreferredPlatform = false;
             foreach (SolutionConfiguration2 configuration in dte.Solution.SolutionBuild.SolutionConfigurations)
             {
+                if (foundPreferredPlatform)
+                    break;
+
                 if (configuration.Name != activeConfiguration.Name)
                     continue;
 
@@ -246,22 +252,34 @@ namespace SiliconStudio.Paradox.VisualStudio
                     if (hasPreviousPlatform && context.PlatformName != startupPlatform)
                         continue;
 
-                    if (configuration != activeConfiguration)
-                    {
-                        try
-                        {
-                            configurationLock = true;
-                            configuration.Activate();
-                        }
-                        finally
-                        {
-                            configurationLock = false;
-                        }
-                    }
+                    newConfiguration = configuration;
 
-                    return;
+                    if (IsPreferredPlatform(projectPlatform, context.PlatformName))
+                    {
+                        foundPreferredPlatform = true;
+                        break;
+                    }
                 }
             }
+
+            if (newConfiguration != null && newConfiguration != activeConfiguration)
+            {
+                try
+                {
+                    configurationLock = true;
+                    newConfiguration.Activate();
+                }
+                finally
+                {
+                    configurationLock = false;
+                }
+            }
+        }
+
+        private static bool IsPreferredPlatform(string projectPlatform, string platformName)
+        {
+            // Prefer ARM on WindowsPhone and non-ARM otherwise
+            return (projectPlatform == "WindowsPhone") == (platformName == "ARM");
         }
 
         private void UpdateStartupProjectFromConfiguration()

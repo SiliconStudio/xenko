@@ -252,6 +252,7 @@
     <Compile Include="DataContractAttribute.cs" />
     <Compile Include="SuppressUnmanagedCodeSecurityAttribute.cs" />
     <Compile Include="Threading\TaskList.cs" />
+    <Compile Include="UnmanagedArray.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="Utilities.Interop.cs" />
     <Compile Include="ValidateValueMetadata.cs" />

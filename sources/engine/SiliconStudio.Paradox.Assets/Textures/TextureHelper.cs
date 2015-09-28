@@ -481,7 +481,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
 
                 assetManager.Save(parameters.OutputUrl, outputImage.ToSerializableVersion());
 
-                logger.Info("Compression successful [{3}] to ({0}x{1},{2})", outputImage.Description.Width, outputImage.Description.Height, outputImage.Description.Format, parameters.OutputUrl);
+                logger.Verbose("Compression successful [{3}] to ({0}x{1},{2})", outputImage.Description.Width, outputImage.Description.Height, outputImage.Description.Format, parameters.OutputUrl);
             }
 
             return ResultStatus.Successful;

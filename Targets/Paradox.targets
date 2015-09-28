@@ -137,7 +137,7 @@
     </PropertyGroup>
     
     <!-- Run assembly processor -->
-    <Message Importance="High" Text="SiliconStudio AssemblyProcessor: $(SiliconStudioAssemblyProcessorCommand)"/>
+    <Message Importance="Normal" Text="SiliconStudio AssemblyProcessor: $(SiliconStudioAssemblyProcessorCommand)"/>
     <Exec Command="$(SiliconStudioAssemblyProcessorCommand)">
       <Output TaskParameter="ExitCode" PropertyName="SiliconStudioAssemblyProcessorErrorCode"/>
     </Exec>
@@ -169,7 +169,7 @@
 
     <SiliconStudioParadoxCompileAssetCommand Condition="'$(SiliconStudioParadoxCompileAssetCommand)' == ''">$(SiliconStudioPackageParadoxSdkBin)\SiliconStudio.Assets.CompilerApp.exe</SiliconStudioParadoxCompileAssetCommand>
 
-    <SiliconStudioParadoxCompileAssetCommandProxy Condition="'$(DisableAssetCompilerExecServerProxy)' == 'true'">&quot;$(SiliconStudioParadoxCompileAssetCommand)&quot;</SiliconStudioParadoxCompileAssetCommandProxy>
+    <SiliconStudioParadoxCompileAssetCommandProxy Condition="'$(DisableAssetCompilerExecServerProxy)' == 'true' Or '$(SiliconStudioParadoxDisableAssetCompilerExecServerProxy)' == 'true'">&quot;$(SiliconStudioParadoxCompileAssetCommand)&quot;</SiliconStudioParadoxCompileAssetCommandProxy>
     <SiliconStudioParadoxCompileAssetCommandProxy Condition="'$(SiliconStudioParadoxCompileAssetCommandProxy)' == ''">&quot;$(SiliconStudioPackageParadoxSdkBin)\SiliconStudio.Assets.CompilerClient.exe&quot;</SiliconStudioParadoxCompileAssetCommandProxy>
   </PropertyGroup>
   
@@ -211,8 +211,12 @@
     <!--Check that the package file actually exist-->
     <Error Condition="'$(SiliconStudioBuildProfile)' == ''" Text="The asset compiler is requiring the property (SiliconStudioBuildProfile) to be defined"/>
     <Error Condition="!Exists('$(SiliconStudioCurrentPackagePath)')" Text="Unable to find package decription from path [$(SiliconStudioCurrentPackagePath)]"/>
-    <Exec WorkingDirectory="$(TargetDir)" 
-          Command="$(SiliconStudioParadoxCompileAssetCommandProxy) $(SiliconStudioParadoxCompileAssetOptions) --disable-auto-compile --project-configuration &quot;$(Configuration)&quot; --platform=$(SiliconStudioPlatform) --graphics-platform=$(SiliconStudioParadoxGraphicsApi) --profile=$(SiliconStudioBuildProfile) --project-configuration=$(Configuration) --output-path=&quot;$(SiliconStudioCompileAssetOutputPath)&quot; --build-path=&quot;$(SiliconStudioCompileAssetBuildPath)&quot; --package-file=&quot;$(SiliconStudioCurrentPackagePath)&quot; --log-pipe=&quot;$(SiliconStudioBuildEngineLogPipeUrl)&quot;" />
+    <PropertyGroup>
+      <SiliconStudioParadoxCompileAssetCommandProxy>$(SiliconStudioParadoxCompileAssetCommandProxy) $(SiliconStudioParadoxCompileAssetOptions) --disable-auto-compile --project-configuration &quot;$(Configuration)&quot; --platform=$(SiliconStudioPlatform) --graphics-platform=$(SiliconStudioParadoxGraphicsApi) --profile=$(SiliconStudioBuildProfile) --project-configuration=$(Configuration) --output-path=&quot;$(SiliconStudioCompileAssetOutputPath)&quot; --build-path=&quot;$(SiliconStudioCompileAssetBuildPath)&quot; --package-file=&quot;$(SiliconStudioCurrentPackagePath)&quot; --log-pipe=&quot;$(SiliconStudioBuildEngineLogPipeUrl)&quot;</SiliconStudioParadoxCompileAssetCommandProxy>
+      <SiliconStudioParadoxCompileAssetCommandProxy Condition="'$(SiliconStudioBuildEngineLogVerbose)' != ''">$(SiliconStudioParadoxCompileAssetCommandProxy) --verbose</SiliconStudioParadoxCompileAssetCommandProxy>
+      <SiliconStudioParadoxCompileAssetCommandProxy Condition="'$(SiliconStudioBuildEngineLogDebug)' != ''">$(SiliconStudioParadoxCompileAssetCommandProxy) --debug</SiliconStudioParadoxCompileAssetCommandProxy>
+    </PropertyGroup>
+    <Exec WorkingDirectory="$(TargetDir)" Command="$(SiliconStudioParadoxCompileAssetCommandProxy)" />
     <!-- Android specific: include build output in _AndroidAssetsDest so that APK is regenerated -->
     <ItemGroup Condition="'$(SiliconStudioPlatform)' == 'Android'">
       <_AndroidAssetsDest Include="$(SiliconStudioCompileAssetOutputPath)\**\*.*" />

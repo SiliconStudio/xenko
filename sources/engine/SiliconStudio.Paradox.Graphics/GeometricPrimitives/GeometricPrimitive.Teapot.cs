@@ -270,13 +270,15 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// <param name="device">The device.</param>
             /// <param name="size">The size.</param>
             /// <param name="tessellation">The tessellation.</param>
+            /// <param name="vScale"></param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
+            /// <param name="uScale"></param>
             /// <returns>GeometricPrimitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;tessellation must be > 0</exception>
-            public static GeometricPrimitive New(GraphicsDevice device, float size = 1.0f, int tessellation = 8, bool toLeftHanded = false)
+            public static GeometricPrimitive New(GraphicsDevice device, float size = 1.0f, int tessellation = 8, float uScale = 1.0f, float vScale = 1.0f, bool toLeftHanded = false)
             {
                 // Create the primitive object.
-                return new GeometricPrimitive(device, New(size, tessellation, toLeftHanded));
+                return new GeometricPrimitive(device, New(size, tessellation, uScale, vScale, toLeftHanded));
             }
 
             /// <summary>
@@ -284,10 +286,12 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
             /// </summary>
             /// <param name="size">The size.</param>
             /// <param name="tessellation">The tessellation.</param>
+            /// <param name="vScale"></param>
             /// <param name="toLeftHanded">if set to <c>true</c> vertices and indices will be transformed to left handed. Default is false.</param>
+            /// <param name="uScale"></param>
             /// <returns>GeometricPrimitive.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">tessellation;tessellation must be > 0</exception>
-            public static GeometricMeshData<VertexPositionNormalTexture> New(float size = 1.0f, int tessellation = 8, bool toLeftHanded = false)
+            public static GeometricMeshData<VertexPositionNormalTexture> New(float size = 1.0f, int tessellation = 8, float uScale = 1.0f, float vScale = 1.0f, bool toLeftHanded = false)
             {
                 var vertices = new List<VertexPositionNormalTexture>();
                 var indices = new List<int>();
@@ -319,6 +323,12 @@ namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
                         TessellatePatch(vertices, indices, ref patch, tessellation, scaleNegateZ, true);
                         TessellatePatch(vertices, indices, ref patch, tessellation, scaleNegateXZ, false);
                     }
+                }
+
+                var texCoord = new Vector2(uScale, vScale);
+                for (var i = 0; i < vertices.Count; i++)
+                {
+                    vertices[i] = new VertexPositionNormalTexture(vertices[i].Position, vertices[i].Normal, vertices[i].TextureCoordinate*texCoord);
                 }
 
                 return new GeometricMeshData<VertexPositionNormalTexture>(vertices.ToArray(), indices.ToArray(), toLeftHanded) { Name = "Teapot" };

@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
 
         protected override GeometricMeshData<VertexPositionNormalTexture> CreatePrimitiveMeshData()
         {
-            return GeometricPrimitive.Cube.New(Size);
+            return GeometricPrimitive.Cube.New(Size, UvScale.X, UvScale.Y);
         }
     }
 }

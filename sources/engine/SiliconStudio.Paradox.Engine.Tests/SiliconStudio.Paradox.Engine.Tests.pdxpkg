@@ -9,7 +9,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Paradox
-            Version: 1.3.0-alpha01
+            Version: 1.3.0-beta
 LocalDependencies: []
 Profiles:
     -   Name: Shared

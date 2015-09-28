@@ -429,7 +429,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
                                 element.Node.Tag == "!CharacterElement"
                                 )
                             {
-                                element.RemoveChild("LinkedNodeName");
+                                element.RemoveChild("LinkedBoneName");
                             }
                         }
                     }

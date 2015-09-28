@@ -63,7 +63,8 @@ namespace SiliconStudio.Assets.CompilerApp
 
             var exeName = Path.GetFileName(Assembly.GetExecutingAssembly().Location);
             var showHelp = false;
-            var options = new PackageBuilderOptions(new ForwardingLoggerResult(GlobalLogger.GetLogger("BuildEngine")));
+            var buildEngineLogger = GlobalLogger.GetLogger("BuildEngine");
+            var options = new PackageBuilderOptions(new ForwardingLoggerResult(buildEngineLogger));
 
             var p = new OptionSet
             {
@@ -150,26 +151,30 @@ namespace SiliconStudio.Assets.CompilerApp
 
             TextWriterLogListener fileLogListener = null;
 
-            // Output logs to the console with colored messages
-            if (options.SlavePipe == null)
-            {
-                if (redirectLogToAppDomainAction != null)
-                {
-                    globalLoggerOnGlobalMessageLogged = new LogListenerRedirectToAction(redirectLogToAppDomainAction);
-                }
-                else
-                {
-                    globalLoggerOnGlobalMessageLogged = new ConsoleLogListener { LogMode = ConsoleLogMode.Always };
-                }
-                globalLoggerOnGlobalMessageLogged.TextFormatter = FormatLog;
-                GlobalLogger.GlobalMessageLogged += globalLoggerOnGlobalMessageLogged;
-            }
-
             BuildResultCode exitCode;
 
             try
             {
                 var unexpectedArgs = p.Parse(args);
+
+                // Activate proper log level
+                buildEngineLogger.ActivateLog(options.LoggerType);
+
+                // Output logs to the console with colored messages
+                if (options.SlavePipe == null && !options.LogPipeNames.Any())
+                {
+                    if (redirectLogToAppDomainAction != null)
+                    {
+                        globalLoggerOnGlobalMessageLogged = new LogListenerRedirectToAction(redirectLogToAppDomainAction);
+                    }
+                    else
+                    {
+                        globalLoggerOnGlobalMessageLogged = new ConsoleLogListener { LogMode = ConsoleLogMode.Always };
+                    }
+                    globalLoggerOnGlobalMessageLogged.TextFormatter = FormatLog;
+                    GlobalLogger.GlobalMessageLogged += globalLoggerOnGlobalMessageLogged;
+                }
+
                 if (unexpectedArgs.Any())
                 {
                     throw new OptionException("Unexpected arguments [{0}]".ToFormat(string.Join(", ", unexpectedArgs)), "args");

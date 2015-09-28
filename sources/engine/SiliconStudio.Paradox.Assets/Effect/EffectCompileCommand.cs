@@ -40,13 +40,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
             this.package = package;
         }
 
-        public override string Title
-        {
-            get
-            {
-                return string.Format("EffectCompile [{0}]", effectName);
-            }
-        }
+        public override string Title => $"EffectCompile [{effectName}]";
 
         protected override void ComputeParameterHash(BinarySerializationWriter writer)
         {
@@ -78,11 +72,11 @@ namespace SiliconStudio.Paradox.Assets.Effect
                 permutationCount++;
                 PermutationCount[effectName] = permutationCount;
             }
-            commandContext.Logger.Info("Trying permutation #{0} for effect [{1}]: \n{2}", permutationCount, effectName, compilerParameters.ToStringDetailed());
+            commandContext.Logger.Verbose("Trying permutation #{0} for effect [{1}]: \n{2}", permutationCount, effectName, compilerParameters.ToStringDetailed());
 
             var compilerResults = compiler.Compile(source, compilerParameters);
 
-            // Copy logs and if there are errors, exit directlry
+            // Copy logs and if there are errors, exit directly
             compilerResults.CopyTo(commandContext.Logger);
             if (compilerResults.HasErrors)
             {
@@ -111,7 +105,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
                 var outputClassFile = effectName + ".bytecode." + compilerParameters.Platform + "." + compilerParameters.Profile + ".cs";
                 var fullOutputClassFile = Path.Combine(outputDirectory.ToWindowsPath(), outputClassFile);
 
-                commandContext.Logger.Info("Writing shader bytecode to .cs source [{0}]", fullOutputClassFile);
+                commandContext.Logger.Verbose("Writing shader bytecode to .cs source [{0}]", fullOutputClassFile);
                 using (var stream = new FileStream(fullOutputClassFile, FileMode.Create, FileAccess.Write, FileShare.Write))
                     EffectByteCodeToSourceCodeWriter.Write(effectName, compilerParameters, compilerResults.Bytecode.WaitForResult().Bytecode, new StreamWriter(stream, System.Text.Encoding.UTF8));
             }

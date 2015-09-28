@@ -130,7 +130,12 @@ namespace SiliconStudio.AssemblyProcessor
 
             try
             {
+                var consoleWriter = Console.Out;
+                Console.SetOut(TextWriter.Null);
+
                 merge.Repack();
+
+                Console.SetOut(consoleWriter);
             }
             catch (Exception)
             {

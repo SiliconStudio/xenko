@@ -24,7 +24,6 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         {
             Radius = 0.5f;
             Tessellation = 16;
-            UVScales = new Vector2(1);
         }
 
         /// <summary>
@@ -45,19 +44,9 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         [DefaultValue(16)]
         public int Tessellation { get; set; }
 
-        /// <summary>
-        /// Gets or sets the UV scales.
-        /// </summary>
-        /// <value>The UV scales</value>
-        /// <userdoc>The scales to apply onto the UV coordinates of the sphere. This can be used to tile a texture on it.</userdoc>
-        [DataMember(30)]
-        [DefaultValue(1.0f)]
-        [Display("UV Scales")]
-        public Vector2 UVScales { get; set; }
-
         protected override GeometricMeshData<VertexPositionNormalTexture> CreatePrimitiveMeshData()
         {
-            return GeometricPrimitive.Sphere.New(Radius, Tessellation, UVScales.X, UVScales.Y);
+            return GeometricPrimitive.Sphere.New(Radius, Tessellation, UvScale.X, UvScale.Y);
         }
     }
 }

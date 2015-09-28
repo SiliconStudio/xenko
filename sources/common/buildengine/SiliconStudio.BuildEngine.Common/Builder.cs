@@ -526,7 +526,7 @@ namespace SiliconStudio.BuildEngine
                         switch (status)
                         {
                             case ResultStatus.Successful:
-                                logType = LogMessageType.Info;
+                                logType = LogMessageType.Verbose;
                                 logText = "BuildStep {0} was successful.".ToFormat(buildStep.ToString());
                                 break;
                             case ResultStatus.Failed:
@@ -712,7 +712,6 @@ namespace SiliconStudio.BuildEngine
 
             if (runMode == Mode.Build)
             {
-                Logger.Info("");
                 if (cancellationTokenSource.IsCancellationRequested)
                 {
                     Logger.Error("Build cancelled.");

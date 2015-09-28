@@ -41,6 +41,7 @@
     <Compile Include="TestStore.cs" />
     <Compile Include="TestSerialization.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestUnmanagedArray.cs" />
     <Compile Include="TestUtilities.cs" />
     <Compile Include="TestWatcher.cs" />
   </ItemGroup>

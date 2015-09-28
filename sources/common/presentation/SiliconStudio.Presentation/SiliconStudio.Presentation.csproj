@@ -123,6 +123,8 @@
     <Compile Include="ValueConverters\MultiplyMultiConverter.cs" />
     <Compile Include="ViewModel\ActionStack\AnonymousViewModelActionItem.cs" />
     <Compile Include="ViewModel\IViewModelServiceProvider.cs" />
+    <Compile Include="ViewModel\NullServiceProvider.cs" />
+    <Compile Include="ViewModel\ServiceRegistrationEventArgs.cs" />
     <Compile Include="ViewModel\ViewModelServiceProvider.cs" />
     <Compile Include="View\DefaultTemplateProvider.cs" />
     <Compile Include="MarkupExtensions\DoubleExtension.cs" />

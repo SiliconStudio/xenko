@@ -172,10 +172,7 @@ namespace SiliconStudio.Paradox.Physics
         /// <value>
         /// The total torque.
         /// </value>
-        public Vector3 TotalTorque
-        {
-            get { return InternalRigidBody.TotalTorque; }
-        }
+        public Vector3 TotalTorque => InternalRigidBody.TotalTorque;
 
         /// <summary>
         /// Applies the impulse.

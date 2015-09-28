@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
 
@@ -463,7 +464,7 @@ namespace SiliconStudio.Core.Serialization.Assets
                     var chunkHeader = ChunkHeader.Read(streamReader);
                     if (chunkHeader != null)
                     {
-                        headerObjType = Type.GetType(chunkHeader.Type);
+                        headerObjType = AssemblyRegistry.GetType(chunkHeader.Type);
                     }
 
                     // Find serializer

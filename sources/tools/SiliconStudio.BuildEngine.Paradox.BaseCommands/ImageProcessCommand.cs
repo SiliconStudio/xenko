@@ -78,9 +78,9 @@ namespace SiliconStudio.BuildEngine
                 {
                     assetManager.Save(OutputUrl, outputImage);
 
-                    commandContext.Logger.Info("Compression successful [{3}] to ({0}x{1},{2})",
-                                               outputImage.Description.Width,
-                                               outputImage.Description.Height, outputImage.Description.Format, OutputUrl);
+                    commandContext.Logger.Verbose("Compression successful [{3}] to ({0}x{1},{2})",
+                                                  outputImage.Description.Width,
+                                                  outputImage.Description.Height, outputImage.Description.Format, OutputUrl);
                 }
             }
 

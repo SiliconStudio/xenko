@@ -25,12 +25,10 @@ namespace SiliconStudio.Paradox.Physics
 
             InternalShape = new BulletSharp.ConvexHullShape(points)
             {
-                LocalScaling = Vector3.One
+                LocalScaling = scaling
             };
 
             DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(1, 1, 1) * 1.01f);
-
-            Scaling = scaling;
 
             pointsList = points;
             indicesList = indices;
@@ -38,37 +36,36 @@ namespace SiliconStudio.Paradox.Physics
 
         public override MeshDraw CreateDebugPrimitive(GraphicsDevice device)
         {
-            if (cachedDebugPrimitive == null)
+            if (cachedDebugPrimitive != null) return cachedDebugPrimitive;
+
+            var verts = new VertexPositionNormalTexture[pointsList.Count];
+            for (var i = 0; i < pointsList.Count; i++)
             {
-                var verts = new VertexPositionNormalTexture[pointsList.Count];
-                for (var i = 0; i < pointsList.Count; i++)
-                {
-                    verts[i].Position = pointsList[i];
-                    verts[i].TextureCoordinate = Vector2.Zero;
-                    verts[i].Normal = Vector3.Zero;
-                }
-
-                var intIndices = indicesList.Select(x => (int)x).ToArray();
-
-                ////calculate basic normals
-                ////todo verify, winding order might be wrong?
-                for (var i = 0; i < indicesList.Count; i += 3)
-                {
-                    var i1 = intIndices[i];
-                    var i2 = intIndices[i + 1];
-                    var i3 = intIndices[i + 2];
-                    var a = verts[i1];
-                    var b = verts[i2];
-                    var c = verts[i3];
-                    var n = Vector3.Cross((b.Position - a.Position), (c.Position - a.Position));
-                    n.Normalize();
-                    verts[i1].Normal = verts[i2].Normal = verts[i3].Normal = n;
-                }
-
-                var meshData = new GeometricMeshData<VertexPositionNormalTexture>(verts, intIndices, false);
-
-                cachedDebugPrimitive = new GeometricPrimitive(device, meshData).ToMeshDraw();
+                verts[i].Position = pointsList[i];
+                verts[i].TextureCoordinate = Vector2.Zero;
+                verts[i].Normal = Vector3.Zero;
             }
+
+            var intIndices = indicesList.Select(x => (int)x).ToArray();
+
+            ////calculate basic normals
+            ////todo verify, winding order might be wrong?
+            for (var i = 0; i < indicesList.Count; i += 3)
+            {
+                var i1 = intIndices[i];
+                var i2 = intIndices[i + 1];
+                var i3 = intIndices[i + 2];
+                var a = verts[i1];
+                var b = verts[i2];
+                var c = verts[i3];
+                var n = Vector3.Cross((b.Position - a.Position), (c.Position - a.Position));
+                n.Normalize();
+                verts[i1].Normal = verts[i2].Normal = verts[i3].Normal = n;
+            }
+
+            var meshData = new GeometricMeshData<VertexPositionNormalTexture>(verts, intIndices, false);
+
+            cachedDebugPrimitive = new GeometricPrimitive(device, meshData).ToMeshDraw();
 
             return cachedDebugPrimitive;
         }

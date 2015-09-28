@@ -37,33 +37,26 @@ namespace SiliconStudio.Paradox.Physics
         {
             ColliderShape res = null;
 
-            try
+            if (descs.Count == 1) //single shape case
             {
-                if (descs.Count == 1) //single shape case
-                {
-                    res = CreateShape(descs[0]);
-                    res.IsPartOfAsset = true;
-                }
-                else if (descs.Count > 1) //need a compound shape in this case
-                {
-                    var compound = new CompoundColliderShape();
-                    foreach (var desc in descs)
-                    {
-                        compound.AddChildShape(CreateShape(desc));
-                    }
-                    res = compound;
-                    res.IsPartOfAsset = true;
-                }
+                res = CreateShape(descs[0]);
+                res.IsPartOfAsset = true;
             }
-            catch (DllNotFoundException)
+            else if (descs.Count > 1) //need a compound shape in this case
             {
-                //during pre process and build process we often don't have the physics native engine running.
+                var compound = new CompoundColliderShape();
+                foreach (var desc in descs)
+                {
+                    compound.AddChildShape(CreateShape(desc));
+                }
+                res = compound;
+                res.IsPartOfAsset = true;
             }
 
             return res;
         }
 
-        private static ColliderShape CreateShape(IColliderShapeDesc desc)
+        internal static ColliderShape CreateShape(IColliderShapeDesc desc)
         {
             ColliderShape shape = null;
 
@@ -193,19 +186,36 @@ namespace SiliconStudio.Paradox.Physics
 
                 return compound;
             }
-
-            if (shape != null)
+            else if (type == typeof(ColliderShapeAssetDesc))
             {
-                shape.UpdateLocalTransformations();
-                shape.Description = desc;
-            } 
+                var assetDesc = (ColliderShapeAssetDesc)desc;
+
+                if (assetDesc.Shape == null)
+                {
+                    return null;
+                }
+
+                if (assetDesc.Shape.Shape == null)
+                {
+                    assetDesc.Shape.Shape = Compose(assetDesc.Shape.Descriptions);
+                }
+
+                shape = assetDesc.Shape.Shape;
+            }
+
+            if (shape == null) return shape;
+
+            shape.UpdateLocalTransformations();
+            shape.Description = desc;
 
             return shape;
         }
 
         public void Dispose()
         {
-            if(Shape != null) Shape.Dispose();
+            if (Shape == null) return;
+            Shape.Dispose();
+            Shape = null;
         }
     }
 }

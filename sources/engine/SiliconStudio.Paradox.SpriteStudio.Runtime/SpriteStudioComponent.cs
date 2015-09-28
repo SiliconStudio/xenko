@@ -9,7 +9,7 @@ using SiliconStudio.Paradox.SpriteStudio.Runtime;
 namespace SiliconStudio.Paradox.Engine
 {
     [DataContract("SpriteStudioComponent")]
-    [Display(55, "Sprite Studio", Expand = ExpandRule.Once)]
+    [Display(99, "Sprite Studio", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(SpriteStudioProcessor))]
     [DefaultEntityComponentRenderer(typeof(SpriteStudioRenderer))]
     public class SpriteStudioComponent : EntityComponent

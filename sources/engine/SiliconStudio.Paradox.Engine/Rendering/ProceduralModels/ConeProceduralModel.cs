@@ -55,7 +55,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
 
         protected override GeometricMeshData<VertexPositionNormalTexture> CreatePrimitiveMeshData()
         {
-            return GeometricPrimitive.Cone.New(Radius, Height, Tessellation);
+            return GeometricPrimitive.Cone.New(Radius, Height, Tessellation, UvScale.X, UvScale.Y);
         }
     }
 }

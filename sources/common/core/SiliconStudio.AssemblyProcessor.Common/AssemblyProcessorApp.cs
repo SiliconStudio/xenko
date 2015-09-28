@@ -188,7 +188,7 @@ namespace SiliconStudio.AssemblyProcessor
                 // Note that we should probably also match the command line as well so that we throw an error if processing is different (need to rebuild).
                 if (assemblyDefinition.CustomAttributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Core.AssemblyProcessedAttribute"))
                 {
-                    OnInfoAction("Assembly has already been processed, skip it.");
+                    OnInfoAction($"Assembly [{assemblyDefinition.Name}] has already been processed, skip it.");
                     return true;
                 }
 

@@ -17,6 +17,8 @@ using SiliconStudio.Core.Reflection;
 using ILogger = SiliconStudio.Core.Diagnostics.ILogger;
 using Microsoft.Build.Evaluation;
 
+using SiliconStudio.Core.Serialization;
+
 namespace SiliconStudio.Assets
 {
     /// <summary>
@@ -115,6 +117,9 @@ namespace SiliconStudio.Assets
 
                 // Unregisters assemblies that have been registered in Package.Load => Package.LoadAssemblyReferencesForPackage
                 AssemblyRegistry.Unregister(loadedAssembly.Assembly);
+
+                // Unload binary serialization
+                DataSerializerFactory.UnregisterSerializationAssembly(loadedAssembly.Assembly);
 
                 // Unload assembly
                 assemblyContainer.UnloadAssembly(loadedAssembly.Assembly);
