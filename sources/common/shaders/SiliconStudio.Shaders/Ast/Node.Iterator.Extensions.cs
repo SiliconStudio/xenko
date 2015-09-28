@@ -127,7 +127,7 @@ namespace SiliconStudio.Shaders.Ast
 
                     var propertyType = sourceField.FieldType;
 
-                    var interfaces = propertyType.GetInterfaces();
+                    var interfaces = propertyType.GetTypeInfo().ImplementedInterfaces;
 
                     // Get the property type and check if the property inherit from IList<>
                     if (!typeof(StatementList).GetTypeInfo().IsAssignableFrom(propertyType.GetTypeInfo()))

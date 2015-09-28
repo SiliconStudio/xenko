@@ -185,7 +185,7 @@ namespace SiliconStudio.Shaders.Visitor
                 return inheritance;
 
                 inheritance = new List<Type>();
-                inheritance.AddRange(type.GetInterfaces());
+                inheritance.AddRange(type.GetTypeInfo().ImplementedInterfaces);
                 var baseType = type.GetTypeInfo().BaseType;
                 while (baseType != null)
                 {
