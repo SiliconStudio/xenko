@@ -120,7 +120,7 @@ namespace SiliconStudio.Shaders.Ast
                 {
 
                     // If the property is not read-writable or contains a visitor ignore attribute, skip it
-                    if (sourceField.GetCustomAttributes(typeof(VisitorIgnoreAttribute), true).Count() != 0)
+                    if (sourceField.GetCustomAttribute<VisitorIgnoreAttribute>(true) != null)
                     {
                         continue;
                     }
