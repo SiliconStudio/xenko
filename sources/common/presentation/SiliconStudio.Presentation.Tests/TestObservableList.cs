@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using NUnit.Framework;
@@ -7,13 +6,13 @@ using SiliconStudio.Presentation.Collections;
 namespace SiliconStudio.Presentation.Tests
 {
     [TestFixture]
-    class TestObservableSet
+    class TestObservableList
     {
         [Test]
         public void TestEnumerableConstructor()
         {
             var list = new List<string> { "aaa", "bbb", "ccc" };
-            var set = new ObservableSet<string>(list);
+            var set = new ObservableList<string>(list);
             Assert.AreEqual(set.Count, list.Count);
             Assert.AreEqual(set[0], "aaa");
             Assert.AreEqual(set[1], "bbb");
@@ -21,21 +20,10 @@ namespace SiliconStudio.Presentation.Tests
         }
 
         [Test]
-        public void TestEnumerableConstructorWithDuplicate()
-        {
-            var list = new List<string> { "aaa", "bbb", "ccc", "bbb" };
-            var set = new ObservableSet<string>(list);
-            Assert.AreEqual(set.Count, 3);
-            Assert.That(set.Contains("aaa"));
-            Assert.That(set.Contains("bbb"));
-            Assert.That(set.Contains("ccc"));
-        }
-
-        [Test]
         public void TestIndexerSet()
         {
             var list = new List<string> { "aaa", "bbb", "ccc" };
-            var set = new ObservableSet<string>(list) { [1] = "ddd" };
+            var set = new ObservableList<string>(list) { [1] = "ddd" };
             Assert.AreEqual(set.Count, 3);
             Assert.That(set.Contains("aaa"));
             Assert.That(set.Contains("ddd"));
@@ -43,27 +31,16 @@ namespace SiliconStudio.Presentation.Tests
         }
 
         [Test]
-        public void TestIndexerSetException()
-        {
-            var list = new List<string> { "aaa", "bbb", "ccc" };
-            var set = new ObservableSet<string>(list);
-            Assert.Throws<InvalidOperationException>(() => set[1] = "ccc");
-            Assert.AreEqual(set[0], "aaa");
-            Assert.AreEqual(set[1], "bbb");
-            Assert.AreEqual(set[2], "ccc");
-        }
-
-        [Test]
         public void TestAdd()
         {
             var list = new List<string> { "aaa", "bbb", "ccc" };
-            var set = new ObservableSet<string>(list);
+            var set = new ObservableList<string>(list);
             bool propertyChangedInvoked = false;
             bool collectionChangedInvoked = false;
             Assert.AreEqual(set.Count, list.Count);
             set.PropertyChanged += (sender, e) =>
             {
-                Assert.AreEqual(e.PropertyName, nameof(ObservableSet<string>.Count));
+                Assert.AreEqual(e.PropertyName, nameof(ObservableList<string>.Count));
                 propertyChangedInvoked = true;
             };
             set.CollectionChanged += (sender, e) =>
@@ -88,13 +65,13 @@ namespace SiliconStudio.Presentation.Tests
         public void TestAddRange()
         {
             var list = new List<string> { "aaa", "bbb", "ccc" };
-            var set = new ObservableSet<string>(list);
+            var set = new ObservableList<string>(list);
             Assert.AreEqual(set.Count, list.Count);
             bool propertyChangedInvoked = false;
             bool collectionChangedInvoked = false;
             set.PropertyChanged += (sender, e) =>
             {
-                Assert.AreEqual(e.PropertyName, nameof(ObservableSet<string>.Count));
+                Assert.AreEqual(e.PropertyName, nameof(ObservableList<string>.Count));
                 propertyChangedInvoked = true;
             };
             set.CollectionChanged += (sender, e) =>
@@ -122,13 +99,13 @@ namespace SiliconStudio.Presentation.Tests
         public void TestClear()
         {
             var list = new List<string> { "aaa", "bbb", "ccc" };
-            var set = new ObservableSet<string>(list);
+            var set = new ObservableList<string>(list);
             Assert.AreEqual(set.Count, list.Count);
             bool propertyChangedInvoked = false;
             bool collectionChangedInvoked = false;
             set.PropertyChanged += (sender, e) =>
             {
-                Assert.AreEqual(e.PropertyName, nameof(ObservableSet<string>.Count));
+                Assert.AreEqual(e.PropertyName, nameof(ObservableList<string>.Count));
                 propertyChangedInvoked = true;
             };
             set.CollectionChanged += (sender, e) =>
@@ -146,7 +123,7 @@ namespace SiliconStudio.Presentation.Tests
         public void TestContains()
         {
             var list = new List<string> { "aaa", "bbb", "ccc" };
-            var set = new ObservableSet<string>(list);
+            var set = new ObservableList<string>(list);
             Assert.That(set.Contains("aaa"));
             Assert.That(set.Contains("bbb"));
             Assert.That(set.Contains("ccc"));
@@ -157,13 +134,13 @@ namespace SiliconStudio.Presentation.Tests
         public void TestRemove()
         {
             var list = new List<string> { "aaa", "bbb", "ccc" };
-            var set = new ObservableSet<string>(list);
+            var set = new ObservableList<string>(list);
             Assert.AreEqual(set.Count, list.Count);
             bool propertyChangedInvoked = false;
             bool collectionChangedInvoked = false;
             set.PropertyChanged += (sender, e) =>
             {
-                Assert.AreEqual(e.PropertyName, nameof(ObservableSet<string>.Count));
+                Assert.AreEqual(e.PropertyName, nameof(ObservableList<string>.Count));
                 propertyChangedInvoked = true;
             };
             set.CollectionChanged += (sender, e) =>
@@ -187,7 +164,7 @@ namespace SiliconStudio.Presentation.Tests
         public void TestIndexOf()
         {
             var list = new List<string> { "aaa", "bbb", "ccc" };
-            var set = new ObservableSet<string>(list);
+            var set = new ObservableList<string>(list);
             Assert.AreEqual(set.IndexOf("aaa"), 0);
             Assert.AreEqual(set.IndexOf("bbb"), 1);
             Assert.AreEqual(set.IndexOf("ccc"), 2);
@@ -203,13 +180,13 @@ namespace SiliconStudio.Presentation.Tests
         public void TestInsert()
         {
             var list = new List<string> { "aaa", "bbb", "ccc" };
-            var set = new ObservableSet<string>(list);
+            var set = new ObservableList<string>(list);
             Assert.AreEqual(set.Count, list.Count);
             bool propertyChangedInvoked = false;
             bool collectionChangedInvoked = false;
             set.PropertyChanged += (sender, e) =>
             {
-                Assert.AreEqual(e.PropertyName, nameof(ObservableSet<string>.Count));
+                Assert.AreEqual(e.PropertyName, nameof(ObservableList<string>.Count));
                 propertyChangedInvoked = true;
             };
             set.CollectionChanged += (sender, e) =>
@@ -235,13 +212,13 @@ namespace SiliconStudio.Presentation.Tests
         public void TestRemoveAt()
         {
             var list = new List<string> { "aaa", "bbb", "ccc" };
-            var set = new ObservableSet<string>(list);
+            var set = new ObservableList<string>(list);
             Assert.AreEqual(set.Count, list.Count);
             bool propertyChangedInvoked = false;
             bool collectionChangedInvoked = false;
             set.PropertyChanged += (sender, e) =>
             {
-                Assert.AreEqual(e.PropertyName, nameof(ObservableSet<string>.Count));
+                Assert.AreEqual(e.PropertyName, nameof(ObservableList<string>.Count));
                 propertyChangedInvoked = true;
             };
             set.CollectionChanged += (sender, e) =>

@@ -72,6 +72,11 @@ namespace SiliconStudio.Presentation.Collections
             return list.GetEnumerator();
         }
 
+        public IList ToIList()
+        {
+            return new NonGenericObservableSetWrapper<T>(this);
+        }
+
         public void Add(T item)
         {
             if (hashSet.Add(item))
@@ -117,7 +122,14 @@ namespace SiliconStudio.Presentation.Collections
 
         public bool Remove(T item)
         {
-            return hashSet.Remove(item) && list.Remove(item);
+            if (!hashSet.Contains(item))
+                return false;
+            int index = list.IndexOf(item);
+            if (index != -1)
+            {
+                RemoveAt(index);
+            }
+            return index != -1;
         }
 
         public int IndexOf(T item)
