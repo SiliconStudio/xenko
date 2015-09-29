@@ -17,10 +17,14 @@ namespace SiliconStudio.Presentation.Behaviors
     /// </summary>
     public static class BindableSelectedItemsControl
     {
+        private static bool disableBindings;
+
         /// <summary>
         /// Allows to disable <see cref="BindableSelectedItemsBehavior{T}"/> instances during specific view operations.
         /// </summary>
-        public static bool DisableBindings;
+        public static bool DisableBindings { get { return disableBindings; } set { disableBindings = value; if (!value) BindingReactivated?.Invoke(); } }
+
+        internal static event Action BindingReactivated;
     }
 
     /// <summary>
@@ -43,6 +47,14 @@ namespace SiliconStudio.Presentation.Behaviors
         /// Identifies the <see cref="GiveFocusOnSelectionChange"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty GiveFocusOnSelectionChangeProperty = DependencyProperty.Register("GiveFocusOnSelectionChange", typeof(bool), typeof(BindableSelectedItemsBehavior<T>), new PropertyMetadata(true));
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BindableSelectedItemsBehavior{T}"/> class.
+        /// </summary>
+        protected BindableSelectedItemsBehavior()
+        {
+            BindableSelectedItemsControl.BindingReactivated += () => CollectionSelectionChanged(SelectedItems, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, SelectedItems));
+        }
 
         /// <summary>
         /// Gets or sets the view model collection that should be bound to the selected item collection of the control.
