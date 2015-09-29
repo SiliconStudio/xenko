@@ -229,7 +229,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <returns>The associated data.</returns>
         protected abstract T GenerateAssociatedData(Entity entity);
 
-        /// <summary>Updates an entity's associated data when components are added or removed change.</summary>
+        /// <summary>Updates an entity's associated data when components after it's components have changed.</summary>
         /// <param name="entity">The entity.</param>
         /// <param name="associatedData">The associated data.</param>
         protected virtual void UpdateAssociatedData(Entity entity, ref T associatedData)

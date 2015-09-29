@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         /// Initializes a new instance of the <see cref="LightProcessor"/> class.
         /// </summary>
         public LightProcessor()
-            : base(new PropertyKey[] { LightComponent.Key })
+            : base(LightComponent.Key)
         {
             lights = new LightComponentCollection(DefaultLightCapacityCount);
             lightsCollected = new LightComponentCollection(DefaultLightCapacityCount);
@@ -31,13 +31,7 @@ namespace SiliconStudio.Paradox.Rendering.Lights
         /// Gets the active lights.
         /// </summary>
         /// <value>The lights.</value>
-        public LightComponentCollection Lights
-        {
-            get
-            {
-                return lightsCollected;
-            }
-        }
+        public LightComponentCollection Lights => lightsCollected;
 
         protected override void OnEntityAdding(Entity entity, LightComponent state)
         {

@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Engine.Processors
         /// Initializes a new instance of the <see cref="CameraProcessor"/> class.
         /// </summary>
         public CameraProcessor()
-            : base(new PropertyKey[] { CameraComponent.Key })
+            : base(CameraComponent.Key)
         {
             Cameras = new List<CameraComponent>();
             Order = -10;

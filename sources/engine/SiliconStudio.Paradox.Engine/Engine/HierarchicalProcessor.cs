@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.Engine
         private readonly TrackingHashSet<Entity> rootEntities;
 
         public HierarchicalProcessor()
-            : base(new[] { TransformComponent.Key })
+            : base(TransformComponent.Key)
         {
             rootEntities = new TrackingHashSet<Entity>();
             rootEntities.CollectionChanged += rootEntities_CollectionChanged;
@@ -27,10 +27,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// Gets the list of root entities (entities which have no <see cref="TransformComponent.Parent"/>).
         /// </summary>
-        public ISet<Entity> RootEntities
-        {
-            get { return rootEntities; }
-        }
+        public ISet<Entity> RootEntities => rootEntities;
 
         /// <inheritdoc/>
         protected override TransformComponent GenerateAssociatedData(Entity entity)

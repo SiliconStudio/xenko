@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Rendering.Sprites
         /// Initializes a new instance of the <see cref="SpriteProcessor"/> class.
         /// </summary>
         public SpriteProcessor()
-            : base(new PropertyKey[] { SpriteComponent.Key, TransformComponent.Key })
+            : base(SpriteComponent.Key, TransformComponent.Key)
         {
             Sprites = new List<SpriteComponentState>();
         }

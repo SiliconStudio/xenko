@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Engine.Processors
     /// <summary>
     /// Updates <see cref="TransformComponent.WorldMatrix"/> of entities.
     /// </summary>
-    public class TransformProcessor : EntityProcessor<TransformProcessor.AssociatedData>
+    public class TransformProcessor : EntityProcessor<TransformComponent>
     {
         /// <summary>
         /// List of <see cref="TransformComponent"/> of every <see cref="Entity"/> in <see cref="EntityManager.RootEntities"/>.
@@ -32,15 +32,15 @@ namespace SiliconStudio.Paradox.Engine.Processors
         /// Initializes a new instance of the <see cref="TransformProcessor" /> class.
         /// </summary>
         public TransformProcessor()
-            : base(new PropertyKey[] { TransformComponent.Key })
+            : base(TransformComponent.Key)
         {
             Order = -100;            
         }
 
         /// <inheritdoc/>
-        protected override AssociatedData GenerateAssociatedData(Entity entity)
+        protected override TransformComponent GenerateAssociatedData(Entity entity)
         {
-            return new AssociatedData { TransformComponent = entity.Transform };
+            return entity.Transform;
         }
 
         /// <inheritdoc/>
@@ -161,11 +161,6 @@ namespace SiliconStudio.Paradox.Engine.Processors
             result.M24 = 0.0f;
             result.M34 = 0.0f;
             result.M44 = 1.0f;
-        }
-
-        public struct AssociatedData
-        {
-            public TransformComponent TransformComponent;
         }
 
         private void rootEntities_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)

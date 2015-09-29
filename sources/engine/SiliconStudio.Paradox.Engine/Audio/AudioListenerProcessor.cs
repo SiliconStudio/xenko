@@ -32,13 +32,13 @@ namespace SiliconStudio.Paradox.Audio
         private AudioSystem audioSystem;
 
         // expose internal member to allow debug (use directly matchingEntities if not for debug uses)
-        internal Dictionary<Entity, AssociatedData> MatchingEntitiesForDebug { get { return matchingEntities; } } 
+        internal Dictionary<Entity, AssociatedData> MatchingEntitiesForDebug => matchingEntities;
 
         /// <summary>
         /// Create a new instance of AudioListenerProcessor.
         /// </summary>
         public AudioListenerProcessor()
-            : base(new PropertyKey[] { AudioListenerComponent.Key, TransformComponent.Key })
+            : base(AudioListenerComponent.Key, TransformComponent.Key)
         {
         }
 
@@ -46,8 +46,11 @@ namespace SiliconStudio.Paradox.Audio
         {
             // Initialize TransformComponent and ListenerComponent fields of the matchingEntities' AssociatedData.
             // other fields are initialized in OnEntityAdded or OnListenerCollectionChanged
-            return new AssociatedData { TransformComponent = entity.Get(TransformComponent.Key),
-                                        ListenerComponent = entity.Get(AudioListenerComponent.Key) };
+            return new AssociatedData
+            {
+                TransformComponent = entity.Get(TransformComponent.Key),
+                ListenerComponent = entity.Get(AudioListenerComponent.Key)
+            };
         }
 
         protected internal override void OnSystemAdd()
