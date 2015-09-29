@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Rendering;
@@ -65,7 +66,9 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                     Transparency = node.BaseTransparency,
                     Hide = node.BaseHide,
                     Sprite = node.Sprite,
-                    BaseNode = node
+                    BaseNode = node,
+                    HFlipped = node.HFlipped,
+                    VFlipped = node.VFlipped
                 };
                 spriteStudioComponent.Nodes.Add(nodeState);
             }
@@ -94,7 +97,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
             return rootNode;
         }
 
-        private static unsafe void UpdateNodes(IList<SpriteStudioNodeState> nodes, Data data)
+        private static unsafe void UpdateNodes(IEnumerable<SpriteStudioNodeState> nodes, Data data)
         {
             //foreach (var node in nodes)
             //{
@@ -151,6 +154,14 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                             else if (channel.PropertyName.StartsWith("hide"))
                             {
                                 node.Hide = value > float.Epsilon;
+                            }
+                            else if (channel.PropertyName.StartsWith("flph"))
+                            {
+                                node.HFlipped = value > float.Epsilon;
+                            }
+                            else if (channel.PropertyName.StartsWith("flpv"))
+                            {
+                                node.VFlipped = value > float.Epsilon;
                             }
                         }
                     }

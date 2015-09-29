@@ -8,11 +8,15 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
     {
         public Matrix LocalTransform;
 
-        public Matrix WorldTransform;
+        public Matrix ModelTransform;
 
         public SpriteStudioNodeState ParentNode;
 
         public List<SpriteStudioNodeState> ChildrenNodes { get; } = new List<SpriteStudioNodeState>();
+
+        public bool HFlipped;
+
+        public bool VFlipped;
 
         public Vector4 CurrentXyPrioAngle;
 
@@ -29,18 +33,18 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
         internal void UpdateTransformation()
         {
             var unit = Sprite.PixelsPerUnit;
-            var scale = Matrix.Scaling(Scale.X, Scale.Y, 1.0f);
+            var scale = Matrix.Scaling(HFlipped ? -Scale.X : Scale.X, VFlipped ? -Scale.Y : Scale.Y, 1.0f);
             var rot = Matrix.RotationZ(CurrentXyPrioAngle.W);
             var pos = Matrix.Translation(CurrentXyPrioAngle.X / unit.X, CurrentXyPrioAngle.Y / unit.Y, 0.0f);
             LocalTransform = scale*rot*pos;
 
             if (ParentNode != null)
             {
-                Matrix.Multiply(ref LocalTransform, ref ParentNode.WorldTransform, out WorldTransform);
+                Matrix.Multiply(ref LocalTransform, ref ParentNode.ModelTransform, out ModelTransform);
             }
             else
             {
-                WorldTransform = LocalTransform;
+                ModelTransform = LocalTransform;
             }
 
             foreach (var childrenNode in ChildrenNodes)

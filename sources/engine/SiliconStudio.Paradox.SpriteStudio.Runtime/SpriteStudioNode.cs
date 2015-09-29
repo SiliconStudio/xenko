@@ -5,6 +5,14 @@ using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.SpriteStudio.Runtime
 {
+    public enum SpriteStudioAlphaBlending
+    {
+        Mix,
+        Multiplication,
+        Addition,
+        Subtraction
+    }
+
     [DataContract]
     [ContentSerializer(typeof(DataContentSerializer<SpriteStudioNode>))]
     public class SpriteStudioNode
@@ -16,13 +24,15 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
 
         public RectangleF Rectangle;
         public Vector2 Pivot;
-        public bool HFlipped;
-        public bool VFlipped;
 
         public Vector4 BaseXyPrioAngle;
         public Vector2 BaseScale = Vector2.One;
         public float BaseTransparency = 1.0f;
         public bool BaseHide;
+        public bool HFlipped;
+        public bool VFlipped;
+        public SpriteStudioAlphaBlending BaseAlphaBlending = SpriteStudioAlphaBlending.Mix;
+
         public Sprite Sprite;
     }
 }

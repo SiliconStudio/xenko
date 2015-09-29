@@ -115,7 +115,27 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                     if (node.Sprite?.Texture == null || node.Sprite.Region.Width <= 0 || node.Sprite.Region.Height <= 0f || node.Hide) continue;
 
                     // Update the sprite batch
-                    var blendState = isPicking ? device.BlendStates.Opaque : renderItems.HasTransparency ? device.BlendStates.NonPremultiplied : device.BlendStates.Opaque;
+
+                    BlendState spriteBlending; //todo handle better each case
+                    switch (node.BaseNode.BaseAlphaBlending)
+                    {
+                        case SpriteStudioAlphaBlending.Mix:
+                            spriteBlending = device.BlendStates.AlphaBlend;
+                            break;
+                        case SpriteStudioAlphaBlending.Multiplication:
+                            spriteBlending = device.BlendStates.AlphaBlend;
+                            break;
+                        case SpriteStudioAlphaBlending.Addition:
+                            spriteBlending = device.BlendStates.Additive;
+                            break;
+                        case SpriteStudioAlphaBlending.Subtraction:
+                            spriteBlending = device.BlendStates.AlphaBlend;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+
+                    var blendState = isPicking ? device.BlendStates.Opaque : renderItems.HasTransparency ? spriteBlending : device.BlendStates.Opaque;
                     var currentEffect = isPicking ? GetOrCreatePickingSpriteEffect() : spriteState.SpriteStudioComponent.Tags.Get(IsEntitySelected) ? GetOrCreateSelectedSpriteEffect() : null;
                     // TODO remove this code when material are available
                     if (previousEffect != currentEffect || blendState != previousBlendState || depthStencilState != previousDepthStencilState)
@@ -134,6 +154,11 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
 
                     var sourceRegion = node.Sprite.Region;
                     var texture = node.Sprite.Texture;
+
+                    // skip the sprite if no texture is set.
+                    if (texture == null)
+                        continue;
+
                     var color = Color.White;
                     if (isPicking)
                     {
@@ -142,17 +167,13 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                     }
                     else
                     {
-                        color.A = (byte)Math.Min(node.Transparency * 255.0f, 255.0f);
+                        color.A = (byte)Math.Min(node.Transparency*255.0f, 255.0f);
                     }
 
-                    // skip the sprite if no texture is set.
-                    if (texture == null)
-                        continue;
-
-                    var worldMatrix = node.WorldTransform * transfoComp.WorldMatrix;
+                    var worldMatrix = node.ModelTransform*transfoComp.WorldMatrix;
 
                     // calculate normalized position of the center of the sprite (takes into account the possible rotation of the image)
-                    var normalizedCenter = new Vector2(node.Sprite.Center.X / sourceRegion.Width - 0.5f, 0.5f - node.Sprite.Center.Y / sourceRegion.Height);
+                    var normalizedCenter = new Vector2(node.Sprite.Center.X/sourceRegion.Width - 0.5f, 0.5f - node.Sprite.Center.Y/sourceRegion.Height);
                     if (node.Sprite.Orientation == ImageOrientation.Rotated90)
                     {
                         var oldCenterX = normalizedCenter.X;
@@ -162,8 +183,8 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                     // apply the offset due to the center of the sprite
                     var size = node.Sprite.Size;
                     var centerOffset = Vector2.Modulate(normalizedCenter, size);
-                    worldMatrix.M41 -= centerOffset.X * worldMatrix.M11 + centerOffset.Y * worldMatrix.M21;
-                    worldMatrix.M42 -= centerOffset.X * worldMatrix.M12 + centerOffset.Y * worldMatrix.M22;    
+                    worldMatrix.M41 -= centerOffset.X*worldMatrix.M11 + centerOffset.Y*worldMatrix.M21;
+                    worldMatrix.M42 -= centerOffset.X*worldMatrix.M12 + centerOffset.Y*worldMatrix.M22;
 
                     // draw the sprite
                     sprite3DBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref size, ref color, node.Sprite.Orientation, SwizzleMode.None, renderItem.Depth);

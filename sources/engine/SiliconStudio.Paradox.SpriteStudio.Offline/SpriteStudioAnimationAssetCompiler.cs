@@ -9,6 +9,7 @@ using SiliconStudio.Paradox.Animations;
 using System.Xml.Linq;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 using SiliconStudio.Paradox.SpriteStudio.Runtime;
 
 namespace SiliconStudio.Paradox.SpriteStudio.Offline
@@ -61,7 +62,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                     {
                         var posxCurve = new AnimationCurve<float>();
                         animation.AddCurve("posx[" + node.Name + "]", posxCurve);
-                        posxCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
+                        posxCurve.InterpolationType = data.Data["POSX"].Any(x => x["curve"] == "2") ? AnimationCurveInterpolationType.Cubic : AnimationCurveInterpolationType.Linear;
 
                         foreach (var nodeData in data.Data["POSX"])
                         {
@@ -75,7 +76,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                     {
                         var posyCurve = new AnimationCurve<float>();
                         animation.AddCurve("posy[" + node.Name + "]", posyCurve);
-                        posyCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
+                        posyCurve.InterpolationType = data.Data["POSY"].Any(x => x["curve"] == "2") ? AnimationCurveInterpolationType.Cubic : AnimationCurveInterpolationType.Linear;
 
                         foreach (var nodeData in data.Data["POSY"])
                         {
@@ -89,7 +90,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                     {
                         var anglCurve = new AnimationCurve<float>();
                         animation.AddCurve("angl[" + node.Name + "]", anglCurve);
-                        anglCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
+                        anglCurve.InterpolationType = data.Data["ANGL"].Any(x => x["curve"] == "2") ? AnimationCurveInterpolationType.Cubic : AnimationCurveInterpolationType.Linear;
 
                         foreach (var nodeData in data.Data["ANGL"])
                         {
@@ -117,7 +118,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                     {
                         var scaxCurve = new AnimationCurve<float>();
                         animation.AddCurve("scax[" + node.Name + "]", scaxCurve);
-                        scaxCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
+                        scaxCurve.InterpolationType = data.Data["SCAX"].Any(x => x["curve"] == "2") ? AnimationCurveInterpolationType.Cubic : AnimationCurveInterpolationType.Linear;
 
                         foreach (var nodeData in data.Data["SCAX"])
                         {
@@ -131,7 +132,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                     {
                         var scayCurve = new AnimationCurve<float>();
                         animation.AddCurve("scay[" + node.Name + "]", scayCurve);
-                        scayCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
+                        scayCurve.InterpolationType = data.Data["SCAY"].Any(x => x["curve"] == "2") ? AnimationCurveInterpolationType.Cubic : AnimationCurveInterpolationType.Linear;
 
                         foreach (var nodeData in data.Data["SCAY"])
                         {
@@ -145,7 +146,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                     {
                         var tranCurve = new AnimationCurve<float>();
                         animation.AddCurve("tran[" + node.Name + "]", tranCurve);
-                        tranCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
+                        tranCurve.InterpolationType = data.Data["TRAN"].Any(x => x["curve"] == "2") ? AnimationCurveInterpolationType.Cubic : AnimationCurveInterpolationType.Linear;
 
                         foreach (var nodeData in data.Data["TRAN"])
                         {
@@ -168,7 +169,36 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                             hideCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
                         }
                     }
+
+                    if (data.Data.ContainsKey("FLPH"))
+                    {
+                        var flphCurve = new AnimationCurve<float>();
+                        animation.AddCurve("flph[" + node.Name + "]", flphCurve);
+                        flphCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
+
+                        foreach (var nodeData in data.Data["FLPH"])
+                        {
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / fps) * Convert.ToInt32(nodeData["time"]));
+                            var value = Convert.ToInt32(nodeData["value"]);
+                            flphCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
+                        }
+                    }
+
+                    if (data.Data.ContainsKey("FLPV"))
+                    {
+                        var flpvCurve = new AnimationCurve<float>();
+                        animation.AddCurve("flpv[" + node.Name + "]", flpvCurve);
+                        flpvCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
+
+                        foreach (var nodeData in data.Data["FLPV"])
+                        {
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / fps) * Convert.ToInt32(nodeData["time"]));
+                            var value = Convert.ToInt32(nodeData["value"]);
+                            flpvCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
+                        }
+                    }
                 }
+
                 animation.Optimize();
 
                 assetManager.Save(Url, animation);
