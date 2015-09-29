@@ -140,6 +140,10 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                         // TODO move this code corresponding to picking out of the runtime code.
                         color = (Color)new Color4(spriteState.SpriteStudioComponent.Id);
                     }
+                    else
+                    {
+                        color.A = (byte)Math.Min(node.Transparency * 255.0f, 255.0f);
+                    }
 
                     // skip the sprite if no texture is set.
                     if (texture == null)
@@ -159,9 +163,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                     var size = node.Sprite.Size;
                     var centerOffset = Vector2.Modulate(normalizedCenter, size);
                     worldMatrix.M41 -= centerOffset.X * worldMatrix.M11 + centerOffset.Y * worldMatrix.M21;
-                    worldMatrix.M42 -= centerOffset.X * worldMatrix.M12 + centerOffset.Y * worldMatrix.M22;
-
-                    color.A = (byte)Math.Min(node.Transparency * 255.0f, 255.0f);
+                    worldMatrix.M42 -= centerOffset.X * worldMatrix.M12 + centerOffset.Y * worldMatrix.M22;    
 
                     // draw the sprite
                     sprite3DBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref size, ref color, node.Sprite.Orientation, SwizzleMode.None, renderItem.Depth);

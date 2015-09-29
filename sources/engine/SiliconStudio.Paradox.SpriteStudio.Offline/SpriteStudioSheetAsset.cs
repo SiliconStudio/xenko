@@ -15,10 +15,6 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
     [Display("Sprite Studio Sheet")]
     public class SpriteStudioSheetAsset : AssetImportTracked
     {
-        public SpriteStudioSheetAsset()
-        {
-        }
-
         [DataMemberIgnore]
         public List<string> BuildTextures { get; } = new List<string>();
 

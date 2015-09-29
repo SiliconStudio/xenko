@@ -62,7 +62,8 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                         Rectangle = rect,
                         Pivot = new Vector2(pivotX, pivotY),
                         BaseScale = Vector2.One,
-                        BaseTransparency = 1.0f
+                        BaseTransparency = 1.0f,
+                        BaseHide = false
                     };
 
                     nodes.Add(node);
