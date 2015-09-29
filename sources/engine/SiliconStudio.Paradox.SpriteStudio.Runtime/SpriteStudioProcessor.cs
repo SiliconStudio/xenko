@@ -26,13 +26,16 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
 
         protected override Data GenerateAssociatedData(Entity entity)
         {
-            var data = new Data
+            return new Data
             {
                 SpriteStudioComponent = entity.Get<SpriteStudioComponent>(),
                 TransformComponent = entity.Transform,
-                AnimationComponent = entity.Get<AnimationComponent>()
             };
-            return data;
+        }
+
+        protected override void UpdateAssociatedData(Entity entity, ref Data associatedData)
+        {
+            associatedData.AnimationComponent = entity.Get<AnimationComponent>();
         }
 
         protected override void OnEntityAdding(Entity entity, Data data)
