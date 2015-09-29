@@ -48,9 +48,9 @@ Example of use:
     <Delete Files="@(FilesToDeleteLauncher)"/>
 
     <MSBuild Targets="10-Assets\SiliconStudio_LauncherApp" Projects="$(ParadoxSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+    <!-- IL Repack is not used anymore -->
     <!--<Exec Command='"$(ILRepackPath)" SiliconStudio.LauncherApp.exe Nuget.Core.dll /out:Paradox.exe' WorkingDirectory="$(ParadoxRoot)sources\install\SiliconStudio.LauncherApp\bin\Release"/>-->
-    <!-- Rename SiliconStudio.LauncherApp.exe into Paradox.exe -->
-    <Copy SourceFiles="$(ParadoxRoot)sources\install\SiliconStudio.LauncherApp\bin\Release\SiliconStudio.LauncherApp.exe" DestinationFiles="$(ParadoxRoot)sources\install\SiliconStudio.LauncherApp\bin\Release\Paradox.exe"/>
+    <!-- Generate the nuget package for the launcher application -->
     <Exec Command='"$(NuGetPath)" pack "$(ParadoxRoot)sources\install\SiliconStudio.LauncherApp\SiliconStudio.LauncherApp.nuspec" -BasePath "$(ParadoxRoot)sources\install\SiliconStudio.LauncherApp\bin\Release"' />
   </Target>
 
