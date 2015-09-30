@@ -15,6 +15,8 @@ namespace SiliconStudio.Paradox.Engine
     [DefaultEntityComponentProcessor(typeof(ChildSceneProcessor))]
     public sealed class ChildSceneComponent : ActivableEntityComponent
     {
+        private Scene scene;
+
         // Used by the ChildSceneProcessor
         [DataMemberIgnore]
         internal SceneInstance SceneInstance;
@@ -43,7 +45,16 @@ namespace SiliconStudio.Paradox.Engine
         /// <value>The scene.</value>
         /// <userdoc>The reference to the scene to render. Any scene can be selected except the containing one.</userdoc>
         [DataMember(10)]
-        public Scene Scene { get; set; }
+        public Scene Scene
+        {
+            get { return scene; }
+            set
+            {
+                scene = value;
+                if (SceneInstance != null)
+                    SceneInstance.Scene = null; // unload the current scene, so that it can be unloaded from memory directly (without having to wait one frame)
+            }
+        }
 
         public override PropertyKey GetDefaultKey()
         {
