@@ -67,8 +67,8 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                     Hide = node.BaseHide,
                     Sprite = node.Sprite,
                     BaseNode = node,
-                    HFlipped = node.HFlipped,
-                    VFlipped = node.VFlipped
+                    HFlipped = node.BaseHFlipped,
+                    VFlipped = node.BaseVFlipped
                 };
                 spriteStudioComponent.Nodes.Add(nodeState);
             }

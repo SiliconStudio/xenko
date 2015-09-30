@@ -78,8 +78,9 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                 int endFrame, fps;
                 var nodes = new List<SpriteStudioNode>();
                 var nodesData = new List<SpriteNodeData>();
+                var extraNodes = new List<SpriteStudioNode>();
 
-                if (!SpriteStudioXmlImport.Load(AssetParameters.Source, nodes, nodesData, out endFrame, out fps)) return null;
+                if (!SpriteStudioXmlImport.Load(AssetParameters.Source, nodes, nodesData, extraNodes, out endFrame, out fps)) return null;
 
                 var assetManager = new AssetManager();
 
@@ -87,6 +88,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
 
                 //sprite sheet and textures
                 var sheet = new SpriteSheet();
+
                 foreach (var node in sortedNodes)
                 {
                     var sprite = node.PictureId != -1
@@ -99,6 +101,19 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                         : new Sprite(node.Name);
                     sheet.Sprites.Add(sprite);
                     node.Sprite = sprite;
+                }
+
+                foreach (var extraNode in extraNodes)
+                {
+                    var sprite = extraNode.PictureId != -1
+                        ? new Sprite(extraNode.Name, AttachedReferenceManager.CreateSerializableVersion<Texture>(Guid.Empty, AssetParameters.BuildTextures[extraNode.PictureId]))
+                        {
+                            Region = extraNode.Rectangle,
+                            IsTransparent = true,
+                            Center = extraNode.Pivot
+                        }
+                        : new Sprite(extraNode.Name);
+                    sheet.Sprites.Add(sprite);
                 }
 
                 assetManager.Save(Url + "_sheet", sheet);

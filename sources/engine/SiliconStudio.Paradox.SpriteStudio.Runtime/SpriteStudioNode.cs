@@ -13,6 +13,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
         Subtraction
     }
 
+    //Everything that has a Base prefix can be animated, in NodeState
     [DataContract]
     [ContentSerializer(typeof(DataContentSerializer<SpriteStudioNode>))]
     public class SpriteStudioNode
@@ -29,8 +30,8 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
         public Vector2 BaseScale = Vector2.One;
         public float BaseTransparency = 1.0f;
         public bool BaseHide;
-        public bool HFlipped;
-        public bool VFlipped;
+        public bool BaseHFlipped;
+        public bool BaseVFlipped;
         public SpriteStudioAlphaBlending BaseAlphaBlending = SpriteStudioAlphaBlending.Mix;
 
         public Sprite Sprite;

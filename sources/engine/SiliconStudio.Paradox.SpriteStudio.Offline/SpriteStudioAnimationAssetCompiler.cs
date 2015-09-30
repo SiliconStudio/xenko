@@ -39,9 +39,10 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
             {
                 var nodes = new List<SpriteStudioNode>();
                 var nodesData = new List<SpriteNodeData>();
+                var extraNodes = new List<SpriteStudioNode>();
 
                 int endFrame, fps;
-                if (!SpriteStudioXmlImport.Load(AssetParameters.Source, nodes, nodesData, out endFrame, out fps)) return null;
+                if (!SpriteStudioXmlImport.Load(AssetParameters.Source, nodes, nodesData, extraNodes, out endFrame, out fps)) return null;
 
                 var assetManager = new AssetManager();
 
@@ -195,6 +196,20 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                             var time = CompressedTimeSpan.FromSeconds((1.0 / fps) * Convert.ToInt32(nodeData["time"]));
                             var value = Convert.ToInt32(nodeData["value"]);
                             flpvCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
+                        }
+                    }
+
+                    if (data.Data.ContainsKey("CELL"))
+                    {
+                        var cellCurve = new AnimationCurve<float>();
+                        animation.AddCurve("cell[" + node.Name + "]", cellCurve);
+                        cellCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
+
+                        foreach (var nodeData in data.Data["CELL"])
+                        {
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / fps) * Convert.ToInt32(nodeData["time"]));
+                            var value = Convert.ToInt32(nodeData["value"]);
+                            cellCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
                         }
                     }
                 }

@@ -2,6 +2,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.SpriteStudio.Runtime;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -61,11 +62,11 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                         break;
 
                     case "FLPH":
-                        node.HFlipped = Convert.ToInt32(values.Select(x => x.First(y => y.Key == "value").Value).First()) == 1;
+                        node.BaseHFlipped = Convert.ToInt32(values.Select(x => x.First(y => y.Key == "value").Value).First()) == 1;
                         break;
 
                     case "FLPV":
-                        node.VFlipped = Convert.ToInt32(values.Select(x => x.First(y => y.Key == "value").Value).First()) == 1;
+                        node.BaseVFlipped = Convert.ToInt32(values.Select(x => x.First(y => y.Key == "value").Value).First()) == 1;
                         break;
                 }
 
@@ -73,7 +74,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
             }
         }
 
-        public static bool Load(string file, List<SpriteStudioNode> nodes, List<SpriteNodeData> nodesData, out int endFrame, out int fps)
+        public static bool Load(string file, List<SpriteStudioNode> nodes, List<SpriteNodeData> nodesData, List<SpriteStudioNode> extraNodes, out int endFrame, out int fps)
         {
             endFrame = 0;
             fps = 0;
@@ -95,7 +96,13 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                 {
                     case "1":
                         {
-                            var node = new SpriteStudioNode { Name = name.Value, Id = -1, ParentId = -2 };
+                            var node = new SpriteStudioNode
+                            {
+                                Name = name.Value,
+                                Id = -1,
+                                ParentId = -2,
+                                PictureId = -1
+                            };
                             nodes.Add(node);
                             nodesData.Add(new SpriteNodeData());
                         }
@@ -169,6 +176,69 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                         }
                         break;
                 }
+            }
+
+            //process the case of a cell change animation
+            //we need to emit extra sprites that will get picked during runtime and at same time modify the animation track
+            for (var i = 0; i < nodesData.Count; i++)
+            {
+                var nodeData = nodesData[i];
+                var node = nodes[i];
+                var sortedVariations = (from v in nodeData.Data.Where(x => x.Key == "IMGX" || x.Key == "IMGY" || x.Key == "IMGW" || x.Key == "IMGH" || x.Key == "ORFX" || x.Key == "ORFY")
+                                        from v1 in v.Value select new Tuple<string, int, int>(v.Key, int.Parse(v1["time"]), int.Parse(v1["value"])));
+                sortedVariations = sortedVariations.OrderBy(x => x.Item1);
+                var variationCount = 0;
+                var cellAnimData = new List<Dictionary<string, string>>();
+                foreach (var frame in sortedVariations.ToLookup(x => x.Item2, y => y))
+                {
+                    var time = frame.Key;
+                    var imgxTuple = frame.FirstOrDefault(x => x.Item1 == "IMGX");
+                    var imgx = imgxTuple?.Item3 ?? 0;
+                    var imgyTuple = frame.FirstOrDefault(x => x.Item1 == "IMGY");
+                    var imgy = imgyTuple?.Item3 ?? 0;
+                    var imgwTuple = frame.FirstOrDefault(x => x.Item1 == "IMGW");
+                    var imgw = imgwTuple?.Item3 ?? 0;
+                    var imghTuple = frame.FirstOrDefault(x => x.Item1 == "IMGH");
+                    var imgh = imghTuple?.Item3 ?? 0;
+                    var orfxTuple = frame.FirstOrDefault(x => x.Item1 == "ORFX");
+                    var orfx = orfxTuple?.Item3 ?? 0;
+                    var orfyTuple = frame.FirstOrDefault(x => x.Item1 == "ORFY");
+                    var orfy = orfyTuple?.Item3 ?? 0;
+
+                    //figure if this frame is actually our base frame
+                    if (imgx == 0 && imgy == 0 && imgw == 0 && imgh == 0 && orfx == 0 && orfy == 0)
+                    {
+                        cellAnimData.Add(new Dictionary<string, string>
+                        {
+                            { "time", time.ToString() },
+                            { "value", "-1" }
+                        });
+                    }
+                    else
+                    {
+                        var extraNode = new SpriteStudioNode
+                        {
+                            Name = node.Name + variationCount,
+                            Id = 0,
+                            ParentId = 0,
+                            PictureId = node.PictureId,
+                            Rectangle = new RectangleF(node.Rectangle.X + imgx, node.Rectangle.Y + imgy, node.Rectangle.Width + imgw, node.Rectangle.Height + imgh),
+                            Pivot = node.Pivot + new Vector2(orfx, orfy),
+                            BaseAlphaBlending = node.BaseAlphaBlending
+                        };
+
+                        extraNodes.Add(extraNode);
+
+                        cellAnimData.Add(new Dictionary<string, string>
+                        {
+                            { "time", time.ToString() },
+                            { "value", variationCount.ToString() }
+                        });
+
+                        variationCount++;
+                    }
+                }
+                nodeData.Data.Add("CELL", cellAnimData);
             }
 
             return true;
