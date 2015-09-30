@@ -64,5 +64,40 @@ namespace SiliconStudio.Paradox.Engine.Tests
             Assert.That(evaluator.Evaluate(CompressedTimeSpan.FromSeconds(2.000001)), Is.EqualTo(0.0f));
             Assert.That(evaluator.Evaluate(CompressedTimeSpan.FromSeconds(2.5)), Is.EqualTo(0.0f));
         }
+
+        [Test]
+        public void TestAnimationClip()
+        {
+            var clip = new AnimationClip
+            {
+                Duration = TimeSpan.FromSeconds(2.0f),
+                RepeatMode = AnimationRepeatMode.LoopInfinite
+            };
+
+            var testCurve = new AnimationCurve<float>();
+            clip.AddCurve("posx[TestNode]", testCurve);
+            testCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
+
+            var time = CompressedTimeSpan.FromSeconds(0.0f);
+            var value = 0.0f;
+            var frame0 = new KeyFrameData<float>(time, value);
+            testCurve.KeyFrames.Add(frame0);
+
+            time = CompressedTimeSpan.FromSeconds(1.0f);
+            value = 1.0f;
+            var frame1 = new KeyFrameData<float>(time, value);
+            testCurve.KeyFrames.Add(frame1);
+
+            clip.Optimize();
+
+            //we should have 3 frames at this point. the last one will be added by the optimization process...
+            Assert.That(clip.OptimizedCurvesFloat.AnimationSortedValueCount, Is.EqualTo(1));
+            //And 2 initial frames            
+            Assert.That(clip.OptimizedCurvesFloat.AnimationInitialValues[0].Value1, Is.EqualTo(frame0));
+            Assert.That(clip.OptimizedCurvesFloat.AnimationInitialValues[0].Value2, Is.EqualTo(frame1));
+            Assert.That(clip.OptimizedCurvesFloat.AnimationSortedValues.Length, Is.EqualTo(1));
+            Assert.That(clip.OptimizedCurvesFloat.AnimationSortedValues[0].Length, Is.EqualTo(1));
+            Assert.That(clip.OptimizedCurvesFloat.AnimationSortedValues[0][0].Value, Is.EqualTo(frame1));
+        }
     }
 }
