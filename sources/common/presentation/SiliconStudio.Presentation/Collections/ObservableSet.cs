@@ -1,6 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
-
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -9,22 +7,33 @@ using System.Linq;
 
 namespace SiliconStudio.Presentation.Collections
 {
-    public class ObservableList<T> : IList<T>, IObservableCollection<T>, IReadOnlyObservableCollection<T>
+    public class ObservableSet<T> : IList<T>, IObservableCollection<T>, IReadOnlyObservableCollection<T>
     {
+        private readonly HashSet<T> hashSet;
         private readonly List<T> list;
 
-        public ObservableList()
+        public ObservableSet()
         {
+            hashSet = new HashSet<T>();
             list = new List<T>();
         }
 
-        public ObservableList(IEnumerable<T> collection)
+        public ObservableSet(IEnumerable<T> collection)
         {
+            // First try to keep order by filling the list and use it for the hash set
             list = new List<T>(collection);
+            hashSet = new HashSet<T>(list);
+            // If there are duplicated values in the list, we won't be able to keep order
+            if (hashSet.Count != list.Count)
+            {
+                list.Clear();
+                list.AddRange(hashSet);
+            }
         }
 
-        public ObservableList(int capacity)
+        public ObservableSet(int capacity)
         {
+            hashSet = new HashSet<T>();
             list = new List<T>(capacity);
         }
 
@@ -37,24 +46,21 @@ namespace SiliconStudio.Presentation.Collections
             set
             {
                 var oldItem = list[index];
+                hashSet.Remove(oldItem);
+                if (!hashSet.Add(value)) throw new InvalidOperationException("Unable to set this value at the given index because this value is already contained in this ObservableSet.");
                 list[index] = value;
                 var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, value, oldItem, index);
                 OnCollectionChanged(arg);
             }
         }
 
-        public int Count => list.Count;
-
         public bool IsReadOnly => false;
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-        public IList ToIList()
-        {
-            return new NonGenericObservableListWrapper<T>(this);
-        }
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public int Count => list.Count;
 
         public IEnumerator<T> GetEnumerator()
         {
@@ -63,21 +69,30 @@ namespace SiliconStudio.Presentation.Collections
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return GetEnumerator();
+            return list.GetEnumerator();
+        }
+
+        public IList ToIList()
+        {
+            return new NonGenericObservableSetWrapper<T>(this);
         }
 
         public void Add(T item)
         {
-            Insert(Count, item);
+            if (hashSet.Add(item))
+            {
+                list.Add(item);
+                var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, list.Count - 1);
+                OnCollectionChanged(arg);
+            }
         }
 
         public void AddRange(IEnumerable<T> items)
         {
-            var itemList = items.ToList();
+            var itemList = items.Where(x => hashSet.Add(x)).ToList();
             if (itemList.Count > 0)
             {
                 list.AddRange(itemList);
-
                 var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, itemList, Count - itemList.Count);
                 OnCollectionChanged(arg);
             }
@@ -86,6 +101,7 @@ namespace SiliconStudio.Presentation.Collections
         public void Clear()
         {
             var raiseEvent = list.Count > 0;
+            hashSet.Clear();
             list.Clear();
             if (raiseEvent)
             {
@@ -96,7 +112,7 @@ namespace SiliconStudio.Presentation.Collections
 
         public bool Contains(T item)
         {
-            return list.Contains(item);
+            return hashSet.Contains(item);
         }
 
         public void CopyTo(T[] array, int arrayIndex)
@@ -106,20 +122,14 @@ namespace SiliconStudio.Presentation.Collections
 
         public bool Remove(T item)
         {
+            if (!hashSet.Contains(item))
+                return false;
             int index = list.IndexOf(item);
             if (index != -1)
             {
                 RemoveAt(index);
             }
             return index != -1;
-        }
-
-        public void RemoveRange(int index, int count)
-        {
-            var oldItems = list.Skip(index).Take(count).ToList();
-            list.RemoveRange(index, count);
-            var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldItems, index);
-            OnCollectionChanged(arg);
         }
 
         public int IndexOf(T item)
@@ -129,29 +139,28 @@ namespace SiliconStudio.Presentation.Collections
 
         public void Insert(int index, T item)
         {
-            list.Insert(index, item);
-            var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index);
-            OnCollectionChanged(arg);
+            if (hashSet.Add(item))
+            {
+                list.Insert(index, item);
+                var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index);
+                OnCollectionChanged(arg);
+            }
         }
 
         public void RemoveAt(int index)
         {
             var item = list[index];
             list.RemoveAt(index);
-            var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index);
-            OnCollectionChanged(arg);
-        }
+            hashSet.Remove(item);
 
-        public void Reset()
-        {
-            var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
+            var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index);
             OnCollectionChanged(arg);
         }
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"{{ObservableList}} Count = {Count}";
+            return $"{{ObservableSet}} Count = {Count}";
         }
 
         protected void OnCollectionChanged(NotifyCollectionChangedEventArgs arg)
