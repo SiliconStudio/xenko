@@ -39,7 +39,9 @@ namespace SiliconStudio.Paradox.Games
         public static extern bool GetClientRect(IntPtr hWnd, out RawRectangle lpRect);
 
         [DllImport("user32.dll", EntryPoint = "PeekMessage")]
+#if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
+#endif
         public static extern int PeekMessage(
             out NativeMessage lpMsg,
             IntPtr hWnd,
@@ -48,7 +50,9 @@ namespace SiliconStudio.Paradox.Games
             int wRemoveMsg);
 
         [DllImport("user32.dll", EntryPoint = "GetMessage")]
+#if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
+#endif
         public static extern int GetMessage(
             out NativeMessage lpMsg,
             IntPtr hWnd,
@@ -56,11 +60,15 @@ namespace SiliconStudio.Paradox.Games
             int wMsgFilterMax);
 
         [DllImport("user32.dll", EntryPoint = "TranslateMessage")]
+#if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
+#endif
         public static extern int TranslateMessage(ref NativeMessage lpMsg);
 
         [DllImport("user32.dll", EntryPoint = "DispatchMessage")]
+#if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
+#endif
         public static extern int DispatchMessage(ref NativeMessage lpMsg);
     }
 }
