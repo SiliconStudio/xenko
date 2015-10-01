@@ -1,12 +1,11 @@
 !SpriteSheet
 Id: d311c28e-39fc-44ff-a4bc-f4a9d8c5fc53
-SerializedVersion: 1
+SerializedVersion: 2
 Tags: []
 Type: Sprite2D
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Format: Color32Bits
-Packing:
-    AtlasMaximumSize: {X: 2048, Y: 2048}
+Packing: {}
 Sprites:
     -   Source: ../../../data/tests/arrow.png
         Name: Arrow

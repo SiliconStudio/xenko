@@ -1,6 +1,6 @@
 !SpriteSheet
 Id: 5d7ecea5-50f2-49c1-8fe8-16e67dd65ab0
-SerializedVersion: 1
+SerializedVersion: 2
 Tags: []
 Type: Sprite2D
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
@@ -10,7 +10,6 @@ Alpha: Mask
 GenerateMipmaps: true
 Packing:
     Enabled: false
-    AtlasMaximumSize: {X: 2048, Y: 2048}
 Sprites:
     -   Source: ../../../data/tests/Sphere.png
         Name: sphere1

@@ -1,5 +1,6 @@
 !Texture
 Id: ad042de6-d40c-4350-b563-651599ab7110
+SerializedVersion: 1
 Tags: []
 Source: ../../../data/tests/ParadoxBackground.jpg
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
@@ -8,6 +9,8 @@ Format: Color32Bits
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: 1
         Tags: []
+        Source: 
         ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
         ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

@@ -1,5 +1,6 @@
 !Texture
 Id: 8e6cf15a-38fa-4631-91fa-ecd21e12d7f0
+SerializedVersion: 1
 Tags: []
 Source: ../../../data/tests/small_uv.png
 ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
@@ -10,5 +11,7 @@ PremultiplyAlpha: false
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: 1
         Tags: []
+        Source: 
         ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

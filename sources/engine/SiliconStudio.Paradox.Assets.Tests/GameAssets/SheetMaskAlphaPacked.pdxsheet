@@ -1,12 +1,11 @@
 !SpriteSheet
 Id: f5cf3f85-622e-4345-aa18-8e781460ba71
-SerializedVersion: 1
+SerializedVersion: 2
 Tags: []
 Type: Sprite2D
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Alpha: Mask
-Packing:
-    AtlasMaximumSize: {X: 2048, Y: 2048}
+Packing: {}
 Sprites:
     -   Source: ../../../data/tests/SmallPngInterpolated.png
         Name: Frame 0
