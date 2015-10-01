@@ -24,7 +24,11 @@
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D
 using System;
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if !SILICONSTUDIO_RUNTIME_CORECLR
 using System.Windows.Forms;
+#else
+using SharpDX.Windows;
+#endif
 #endif
 using SharpDX;
 using SharpDX.DXGI;
