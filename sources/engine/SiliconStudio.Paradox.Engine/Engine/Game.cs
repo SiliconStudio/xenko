@@ -285,7 +285,12 @@ namespace SiliconStudio.Paradox.Engine
                     && Input.IsKeyDown(Keys.C)
                     && Input.IsKeyReleased(Keys.F12))
                 {
+#if !SILICONSTUDIO_RUNTIME_CORECLR
                     var currentFilePath = Assembly.GetEntryAssembly().Location;
+#else
+                        // FIXME: Manu: We use the current workding directory while finding a solution to get the location of an assembly.
+                    var currentFilePath = Directory.GetCurrentDirectory();
+#endif
                     var timeNow = DateTime.Now.ToString("s", CultureInfo.InvariantCulture).Replace(':', '_');
                     var newFileName = Path.Combine(
                         Path.GetDirectoryName(currentFilePath),
