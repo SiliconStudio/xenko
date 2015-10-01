@@ -62,7 +62,9 @@ namespace SiliconStudio.Paradox.Physics
         /// The reference to the collider Shape of this element.
         /// </userdoc>
         [DataMember(200)]
+#if !SILICONSTUDIO_RUNTIME_CORECLR
         [Category]
+#endif
         public TrackingCollection<IInlineColliderShapeDesc> ColliderShapes { get; private set; }
 
         [DataMemberIgnore]

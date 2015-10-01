@@ -26,7 +26,9 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// <summary>
         /// Gets the collection of material instances used by this <see cref="IProceduralModel"/>/
         /// </summary>
+#if !SILICONSTUDIO_RUNTIME_CORECLR
         [Browsable(false)]
+#endif
         IEnumerable<KeyValuePair<string, MaterialInstance>> MaterialInstances { get; }
     }
 }

@@ -35,7 +35,9 @@ namespace SiliconStudio.Paradox.Rendering.Composers
         /// <value>The cameras.</value>
         /// <userdoc>The list of cameras used in the graphic pipeline</userdoc>
         [DataMember(10)]
+#if !SILICONSTUDIO_RUNTIME_CORECLR
         [Category]
+#endif
         public SceneCameraSlotCollection Cameras { get; private set; }
 
         /// <summary>
@@ -44,7 +46,9 @@ namespace SiliconStudio.Paradox.Rendering.Composers
         /// <value>The layers.</value>
         /// <userdoc>The sequence of graphic layers to incorporate into the pipeline</userdoc>
         [DataMember(20)]
+#if !SILICONSTUDIO_RUNTIME_CORECLR
         [Category]
+#endif
         [MemberCollection(CanReorderItems = true)]
         public SceneGraphicsLayerCollection Layers { get; private set; }
 
@@ -54,7 +58,9 @@ namespace SiliconStudio.Paradox.Rendering.Composers
         /// <value>The master layer.</value>
         /// <userdoc>The main layer of the pipeline. Its output is the window back buffer.</userdoc>
         [DataMember(30)]
+#if !SILICONSTUDIO_RUNTIME_CORECLR
         [Category]
+#endif
         public SceneGraphicsLayer Master { get; private set; }
 
         protected override void Unload()

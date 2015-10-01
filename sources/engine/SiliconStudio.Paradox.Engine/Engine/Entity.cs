@@ -36,7 +36,9 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// The entity identifier.
         /// </summary>
+#if !SILICONSTUDIO_RUNTIME_CORECLR
         [Browsable(false)]
+#endif
         public new Guid Id;
 
         static Entity()
