@@ -20,7 +20,13 @@ namespace Sockets.Plugin
     {
         private readonly TcpClient _backingTcpClient;
         private readonly int _bufferSize;
+#if !SILICONSTUDIO_RUNTIME_CORECLR
         private SslStream _secureStream;
+#else
+            // FIXME: Manu: Big Warning here! SslStream is not yet in CoreCLR, so we use a normal one instead
+            // For the time being.
+        private Stream _secureStream;
+#endif
         private Stream _writeStream;
 
         /// <summary>
@@ -59,13 +65,19 @@ namespace Sockets.Plugin
             InitializeWriteStream();
             if (secure)
             {
+#if !SILICONSTUDIO_RUNTIME_CORECLR
                 var secureStream = new SslStream(_writeStream, true, (sender, cert, chain, sslPolicy) => ServerValidationCallback(sender, cert, chain, sslPolicy));
                 secureStream.AuthenticateAsClient(address, null, System.Security.Authentication.SslProtocols.Tls, false);
                 _secureStream = secureStream;
+#else
+                    // FIXME: Manu: Big Warning here! SslStream is not yet in CoreCLR, so we use a normal one instead
+                    // For the time being.
+                _secureStream = _writeStream;
+#endif
             }            
         }
 
-        #region Secure Sockets Details
+#region Secure Sockets Details
         
         private bool ServerValidationCallback (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
@@ -87,7 +99,7 @@ namespace Sockets.Plugin
             return true;
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         ///     Disconnects from an endpoint previously connected to using <code>ConnectAsync</code>.
