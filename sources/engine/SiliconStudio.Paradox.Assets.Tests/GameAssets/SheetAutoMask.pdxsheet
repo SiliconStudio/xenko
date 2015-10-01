@@ -1,12 +1,11 @@
 !SpriteSheet
 Id: 915ede20-6202-4e2b-a667-2bd4c22da6ba
-SerializedVersion: 1
+SerializedVersion: 2
 Tags: []
 Type: Sprite2D
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Packing:
     Enabled: false
-    AtlasMaximumSize: {X: 2048, Y: 2048}
 Sprites:
     -   Source: ../../../data/tests/SmallPngMask.png
         Name: Frame 0

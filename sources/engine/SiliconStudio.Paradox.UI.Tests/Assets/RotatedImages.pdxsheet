@@ -1,13 +1,12 @@
 !SpriteSheet
 Id: 0d564cf9-3de7-4550-8bdd-ad29f7c57d36
-SerializedVersion: 1
+SerializedVersion: 2
 Tags: []
 Type: Sprite2D
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Format: Color32Bits
 Alpha: None
 Packing:
-    AtlasMaximumSize: {X: 2048, Y: 2048}
     BorderSize: 8
 Sprites:
     -   Source: ../../../data/tests/TexturePacking/imageBorder.png

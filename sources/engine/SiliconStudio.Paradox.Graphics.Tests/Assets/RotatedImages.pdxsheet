@@ -1,12 +1,11 @@
 !SpriteSheet
 Id: 91749410-580d-4ab0-bf03-8db5cc703700
-SerializedVersion: 1
+SerializedVersion: 2
 Tags: []
 Type: Sprite2D
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Packing:
     Enabled: false
-    AtlasMaximumSize: {X: 2048, Y: 2048}
 Sprites:
     -   Source: ../../../data/tests/ImageOrientation.png
         Name: NoRotation

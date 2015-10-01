@@ -1,11 +1,10 @@
 !SpriteSheet
 Id: c39fe354-374c-4953-a85a-37c2cdd8fe8b
-SerializedVersion: 1
+SerializedVersion: 2
 Tags: []
 Type: Sprite2D
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-Packing:
-    AtlasMaximumSize: {X: 2048, Y: 2048}
+Packing: {}
 Sprites:
     -   Source: ../../../data/tests/SmallPngNoAlpha.png
         Name: Frame 0

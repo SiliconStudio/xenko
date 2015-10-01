@@ -1,6 +1,6 @@
 !SceneAsset
 Id: b47e4609-0125-41bd-a26e-0fdf9184327e
-SerializedVersion: 13
+SerializedVersion: 18
 Tags: []
 Hierarchy:
     RootEntities: []
@@ -16,6 +16,5 @@ Hierarchy:
         EditorSettings:
             GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
             SceneUnit: 1.0
-            Camera: {}
             Mode: !SceneEditorGraphicsModeLDRSettings
                 BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}

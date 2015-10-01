@@ -1,13 +1,11 @@
 !SpriteSheet
 Id: 6318256a-cbfa-43cf-a9ba-18b91e6ab350
-SerializedVersion: 1
+SerializedVersion: 2
 Tags: []
 Type: Sprite2D
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Format: Color32Bits
-Packing:
-    Enabled: true
-    AtlasMaximumSize: {X: 2048, Y: 2048}
+Packing: {}
 Sprites:
     -   Source: ../../../data/tests/DebugSprites.png
         Name: Center
