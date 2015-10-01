@@ -24,15 +24,6 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
             MaterialInstance = new MaterialInstance();
             UvScale = Vector2.One;
         }
-        /// <summary>
-        /// Gets the material instance.
-        /// </summary>
-        /// <value>The material instance.</value>
-        /// <userdoc>The reference material asset to use with this model.</userdoc>
-        [DataMember(500)]
-        [NotNull]
-        [Display("Material")]
-        public MaterialInstance MaterialInstance { get; private set; }
 
         public void SetMaterial(string name, Material material)
         {
@@ -54,6 +45,16 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         [DefaultValue(1.0f)]
         [Display("UV Scale")]
         public Vector2 UvScale { get; set; }
+
+        /// <summary>
+        /// Gets the material instance.
+        /// </summary>
+        /// <value>The material instance.</value>
+        /// <userdoc>The reference material asset to use with this model.</userdoc>
+        [DataMember(600)]
+        [NotNull]
+        [Display("Material")]
+        public MaterialInstance MaterialInstance { get; private set; }
 
         /// <inheritdoc/>
         [DataMemberIgnore]

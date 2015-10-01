@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Engine.Processors
         /// Initializes a new instance of the <see cref="SpriteProcessor"/> class.
         /// </summary>
         public BackgroundComponentProcessor()
-            : base(new PropertyKey[] { BackgroundComponent.Key })
+            : base(BackgroundComponent.Key)
         {
             Backgrounds = new List<BackgroundComponent>();
         }

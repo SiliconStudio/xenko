@@ -14,7 +14,7 @@ namespace SiliconStudio.Paradox.Engine.Processors
     {
         private ScriptSystem scriptSystem;
 
-        public ScriptProcessor() : base(new PropertyKey[] { ScriptComponent.Key })
+        public ScriptProcessor() : base(ScriptComponent.Key)
         {
             // Script processor always running before others
             Order = -100000;

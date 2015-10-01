@@ -186,6 +186,7 @@ namespace SiliconStudio.Paradox.Engine
                 
                 // Need to add entity
                 entityData = GenerateAssociatedData(entity);
+                UpdateAssociatedData(entity, ref entityData);
 
                 processors.Add(this);
                 OnEntityAdding(entity, entityData);
@@ -213,9 +214,9 @@ namespace SiliconStudio.Paradox.Engine
             else if (entityMatch) // && entityMatch
             {
                 // one of the components of the entity changed we need to regenerate the AssociatedData
-                OnEntityRemoved(entity, entityData);
-                entityData = GenerateAssociatedData(entity);
-                OnEntityAdding(entity, entityData);
+                entityData = matchingEntities[entity];
+                UpdateAssociatedData(entity, ref entityData);
+
                 matchingEntities[entity] = entityData;
                 if (EntityManager.IsEnabled(entity))
                     enabledEntities[entity] = entityData;
@@ -227,6 +228,13 @@ namespace SiliconStudio.Paradox.Engine
         /// <param name="entity">The entity.</param>
         /// <returns>The associated data.</returns>
         protected abstract T GenerateAssociatedData(Entity entity);
+
+        /// <summary>Updates an entity's associated data when components after it's components have changed.</summary>
+        /// <param name="entity">The entity.</param>
+        /// <param name="associatedData">The associated data.</param>
+        protected virtual void UpdateAssociatedData(Entity entity, ref T associatedData)
+        {
+        }
 
         protected virtual bool EntityMatch(Entity entity)
         {

@@ -60,14 +60,12 @@ namespace SiliconStudio.Paradox.Animations
                         var requiredTime = channel.KeyFrames[keyIndex - 2].Time;
 
                         animationChannelValues.Add(new AnimationKeyValuePair<T> { ChannelIndex = channelIndex, RequiredTime = requiredTime, Value = channel.KeyFrames[keyIndex] });
-
-                        // Add last frame again so that we have ValueNext == ValueEnd at end of curve
-                        if (keyIndex == channel.KeyFrames.Count - 1)
-                        {
-                            requiredTime = channel.KeyFrames[keyIndex - 1].Time;    // important should not be "keyIndex - 2" or last frame will be skipped by update (two updates in a row)
-                            animationChannelValues.Add(new AnimationKeyValuePair<T> { ChannelIndex = channelIndex, RequiredTime = requiredTime, Value = channel.KeyFrames[keyIndex] });
-                        }
                     }
+
+                    // Add last frame again so that we have ValueNext == ValueEnd at end of curve
+                    var lastKeyIndex = channel.KeyFrames.Count - 1;
+                    var lastRequiredTime = channel.KeyFrames[channel.KeyFrames.Count > 1 ? lastKeyIndex - 1 : 0].Time; // important should not be "keyIndex - 2" or last frame will be skipped by update (two updates in a row)
+                    animationChannelValues.Add(new AnimationKeyValuePair<T> { ChannelIndex = channelIndex, RequiredTime = lastRequiredTime, Value = channel.KeyFrames[lastKeyIndex] });
                 }
             }
 

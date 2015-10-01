@@ -59,13 +59,7 @@ namespace SiliconStudio.Paradox.Assets.Model
             ScaleImport = 1.0f;
         }
 
-        private string ContextAsString
-        {
-            get
-            {
-                return string.Format("model [{0}] from import [{1}]", Location, SourcePath);
-            }
-        }
+        private string ContextAsString => $"model [{Location}] from import [{SourcePath}]";
 
         /// <summary>
         /// The method to override containing the actual command code. It is called by the <see cref="DoCommand" /> function
@@ -113,9 +107,9 @@ namespace SiliconStudio.Paradox.Assets.Model
                     // Apply materials
                     foreach (var modelMaterial in Materials)
                     {
-                        if (modelMaterial.MaterialInstance == null || modelMaterial.MaterialInstance.Material == null)
+                        if (modelMaterial.MaterialInstance?.Material == null)
                         {
-                            commandContext.Logger.Warning(string.Format("The material [{0}] is null in the list of materials.", modelMaterial.Name));
+                            commandContext.Logger.Warning($"The material [{modelMaterial.Name}] is null in the list of materials.");
                             continue;
                         }                       
                         model.Materials.Add(modelMaterial.MaterialInstance);
@@ -396,7 +390,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                 if (exportedObject != null)
                     assetManager.Save(Location, exportedObject);
 
-                commandContext.Logger.Info("The {0} has been successfully imported.", ContextAsString);
+                commandContext.Logger.Verbose("The {0} has been successfully imported.", ContextAsString);
 
                 return ResultStatus.Successful;
             }

@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Rendering.Skyboxes
         /// Initializes a new instance of the <see cref="SkyboxProcessor" /> class.
         /// </summary>
         public SkyboxProcessor()
-            : base(new PropertyKey[] { SkyboxComponent.Key })
+            : base(SkyboxComponent.Key)
         {
         }
 

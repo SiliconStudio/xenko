@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.Engine.Processors
         /// Initializes a new instance of the <see cref="ModelProcessor"/> class.
         /// </summary>
         public ModelProcessor()
-            : base(new PropertyKey[] { ModelComponent.Key, TransformComponent.Key })
+            : base(ModelComponent.Key, TransformComponent.Key)
         {
             ModelGroups = new List<RenderModelCollection>();
             allModelGroups = new RenderModelCollection[32];

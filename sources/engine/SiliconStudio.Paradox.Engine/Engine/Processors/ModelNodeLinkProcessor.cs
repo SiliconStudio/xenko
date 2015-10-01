@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Engine.Processors
         internal ModelProcessor meshProcessor;
 
         public ModelNodeLinkProcessor()
-            : base(new PropertyKey[] { TransformComponent.Key, ModelNodeLinkComponent.Key })
+            : base(TransformComponent.Key, ModelNodeLinkComponent.Key)
         {
         }
 

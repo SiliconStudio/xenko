@@ -11,18 +11,26 @@ namespace SiliconStudio.Paradox.Animations
 {
     public class AnimationProcessor : EntityProcessor<AnimationProcessor.AssociatedData>
     {
-        private FastList<AnimationOperation> animationOperations = new FastList<AnimationOperation>(2);
+        private readonly FastList<AnimationOperation> animationOperations = new FastList<AnimationOperation>(2);
 
 
         public AnimationProcessor()
-            : base(new PropertyKey[] { AnimationComponent.Key })
+            : base(AnimationComponent.Key)
         {
             Order = -500;
         }
 
         protected override AssociatedData GenerateAssociatedData(Entity entity)
         {
-            return new AssociatedData { ModelComponent = entity.Get(ModelComponent.Key), AnimationComponent = entity.Get(AnimationComponent.Key) };
+            return new AssociatedData
+            {
+                AnimationComponent = entity.Get(AnimationComponent.Key)
+            };
+        }
+
+        protected override void UpdateAssociatedData(Entity entity, ref AssociatedData associatedData)
+        {
+            associatedData.ModelComponent = entity.Get(ModelComponent.Key);
         }
 
         protected override void OnEntityAdding(Entity entity, AssociatedData data)
