@@ -117,7 +117,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                     // Update the sprite batch
 
                     BlendState spriteBlending; //todo handle better each case
-                    switch (node.BaseNode.BaseAlphaBlending)
+                    switch (node.BaseNode.AlphaBlending)
                     {
                         case SpriteStudioAlphaBlending.Mix:
                             spriteBlending = device.BlendStates.AlphaBlend;
@@ -167,7 +167,8 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                     }
                     else
                     {
-                        color.A = (byte)Math.Min(node.Transparency*255.0f, 255.0f);
+                        var color4 = new Color4(color)*node.Transparency;
+                        color = new Color(color4);
                     }
 
                     var worldMatrix = node.ModelTransform*transfoComp.WorldMatrix;

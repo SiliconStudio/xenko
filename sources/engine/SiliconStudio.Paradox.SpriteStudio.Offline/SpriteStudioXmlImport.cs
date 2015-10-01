@@ -1,247 +1,223 @@
+using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.SpriteStudio.Runtime;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 namespace SiliconStudio.Paradox.SpriteStudio.Offline
 {
     internal class SpriteStudioXmlImport
     {
-        private static void FillNodeData(SpriteStudioNode node, XNamespace nameSpace, XElement part, out SpriteNodeData nodeData)
+        private static void FillNodeData(XNamespace nameSpace, XContainer part, List<SpriteStudioCell> cells, out NodeAnimationData nodeData)
         {
-            nodeData = new SpriteNodeData();
+            nodeData = new NodeAnimationData();
 
-            var attribs = part.Descendants(nameSpace + "Attribute");
+            var attribs = part.Descendants(nameSpace + "attribute");
             foreach (var attrib in attribs)
             {
-                var tag = attrib.Attributes("Tag").First().Value;
-                var keys = attrib.Descendants(nameSpace + "Key");
-
-                var values = keys.Where(key => key.Descendants(nameSpace + "Value").FirstOrDefault() != null).Select(key => new Dictionary<string, string>
-                        {
-                            {"time", key.Attribute("Time").Value},
-                            {"curve", key.Attribute("CurveType") != null ? key.Attribute("CurveType").Value : "0"},
-                            {"value", key.Descendants(nameSpace + "Value").First().Value}
-                        }).ToList();
+                var tag = attrib.Attributes("tag").First().Value;
+                var keys = attrib.Descendants(nameSpace + "key");
 
                 switch (tag)
                 {
-                    case "POSX":
-                        node.BaseXyPrioAngle.X = Convert.ToSingle(values.Select(x => x.First(y => y.Key == "value").Value).First());
+                    case "CELL":
+                        {
+                            var keyValues = new List<Dictionary<string, string>>();
+                            foreach (var key in keys)
+                            {
+                                var values = new Dictionary<string, string>();
+                                var cellName = key.Descendants(nameSpace + "value").First().Descendants(nameSpace + "name").First().Value;
+                                var index = 0;
+                                var realIndex = -1;
+                                foreach (var cell in cells)
+                                {
+                                    if (cell.Name == cellName)
+                                    {
+                                        realIndex = index;
+                                    }
+                                    index++;
+                                }
+                                values.Add("time", key.Attribute("time").Value);
+                                values.Add("curve", key.Attribute("ipType") != null ? key.Attribute("ipType").Value : "linear");
+                                values.Add("value", realIndex.ToString());
+
+                                keyValues.Add(values);
+                            }
+                            nodeData.Data.Add(tag, keyValues);
+                        }
                         break;
 
-                    case "POSY":
-                        node.BaseXyPrioAngle.Y = -Convert.ToSingle(values.Select(x => x.First(y => y.Key == "value").Value).First());
-                        break;
-
-                    case "PRIO":
-                        node.BaseXyPrioAngle.Z = Convert.ToSingle(values.Select(x => x.First(y => y.Key == "value").Value).First());
-                        break;
-
-                    case "ANGL":
-                        node.BaseXyPrioAngle.W = MathUtil.DegreesToRadians(Convert.ToSingle(values.Select(x => x.First(y => y.Key == "value").Value).First()));
-                        break;
-
-                    case "SCAX":
-                        node.BaseScale.X = Convert.ToSingle(values.Select(x => x.First(y => y.Key == "value").Value).First());
-                        break;
-
-                    case "SCAY":
-                        node.BaseScale.Y = Convert.ToSingle(values.Select(x => x.First(y => y.Key == "value").Value).First());
-                        break;
-
-                    case "TRAN":
-                        node.BaseTransparency = Convert.ToSingle(values.Select(x => x.First(y => y.Key == "value").Value).First());
-                        break;
-
-                    case "HIDE":
-                        node.BaseHide = Convert.ToInt32(values.Select(x => x.First(y => y.Key == "value").Value).First()) == 1;
-                        break;
-
-                    case "FLPH":
-                        node.BaseHFlipped = Convert.ToInt32(values.Select(x => x.First(y => y.Key == "value").Value).First()) == 1;
-                        break;
-
-                    case "FLPV":
-                        node.BaseVFlipped = Convert.ToInt32(values.Select(x => x.First(y => y.Key == "value").Value).First()) == 1;
+                    default:
+                        {
+                            var values = keys.Where(key => key.Descendants(nameSpace + "value").FirstOrDefault() != null).Select(key => new Dictionary<string, string>
+                            {
+                                { "time", key.Attribute("time").Value },
+                                { "curve", key.Attribute("ipType") != null ? key.Attribute("ipType").Value : "linear" },
+                                { "value", key.Descendants(nameSpace + "value").First().Value }
+                            }).ToList();
+                            nodeData.Data.Add(tag, values);
+                        }
                         break;
                 }
-
-                nodeData.Data.Add(tag, values);
             }
         }
 
-        public static bool Load(string file, List<SpriteStudioNode> nodes, List<SpriteNodeData> nodesData, List<SpriteStudioNode> extraNodes, out int endFrame, out int fps)
+        public static bool ParseAnimations(UFile file, List<SpriteStudioAnim> animations)
         {
-            endFrame = 0;
-            fps = 0;
+            var textures = new List<UFile>();
+            var cells = new List<SpriteStudioCell>();
+            if (!ParseCellMaps(file, textures, cells)) return false;
 
             var xmlDoc = XDocument.Load(file);
             if (xmlDoc.Root == null) return false;
 
             var nameSpace = xmlDoc.Root.Name.Namespace;
 
-            if (!int.TryParse(xmlDoc.Descendants(nameSpace + "EndFrame").First().Value, out endFrame)) return false;
-            if (!int.TryParse(xmlDoc.Descendants(nameSpace + "BaseTickTime").First().Value, out fps)) return false;
-
-            var parts = xmlDoc.Descendants(nameSpace + "Part").ToList();
-            foreach (var part in parts)
+            var anims = xmlDoc.Descendants(nameSpace + "anime");
+            foreach (var animXml in anims)
             {
-                var type = part.Descendants(nameSpace + "Type").First();
-                var name = part.Descendants(nameSpace + "Name").First();
-                switch (type.Value)
+                var animName = animXml.Descendants(nameSpace + "name").First().Value;
+
+                int fps, frameCount;
+                if (!int.TryParse(animXml.Descendants(nameSpace + "fps").First().Value, out fps)) continue;
+                if (!int.TryParse(animXml.Descendants(nameSpace + "frameCount").First().Value, out frameCount)) continue;
+
+                var anim = new SpriteStudioAnim
                 {
-                    case "1":
-                        {
-                            var node = new SpriteStudioNode
-                            {
-                                Name = name.Value,
-                                Id = -1,
-                                ParentId = -2,
-                                PictureId = -1
-                            };
-                            nodes.Add(node);
-                            nodesData.Add(new SpriteNodeData());
-                        }
-                        break;
+                    Name = animName,
+                    Fps = fps,
+                    FrameCount = frameCount
+                };
 
-                    case "2":
-                        {
-                            int nodeId, parentId;
-                            if (!int.TryParse(part.Descendants(nameSpace + "ID").First().Value, out nodeId)) continue;
-                            if (!int.TryParse(part.Descendants(nameSpace + "ParentID").First().Value, out parentId)) continue;
-
-                            var node = new SpriteStudioNode
-                            {
-                                Name = name.Value,
-                                Id = nodeId,
-                                ParentId = parentId,
-                                PictureId = -1,
-                                Rectangle = RectangleF.Empty,
-                                Pivot = Vector2.Zero
-                            };
-
-                            nodes.Add(node);
-
-                            SpriteNodeData nodeData;
-                            FillNodeData(node, nameSpace, part, out nodeData);
-
-                            nodesData.Add(nodeData);
-                        }
-                        break;
-
-                    case "0":
-                        {
-                            int nodeId, parentId;
-                            if (!int.TryParse(part.Descendants(nameSpace + "ID").First().Value, out nodeId)) continue;
-                            if (!int.TryParse(part.Descendants(nameSpace + "ParentID").First().Value, out parentId)) continue;
-
-                            int textureId;
-                            if (!int.TryParse(part.Descendants(nameSpace + "PicID").First().Value, out textureId)) continue;
-                            var pictAreaX = part.Descendants(nameSpace + "PictArea").First();
-                            int top, left, bottom, right;
-                            if (!int.TryParse(pictAreaX.Descendants(nameSpace + "Top").First().Value, out top)) continue;
-                            if (!int.TryParse(pictAreaX.Descendants(nameSpace + "Left").First().Value, out left)) continue;
-                            if (!int.TryParse(pictAreaX.Descendants(nameSpace + "Bottom").First().Value, out bottom)) continue;
-                            if (!int.TryParse(pictAreaX.Descendants(nameSpace + "Right").First().Value, out right)) continue;
-                            var rect = new RectangleF(left, top, right - left, bottom - top);
-
-                            int pivotX, pivotY;
-                            if (!int.TryParse(part.Descendants(nameSpace + "OriginX").First().Value, out pivotX)) continue;
-                            if (!int.TryParse(part.Descendants(nameSpace + "OriginY").First().Value, out pivotY)) continue;
-
-                            int blending;
-                            if (!int.TryParse(part.Descendants(nameSpace + "TransBlendType").First().Value, out blending)) continue;
-
-                            var node = new SpriteStudioNode
-                            {
-                                Name = name.Value,
-                                Id = nodeId,
-                                ParentId = parentId,
-                                PictureId = textureId,
-                                Rectangle = rect,
-                                Pivot = new Vector2(pivotX, pivotY),
-                                BaseAlphaBlending = (SpriteStudioAlphaBlending)blending
-                            };
-
-                            nodes.Add(node);
-
-                            SpriteNodeData nodeData;
-                            FillNodeData(node, nameSpace, part, out nodeData);
-
-                            nodesData.Add(nodeData);
-                        }
-                        break;
-                }
-            }
-
-            //process the case of a cell change animation
-            //we need to emit extra sprites that will get picked during runtime and at same time modify the animation track
-            for (var i = 0; i < nodesData.Count; i++)
-            {
-                var nodeData = nodesData[i];
-                var node = nodes[i];
-                var sortedVariations = (from v in nodeData.Data.Where(x => x.Key == "IMGX" || x.Key == "IMGY" || x.Key == "IMGW" || x.Key == "IMGH" || x.Key == "ORFX" || x.Key == "ORFY")
-                                        from v1 in v.Value select new Tuple<string, int, int>(v.Key, int.Parse(v1["time"]), int.Parse(v1["value"])));
-                sortedVariations = sortedVariations.OrderBy(x => x.Item1);
-                var variationCount = 0;
-                var cellAnimData = new List<Dictionary<string, string>>();
-                foreach (var frame in sortedVariations.ToLookup(x => x.Item2, y => y))
+                var animParts = animXml.Descendants(nameSpace + "partAnime");
+                foreach (var animPart in animParts)
                 {
-                    var time = frame.Key;
-                    var imgxTuple = frame.FirstOrDefault(x => x.Item1 == "IMGX");
-                    var imgx = imgxTuple?.Item3 ?? 0;
-                    var imgyTuple = frame.FirstOrDefault(x => x.Item1 == "IMGY");
-                    var imgy = imgyTuple?.Item3 ?? 0;
-                    var imgwTuple = frame.FirstOrDefault(x => x.Item1 == "IMGW");
-                    var imgw = imgwTuple?.Item3 ?? 0;
-                    var imghTuple = frame.FirstOrDefault(x => x.Item1 == "IMGH");
-                    var imgh = imghTuple?.Item3 ?? 0;
-                    var orfxTuple = frame.FirstOrDefault(x => x.Item1 == "ORFX");
-                    var orfx = orfxTuple?.Item3 ?? 0;
-                    var orfyTuple = frame.FirstOrDefault(x => x.Item1 == "ORFY");
-                    var orfy = orfyTuple?.Item3 ?? 0;
-
-                    //figure if this frame is actually our base frame
-                    if (imgx == 0 && imgy == 0 && imgw == 0 && imgh == 0 && orfx == 0 && orfy == 0)
-                    {
-                        cellAnimData.Add(new Dictionary<string, string>
-                        {
-                            { "time", time.ToString() },
-                            { "value", "-1" }
-                        });
-                    }
-                    else
-                    {
-                        var extraNode = new SpriteStudioNode
-                        {
-                            Name = node.Name + variationCount,
-                            Id = 0,
-                            ParentId = 0,
-                            PictureId = node.PictureId,
-                            Rectangle = new RectangleF(node.Rectangle.X + imgx, node.Rectangle.Y + imgy, node.Rectangle.Width + imgw, node.Rectangle.Height + imgh),
-                            Pivot = node.Pivot + new Vector2(orfx, orfy),
-                            BaseAlphaBlending = node.BaseAlphaBlending
-                        };
-
-                        extraNodes.Add(extraNode);
-
-                        cellAnimData.Add(new Dictionary<string, string>
-                        {
-                            { "time", time.ToString() },
-                            { "value", variationCount.ToString() }
-                        });
-
-                        variationCount++;
-                    }
+                    NodeAnimationData data;
+                    FillNodeData(nameSpace, animPart, cells, out data);
+                    anim.NodesData.Add(animPart.Descendants(nameSpace + "partName").First().Value, data);
                 }
-                nodeData.Data.Add("CELL", cellAnimData);
+
+                animations.Add(anim);
             }
 
             return true;
+        }
+
+        public static bool ParseModel(UFile file, List<SpriteStudioNode> nodes, out string modelName)
+        {
+            modelName = string.Empty;
+
+            var xmlDoc = XDocument.Load(file);
+            if (xmlDoc.Root == null) return false;
+
+            var nameSpace = xmlDoc.Root.Name.Namespace;
+
+            modelName = xmlDoc.Descendants(nameSpace + "name").First().Value;
+
+            var model = xmlDoc.Descendants(nameSpace + "Model").First();
+            var modelNodes = model.Descendants(nameSpace + "value");
+            foreach (var xmlNode in modelNodes)
+            {
+                var nodeName = xmlNode.Descendants(nameSpace + "name").First().Value;
+                var isNull = xmlNode.Descendants(nameSpace + "type").First().Value == "null";
+                int nodeId, parentId;
+                if (!int.TryParse(xmlNode.Descendants(nameSpace + "arrayIndex").First().Value, out nodeId)) continue;
+                if (!int.TryParse(xmlNode.Descendants(nameSpace + "parentIndex").First().Value, out parentId)) continue;
+
+                var blendingName = xmlNode.Descendants(nameSpace + "alphaBlendType").First().Value;
+
+                var node = new SpriteStudioNode
+                {
+                    Name = nodeName,
+                    Id = nodeId,
+                    ParentId = parentId,
+                    IsNull = isNull
+                };
+
+                switch (blendingName)
+                {
+                    case "mix":
+                        node.AlphaBlending = SpriteStudioAlphaBlending.Mix;
+                        break;
+
+                    case "add":
+                        node.AlphaBlending = SpriteStudioAlphaBlending.Addition;
+                        break;
+
+                    case "mul":
+                        node.AlphaBlending = SpriteStudioAlphaBlending.Multiplication;
+                        break;
+
+                    case "sub":
+                        node.AlphaBlending = SpriteStudioAlphaBlending.Subtraction;
+                        break;
+                }
+
+                nodes.Add(node);
+            }
+
+            return true;
+        }
+
+        public static bool ParseCellMaps(UFile file, List<UFile> textures, List<SpriteStudioCell> cells)
+        {
+            var xmlDoc = XDocument.Load(file);
+            if (xmlDoc.Root == null) return false;
+
+            var nameSpace = xmlDoc.Root.Name.Namespace;
+
+            var cellMaps = xmlDoc.Descendants(nameSpace + "cellmapNames").Descendants(nameSpace + "value");
+
+            foreach (var cellMap in cellMaps)
+            {
+                var mapFile = UPath.Combine(file.GetFullDirectory(), new UFile(cellMap.Value));
+                var cellDoc = XDocument.Load(mapFile);
+                if (cellDoc.Root == null) return false;
+
+                var cnameSpace = cellDoc.Root.Name.Namespace;
+
+                var cellNodes = cellDoc.Descendants(nameSpace + "cell");
+                foreach (var cellNode in cellNodes)
+                {
+                    var cell = new SpriteStudioCell
+                    {
+                        Name = cellNode.Descendants(cnameSpace + "name").First().Value,
+                        TextureIndex = textures.Count
+                    };
+   
+                    var posData = cellNode.Descendants(nameSpace + "pos").First().Value;
+                    var posValues = Regex.Split(posData, "\\s+");
+                    var sizeData = cellNode.Descendants(nameSpace + "size").First().Value;
+                    var sizeValues = Regex.Split(sizeData, "\\s+");
+                    cell.Rectangle = new RectangleF(float.Parse(posValues[0]), float.Parse(posValues[1]), float.Parse(sizeValues[0]), float.Parse(sizeValues[1]));
+
+                    var pivotData = cellNode.Descendants(nameSpace + "pivot").First().Value;
+                    var pivotValues = Regex.Split(pivotData, "\\s+");
+                    cell.Pivot = new Vector2((float.Parse(pivotValues[0]) + 0.5f) * cell.Rectangle.Width, (-float.Parse(pivotValues[1]) + 0.5f) * cell.Rectangle.Height);
+
+                    cells.Add(cell);
+                }
+
+                var textPath = cellDoc.Descendants(nameSpace + "imagePath").First().Value;
+
+                textures.Add(UPath.Combine(file.GetFullDirectory(), new UFile(textPath)));
+            }
+
+            return true;
+        }
+
+        public static bool SanityCheck(UFile file)
+        {
+            var xmlDoc = XDocument.Load(file);
+            if (xmlDoc.Root == null) return false;
+
+            var nameSpace = xmlDoc.Root.Name.Namespace;
+
+            var cellMaps = xmlDoc.Descendants(nameSpace + "cellmapNames").Descendants(nameSpace + "value").ToList();
+            return cellMaps.Select(cellMap => UPath.Combine(file.GetFullDirectory(), new UFile(cellMap.Value))).All(fileName => File.Exists(fileName.ToWindowsPath()));
         }
     }
 }

@@ -8,12 +8,12 @@ using SiliconStudio.Core.Reflection;
 namespace SiliconStudio.Paradox.SpriteStudio.Offline
 {
     [DataContract("SpriteStudioSheetAsset")] // Name of the Asset serialized in YAML
-    [AssetCompiler(typeof(SpriteStudioSheetAssetCompiler))] // The compiler used to transform this asset to RangeValues
+    [AssetCompiler(typeof(SpriteStudioModelAssetCompiler))] // The compiler used to transform this asset to RangeValues
     [AssetDescription(".pdxss4s", false)] // A description used to display in the asset editor
     [ObjectFactory(typeof(SpriteStudioSheetAssetFactory))]
     [ThumbnailCompiler("SiliconStudio.Paradox.GameStudio.Plugin.ThumbnailCompilers.SpriteStudioSheetThumbnailCompiler, SiliconStudio.Paradox.GameStudio.Plugin", true)] // TODO: Obsolete
     [Display("Sprite Studio Sheet")]
-    public class SpriteStudioSheetAsset : AssetImportTracked
+    public class SpriteStudioModelAsset : AssetImportTracked
     {
         [DataMemberIgnore]
         public List<string> BuildTextures { get; } = new List<string>();
@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
         {
             public object New(Type type)
             {
-                return new SpriteStudioSheetAsset();
+                return new SpriteStudioModelAsset();
             }
         }
     }

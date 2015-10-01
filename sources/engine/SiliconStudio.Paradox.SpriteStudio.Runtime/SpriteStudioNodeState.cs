@@ -6,6 +6,11 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
 {
     public class SpriteStudioNodeState
     {
+        public SpriteStudioNodeState()
+        {
+            DefaultPixelsPerUnit = new Vector2(Sprite.DefaultPixelsPerUnit);
+        }
+
         public Matrix LocalTransform;
 
         public Matrix ModelTransform;
@@ -30,9 +35,11 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
 
         public SpriteStudioNode BaseNode;
 
+        public Vector2 DefaultPixelsPerUnit;
+
         internal void UpdateTransformation()
         {
-            var unit = Sprite.PixelsPerUnit;
+            var unit = Sprite?.PixelsPerUnit ?? DefaultPixelsPerUnit;
             var scale = Matrix.Scaling(HFlipped ? -Scale.X : Scale.X, VFlipped ? -Scale.Y : Scale.Y, 1.0f);
             var rot = Matrix.RotationZ(CurrentXyPrioAngle.W);
             var pos = Matrix.Translation(CurrentXyPrioAngle.X / unit.X, CurrentXyPrioAngle.Y / unit.Y, 0.0f);

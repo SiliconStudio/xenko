@@ -17,10 +17,6 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
     [Display("Sprite Studio Animation")]
     public class SpriteStudioAnimationAsset : AssetImportTracked
     {
-        public SpriteStudioAnimationAsset()
-        {
-        }
-
         [DataMember(1)]
         public AnimationRepeatMode RepeatMode { get; set; } = AnimationRepeatMode.LoopInfinite;
 

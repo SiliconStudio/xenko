@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.SpriteStudio.Runtime
@@ -57,18 +59,30 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
             if (nodes == null)
                 return null;
 
+            //check if the sheet name dictionary has already been populated
+            if (spriteStudioComponent.Sheet.Sprites == null)
+            {
+                spriteStudioComponent.Sheet.Sprites = new Dictionary<int, Sprite>();
+                var index = 0;
+                foreach (var sprite in spriteStudioComponent.Sheet.SpriteSheet.Sprites)
+                {
+                    spriteStudioComponent.Sheet.Sprites.Add(index, sprite);
+                    index++;
+                }
+            }
+
             foreach (var node in nodes)
             {
                 var nodeState = new SpriteStudioNodeState
                 {
-                    CurrentXyPrioAngle = node.BaseXyPrioAngle,
-                    Scale = node.BaseScale,
-                    Transparency = node.BaseTransparency,
-                    Hide = node.BaseHide,
-                    Sprite = node.Sprite,
+                    CurrentXyPrioAngle = Vector4.Zero,
+                    Scale = Vector2.One,
+                    Transparency = 1.0f,
+                    Hide = false,
+                    Sprite = null,
                     BaseNode = node,
-                    HFlipped = node.BaseHFlipped,
-                    VFlipped = node.BaseVFlipped
+                    HFlipped = false,
+                    VFlipped = false
                 };
                 spriteStudioComponent.Nodes.Add(nodeState);
             }
@@ -79,11 +93,11 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                 var nodeState = spriteStudioComponent.Nodes[i];
                 var nodeAsset = nodes[i];
 
-                if (nodeAsset.Id == -1)
+                if (nodeAsset.ParentId == -1)
                 {
                     rootNode = nodeState;
                 }
-                else if (nodeAsset.Id > -1)
+                else
                 {
                     nodeState.ParentNode = spriteStudioComponent.Nodes.FirstOrDefault(x => x.BaseNode.Id == nodeAsset.ParentId);
                 }
@@ -135,19 +149,19 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                             {
                                 node.CurrentXyPrioAngle.Z = value;
                             }
-                            else if (channel.PropertyName.StartsWith("angl"))
+                            else if (channel.PropertyName.StartsWith("rotz"))
                             {
                                 node.CurrentXyPrioAngle.W = value;
                             }
-                            else if (channel.PropertyName.StartsWith("scax"))
+                            else if (channel.PropertyName.StartsWith("sclx"))
                             {
                                 node.Scale.X = value;
                             }
-                            else if (channel.PropertyName.StartsWith("scay"))
+                            else if (channel.PropertyName.StartsWith("scly"))
                             {
                                 node.Scale.Y = value;
                             }
-                            else if (channel.PropertyName.StartsWith("tran"))
+                            else if (channel.PropertyName.StartsWith("alph"))
                             {
                                 node.Transparency = value;
                             }
@@ -162,6 +176,15 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                             else if (channel.PropertyName.StartsWith("flpv"))
                             {
                                 node.VFlipped = value > float.Epsilon;
+                            }
+                            else if (channel.PropertyName.StartsWith("cell"))
+                            {
+                                var spriteIndex = (int)Math.Round(value, MidpointRounding.AwayFromZero);
+                                Sprite sprite;
+                                if (data.SpriteStudioComponent.Sheet.Sprites.TryGetValue(spriteIndex, out sprite))
+                                {
+                                    node.Sprite = sprite;
+                                }
                             }
                         }
                     }
