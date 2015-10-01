@@ -10,6 +10,18 @@ using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Paradox.Shaders.Compiler
 {
+
+#if SILICONSTUDIO_RUNTIME_CORECLR
+    public enum ThreadPriority
+    {
+        Lowest = 0,
+        BelowNormal = 1,
+        Normal = 2,
+        AboveNormal = 3,
+        Highest = 4,
+    }
+#endif
+
     /// <summary>
     /// A <see cref="TaskScheduler"/> with control over concurrency and priority, useful with <see cref="EffectCompilerCache"/>.
     /// </summary>
