@@ -18,12 +18,6 @@
     <ParadoxBuildTags>*</ParadoxBuildTags>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SharpDX.Desktop">
-      <HintPath>..\..\common\deps\SharpDX\Bin\Desktop\SharpDX.Desktop.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.RawInput">
-      <HintPath>..\..\common\deps\SharpDX\Bin\Desktop\SharpDX.RawInput.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
@@ -31,6 +25,12 @@
     <Reference Include="SharpDX">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Desktop">
+      <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.RawInput">
+      <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.RawInput.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D11">
       <SpecificVersion>False</SpecificVersion>
