@@ -145,11 +145,11 @@ namespace SiliconStudio.Paradox.Input
             else
             {
                 EnsureMapKeys();
-                defaultWndProc = Win32Native.GetWindowLong(new HandleRef(this, uiControl.Handle), Win32Native.WindowLongType.WndProc);
+                defaultWndProc = Win32Native.GetWindowLong(uiControl.Handle, Win32Native.WindowLongType.WndProc);
                 // This is needed to prevent garbage collection of the delegate.
                 inputWndProc = WndProc;
                 var inputWndProcPtr = Marshal.GetFunctionPointerForDelegate(inputWndProc);
-                Win32Native.SetWindowLong(new HandleRef(this, uiControl.Handle), Win32Native.WindowLongType.WndProc, inputWndProcPtr);
+                Win32Native.SetWindowLong(uiControl.Handle, Win32Native.WindowLongType.WndProc, inputWndProcPtr);
             }
             uiControl.GotFocus += (_, e) => OnUiControlGotFocus();
             uiControl.LostFocus += (_, e) => OnUiControlLostFocus();
