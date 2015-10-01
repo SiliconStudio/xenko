@@ -18,6 +18,12 @@
     <ParadoxBuildTags>*</ParadoxBuildTags>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SharpDX.Desktop">
+      <HintPath>..\..\common\deps\SharpDX\Bin\Desktop\SharpDX.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.RawInput">
+      <HintPath>..\..\common\deps\SharpDX\Bin\Desktop\SharpDX.RawInput.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
@@ -136,7 +142,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Desktop\Win32Native.DirectX.cs" />
-    <Content Include="Resources\Logo.ico" Condition=" '$(SiliconStudioPlatform)' == 'Windows'"/>
+    <Content Include="Resources\Logo.ico" Condition=" '$(SiliconStudioPlatform)' == 'Windows'" />
   </ItemGroup>
   <Choose>
     <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' And '$(ParadoxGraphicsApi)' == 'OpenGLES' ">

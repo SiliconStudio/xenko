@@ -23,7 +23,12 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D
 using System;
 using System.Globalization;
+#if !SILICONSTUDIO_RUNTIME_CORECLR
 using System.Windows.Forms;
+#else
+using SharpDX.RawInput;
+using SharpDX.Windows;
+#endif
 using System.Runtime.InteropServices;
 
 using SharpDX.Win32;
@@ -140,7 +145,9 @@ namespace SiliconStudio.Paradox.Games
                     // Revert back to Application.DoEvents in order to support Application.AddMessageFilter
                     // Seems that DoEvents is compatible with Mono unlike Application.Run that was not running
                     // correctly.
+#if !SILICONSTUDIO_RUNTIME_CORECLR
                     Application.DoEvents();
+#endif
                 }
                 else
                 {
@@ -173,8 +180,9 @@ namespace SiliconStudio.Paradox.Games
                             //{
                             //    continue;
                             //}
-
+#if !SILICONSTUDIO_RUNTIME_CORECLR
                             if (!Application.FilterMessage(ref message))
+#endif
                             {
                                 Win32Native.TranslateMessage(ref msg);
                                 Win32Native.DispatchMessage(ref msg);
@@ -205,6 +213,7 @@ namespace SiliconStudio.Paradox.Games
         /// </summary>
         public delegate void RenderCallback();
 
+#if !SILICONSTUDIO_RUNTIME_CORECLR
         /// <summary>
         /// Runs the specified main loop in the specified context.
         /// </summary>
@@ -212,6 +221,7 @@ namespace SiliconStudio.Paradox.Games
         {
             Run(context.MainForm, renderCallback);
         }
+#endif
 
         /// <summary>
         /// Runs the specified main loop for the specified windows form.
