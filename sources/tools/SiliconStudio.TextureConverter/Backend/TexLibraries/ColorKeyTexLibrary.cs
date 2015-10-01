@@ -62,7 +62,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
             var colorKey = request.ColorKey;
             var rowPtr = image.Data;
-            if (image.Format == PixelFormat.R8G8B8A8_UNorm)
+            if (image.Format == PixelFormat.R8G8B8A8_UNorm || image.Format == PixelFormat.R8G8B8A8_UNorm_SRgb)
             {
                 for (int i = 0; i < image.Height; i++)
                 {
@@ -77,7 +77,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     rowPtr = IntPtr.Add(rowPtr, image.RowPitch);
                 }
             }
-            else if (image.Format == PixelFormat.B8G8R8A8_UNorm)
+            else if (image.Format == PixelFormat.B8G8R8A8_UNorm || image.Format == PixelFormat.B8G8R8A8_UNorm_SRgb)
             {
                 var rgbaColorKey = colorKey.ToRgba();
                 for (int i = 0; i < image.Height; i++)
