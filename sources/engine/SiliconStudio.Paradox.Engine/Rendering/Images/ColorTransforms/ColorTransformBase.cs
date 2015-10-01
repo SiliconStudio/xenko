@@ -107,7 +107,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
 
         private void InitializeProperties()
         {
-            foreach (var property in GetType().GetTypeInfo().GetProperties())
+            foreach (var property in GetType().GetRuntimeProperties())
             {
                 if (property.CanRead && property.CanWrite)
                 {
