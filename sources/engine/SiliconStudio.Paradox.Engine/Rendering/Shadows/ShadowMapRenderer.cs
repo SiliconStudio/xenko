@@ -88,7 +88,7 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
             // Creates a model renderer for the shadows casters
             shadowModelComponentRenderer = new ModelComponentRenderer(effectName + ".ShadowMapCaster")
             {
-                CullingMode =  CameraCullingMode.None,
+                CullingModeOverride =  CameraCullingMode.None,
                 Callbacks =
                 {
                     UpdateMeshes = FilterCasters,
