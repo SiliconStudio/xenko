@@ -229,7 +229,7 @@ namespace SiliconStudio.Paradox.Rendering
             return vertexArrayObjectAEN;
         }
 
-        public void UpdateMaterial()
+        public bool UpdateMaterial()
         {
             var materialIndex = Mesh.MaterialIndex;
             Material = RenderModel.GetMaterial(materialIndex);
@@ -244,6 +244,8 @@ namespace SiliconStudio.Paradox.Rendering
                 IsShadowCaster = IsShadowCaster && materialInstance.IsShadowCaster;
                 IsShadowReceiver = IsShadowReceiver && materialInstance.IsShadowReceiver;
             }
+
+            return Material != null;
         }
 
         internal void Initialize(GraphicsDevice device)

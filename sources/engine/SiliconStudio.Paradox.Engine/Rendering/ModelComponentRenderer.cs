@@ -331,7 +331,7 @@ namespace SiliconStudio.Paradox.Rendering
                 var modelViewHierarchy = renderModel.ModelComponent.ModelViewHierarchy;
                 modelViewHierarchy.UpdateRenderMesh(renderMesh);
 
-                if (!renderMesh.Enabled)
+                if (!renderMesh.Enabled || !renderMesh.UpdateMaterial())
                 {
                     continue;
                 }
@@ -358,8 +358,6 @@ namespace SiliconStudio.Paradox.Rendering
 
                 renderMesh.RasterizerState = renderMesh.IsGeometryInverted ? RasterizerStateForInvertedGeometry : RasterizerState;
                 renderMesh.ForceRasterizer = ForceRasterizer;
-
-                renderMesh.UpdateMaterial();
 
                 var list = renderMesh.HasTransparency ? transparentList : opaqueList;
                 list.Add(new RenderItem(this, renderMesh, projectedZ));
