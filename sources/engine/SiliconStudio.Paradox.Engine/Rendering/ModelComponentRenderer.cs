@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
@@ -139,7 +138,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// Allows to override the culling mode. If null, takes the culling mode from the current <see cref="SceneCameraRenderer"/>
         /// </summary>
         /// <value>The culling mode override.</value>
-        public CameraCullingMode CullingMode { get; set; }
+        public CameraCullingMode? CullingModeOverride { get; set; }
 
         /// <summary>
         /// Gets the dynamic effect compiler created by this instance. This value may be null if <see cref="EffectName"/> is null and the renderer hasn't been called.
@@ -324,6 +323,9 @@ namespace SiliconStudio.Paradox.Rendering
             // Create the bounding frustum locally on the stack, so that frustum.Contains is performed with boundingBox that is also on the stack
             var frustum = new BoundingFrustum(ref ViewProjectionMatrix);
 
+            var sceneCameraRenderer = Context.Tags.Get(SceneCameraRenderer.Current);
+            var cullingMode = CullingModeOverride ?? (sceneCameraRenderer?.CullingMode ?? CameraCullingMode.None);
+
             for (int i = 0; i < renderMeshes.Count; i++)
             {
                 var renderMesh = renderMeshes[i];
@@ -331,7 +333,7 @@ namespace SiliconStudio.Paradox.Rendering
                 var modelViewHierarchy = renderModel.ModelComponent.ModelViewHierarchy;
                 modelViewHierarchy.UpdateRenderMesh(renderMesh);
 
-                if (!renderMesh.Enabled)
+                if (!renderMesh.Enabled || !renderMesh.UpdateMaterial())
                 {
                     continue;
                 }
@@ -344,7 +346,7 @@ namespace SiliconStudio.Paradox.Rendering
                 // Compute transformed AABB (by world)
                 // TODO: CameraCullingMode should be pluggable
                 // TODO: This should not be necessary. Add proper bounding boxes to gizmos etc.
-                if (CullingMode == CameraCullingMode.Frustum && boundingBox.Extent != Vector3.Zero && !frustum.Contains(ref boundingBox))
+                if (cullingMode == CameraCullingMode.Frustum && boundingBox.Extent != Vector3.Zero && !frustum.Contains(ref boundingBox))
                 {
                     continue;
                 }
@@ -358,8 +360,6 @@ namespace SiliconStudio.Paradox.Rendering
 
                 renderMesh.RasterizerState = renderMesh.IsGeometryInverted ? RasterizerStateForInvertedGeometry : RasterizerState;
                 renderMesh.ForceRasterizer = ForceRasterizer;
-
-                renderMesh.UpdateMaterial();
 
                 var list = renderMesh.HasTransparency ? transparentList : opaqueList;
                 list.Add(new RenderItem(this, renderMesh, projectedZ));

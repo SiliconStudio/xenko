@@ -88,7 +88,16 @@ namespace SiliconStudio.ExecServer
                 MaxReceivedMessageSize = int.MaxValue,
                 // TODO: Check if we need to tweak timeouts
             }, address);
-            host.Open();
+
+            try
+            {
+                host.Open();
+            }
+            catch (AddressAlreadyInUseException)
+            {
+                // Silently exit if the server is already running
+                return;
+            }
 
             Console.WriteLine("Server [{0}] is running", executablePath);
 

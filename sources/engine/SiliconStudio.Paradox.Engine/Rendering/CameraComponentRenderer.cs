@@ -51,11 +51,9 @@ namespace SiliconStudio.Paradox.Rendering
             {
                 aspectRatio = camera.AspectRatio;
             }
-            else
-            {
-                // If the aspect ratio is calculated automatically from the current viewport, update matrices here
-                camera.Update(aspectRatio);
-            }
+
+            // If the aspect ratio is calculated automatically from the current viewport, update matrices here
+            camera.Update(aspectRatio);
 
             // Store the current view/projection matrix in the context
             var viewParameters = context.Parameters;

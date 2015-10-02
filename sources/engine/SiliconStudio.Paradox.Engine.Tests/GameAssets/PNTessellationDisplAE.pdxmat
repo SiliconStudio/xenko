@@ -4,20 +4,22 @@ SerializedVersion: 1
 Tags: []
 Attributes:
     Tessellation: !MaterialTessellationPNFeature
-        TriangleSize: 12
+        TriangleSize: 12.0
         AdjacentEdgeAverage: true
     Displacement: !MaterialDisplacementMapFeature
         DisplacementMap: !ComputeTextureScalar
             Texture: a7a030b6-da74-4c64-9b6f-e15d9ee50434:CobbleDisplacementMap
-            Scale: {X: 1, Y: 1}
-            Offset: {X: 0, Y: 0}
+            FallbackValue:
+                Value: 1.0
+            Scale: {X: 1.0, Y: 1.0}
+            Offset: {X: 0.0, Y: 0.0}
         Intensity: !ComputeFloat
-            Value: 5
+            Value: 5.0
         Stage: Domain
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeColor
-            Value: {R: 0, G: 0.454901963, B: 0.419607848, A: 1}
+            Value: {R: 0.024395315, G: 0.30025, B: 0.278847545, A: 1.0}
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Overrides:
-        UVScale: {X: 1, Y: 1}
+        UVScale: {X: 1.0, Y: 1.0}
 Layers: []

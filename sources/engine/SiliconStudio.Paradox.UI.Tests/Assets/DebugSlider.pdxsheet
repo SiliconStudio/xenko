@@ -1,6 +1,6 @@
 !SpriteSheet
 Id: 90569fac-e17d-41a0-9fc0-e7521aa05300
-SerializedVersion: 1
+SerializedVersion: 2
 Tags: []
 Type: Sprite2D
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
@@ -8,7 +8,6 @@ Format: Color32Bits
 Alpha: Explicit
 Packing:
     Enabled: false
-    AtlasMaximumSize: {X: 2048, Y: 2048}
     BorderSize: 8
 Sprites:
     -   Source: ../../../data/tests/DebugSlider.png

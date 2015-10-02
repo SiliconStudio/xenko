@@ -1,6 +1,6 @@
 !SpriteSheet
 Id: c3cb3d3b-8e27-4a1a-9e35-26a92fdc18b0
-SerializedVersion: 1
+SerializedVersion: 2
 Tags: []
 Type: Sprite2D
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
@@ -10,7 +10,6 @@ GenerateMipmaps: true
 PremultiplyAlpha: false
 Packing:
     Enabled: false
-    AtlasMaximumSize: {X: 2048, Y: 2048}
 Sprites:
     -   Source: ../../../data/tests/small_uv.png
         Name: uv1

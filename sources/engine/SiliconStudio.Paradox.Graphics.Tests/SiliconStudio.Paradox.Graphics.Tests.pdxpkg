@@ -10,6 +10,7 @@ Meta:
     Dependencies:
         -   Name: Paradox
             Version: 1.3.0-beta
+            RootAssets: []
 LocalDependencies: []
 Profiles:
     -   Name: Shared
@@ -59,3 +60,18 @@ Profiles:
 ExplicitFolders: []
 Bundles: []
 TemplateFolders: []
+RootAssets:
+    - 12fde36c-d5d6-4ead-b472-5d088d319b8c:BasicMaterial
+    - 5d7ecea5-50f2-49c1-8fe8-16e67dd65ab0:SpriteSphere
+    - 5d8ecea5-50f2-49c1-8fe8-16e67dd65ab0:BallSprite1
+    - 6e52ca68-ba84-4521-a20c-b780ea2831da:CubeMap
+    - 804b77a2-792d-4113-a148-756d55aaa3b1:JpegImage
+    - 883b7ad8-d9d7-4486-91ee-a7557d6dcadc:PngImage
+    - 8b1bd7d0-3dfa-4b62-89c7-2d9751f4f086:round
+    - 8e6cf15a-38fa-4631-91fa-ecd21e12d7f0:small_uv
+    - 91749410-580d-4ab0-bf03-8db5cc703700:RotatedImages
+    - a60c5fe7-6934-455f-bf6a-bd7abe1453d1:uv
+    - b47e4609-0125-41bd-a26e-0fdf9184327e:MainScene
+    - c3cb3d3b-8e27-4a1a-9e35-26a92fdc18b0:SpriteUV
+    - eedb5de8-e19f-4218-8389-99c4178b86c1:Sphere
+    - f474fd19-e3d1-4923-b0b2-65cc513a4ad3:uv_cube

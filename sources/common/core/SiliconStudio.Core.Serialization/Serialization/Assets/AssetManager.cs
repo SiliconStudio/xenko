@@ -685,7 +685,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         // TODO: Replug this when an asset is not found?
         private static void HandleAssetNotFound(string url)
         {
-            var errorMessage = string.Format("The asset '{0}' does not exist. Path should be 'Subfolder/AssetName'", url);
+            var errorMessage = $"The asset '{url}' could not be found. Asset path should be 'MyFolder/MyAssetName'. Check that the path is correct and that the asset has been included into the build.";
 
             // If a debugger is attached, throw an exception (we do that instead of Debugger.Break so that user can easily ignore this specific type of exception)
             if (Debugger.IsAttached)
