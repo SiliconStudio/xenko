@@ -627,7 +627,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         internal struct InternalDrawCommand
         {
-            public InternalDrawCommand(SpriteBatch spriteBatch, ref Vector2 fontSize, ref Vector2 position, ref Color color, float rotation, ref Vector2 origin, ref Vector2 scale, SpriteEffects spriteEffects, float depth)
+            public InternalDrawCommand(SpriteBatch spriteBatch, ref Vector2 fontSize, ref Vector2 position, ref Color4 color, float rotation, ref Vector2 origin, ref Vector2 scale, SpriteEffects spriteEffects, float depth)
             {
                 SpriteBatch = spriteBatch;
                 Position = position;
@@ -646,7 +646,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             public Vector2 Position;
 
-            public Color Color;
+            public Color4 Color;
 
             public float Rotation;
 
