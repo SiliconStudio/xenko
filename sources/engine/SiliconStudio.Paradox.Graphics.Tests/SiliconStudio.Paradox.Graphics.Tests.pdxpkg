@@ -61,17 +61,36 @@ ExplicitFolders: []
 Bundles: []
 TemplateFolders: []
 RootAssets:
+    - 05718a05-c688-4340-853a-e22ee854d9cf:DynamicFonts/ExternFont
+    - 0dbf1792-c53a-41ea-9f98-ba65014c5277:DynamicFonts/CourierNew10
     - 12fde36c-d5d6-4ead-b472-5d088d319b8c:BasicMaterial
+    - 21069bb0-91b2-4570-be00-a70a1df67cb1:StaticFonts/TestBitmapFont
+    - 215e8a1b-a56e-4103-b529-ddd1fbfaacce:DynamicFonts/Arial16
+    - 2382194a-83fb-45fb-96e6-27fae1056e99:StaticFonts/ExternFont
+    - 2615a072-845e-4d15-a19b-aebf612e432c:DynamicFonts/Arial16ClearType
+    - 2fba8d24-2510-463f-b5d0-af0ad5b1da80:DynamicFonts/MSMincho10
+    - 54bf2894-2a2c-477e-be9c-2a88d265e739:DynamicFonts/MicrosoftSansSerif10
+    - 5875a604-ea72-4efb-8d1b-dcdbf2f324b5:StaticFonts/Arial13
     - 5d7ecea5-50f2-49c1-8fe8-16e67dd65ab0:SpriteSphere
     - 5d8ecea5-50f2-49c1-8fe8-16e67dd65ab0:BallSprite1
+    - 693f0d3d-b0ef-4cb8-bc84-0aa69efb3462:DynamicFonts/Meiryo14
     - 6e52ca68-ba84-4521-a20c-b780ea2831da:CubeMap
     - 804b77a2-792d-4113-a148-756d55aaa3b1:JpegImage
+    - 83cbacc4-ae04-4a9b-94ef-4ecd49557287:StaticFonts/Calibri64
     - 883b7ad8-d9d7-4486-91ee-a7557d6dcadc:PngImage
     - 8b1bd7d0-3dfa-4b62-89c7-2d9751f4f086:round
     - 8e6cf15a-38fa-4631-91fa-ecd21e12d7f0:small_uv
+    - 90b99454-a7b4-4b88-8d42-638acc73e34b:StaticFonts/CourierNew10
     - 91749410-580d-4ab0-bf03-8db5cc703700:RotatedImages
+    - 932ea3a2-3803-4674-93b0-ef049650f5be:StaticFonts/Arial16
     - a60c5fe7-6934-455f-bf6a-bd7abe1453d1:uv
+    - a8c5497e-7dea-46ec-a818-5728f34f5cc5:StaticFonts/Arial16Bold
+    - ac273d83-ded2-45b9-9789-37c5c5cd6c14:DynamicFonts/Arial16Bold
+    - aed70788-54ce-4a84-bed9-c7f29bd71177:DynamicFonts/Calibri64
     - b47e4609-0125-41bd-a26e-0fdf9184327e:MainScene
+    - b742b0b2-c2a9-4291-89a0-56fb0cb214c1:StaticFonts/Arial16ClearType
+    - bf28a16e-9945-4f3f-87e3-815b61944bef:StaticFonts/MicrosoftSansSerif10
     - c3cb3d3b-8e27-4a1a-9e35-26a92fdc18b0:SpriteUV
+    - d743e676-2c6f-4fc0-917d-4203d4d409ed:DynamicFonts/Arial13
     - eedb5de8-e19f-4218-8389-99c4178b86c1:Sphere
     - f474fd19-e3d1-4923-b0b2-65cc513a4ad3:uv_cube

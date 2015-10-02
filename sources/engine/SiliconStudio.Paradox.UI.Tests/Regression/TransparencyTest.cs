@@ -29,7 +29,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public TransparencyTest()
         {
-            CurrentVersion = 7;
+            CurrentVersion = 8;
         }
 
         protected override async Task LoadContent()

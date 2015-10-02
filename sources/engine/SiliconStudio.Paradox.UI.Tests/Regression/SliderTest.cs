@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public SliderTest()
         {
-            CurrentVersion = 2;
+            CurrentVersion = 3;
         }
 
         protected override async Task LoadContent()

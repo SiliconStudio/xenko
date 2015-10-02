@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         public TestRenderToTexture()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 2;
         }
 
         protected override void RegisterTests()

@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         public TestDrawQuad()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 2;
         }
 
         protected override void RegisterTests()

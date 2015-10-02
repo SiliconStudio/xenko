@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public ClickTests()
         {
-            CurrentVersion = 7;
+            CurrentVersion = 8;
         }
 
         protected override async Task LoadContent()

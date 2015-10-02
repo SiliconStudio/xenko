@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     {
         public BillboardModeTests()
         {
-            CurrentVersion = 3;
+            CurrentVersion = 4;
         }
 
         protected override async Task LoadContent()
