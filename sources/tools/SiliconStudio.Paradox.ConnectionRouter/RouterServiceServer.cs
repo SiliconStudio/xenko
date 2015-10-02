@@ -2,12 +2,15 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Paradox.Engine.Network;
 
 namespace SiliconStudio.Paradox.ConnectionRouter
 {
     public abstract class RouterServiceServer
     {
+        private static readonly Logger Log = GlobalLogger.GetLogger("RouterServiceServer");
+
         private string address;
         private int port;
 
@@ -41,45 +44,59 @@ namespace SiliconStudio.Paradox.ConnectionRouter
         private SimpleSocket CreateSocketContext()
         {
             var socketContext = new SimpleSocket();
-            socketContext.Connected = async (clientSocketContext) =>
+            socketContext.Connected = (clientSocketContext) =>
             {
-                // Register service server
-                await socketContext.WriteStream.WriteInt16Async((short)RouterMessage.ServiceProvideServer);
-                await socketContext.WriteStream.WriteStringAsync(serverUrl);
-                await socketContext.WriteStream.FlushAsync();
-
-                while (true)
+                Task.Run(async () =>
                 {
-                    var routerMessage = (RouterMessage)await socketContext.ReadStream.ReadInt16Async();
-
-                    switch (routerMessage)
+                    try
                     {
-                        case RouterMessage.ServiceRequestServer:
+
+                        // Register service server
+                        await socketContext.WriteStream.WriteInt16Async((short)RouterMessage.ServiceProvideServer);
+                        await socketContext.WriteStream.WriteStringAsync(serverUrl);
+                        await socketContext.WriteStream.FlushAsync();
+
+                        while (true)
                         {
-                            var requestedUrl = await clientSocketContext.ReadStream.ReadStringAsync();
-                            var guid = await clientSocketContext.ReadStream.ReadGuidAsync();
+                            var routerMessage = (RouterMessage)await socketContext.ReadStream.ReadInt16Async();
 
-                            // Spawn actual server
-                            var realServerSocketContext = new SimpleSocket();
-                            realServerSocketContext.Connected = async (clientSocketContext2) =>
+                            switch (routerMessage)
                             {
-                                // Write connection string
-                                await clientSocketContext2.WriteStream.WriteInt16Async((short)RouterMessage.ServerStarted);
-                                await clientSocketContext2.WriteStream.WriteGuidAsync(guid);
+                                case RouterMessage.ServiceRequestServer:
+                                {
+                                    var requestedUrl = await clientSocketContext.ReadStream.ReadStringAsync();
+                                    var guid = await clientSocketContext.ReadStream.ReadGuidAsync();
 
-                                // Delegate next steps to actual server
-                                HandleClient(clientSocketContext2, requestedUrl);
-                            };
+                                    // Spawn actual server
+                                    var realServerSocketContext = new SimpleSocket();
+                                    realServerSocketContext.Connected = async (clientSocketContext2) =>
+                                    {
+                                        // Write connection string
+                                        await clientSocketContext2.WriteStream.WriteInt16Async((short)RouterMessage.ServerStarted);
+                                        await clientSocketContext2.WriteStream.WriteGuidAsync(guid);
 
-                            // Start connection
-                            await realServerSocketContext.StartClient(address, port);
-                            break;
+                                        // Delegate next steps to actual server
+                                        HandleClient(clientSocketContext2, requestedUrl);
+                                    };
+
+                                    // Start connection
+                                    await realServerSocketContext.StartClient(address, port);
+                                    break;
+                                }
+                                default:
+                                    Console.WriteLine("Router: Unknown message: {0}", routerMessage);
+                                    throw new ArgumentOutOfRangeException();
+                            }
                         }
-                        default:
-                            Console.WriteLine("Router: Unknown message: {0}", routerMessage);
-                            throw new ArgumentOutOfRangeException();
                     }
-                }
+                    catch (Exception e)
+                    {
+                        // TODO: Ideally, separate socket-related error messages (disconnection) from real errors
+                        // Unfortunately, it seems WinRT returns Exception, so it seems we can't filter with SocketException/IOException only?
+                        Log.Info("Client {0}:{1} disconnected with exception: {2}", clientSocketContext.RemoteAddress, clientSocketContext.RemotePort, e.Message);
+                        clientSocketContext.Dispose();
+                    }
+                });
             };
 
             return socketContext;
