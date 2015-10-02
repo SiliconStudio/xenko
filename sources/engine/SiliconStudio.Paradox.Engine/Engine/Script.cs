@@ -19,9 +19,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <summary>
         /// The script identifier.
         /// </summary>
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         [Browsable(false)]
-#endif
         public new Guid Id;
 
         private int priority;

@@ -95,9 +95,7 @@ namespace SiliconStudio.Paradox.Engine
         /// </summary>
         /// <value><c>true</c> if [use TRS]; otherwise, <c>false</c>.</value>
         [DataMemberIgnore]
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         [Browsable(false)]
-#endif
         [DefaultValue(true)]
         public bool UseTRS
         {

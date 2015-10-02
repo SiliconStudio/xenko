@@ -35,9 +35,7 @@ namespace SiliconStudio.Paradox.Engine
         [DataMember(10)]
         [Display("Graphics Composition", Expand = ExpandRule.Always)]
         [NotNull]
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         [Category]
-#endif
         public ISceneGraphicsCompositor GraphicsCompositor { get; set; }   // TODO: Should we move this to a special component?
 
         /// <summary>
@@ -47,9 +45,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <userdoc>Settings for the scene editor</userdoc>
         [DataMember(20)]
         [Display("Editor Settings", Expand = ExpandRule.Always)]
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         [Category]
-#endif
         public SceneEditorSettings EditorSettings { get; set; }
     }
 }

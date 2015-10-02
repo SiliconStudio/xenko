@@ -12,9 +12,7 @@ namespace SiliconStudio.Paradox.Rendering
     /// A delegate renderer.
     /// </summary>
     [DataContract("SceneDelegateRenderer")]
-#if !SILICONSTUDIO_RUNTIME_CORECLR
     [Browsable(false)] // This type is not browsable from the editor
-#endif
     public class SceneDelegateRenderer : SceneRendererViewportBase
     {
         private readonly Action<RenderContext, RenderFrame> drawAction;

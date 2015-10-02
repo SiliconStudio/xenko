@@ -84,9 +84,7 @@ namespace SiliconStudio.Paradox.Rendering.Composers
         /// The sequence of renderers that will be used to render this layer.
         /// </userdoc>
         [DataMember(50)]
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         [Category]
-#endif
         [NotNullItems]
         [MemberCollection(CanReorderItems = true)]
         public SceneRendererCollection Renderers { get; private set; }
