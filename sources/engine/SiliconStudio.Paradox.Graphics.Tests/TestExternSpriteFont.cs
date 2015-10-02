@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         public TestExternSpriteFont()
         {
-            CurrentVersion = 2;
+            CurrentVersion = 3;
         }
 
         protected override void RegisterTests()

@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         public TestMultipleRenderTargets(bool rotateModel)
         {
-            CurrentVersion = 3;
+            CurrentVersion = 4;
             this.rotateModel = rotateModel;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
         }

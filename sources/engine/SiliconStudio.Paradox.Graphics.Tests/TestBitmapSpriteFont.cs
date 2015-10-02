@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         public TestBitmapSpriteFont()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 2;
         }
 
         protected override void RegisterTests()
