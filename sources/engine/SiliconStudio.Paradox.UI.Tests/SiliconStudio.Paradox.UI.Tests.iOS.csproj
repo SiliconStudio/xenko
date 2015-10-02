@@ -243,7 +243,6 @@
     <Compile Include="Regression\ImageButtonTest.cs" />
     <Compile Include="Regression\ImageRegionTest.cs" />
     <Compile Include="Regression\ImageRotatedTest.cs" />
-    <Compile Include="Regression\ImageSeparateAlphaTest.cs" />
     <Compile Include="Regression\ImageTest.cs" />
     <Compile Include="Regression\InSceneUITest.cs" />
     <Compile Include="Regression\LeaveEnterTest.cs" />
