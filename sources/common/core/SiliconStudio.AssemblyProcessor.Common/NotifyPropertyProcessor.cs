@@ -44,7 +44,7 @@ namespace SiliconStudio.AssemblyProcessor
         {
             var method = typeDefinition.Methods.FirstOrDefault(x => x.Name == "GetPropertyChanged");
             if (method != null)
-                return assembly.MainModule.Import(method);
+                return assembly.MainModule.ImportReference(method);
 
             if (typeDefinition.BaseType != null)
                 return GetGetPropertyChangedMethod(assembly, typeDefinition.BaseType.Resolve());
@@ -80,17 +80,16 @@ namespace SiliconStudio.AssemblyProcessor
                 throw new InvalidOperationException("Missing mscorlib.dll from assembly");
 
             // For now, use import, but this can cause mixed framework versions when processing an assembly with a different framework version.
-            voidType = assembly.MainModule.Import(mscorlibAssembly.MainModule.GetTypeResolved(typeof(void).FullName));
-            stringType = assembly.MainModule.Import(mscorlibAssembly.MainModule.GetTypeResolved(typeof(string).FullName));
-            objectType = assembly.MainModule.Import(mscorlibAssembly.MainModule.GetTypeResolved(typeof(object).FullName));
-            var propertyInfoType = assembly.MainModule.Import(mscorlibAssembly.MainModule.GetTypeResolved(typeof(PropertyInfo).FullName));
-
+            voidType = assembly.MainModule.TypeSystem.Void;
+            stringType = assembly.MainModule.TypeSystem.String;
+            objectType = assembly.MainModule.TypeSystem.Object;
+            var propertyInfoType = assembly.MainModule.ImportReference(mscorlibAssembly.MainModule.GetTypeResolved(typeof(PropertyInfo).FullName));
             var typeType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(Type).FullName);
 
 
             TypeDefinition propertyChangedExtendedEventArgsType;
 
-            AssemblyDefinition siliconStudioCoreAssembly = null;
+            AssemblyDefinition siliconStudioCoreAssembly;
             try
             {
                 siliconStudioCoreAssembly = assembly.Name.Name == "SiliconStudio.Core"
@@ -110,13 +109,13 @@ namespace SiliconStudio.AssemblyProcessor
             var getTypeFromHandleMethod = typeType.Methods.First(x => x.Name == "GetTypeFromHandle");
             var getTokenInfoExMethod = mscorlibAssembly.MainModule.GetType("System.Reflection.IntrospectionExtensions").Resolve().Methods.First(x => x.Name == "GetTypeInfo");
             
-            var propertyChangedExtendedEventArgsConstructor = assembly.MainModule.Import(propertyChangedExtendedEventArgsType.Methods.First(x => x.IsConstructor));
+            var propertyChangedExtendedEventArgsConstructor = assembly.MainModule.ImportReference(propertyChangedExtendedEventArgsType.Methods.First(x => x.IsConstructor));
 
             bool modified = false;
 
             foreach (var type in assembly.MainModule.GetTypes())
             {
-                MethodReference getPropertyChangedMethod = null;
+                MethodReference getPropertyChangedMethod;
 
                 getPropertyChangedMethod = GetGetPropertyChangedMethod(assembly, type);
                 //var propertyChangedField = GetPropertyChangedField(type);
@@ -138,7 +137,7 @@ namespace SiliconStudio.AssemblyProcessor
 
                 if (propertyChangedField != null)
                 {
-                    propertyChangedField = assembly.MainModule.Import(propertyChangedField);
+                    propertyChangedField = assembly.MainModule.ImportReference(propertyChangedField);
                     propertyChangedFieldType = propertyChangedField.FieldType;
                 }
                 else
@@ -150,7 +149,7 @@ namespace SiliconStudio.AssemblyProcessor
                 if (getPropertyChangedMethod.DeclaringType.HasGenericParameters)
                     getPropertyChangedMethod = getPropertyChangedMethod.MakeGeneric(getPropertyChangedMethod.DeclaringType.GenericParameters.ToArray());
 
-                var propertyChangedInvoke = assembly.MainModule.Import(propertyChangedFieldType.Resolve().Methods.First(x => x.Name == "Invoke"));
+                var propertyChangedInvoke = assembly.MainModule.ImportReference(propertyChangedFieldType.Resolve().Methods.First(x => x.Name == "Invoke"));
 
                 foreach (var property in type.Properties)
                 {
@@ -212,7 +211,7 @@ namespace SiliconStudio.AssemblyProcessor
 
                         if (localTokenEx == null)
                         {
-                            localTokenEx = new VariableDefinition(assembly.MainModule.Import(typeTokenInfoEx));
+                            localTokenEx = new VariableDefinition(assembly.MainModule.ImportReference(typeTokenInfoEx));
                             staticConstructor.Body.Variables.Add((VariableDefinition)localTokenEx);
                             localTokenExIndex = staticConstructor.Body.Variables.Count - 1;
                         }
@@ -228,12 +227,12 @@ namespace SiliconStudio.AssemblyProcessor
 
                         // Find PropertyInfo and store it in static field
                         ilProcessor.Append(Instruction.Create(OpCodes.Ldtoken, type));
-                        ilProcessor.Append(Instruction.Create(OpCodes.Call, assembly.MainModule.Import(getTypeFromHandleMethod)));
-                        ilProcessor.Append(Instruction.Create(OpCodes.Call, assembly.MainModule.Import(getTokenInfoExMethod)));
+                        ilProcessor.Append(Instruction.Create(OpCodes.Call, assembly.MainModule.ImportReference(getTypeFromHandleMethod)));
+                        ilProcessor.Append(Instruction.Create(OpCodes.Call, assembly.MainModule.ImportReference(getTokenInfoExMethod)));
                         ilProcessor.Append(LocationToStloc(ilProcessor, localTokenExIndex));
                         ilProcessor.Append(ilProcessor.Create(OpCodes.Ldloca_S, (byte)localTokenExIndex));
                         ilProcessor.Append(Instruction.Create(OpCodes.Ldstr, property.Name));
-                        ilProcessor.Append(Instruction.Create(OpCodes.Call, assembly.MainModule.Import(getPropertyMethod)));
+                        ilProcessor.Append(Instruction.Create(OpCodes.Call, assembly.MainModule.ImportReference(getPropertyMethod)));
                         ilProcessor.Append(Instruction.Create(OpCodes.Stsfld, staticField));
 
                         ilProcessor.Append(newReturnInstruction);
@@ -254,7 +253,7 @@ namespace SiliconStudio.AssemblyProcessor
                         returnInstruction.OpCode = OpCodes.Nop;
                         returnInstruction.Operand = null;
 
-                        var propertyChangedVariable = new VariableDefinition("propertyChanged", assembly.MainModule.Import(propertyChangedFieldType));
+                        var propertyChangedVariable = new VariableDefinition("propertyChanged", assembly.MainModule.ImportReference(propertyChangedFieldType));
                         property.SetMethod.Body.Variables.Add(propertyChangedVariable);
 
                         var oldValueVariable = new VariableDefinition("oldValue", objectType);

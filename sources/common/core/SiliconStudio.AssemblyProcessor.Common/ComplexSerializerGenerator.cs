@@ -71,9 +71,9 @@ namespace SiliconStudio.AssemblyProcessor
 
             // typeof(Dictionary<,>)
             // Special case for 4.5: Because Dictionary<,> is forwarded, we need to add a reference to the actual assembly
-            var mscorlibAssembly = CecilExtensions.FindCorlibAssembly(assembly);
-            metadataReferences.Add(CreateMetadataReference(assemblyResolver, mscorlibAssembly));
-            var collectionType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(Dictionary<,>).FullName);
+            var collectionsAssembly = CecilExtensions.FindCollectionsAssembly(assembly);
+            metadataReferences.Add(CreateMetadataReference(assemblyResolver, collectionsAssembly));
+            var collectionType = collectionsAssembly.MainModule.GetTypeResolved(typeof(Dictionary<,>).FullName);
             metadataReferences.Add(CreateMetadataReference(assemblyResolver, collectionType.Module.Assembly));
             metadataReferences.Add(CreateMetadataReference(assemblyResolver, assembly));
 
