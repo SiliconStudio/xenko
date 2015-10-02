@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Animations
             var keyFrames = channel.Curve.KeyFrames;
             var currentIndex = channel.CurrentIndex;
 
-            *(int*)(location + channel.Offset) = keyFrames[currentIndex + 0].Value;
+            *(int*)(location + channel.Offset) = keyFrames[currentIndex].Value;
         }
     }
 }
