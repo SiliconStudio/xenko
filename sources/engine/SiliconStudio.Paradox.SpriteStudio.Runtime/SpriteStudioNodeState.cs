@@ -31,6 +31,10 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
 
         public int SpriteId;
 
+        public Color4 BlendColor;
+        public SpriteStudioBlending BlendType;
+        public float BlendFactor;
+
         [DataMemberIgnore]
         public Sprite Sprite;
 

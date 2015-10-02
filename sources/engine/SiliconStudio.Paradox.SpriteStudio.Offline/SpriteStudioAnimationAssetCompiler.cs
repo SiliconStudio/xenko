@@ -111,7 +111,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
 
                     if (data.Data.ContainsKey("PRIO"))
                     {
-                        var prioCurve = new AnimationCurve<float>();
+                        var prioCurve = new AnimationCurve<int>();
                         animation.AddCurve("prio[" + nodeName + "]", prioCurve);
                         prioCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
 
@@ -119,7 +119,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                         {
                             var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
                             var value = int.Parse(nodeData["value"], CultureInfo.InvariantCulture);
-                            prioCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
+                            prioCurve.KeyFrames.Add(new KeyFrameData<int>(time, value));
                         }
                     }
 
@@ -167,7 +167,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
 
                     if (data.Data.ContainsKey("HIDE"))
                     {
-                        var hideCurve = new AnimationCurve<float>();
+                        var hideCurve = new AnimationCurve<int>();
                         animation.AddCurve("hide[" + nodeName + "]", hideCurve);
                         hideCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
 
@@ -175,13 +175,13 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                         {
                             var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
                             var value = int.Parse(nodeData["value"], CultureInfo.InvariantCulture);
-                            hideCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
+                            hideCurve.KeyFrames.Add(new KeyFrameData<int>(time, value));
                         }
                     }
 
                     if (data.Data.ContainsKey("FLPH"))
                     {
-                        var flphCurve = new AnimationCurve<float>();
+                        var flphCurve = new AnimationCurve<int>();
                         animation.AddCurve("flph[" + nodeName + "]", flphCurve);
                         flphCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
 
@@ -189,13 +189,13 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                         {
                             var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
                             var value = int.Parse(nodeData["value"], CultureInfo.InvariantCulture);
-                            flphCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
+                            flphCurve.KeyFrames.Add(new KeyFrameData<int>(time, value));
                         }
                     }
 
                     if (data.Data.ContainsKey("FLPV"))
                     {
-                        var flpvCurve = new AnimationCurve<float>();
+                        var flpvCurve = new AnimationCurve<int>();
                         animation.AddCurve("flpv[" + nodeName + "]", flpvCurve);
                         flpvCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
 
@@ -203,13 +203,13 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                         {
                             var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
                             var value = int.Parse(nodeData["value"], CultureInfo.InvariantCulture);
-                            flpvCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
+                            flpvCurve.KeyFrames.Add(new KeyFrameData<int>(time, value));
                         }
                     }
 
                     if (data.Data.ContainsKey("CELL"))
                     {
-                        var cellCurve = new AnimationCurve<float>();
+                        var cellCurve = new AnimationCurve<int>();
                         animation.AddCurve("cell[" + nodeName + "]", cellCurve);
                         cellCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
 
@@ -217,7 +217,49 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                         {
                             var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
                             var value = int.Parse(nodeData["value"], CultureInfo.InvariantCulture);
-                            cellCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
+                            cellCurve.KeyFrames.Add(new KeyFrameData<int>(time, value));
+                        }
+                    }
+
+                    if (data.Data.ContainsKey("COLV"))
+                    {
+                        var colvCurve = new AnimationCurve<Vector4>();
+                        animation.AddCurve("colv[" + nodeName + "]", colvCurve);
+                        colvCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
+
+                        foreach (var nodeData in data.Data["COLV"])
+                        {
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var valueArgb = Color.FromArgb(int.Parse(nodeData["value"], CultureInfo.InvariantCulture));
+                            colvCurve.KeyFrames.Add(new KeyFrameData<Vector4>(time, valueArgb.ToVector4()));
+                        }
+                    }
+
+                    if (data.Data.ContainsKey("COLB"))
+                    {
+                        var colbCurve = new AnimationCurve<int>();
+                        animation.AddCurve("colb[" + nodeName + "]", colbCurve);
+                        colbCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
+
+                        foreach (var nodeData in data.Data["COLB"])
+                        {
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = int.Parse(nodeData["value"], CultureInfo.InvariantCulture);
+                            colbCurve.KeyFrames.Add(new KeyFrameData<int>(time, value));
+                        }
+                    }
+
+                    if (data.Data.ContainsKey("COLF"))
+                    {
+                        var colfCurve = new AnimationCurve<float>();
+                        animation.AddCurve("colf[" + nodeName + "]", colfCurve);
+                        colfCurve.InterpolationType = data.Data["COLF"].Any(x => x["curve"] != "linear") ? AnimationCurveInterpolationType.Cubic : AnimationCurveInterpolationType.Linear;
+
+                        foreach (var nodeData in data.Data["COLF"])
+                        {
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = float.Parse(nodeData["value"], CultureInfo.InvariantCulture);
+                            colfCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
                         }
                     }
                 }

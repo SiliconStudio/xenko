@@ -119,16 +119,16 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                     BlendState spriteBlending; //todo handle better each case
                     switch (node.BaseNode.AlphaBlending)
                     {
-                        case SpriteStudioAlphaBlending.Mix:
+                        case SpriteStudioBlending.Mix:
                             spriteBlending = device.BlendStates.AlphaBlend;
                             break;
-                        case SpriteStudioAlphaBlending.Multiplication:
+                        case SpriteStudioBlending.Multiplication:
                             spriteBlending = device.BlendStates.AlphaBlend;
                             break;
-                        case SpriteStudioAlphaBlending.Addition:
+                        case SpriteStudioBlending.Addition:
                             spriteBlending = device.BlendStates.Additive;
                             break;
-                        case SpriteStudioAlphaBlending.Subtraction:
+                        case SpriteStudioBlending.Subtraction:
                             spriteBlending = device.BlendStates.AlphaBlend;
                             break;
                         default:
@@ -167,8 +167,16 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                     }
                     else
                     {
-                        var color4 = new Color4(color)*node.Transparency;
-                        color = new Color(color4);
+//                        if (node.BlendFactor > 0.0f)
+//                        {
+//                            var color4 = Color4.Lerp(new Color4(color), node.BlendColor, node.BlendFactor) * node.Transparency;
+//                            color = new Color(color4);
+//                        }
+//                        else
+                        {
+                            var color4 = new Color4(color) * node.Transparency;
+                            color = new Color(color4);
+                        } 
                     }
 
                     var worldMatrix = node.ModelTransform*transfoComp.WorldMatrix;

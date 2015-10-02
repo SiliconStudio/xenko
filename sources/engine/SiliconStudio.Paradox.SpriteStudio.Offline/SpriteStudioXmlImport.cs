@@ -12,6 +12,26 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
 {
     internal class SpriteStudioXmlImport
     {
+        public static SpriteStudioBlending ParseBlending(string str)
+        {
+            switch (str)
+            {
+                case "mix":
+                    return SpriteStudioBlending.Mix;
+
+                case "add":
+                    return SpriteStudioBlending.Addition;
+
+                case "mul":
+                    return SpriteStudioBlending.Multiplication;
+
+                case "sub":
+                    return SpriteStudioBlending.Subtraction;
+            }
+
+            return SpriteStudioBlending.Mix;
+        }
+
         private static void FillNodeData(XNamespace nameSpace, XContainer part, List<SpriteStudioCell> cells, out NodeAnimationData nodeData)
         {
             nodeData = new NodeAnimationData();
@@ -43,11 +63,59 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                                 }
                                 values.Add("time", key.Attribute("time").Value);
                                 values.Add("curve", key.Attribute("ipType") != null ? key.Attribute("ipType").Value : "linear");
-                                values.Add("value", realIndex.ToString());
+                                values.Add("value", realIndex.ToString(CultureInfo.InvariantCulture));
 
                                 keyValues.Add(values);
                             }
                             nodeData.Data.Add(tag, keyValues);
+                        }
+                        break;
+
+                    case "VCOL":
+                        {
+                            var xElements = keys as XElement[] ?? keys.ToArray();
+                            var blendValues = new List<Dictionary<string, string>>();
+                            foreach (var key in xElements)
+                            {
+                                var values = new Dictionary<string, string>();
+                                var blendType = key.Descendants(nameSpace + "value").First().Descendants(nameSpace + "blendType").First().Value;
+
+                                values.Add("time", key.Attribute("time").Value);
+                                values.Add("curve", key.Attribute("ipType") != null ? key.Attribute("ipType").Value : "linear");
+                                values.Add("value", ((int)ParseBlending(blendType)).ToString(CultureInfo.InvariantCulture));
+
+                                blendValues.Add(values);
+                            }
+                            nodeData.Data.Add("COLB", blendValues);
+
+                            var colorValues = new List<Dictionary<string, string>>();
+                            foreach (var key in xElements)
+                            {
+                                var values = new Dictionary<string, string>();
+                                var argb = key.Descendants(nameSpace + "value").First().Descendants(nameSpace + "rgba").First().Value;
+                                var color = int.Parse(argb, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+
+                                values.Add("time", key.Attribute("time").Value);
+                                values.Add("curve", key.Attribute("ipType") != null ? key.Attribute("ipType").Value : "linear");
+                                values.Add("value", color.ToString(CultureInfo.InvariantCulture));
+
+                                colorValues.Add(values);
+                            }
+                            nodeData.Data.Add("COLV", colorValues);
+
+                            var factorValues = new List<Dictionary<string, string>>();
+                            foreach (var key in xElements)
+                            {
+                                var values = new Dictionary<string, string>();
+                                var rateValue = key.Descendants(nameSpace + "value").First().Descendants(nameSpace + "rate").First().Value;
+
+                                values.Add("time", key.Attribute("time").Value);
+                                values.Add("curve", key.Attribute("ipType") != null ? key.Attribute("ipType").Value : "linear");
+                                values.Add("value", rateValue);
+
+                                factorValues.Add(values);
+                            }
+                            nodeData.Data.Add("COLF", factorValues);
                         }
                         break;
 
@@ -138,24 +206,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                     IsNull = isNull
                 };
 
-                switch (blendingName)
-                {
-                    case "mix":
-                        node.AlphaBlending = SpriteStudioAlphaBlending.Mix;
-                        break;
-
-                    case "add":
-                        node.AlphaBlending = SpriteStudioAlphaBlending.Addition;
-                        break;
-
-                    case "mul":
-                        node.AlphaBlending = SpriteStudioAlphaBlending.Multiplication;
-                        break;
-
-                    case "sub":
-                        node.AlphaBlending = SpriteStudioAlphaBlending.Subtraction;
-                        break;
-                }
+                node.AlphaBlending = ParseBlending(blendingName);
 
                 nodes.Add(node);
             }
@@ -188,15 +239,15 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                         Name = cellNode.Descendants(cnameSpace + "name").First().Value,
                         TextureIndex = textures.Count
                     };
-   
+
                     var posData = cellNode.Descendants(nameSpace + "pos").First().Value;
                     var posValues = Regex.Split(posData, "\\s+");
                     var sizeData = cellNode.Descendants(nameSpace + "size").First().Value;
                     var sizeValues = Regex.Split(sizeData, "\\s+");
                     cell.Rectangle = new RectangleF(
-                        float.Parse(posValues[0], CultureInfo.InvariantCulture), 
-                        float.Parse(posValues[1], CultureInfo.InvariantCulture), 
-                        float.Parse(sizeValues[0], CultureInfo.InvariantCulture), 
+                        float.Parse(posValues[0], CultureInfo.InvariantCulture),
+                        float.Parse(posValues[1], CultureInfo.InvariantCulture),
+                        float.Parse(sizeValues[0], CultureInfo.InvariantCulture),
                         float.Parse(sizeValues[1], CultureInfo.InvariantCulture));
 
                     var pivotData = cellNode.Descendants(nameSpace + "pivot").First().Value;

@@ -3,7 +3,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.SpriteStudio.Runtime
 {
-    public enum SpriteStudioAlphaBlending
+    public enum SpriteStudioBlending
     {
         Mix,
         Multiplication,
@@ -22,7 +22,10 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                 Scale = Vector2.One,
                 Transparency = 1.0f,
                 Hide = true,
-                SpriteId = -1
+                SpriteId = -1,
+                BlendColor = Color.White,
+                BlendType = SpriteStudioBlending.Mix,
+                BlendFactor = 0.0f
             };
         }
 
@@ -30,7 +33,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
         public int Id = -1;
         public int ParentId;
         public bool IsNull;
-        public SpriteStudioAlphaBlending AlphaBlending;
+        public SpriteStudioBlending AlphaBlending;
 
         public SpriteStudioNodeState BaseState;
     }

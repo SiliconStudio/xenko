@@ -147,6 +147,15 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                             case "CELL":
                                 node.BaseState.SpriteId = int.Parse(value, CultureInfo.InvariantCulture);
                                 break;
+                            case "COLV":
+                                node.BaseState.BlendColor = Color.FromArgb(int.Parse(value, CultureInfo.InvariantCulture));
+                                break;
+                            case "COLB":
+                                node.BaseState.BlendType = (SpriteStudioBlending)int.Parse(value, CultureInfo.InvariantCulture);
+                                break;
+                            case "COLF":
+                                node.BaseState.BlendFactor = float.Parse(value, CultureInfo.InvariantCulture);
+                                break;
                         }
                     }
                 }

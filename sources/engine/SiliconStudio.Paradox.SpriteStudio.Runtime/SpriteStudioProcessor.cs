@@ -82,7 +82,10 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                     BaseNode = node,
                     HFlipped = node.BaseState.HFlipped,
                     VFlipped = node.BaseState.VFlipped,
-                    SpriteId = node.BaseState.SpriteId
+                    SpriteId = node.BaseState.SpriteId,
+                    BlendColor = node.BaseState.BlendColor,
+                    BlendType = node.BaseState.BlendType,
+                    BlendFactor = node.BaseState.BlendFactor
                 };
 
                 Sprite sprite;
@@ -134,59 +137,72 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                         var channels = results.Channels.Where(x => x.NodeName == node.BaseNode.Name);
                         foreach (var channel in channels)
                         {
-                            if((channel.Offset + (sizeof(float)*2)) > animComp.CurrentFrameResult.Data.Length) throw new Exception("SpriteStudio anim data corruption.");
                             var structureData = (float*)(bytes + channel.Offset);
                             if(structureData == null) continue;
                             if (structureData[0] == 0.0f) continue;
 
-                            var value = structureData[1];
+                            var valueFloat = *(structureData + 1);
+                            var valueInt = *((int*)structureData + 1);
+                            var valueVector4 = *((Vector4*)structureData + 1);
 
                             if (channel.PropertyName.StartsWith("posx"))
                             {
-                                node.CurrentXyPrioAngle.X = value;
+                                node.CurrentXyPrioAngle.X = valueFloat;
                             }
                             else if (channel.PropertyName.StartsWith("posy"))
                             {
-                                node.CurrentXyPrioAngle.Y = value;
+                                node.CurrentXyPrioAngle.Y = valueFloat;
                             }
                             else if (channel.PropertyName.StartsWith("prio"))
                             {
-                                node.CurrentXyPrioAngle.Z = value;
+                                node.CurrentXyPrioAngle.Z = valueFloat;
                             }
                             else if (channel.PropertyName.StartsWith("rotz"))
                             {
-                                node.CurrentXyPrioAngle.W = value;
+                                node.CurrentXyPrioAngle.W = valueFloat;
                             }
                             else if (channel.PropertyName.StartsWith("sclx"))
                             {
-                                node.Scale.X = value;
+                                node.Scale.X = valueFloat;
                             }
                             else if (channel.PropertyName.StartsWith("scly"))
                             {
-                                node.Scale.Y = value;
+                                node.Scale.Y = valueFloat;
                             }
                             else if (channel.PropertyName.StartsWith("alph"))
                             {
-                                node.Transparency = value;
+                                node.Transparency = valueFloat;
                             }
                             else if (channel.PropertyName.StartsWith("hide"))
                             {
-                                node.Hide = value > float.Epsilon;
+                                node.Hide = valueInt != 0;
                             }
                             else if (channel.PropertyName.StartsWith("flph"))
                             {
-                                node.HFlipped = value > float.Epsilon;
+                                node.HFlipped = valueInt != 0;
                             }
                             else if (channel.PropertyName.StartsWith("flpv"))
                             {
-                                node.VFlipped = value > float.Epsilon;
+                                node.VFlipped = valueInt != 0;
                             }
                             else if (channel.PropertyName.StartsWith("cell"))
                             {
-                                var spriteIndex = (int)Math.Round(value, MidpointRounding.AwayFromZero);
+                                var spriteIndex = valueInt;
                                 node.SpriteId = spriteIndex;
                                 Sprite sprite;
                                 node.Sprite = data.SpriteStudioComponent.Sheet.Sprites.TryGetValue(spriteIndex, out sprite) ? sprite : null;
+                            }
+                            else if (channel.PropertyName.StartsWith("colb"))
+                            {
+                                node.BlendType = (SpriteStudioBlending)valueInt;
+                            }
+                            else if (channel.PropertyName.StartsWith("colv"))
+                            {
+                                node.BlendColor = new Color4(valueVector4);
+                            }
+                            else if (channel.PropertyName.StartsWith("colf"))
+                            {
+                                node.BlendFactor = valueFloat;
                             }
                         }
                     }
